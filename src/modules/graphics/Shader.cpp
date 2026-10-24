@@ -1,6 +1,8 @@
 #include "graphics/Shader.h"
 #include "common/Exception.h"
 
+#include <algorithm>
+#include <cmath>
 #include <cstring>
 
 namespace eve::graphics {
@@ -16,6 +18,15 @@ Result<void> Shader::setMeshTexture(std::size_t slot, Texture *texture) {
 Shader::Shader() = default;
 
 Shader::~Shader() = default;
+
+Result<void> Shader::sendFloatBlock(std::span<const float> values) {
+    if (values.size() != static_cast<std::size_t>(usedFloats_) ||
+        !std::all_of(values.begin(), values.end(), [](float value) { return std::isfinite(value); }))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Shader float block size or values invalid", "graphics.shader"));
+    std::copy(values.begin(), values.end(), floats_.begin());
+    return Result<void>::success();
+}
 
 void Shader::setPushConstantBlock(const std::array<float, kMaxFloats> &values) noexcept {
     floats_     = values;

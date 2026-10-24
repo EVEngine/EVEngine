@@ -15,6 +15,8 @@
 namespace eve::physics {
 
 class World3D;
+class Joint3D;
+struct FractureGeometry;
 
 /** @brief Runtime lifecycle for one bone inside a geometry-collection instance. */
 enum class BoneRuntimeState : std::uint8_t {
@@ -118,6 +120,22 @@ public:
                                                                             float originX, float originY,
                                                                             float originZ);
 
+    /** @brief Instantiate exact convex fragments from a cooked mesh/graph pair.
+     * @param geometry Owning immutable copy is retained, shared with captured clips.
+     * @return Complete owning instance or failure after rolling back all created bodies.
+     * @cost Linear hull creation; instantiate once, then reuse for offline baking.
+     * @thread Owning physics thread; no callbacks. World is borrowed only during calls.
+     * @lifetime Uses the same generation-qualified world and destruction contract as create().
+     */
+    [[nodiscard]] static eve::Result<std::unique_ptr<GeometryCollectionInstance>> createFractured(
+        World3D& world, const GeometryCollectionAsset& asset, const FractureGeometry& geometry, float originX,
+        float originY, float originZ);
+    /** @brief Shared immutable geometry; empty for legacy box collections.
+     * @ownership Returned shared value keeps geometry alive independently of this instance.
+     * @thread Owner thread for acquisition; read-only sharing is safe after publication.
+     */
+    [[nodiscard]] std::shared_ptr<const FractureGeometry> fragmentGeometry() const noexcept;
+
     /** @brief Whether the owning world handle still resolves. */
     [[nodiscard]] bool hasLiveWorld() const noexcept;
 
@@ -186,6 +204,9 @@ public:
     void releaseBodies();
 
 private:
+    [[nodiscard]] static eve::Result<std::unique_ptr<GeometryCollectionInstance>> createInternal(
+        World3D& world, const GeometryCollectionAsset& asset, std::shared_ptr<const FractureGeometry> geometry,
+        float originX, float originY, float originZ);
     struct BoneRuntime {
         BoneRuntimeState state = BoneRuntimeState::Attached;
         bool             anchored = false;
@@ -202,6 +223,7 @@ private:
         float strainThreshold = 1.f;
         float accumulatedStrain = 0.f;
         bool  broken = false;
+        PhysicsJointHandle joint             = PhysicsJointHandle::invalid();
     };
 
     GeometryCollectionInstance(PhysicsWorldHandle worldHandle, float originX, float originY, float originZ);
@@ -209,6 +231,9 @@ private:
     [[nodiscard]] World3D* resolveWorld() const noexcept;
     [[nodiscard]] eve::Result<Body3D*> resolveBoneBody(int boneIndex) const;
     [[nodiscard]] float falloffAt(const DestructionField& field, float x, float y, float z) const;
+    [[nodiscard]] eve::Result<std::vector<std::unique_ptr<Joint3D>>> stageConstraints(
+        const std::vector<EdgeRuntime>& edges);
+    void releaseConstraints();
     void breakEdge(int edgeIndex, std::uint64_t tick, DestructionStepReceipt& receipt);
     /**
      * @brief Recompute Attached/Detached from the unbroken connection graph.
@@ -234,6 +259,8 @@ private:
     std::vector<BoneDetachEvent> detachEvents_;
     std::vector<ClusterBreakEvent> clusterBreakEvents_;
     std::vector<int> pendingEdgeBreaks_;
+    std::shared_ptr<const FractureGeometry> geometry_;
+    std::vector<std::unique_ptr<Joint3D>>   ownedJoints_;
 };
 
 }  // namespace eve::physics

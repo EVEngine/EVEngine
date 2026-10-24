@@ -1,5 +1,7 @@
 # EVEngine Examples
 
+- [galaxy](galaxy/README.md): procedural spiral galaxy with a 3D star cloud, four arms, warm core, dust lanes, and interactive viewing controls.
+
 [中文 — complete example catalog](README.md) · [Render gallery](../docs/images/examples/README.en.md) · [User guide](../docs/en/usr/README.md)
 
 This is a curated English starting point. Chinese documentation remains authoritative. Examples demonstrate the source revision they accompany; a screenshot from `dev` does not guarantee that an older released SDK includes that capability.
@@ -45,4 +47,8 @@ Start with [AI and MCP setup](../docs/en/usr/AI-MCP.md), then choose:
 - [AI Game](ai-game/README.en.md): structured gameplay actions, observations, deterministic stepping and checkpoints.
 - [AI Editor](ai-editor/README.en.md): create a live editor, change its model, observe events and verify rendering.
 
+- [Modern balcony](modern-balcony/README.md): SCAD architecture, procedural garden, two skinned animated cats, atmospheric sky and KHR ray tracing / portable reflections.
+
 Both include Python drivers that exercise the protocol without an LLM. Graphical verification still needs a working desktop graphics environment. For startup problems and version mismatches, see the [FAQ](../docs/en/usr/FAQ.md).
+
+- [SCAD warm modern living room](scad-living-room/README.md): original procedural interior, warm lights, PBR, shadows, volumetrics, AO/SSGI/SSR/TAA and automatic hardware RT reflections.

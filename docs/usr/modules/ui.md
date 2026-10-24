@@ -621,3 +621,34 @@ ui.animateItemValue("hp/trail", hp, 450.0, "outQuad", 350.0)
 C++ 可用 `UIHost::nodeHandle(id)` 查找一次，再通过 `UIHost::resolveNode(token)` 常数时间访问。句柄不拥有节点；仅在 UI 线程解析，返回的引用不可跨帧保存。属性协调保留句柄，整树替换或 Host 销毁使其失效。补间内部使用同样的检查，重建后的同名节点不会继承旧动画。
 
 文档发布可向 `UiDocumentRuntimeBridge::publish` 传入 `UiTextureResolver`，将 `textureAsset` 映射为已有的非零 UI 纹理注册 ID。支持 image、image-button、filled-image 和 nine-patch；每次发布对同一资源只解析一次。调用方负责注册和纹理的生命周期，后端重建后须重新注册并发布。解析失败保留旧树；字体资源及非 stretch 图片适配暂不支持。
+
+## 工具界面的文本与提示
+
+版本 5 增加 `link`、`helpText`、`disabledReason`、`multiline`、`readOnly` 和
+`placeholder`。旧文档中的这些属性默认分别为空字符串或 `false`；未知字段继续忽略。
+
+```squirrel
+ui.link("使用说明", "https://example.com/manual", "manual");
+ui.setItemTooltip("打开使用说明");
+ui.inputText("备注", "", "notes");
+ui.setItemTextInput(true, false, "");
+ui.setItemHelp("支持多行纯文本", "当前文档不可编辑");
+```
+
+链接是独立的可聚焦文本控件，可以与普通文本通过 `sameLine` 组合；不解析 Markdown
+或 HTML。`valueText` 保存目标 URI。鼠标或键盘激活后走已有的 click 事件／C++ `onClick`
+回调，由工具决定如何导航；控件自身不启动浏览器或外部进程。自动化快照提供 `target`
+和 `link` 角色，自动化点击沿用现有接口。回调沿用 UI 线程事件派发与生命周期约定。
+
+C++ 使用 `link(label, target, id, onClick)`、
+`inputText(...).withTextInput(multiline, readOnly, placeholder)` 和
+`.withHelp(helpText, disabledReason)`。只读文本仍可选择和复制；placeholder 用于单行
+输入。帮助文本常驻显示在控件下方；禁用原因优先于普通 tooltip，并支持悬停禁用控件
+时显示。可聚焦控件在获得键盘焦点时也显示 tooltip。
+
+EditorHost JSON 使用 `{"type":"link","id":"manual","label":"使用说明","target":"..."}`；
+激活产生携带 target 的 click 事件。其 `input` 同样支持 `multiline`、`readOnly`、
+`placeholder`，各控件支持 `helpText`、`disabledReason`、`tooltip`。
+
+工具的进度、就绪／错误状态和取消／重试操作继续使用已有的 `progress`、`badge`、
+`statusBar` 和按钮，由工具根据自身执行结果设置文本与可用状态。

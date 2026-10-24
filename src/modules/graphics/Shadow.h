@@ -39,6 +39,14 @@ struct ShadowUBO {
     glm::vec4 bias{0.002f, 0.f, 1.f, 0.02f};  // w=directional source angular radius
     glm::vec4 cascadeBias{0.f};             // xyz = per-cascade NDC compare bias
     glm::vec4 cascadeTexel{0.f};            // xyz = world units per shadow texel
+    /**
+     * @brief Adaptive cascade resolution scales inside the shared depth array.
+     * Placed immediately after cascadeTexel so short ShadowFrame blocks
+     * stay std140-compatible with the full UBO.
+     * @note xyz = cascadeMapSize / atlasSize; viewport uses the top-left tile.
+     *       w = atlas edge length in texels. When adaptive is off, xyz = 1.
+     */
+    glm::vec4 cascadeUvScale{1.f, 1.f, 1.f, float(ShadowConfig::kMapSize)};
     /** @brief Perspective VPs for local spot slots (layers kCascades .. kTotalLayers-1). */
     glm::mat4 localVP[ShadowConfig::kLocalSlots]{};
     /** @brief Per packed-light local slot index (0..3) or -1; eight floats across two vec4s. */
@@ -54,6 +62,10 @@ struct ShadowUBO {
 struct ShadowUpload {
     ShadowUBO ubo{};
     bool active = false;
+    /** @brief Per-cascade render viewport edge length (texels); drives shadow pass viewport. */
+    int cascadeMapSizes[ShadowConfig::kCascades]{ShadowConfig::kMapSize, ShadowConfig::kMapSize,
+                                                 ShadowConfig::kMapSize};
+    int atlasMapSize = ShadowConfig::kMapSize;
 };
 
 /**
@@ -63,7 +75,9 @@ struct ShadowUpload {
  * @param fovYRad / aspect / nearZ / farZ  camera clip
  * Splits are camera-forward (view-space +Z) distances. Shaders must select cascades
  * with the same metric (max(-viewPos.z, 0)), not euclidean eye-to-point length.
- * Camera far is clamped to kMaxDistance so large scenes keep usable texel density.
+ * Camera far is clamped to `ShadowSchemeSettings::resolvedDirectionalMaxDistance()`
+ * and texel-world math uses `resolvedAtlasMapSize()` so runtime resolution changes
+ * keep bias / PCF / snap grids consistent with the allocated atlas.
  */
 EVENGINE_API_BACKENDS ShadowUpload buildDirectionalCSM(const glm::vec3 &lightDirTowardSurface, const glm::vec3 &eye,
                                                        const glm::vec3 &target, const glm::vec3 &up, float fovYRad,

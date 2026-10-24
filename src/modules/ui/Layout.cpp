@@ -395,6 +395,12 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = ImGui::GetFrameHeight();
         break;
     }
+    case NodeType::Link: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.empty() ? "Link" : n.text.c_str());
+        n.measuredW    = t.x;
+        n.measuredH    = t.y;
+        break;
+    }
     case NodeType::Button: {
         const char *label = n.text.empty() ? "Button" : n.text.c_str();
         const ImVec2 t = ImGui::CalcTextSize(label);
@@ -422,8 +428,11 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = t.y + 6.f;
         break;
     }
-    case NodeType::Slider:
     case NodeType::InputText:
+        n.measuredW = 120.f;
+        n.measuredH = n.multiline ? 96.f : ImGui::GetFrameHeight();
+        break;
+    case NodeType::Slider:
         n.measuredW = 120.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
@@ -705,6 +714,11 @@ void measureNode(UIHost::Tree &tree, int index) {
     if (n.aspectRatio > 0.f) {
         if (n.sizeX > 0.f && n.sizeY <= 0.f) n.measuredH = n.measuredW / n.aspectRatio;
         else if (n.sizeY > 0.f && n.sizeX <= 0.f) n.measuredW = n.measuredH * n.aspectRatio;
+    }
+    if (!n.helpText.empty()) {
+        const ImVec2 help = ImGui::CalcTextSize(n.helpText.c_str());
+        n.measuredW       = std::max(n.measuredW, help.x);
+        n.measuredH += style.ItemSpacing.y + help.y;
     }
     if (n.minSizeX > 0.f) n.measuredW = std::max(n.measuredW, n.minSizeX);
     if (n.minSizeY > 0.f) n.measuredH = std::max(n.measuredH, n.minSizeY);

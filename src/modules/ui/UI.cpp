@@ -666,6 +666,7 @@ AccessibilityRole parseAccessibilityRole(const std::string &role) {
     if (value == "checkbox") return AccessibilityRole::Checkbox;
     if (value == "slider") return AccessibilityRole::Slider;
     if (value == "text") return AccessibilityRole::Text;
+    if (value == "link") return AccessibilityRole::Link;
     if (value == "textinput" || value == "text-input") return AccessibilityRole::TextInput;
     if (value == "list") return AccessibilityRole::List;
     if (value == "listitem" || value == "list-item") return AccessibilityRole::ListItem;
@@ -867,6 +868,20 @@ void UI::addCombo(const std::string &label, const std::string &options, int sele
         start = end + 1;
     }
     currentParent().children.push_back(combo(label, items, selected, id));
+}
+
+void UI::addLink(const std::string &label, const std::string &target, const std::string &id) {
+    currentParent().children.push_back(link(label, target, id));
+}
+
+void UI::setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withTextInput(multiline, readOnly, placeholder);
+}
+
+void UI::setItemHelp(const std::string &help, const std::string &disabledReason) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withHelp(help, disabledReason);
 }
 
 void UI::addInputText(const std::string &label, const std::string &value, const std::string &id) {
@@ -1817,6 +1832,7 @@ std::string UI::saveTreeJson() const {
                                               "panelFrame",
                                               "dockArea",
                                               "appFrame",
+                                              "link",
                                               "filled-image",
                                               "radial-fill"};
     const auto                     tree    = host->get().tree();
@@ -1830,6 +1846,11 @@ std::string UI::saveTreeJson() const {
         if (!n.text.empty()) node.set("text", n.text);
         if (!n.valueText.empty()) node.set("valueText", n.valueText);
         if (!n.tooltip.empty()) node.set("tooltip", n.tooltip);
+        if (n.readOnly) node.set("readOnly", n.readOnly);
+        if (n.multiline) node.set("multiline", n.multiline);
+        if (!n.placeholder.empty()) node.set("placeholder", n.placeholder);
+        if (!n.disabledReason.empty()) node.set("disabledReason", n.disabledReason);
+        if (!n.helpText.empty()) node.set("helpText", n.helpText);
         if (!n.styleClass.empty()) node.set("styleClass", n.styleClass);
         node.set("visible", n.visible);
         node.set("enabled", n.enabled);
@@ -1944,6 +1965,7 @@ bool UI::loadTreeJson(const std::string &text) {
                                                            "panelFrame",
                                                            "dockArea",
                                                            "appFrame",
+                                                           "link",
                                                            "filled-image",
                                                            "radial-fill"};
     bool                                        valid   = true;
@@ -1957,6 +1979,11 @@ bool UI::loadTreeJson(const std::string &text) {
         node.text           = value.getString("text");
         node.valueText      = value.getString("valueText");
         node.tooltip        = value.getString("tooltip");
+        node.readOnly       = value.getBool("readOnly", false);
+        node.multiline      = value.getBool("multiline", false);
+        node.placeholder    = value.getString("placeholder");
+        node.disabledReason = value.getString("disabledReason");
+        node.helpText       = value.getString("helpText");
         node.styleClass     = value.getString("styleClass");
         node.visible        = value.getBool("visible", true);
         node.enabled        = value.getBool("enabled", true);
@@ -2009,21 +2036,22 @@ bool UI::loadTreeJson(const std::string &text) {
         node.focusMode     = focus == "none" ? FocusMode::None : (focus == "click" ? FocusMode::Click : FocusMode::All);
         node.flexDirection = value.getString("flexDirection") == "column" ? FlexDirection::Column : FlexDirection::Row;
         node.alignItems    = static_cast<FlexAlign>(value.getInt("alignItems"));
-        node.justifyContent           = static_cast<FlexJustify>(value.getInt("justifyContent"));
-        node.gap                      = value.getFloat("gap", -1.f);
-        node.columnGap                = value.getFloat("columnGap", -1.f);
-        node.rowGap                   = value.getFloat("rowGap", -1.f);
-        node.flexGrow                 = value.getFloat("flexGrow");
-        node.flexShrink               = value.getFloat("flexShrink", 1.f);
-        node.flexBasis                = value.getFloat("flexBasis", -1.f);
-        node.alignSelf                = value.getInt("alignSelf", -1);
-        node.aspectRatio              = value.getFloat("aspectRatio");
-        node.flexWrap                 = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
-        node.overflow                 = static_cast<OverflowMode>(value.getInt("overflow"));
-        node.gridColumns              = std::max(1, value.getInt("gridColumns", 1));
-        node.gridColumnSpan           = std::max(1, value.getInt("gridColumnSpan", 1));
-        node.accessibilityRole        = static_cast<AccessibilityRole>(value.getInt("accessibilityRole"));
-        node.accessibilityName        = value.getString("accessibilityName");
+        node.justifyContent    = static_cast<FlexJustify>(value.getInt("justifyContent"));
+        node.gap               = value.getFloat("gap", -1.f);
+        node.columnGap         = value.getFloat("columnGap", -1.f);
+        node.rowGap            = value.getFloat("rowGap", -1.f);
+        node.flexGrow          = value.getFloat("flexGrow");
+        node.flexShrink        = value.getFloat("flexShrink", 1.f);
+        node.flexBasis         = value.getFloat("flexBasis", -1.f);
+        node.alignSelf         = value.getInt("alignSelf", -1);
+        node.aspectRatio       = value.getFloat("aspectRatio");
+        node.flexWrap          = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
+        node.overflow          = static_cast<OverflowMode>(value.getInt("overflow"));
+        node.gridColumns       = std::max(1, value.getInt("gridColumns", 1));
+        node.gridColumnSpan    = std::max(1, value.getInt("gridColumnSpan", 1));
+        node.accessibilityRole = static_cast<AccessibilityRole>(value.getInt("accessibilityRole"));
+        node.accessibilityName = value.getString("accessibilityName");
+        if (node.type == NodeType::Link) node.accessibilityRole = AccessibilityRole::Link;
         node.accessibilityDescription = value.getString("accessibilityDescription");
         if (!validHudFields(node)) valid = false;
         const eve::json::Value children = value.get("children");
@@ -2102,6 +2130,7 @@ namespace {
 
 const char *nodeTypeName(NodeType t) {
     switch (t) {
+        case NodeType::Link: return "link";
         case NodeType::Window: return "window";
         case NodeType::Text: return "text";
         case NodeType::Button: return "button";
@@ -2160,6 +2189,7 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "filled-image") return NodeType::FilledImage;
     if (s == "radial-fill") return NodeType::RadialFill;
     if (s == "progress") return NodeType::Progress;
+    if (s == "link") return NodeType::Link;
     if (s == "inputText") return NodeType::InputText;
     if (s == "collapsingHeader") return NodeType::CollapsingHeader;
     if (s == "child") return NodeType::Child;
@@ -2202,6 +2232,11 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.text.empty()) o.set("text", n.text);
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
     if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
+    if (n.readOnly) o.set("readOnly", n.readOnly);
+    if (n.multiline) o.set("multiline", n.multiline);
+    if (!n.placeholder.empty()) o.set("placeholder", n.placeholder);
+    if (!n.disabledReason.empty()) o.set("disabledReason", n.disabledReason);
+    if (!n.helpText.empty()) o.set("helpText", n.helpText);
     if (!n.visible) o.set("visible", false);
     if (!n.enabled) o.set("enabled", false);
     if (n.focusMode != FocusMode::All)
@@ -2225,6 +2260,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
             case AccessibilityRole::Checkbox: role = "checkbox"; break;
             case AccessibilityRole::Slider: role = "slider"; break;
             case AccessibilityRole::Text: role = "text"; break;
+            case AccessibilityRole::Link: role = "link"; break;
             case AccessibilityRole::TextInput: role = "text-input"; break;
             case AccessibilityRole::List: role = "list"; break;
             case AccessibilityRole::ListItem: role = "list-item"; break;
@@ -2331,10 +2367,16 @@ float fnum(const Poco::Dynamic::Var &v, float def = 0.f) {
 }
 
 void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
+    if (d.type == NodeType::Link) d.accessibilityRole = AccessibilityRole::Link;
     if (o.has("id")) d.id = o.getValue<std::string>("id");
     if (o.has("key")) d.key = o.getValue<std::string>("key");
     if (o.has("text")) d.text = o.getValue<std::string>("text");
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
+    if (o.has("helpText")) d.helpText = o.getValue<std::string>("helpText");
+    if (o.has("disabledReason")) d.disabledReason = o.getValue<std::string>("disabledReason");
+    if (o.has("placeholder")) d.placeholder = o.getValue<std::string>("placeholder");
+    if (o.has("multiline")) d.multiline = o.getValue<bool>("multiline");
+    if (o.has("readOnly")) d.readOnly = o.getValue<bool>("readOnly");
     if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
     if (o.has("enabled")) d.enabled = o.getValue<bool>("enabled");
@@ -2880,6 +2922,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("imageButton", &UI::addImageButton);
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
+    cls.addFunc("link", &UI::addLink);
+    cls.addFunc("setItemTextInput", &UI::setItemTextInput);
+    cls.addFunc("setItemHelp", &UI::setItemHelp);
     cls.addFunc("inputText", &UI::addInputText);
     cls.addFunc("searchField", &UI::addSearchField);
     cls.addFunc("switch", &UI::addSwitch);

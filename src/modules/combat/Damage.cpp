@@ -1,5 +1,6 @@
 #include "combat/Damage.h"
 
+#include "common/Profile.h"
 #include "tags/GameplayTag.h"
 
 #include <algorithm>
@@ -198,7 +199,10 @@ Result<DamageAmounts> DamageRuntime::preview(const CombatState& target, const Da
 }
 
 Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request) const {
-    auto previewed = preview(target, request);
+    auto previewed = [&] {
+        EV_PROFILE_MODULE("combat", "DamageRuntime::preview");
+        return preview(target, request);
+    }();
     if (!previewed) return Result<DamageOutcome>::failure(previewed.status());
     const CombatState             before = target;
     DamageSettlementPolicy        adapter(target, request, std::move(previewed).takeValue(), policy_);
@@ -217,7 +221,10 @@ Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequ
         target.maxHealth > 0.0 ? target.health / target.maxHealth : 0.0;
     context["target_poise_ratio"] = target.maxPoise > 0.0 ? target.poise / target.maxPoise : 0.0;
     settlementRequest.context = Value(std::move(context));
-    auto settled              = settlement_.settle(settlementRequest, adapter);
+    auto settled                  = [&] {
+        EV_PROFILE_MODULE("combat", "DamageRuntime::settle");
+        return settlement_.settle(settlementRequest, adapter);
+    }();
     if (!settled) return Result<DamageOutcome>::failure(settled.status());
     const auto          settlementResult = std::move(settled).takeValue();
     const DamageAmounts amounts          = adapter.amounts();

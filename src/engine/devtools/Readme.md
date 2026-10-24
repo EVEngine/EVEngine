@@ -148,6 +148,6 @@ debug adapter 在 launch 时启动 `eve run --debug --dap-port`，attach 则连�
 `eve language-server --root <game>` 只是把它接到 stdio 上。
 
 进程内可直接调用 `openDocument` / `complete` / `hover` / `definition` / `diagnosticsFor`
-/ `formatDocument` / `foldingRanges` / `semanticTokens` 等 API（见 `test/language_server.cpp`）。JSON-RPC
+/ `formatDocument` / `foldingRanges` / `semanticTokens` 等 API（见 `test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp`）。JSON-RPC
 覆盖 initialize、增量文档同步、补全、Hover、定义、引用、重命名、documentSymbol、
 signatureHelp、formatting、rangeFormatting、foldingRange、semanticTokens 和 publishDiagnostics。

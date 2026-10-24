@@ -1,0 +1,4425 @@
+{
+  "schema": "evengine.test-levels",
+  "version": 2,
+  "sources": {
+    "integration/transaction-authority/editor_authority_atomic.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "editing"
+    },
+    "integration/scene-editing/scene_transaction_observer.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "scene_editing"
+    },
+    "transaction_contracts/transaction_contracts_main.cpp": {
+      "role": "helper",
+      "default": "local-logic",
+      "module": "editing"
+    },
+    "integration/crowd-runtime/crowd_advance.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.advance.scriptClockHasLosslessMetadataAndStrictIntegerInputs"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_advance.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_avoidance.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd"
+    },
+    "integration/crowd-runtime/crowd_budget.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_budget.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_contact_pairs.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.contactPairs.scriptExtensionsAreOptionalAndStrictInteger"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_contact_pairs.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_flow_cache.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_flow_cache.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_navigation_script.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.navigation.scriptTokensBoundWorkAndRejectWrongKindsOwnersAndGenerations",
+          "crowd.navigation.scriptRegistryCapacityIsRecoverableAfterRelease",
+          "crowd.navigation.scriptRequestsRemainValidAcrossOtherGoalPublications",
+          "crowd.navigation.scriptRequestOwnedLeaseSamplesAndReleasesSafely",
+          "crowd.navigation.scriptAgentsKeepLeaseAfterRequestReleaseAndRejectAtomicBadBindings"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_navigation_script.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_navigation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_navigation.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_policy.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.policy.scriptCanonicalPolicyAndAtomicBatchBoundary"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_policy.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_registry.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.registry.scriptReferencesAndBatchesHaveCheckedBoundary",
+          "crowd.registry.scriptMovementBindingRejectsCoercionAndPartialUpdates"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_registry.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_revision.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.revision.scriptStatusAndStepReportExposeStaleField"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_revision.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_scheduler.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_scheduler.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_snapshot.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_snapshot.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_spatial.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "crowd.spatial.scriptBudgetExtensionIsOptionalAndStrictInteger"
+        ]
+      },
+      "module": "crowd",
+      "origins": [
+        "crowd_spatial.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_surface.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_surface.cpp"
+      ]
+    },
+    "integration/crowd-runtime/crowd_ties.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "crowd",
+      "origins": [
+        "crowd_ties.cpp"
+      ]
+    },
+    "integration/crowd-runtime/CrowdThread.cpp": {
+      "role": "tests",
+      "default": "concurrency",
+      "module": "crowd",
+      "origins": [
+        "CrowdThread.cpp"
+      ]
+    },
+    "integration/map-navigation/map_navigation_snapshot.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "map",
+      "origins": [
+        "map_navigation_snapshot.cpp"
+      ]
+    },
+    "profile/crowd_benchmark.cpp": {
+      "role": "compile-contract",
+      "default": "performance",
+      "module": "crowd"
+    },
+    "profile/crowd_update_allocation.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "crowd"
+    },
+    "profile/result_policy_consumer.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/result_policy_producer.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/rts_battle_benchmark.cpp": {
+      "role": "compile-contract",
+      "default": "performance",
+      "module": "crowd"
+    },
+    "integration/rts-crowd/rts_attack_slots.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_attack_slots.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_combat_suppression_aura.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_combat_suppression_aura.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_crowd_flow_groups.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_crowd_flow_groups.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_crowd_flow_navigation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "rts.crowd.scriptSharedFlowConfigurationHasExactQuotas"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_flow_navigation.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_crowd_registry.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "rts.crowd.scriptRelocationUsesCheckedOwnerPlacement"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_registry.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_crowd_surface_adapter.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "rts.crowd.scriptTrackingSupportsWorldSetupAndCheckedConfiguration"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "rts_crowd_surface_adapter.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_crowd_zero_delta.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_crowd_zero_delta.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_formation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts"
+    },
+    "integration/rts-crowd/rts_group_attack_move.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_group_attack_move.cpp"
+      ]
+    },
+    "integration/rts-crowd/rts_performance_semantics.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_performance_semantics.cpp"
+      ]
+    },
+    "integration/rts-crowd/CrowdMotion.cpp": {
+      "role": "tests",
+      "default": "concurrency",
+      "cases": {
+        "script-binding": [
+          "rts.thread.scriptCrowdExecutionRequiresConfiguredWorldAndScheduler"
+        ]
+      },
+      "module": "rts",
+      "origins": [
+        "CrowdMotion.cpp"
+      ]
+    },
+    "integration/sensing/sensing_spatial_cells.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "sensing",
+      "origins": [
+        "sensing_spatial_cells.cpp"
+      ]
+    },
+    "GraphicsWindowFixtures.cpp": {
+      "role": "helper",
+      "default": "render-window",
+      "module": "common"
+    },
+    "RenderImageAuditIo.cpp": {
+      "role": "helper",
+      "default": "platform-file",
+      "module": "image"
+    },
+    "agent/GpuProbe.cpp": {
+      "role": "probe",
+      "default": "platform-file",
+      "module": "tensor"
+    },
+    "asset_import/ScadCompilerTimeoutFixture.cpp": {
+      "role": "probe",
+      "default": "concurrency",
+      "module": "common"
+    },
+    "asset_import/StructuredModelGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_graphics"
+    },
+    "unit/graphics/virtual_texture_streaming.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "virtual_texture_streaming.cpp"
+      ]
+    },
+    "asset_import/UnityFbxUnavailable.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "asset_import"
+    },
+    "asset_import/UnityGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-window",
+      "module": "asset_graphics"
+    },
+    "asset_import/UnityMaterialGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_graphics"
+    },
+    "asset_import/UnityNormalMipGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_graphics"
+    },
+    "asset_import/UnityPackageProbe.cpp": {
+      "role": "probe",
+      "default": "asset-files",
+      "module": "asset_graphics"
+    },
+    "asset_import/UnitySpriteGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_graphics"
+    },
+    "asset_import/UnityVolumeGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_graphics"
+    },
+    "asset_shader/ShaderEffectProbe.cpp": {
+      "role": "probe",
+      "default": "render-offscreen",
+      "module": "asset_stylize"
+    },
+    "asset_shader/ShaderPackageProbe.cpp": {
+      "role": "probe",
+      "default": "asset-files",
+      "module": "asset_import"
+    },
+    "asset_shader/ShaderValidationAbsent.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "asset_graphics"
+    },
+    "asset_shader/ShaderValidationTests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "asset-pipeline": [
+          "asset.shader GPU admission rejects foreign descriptor slots",
+          "asset.shader GPU admission validates both stage semantics and pipeline layout"
+        ]
+      },
+      "module": "asset_graphics"
+    },
+    "fixtures/native_test_plugin.cpp": {
+      "role": "helper",
+      "default": "local-logic",
+      "module": "common"
+    },
+    "fuzz/json_fuzz.cpp": {
+      "role": "fuzz",
+      "default": "fuzz-property",
+      "module": "common"
+    },
+    "integration/asset-import/asset_import_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "asset-files",
+      "cases": {
+        "concurrency": [
+          "thread.resource executor bounds concurrent decoding",
+          "resource.requestAsyncThenWaitFor",
+          "resource.getJoinsInFlightRequest",
+          "resource.asyncLoadFailureSurfacesInWaitFor",
+          "SceneLoader.prewarmAsync.reusesDecodedScene"
+        ],
+        "platform-file": [
+          "animation.mixamo.anim.txtFixturesPresent",
+          "font.newFontData.ttf",
+          "font.newFontDataFromFile.cached",
+          "font.newFontData.invalidSize",
+          "model3d.newModelDataFromFile.cached",
+          "model3d.newModelData.rock1Fbx",
+          "model3d.newModelDataFromFile.sofaObjMtl",
+          "model3d.materialApi.objMtl",
+          "model3d.materialApi.gltf",
+          "spritestack.render.pure2DStack",
+          "spritestack.render.batchUses2DStacks"
+        ],
+        "render-window": [
+          "animation.mixamo.skeletonIdleRunJumpPreview",
+          "map.render.orthoAndIsoPreview",
+          "model3d.render.rock1Fbx",
+          "model3d.render.rock1ToonShader",
+          "model3d.render.sofaObjMtl",
+          "model3d.buildRenderable.objMtl",
+          "model3d.render.gltfEmbeddedUvOrientation",
+          "model3d.render.cesiumManGltf",
+          "particles.render.fireAndSmokePreview",
+          "SceneLoader.load.buildsGameObjectTreeWithRenderables",
+          "SceneLoader.load.pbrMaterialAndLightsAndCamera",
+          "SceneLoader.load.pbrTextureCacheReusesTexture",
+          "SceneLoader.load.gltfCesiumManPbrAndAnimation",
+          "SceneLoader.loadAsync.mountsOnPoll",
+          "SceneLoader.loadAsync.precodesTextures"
+        ],
+        "physics-backend": [
+          "particles.groundCulling.filtersVisitorAndControlsPlayback"
+        ]
+      },
+      "module": "filesystem",
+      "modules": [
+        "animation",
+        "editor",
+        "filesystem",
+        "font",
+        "map",
+        "model3d",
+        "particles",
+        "sceneloader",
+        "sound",
+        "spritestack"
+      ],
+      "origins": [
+        "ModelPrefetch.cpp",
+        "PreparedFile.cpp",
+        "animation_mixamo.cpp",
+        "editor_disk_asset_catalog_v2.cpp",
+        "font.cpp",
+        "map.cpp",
+        "model3d.cpp",
+        "particles.cpp",
+        "resource.cpp",
+        "resource_decoder_lifetime.cpp",
+        "resource_format_model.cpp",
+        "resource_format_sound.cpp",
+        "sceneloader.cpp",
+        "spritestack.cpp"
+      ]
+    },
+    "integration/asset-pipeline/asset_pipeline_graphics_asset_image_mips_tests.cpp": {
+      "role": "tests",
+      "default": "asset-pipeline",
+      "cases": {
+        "asset-files": [
+          "asset.import.unityTerrainPrefabUsesGuidFileIdAndCanonicalCoordinates",
+          "asset.packageStore.reopensBeforeAtomicPublishAndFailureKeepsOldEvpack",
+          "asset.packageStore.publishesAndReopensEva",
+          "asset.import.realGlbDecodesCanonicalMeshAndTraversesRuntimePack",
+          "asset.import.animationFixtureBecomesCanonicalEvaAndTwoRuntimeTargets",
+          "asset.import.animationFixtureRejectsDeclaredKeyCountMismatch",
+          "asset.import.structuredModelsScadCompilerAbsent",
+          "asset.import.structuredModelsScadCompilerTimeout"
+        ],
+        "render-offscreen": [
+          "asset.import.unityTexture3dSurvivesCookAndVulkanUpload"
+        ]
+      },
+      "module": "asset",
+      "modules": [
+        "asset",
+        "asset_graphics",
+        "asset_import"
+      ],
+      "origins": [
+        "asset_cooker.cpp",
+        "asset_graphics_image_mips.cpp",
+        "asset_graphics_loader.cpp",
+        "asset_image_mips.cpp",
+        "asset_import.cpp",
+        "asset_import_animation.cpp",
+        "asset_import_gltf_animation.cpp",
+        "asset_import_gltf_material.cpp",
+        "asset_import_structured_models.cpp",
+        "asset_import_tga.cpp",
+        "asset_import_tiff.cpp",
+        "asset_import_unity_collection.cpp"
+      ]
+    },
+    "integration/asset-pipeline/asset_pipeline_graphics_asset_import_unity_vegetation_material_tests.cpp": {
+      "role": "tests",
+      "default": "asset-pipeline",
+      "cases": {
+        "asset-files": [
+          "asset.import.unityFbxCharacterProducesSkinAndAnimation"
+        ],
+        "render-offscreen": [
+          "asset.mesh.unityV11AuthoringChannelsSurviveCookAndRuntimeLoad",
+          "graphics.vegetation.translucency_gpu_backlight_and_ambient"
+        ],
+        "render-window": [
+          "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource",
+          "asset.import.unityStaticPrefabRendersOwnedEcsInstances"
+        ]
+      },
+      "module": "asset_import",
+      "modules": [
+        "asset",
+        "asset_graphics",
+        "asset_import",
+        "asset_procgen",
+        "asset_scene",
+        "common",
+        "graphics"
+      ],
+      "origins": [
+        "asset_import_unity_fbx.cpp",
+        "asset_import_unity_native.cpp",
+        "asset_import_unity_package.cpp",
+        "asset_import_unity_sprite.cpp",
+        "asset_import_unity_vegetation_material.cpp",
+        "asset_mesh_attributes.cpp",
+        "asset_mesh_uv.cpp",
+        "asset_migration.cpp",
+        "asset_procgen_terrain_detail_render.cpp",
+        "asset_scene_bindings.cpp",
+        "asset_shader.cpp",
+        "graphics_vegetation_translucency.cpp",
+        "medialoader_model_link.cpp"
+      ]
+    },
+    "integration/audio-playback/audio_playback_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "platform-audio",
+      "cases": {
+        "render-window": [
+          "demo.newPlanetTexture"
+        ],
+        "platform-file": [
+          "sound.modplug.midi.decode"
+        ]
+      },
+      "module": "demo",
+      "modules": [
+        "demo",
+        "sound"
+      ],
+      "origins": [
+        "demo.cpp",
+        "sound.cpp"
+      ]
+    },
+    "integration/card-rts-payment/card_rts_payment_card_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "card.genericBatchComposesWithEconomyWithoutRts",
+          "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
+          "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
+          "card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills",
+          "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+          "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff"
+        ],
+        "platform-file": [
+          "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard"
+        ]
+      },
+      "module": "card",
+      "modules": [
+        "card"
+      ],
+      "origins": [
+        "card_rts_production_integration.cpp",
+        "card_rts_script_composition.cpp"
+      ]
+    },
+    "integration/concurrency/concurrency_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "concurrency",
+      "cases": {
+        "script-binding": [
+          "devtools.mcp.consoleToolsRoundTripScriptPrint",
+          "procgen.result.squirrelExecutionAndSchedulerShareProjection",
+          "procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically"
+        ],
+        "runtime-lifecycle": [
+          "devtools.mcp.inputBatchWaitCompletesAcrossPoll"
+        ],
+        "platform-network": [
+          "event.VariantMessage",
+          "network.NetWorkerQueue",
+          "network.Channel.fragmentedAndCoalescedFrames",
+          "network.Channel.rejectsOversizedFrameHeader",
+          "network.Network.timeoutAndVerifySsl",
+          "network.Network.cppFactoriesReturnOwners",
+          "network.NetWriterReaderRoundtrip",
+          "network.NetReaderOverrunIsSticky"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "animation",
+        "cmdline",
+        "common",
+        "devtools",
+        "network",
+        "pixelworld_thread",
+        "procgen",
+        "thread",
+        "voxel"
+      ],
+      "origins": [
+        "animation_batch_lod.cpp",
+        "animation_binary.cpp",
+        "cmdline_sdk_hash.cpp",
+        "common_diagnostic_vector_instances.cpp",
+        "mcp_architecture_graph.cpp",
+        "mcp_binding_architecture.cpp",
+        "mcp_console.cpp",
+        "mcp_domain_tools.cpp",
+        "mcp_editor_targets.cpp",
+        "mcp_input_tools.cpp",
+        "mcp_stdio.cpp",
+        "mcp_tool_filter.cpp",
+        "network.cpp",
+        "pixelworld_parallel.cpp",
+        "procgen_result_contract.cpp",
+        "procgen_rng_contract.cpp",
+        "render_graph.cpp",
+        "thread.cpp",
+        "voxel.cpp"
+      ]
+    },
+    "integration/file-io/file_io_graphics_hex_level_data_tests.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "cases": {
+        "render-window": [
+          "animation.skinned.render.bindPose",
+          "animation.skinned.render.clipSampledMovesPixels",
+          "animation.skinned.render.playerDriven",
+          "animation.skinned.render.applyToMesh",
+          "avatar.vrm.graphicsBackendSupportIsExplicit"
+        ],
+        "concurrency": [
+          "filesystem.watch.fileModified",
+          "filesystem.watch.coalescesOverlappingRegistrations",
+          "filesystem.watch.dotResolvesToCwd",
+          "hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath"
+        ],
+        "script-binding": [
+          "hotreload.tryReloadParticleJson",
+          "hotreload.softScriptReloadPreservesState"
+        ]
+      },
+      "module": "daynight",
+      "modules": [
+        "animation",
+        "avatar",
+        "cmdline",
+        "common",
+        "database",
+        "daynight",
+        "editor",
+        "filesystem",
+        "i18n",
+        "joystick",
+        "map",
+        "particles"
+      ],
+      "origins": [
+        "SkyProfile.cpp",
+        "SkyWispsAsset.cpp",
+        "animation_skinned.cpp",
+        "avatar_vrm.cpp",
+        "cmdline.cpp",
+        "crashlog.cpp",
+        "database.cpp",
+        "editor_tilemap_formats.cpp",
+        "filesystem_cpp.cpp",
+        "hex_level_data.cpp",
+        "hotreload.cpp",
+        "i18n.cpp",
+        "joystick_cpp.cpp"
+      ]
+    },
+    "integration/file-io/file_io_graphics_tensor_llm_tests.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "cases": {
+        "concurrency": [
+          "devtools.projectIndex.stdioDiscoveryAndTaskContext",
+          "hotreload.remoteSyncUnreachableRecovers"
+        ],
+        "platform-network": [
+          "hotreload.remoteSyncDownload"
+        ],
+        "script-binding": [
+          "rpg.classic.mainScriptCompilesThroughEveScriptFrontend"
+        ]
+      },
+      "module": "devtools",
+      "modules": [
+        "devtools",
+        "filesystem",
+        "graphics",
+        "map",
+        "rpg",
+        "tensor",
+        "ui"
+      ],
+      "origins": [
+        "language_server.cpp",
+        "map_dual_grid_masks.cpp",
+        "mcp_project_index.cpp",
+        "pcg_photo_mode_session.cpp",
+        "reflection_probe_culling.cpp",
+        "remotesync.cpp",
+        "rpg_classic.cpp",
+        "rpg_classic_playthrough.cpp",
+        "tensor_llm.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_action_preview_profile_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "action_editor",
+      "modules": [
+        "action",
+        "action_editor",
+        "animation"
+      ],
+      "origins": [
+        "action_preview_profile.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_action_upper_body_orientation_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "origins": [
+        "action_upper_body_orientation.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "platform-file": [
+          "animClip.reloadPathRefreshesRegisteredClips",
+          "animClip.reloadUnknownOrBrokenPathIsNoop"
+        ],
+        "concurrency": [
+          "audio.streamSource.pump",
+          "audio.source.seekTell",
+          "audio.modplug.midi.play"
+        ],
+        "script-binding": [
+          "audio.pcgZone.squirrelContract"
+        ]
+      },
+      "module": "action_editor",
+      "modules": [
+        "action_editor",
+        "action_game_event",
+        "agent",
+        "agent_tensor",
+        "animation",
+        "animation_editing",
+        "animation_tensor",
+        "attributes",
+        "audio_editing",
+        "card"
+      ],
+      "origins": [
+        "action_editor_adapter.cpp",
+        "action_game_event.cpp",
+        "action_montage.cpp",
+        "action_preview_controller.cpp",
+        "action_timeline.cpp",
+        "action_timeline_payload_editor.cpp",
+        "action_timeline_widget.cpp",
+        "agent_composition.cpp",
+        "agent_tensor.cpp",
+        "animation_action_preview.cpp",
+        "animation_inertializer.cpp",
+        "animation_smr_neural_retarget.cpp",
+        "attribute_domain_adapters.cpp",
+        "attributes_rpg_unification.cpp",
+        "audio.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "platform-file": [
+          "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips"
+        ],
+        "script-binding": [
+          "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary"
+        ],
+        "physics-backend": [
+          "climbing.vault.runningJumpUsesLowVaultAndProducesStableConstrainedLanding",
+          "climbing.vault.destroyedTargetCancelsWithStaleEvidence",
+          "container.zoneUsesStrongCoordinateSpacesAndValidatesShapes"
+        ]
+      },
+      "module": "buildingfx",
+      "modules": [
+        "buildingfx",
+        "card",
+        "climbing",
+        "combat",
+        "combat_navigation",
+        "common",
+        "definitions",
+        "dialogue",
+        "inventory",
+        "rpg"
+      ],
+      "origins": [
+        "buildingfx.cpp",
+        "card_payment_composition.cpp",
+        "climbing_animation.cpp",
+        "combat_action_damage.cpp",
+        "combat_action_windows.cpp",
+        "combat_arena_foundation.cpp",
+        "combat_cancel_resolver.cpp",
+        "combat_damage.cpp",
+        "combat_feel_cancel_guard.cpp",
+        "combat_framework_composition.cpp",
+        "combat_loop.cpp",
+        "combat_navigation.cpp",
+        "combat_target_enemy_ai.cpp",
+        "common_result_header.cpp",
+        "container_transfer.cpp",
+        "definition_runtime.cpp",
+        "definition_runtime_skill_vehicle.cpp",
+        "definition_runtime_weapon.cpp",
+        "dialogue_localization.cpp",
+        "dialogue_payment.cpp",
+        "dialogue_proc.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "editor.script.composes_heightmap_target_field_tool_and_transaction"
+        ]
+      },
+      "module": "editor",
+      "modules": [
+        "domain_gizmo_editing",
+        "editor",
+        "queue_editing"
+      ],
+      "origins": [
+        "editor_behavior_graph.cpp",
+        "editor_biome_rules_editor.cpp",
+        "editor_building_target.cpp",
+        "editor_building_tool.cpp",
+        "editor_camera_target.cpp",
+        "editor_core_v2.cpp",
+        "editor_definition_target.cpp",
+        "editor_dialogue_graph.cpp",
+        "editor_extension_v2.cpp",
+        "editor_fluid_target.cpp",
+        "editor_gpuagents.cpp",
+        "editor_housegen_target.cpp",
+        "editor_localization.cpp",
+        "editor_map.cpp",
+        "editor_map_document.cpp",
+        "editor_material_batch_target.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "editor.procgen.script_editor_script_loads_schema_and_keeps_failed_preview",
+          "editor.v2.script_discovers_plans_and_executes_registered_command",
+          "editor.v2.script_game_injects_command_into_the_same_session_protocol",
+          "editor.v2.runtime_builder_quick_add_click_executes_command",
+          "editor.v2.script_command_failure_is_not_silent",
+          "editor.v2.script_tool_failure_is_not_silent"
+        ],
+        "physics-backend": [
+          "editor.physics.live_shape_publication_swaps_after_build_and_undoes",
+          "editor.physics.live_shape_publication_rejection_preserves_old_shape_and_document",
+          "editor.physics.live_2d_polygon_publication_swaps_after_build_and_undoes"
+        ]
+      },
+      "module": "editor",
+      "modules": [
+        "editor"
+      ],
+      "origins": [
+        "editor_material_target.cpp",
+        "editor_mesh_modifier_editor.cpp",
+        "editor_network_telemetry.cpp",
+        "editor_offscreen_preview.cpp",
+        "editor_particle_graph.cpp",
+        "editor_pcg_graph.cpp",
+        "editor_physics_asset.cpp",
+        "editor_procgen_script_editor.cpp",
+        "editor_property_model.cpp",
+        "editor_runtime_manifest_v2.cpp",
+        "editor_scene_component_payload.cpp",
+        "editor_scene_runtime.cpp",
+        "editor_scene_target_v2.cpp",
+        "editor_skeleton_overlay.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "editor.script_tool.implements_the_same_session_protocol",
+          "editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace",
+          "editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState",
+          "editor.animation.clip_editor_script_composes_workspace_and_transactions",
+          "editor.avatar.document_editor_script_composes_workspace_and_rejects_referenced_delete",
+          "editor.biome.rules_editor_script_composes_workspace_and_exclusions",
+          "editor.audio.source_editor_script_composes_workspace_and_transactions"
+        ],
+        "platform-file": [
+          "archspace.document.opening_cutout_changes_mesh_and_helpers_work"
+        ]
+      },
+      "module": "dialogue",
+      "modules": [
+        "dialogue",
+        "editing",
+        "editor",
+        "scene_editor"
+      ],
+      "origins": [
+        "dialogue_state_integration.cpp",
+        "editing_contracts.cpp",
+        "editing_result_storage.cpp",
+        "editing_satellite_contract_suite.cpp",
+        "editing_value_lifecycle.cpp",
+        "editor.cpp",
+        "editor_animation_clip.cpp",
+        "editor_archspace_target.cpp",
+        "editor_archspace_tools.cpp",
+        "editor_audio_editor.cpp",
+        "editor_audio_source_script.cpp",
+        "editor_audio_transport.cpp",
+        "editor_automation_v2.cpp",
+        "editor_avatar_document_editor.cpp",
+        "editor_avatar_editor.cpp",
+        "editor_avatar_target.cpp",
+        "editor_host_package.cpp",
+        "editor_script_component_payload.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "concurrency": [
+          "editor.v2.task_queue_is_queryable_and_cancellable"
+        ],
+        "script-binding": [
+          "editor.script.composes_live_tile_layer_target_with_field_tool",
+          "editor.ui.theme_editor_script_composes_workspace_and_transactions"
+        ]
+      },
+      "module": "editor",
+      "modules": [
+        "action",
+        "editor",
+        "effects",
+        "gpuagents",
+        "inventory",
+        "rpg"
+      ],
+      "origins": [
+        "editor_spline_path_binder.cpp",
+        "editor_stylize_mesh_vfx.cpp",
+        "editor_surface_fluid_preview.cpp",
+        "editor_task_diagnostic_v2.cpp",
+        "editor_texture_recipe_target.cpp",
+        "editor_transaction_consumer.cpp",
+        "editor_ui_document.cpp",
+        "editor_ui_skin_preview.cpp",
+        "editor_voxel_catalog.cpp",
+        "editor_workspace_layout_shell.cpp",
+        "effects_domain_adapters.cpp",
+        "game_save_integration.cpp",
+        "gameplay_action.cpp",
+        "gameplay_control_rpg_product.cpp",
+        "gameplay_control_weapon.cpp",
+        "gpuagents.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "render-offscreen": [
+          "graphics.backendParity.primitive2DAnd3DReadback",
+          "graphics.backendParity.vegetationFieldGizmoReadback",
+          "graphics.raytracing.probeAndUnsupportedOps",
+          "graphics.vegetation.extras_gpu_atlas_tracks_revision_and_rejects_half_overflow",
+          "graphics.vegetation.gpu_field_binding_is_coherent_stale_safe_and_atomic",
+          "graphics.vegetation.prebaked_layers_upload_bind_and_release_atomically",
+          "graphics.vegetation.color_mask_remaps_after_gpu_filtering",
+          "graphics.vegetation.global_colors_matches_tve_linear_fragment_formula",
+          "graphics.vegetation.detail_layer_matches_tve_replace_formula",
+          "graphics.vegetation.normal_gpu_matches_filtered_cpu_reference"
+        ],
+        "script-binding": [
+          "GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy"
+        ],
+        "platform-file": [
+          "particles.skin.filterByIndexAndClearFilter",
+          "particles.skin.emitFromSkinRespectsBuffer",
+          "particles.attach.cesiumManBoneByNameIfPresent",
+          "particles.skin.planeXzYzCesiumMan",
+          "particles.skin.clearRestoresBoneOriginSpawn",
+          "particles.skin.surfaceEmitCesiumMan",
+          "particles.attach.clipSampleMovesEmitter",
+          "particles.skin.emptyBoneFilterFallsBack"
+        ]
+      },
+      "module": "graphics",
+      "modules": [
+        "animation",
+        "effects",
+        "graphics",
+        "graphics_editing",
+        "graphics_raytracing",
+        "map_editing",
+        "npc_ai",
+        "particles"
+      ],
+      "origins": [
+        "graphics_authoring_projection.cpp",
+        "graphics_primitive_cache.cpp",
+        "graphics_raytracing.cpp",
+        "graphics_vegetation.cpp",
+        "graphics_vegetation_gizmo.cpp",
+        "identity_result_audit.cpp",
+        "kaykit_combat_assets.cpp",
+        "map_tile_editing.cpp",
+        "npc_ai_navigation.cpp",
+        "particles_attach_extra.cpp",
+        "particles_attach_more.cpp",
+        "particles_attach_skin.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "asset-files": [
+          "particles.effectAsset.playbackLabAssetIsConsumable"
+        ],
+        "render-offscreen": [
+          "graphics.pcgMeshLod.speedTreeFadeUsesComplementaryOpaqueCoverage"
+        ],
+        "script-binding": [
+          "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel",
+          "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam",
+          "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback"
+        ],
+        "render-window": [
+          "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones"
+        ],
+        "physics-backend": [
+          "physics_destruction_graphics.staleWorldRejectsDraw"
+        ]
+      },
+      "module": "particles",
+      "modules": [
+        "camera",
+        "daynight",
+        "particles",
+        "physics_backend",
+        "physics_destruction_graphics",
+        "physics_editor",
+        "physics_softbody",
+        "pixelworld_editor",
+        "procgen"
+      ],
+      "origins": [
+        "particles_dynamic_bones.cpp",
+        "particles_effect_asset.cpp",
+        "pcg_car_camera.cpp",
+        "pcg_photo_mode_apply.cpp",
+        "physics_accelerator_domains.cpp",
+        "physics_destruction_graphics.cpp",
+        "physics_editor_boot.cpp",
+        "physics_simulation_backend_satellites.cpp",
+        "pixelworld_editor.cpp",
+        "procgen_artifact_publish.cpp",
+        "procgen_core_boundary.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "render-window": [
+          "procgen.simulation.crystalCave"
+        ]
+      },
+      "module": "procgen_editing",
+      "modules": [
+        "card",
+        "procgen",
+        "procgen_editing",
+        "rpg"
+      ],
+      "origins": [
+        "procgen_road_editing.cpp",
+        "procgen_simulation.cpp",
+        "resource_account.cpp",
+        "rpg_crafting.cpp",
+        "rpg_equipment.cpp",
+        "rpg_quest_reward.cpp",
+        "rpg_save_prepare.cpp",
+        "rpg_shop_transaction.cpp",
+        "rpg_world_interaction.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "modules": [
+        "rts"
+      ],
+      "origins": [
+        "rts_combat.cpp",
+        "rts_combat_3.cpp",
+        "rts_composition.cpp",
+        "rts_economy.cpp",
+        "rts_economy_2.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "platform-file": [
+          "rts.legacySandboxContentMaterializesEveryArchetype"
+        ],
+        "module-composition": [
+          "rts.scriptProductionUsesCanonicalEconomyActionAndProductionQueues",
+          "rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder",
+          "rts.scriptConstructionCancellationRefundsProgressAndRestoresThroughCheckpoint",
+          "rts.scriptBuildingSaleRefundsQueuesEvacuatesGarrisonAndRestoresThroughCheckpoint",
+          "rts.scriptReinforcementFacadeAndReplayResolveFallbackThroughPaidProduction",
+          "rts.scriptAIReplenishesWorkersBuildsArmyAndRestoresDeterministicIdentitySequence",
+          "rts.scriptResearchPaysOnceAndUpgradesExistingAndFutureUnits",
+          "rts.scriptAbilityLoadsCanonicalDefinitionDebitsAndSettlesChannelDamage",
+          "rts.scriptStatusEffectsDriveMovementDamageIntakeRegenerationAndExpiry",
+          "rts.scriptCommandLogSchedulesStableCommandsAtExactFixedTicks",
+          "rts.scriptCommandLogReplaysConstructionCancellationAndBuildingSale",
+          "rts.scriptCheckpointRestoresRootsEconomyAndTimelineTogether",
+          "rts.scriptCheckpointRebuildsChangedRootTopology",
+          "rts.scriptFogUsesCanonicalFovAndProjectsStableLastKnownContacts",
+          "rts.scriptMatchFacadeRunsResourceVictoryAndStableSurrenderLifecycle",
+          "rts.scriptProfileMaterializesCanonicalContentAndAutomaticFire",
+          "rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles",
+          "rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints",
+          "rts.settlement.configurationUsesAttachedCombatProvider",
+          "rts.settlement.rulesReadCanonicalCombatContext",
+          "rts.settlement.healingUsesTheConfiguredCombatPipeline",
+          "scene.authoring.document_atomic_spawn_presentation_roundtrip_history",
+          "scene.authoring.rejected_source_schema_camera_and_parent_preserve_state",
+          "scene.authoring.ground_and_gap_solve_world_geometry_under_reflected_parent",
+          "scene.authoring.screen_anchor_preserves_depth_and_rejects_singular_parent",
+          "scene.editing.commands_hierarchy_plans_are_reversible_and_backend_neutral",
+          "scene.editing.snapshot_restore_is_validated_atomic_and_reversible",
+          "scene.editor.live_session_preserves_links_rejects_divergence_and_stale_host",
+          "scene.editor.live_restore_reorders_hierarchy_atomically_and_can_reopen",
+          "scene.editor.detached_root_keeps_world_transform",
+          "scene.editor.session_create_restore_and_undo_share_one_history",
+          "scene.editor.physics_placement_commits_selected_objects_as_one_undo_step",
+          "scene.editor.physics_placement_cancel_is_non_destructive",
+          "scene.editor.physics_placement_transform_commits_scale_and_undoes_atomically",
+          "scene.editor.physics_placement_auto_hull_cache_is_explicit_and_session_owned",
+          "scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources",
+          "scene.editor.physics_placement_detects_scene_changes_before_commit",
+          "scene.editor.physics_placement_converts_mixed_parent_world_preview_back_to_local_trs",
+          "scene.editor.physics_placement_selected_parent_uses_its_final_world_for_child_local_trs",
+          "scene.followPlayer.matchesPcgOffsetsAndWaterThreshold",
+          "scene.followPlayer.scaleNoPlayerAndAtomicValidation",
+          "scene.locationProfile.oneShotLocationAndFailureAtomicity",
+          "scene.locationProfile.bookmarksMatchPcgSelectionRules",
+          "scene.locationProfile.versionedJsonRoundTripAndAtomicRestore",
+          "scene.physicsPlacement.rejects_invalid_admission_without_a_world",
+          "scene.physicsPlacement.drives_a_private_box3d_world_without_mutating_admission",
+          "scene.physicsPlacement.fast_drag_reaches_the_handle_in_one_preview_step",
+          "scene.physicsPlacement.resolves_collision_and_clones_independently",
+          "scene.physicsPlacement.drop_uses_gravity_and_reports_settled_contact",
+          "scene.physicsPlacement.rotates_a_multi_selection_as_one_rigid_layout",
+          "scene.physicsPlacement.scales_layout_and_live_collision_shapes_from_the_primary_handle",
+          "scene.physicsPlacement.supports_primitive_and_convex_preview_shapes",
+          "scene.physicsPlacement.rejects_malformed_convex_preview_shape",
+          "scene.physicsPlacement.aligns_selection_up_and_support_to_external_surface",
+          "scene.physicsPlacement.builds_compound_colliders_and_honors_source_policy",
+          "scene.physicsPlacement.filters_background_but_rejects_filtered_selection",
+          "scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies",
+          "scene.physicsPlacement_supports_vector_gravity_motion_locks_and_teleport_threshold",
+          "scene.projected_overlap.schema_v4_migration_roundtrip_delete_and_invalid_restore",
+          "scene.projected_overlap.target_planning_includes_partner_and_reference_region",
+          "scene.projected_overlap_uses_pair_fraction_independent_of_visibility_and_rejects_bad_evidence",
+          "scene.projected_overlap.provider_absent_rejects_measure_and_commit_without_document_mutation",
+          "scene.regions.geometry_revision_excludes_trs_and_material_but_invalidates_recipe",
+          "scene.regions.roundtrip_delete_undo_and_v2_migration_preserve_intent",
+          "scene.regions.invalid_bounds_unknown_fields_and_conflicting_identity_are_atomic",
+          "scene.regions.evidence_is_matched_by_object_region_and_definition",
+          "scene.relations.roundtrip_delete_undo_and_v1_migration_are_atomic",
+          "scene.relations.reject_unknown_missing_and_duplicate_without_mutation",
+          "scene.relations.contact_evidence_distinguishes_support_penetration_and_unmeasurable",
+          "scene.relations.native_drop_preserves_preview_and_commits_with_locked_floor",
+          "scene.relations.reject_wrong_support_missing_participant_locked_selection_and_stale_preview",
+          "scene.relations.physics_roundtrip_preserves_scene_yxz_rotation",
+          "scene.relations.visual_roundtrip_delete_and_invalid_intervals_are_atomic",
+          "scene.relations.visual_evidence_uses_directional_occluder_and_rejects_ambiguity",
+          "scene.relations.visual_provider_absent_cannot_commit_but_physics_still_works",
+          "scene.relations.moving_unrelated_occluder_still_checks_all_visual_intent",
+          "scene.relations.malformed_visual_provider_evidence_returns_failure",
+          "schema.productionBoundary.validatesDefinitionsBeforeMutation",
+          "schema.productionBoundary.validatesPolicyMetadataBeforeMutation",
+          "settlement.replay.rpgLifestealChainReplaysThroughDomainAdapter",
+          "settlement.replay.rtsDamageBatchRetainsAndVerifiesCanonicalAudits",
+          "settlement.replay.cardPeriodicRestoreRetainsAndVerifiesCanonicalAudit",
+          "settlement.replay.cardProjectionFailureDoesNotCommitLifecycleCandidate",
+          "settlement.replay.tacticsCanonicalProjectionReplaysThroughDomainAdapter",
+          "settlement.replay.tacticsCommitFailureRollsBackDomainState",
+          "snapshot.consumers.eventStreamEnvelopeRoundTripAndGeneratorSurvives",
+          "snapshot.consumers.transactionLedgerEnvelopeMigratesAtomically",
+          "snapshot.consumers.statePatchEnvelopeRejectsHashAndRevisionMismatch",
+          "snapshot.consumers.productionEnvelopeRoundTripAndUnknownVersionIsAtomic",
+          "snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtomically",
+          "snapshot.envelope.canonicalHashRoundTripAndNoWallClock",
+          "snapshot.migration.rejectsUnknownNewVersionAndHashMismatch",
+          "snapshot.consumers.authorityAndDefinitionsRoundTripAndMetadata",
+          "snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchanged",
+          "softbody.volume.creationRejectsInvalidLattice",
+          "softbody.volume.definitionRoundTripsAndCreatesRuntime",
+          "softbody.volume.definitionRejectsUnknownFieldsAndVersions",
+          "softbody.volume.modelDefinitionRoundTripsMeshSamplingRecipe",
+          "softbody.volume.cooksVertexSampledModelFromCanonicalMesh",
+          "softbody.volume.cookerRejectsUnsupportedVoxelRecipeTransactionally",
+          "softbody.volume.creationSchemaMatchesDefinitionDefaults",
+          "softbody.volume.shapeMatchingRecoversAfterCompression",
+          "softbody.volume.coreAcceptsBackendNeutralCollisionProvider",
+          "softbody.volume.checkedStepTracksInjectedTime",
+          "standardCombatAbilities.providesTwentyUniqueValidatedArchetypes",
+          "standardCombatAbilities.registerGrantAndActivateThroughSharedController",
+          "standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAssets",
+          "stylize.action.attack_vfx binding validates recipe xor uri",
+          "stylize.action.attack_vfx camera executor routes to optional sink",
+          "stylize.action.attack_vfx runtime plays with soft-skipped missing backends",
+          "stylize.action.attack_vfx action notify plays registered recipe",
+          "stylize.action.attack_vfx cues are sorted by offset",
+          "stylize.action.attack_vfx concurrent executions use isolated clocks"
+        ],
+        "physics-backend": [
+          "softbody.volume.pinsAndWorldCollision"
+        ],
+        "render-window": [
+          "softbody.volume.renderPreview"
+        ]
+      },
+      "module": "rts",
+      "modules": [
+        "action",
+        "authority",
+        "physics_softbody_graphics",
+        "rts",
+        "scene_editing",
+        "scene_editor",
+        "schema",
+        "settlement",
+        "stylize_action"
+      ],
+      "origins": [
+        "rts_script.cpp",
+        "scene_authoring.cpp",
+        "scene_editing_commands.cpp",
+        "scene_editor_live_session.cpp",
+        "scene_editor_session.cpp",
+        "scene_follow_player.cpp",
+        "scene_projected_overlap.cpp",
+        "scene_regions.cpp",
+        "scene_relations.cpp",
+        "schema_production_integration.cpp",
+        "settlement_replay_composition.cpp",
+        "snapshot_consumers.cpp",
+        "snapshot_envelope.cpp",
+        "softbody_volume.cpp",
+        "standard_combat_abilities.cpp",
+        "stylize_action_attack_vfx.cpp"
+      ]
+    },
+    "integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "render-window": [
+          "stylize.effects.gpu.postPasses",
+          "stylize.effects.gpu.meshShaders",
+          "stylize.ysa.realGpuPipeline"
+        ],
+        "render-offscreen": [
+          "stylize.ysa.skinnedMeshFollowsPalette",
+          "stylize.ysa.vertexColorFeedsMaterialColor"
+        ],
+        "physics-backend": [
+          "vehicle.physics2d.wheelDrivesAndSteers",
+          "vehicle.physics2d.trackRotatesInPlace",
+          "vehicle.physics3d.suspensionDrives"
+        ]
+      },
+      "module": "stylize_action",
+      "modules": [
+        "animation",
+        "stylize",
+        "stylize_action",
+        "tactics",
+        "ui",
+        "vehicle"
+      ],
+      "origins": [
+        "stylize_attack_vfx_audio_decal.cpp",
+        "stylize_attack_vfx_layers.cpp",
+        "tactics_action.cpp",
+        "tactics_rpg_integration.cpp",
+        "tactics_settlement.cpp",
+        "time_subscription_consumers.cpp",
+        "ui_motion_bind.cpp",
+        "ui_presentation.cpp",
+        "vehicle_physics.cpp"
+      ]
+    },
+    "integration/offscreen-authoring/offscreen_authoring_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "procgen_graphics_editing",
+      "modules": [
+        "procgen_graphics_editing",
+        "stylize_editor"
+      ],
+      "origins": []
+    },
+    "integration/performance/performance_action_montage_tests.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "module": "animation",
+      "modules": [
+        "action",
+        "animation"
+      ],
+      "origins": [
+        "action_montage_performance.cpp"
+      ]
+    },
+    "integration/performance/performance_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "cases": {
+        "render-window": [
+          "stylize.meshVfx.sceneColorRefractionSamplesBoundTexture"
+        ]
+      },
+      "module": "animation",
+      "modules": [
+        "animation",
+        "emergence",
+        "settlement",
+        "stylize"
+      ],
+      "origins": [
+        "animation_motion.cpp",
+        "emergence_perf.cpp",
+        "settlement_benchmark.cpp",
+        "stylize_mesh_vfx_benchmark.cpp"
+      ]
+    },
+    "integration/physics-simulation/physics_buoyancy_geometry.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_coupling3d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_coupling3d_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.coupling3d.scriptOwnershipAndTypeSafety",
+          "physics.coupling3d.scriptWorldFirstInvalidation"
+        ]
+      },
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_field_set.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_force_application.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_force_receipt.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_force_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.forces.scriptModelsProjectResults",
+          "physics.forces.scriptFieldSetsOwnValuesAndBatchRights",
+          "physics.forces.scriptWingAssembliesControlBothDimensions"
+        ]
+      },
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_joint2d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_joint2d_script.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.joint2d.scriptResultAndOwningRelease"
+        ]
+      },
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_joint2d_snapshot.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.joint2d.snapshotScriptReferencesObserveRestoreAndWorldLifetime"
+        ]
+      },
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_merge_contract.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "render-window": [
+          "box2d.render.fallingStackPreview"
+        ]
+      },
+      "module": "action",
+      "modules": [
+        "action",
+        "climbing",
+        "physics"
+      ],
+      "origins": [
+        "action_collision_ignore.cpp",
+        "box2d.cpp",
+        "box3d.cpp",
+        "climbing.cpp",
+        "climbing_anchor_execution.cpp",
+        "climbing_anchor_graph.cpp",
+        "climbing_anchor_route.cpp",
+        "climbing_definition_policy.cpp",
+        "climbing_ecs.cpp",
+        "climbing_events.cpp",
+        "climbing_input.cpp",
+        "climbing_parkour.cpp",
+        "climbing_performance.cpp",
+        "climbing_physics_policy.cpp"
+      ]
+    },
+    "integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "module-composition": [
+          "container.adaptersFailureInjectionLeavesMembershipUnchanged",
+          "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams",
+          "pixelworld_physics.character_probe_and_sweep_query_authoritative_material"
+        ],
+        "script-binding": [
+          "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed",
+          "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam"
+        ]
+      },
+      "module": "climbing",
+      "modules": [
+        "building",
+        "climbing",
+        "fluids",
+        "physics",
+        "physics_backend",
+        "physics_destruction",
+        "physics_rope",
+        "physics_trajectory",
+        "pixelworld_physics"
+      ],
+      "origins": [
+        "climbing_prediction.cpp",
+        "climbing_reload.cpp",
+        "climbing_services.cpp",
+        "climbing_snapshot.cpp",
+        "container_adapters.cpp",
+        "fluids_volume_coupling.cpp",
+        "gameplay_control_climbing.cpp",
+        "gts_terrain_collider.cpp",
+        "physics_artifact_provider.cpp",
+        "physics_consumer_integration.cpp",
+        "physics_contact_query.cpp",
+        "physics_core_boundary.cpp",
+        "physics_destruction.cpp",
+        "physics_destruction_p3.cpp",
+        "physics_joint_frames.cpp",
+        "physics_jolt_cooking.cpp",
+        "physics_mechanism.cpp",
+        "physics_mechanism2d.cpp",
+        "physics_rigid_backend.cpp",
+        "physics_rope.cpp",
+        "physics_trajectory_collision.cpp",
+        "physics_world_snapshot_topology.cpp",
+        "pixelworld_physics.cpp",
+        "targeting.cpp"
+      ]
+    },
+    "integration/physics-simulation/physics_snapshot3d_ownership.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "script-binding": [
+          "physics.snapshot3d.scriptReferencesDoNotRetargetAfterRestore"
+        ]
+      },
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_vehicle_tires.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_vehicle_tires3d.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/physics-simulation/physics_wing_assembly.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
+    "integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "cases": {
+        "runtime-lifecycle": [
+          "gpgpu.module.create",
+          "gpgpu.procgen.transformChainRejectsInvalidLength"
+        ],
+        "script-render": [
+          "gpgpu.ecsPack.roundTrip",
+          "gpgpu.ecsPack.contiguousRange",
+          "gpgpu.ecsPack.errors"
+        ],
+        "script-binding": [
+          "gpgpu.buffer.readFloat32sReturnsAnArrayToScript",
+          "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip",
+          "gpgpu.ecsPack.scriptEcsComponentsRoundTrip"
+        ]
+      },
+      "module": "action",
+      "modules": [
+        "action",
+        "asset_graphics",
+        "fluids",
+        "gpgpu",
+        "graphics",
+        "graphics_fog",
+        "graphics_raytracing"
+      ],
+      "origins": [
+        "action_prefab_runtime.cpp",
+        "asset_graphics_vegetation_scene.cpp",
+        "diffuse_light_probe.cpp",
+        "fluids.cpp",
+        "gpgpu.cpp",
+        "graphics_backend_parity.cpp",
+        "graphics_display_output.cpp",
+        "graphics_fog.cpp",
+        "graphics_gbuffer_depth.cpp",
+        "graphics_headless.cpp",
+        "graphics_map_fog.cpp",
+        "graphics_pbr_surface.cpp",
+        "graphics_raytracing_alignment.cpp",
+        "graphics_skin_palette_render.cpp",
+        "graphics_texture_mips.cpp"
+      ]
+    },
+    "integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "cases": {
+        "platform-file": [
+          "graphics.Grass.fileSwayAtlasPacksFourGrassAndTwoLeaf"
+        ],
+        "render-window": [
+          "graphics.Grass.gpuRenderScreenshot"
+        ],
+        "runtime-lifecycle": [
+          "virtualgeometry.module.create"
+        ]
+      },
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "image",
+        "model3d",
+        "procgen_editing",
+        "stylize",
+        "tensor",
+        "virtualgeometry"
+      ],
+      "origins": [
+        "graphics_vegetation_extras.cpp",
+        "graphics_webgpu_pbr_variant.cpp",
+        "grass.cpp",
+        "model3d_gltf_uv.cpp",
+        "procgen_mesh_vertex_axis_gizmo.cpp",
+        "procgen_spline_gizmo_render.cpp",
+        "stylize_mesh_vertex.cpp",
+        "tensor.cpp",
+        "tensor_gpu.cpp",
+        "tensor_gpu_contract.cpp",
+        "tensor_onnx_gpu.cpp",
+        "virtualgeometry_builder.cpp"
+      ]
+    },
+    "integration/render-presentation/fluids_shore_backend_tests.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "fluids"
+    },
+    "integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "image"
+      ],
+      "origins": [
+        "AmbientOcclusion.cpp",
+        "AntiAliasing.cpp",
+        "BloomPyramid.cpp",
+        "ClassicScenes.cpp",
+        "ClusteredLighting.cpp",
+        "GlobalIllumination.cpp",
+        "IBL.cpp",
+        "Lighting2D.cpp",
+        "Outline.cpp",
+        "Quad.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "animation",
+      "modules": [
+        "animation",
+        "graphics"
+      ],
+      "origins": [
+        "RenderImageAudit.cpp",
+        "RenderSceneEffects.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "render-window": [
+          "GraphicsSmoke.clearAndPresentWindow",
+          "GraphicsSmoke.newTextureFromFileThrowsOnMissing",
+          "Canvas.offscreenGetPixelAndSampleOnScreen",
+          "Camera.panAndZoomAffectOffscreenPixels",
+          "Mesh.newMeshFromAssimpCube",
+          "Mesh.newMeshSphere",
+          "Graphics.screenGetPixelAfterPresent",
+          "RenderSystem3D.smokeRotatingCube",
+          "RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters",
+          "RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters",
+          "RenderSystem3D.shadowContributorRunsInCascadesAndUnregisters",
+          "RenderSystem3D.dynamicVertexRingTracksLatestUpdate",
+          "RenderSystem3D.textureCheckerPixels",
+          "RenderSystem3D.lightingAffectsPixels",
+          "Lighting3D.pointLightBrightensNearbyFace",
+          "Lighting3D.metallicIncreasesSpecularHighlight",
+          "RenderSystem3D.texCellBombChangesPixels",
+          "RenderSystem3D.parallaxChangesPixels",
+          "RenderSystem3D.entityIdMaskPixels",
+          "RenderSystem3D.readTextureBackPixels",
+          "ssr.createConfigureAndApply",
+          "graphics.shader shared images retain ownership and replacement isolation",
+          "Shadow3D.dirLightDarkensOccludedGround",
+          "Shadow3D.pcgLodTwoSidedCastsBackFacingGeometry",
+          "Shadow3D.pcgSpeedTreeLodKeepsComplementaryCasterCoverage",
+          "Shadow3D.receiveShadowFalseIgnoresMap",
+          "Shadow3D.shadowStrengthInterpolatesVisibility",
+          "Shadow3D.maskedCasterUsesAlbedoAlpha",
+          "graphics.sky atmosphere capture uses independent HDR lighting and detaches cleanly",
+          "graphics.sky filmic display preserves middle grey and keeps prior modes explicit",
+          "graphics.sky height fog fills the ground with independently integrated ambient light",
+          "graphics.sky lunar surface preserves phase earthlight occultation and source orientation",
+          "daynight.sky runtime advances one clock and publishes solar lighting to capture",
+          "daynight.sky injected cloud time changes authored wisps and closes the morph cycle",
+          "daynight.sky optical cycle survives midnight and restores the same rendered snapshot",
+          "daynight.sky script prepares an owned profile runtime and checks time commands",
+          "graphics.sky HDR volume uploads preserve interpolation and failed replacement",
+          "graphics.view preparation failures cancel dispatch and registrations detach",
+          "graphics.view preparation runs before offscreen target opens",
+          "graphics.sky descriptor limit rejects clouds and leaves atmosphere preparation usable",
+          "graphics.sky authored wisps composite into the shared capture path",
+          "graphics.sky wisps preserve phase blending and celestial vertex lighting",
+          "GraphicsSmoke.textureMipmapsAndAnisotropy",
+          "GraphicsSmoke.setTextureSamplerValidatesStrings",
+          "GraphicsSmoke.cubemapGeneratesMipChain",
+          "Renderable3D.gtsTerrainTileUploadsAndConfiguresRealLodChain",
+          "Renderable3D.pcgGenericLodsUploadAsOneAtomicChain",
+          "Renderable3D.gtsTerrainRuntimeReplacesTilesWithStableHandles",
+          "Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLifetimeOrder",
+          "UI.smoke.RenderSystemSameFrameVulkanOverlay",
+          "UI.smoke.panelGalleryPreview",
+          "UI.smoke.viewportEmbeddedRenderTarget",
+          "volumetric.qualityPresets",
+          "volumetric.occlusionMapAndScatter",
+          "volumetric.applyFromScene",
+          "volumetric.drawOcclusionRespectsFlag",
+          "volumetric.collectAndDriveSceneLights3D",
+          "volumetric.froxelSceneLightsValidateBoundsAndRankProxies",
+          "volumetric.froxelIntegratesEmissiveProxyAndSceneLights",
+          "volumetric.occlusionFromSceneLights2D",
+          "volumetric.spotConeScatter2D",
+          "volumetric.modeAndRayMarchQuality",
+          "volumetric.cloudModeParametersAndQuality",
+          "volumetric.rayMarchProducesScatter",
+          "volumetric.rayMarchShadowDarkensBehindOccluder",
+          "volumetric.drawOccluders2DUsesCastFlag",
+          "volumetric.paramRoundTripShared",
+          "volumetric.fogModeAndQuality",
+          "volumetric.fogParamsRoundTrip",
+          "volumetric.applyFogProducesOpacity",
+          "volumetric.fogDenserAtDistance",
+          "volumetric.froxelAtlasCompositesIntegratedMedia"
+        ],
+        "render-offscreen": [
+          "graphics.sky atmosphere survives graphics provider retirement",
+          "daynight.sky runtime rejects updates after provider retirement without advancing state"
+        ]
+      },
+      "module": "filesystem",
+      "modules": [
+        "common",
+        "daynight",
+        "filesystem",
+        "graphics",
+        "image",
+        "procgen",
+        "ui"
+      ],
+      "origins": [
+        "RenderSystem.cpp",
+        "RenderSystem3D.cpp",
+        "ScreenSpaceReflection.cpp",
+        "ShaderResourceSharing.cpp",
+        "Shadow3D.cpp",
+        "SkyAtmospherePass.cpp",
+        "SkyMoon.cpp",
+        "SkyRuntime.cpp",
+        "SkyScriptBindings.cpp",
+        "SkyTextureGpu.cpp",
+        "SkyViewPreparation.cpp",
+        "SkyWisps.cpp",
+        "TextureSampler.cpp",
+        "UIOverlaySmoke.cpp",
+        "Volumetric.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "platform-file": [
+          "decal.proceduralImportsReferenceSubstanceMaterialPresets",
+          "decal.renderImportedPresetContactSheet"
+        ],
+        "render-offscreen": [
+          "decal.proceduralFacadeUploadsAllRuntimeChannels",
+          "decal.gpuHeadlessProjectionReadback",
+          "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
+        ]
+      },
+      "module": "stylize",
+      "modules": [
+        "animation",
+        "avatar",
+        "decal",
+        "dialogue",
+        "gpgpu",
+        "graphics",
+        "stylize"
+      ],
+      "origins": [
+        "Xray.cpp",
+        "animation_sprite_spine.cpp",
+        "avatar_vrm_vulkan.cpp",
+        "decal.cpp",
+        "dialogue.cpp",
+        "gpu_driven.cpp",
+        "gpu_driven_parity.cpp",
+        "graphics_deferred_lifetime.cpp",
+        "graphics_deferred_targets.cpp",
+        "graphics_font.cpp",
+        "graphics_resource_reuse.cpp",
+        "graphics_vegetation_render.cpp",
+        "hair.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "module-composition": [
+          "hd2d.sprite.gridReplacementStopsOldClip",
+          "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+          "hd2d.sprite.largeTimeRemainsInClip",
+          "hd2d.look.miniatureWritesCameraDofAndBloom",
+          "hd2d.look.rejectsInvalidFocusRange",
+          "hd2d.sprite.dopFixMaterialDefaults",
+          "hex.level.pipeline.dungeonCrawl",
+          "hex.level.pipeline.fogRaid",
+          "hex.level.pipeline.torchEscort",
+          "hex.level.pipeline.catalogRaid",
+          "hex.level.pipeline.costlyFogPickup"
+        ],
+        "runtime-lifecycle": [
+          "mouse.isCursorSupported",
+          "mouse.isDownEmptySafe"
+        ]
+      },
+      "module": "hd2d",
+      "modules": [
+        "hd2d",
+        "hexmap",
+        "ik",
+        "inventory",
+        "map",
+        "mouse",
+        "procgen"
+      ],
+      "origins": [
+        "hd2d.cpp",
+        "hex_level_simulation.cpp",
+        "hexmap_module.cpp",
+        "housegen_render.cpp",
+        "ik.cpp",
+        "inventory.cpp",
+        "map_fov.cpp",
+        "mouse_cpp.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_procgen_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "render-offscreen": [
+          "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
+          "procgen.terrain.waterShaderShipsEmbeddedSpirv"
+        ],
+        "script-binding": [
+          "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+          "procgen.script.pointsetPolygonAndBatchApiAreBound"
+        ]
+      },
+      "module": "particles",
+      "modules": [
+        "image",
+        "particles",
+        "procgen",
+        "rpg"
+      ],
+      "origins": [
+        "particles_gpu_resident.cpp",
+        "particles_p2_p3.cpp",
+        "particles_playback.cpp",
+        "particles_reference_effects.cpp",
+        "particles_scalability.cpp",
+        "procgen.cpp",
+        "procgen_foliage_clusters.cpp",
+        "procgen_lsystem.cpp",
+        "procgen_preview.cpp",
+        "resource_lifetime.cpp",
+        "rpg_simulation.cpp",
+        "procgen_pointset.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "physics-backend": [
+          "softbody.cloth.collidesWithWorld",
+          "softbody.cloth.momentumExchangeScalesWithMass",
+          "softbody.cloth3d.collidesWithWorld3D",
+          "softbody.cloth3d.momentumExchangeScalesWithMass",
+          "softbody.fluid.emitAndSettle",
+          "softbody.fluid.interactRepels",
+          "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents"
+        ],
+        "script-binding": [
+          "graphics.waterReflectionMasker.bindsRealVm"
+        ]
+      },
+      "module": "filesystem",
+      "modules": [
+        "filesystem",
+        "graphics",
+        "physics",
+        "physics_softbody",
+        "spatial",
+        "stylize",
+        "ui",
+        "voxel",
+        "weather"
+      ],
+      "origins": [
+        "shader.cpp",
+        "shader_reload.cpp",
+        "shader_reload_vulkan.cpp",
+        "softbody.cpp",
+        "spatial.cpp",
+        "stylize.cpp",
+        "stylize_anime.cpp",
+        "stylize_mesh_particles.cpp",
+        "ui_texture_bridge.cpp",
+        "voxel_face_dir.cpp",
+        "voxel_render_atlas.cpp",
+        "water_mesh.cpp",
+        "weather.cpp"
+      ]
+    },
+    "integration/render-presentation/render_presentation_impasto_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "render-window": [
+          "stylize.impasto.realGpuPipeline"
+        ]
+      },
+      "module": "stylize"
+    },
+    "integration/render-presentation/render_presentation_graphics_window_cpp_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "window",
+      "modules": [
+        "window"
+      ],
+      "origins": [
+        "window_cpp.cpp",
+        "window_lifecycle.cpp"
+      ]
+    },
+    "integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "rts.formation.scriptCommandsReachCanonicalOrdersAndReplay",
+          "rts.groups.scriptAndReplayUseCanonicalAdmission"
+        ]
+      },
+      "module": "rts",
+      "modules": [
+        "rts"
+      ],
+      "origins": [
+        "rts_crowd.cpp",
+        "rts_crowd_production.cpp",
+        "rts_formation.cpp",
+        "rts_groups.cpp",
+        "rts_orders.cpp",
+        "rts_production.cpp",
+        "rts_restore.cpp"
+      ]
+    },
+    "integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "runtime-lifecycle",
+      "cases": {
+        "concurrency": [
+          "event.workerPushWakesWait",
+          "timer.step.deltaPositiveAfterSleep"
+        ],
+        "script-binding": [
+          "gameplay.control.squirrelFacadeUsesTheSharedJsonRouter",
+          "devtools.playHost.liveObservationProjectsBeforeSerializing",
+          "Scene.componentScheduling.scriptCoalescingAndFailureRecovery"
+        ],
+        "render-window": [
+          "keyboard.textInput",
+          "keyboard.keyScancodeRoundTrip"
+        ]
+      },
+      "module": "mouse",
+      "modules": [
+        "devtools",
+        "keyboard",
+        "mouse",
+        "os",
+        "platform_event",
+        "plugins",
+        "scene",
+        "timer",
+        "touch",
+        "ui"
+      ],
+      "origins": [
+        "MouseWheel.cpp",
+        "ScenePanel.cpp",
+        "event.cpp",
+        "gameplay_control_json.cpp",
+        "keyboard_cpp.cpp",
+        "os.cpp",
+        "pcg_build_config.cpp",
+        "play_host.cpp",
+        "plugins.cpp",
+        "renderflow.cpp",
+        "scene_component_scheduling.cpp",
+        "service_mocks.cpp",
+        "timer_cpp.cpp",
+        "touch.cpp"
+      ]
+    },
+    "integration/save-restore/save_restore_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "runtime-lifecycle",
+      "cases": {
+        "module-composition": [
+          "dialoguePersistence.jsonRoundtrip",
+          "dialoguePersistence.migratesCurrentAndCallFrames",
+          "dialoguePersistence.rejectsLegacyUnversionedState",
+          "rpg.saveSession.partyRoundTripIsAtomic",
+          "rpg.saveSession.explicitSingleActorPartyMigrationPreservesCompanionBaseline",
+          "rpg.saveSession.roundTripAndCrossParticipantRollback",
+          "rpg.saveSession.unboundOperationsFailStructurally",
+          "rpg.saveSession.explicitQuestAdditionMigrationPreservesOldProgress",
+          "rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidation"
+        ],
+        "render-offscreen": [
+          "graphics.canvas.separateSubmissionsPreserveAndClearRGBA8"
+        ]
+      },
+      "module": "common",
+      "modules": [
+        "common",
+        "dialogue",
+        "graphics",
+        "rpg"
+      ],
+      "origins": [
+        "common_game_save_session.cpp",
+        "dialogue_persistence.cpp",
+        "graphics_canvas_persistence.cpp",
+        "rpg_save_session.cpp"
+      ]
+    },
+    "integration/script-api/script_api_graphics_ScriptECS_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "ui",
+      "modules": [
+        "action",
+        "agent",
+        "agent_tensor",
+        "animation",
+        "authority",
+        "avatar",
+        "buildingfx",
+        "card",
+        "climbing",
+        "combat",
+        "common",
+        "crowd",
+        "devtools",
+        "dialogue",
+        "platform_event",
+        "ui"
+      ],
+      "origins": [
+        "DatabasePanel.cpp",
+        "ECS.cpp",
+        "EditorShell.cpp",
+        "Inspector.cpp",
+        "ReflectScript.cpp",
+        "ScriptECS.cpp",
+        "action_ability_script.cpp",
+        "agent_script.cpp",
+        "agent_tensor_script.cpp",
+        "animation_clip_editing.cpp",
+        "async.cpp",
+        "authority.cpp",
+        "avatar.cpp",
+        "binding_selfcheck.cpp",
+        "building_placement_regression.cpp",
+        "card.cpp",
+        "card_gameplay_control.cpp",
+        "climbing_anchor_authoring.cpp",
+        "combat_carrier.cpp",
+        "combat_script.cpp",
+        "composable_gameplay.cpp",
+        "console.cpp",
+        "crowd_contacts.cpp",
+        "crowd_script.cpp",
+        "crowd_spawn.cpp",
+        "dialogue_state_script_provider.cpp",
+        "script_provider.cpp"
+      ]
+    },
+    "integration/script-api/script_api_graphics_dap_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "platform-network": [
+          "devtools.dap.stopOnEntry",
+          "devtools.dap.exceptionBreakpoints",
+          "devtools.dap.breakpointVerificationEvent",
+          "devtools.dap.setBreakpointsStoresCondition"
+        ]
+      },
+      "module": "devtools",
+      "modules": [
+        "decal",
+        "definitions",
+        "devtools",
+        "dialogue",
+        "economy",
+        "editor",
+        "effects",
+        "filesystem",
+        "game_event",
+        "graphics",
+        "hexmap",
+        "i18n",
+        "image",
+        "inventory",
+        "joystick"
+      ],
+      "origins": [
+        "dap.cpp",
+        "debugger.cpp",
+        "debugger_audit.cpp",
+        "decal_script.cpp",
+        "definitions.cpp",
+        "dialogue_authoring.cpp",
+        "dialogue_proc_script.cpp",
+        "economy.cpp",
+        "editor_voxel_catalog_script.cpp",
+        "effects.cpp",
+        "eventstream.cpp",
+        "filesystem.cpp",
+        "graphics_shader_spv_script.cpp",
+        "graphics_vegetation_script.cpp",
+        "grass_wind.cpp",
+        "hexmap_sphere_script.cpp",
+        "i18n_script.cpp",
+        "image_script.cpp",
+        "inventory_binding_architecture.cpp",
+        "inventory_gameplay_control.cpp",
+        "joystick_script.cpp"
+      ],
+      "generated": [
+        "FilesystemTest.",
+        "I18nScriptTest.",
+        "JoystickScript."
+      ]
+    },
+    "integration/script-api/script_api_graphics_mcp_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "runtime-lifecycle": [
+          "devtools.procgenQuery.generateMapReportsStructuredFailure",
+          "devtools.sceneQuery.getSetReportStructuredFailure",
+          "devtools.renderCapture.savePngReportsStructuredFailure",
+          "devtools.ai.panelLog",
+          "devtools.mcp.engineLineDropsScriptEchoOnly",
+          "ModuleManager.RegistryRollbackOwnsCreatedInstance",
+          "ModuleManager.RegistryConflictPreservesCommittedInstance",
+          "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods"
+        ],
+        "platform-network": [
+          "devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime",
+          "devtools.mcp.executeObserveCorrelatesSceneEditorWithNamedHost",
+          "devtools.mcp.rxObservationSessionTracksChangesDeduplicatesAndCloses"
+        ],
+        "concurrency": [
+          "devtools.mcp.crashReportExplainsPreviousRun",
+          "procgen.worker.legacyIssueRejectsWrongThread",
+          "procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary",
+          "procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation"
+        ],
+        "render-offscreen": [
+          "moduleExpose.allBindingsPreserveProcgenRockSurface"
+        ],
+        "render-window": [
+          "procgen.animation.pcgSkinnedMesh.realGraphicsAcceptsCombinedSkinStreams"
+        ]
+      },
+      "module": "devtools",
+      "modules": [
+        "common",
+        "devtools",
+        "mouse",
+        "npc_ai",
+        "orders",
+        "physics_cloth",
+        "policyregistry",
+        "procgen",
+        "procgen_animation",
+        "production",
+        "profiler",
+        "rpg",
+        "ui"
+      ],
+      "origins": [
+        "mcp.cpp",
+        "mcp_agent_export.cpp",
+        "mcp_hot_reload.cpp",
+        "mcp_scene_literal.cpp",
+        "mcp_soft_restart.cpp",
+        "model.cpp",
+        "module_lazy_bind.cpp",
+        "mouse.cpp",
+        "npc_ai_script.cpp",
+        "orders.cpp",
+        "pcg_biome_controller.cpp",
+        "pcg_color_preview_sync.cpp",
+        "pcg_terrain_watcher.cpp",
+        "physics_cloth.cpp",
+        "policyregistry.cpp",
+        "procgen_module_assembly.cpp",
+        "procgen_runtime_generation.cpp",
+        "procgen_scene_sink.cpp",
+        "production.cpp",
+        "profiler.cpp",
+        "reload_script.cpp",
+        "rpg_classic_semantic_index.cpp",
+        "rpg_dnut_script.cpp",
+        "rpg_script.cpp",
+        "rpg_world_state_script.cpp",
+        "simplesquirrel.cpp"
+      ],
+      "generated": [
+        "Mouse."
+      ]
+    },
+    "integration/script-api/script_api_graphics_scene_tests.cpp": {
+      "role": "tests",
+      "default": "runtime-lifecycle",
+      "cases": {
+        "script-binding": [
+          "runtime.reflectsAndUnloadsScriptClasses",
+          "runtimeWrapsCompileErrorsAndRestoresStack",
+          "runtimeRuntimeErrorCarriesLocationAndStack",
+          "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+          "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+          "runtimeCompileErrorCarriesLineColumnAndSnippet",
+          "devtools.runtimeErrorSink.reportsCompileError",
+          "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+          "rx.script.subject.onNext",
+          "rx.script.subject.operators",
+          "rx.script.map",
+          "rx.script.behaviorSubject",
+          "rx.script.take",
+          "rx.script.replaySubject",
+          "rx.script.fromEvent.pump",
+          "devtools.scenario.recordPersistLoadRoundTrip",
+          "devtools.scenario.replayReproducesStateDrivenError",
+          "Scene.script.entityLifecycle",
+          "Scene.script.entityViewCacheAfterDetach",
+          "Scene.script.entityEnableAndDelayedDetach",
+          "Scene.script.linkPhysics2D",
+          "Scene.script.apiCompleteness",
+          "Scene.script.nodeEvents",
+          "Scene.script.componentOnMount",
+          "Scene.script.errorSemantics",
+          "Scene.script.serializeAndPick",
+          "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+          "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+          "Scene.script.visibilityArchitectureMapping",
+          "scene.editor.script_session_owns_target_and_projects_transaction_results",
+          "scene.editor.script_physics_placement_previews_and_commits",
+          "Scene.script.firstObjectLookupAndDelayedDetach",
+          "schema.module.scriptBinding",
+          "schema.module.reflectFromClass",
+          "scriptCompiler.recordsErasedLanguageMetadata",
+          "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+          "scriptCompiler.generatedModuleContractIsExecutable",
+          "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+          "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+          "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+          "scriptCompiler.bindingContractConvertsUnitLiterals",
+          "scriptCompiler.bindingContractChecksStringChoices",
+          "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+          "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+          "scriptCompiler.servesLanguageToolingQueries",
+          "scriptCompiler.bindingContractChecksLiteralTypes",
+          "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument",
+          "scriptCompiler.compilesRepositoryNutCompatibilityBaseline",
+          "scriptConfig.acceptsAbsentModuleRequirements",
+          "scriptConfig.rejectsMissingRequiredModule",
+          "scriptConfig.validatesOptionalModuleDeclarationShape",
+          "scriptConfig.instantiatesOnlyConfiguredModules",
+          "scriptConfig.ensureModuleLoadsOmittedSlot",
+          "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+          "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+          "scriptModule.rejectsCyclesBeforeExecution",
+          "scriptModule.reloadReplacesGenerationAtomically",
+          "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+          "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+          "scriptModule.dofileInstantiatesImports",
+          "property_access.reflection_builds_shared_schema_and_structured_values",
+          "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+          "property_access.script_validation_matches_shared_contract",
+          "scriptOwnership.ordersAndEffectsOwnedBinding",
+          "scriptOwnership.procgenAndStateModulesOwnedBindings",
+          "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+          "userDocs.economy",
+          "userDocs.attributes",
+          "userDocs.decision",
+          "userDocs.definitions",
+          "userDocs.tags",
+          "userDocs.gameEvent",
+          "userDocs.policyRegistry",
+          "userDocs.transaction",
+          "userDocs.profiler",
+          "userDocs.rope",
+          "userDocs.ecsLifecycle",
+          "userDocs.tutorialRules",
+          "userDocs.tutorialLifecycleAndSaveFailure",
+          "sensing.worldHandleAndScriptResultContract",
+          "settlementScript.runtimeOwnsRulesAndLedger",
+          "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+          "SimpleSquirrelTest.ExportClass",
+          "SimpleSquirrelTest.RefTest",
+          "SimpleSquirrelTest.TestDefClass",
+          "SimpleSquirrelTest.PerformInteration",
+          "SimpleSquirrelTest.GetterTest",
+          "SimpleSquirrelTest.GetAttr",
+          "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+          "social.script.bindings",
+          "squirrel_binding.value_round_trip_preserves_nested_value",
+          "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+          "squirrel_binding.value_enforces_depth_limit",
+          "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+          "statepatch.script.batchConflictQueryAndSnapshot",
+          "tactics.graphScriptMovementSnapshotAndStaleRelease",
+          "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+          "tactics.scriptReachesPresentationAndSightQueries",
+          "tactics.scriptOwnedBattleRunsDeterministicTurn",
+          "tactics.scriptReleaseMakesProxyStale",
+          "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+          "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+          "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+          "tactics.scriptEdgesAreDirectedAndAffectReachability",
+          "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+          "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+          "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+          "tags.script.bindings",
+          "rx.script.throwingSubscriberIsReported",
+          "Scene.script.attachRejectsPlainEntity",
+          "Scene.script.callbackFailureIsNotSilent",
+          "Scene.script.entityIsTheFirstEcsName",
+          "Scene.script.nativeAccessReadsRegisteredComponentState",
+          "Scene.script.nativeAccessSkipsUnregisteredComponents",
+          "Scene.script.updateFailureIsNotSilent",
+          "scriptModule.instantiationFailureCarriesTheScriptError",
+          "map.collision.scriptOwnsTheWholeCollisionLoop",
+          "map.collision.scriptSinkCanTellLayersApart",
+          "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+          "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+          "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+          "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+          "animation.motion.nonFloatShapesReachScriptSinksToo",
+          "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+          "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+          "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+          "scene.scriptLink.absentInputsAreReported",
+          "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+          "scene.scriptLink.pullDrivesNode",
+          "scene.scriptLink.pushDrivesFollower",
+          "scene.scriptLink.rejectedPullKeepsNodeIntact",
+          "scene.scriptLink.retiredProviderIsDropped",
+          "scene.scriptLink.scriptBindingReportsResult",
+          "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+          "sensing.script.candidateProviderAnswersTheResolver",
+          "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+          "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+          "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+          "sensing.script.malformedCandidateAnswersAreRejected"
+        ],
+        "render-window": [
+          "Scene.render.parentChildOrbitPreview"
+        ],
+        "physics-backend": [
+          "Scene.link.genericMultiLinkAndSync",
+          "Scene.link.physics2D",
+          "Scene.link.body3DPullRoundTripsEuler"
+        ],
+        "module-composition": [
+          "Scene.link.syncRenderable3DWorldRotation"
+        ]
+      },
+      "module": "common",
+      "modules": [
+        "animation",
+        "authority",
+        "common",
+        "devtools",
+        "map",
+        "property_access",
+        "rx",
+        "scene",
+        "scene_editor",
+        "schema",
+        "sensing",
+        "settlement",
+        "social",
+        "statepatch",
+        "tactics",
+        "tags"
+      ],
+      "origins": [
+        "runtime.cpp",
+        "runtime_error_sink.cpp",
+        "rx.cpp",
+        "scenario_recorder.cpp",
+        "scene.cpp",
+        "scene_authoring_script.cpp",
+        "scene_binding_architecture.cpp",
+        "scene_editor_script.cpp",
+        "scene_object_lifetime.cpp",
+        "schema.cpp",
+        "script_compiler.cpp",
+        "script_config.cpp",
+        "script_module.cpp",
+        "script_ownership.cpp",
+        "script_user_doc_examples.cpp",
+        "sensing.cpp",
+        "settlement_script.cpp",
+        "simplesquirrel.cpp",
+        "simplesquirrel_direct_member.cpp",
+        "social.cpp",
+        "squirrel_binding.cpp",
+        "statepatch.cpp",
+        "tactics_graph.cpp",
+        "tactics_presentation_script.cpp",
+        "tactics_script.cpp",
+        "tactics_snapshot_script.cpp",
+        "tags.cpp",
+        "map_tile_collision_sink.cpp",
+        "motion_script_sink.cpp",
+        "scene_script_link.cpp",
+        "sensing_script_provider.cpp"
+      ]
+    },
+    "integration/script-api/script_api_graphics_terrain_probe_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "cases": {
+        "performance": [
+          "procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess"
+        ]
+      },
+      "module": "procgen",
+      "modules": [
+        "procgen",
+        "timer",
+        "transaction",
+        "ui",
+        "vehicle",
+        "weapon",
+        "weather"
+      ],
+      "origins": [
+        "terrain_curve_texture.cpp",
+        "terrain_detail.cpp",
+        "terrain_erosion.cpp",
+        "terrain_generation_session.cpp",
+        "terrain_legacy_hydraulic.cpp",
+        "terrain_multitile.cpp",
+        "terrain_probe.cpp",
+        "terrain_sediment.cpp",
+        "terrain_smooth_stamp_script.cpp",
+        "terrain_stamp_script.cpp",
+        "terrain_tree.cpp",
+        "terrain_water.cpp",
+        "thunder_strike.cpp",
+        "timer.cpp",
+        "transaction.cpp",
+        "ui_tween_script.cpp",
+        "vehicle.cpp",
+        "weapon.cpp"
+      ]
+    },
+    "integration/script-api/script_api_procgen_cave_generation_stages_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
+    },
+    "integration/script-rendering/script_rendering_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "script-render",
+      "cases": {
+        "script-binding": [
+          "WindowTest.settingsFields"
+        ]
+      },
+      "module": "common",
+      "modules": [
+        "common",
+        "window"
+      ],
+      "origins": [
+        "graphic.cpp",
+        "window.cpp"
+      ],
+      "generated": [
+        "GraphicTest."
+      ]
+    },
+    "integration/ui-workflows/ui_workflows_graphics_tests.cpp": {
+      "role": "tests",
+      "default": "ui-render",
+      "cases": {
+        "script-binding": [
+          "UI.componentScheduling.scriptCoalescingAndFailureRecovery",
+          "UI.adv.scriptUIComponent",
+          "UI.p0.scriptEventCallbacks"
+        ]
+      },
+      "module": "ui",
+      "modules": [
+        "ui"
+      ],
+      "origins": [
+        "UIComponentScheduling.cpp",
+        "UIEditorKit.cpp",
+        "UIPhaseAdv.cpp",
+        "UIPhaseB.cpp",
+        "UISystem.cpp",
+        "ui_overlay_chrome.cpp",
+        "ui_progress_size.cpp"
+      ]
+    },
+    "main.cpp": {
+      "role": "runner",
+      "default": "runtime-lifecycle",
+      "module": "common"
+    },
+    "profile/capability_absent.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/capability_present.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/crowd_main.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "crowd"
+    },
+    "profile/gltf_animation_main.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/physics_mechanics/NoPlatformEvent.cpp": {
+      "role": "helper",
+      "default": "module-composition",
+      "module": "physics"
+    },
+    "profile/physics_mechanics/VehicleAbsent.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "vehicle"
+    },
+    "profile/public_headers_common.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "common"
+    },
+    "profile/public_headers_domains.cpp": {
+      "role": "compile-contract",
+      "default": "module-composition",
+      "module": "physics_backend"
+    },
+    "unit/action/action_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "local-format": [
+          "abilityAsset.roundTripsCompleteDefinitionAndRegistersDecodedCandidate",
+          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData",
+          "abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline"
+        ]
+      },
+      "origins": [
+        "ability_asset.cpp",
+        "ability_controller.cpp",
+        "ability_system.cpp",
+        "action_notify_registry.cpp"
+      ]
+    },
+    "unit/action_input/action_combo_windows.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "action_combo_windows.cpp"
+      ]
+    },
+    "unit/agent/agent.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "agent.cpp"
+      ]
+    },
+    "unit/animation/animation_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "animation_sprite_spine.cpp",
+        "animation_two_bone_precision.cpp",
+        "hair_dynamic_bones.cpp",
+        "animation.cpp",
+        "animation_batch_lod.cpp",
+        "animation_binary.cpp",
+        "animation_clip_editing.cpp",
+        "animation_constraints_sync.cpp",
+        "animation_curves.cpp",
+        "animation_motion_normalization.cpp",
+        "animation_motion.cpp",
+        "animation_retarget_compression.cpp",
+        "animation_root_motion_policy.cpp",
+        "animation_skinned.cpp",
+        "animation_smr_retarget.cpp"
+      ]
+    },
+    "unit/archspace/archspace_space_query.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/archspace_hd2d/archspace_hd2d_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/archspace_map/archspace_map_projector.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/asset/asset_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "asset_dependency.cpp",
+        "asset_diff.cpp",
+        "asset_eva_archive.cpp",
+        "asset_evpack.cpp",
+        "asset_runtime_definition.cpp"
+      ]
+    },
+    "unit/asset_graphics/asset_graphics_material_color.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "asset_graphics_material_color.cpp"
+      ]
+    },
+    "unit/attributes/attributes.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "attributes.cpp"
+      ]
+    },
+    "unit/authority/authority_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "authority.cpp",
+        "script_ownership.cpp"
+      ]
+    },
+    "unit/avatar/avatar_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "avatar.cpp",
+        "avatar_vrm.cpp",
+        "avatar_appearance.cpp"
+      ]
+    },
+    "unit/building/building.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "building.cpp"
+      ]
+    },
+    "unit/buildingfx/building_placement_regression_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "building_placement_regression.cpp"
+      ]
+    },
+    "unit/camera/camera.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "camera.cpp"
+      ]
+    },
+    "unit/card/card_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "card_gameplay_control.cpp",
+        "card_reload.cpp",
+        "card_play_condition.cpp",
+        "card.cpp"
+      ]
+    },
+    "unit/climbing/climbing_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "climbing_anchor_authoring.cpp",
+        "climbing_authored_motion.cpp",
+        "climbing_anchor_graph.cpp",
+        "climbing_ecs.cpp",
+        "climbing_input.cpp",
+        "climbing_parkour.cpp",
+        "climbing_services.cpp",
+        "climbing.cpp",
+        "climbing_events.cpp"
+      ]
+    },
+    "unit/cmdline/cmdline_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "cmdline.cpp"
+      ]
+    },
+    "unit/combat/combat_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "combat_camera_framing.cpp",
+        "combat_attributes.cpp",
+        "combat_character.cpp",
+        "combat_locomotion.cpp",
+        "combat_carrier.cpp",
+        "combat_melee_hit.cpp",
+        "combat_motion_warp.cpp"
+      ]
+    },
+    "unit/common/common_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "cases": {
+        "test-framework": [
+          "common.zeroerr.preservesExpressionAndSource",
+          "common.zeroerr.preservesAssertionCounters",
+          "common.zeroerr.preservesFixtureRegistration",
+          "common.zeroerr.expressionValueLifecycle",
+          "common.zeroerr.testMetadataLifecycle",
+          "common.zeroerr.assertionExceptionLifecycle",
+          "common.zeroerr.formatPreservesGrammarAndOrder",
+          "common.zeroerr.printerOwnsAndResetsStream",
+          "common.zeroerr.printerBorrowsExternalStream",
+          "common.zeroerr.printerFormattingModes",
+          "common.zeroerrRegistration.borrowedDecoratorsKeepOrder",
+          "common.zeroerrRegistration.borrowedNamesBecomeOwned",
+          "common.zeroerrRegistration.skippedCase",
+          "common.zeroerrRegistration.fixtureFactory"
+        ]
+      },
+      "origins": [
+        "capability.cpp",
+        "protocol_dispatch.cpp",
+        "common_diagnostic_storage.cpp",
+        "common_diagnostic_vector_instances.cpp",
+        "diagnostic_value.cpp",
+        "ECS.cpp",
+        "ecs_container_instances.cpp",
+        "common_identity_version.cpp",
+        "common_result_assertion.cpp",
+        "value.cpp",
+        "value_lifecycle.cpp",
+        "common_zeroerr_diagnostics.cpp",
+        "common_zeroerr_registration.cpp",
+        "json.cpp",
+        "result.cpp",
+        "runtime_handle.cpp",
+        "script_compiler.cpp",
+        "script_structure.cpp",
+        "state_value.cpp",
+        "string_instances.cpp",
+        "time_contract.cpp",
+        "versioned_registry.cpp",
+        "xml.cpp",
+        "capability_owned.cpp",
+        "condition.cpp",
+        "sdf_field3d.cpp",
+        "ecs_view_preparation.cpp"
+      ]
+    },
+    "unit/crowd/crowd_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "crowd.cpp",
+        "crowd_avoidance.cpp",
+        "crowd_contacts.cpp",
+        "crowd_interaction.cpp",
+        "crowd_spawn.cpp"
+      ]
+    },
+    "unit/data/data.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "data.cpp"
+      ]
+    },
+    "unit/daynight/daynight_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "SkySolarOrbit.cpp",
+        "SkyTimeline.cpp",
+        "daynight.cpp"
+      ]
+    },
+    "unit/decal/decal_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "decal.cpp"
+      ]
+    },
+    "unit/definitions/definitions_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "definitions.cpp"
+      ]
+    },
+    "unit/devtools/devtools_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "agent_development_session.cpp",
+        "callgraph.cpp",
+        "console.cpp",
+        "debugger.cpp",
+        "mcp_architecture_graph.cpp",
+        "mcp_whitebox.cpp",
+        "frame_stats.cpp",
+        "language_index.cpp",
+        "language_text.cpp",
+        "mcp_console.cpp",
+        "mcp_tool_filter.cpp",
+        "play_trace.cpp",
+        "game_world_context.cpp",
+        "mcp_frame_capture.cpp"
+      ]
+    },
+    "unit/dialogue/dialogue_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "dialogue_authoring.cpp",
+        "dialogue_text.cpp",
+        "dialogue.cpp"
+      ]
+    },
+    "unit/dnut_interpreter/dnut_interpreter.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "dnut_interpreter.cpp"
+      ]
+    },
+    "unit/economy/economy_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "economy.cpp"
+      ]
+    },
+    "unit/editing/editing_tests.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "origins": [
+        "editing_property_schema_json.cpp"
+      ]
+    },
+    "unit/editor/editor_tests.cpp": {
+      "role": "tests",
+      "default": "local-format",
+      "cases": {
+        "local-logic": [
+          "property.validation_presentation_and_editor_share_type_enum_range_and_finite_rules",
+          "property.validation_editor_model_rejects_before_command_sink",
+          "property.validation_dynamic_model_uses_shared_finite_rule",
+          "property.validation_transform_descriptor_preserves_editor_object_semantics"
+        ]
+      },
+      "origins": [
+        "editor_level.cpp",
+        "editor_tilemap_formats.cpp",
+        "property_validation_parity.cpp"
+      ]
+    },
+    "unit/effects/effects_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "effects.cpp"
+      ]
+    },
+    "unit/emergence/emergence_perf_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "emergence_perf.cpp"
+      ]
+    },
+    "unit/filesystem/filesystem_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "RenderSystem.cpp",
+        "SkyWispsAsset.cpp",
+        "resource.cpp",
+        "shader.cpp"
+      ]
+    },
+    "unit/fluids/fluids_emitters_coupling_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "fluids_volume_collision_material.cpp",
+        "fluids_volume_coupling.cpp",
+        "fluids_volume_emitter.cpp",
+        "fluids_volume_emitter_part2.cpp",
+        "fluids_volume_mesh_emitter.cpp",
+        "fluids_volume_triggers.cpp"
+      ]
+    },
+    "unit/fluids/fluids_shore_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/fluids/fluids_solver_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "fluids.cpp",
+        "fluids_shallow_water.cpp",
+        "fluids_volume.cpp",
+        "fluids_volume_part2.cpp",
+        "fluids_volume_part3.cpp"
+      ]
+    },
+    "unit/game_event/game_event_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "event_envelope.cpp",
+        "eventstream.cpp"
+      ]
+    },
+    "unit/gpgpu/gpgpu_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "gpgpu.cpp"
+      ]
+    },
+    "unit/graphics/graphics_pipeline_state_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "BloomSettings.cpp",
+        "ClusteredLighting.cpp",
+        "CubemapPrefilter.cpp",
+        "Lighting2D.cpp",
+        "MeshInstanceRange.cpp",
+        "ParallaxMap.cpp",
+        "Quad.cpp",
+        "RenderSceneEffects.cpp",
+        "RenderSystem3D.cpp",
+        "Shadow3D.cpp",
+        "ShadowScheme.cpp",
+        "SkyAtmosphereLuts.cpp",
+        "Volumetric.cpp",
+        "atmosphere_volume.cpp",
+        "depth_of_field_focus.cpp",
+        "diffuse_light_probe.cpp",
+        "graphics_camera_factory.cpp",
+        "graphics_display_output.cpp",
+        "graphics_pbr_surface.cpp",
+        "graphics_primitives.cpp",
+        "graphics_skin_palette.cpp",
+        "graphics_vegetation_extras.cpp",
+        "graphics_webgpu_pbr_variant.cpp",
+        "grass_billboard.cpp",
+        "grass.cpp",
+        "grass_wind.cpp",
+        "hair.cpp",
+        "indirect_builder.cpp",
+        "reflection_probe_culling.cpp",
+        "tree_wind.cpp"
+      ]
+    },
+    "unit/graphics/graphics_resources_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "MaterialRenderControl.cpp",
+        "MeshShaderRasterState.cpp",
+        "SkyTextureResources.cpp",
+        "TextureCellBomb.cpp",
+        "ShaderInstances.cpp",
+        "ShaderResources.cpp",
+        "virtual_texture_blend.cpp",
+        "RenderImageAudit.cpp"
+      ]
+    },
+    "unit/graphics_fog/graphics_fog_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "graphics_fog.cpp"
+      ]
+    },
+    "unit/graphics_raytracing/graphics_raytracing_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "graphics_raytracing.cpp"
+      ]
+    },
+    "unit/grid/grid.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "grid.cpp"
+      ]
+    },
+    "unit/hexmap/hexmap_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "hexmap.cpp",
+        "hexmap_module.cpp",
+        "hexmap_sphere.cpp"
+      ]
+    },
+    "unit/i18n/i18n_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "i18n.cpp"
+      ]
+    },
+    "unit/ik/ik_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "ik.cpp"
+      ]
+    },
+    "unit/image/image_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "image.cpp",
+        "image_scale.cpp"
+      ]
+    },
+    "unit/inventory/inventory_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "inventory_gameplay_control.cpp",
+        "inventory.cpp"
+      ]
+    },
+    "unit/map/map_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "map_dual_grid_masks.cpp",
+        "map_fov.cpp",
+        "map_object_contract.cpp",
+        "resource_format_map.cpp",
+        "map.cpp"
+      ]
+    },
+    "unit/math/math_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "math.cpp",
+        "math_smooth_max.cpp",
+        "math_steering.cpp"
+      ]
+    },
+    "unit/model3d/model3d_normals.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "model3d_normals.cpp"
+      ]
+    },
+    "unit/npc_ai/npc_ai_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "npc_ai.cpp",
+        "npc_ai_ecs.cpp",
+        "npc_ai_smart_object.cpp",
+        "decision_context.cpp"
+      ]
+    },
+    "unit/orders/orders_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "orders.cpp"
+      ]
+    },
+    "unit/particles/particles_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "particles_effect_asset.cpp",
+        "particles_gpu_resident.cpp",
+        "particles_p2_p3.cpp",
+        "particles_playback.cpp",
+        "particles_renderer.cpp",
+        "particles_scalability.cpp",
+        "particles.cpp",
+        "pcg_material_selector.cpp"
+      ]
+    },
+    "unit/physics/physics_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "box3d.cpp",
+        "physics_jolt.cpp",
+        "physics_jolt_contacts.cpp",
+        "physics_jolt_cooking.cpp",
+        "physics_rigid_backend.cpp",
+        "targeting.cpp",
+        "water_mesh.cpp",
+        "physics_force_models.cpp",
+        "physics_tire_stability.cpp"
+      ]
+    },
+    "unit/physics_backend/physics_core_boundary_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "physics_core_boundary.cpp"
+      ]
+    },
+    "unit/physics_cloth/physics_cloth_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "physics_cloth.cpp",
+        "physics_layered_cloth.cpp",
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "unit/physics_destruction/physics_destruction_fracture_rules.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "physics_destruction_p3.cpp",
+        "physics_destruction.cpp"
+      ]
+    },
+    "unit/physics_destruction_cook/physics_destruction_cook.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "physics_destruction_cook.cpp"
+      ]
+    },
+    "unit/physics_rope/physics_rope_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "physics_rope.cpp"
+      ]
+    },
+    "unit/physics_softbody/softbody_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "softbody.cpp"
+      ]
+    },
+    "unit/pixelworld/pixelworld_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "pixelworld.cpp",
+        "pixelworld_control.cpp",
+        "pixelworld_generation.cpp"
+      ]
+    },
+    "unit/pixelworld_replay/pixelworld_replay.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "pixelworld_replay.cpp"
+      ]
+    },
+    "unit/pixelworld_streaming/pixelworld_script.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "pixelworld_script.cpp"
+      ]
+    },
+    "unit/platform_event/async_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "async.cpp"
+      ]
+    },
+    "unit/policyregistry/policyregistry_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "policyregistry.cpp"
+      ]
+    },
+    "unit/procgen/procgen_cave_formations.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_cave_formations.cpp"
+      ]
+    },
+    "unit/procgen/procgen_composition_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_incremental_build.cpp",
+        "procgen_module_assembly.cpp",
+        "procgen_object_build_layer.cpp",
+        "procgen_runtime_generation.cpp",
+        "procgen_scene_sink.cpp",
+        "prototype_kit.cpp",
+        "roguelike_generator.cpp"
+      ]
+    },
+    "unit/procgen/procgen_foundation_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "TextureSampler.cpp",
+        "procgen_result_contract.cpp",
+        "procgen_rng_contract.cpp",
+        "procgen.cpp"
+      ]
+    },
+    "unit/procgen/procgen_generation_stages.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_generation_stages.cpp"
+      ]
+    },
+    "unit/procgen/procgen_mesh_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "gts_mesh_splitter.cpp",
+        "procgen_lsystem.cpp",
+        "procgen_mesh_boolean.cpp",
+        "procgen_mesh_modifier_graph.cpp",
+        "procgen_mesh_uv_projection.cpp"
+      ]
+    },
+    "unit/procgen/procgen_points_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_attribute_table.cpp",
+        "procgen_foliage_clusters.cpp",
+        "procgen_grid_graph.cpp",
+        "procgen_point_delta.cpp",
+        "procgen_point_graph.cpp",
+        "procgen_pointset.cpp",
+        "procgen_poisson.cpp"
+      ]
+    },
+    "unit/procgen/procgen_terrain_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "pcg_terrain_watcher.cpp",
+        "procgen_hex_terrain.cpp",
+        "terrain_curve_texture.cpp",
+        "terrain_detail.cpp",
+        "terrain_effect.cpp",
+        "terrain_erosion.cpp",
+        "terrain_generation_session.cpp",
+        "terrain_legacy_hydraulic.cpp",
+        "terrain_mask.cpp",
+        "terrain_multitile.cpp",
+        "terrain_probe.cpp",
+        "terrain_sediment.cpp",
+        "terrain_smooth_stamp.cpp",
+        "terrain_smooth_stamp_persistence.cpp",
+        "terrain_stamp.cpp",
+        "terrain_tree.cpp",
+        "terrain_water.cpp"
+      ]
+    },
+    "unit/procgen/procgen_urban_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road.cpp",
+        "urban_generator.cpp",
+        "housegen.cpp"
+      ]
+    },
+    "unit/procgen_animation/pcg_biome_controller_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "pcg_biome_controller.cpp"
+      ]
+    },
+    "unit/production/production_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "production_time.cpp",
+        "production.cpp"
+      ]
+    },
+    "unit/profiler/profiler_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "profiler.cpp"
+      ]
+    },
+    "unit/rpg/rpg_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "rpg.cpp",
+        "rpg_actor_checkpoint.cpp",
+        "rpg_battle.cpp",
+        "rpg_battle_tactics.cpp",
+        "rpg_class.cpp",
+        "rpg_dialect.cpp",
+        "rpg_gamestate.cpp",
+        "gameplay_control_rpg.cpp",
+        "rpg_encounter_catalogue.cpp",
+        "rpg_party.cpp",
+        "rpg_state_canonical.cpp",
+        "rpg_progression.cpp",
+        "rpg_quest.cpp",
+        "rpg_reload.cpp",
+        "rpg_skill_condition.cpp",
+        "rpg_story_event.cpp",
+        "rpg_trait.cpp",
+        "status_effect_adapter.cpp"
+      ]
+    },
+    "unit/rts/gameplay_control_rts.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "gameplay_control_rts.cpp"
+      ]
+    },
+    "unit/rx/rx_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "rx.cpp"
+      ]
+    },
+    "unit/scene/scene_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "scene.cpp",
+        "scene_visibility.cpp"
+      ]
+    },
+    "unit/scene_editor/scene_editor_gizmo.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "scene_editor_gizmo.cpp"
+      ]
+    },
+    "unit/schema/schema_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "schema_contract.cpp",
+        "schema.cpp"
+      ]
+    },
+    "unit/sensing/sensing_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "sensing.cpp"
+      ]
+    },
+    "unit/settlement/settlement_simulation_rules.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "settlement_replay.cpp",
+        "settlement_rules.cpp"
+      ]
+    },
+    "unit/social/social_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "social.cpp"
+      ]
+    },
+    "unit/spatial/spatial_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "spatial.cpp"
+      ]
+    },
+    "unit/statepatch/statepatch_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "statepatch.cpp"
+      ]
+    },
+    "unit/stylize/stylize_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "stylize_anime.cpp",
+        "stylize_area_indicator_effect.cpp",
+        "stylize_attack_vfx.cpp",
+        "stylize_attack_vfx_layers.cpp",
+        "stylize_beam_effect.cpp",
+        "stylize_mesh_particles.cpp",
+        "stylize_mesh_vfx_benchmark.cpp",
+        "stylize.cpp"
+      ]
+    },
+    "unit/tactics/tactics_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "gameplay_control_tactics.cpp",
+        "tactics_ability.cpp",
+        "tactics_board.cpp",
+        "tactics_edges.cpp",
+        "tactics_graph.cpp",
+        "tactics_line_of_sight.cpp",
+        "tactics_path.cpp",
+        "tactics_interaction.cpp",
+        "tactics_objective.cpp",
+        "tactics_presentation_script.cpp",
+        "tactics_presentation.cpp",
+        "tactics_reaction.cpp",
+        "tactics_migration.cpp",
+        "tactics_replay.cpp",
+        "tactics_snapshot_script.cpp",
+        "tactics_charge_time.cpp",
+        "tactics_turn.cpp",
+        "tactics_turn_policy.cpp"
+      ]
+    },
+    "unit/tags/tags_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "gameplay_tags.cpp",
+        "tags.cpp"
+      ]
+    },
+    "unit/tensor/tensor_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "tensor_llm.cpp",
+        "tensor.cpp"
+      ]
+    },
+    "unit/timer/service_mocks_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "service_mocks.cpp"
+      ]
+    },
+    "unit/transaction/transaction_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "transaction.cpp"
+      ]
+    },
+    "unit/ui/ui_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "UIBuilder.cpp",
+        "UIEditorKit.cpp",
+        "UIPhaseAdv.cpp",
+        "UIPhaseB.cpp",
+        "UISystem.cpp",
+        "pcg_color_preview_sync.cpp",
+        "pcg_photo_mode_color_picker.cpp",
+        "pcg_photo_mode_session.cpp",
+        "ui_color_palette.cpp",
+        "ui_control_semantics.cpp",
+        "ui_drag_drop.cpp",
+        "UIMoveRepro.cpp",
+        "UITween.cpp",
+        "ui_nine_patch.cpp",
+        "ui_parent_scaler.cpp",
+        "ui_world_anchor.cpp"
+      ]
+    },
+    "unit/vehicle/vehicle_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "vehicle.cpp"
+      ]
+    },
+    "unit/virtualgeometry/virtualgeometry_builder_unit.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "virtualgeometry_builder.cpp"
+      ]
+    },
+    "unit/voxel/voxel_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "voxel_face_dir.cpp",
+        "voxel.cpp"
+      ]
+    },
+    "unit/weapon/weapon_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "projectile_runtime.cpp",
+        "spell_fragment_compiler.cpp",
+        "weapon_infinite_reload.cpp",
+        "weapon.cpp"
+      ]
+    },
+    "unit/weather/weather_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "snow.cpp",
+        "thunder_strike.cpp",
+        "weather.cpp"
+      ]
+    },
+    "integration/ocean-voyage/ocean_boat.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_codec.cpp": {
+      "role": "tests",
+      "default": "local-format"
+    },
+    "integration/ocean-voyage/ocean_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_hull_mask.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/fluids/ocean_mesh.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/ocean-voyage/ocean_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "fluids"
+    },
+    "integration/ocean-voyage/ocean_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_spectrum.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/fluids/ocean_spray.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/ocean-voyage/ocean_spray_render.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "cases": {
+        "script-binding": [
+          "fluids.ocean.sprayScriptBuildersSurviveGc"
+        ]
+      },
+      "module": "fluids"
+    },
+    "unit/fluids/ocean_surface.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/fluids/ocean_transition.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/fluids/ocean_wake.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "unit/graphics/graphics_shader_parameters.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/gameplay-composition/procgen_road_authoring.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_authoring.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_bundled_circular.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_bundled_circular.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_circular.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_circular.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_circular_ghost.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_circular_ghost.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_connections.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_connections.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_controllers.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_controllers.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_extensions.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_extensions.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_full_roll.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_full_roll.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_geometry_artifact.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_geometry_artifact.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_geometry_sources.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_geometry_sources.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_junction_seams.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_junction_seams.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_junction_style.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_junction_style.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_noop.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_noop.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_parameter_sampling.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_parameter_sampling.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_placement_anchors.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_placement_anchors.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_position_split.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_position_split.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_presets.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_presets.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_profile_editing.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_profile_editing.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_profiles.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_profiles.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_recipe_artifact.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_recipe_artifact.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_recipe_snapshot.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_recipe_snapshot.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_reference.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_reference.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_roll_pivot.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_roll_pivot.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_roll_policy.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_roll_policy.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_roundabout.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_roundabout.cpp"
+      ]
+    },
+    "integration/gameplay-composition/procgen_road_sampling.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_sampling.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_sampling_defaults.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_sampling_defaults.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_side_placement.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_side_placement.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_side_terrain.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_side_terrain.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_spacing_portals.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_spacing_portals.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_strength.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_strength.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_surface_path.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_surface_path.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/gameplay-composition/procgen_road_terrain_author_policy.cpp": {
+      "modules": [
+        "procgen",
+        "procgen_editing"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "procgen_road_terrain_author_policy.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_road_terrain_batch.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_terrain_batch.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_terrain_blend.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_terrain_blend.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_terrain_opacity.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_terrain_opacity.cpp"
+      ]
+    },
+    "unit/procgen/procgen_road_world_origin.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_road_world_origin.cpp"
+      ]
+    },
+    "unit/procgen/procgen_spline_explicit_frames.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_spline_explicit_frames.cpp"
+      ]
+    },
+    "integration/gameplay-composition/scene_procgen_rotation.cpp": {
+      "modules": [
+        "procgen",
+        "scene"
+      ],
+      "role": "tests",
+      "default": "module-composition",
+      "origins": [
+        "scene_procgen_rotation.cpp"
+      ],
+      "module": "scene"
+    },
+    "unit/procgen/terrain_object_collision.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "terrain_object_collision.cpp"
+      ]
+    },
+    "integration/script-api/terrain_road_batch_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "role": "tests",
+      "default": "script-binding",
+      "origins": [
+        "terrain_road_batch_vm.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/script-api/terrain_road_write_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "role": "tests",
+      "default": "script-binding",
+      "origins": [
+        "terrain_road_write_vm.cpp"
+      ],
+      "module": "procgen"
+    },
+    "integration/script-api/terrain_world_origin_vm.cpp": {
+      "modules": [
+        "procgen"
+      ],
+      "role": "tests",
+      "default": "script-binding",
+      "origins": [
+        "terrain_world_origin_vm.cpp"
+      ],
+      "module": "procgen"
+    },
+    "unit/procgen/procgen_spline_path.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_spline_path.cpp"
+      ]
+    },
+    "asset_import/RoadSideGraphicsProbe.cpp": {
+      "role": "probe",
+      "default": "render-window",
+      "module": "asset_graphics"
+    },
+    "integration/script-api/procgen_native_proxy_reuse.cpp": {
+      "module": "procgen",
+      "modules": [
+        "procgen"
+      ],
+      "role": "tests",
+      "default": "script-binding"
+    },
+    "integration/gameplay-composition/rts_terrain_combat.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "rts",
+      "origins": [
+        "rts_terrain_combat.cpp"
+      ]
+    },
+    "integration/module-composition/module_composition_devtools_frame_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "devtools"
+    },
+    "integration/file-io/file_io_devtools_frame_capture_tests.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "module": "devtools"
+    },
+    "integration/render-pipeline/render_pipeline_graphics_frame_capture_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics"
+    },
+    "integration/house-collapse/physics_collapse_animation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction",
+      "origins": [
+        "physics_collapse_animation.cpp"
+      ]
+    },
+    "integration/house-collapse/physics_voronoi_fracture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction_cook",
+      "origins": [
+        "physics_voronoi_fracture.cpp"
+      ]
+    },
+    "integration/house-collapse/physics_collapse_dust.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction_dust",
+      "origins": [
+        "physics_collapse_dust.cpp"
+      ]
+    },
+    "integration/house-collapse/physics_destruction_graphics_depth.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_destruction_graphics",
+      "origins": [
+        "physics_destruction_graphics_depth.cpp"
+      ]
+    },
+    "unit/procgen/procgen_auto_bridge.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "origins": [
+        "procgen_auto_bridge.cpp"
+      ]
+    },
+    "unit/procgen/procgen_arrow.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/frame-recording/frame_recording_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "thread",
+        "common",
+        "window"
+      ],
+      "cases": {
+        "module-composition": [
+          "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+        ]
+      }
+    },
+    "integration/profiler-capture/profile_capture_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "profiler",
+      "modules": [
+        "common",
+        "profiler"
+      ]
+    },
+    "integration/vsync-config/vsync_config_tests.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics",
+      "modules": [
+        "graphics",
+        "window",
+        "common"
+      ]
+    },
+    "integration/material-studio/material_preview_shadows.cpp": {
+      "role": "tests",
+      "default": "render-offscreen",
+      "module": "graphics"
+    },
+    "integration/material-studio/material_studio_scripts.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "material_editor"
+    },
+    "unit/material_editor/material_editor_tests.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/layered-cloth/physics_layered_cloth_gpu.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_cloth",
+      "origins": [
+        "physics_layered_cloth_gpu.cpp"
+      ]
+    },
+    "integration/layered-cloth/physics_layered_cloth_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "physics_cloth",
+      "origins": [
+        "physics_layered_cloth.cpp"
+      ]
+    },
+    "integration/avatar-appearance/avatar_appearance_script.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "avatar",
+      "origins": [
+        "avatar_appearance.cpp"
+      ]
+    },
+    "integration/projectile-behavior/continuous_solver.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "weapon"
+    },
+    "integration/projectile-behavior/advanced_carrier.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "weapon"
+    },
+    "integration/projectile-behavior/world_sweep.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics"
+    },
+    "integration/weather-lightning/weather_lightning_runtime.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "weather"
+    },
+    "unit/procgen/procgen_everyday_materials.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/script-api/procgen_everyday_material_optics.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "procgen"
+    },
+    "integration/sensing/environment_query_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "script-binding": [
+          "sensing.environment.scriptPositionsUseCanonicalExecutor"
+        ]
+      },
+      "module": "sensing",
+      "origins": [
+        "sensing_environment.cpp"
+      ]
+    },
+    "integration/ui-hud/hud_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "ui_editing",
+      "cases": {
+        "ui-render": [
+          "UI.hud.renderScalesHitRectAndRestoresDesignMetrics",
+          "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry"
+        ]
+      }
+    }
+  }
+}

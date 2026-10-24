@@ -71,8 +71,9 @@ enum class NodeType : uint8_t {
     PanelFrame       = 38,  // titled fixed chrome (not a free-floating Window host)
     DockArea         = 39,  // named fill slot for a dock region (region in valueText)
     AppFrame         = 40,  // fixed editor frame: toolbar + body + status bar
-    FilledImage      = 41,  // horizontal/vertical cropped image or solid fill
-    RadialFill       = 42,  // solid elliptical sector/ring for cooldown overlays
+    Link             = 41,  // clickable text; target URI in valueText
+    FilledImage      = 42,  // cropped image or solid fill
+    RadialFill       = 43,  // solid sector/ring for cooldown overlays
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -139,7 +140,8 @@ enum class AccessibilityRole : uint8_t {
     Progress,
     Region,
     Tab,
-    Window
+    Window,
+    Link
 };
 
 /**
@@ -153,6 +155,16 @@ struct UINode {
     std::string text;       // label / title
     std::string valueText;  // InputText content
     std::string tooltip;    // hover help; empty disables the tooltip
+    /** @brief Plain help shown beneath the control. */
+    std::string helpText;
+    /** @brief Explanation shown when interaction is disabled. */
+    std::string disabledReason;
+    /** @brief Empty-input hint; applies to single-line text inputs. */
+    std::string placeholder;
+    /** @brief Use a multiline plain-text editor. */
+    bool multiline = false;
+    /** @brief Allow selection and copying while preventing text edits. */
+    bool              readOnly    = false;
     bool visible = true;
     bool enabled = true;
     bool checked = false;

@@ -20,6 +20,16 @@ struct WidgetDesc {
     std::string text;
     std::string valueText;
     std::string tooltip;
+    /** @brief Plain help shown beneath the control. */
+    std::string helpText;
+    /** @brief Explanation shown when interaction is disabled. */
+    std::string disabledReason;
+    /** @brief Empty-input hint; applies to single-line text inputs. */
+    std::string placeholder;
+    /** @brief Use a multiline plain-text editor. */
+    bool multiline = false;
+    /** @brief Allow selection and copying while preventing text edits. */
+    bool              readOnly    = false;
     bool visible = true;
     bool enabled = true;
     bool checked = false;
@@ -141,6 +151,19 @@ struct WidgetDesc {
     /** @brief With tooltip. */
     WidgetDesc &withTooltip(std::string v) {
         tooltip = std::move(v);
+        return *this;
+    }
+    /** @brief Configure plain text input and its empty-input hint. */
+    WidgetDesc &withTextInput(bool multi, bool locked = false, std::string hint = {}) {
+        multiline   = multi;
+        readOnly    = locked;
+        placeholder = std::move(hint);
+        return *this;
+    }
+    /** @brief Set always-visible help and an optional disabled explanation. */
+    WidgetDesc &withHelp(std::string help, std::string reason = {}) {
+        helpText       = std::move(help);
+        disabledReason = std::move(reason);
         return *this;
     }
     /** @brief With visible. */
@@ -491,6 +514,12 @@ EVENGINE_API_WORLD WidgetDesc viewport(std::string id = "", float width = 0.f, f
 EVENGINE_API_WORLD WidgetDesc inputText(std::string label, std::string value, std::string id = "",
                                         /** @brief Void. */
                                         std::function<void(const std::string &)> onChange = {});
+/** @brief Clickable text; caller handles URI activation through the UI-thread callback.
+ * @remarks No browser or process is launched by this widget.
+ */
+EVENGINE_API_WORLD WidgetDesc link(std::string label, std::string target, std::string id = "",
+                                   std::function<void()> onClick = {});
+
 /** @brief Compact search field with placeholder text and a bundled search icon. */
 EVENGINE_API_WORLD WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
                                           /** @brief Void. */

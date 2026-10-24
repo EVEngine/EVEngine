@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionPrefabBlock.h @brief Typed payload contract for prefab-spawn action states. */
+/** @file ActionPrefabBlock.h
+ *  @brief Typed payload contract for prefab-spawn action states.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionSpatialBlock.h"
 #include "common/Time.h"

@@ -10,6 +10,7 @@ uint32_t g_anonHostSeq = 0;
 
 bool focusableType(NodeType type) {
     switch (type) {
+        case NodeType::Link:
         case NodeType::Button:
         case NodeType::Checkbox:
         case NodeType::Slider:
