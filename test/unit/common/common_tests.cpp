@@ -612,16 +612,19 @@ TEST_CASE("common.diagnosticValue.stableNamesAndCodes") {
 #include <ECS.hpp>
 #include <cmath>
 #include <functional>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <type_traits>
 #include <vector>
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ECS)
+#include <simplesquirrel/simplesquirrel.hpp>
 #include "PrivateTestScope.h"
 #include "common/ECS.h"
 #include "common/Module.h"
+#endif
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: common_ecs
 namespace test_common_ecs {
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ECS)
 // ECS.cpp
 namespace {
 namespace ECS {
@@ -1142,6 +1145,8 @@ TEST_CASE("ECS.deferredPublishTransfersNonDefaultComponent") {
 }  // namespace ECS
 }  // namespace
 
+#endif
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ecs_container_instances)
 // ecs_container_instances.cpp
 namespace {
 namespace ecs_container_instances {
@@ -1248,6 +1253,7 @@ TEST_CASE("ecs.handle_containers_preserve_generation_and_table_projection") {
 }
 }  // namespace ecs_container_instances
 }  // namespace
+#endif
 }  // namespace test_common_ecs
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_identity_version)
@@ -2608,6 +2614,31 @@ TEST_CASE("scriptCompiler.generatedBindingContractsAreSearchable") {
     CHECK(hits[0].contract.toJson().find("\"method\":\"") != std::string::npos);
 }
 
+TEST_CASE("scriptCompiler.bindingContractSearchSplitsSlashAndDot") {
+    script::BindingContractRegistry registry;
+    script::BindingContract         reset;
+    reset.module          = "dialogue";
+    reset.method          = "reset";
+    reset.returnType      = "void";
+    reset.documentationId = "dialogue.reset";
+    registry.registerContract(reset);
+
+    script::BindingContract publish;
+    publish.module          = "dialogueFlow";
+    publish.method          = "publishGameplay";
+    publish.returnType      = "table";
+    publish.documentationId = "dialogueFlow.publishGameplay";
+    registry.registerContract(publish);
+
+    const auto dotted = registry.search("dialogue.reset", {}, {}, 4);
+    REQUIRE(!dotted.empty());
+    CHECK_EQ(dotted[0].contract.key(), std::string("dialogue/reset"));
+
+    const auto legacy = registry.search("dialogue publishGameplay", {}, {}, 4);
+    REQUIRE(!legacy.empty());
+    CHECK_EQ(legacy[0].contract.key(), std::string("dialogueFlow/publishGameplay"));
+}
+
 
 TEST_CASE("scriptCompiler.recordsInspectorPropertyMetadata") {
     const script::ScriptMetadata metadata = script::ScriptCompiler::analyze(
@@ -3865,4 +3896,522 @@ TEST_CASE("decision.condition.legacyCodecExpandsDomainLeaves") {
     CHECK_EQ(authority.value().key(), std::string(kAuthorityAllowPolicy));
 }
 }  // namespace test_condition
+#endif
+
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sdf_field3d)
+#include <cmath>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "common/SdfField3D.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// sdf_field3d.cpp
+namespace test_common_sdf_field3d {
+using namespace eve;
+
+namespace {
+SdfField3DBlob makeSphereBlob(int resolution = 8) {
+    SdfField3DBlob blob;
+    blob.kind            = SdfField3DSampleKind::VertexGrid;
+    blob.width           = resolution;
+    blob.height          = resolution;
+    blob.depth           = resolution;
+    blob.cellSize        = 0.25f;
+    blob.originX         = -1.f;
+    blob.originY         = -1.f;
+    blob.originZ         = -1.f;
+    blob.outsideDistance = 10.f;
+    blob.distances.resize(size_t(resolution * resolution * resolution));
+    const float radius = 0.5f;
+    for (int z = 0; z < resolution; ++z)
+        for (int y = 0; y < resolution; ++y)
+            for (int x = 0; x < resolution; ++x) {
+                const float px = blob.originX + float(x) * blob.cellSize;
+                const float py = blob.originY + float(y) * blob.cellSize;
+                const float pz = blob.originZ + float(z) * blob.cellSize;
+                blob.distances[size_t(x + resolution * (y + resolution * z))] =
+                    std::sqrt(px * px + py * py + pz * pz) - radius;
+            }
+    return blob;
+}
+}  // namespace
+
+TEST_CASE("common.sdfField3D.blobRoundTripPreservesSamples") {
+    const auto blob = makeSphereBlob();
+    REQUIRE(validateSdfField3DBlob(blob).ok());
+    auto encoded = encodeSdfField3DBlob(blob);
+    REQUIRE(encoded.ok());
+    auto decoded = decodeSdfField3DBlob(encoded.value());
+    REQUIRE(decoded.ok());
+    REQUIRE(decoded.value().width == blob.width);
+    REQUIRE(decoded.value().height == blob.height);
+    REQUIRE(decoded.value().depth == blob.depth);
+    REQUIRE(decoded.value().cellSize == blob.cellSize);
+    REQUIRE(decoded.value().originX == blob.originX);
+    REQUIRE(decoded.value().distances == blob.distances);
+}
+
+TEST_CASE("common.sdfField3D.blobRejectsUnknownSchemaAndBadCounts") {
+    auto encoded = encodeSdfField3DBlob(makeSphereBlob());
+    REQUIRE(encoded.ok());
+    auto object = std::move(encoded).takeValue();
+    object.set("schemaId", std::string("eve.sdf.other"));
+    REQUIRE(!decodeSdfField3DBlob(object).ok());
+
+    auto shortBlob = makeSphereBlob();
+    shortBlob.distances.pop_back();
+    REQUIRE(!validateSdfField3DBlob(shortBlob).ok());
+    REQUIRE(!encodeSdfField3DBlob(shortBlob).ok());
+}
+
+class AnalyticSphereSdf final : public ISdfField3D {
+public:
+    float sample(float x, float y, float z) const override { return std::sqrt(x * x + y * y + z * z) - 0.5f; }
+    SdfField3DGradientStatus gradient(float x, float y, float z, float& outNx, float& outNy,
+                                      float& outNz) const override {
+        const float len = std::sqrt(x * x + y * y + z * z);
+        if (len <= 1e-8f) return SdfField3DGradientStatus::Undefined;
+        outNx = x / len;
+        outNy = y / len;
+        outNz = z / len;
+        return SdfField3DGradientStatus::Defined;
+    }
+    unsigned revision() const override { return 1; }
+    void     bounds(float& minX, float& minY, float& minZ, float& maxX, float& maxY, float& maxZ) const override {
+        minX = minY = minZ = -1.f;
+        maxX = maxY = maxZ = 1.f;
+    }
+};
+
+TEST_CASE("common.sdfField3D.capabilityInterfaceSamplesGradient") {
+    AnalyticSphereSdf field;
+    REQUIRE(std::abs(field.sample(0.f, 0.f, 0.f) + 0.5f) < 1e-5f);
+    float nx = 0, ny = 0, nz = 0;
+    REQUIRE(field.gradient(1.f, 0.f, 0.f, nx, ny, nz) == SdfField3DGradientStatus::Defined);
+    REQUIRE(std::abs(nx - 1.f) < 1e-5f);
+    float minX, minY, minZ, maxX, maxY, maxZ;
+    field.bounds(minX, minY, minZ, maxX, maxY, maxZ);
+    REQUIRE(minX == -1.f);
+    REQUIRE(maxZ == 1.f);
+    REQUIRE(field.revision() == 1u);
+}
+
+}  // namespace test_common_sdf_field3d
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ecs_view_preparation)
+#include <zeroerr/assert.h>
+#include <zeroerr/unittest.h>
+#include <ECS.hpp>
+
+#include <functional>
+#include <stdexcept>
+
+// Responsibility: ECS view preparation and deferred lifetime
+namespace test_ecs_view_preparation {
+namespace {
+struct PreparedValue {
+    inline static int                   constructed = 0;
+    inline static int                   throwAt     = -1;
+    inline static std::function<void()> onConstruct;
+    int                                 value = 7;
+
+    PreparedValue() {
+        if (constructed == throwAt) throw std::runtime_error("injected construction failure");
+        ++constructed;
+        if (onConstruct) onConstruct();
+    }
+};
+
+class PreparedEntity : public ecs::Entity {
+public:
+    ENTITY(PreparedEntity, ecs::Entity)
+    void release() override { ecs::DestroyEntity(this); }
+};
+class PreparedDerived : public PreparedEntity {
+public:
+    ENTITY(PreparedDerived, PreparedEntity)
+};
+
+struct ConstructionState {
+    ConstructionState() {
+        PreparedValue::constructed = 0;
+        PreparedValue::throwAt     = -1;
+        PreparedValue::onConstruct = {};
+    }
+    ~ConstructionState() {
+        PreparedValue::throwAt     = -1;
+        PreparedValue::onConstruct = {};
+    }
+};
+
+struct ExplicitValue {
+    explicit ExplicitValue(int input) : value(input) {}
+    int value;
+};
+}  // namespace
+
+TEST_CASE("ecs.viewPreparationPreservesWordAndPrefixBoundaries") {
+    ConstructionState state;
+    ecs::Table        table;
+    auto*             buffer = table.getOrCreateManager<PreparedEntity>().getOrCreateComponentBuffer<PreparedValue>();
+    buffer->ensure_space(193);
+    for (const auto count : {0u, 1u, 63u, 64u, 65u, 127u, 128u, 129u, 193u}) {
+        buffer->engageUpTo(count);
+        REQUIRE_EQ(PreparedValue::constructed, static_cast<int>(count));
+        buffer->engageUpTo(count);
+        REQUIRE_EQ(PreparedValue::constructed, static_cast<int>(count));
+    }
+    buffer->at(62).value = 91;
+    buffer->reset_slot(63);
+    buffer->reset_slot(64);
+    buffer->reset_slot(128);
+    buffer->engageUpTo(65);
+    REQUIRE_EQ(PreparedValue::constructed, 195);
+    REQUIRE(!buffer->has(128));
+    REQUIRE_EQ(buffer->at(62).value, 91);
+    buffer->engageUpTo(193);
+    REQUIRE_EQ(PreparedValue::constructed, 196);
+    REQUIRE(buffer->has(128));
+}
+
+TEST_CASE("ecs.viewPreparationRetriesThrowingConstruction") {
+    ConstructionState state;
+    ecs::Table        table;
+    auto*             buffer = table.getOrCreateManager<PreparedEntity>().getOrCreateComponentBuffer<PreparedValue>();
+    PreparedValue::throwAt   = 64;
+    bool threw               = false;
+    try {
+        buffer->engageUpTo(130);
+    } catch (const std::runtime_error&) {
+        threw = true;
+    }
+    REQUIRE(threw);
+    REQUIRE_EQ(PreparedValue::constructed, 64);
+    REQUIRE(!buffer->has(64));
+    PreparedValue::throwAt = -1;
+    buffer->engageUpTo(130);
+    REQUIRE_EQ(PreparedValue::constructed, 130);
+    REQUIRE(buffer->has(129));
+}
+
+TEST_CASE("ecs.viewPreparationObservesConstructorChangesWithinWord") {
+    ConstructionState state;
+    ecs::Table        table;
+    auto*             buffer = table.getOrCreateManager<PreparedEntity>().getOrCreateComponentBuffer<PreparedValue>();
+    buffer->engageUpTo(128);
+    buffer->reset_slot(64);
+    bool reset                 = false;
+    PreparedValue::onConstruct = [&] {
+        if (!reset) {
+            reset = true;
+            buffer->reset_slot(65);
+        }
+    };
+    buffer->engageUpTo(128);
+    REQUIRE_EQ(PreparedValue::constructed, 130);
+    REQUIRE(buffer->has(64));
+    REQUIRE(buffer->has(65));
+}
+
+TEST_CASE("ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation") {
+    ConstructionState state;
+    ecs::Table        table;
+    ecs::Table        other;
+    ecs::EntityHandle first;
+    for (int i = 0; i < 130; ++i) {
+        auto* entity = PreparedDerived::create(table);
+        if (i == 0) first = ecs::handle_of(entity);
+    }
+    for (int pass = 0; pass < 3; ++pass) {
+        int count = 0;
+        for (auto [value] : ecs::View<PreparedEntity, PreparedValue>(table)) {
+            REQUIRE_EQ(value->value, 7);
+            ++count;
+        }
+        REQUIRE_EQ(count, 130);
+    }
+    REQUIRE_EQ(PreparedValue::constructed, 130);
+    {
+        auto empty = ecs::View<PreparedEntity, PreparedValue>(other);
+        REQUIRE(empty.begin() == empty.end());
+    }
+    ecs::EntityHandle staged;
+    {
+        ecs::ScopedDefer defer(table);
+        staged = ecs::handle_of(PreparedDerived::create(table));
+        ecs::DestroyEntity(ecs::try_get(first));
+        int visible = 0;
+        for (auto [value] : ecs::View<PreparedEntity, PreparedValue>(table)) {
+            (void)value;
+            ++visible;
+        }
+        REQUIRE_EQ(visible, 129);
+    }
+    REQUIRE(ecs::try_get(first) == nullptr);
+    REQUIRE(ecs::try_get(staged) != nullptr);
+    int published = 0;
+    for (auto [value] : ecs::View<PreparedEntity, PreparedValue>(table)) {
+        REQUIRE_EQ(value->value, 7);
+        ++published;
+    }
+    REQUIRE_EQ(published, 130);
+}
+
+TEST_CASE("ecs.viewPreparationDoesNotRequireDefaultConstruction") {
+    ecs::Table table;
+    for (int i = 0; i < 130; ++i) {
+        auto* entity = PreparedDerived::create(table);
+        REQUIRE(entity != nullptr);
+    }
+    auto* buffer = table.getOrCreateManager<PreparedDerived>().getOrCreateComponentBuffer<ExplicitValue>();
+    REQUIRE(buffer->emplace(129, 42));
+    int count = 0;
+    for (auto [value] : ecs::View<PreparedEntity, ExplicitValue>(table)) {
+        REQUIRE_EQ(value->value, 42);
+        ++count;
+    }
+    REQUIRE_EQ(count, 1);
+}
+
+TEST_CASE("ecs.idleCommitKeepsNestedAndExplicitPublication") {
+    ecs::Table        table;
+    ecs::EntityHandle first;
+    ecs::EntityHandle second;
+    {
+        ecs::ScopedDefer outer(table);
+        first = ecs::handle_of(PreparedDerived::create(table));
+        REQUIRE(!ecs::is_entity_visible(ecs::try_get(first)));
+        table.commit();
+        REQUIRE(table.is_deferred());
+        REQUIRE(ecs::is_entity_visible(ecs::try_get(first)));
+        {
+            ecs::ScopedDefer inner(table);
+            second = ecs::handle_of(PreparedDerived::create(table));
+        }
+        REQUIRE(!ecs::is_entity_visible(ecs::try_get(second)));
+    }
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(second)));
+    table.commit();
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(first)));
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(second)));
+    {
+        ecs::ScopedDefer scope(table);
+        auto*            immediate = ecs::CreateEntity<PreparedDerived>(table, true);
+        REQUIRE(ecs::is_entity_visible(immediate));
+        ecs::DestroyEntity(immediate);
+        ecs::DestroyEntity(ecs::try_get(first));
+    }
+    REQUIRE(ecs::try_get(first) == nullptr);
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(second)));
+}
+
+TEST_CASE("ecs.idleCommitCancelsStagedAndRearmsAfterReuse") {
+    ecs::Table        table;
+    ecs::EntityHandle cancelled;
+    {
+        ecs::ScopedDefer scope(table);
+        cancelled = ecs::handle_of(PreparedDerived::create(table));
+        ecs::DestroyEntity(ecs::try_get(cancelled));
+        table.commit();
+        REQUIRE(ecs::try_get(cancelled) == nullptr);
+    }
+    ecs::EntityHandle replacement;
+    {
+        ecs::ScopedDefer scope(table);
+        replacement = ecs::handle_of(PreparedDerived::create(table));
+        REQUIRE_EQ(replacement.id, cancelled.id);
+        REQUIRE(!ecs::is_entity_visible(ecs::try_get(replacement)));
+    }
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(replacement)));
+    REQUIRE(ecs::try_get(cancelled) == nullptr);
+}
+
+TEST_CASE("ecs.failedViewPreparationReleasesItsDeferScope") {
+    ConstructionState state;
+    ecs::Table        table;
+    for (int i = 0; i < 130; ++i) {
+        auto* entity = PreparedDerived::create(table);
+        REQUIRE(entity != nullptr);
+    }
+    PreparedValue::throwAt = 64;
+    bool threw             = false;
+    try {
+        auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+    } catch (const std::runtime_error&) {
+        threw = true;
+    }
+    REQUIRE(threw);
+    REQUIRE(!table.is_deferred());
+    REQUIRE_EQ(PreparedValue::constructed, 64);
+    PreparedValue::throwAt = -1;
+    auto* fresh            = PreparedDerived::create(table);
+    REQUIRE(ecs::is_entity_visible(fresh));
+    int count = 0;
+    for (auto [value] : ecs::View<PreparedEntity, PreparedValue>(table)) {
+        REQUIRE_EQ(value->value, 7);
+        ++count;
+    }
+    REQUIRE_EQ(count, 131);
+    REQUIRE_EQ(PreparedValue::constructed, 131);
+}
+
+TEST_CASE("ecs.failedNestedViewPreservesTheOuterDeferScope") {
+    ConstructionState state;
+    ecs::Table        table;
+    ecs::EntityHandle pending;
+    {
+        ecs::ScopedDefer outer(table);
+        pending                = ecs::handle_of(PreparedDerived::create(table));
+        PreparedValue::throwAt = 0;
+        bool threw             = false;
+        try {
+            auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+        } catch (const std::runtime_error&) {
+            threw = true;
+        }
+        REQUIRE(threw);
+        REQUIRE(table.is_deferred());
+        REQUIRE(!ecs::is_entity_visible(ecs::try_get(pending)));
+        PreparedValue::throwAt = -1;
+    }
+    REQUIRE(!table.is_deferred());
+    REQUIRE(ecs::is_entity_visible(ecs::try_get(pending)));
+}
+
+TEST_CASE("ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison") {
+    ecs::Table table;
+    auto*      base    = PreparedEntity::create(table);
+    auto*      derived = PreparedDerived::create(table);
+    REQUIRE(base != nullptr);
+    REQUIRE(derived != nullptr);
+    int visited = 0;
+    {
+        auto view = ecs::View<PreparedEntity>(table);
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            auto* staged = PreparedDerived::create(table);
+            REQUIRE(!ecs::is_entity_visible(staged));
+            ecs::DestroyEntity(it.entity());
+            ++visited;
+        }
+    }
+    REQUIRE_EQ(visited, 2);
+    {
+        auto view      = ecs::View<PreparedEntity>(table);
+        int  published = 0;
+        for (auto it = view.begin(); it != view.end(); ++it) {
+            ecs::DestroyEntity(it.entity());
+            ++published;
+        }
+        REQUIRE_EQ(published, 2);
+    }
+    auto empty = ecs::View<PreparedEntity>(table);
+    REQUIRE(empty.begin() == empty.end());
+}
+
+TEST_CASE("ecs.viewPreparationSkipsDeadSlotsAndInitializesReuse") {
+    ConstructionState              state;
+    ecs::Table                     table;
+    std::vector<ecs::EntityHandle> handles;
+    for (int i = 0; i < 130; ++i) handles.push_back(ecs::handle_of(PreparedDerived::create(table)));
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE_EQ(PreparedValue::constructed, 130);
+    for (unsigned i = 1; i < handles.size(); ++i) ecs::DestroyEntity(ecs::try_get(handles[i]));
+    for (int pass = 0; pass < 2; ++pass) {
+        int visible = 0;
+        for (auto [value] : ecs::View<PreparedEntity, PreparedValue>(table)) {
+            REQUIRE_EQ(value->value, 7);
+            ++visible;
+        }
+        REQUIRE_EQ(visible, 1);
+        REQUIRE_EQ(PreparedValue::constructed, 130);
+    }
+    auto*      reused      = PreparedDerived::create(table);
+    const auto replacement = ecs::handle_of(reused);
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE_EQ(PreparedValue::constructed, 131);
+    REQUIRE(ecs::try_get(replacement) != nullptr);
+    for (unsigned i = 1; i < handles.size(); ++i) REQUIRE(ecs::try_get(handles[i]) == nullptr);
+    ecs::DestroyEntity(reused);
+    ecs::DestroyEntity(ecs::try_get(handles.front()));
+    {
+        auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+        REQUIRE(view.begin() == view.end());
+    }
+    REQUIRE_EQ(PreparedValue::constructed, 131);
+}
+
+TEST_CASE("ecs.viewPreparationKeepsStagingAndSkipsCancelledEntities") {
+    ConstructionState state;
+    ecs::Table        table;
+    ecs::EntityHandle staged;
+    {
+        ecs::ScopedDefer defer(table);
+        staged          = ecs::handle_of(PreparedDerived::create(table));
+        auto* cancelled = PreparedDerived::create(table);
+        ecs::DestroyEntity(cancelled);
+        {
+            auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+            REQUIRE(view.begin() == view.end());
+        }
+        REQUIRE_EQ(PreparedValue::constructed, 1);
+    }
+    REQUIRE(ecs::try_get(staged) != nullptr);
+    {
+        auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+        REQUIRE(view.begin() != view.end());
+    }
+    REQUIRE_EQ(PreparedValue::constructed, 1);
+}
+
+TEST_CASE("ecs.viewPreparationObservesDestructionDuringConstruction") {
+    ConstructionState state;
+    ecs::Table        table;
+    PreparedDerived::create(table);
+    auto* later                = PreparedDerived::create(table);
+    PreparedValue::onConstruct = [&] { ecs::DestroyEntity(later); };
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE_EQ(PreparedValue::constructed, 1);
+}
+
+TEST_CASE("ecs.viewPreparationInvalidatesCachedSparsePass") {
+    ConstructionState state;
+    ecs::Table        table;
+    auto*             first = PreparedDerived::create(table);
+    auto*             dead  = PreparedDerived::create(table);
+    ecs::DestroyEntity(dead);
+    for (int pass = 0; pass < 3; ++pass) {
+        auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+    }
+    auto* buffer = first->getComponentManager().getOrCreateComponentBuffer<PreparedValue>();
+    buffer->reset_slot(first->id);
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE_EQ(PreparedValue::constructed, 2);
+    for (int pass = 0; pass < 2; ++pass) {
+        auto view = ecs::View<PreparedEntity, PreparedValue>(table);
+    }
+    auto* replacement = PreparedDerived::create(table);
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE_EQ(PreparedValue::constructed, 3);
+    REQUIRE(buffer->has(replacement->id));
+}
+
+TEST_CASE("ecs.viewPreparationDoesNotCacheConstructorSideEffects") {
+    ConstructionState state;
+    ecs::Table        table;
+    auto*             first = PreparedDerived::create(table);
+    PreparedDerived::create(table);
+    auto* buffer               = first->getComponentManager().getOrCreateComponentBuffer<PreparedValue>();
+    PreparedValue::onConstruct = [&] {
+        if (PreparedValue::constructed == 2) buffer->reset_slot(first->id);
+    };
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE(!buffer->has(first->id));
+    PreparedValue::onConstruct = {};
+    { auto view = ecs::View<PreparedEntity, PreparedValue>(table); }
+    REQUIRE(buffer->has(first->id));
+    REQUIRE_EQ(PreparedValue::constructed, 3);
+}
+}  // namespace test_ecs_view_preparation
 #endif

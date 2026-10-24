@@ -8,6 +8,71 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+### Native ARM64 builds (Windows and Linux)
+
+Run these commands on an ARM64 host; these configurations reject cross compilation
+and non-ARM64 compilers. Initialize submodules first (`make init/submodules`).
+
+| Host | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Windows requires Visual Studio's ARM64 C++ tools (including `vcvarsarm64.bat`),
+Windows SDK, Ninja, Git Bash, and Vulkan headers, shader tools and ARM64 loader
+libraries. The Makefile invokes `cmake/with-msvc.cmd --arm64` for every configure
+and build, selecting the native ARM64 MSVC environment. Linux requires native
+GCC/G++, Ninja, LLD (for the large Release link) and the same development packages as the standard Linux build,
+installed for aarch64. No cross toolchain file is used.
+
+The existing CMake entry point also accepts `-DEVENGINE_NATIVE_ARM64=ON` together
+with `-DEVENGINE_BUILD_PLATFORM=win32` or `linux`. On Windows invoke CMake through
+`cmake/with-msvc.cmd --arm64`. Use a separate `-B build/<platform>-arm64[-debug]`
+directory. Dependencies build into `build/third-party/<platform>-arm64[-debug]`
+and install into `build/third-party-binary/<platform>-arm64[-debug]`; never reuse
+x64 prebuilt dependencies through `EVENGINE_THIRD_PARTY_BINARY_DIR`.
+
+To build and install only the matching third-party libraries, use
+`make deps/win32-arm64-debug`, `make deps/win32-arm64`,
+`make deps/linux-arm64-debug`, or `make deps/linux-arm64`.
+The `build/` targets run this dependency step automatically. Windows dependencies
+inherit the native ARM64 MSVC environment; Linux dependencies receive the parent's
+native C/C++ compilers. Both architectures share pinned dependency source code,
+while compiled libraries and dependency CMake caches remain separate.
+
+Debug keeps strict warnings and the existing development linkage policy; Release
+selects OBJECT linkage. Run a targeted host test with, for example,
+`make test/win32-arm64-debug DOMAIN=math` or
+`make test/linux-arm64-debug DOMAIN=math` (use an existing test domain).
+Linux graphics tests still require a display/Vulkan ICD and audio backend;
+use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
+These explicit targets do not change the existing `make debug` default.
+
+CI builds these targets on native GitHub-hosted `windows-11-arm` and
+`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
+scopes: normal runs build Debug; `build_type=release` builds Release and
+`build_type=both` builds both configurations. Each lane compiles and links the
+engine and test binaries, requiring the matching ARM64 third-party release
+packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
+packaging belong to the third-party repository. Missing packages fail explicitly
+instead of rebuilding dependencies in these CI lanes. Both configurations run the
+process-isolated unit suite (including graphics) with null audio and native
+software Vulkan: Linux uses aarch64 Lavapipe + Xvfb; Windows builds pinned
+SwiftShader for ARM64 and caches its verified ICD. Missing runtime support fails
+the lane. Release lanes also install the SDK, compile a native consumer plugin
+and run a packaged game with its script startup marker.
+
+`make sdk/win32-arm64` and `make sdk/linux-arm64` install Release SDKs under
+`dist/eve-sdk/<platform>-arm64`; append `-debug` for a development SDK. Release
+SDKs use OBJECT linkage. Runtime `TARGET_PLATFORM` stays `win32` or `linux`.
+The release workflow publishes `eve-sdk-win32-arm64-<tag>.zip` and
+`eve-sdk-linux-arm64-<tag>.zip` alongside the existing five SDKs and SHA256SUMS.
+Before upload and again from the downloaded release archive, native consumers
+verify PE/ELF architecture, exact version, zip/package operations, C++ plugin
+compilation/linkage and packaged-game liveness plus `SDK_TEST_GAME_OK`.
+Failures block formal promotion. ARM consumers validate native desktop usage;
+the existing Android and cross-host consumer jobs remain separate.
+
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
 - Want to see what the engine renders before running anything? Browse the [example render gallery](docs/images/examples/README.en.md) — every screenshot is a real presented frame written by the engine itself.
@@ -64,7 +129,9 @@ Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases)
 | Target platform | Download | Notes |
 |-----------------|----------|-------|
 | Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
+| Windows ARM64 | `eve-sdk-win32-arm64-<version>.zip` | Native Windows 11 ARM64 |
 | Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
+| Linux ARM64 | `eve-sdk-linux-arm64-<version>.zip` | Native aarch64 Linux (requires a Vulkan driver) |
 | macOS | `eve-sdk-macosx-<version>.zip` | macOS 12+ (Apple Silicon / Intel) |
 | Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
 | iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |

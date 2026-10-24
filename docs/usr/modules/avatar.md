@@ -8,6 +8,11 @@
 
 ## 基本用法
 
+3D 捏脸换装的参数、纠正形变与服装组合可以使用本模块的 `eve.AvatarAppearance()`。
+它是持有版本化外观状态的纯值对象，支持范围校验、事务修改、遮挡/排斥、64 步撤销重做、
+存档恢复及 Morph 权重投影。UI、Mesh 和装备视觉从它重建；不持有外部资源。
+可运行界面、定义格式与资产接入边界见 [Character Atelier](../../../examples/character-atelier/README.md)。
+
 ```squirrel
 avatar <- eve.Avatar();
 local av = avatar.newImageAvatar();

@@ -179,12 +179,15 @@ public:
 class EVENGINE_API_FOUNDATION Coordinator {
 public:
     /**
-     * @brief Atomically execute borrowed participants for one context.
+     * @brief Execute borrowed participants with rollback and compensation.
      * @param context Immutable transaction metadata shared with all participants.
      * @param participants Non-owning participant pointers, unique and non-null;
      *        order defines prepare and commit order.
      * @return A committed receipt, or a failure describing the first error and
      *         any rollback/compensation failure.
+     * @remarks This coordinator does not provide isolation or durable idempotency.
+     * Sequential publication can be observed by participants. Strict atomic batches
+     * must stage all related state in one participant and publish it once.
      * @thread Synchronous; caller and participants must obey their documented
      *         thread affinity and must not re-enter this coordinator call.
      */

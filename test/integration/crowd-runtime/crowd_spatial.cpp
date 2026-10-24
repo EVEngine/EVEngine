@@ -21,8 +21,8 @@ TEST_CASE("crowd.spatial.sparseQueriesMatchBruteForceAcrossNegativeAndFarCoordin
     ties.push_back({true, 1});
     std::int64_t comparisons = 0;
     index.rebuild(xs, ys, ties, 2.0, 100, comparisons);
-    CHECK(index.cellCount() <= xs.size());
-    CHECK(comparisons > 0);
+    REQUIRE(index.cellCount() <= xs.size());
+    REQUIRE(comparisons > 0);
     for (int i = 0; i < 40; ++i) {
         const double     x      = i == 39 ? 1e9 : double((i * 11) % 23) - 11.25;
         const double     y      = i == 39 ? -1e9 : double((i * 3) % 19) - 9.25;
@@ -38,8 +38,8 @@ TEST_CASE("crowd.spatial.sparseQueriesMatchBruteForceAcrossNegativeAndFarCoordin
             if (dx * dx + dy * dy <= radius * radius) expected.push_back(static_cast<int>(slot));
         }
         std::sort(actual.begin(), actual.end());
-        CHECK(actual == expected);
-        CHECK(visits >= cells);
+        REQUIRE(actual == expected);
+        REQUIRE(visits >= cells);
     }
     xs   = {0.1f, 0.2f, 0.3f};
     ys   = {0.f, 0.f, 0.f};
@@ -48,7 +48,7 @@ TEST_CASE("crowd.spatial.sparseQueriesMatchBruteForceAcrossNegativeAndFarCoordin
     std::vector<int> order;
     std::int64_t     visits = 0, cells = 0;
     index.visit(0.2, 0.0, 1.0, 100, visits, cells, [&](int slot) { order.push_back(slot); });
-    CHECK(order == std::vector<int>({2, 1, 0}));
+    REQUIRE(order == std::vector<int>({2, 1, 0}));
 }
 
 TEST_CASE("crowd.spatial.farGroupsUseOccupiedCellsAndLookupBudgetRollsBackClock") {

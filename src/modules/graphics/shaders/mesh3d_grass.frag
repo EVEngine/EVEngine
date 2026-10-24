@@ -49,6 +49,7 @@ layout(set = 0, binding = 4, std140) uniform ShadowFrame {
     vec4 bias;
     vec4 cascadeBias;
     vec4 cascadeTexel;
+    vec4 cascadeUvScale;
 } shadow;
 
 layout(set = 0, binding = 5) uniform sampler2DArrayShadow shadowMap;
@@ -59,6 +60,8 @@ layout(push_constant) uniform Externals {
 
 layout(location = 0) out vec4 outColor;
 
+#include "shadow_cascade_uv.glsl"
+
 float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     vec4 lightClip = shadow.lightVP[cascade] * vec4(worldPos, 1.0);
     vec3 ndc = lightClip.xyz / max(lightClip.w, 1e-6);
@@ -67,7 +70,8 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0)
         return 1.0;
 
-    vec2 texel = 1.0 / vec2(textureSize(shadowMap, 0).xy);
+    float uvScale = eveCascadeUvScale(cascade);
+    vec2 texel = vec2(1.0 / eveCascadeMapSize(cascade));
     const vec2 kRotOffsets[9] = vec2[9](
         vec2(-0.5, -0.5), vec2(0.0, -0.6), vec2(0.5, -0.5),
         vec2(-0.6, 0.0), vec2(0.0, 0.0),  vec2(0.6, 0.0),
@@ -76,10 +80,10 @@ float sampleShadowCascade(vec3 worldPos, int cascade, float ndcBias) {
     float sum = 0.0;
     float zref = depth - ndcBias;
     for (int i = 0; i < 9; ++i) {
-        vec2 s = uv + kRotOffsets[i] * texel;
-        if (s.x < 0.0 || s.x > 1.0 || s.y < 0.0 || s.y > 1.0)
+        vec2 sCascade = uv + kRotOffsets[i] * texel;
+        if (sCascade.x < 0.0 || sCascade.x > 1.0 || sCascade.y < 0.0 || sCascade.y > 1.0)
             continue;
-        sum += texture(shadowMap, vec4(s, float(cascade), zref));
+        sum += texture(shadowMap, vec4(sCascade * uvScale, float(cascade), zref));
     }
     return sum / 9.0;
 }

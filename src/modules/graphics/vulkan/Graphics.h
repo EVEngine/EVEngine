@@ -26,9 +26,11 @@
 #include "graphics/RayTracingCaps.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/vulkan/ComputePass.h"
 #include "graphics/vulkan/FrameArena.h"
+#include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/vulkan/GpuDriven.h"
 #include "vkbuilder.hpp"
 #include "vkbuilder/framegraph.hpp"
@@ -305,6 +307,9 @@ struct GpuMesh {
     /** @brief Number of dynamic updates; ring slot = count % kDynamicVertexCopies. */
     uint64_t      dynamicWriteCount = 0;
     bool          dynamic           = false;
+    // Borrowed only while drawMeshResidentVertices records one draw.
+    vk::Buffer     residentVertexOverride{};
+    vk::DeviceSize residentVertexOffset = 0;
     uint32_t      vertexCount       = 0;
     uint32_t      indexCount        = 0;
     vk::IndexType indexType         = vk::IndexType::eUint32;
@@ -356,11 +361,11 @@ public:
     // ---- GPU frame timing (eve::service::IGpuTimer) ----------------------
     /** @brief Creates the GPU timestamp query pool; call after device init. */
     void initGpuTiming();
-    /** @brief Writes a begin timestamp into the current present command buffer. */
+    /** @brief Records a slot-owned prefix timestamp; submitted before deferred or present GPU work. */
     void writeGpuTimestampBegin();
     /** @brief Writes an end timestamp into the current present command buffer. */
     void writeGpuTimestampEnd();
-    /** @brief Reads the query results after the frame's submit has completed. */
+    /** @brief Reads a completed reusable slot without blocking; call after acquire and before recording. */
     void readGpuFrameTiming();
 
     /** @brief Gpu timing available. */
@@ -752,6 +757,8 @@ public:
     Mesh *newMeshCylinder(int slices = 32, int stacks = 1, bool caps = true) override;
     /** @brief Release mesh. */
     bool releaseMesh(Mesh *mesh) override;
+    /** @brief Record a same-device producer-owned vertex stream; inherits Graphics lifetime contract. */
+    [[nodiscard]] Result<void> drawMeshResidentVertices(Mesh &mesh, const GpuResidentBufferView &source) override;
     /** @brief Begins 3 d frame. */
     void begin3DFrame() override;
     /** @brief Begins 3 d frame to canvas. */
@@ -1772,6 +1779,8 @@ private:
         vk::Framebuffer      framebuffers[ShadowConfig::kTotalLayers]{};
     };
     std::vector<ShadowMapSlot> shadowMaps;
+    /** @brief Edge length of the currently allocated shadow depth array (0 = none). */
+    int                           allocatedShadowMapSize = 0;
     vkb::DepthSampler shadowSampler{};
     vk::Sampler shadowRawSampler{};
     vkb::BuiltRenderPass shadowRenderPass{};
@@ -1976,6 +1985,12 @@ private:
     // keeps ownership so readback / entity-ID rendering / postFX wrappers keep
     // working unchanged.
     std::array<std::unique_ptr<vkb::FrameGraph>, kAsyncResourceCopies> deferredFrameGraphs_;
+    FrameGraphRecordingState                                           deferredRecordingState_;
+    // Only fully overwritten pipeline intermediates are frame-local. User canvases
+    // and temporal histories retain their persistent-image semantics.
+    std::array<std::vector<Canvas *>, 2> framePostTargets_;
+    Canvas                              &prepareFramePostTarget(FramePostTarget target, int width, int height) override;
+    void                                 releaseFramePostTargets();
     vkb::FrameGraph *currentDeferredFrameGraph();
     /** @brief True once this frame slot's deferred graph was recorded+submitted. */
     bool deferredGraphRecorded_ = false;
@@ -1989,6 +2004,7 @@ private:
     void resetDeferredFrameGraphs();
     /** @brief Draws one CSM cascade's pending casters into a FrameGraph pass CB. */
     void recordShadowCascadePass(vkb::FrameGraphPassContext &ctx, int cascade);
+    void recordShadowCascadeDraws(vk::CommandBuffer cb, int cascade, uint32_t size);
     /** @brief Draws the pending G-buffer list into a FrameGraph pass CB. */
     void recordGBufferPassDraws(vkb::FrameGraphPassContext &ctx);
 
@@ -2075,7 +2091,10 @@ private:
     vkb::DepthStencilImage depthImage;
     vk::Format depthFormat = vk::Format::eD32Sfloat;
 
-    // GPU timestamp queries (one pool of 2: [0]=frame begin, [1]=frame end).
+    // One timestamp pair and prefix command buffer per reusable frame slot.
+    void                                                submitGpuTimingPrefix();
+    std::array<vk::CommandBuffer, kAsyncResourceCopies> gpuTimingPrefix_{};
+    std::array<bool, kAsyncResourceCopies>              gpuTimingPrefixSubmitted_{};
     vk::QueryPool gpuQueryPool_{};
     float         timestampPeriod_ = 1.f;
     bool          gpuTimingReady_  = false;

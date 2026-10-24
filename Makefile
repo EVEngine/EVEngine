@@ -146,7 +146,7 @@ GAME ?=
 	check/test-manifest check/module-layers check/bindings check/nodiscard check/adhoc-result-tables \
 	check/quality-metadata check/profile-matrix check/architecture-contracts check/quality \
 	check/examples check \
-	check/format check/depgraph check/binding-gaps check/versions check/scripts check/scripts-test \
+	check/format check/depgraph check/versions check/scripts check/scripts-test \
 	check/test-case-lines check/sq-call-sites check/test-assert-level check/test-case-names \
 	profile profile/configure profile/build profile/smoke profile/dry-run \
 	ensure-built/win32 ensure-built/win32-debug ensure-built/linux ensure-built/linux-debug \
@@ -280,9 +280,6 @@ check/format:
 
 check/depgraph:
 	python3 scripts/module_depgraph.py --check
-
-check/binding-gaps:
-	python3 scripts/check_binding_gap_metadata.py
 
 check/versions:
 	python3 scripts/release.py check-versions
@@ -1357,3 +1354,5 @@ rpg-classic/skill:
 # build/.build-docker: Dockerfile
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
+
+include cmake/native_arm64.mk

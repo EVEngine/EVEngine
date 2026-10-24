@@ -13,6 +13,9 @@
  *   `core`, `debug`, `play`, `editor`, `host`, `scene`, `input`, `domain`, `agent`
  * - `EVE_MCP_READONLY=1` — hide / reject mutating tools
  * - `EVE_MCP_EXCLUDE` — comma-separated exact tool names to drop
+ * - `EVE_MCP_PROFILE` — named task profile (`verify.play`, `content.scene`, …);
+ *   stacks with toolset tags and with the session profile from
+ *   `eve_agent_session_start` (see `McpTaskProfile.hpp`)
  */
 
 #include "common/Export.h"

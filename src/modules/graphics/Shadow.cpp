@@ -1,6 +1,7 @@
 #include "graphics/Shadow.h"
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include <glm/gtc/matrix_transform.hpp>
 #include "common/Diagnostic.h"
 #include "graphics/ClipSpace.h"
@@ -12,7 +13,8 @@ namespace eve::graphics {
 namespace {
 
 glm::mat4 cascadeVP(const glm::vec3& lightDir, const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up,
-                    float fovYRad, float aspect, float nearZ, float farZ, float* texelWorldOut, float* zRangeOut) {
+                    float fovYRad, float aspect, float nearZ, float farZ, float mapSize, float* texelWorldOut,
+                    float* zRangeOut) {
     const glm::mat4 view = glm::lookAtRH(eye, target, up);
     // Match the camera projection used by RenderSystem3D so frustum corners align.
     const glm::mat4 proj = perspectiveVulkanRH_ZO(fovYRad, aspect, nearZ, farZ);
@@ -61,10 +63,10 @@ glm::mat4 cascadeVP(const glm::vec3& lightDir, const glm::vec3& eye, const glm::
     maxB.z += zPad + 2.f;
     if (zRangeOut) *zRangeOut = std::max(-minB.z - (-maxB.z), 1e-3f);
 
-    const float mapSize = float(ShadowConfig::kMapSize);
+    const float atlasSize = std::max(mapSize, 1.f);
     // World-space frustum sphere radius is pose-invariant for a given split, so
     // the texel grid does not rescale as the camera rotates.
-    const float texelWorld = (2.f * radius) / mapSize;
+    const float texelWorld = (2.f * radius) / atlasSize;
     if (texelWorldOut) *texelWorldOut = texelWorld;
 
     auto snap  = [&](float v) { return std::floor(v / texelWorld) * texelWorld; };
@@ -82,11 +84,14 @@ ShadowUpload buildDirectionalCSM(const glm::vec3& lightDirTowardSurface, const g
                                  const glm::vec3& up, float fovYRad, float aspect, float nearZ, float farZ, float bias,
                                  float strength) {
     ShadowUpload out{};
-    out.active        = true;
-    const float n     = std::max(nearZ, 1e-3f);
-    const float fCam  = std::max(farZ, n + 1e-2f);
-    const float f     = std::min(fCam, std::max(n + 1e-2f, ShadowConfig::kMaxDistance));
-    const float ratio = f / n;
+    out.active              = true;
+    const auto& scheme      = ShadowSchemeSettings::current();
+    const int   atlasSize   = scheme.resolvedAtlasMapSize();
+    const float maxDistance = scheme.resolvedDirectionalMaxDistance();
+    const float n           = std::max(nearZ, 1e-3f);
+    const float fCam        = std::max(farZ, n + 1e-2f);
+    const float f           = std::min(fCam, std::max(n + 1e-2f, maxDistance));
+    const float ratio       = f / n;
     float       splits[ShadowConfig::kCascades + 1];
     splits[0] = n;
     for (int i = 1; i <= ShadowConfig::kCascades; ++i) {
@@ -96,25 +101,37 @@ ShadowUpload buildDirectionalCSM(const glm::vec3& lightDirTowardSurface, const g
         splits[i]        = ShadowConfig::kSplitLambda * logS + (1.f - ShadowConfig::kSplitLambda) * uniS;
     }
 
+    float screenCoverage[ShadowConfig::kCascades]{};
+    for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        screenCoverage[i] = estimateCascadeScreenCoverage(eye, target, up, fovYRad, aspect, splits[i], splits[i + 1]);
+    }
+    const AdaptiveCascadeAllocation alloc =
+        allocateAdaptiveCascadeResolutions(atlasSize, splits, screenCoverage, scheme);
+    out.atlasMapSize = alloc.atlasSize;
+
     float cascadeNdc[ShadowConfig::kCascades]{};
     float cascadeTexel[ShadowConfig::kCascades]{};
+    float uvScale[ShadowConfig::kCascades]{};
     for (int i = 0; i < ShadowConfig::kCascades; ++i) {
-        float texelWorld   = 0.f;
-        float zRange       = 1.f;
-        out.ubo.lightVP[i] = cascadeVP(lightDirTowardSurface, eye, target, up, fovYRad, aspect, splits[i],
-                                       splits[i + 1], &texelWorld, &zRange);
+        float texelWorld       = 0.f;
+        float zRange           = 1.f;
+        out.cascadeMapSizes[i] = alloc.sizes[i];
+        out.ubo.lightVP[i]     = cascadeVP(lightDirTowardSurface, eye, target, up, fovYRad, aspect, splits[i],
+                                           splits[i + 1], float(alloc.sizes[i]), &texelWorld, &zRange);
         // ~0.6 texels of world bias. More than that, projected onto a grazing
         // Cornell wall, becomes a multi-pixel bright rim on the left/top of
         // the umbra (peter-panning at the box/wall crease).
         const float autoNdc = std::clamp((0.6f * texelWorld) / zRange, 1e-5f, 0.01f);
         cascadeNdc[i]       = std::max(std::max(0.f, bias), autoNdc);
         cascadeTexel[i]     = texelWorld;
+        uvScale[i]          = float(alloc.sizes[i]) / float(std::max(alloc.atlasSize, 1));
     }
     const float perceptualStrength = std::sqrt(std::clamp(strength, 0.f, 1.f));
     out.ubo.splits                 = glm::vec4(splits[1], splits[2], splits[3], perceptualStrength);
     out.ubo.cascadeBias            = glm::vec4(cascadeNdc[0], cascadeNdc[1], cascadeNdc[2], 0.f);
     out.ubo.cascadeTexel           = glm::vec4(cascadeTexel[0], cascadeTexel[1], cascadeTexel[2], 0.f);
     out.ubo.bias                   = glm::vec4(cascadeNdc[0], 1.f, 1.f, 0.02f);
+    out.ubo.cascadeUvScale         = glm::vec4(uvScale[0], uvScale[1], uvScale[2], float(alloc.atlasSize));
     return out;
 }
 
@@ -198,8 +215,173 @@ int findCachedSlot(Light3D::Data* light) {
 
 ShadowSchemeSettings& ShadowSchemeSettings::current() { return g_shadowSchemeSettings; }
 
+int clampShadowMapSize(int size) {
+    static constexpr int kAllowed[] = {256, 512, 1024, 2048, 4096};
+    if (size <= kAllowed[0]) return kAllowed[0];
+    int best     = kAllowed[0];
+    int bestDist = std::abs(size - best);
+    for (int candidate : kAllowed) {
+        const int dist = std::abs(size - candidate);
+        if (dist < bestDist) {
+            best     = candidate;
+            bestDist = dist;
+        }
+    }
+    return best;
+}
+
+int shadowMapSizeForResolutionTier(int resolutionTier) {
+    switch (resolutionTier) {
+        case 0: return 512;
+        case 1: return 1024;
+        case 2: return 2048;
+        default: return 4096;
+    }
+}
+
+int ShadowSchemeSettings::resolvedAtlasMapSize() const {
+    const int directional = clampShadowMapSize(directionalMapSize);
+    const int local       = clampShadowMapSize(localMapSize);
+    return std::max(directional, local);
+}
+
+float ShadowSchemeSettings::resolvedDirectionalMaxDistance() const {
+    if (!std::isfinite(directionalMaxDistance) || directionalMaxDistance <= 0.f) return ShadowConfig::kMaxDistance;
+    return directionalMaxDistance;
+}
+
+Result<void> setShadowSchemeMapSizes(int directionalMapSize, int localMapSize) {
+    if (directionalMapSize <= 0) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "directional shadow map size must be positive", "graphics.shadow"));
+    }
+    auto& settings              = ShadowSchemeSettings::current();
+    settings.directionalMapSize = clampShadowMapSize(directionalMapSize);
+    if (localMapSize > 0) {
+        settings.localMapSize = clampShadowMapSize(localMapSize);
+    } else if (localMapSize == 0) {
+        return Result<void>::failure(Diagnostic::error(
+            DiagnosticCode::InvalidArgument, "local shadow map size must be positive when set", "graphics.shadow"));
+    }
+    return Result<void>::success();
+}
+
+Result<void> setShadowSchemeDirectionalMaxDistance(float meters) {
+    if (!std::isfinite(meters) || meters <= 0.f) {
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "directional shadow max distance must be finite and > 0",
+                                                       "graphics.shadow"));
+    }
+    ShadowSchemeSettings::current().directionalMaxDistance = meters;
+    return Result<void>::success();
+}
+
+namespace {
+
+int g_adaptiveCascadeSizes[ShadowConfig::kCascades] = {0, 0, 0};
+int g_adaptiveCascadeAtlas                          = 0;
+
+}  // namespace
+
+float estimateCascadeScreenCoverage(const glm::vec3& eye, const glm::vec3& target, const glm::vec3& up, float fovYRad,
+                                    float aspect, float nearZ, float farZ) {
+    const float     n    = std::max(nearZ, 1e-3f);
+    const float     f    = std::max(farZ, n + 1e-3f);
+    const glm::mat4 view = glm::lookAtRH(eye, target, up);
+    const glm::mat4 proj = perspectiveVulkanRH_ZO(fovYRad, aspect, n, f);
+    const glm::mat4 inv  = glm::inverse(proj * view);
+    glm::vec2       minNdc(1.f), maxNdc(-1.f);
+    int             valid = 0;
+    for (int z = 0; z < 2; ++z)
+        for (int y = 0; y < 2; ++y)
+            for (int x = 0; x < 2; ++x) {
+                const glm::vec4 ndcCorner(x ? 1.f : -1.f, y ? 1.f : -1.f, z ? 1.f : 0.f, 1.f);
+                glm::vec4       world = inv * ndcCorner;
+                if (std::abs(world.w) < 1e-8f) continue;
+                world /= world.w;
+                // Reproject with a long camera frustum so coverage reflects how
+                // much of the *current view* this slice occupies (silhouette /
+                // shadow-edge importance across the frame).
+                const glm::mat4 viewLong = view;
+                const glm::mat4 projLong = perspectiveVulkanRH_ZO(fovYRad, aspect, n, std::max(f, n + 1.f) * 4.f);
+                const glm::vec4 clip     = projLong * viewLong * glm::vec4(glm::vec3(world), 1.f);
+                if (std::abs(clip.w) < 1e-8f) continue;
+                const glm::vec2 ndc(clip.x / clip.w, clip.y / clip.w);
+                minNdc = glm::min(minNdc, ndc);
+                maxNdc = glm::max(maxNdc, ndc);
+                ++valid;
+            }
+    if (valid < 4) return 0.f;
+    minNdc           = glm::clamp(minNdc, glm::vec2(-1.f), glm::vec2(1.f));
+    maxNdc           = glm::clamp(maxNdc, glm::vec2(-1.f), glm::vec2(1.f));
+    const float area = std::max(0.f, maxNdc.x - minNdc.x) * std::max(0.f, maxNdc.y - minNdc.y);
+    return std::clamp(area * 0.25f, 0.f, 1.f);
+}
+
+AdaptiveCascadeAllocation allocateAdaptiveCascadeResolutions(int atlasSize,
+                                                             const float (&splitEnds)[ShadowConfig::kCascades + 1],
+                                                             const float (&screenCoverage)[ShadowConfig::kCascades],
+                                                             const ShadowSchemeSettings& settings) {
+    AdaptiveCascadeAllocation out{};
+    const int                 atlas = clampShadowMapSize(atlasSize);
+    out.atlasSize                   = atlas;
+    if (!settings.enableAdaptiveCascadeResolution) {
+        for (int i = 0; i < ShadowConfig::kCascades; ++i) out.sizes[i] = atlas;
+        return out;
+    }
+
+    float score[ShadowConfig::kCascades]{};
+    float scoreSum = 0.f;
+    for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        const float nearS = splitEnds[i];
+        const float farS  = splitEnds[i + 1];
+        const float mid   = std::max(0.5f * (nearS + farS), 0.25f);
+        // Near camera → higher score. Screen coverage boosts cascades that
+        // paint large / edge-heavy regions of the frame.
+        const float distanceTerm = settings.adaptiveDistanceWeight / mid;
+        const float screenTerm   = settings.adaptiveScreenWeight * std::clamp(screenCoverage[i], 0.f, 1.f);
+        score[i]                 = std::max(1e-4f, distanceTerm + screenTerm);
+        // Prefer monotonic near > far even when a distant cascade fills the screen.
+        score[i] *= (1.f + 0.35f * float(ShadowConfig::kCascades - 1 - i));
+        scoreSum += score[i];
+    }
+
+    // Convert scores to power-of-two edge lengths under the atlas budget.
+    // Area share ≈ score/sum, so edge ≈ atlas * sqrt(share). Near cascade is
+    // floored to at least atlas/2 so contact shadows stay sharp.
+    int sizes[ShadowConfig::kCascades]{};
+    for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        const float share = score[i] / std::max(scoreSum, 1e-4f);
+        const float edge  = float(atlas) * std::sqrt(std::clamp(share * float(ShadowConfig::kCascades), 0.05f, 1.f));
+        sizes[i]          = clampShadowMapSize(int(std::lround(edge)));
+    }
+    sizes[0] = std::max(sizes[0], clampShadowMapSize(atlas / 2));
+    sizes[0] = std::min(sizes[0], atlas);
+    for (int i = 1; i < ShadowConfig::kCascades; ++i) sizes[i] = std::min(sizes[i], sizes[i - 1]);
+
+    // Hysteresis against last frame to avoid size ping-pong when coverage wobbles.
+    if (g_adaptiveCascadeAtlas == atlas) {
+        const float hyst = std::clamp(settings.adaptiveSizeHysteresis, 0.f, 0.9f);
+        for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+            const int prev = g_adaptiveCascadeSizes[i];
+            if (prev <= 0) continue;
+            const float ratio = float(sizes[i]) / float(prev);
+            if (ratio > 1.f - hyst && ratio < 1.f + hyst) sizes[i] = prev;
+        }
+        for (int i = 1; i < ShadowConfig::kCascades; ++i) sizes[i] = std::min(sizes[i], sizes[i - 1]);
+    }
+    for (int i = 0; i < ShadowConfig::kCascades; ++i) {
+        out.sizes[i]              = sizes[i];
+        g_adaptiveCascadeSizes[i] = sizes[i];
+    }
+    g_adaptiveCascadeAtlas = atlas;
+    return out;
+}
+
 void resetShadowLocalPageCache() {
     for (auto& slot : g_localPageCache.slots) slot = LocalPageCacheEntry{};
+    for (int& s : g_adaptiveCascadeSizes) s = 0;
+    g_adaptiveCascadeAtlas = 0;
 }
 
 Result<ShadowMethod> parseShadowMethod(std::string_view name) {

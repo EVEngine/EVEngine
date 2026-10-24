@@ -1444,6 +1444,9 @@ void Dialogue::expose(ssq::Class &cls) {
 
     cls.addFunc("update", &Dialogue::update);
     cls.addFunc("reset", &Dialogue::reset);
+    // Compatibility alias: agents (and older samples) often guess dialogue.clear;
+    // the authoritative wipe is reset(). DialogueVoice::clear is a different API.
+    cls.addFunc("clear", &Dialogue::reset);
 }
 
 }  // namespace eve::dialogue

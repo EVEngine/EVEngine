@@ -132,7 +132,7 @@ endif()
 # to real runtime clips and state machines.
 eve_module_enabled(animation _has_animation_editor_bridge)
 if(NOT _has_animation_editor_bridge)
-  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp ControlRigDocument.cpp)
 endif()
 
 # UI document style/layout preview stays standalone. Runtime publication is
@@ -536,6 +536,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DJoints.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSphereSweep.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DQueries.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DMover.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DContacts.cpp

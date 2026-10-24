@@ -52,22 +52,22 @@ TEST_CASE("rts.performanceFovIndexSurvivesOrderedRemovalMoveAndClear") {
     fov.removeRevealer(middle);
     fov.setRevealerPosition(last, 30, 2);
     fov.compute();
-    CHECK(fov.isVisible(2, 2));
-    CHECK(fov.isVisible(30, 2));
-    CHECK(!fov.isVisible(10, 2));
+    REQUIRE(fov.isVisible(2, 2));
+    REQUIRE(fov.isVisible(30, 2));
+    REQUIRE(!fov.isVisible(10, 2));
     eve::map::Fov moved(std::move(fov));
     moved.removeRevealer(first);
     moved.setRevealerRadius(last, 2);
     moved.compute();
-    CHECK(!moved.isVisible(2, 2));
-    CHECK(moved.isVisible(31, 2));
+    REQUIRE(!moved.isVisible(2, 2));
+    REQUIRE(moved.isVisible(31, 2));
     moved.clearRevealers();
     moved.setRevealerPosition(last, 1, 1);
     const int fresh = moved.addRevealer(5, 5, 1);
-    CHECK(fresh != last);
+    REQUIRE(fresh != last);
     moved.compute();
-    CHECK(moved.isVisible(5, 5));
-    CHECK(!moved.isVisible(30, 2));
+    REQUIRE(moved.isVisible(5, 5));
+    REQUIRE(!moved.isVisible(30, 2));
 }
 
 
@@ -173,7 +173,7 @@ TEST_CASE("rts.performanceOpenHeightmapMatchesHeightRayPathAndInvalidatesOnEdits
         fast.compute();
         reference.compute();
         for (int y = 0; y < 50; ++y)
-            for (int x = 0; x < 50; ++x) CHECK(fast.isVisible(x, y) == reference.isVisible(x, y));
+            for (int x = 0; x < 50; ++x) REQUIRE(fast.isVisible(x, y) == reference.isVisible(x, y));
     }
 }
 
@@ -204,22 +204,22 @@ TEST_CASE("rts.performanceCasualtyBatchRepairsOwnedReferencesWithoutCrowdProvide
     dead->durability()->alive              = false;
     dead->durability()->state.health       = 0;
     const auto cleanupCount                = sim.cleanupDestroyed().expect("cleanup");
-    CHECK_EQ(cleanupCount, 1);
-    CHECK(ecs::try_get(deadHandle) == nullptr);
-    CHECK(ecs::try_get(aliveHandle) == survivor);
-    CHECK(survivor->combat()->target.table == nullptr);
-    CHECK(survivor->tactics()->escortTarget.table == nullptr);
-    CHECK(survivor->supply()->assignedTarget.table == nullptr);
-    CHECK(survivor->supply()->convoyLeader.table == nullptr);
-    CHECK(building->garrison()->occupants.empty());
-    CHECK(!building->capture()->blockedByGarrison);
-    CHECK(!building->rally()->transportActive);
-    CHECK_EQ(building->construction()->builders.size(), 1);
-    CHECK_EQ(building->rally()->reinforcements.size(), 1);
-    CHECK_EQ(player->selection()->units.size(), 1);
-    CHECK_EQ(faction->members()->units.size(), 1);
+    REQUIRE_EQ(cleanupCount, 1);
+    REQUIRE(ecs::try_get(deadHandle) == nullptr);
+    REQUIRE(ecs::try_get(aliveHandle) == survivor);
+    REQUIRE(survivor->combat()->target.table == nullptr);
+    REQUIRE(survivor->tactics()->escortTarget.table == nullptr);
+    REQUIRE(survivor->supply()->assignedTarget.table == nullptr);
+    REQUIRE(survivor->supply()->convoyLeader.table == nullptr);
+    REQUIRE(building->garrison()->occupants.empty());
+    REQUIRE(!building->capture()->blockedByGarrison);
+    REQUIRE(!building->rally()->transportActive);
+    REQUIRE_EQ(building->construction()->builders.size(), 1);
+    REQUIRE_EQ(building->rally()->reinforcements.size(), 1);
+    REQUIRE_EQ(player->selection()->units.size(), 1);
+    REQUIRE_EQ(faction->members()->units.size(), 1);
     const auto emptycleanupCount = sim.cleanupDestroyed().expect("empty cleanup");
-    CHECK_EQ(emptycleanupCount, 0);
+    REQUIRE_EQ(emptycleanupCount, 0);
 }
 
 TEST_CASE("rts.performanceCasualtyBatchCrowdFailureLeavesReferencesAndRootsIntact") {
@@ -269,8 +269,8 @@ TEST_CASE("rts.performanceNestedPassengerCleanupKeepsRecursiveLifecycle") {
     carrier->durability()->alive        = false;
     carrier->durability()->state.health = 0;
     const auto recursivecleanupCount    = sim.cleanupDestroyed().expect("recursive cleanup");
-    CHECK_EQ(recursivecleanupCount, 2);
-    CHECK(ecs::try_get(carrierHandle) == nullptr);
-    CHECK(ecs::try_get(passengerHandle) == nullptr);
-    CHECK_EQ(sim.unitCount(), 0);
+    REQUIRE_EQ(recursivecleanupCount, 2);
+    REQUIRE(ecs::try_get(carrierHandle) == nullptr);
+    REQUIRE(ecs::try_get(passengerHandle) == nullptr);
+    REQUIRE_EQ(sim.unitCount(), 0);
 }
