@@ -1,4 +1,5 @@
 #include "map/MapObjectContract.h"
+#include "common/ValueRead.h"
 
 #include "common/Value.h"
 
@@ -20,20 +21,21 @@ const eve::Value* member(const eve::Value::Object& object, std::string_view name
 }
 
 bool booleanMember(const eve::Value::Object& object, std::string_view name, bool fallback, bool& output) {
-    const eve::Value* value = member(object, name);
+    const auto* value = member(object, name);
     if (!value) {
         output = fallback;
         return true;
     }
-    if (!value->isBool()) return false;
-    output = value->asBool();
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool numericValue(const eve::Value& value, double& output) {
-    if (value.isInt64()) output = static_cast<double>(value.asInt());
-    else if (value.isDouble()) output = value.asDouble();
-    else return false;
+    auto parsed = eve::readNumericDoubleValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return std::isfinite(output);
 }
 

@@ -3015,6 +3015,12 @@
     "unit/editing/editing_tests.cpp": {
       "role": "tests",
       "default": "local-format",
+      "cases": {
+        "local-logic": [
+          "editing.numericRead.preservesNumbersWithoutAddingValidation",
+          "editing.numericRead.rejectsNonNumericKinds"
+        ]
+      },
       "origins": [
         "editing_property_schema_json.cpp"
       ]
