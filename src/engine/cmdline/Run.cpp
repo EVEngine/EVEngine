@@ -1,21 +1,22 @@
 #include "cmdline.h"
-#include "scripts.h"
+#include "common/BootWarmup.h"
 #include "common/Capability.h"
+#include "common/CrashLog.h"
+#include "common/ECS.h"
 #include "common/EditorHost.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
-#include "common/config.h"
-#include "common/ECS.h"
-#include "common/BootWarmup.h"
-#include "common/CrashLog.h"
+#include "common/SquirrelBinding.h"
 #include "common/StartupTiming.h"
+#include "common/config.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/physfs/FileApi.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem3D.h"
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#include "scripts.h"
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #endif
@@ -111,11 +112,11 @@ void playgroundApply(const char* source) {
     sq_pushstring(vm, _SC("handle_change"), -1);
     if (SQ_SUCCEEDED(sq_get(vm, -2))) {          // [root, fn]
         sq_remove(vm, -2);                       // [fn]
-        sq_pushroottable(vm);                    // [fn, root] (env/this param)
-        sq_pushstring(vm, _SC("main.nut"), -1);
-        // UI.cpp callScriptHandler convention: the roottable is the first
-        // parameter, so 2 params = [root, "main.nut"].
-        sq_call(vm, 2, SQFalse, SQTrue);
+        HSQOBJECT handleChange;
+        sq_getstackobj(vm, -1, &handleChange);  // borrowed: still rooted by `top`
+        // The roottable is the receiver ("this"), "main.nut" the single argument. The
+        // result used to be dropped, so a failing reload left the page with no trace.
+        eve::script::callFunction(vm, handleChange, eve::script::rootTable, "main.nut");
     }
     sq_settop(vm, top);
 }
@@ -361,6 +362,12 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                  std::string devServer) {
     std::fprintf(stderr, "[startup] Run() begins at process clock %.1f ms\n",
                  (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
+#if !EVENGINE_CMDLINE_DEVTOOLS
+    if (debug || dapPort > 0 || mcpPort > 0) {
+        std::cerr << "eve run: debugging requires the devtools module" << std::endl;
+        return 4;
+    }
+#endif
     // Overlap VkInstance creation with VM/script boot: the loader+ICD init is
     // typically 100ms+ and does not need a window.
     eve::boot::startVulkanInstanceWarmup();
@@ -436,7 +443,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             StartupStage stage("runtime: ModuleManager::expose");
             runtime.initialize();
         }
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
             dt.attach(runtime, /*sampleLocals=*/true);
@@ -563,14 +570,14 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         EM_ASM({ if (window.eveEngineReady) window.eveEngineReady(); });
         emscripten_set_main_loop(&webgpuFrameTick, 0, /*simulateInfiniteLoop=*/1);
 #endif
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) eve::dev::DevTool::instance().detach();
 #endif
         return 0;
     } catch (const std::exception& e) {
         std::string what = e.what() ? e.what() : "unknown exception";
         eve::recordLogEvent("error", "Run failed: " + what);
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
             // The VM error hook and the Runtime error-handler sink (wired in
@@ -591,7 +598,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         return 3;
     } catch (...) {
         eve::recordLogEvent("error", "Run failed: unknown exception");
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             const std::string report =
                 eve::dev::DevTool::instance().notifyError("unknown exception");

@@ -32,7 +32,8 @@ class Vehicle;
  * @remarks The returned value is not an additional definition store. Callers that need to
  *          retain the projection must own a copy for their runtime instance.
  */
-[[nodiscard]] eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::Definition& source);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<VehicleDefinition> parseVehicleDefinition(
+    const eve::definitions::Definition& source);
 
 /** @brief Mutable state owned by one typed vehicle runtime instance. */
 struct VehicleRuntimeState {

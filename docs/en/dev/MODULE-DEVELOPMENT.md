@@ -15,9 +15,9 @@ External exchanges belong to six faces:
 5. Script surface: eve classes/methods and ownership.
 6. Tool protocols where applicable: MCP/LSP/DAP names and response shapes.
 
-New/changed modules need a `module-interface` contract. Reuse existing link/ecs-system entries by scope instead of duplicating them. Declarations must be falsifiable against source/build/tests (`R-FACE-1..5`). Domains own their interfaces/state; common owns mechanisms and domain-neutral values/envelopes.
+Declarations must be falsifiable against source/build/tests (`R-FACE-1..5`). Domains own their interfaces/state; common owns mechanisms and domain-neutral values/envelopes.
 
-Architecture contracts can be maintained in `scripts/architecture_contracts/*.json` shards. Update the owning shard and run `python3 scripts/sort_architecture_contracts.py`, rather than editing only the generated aggregate.
+Architecture CI (`make check/architecture-contracts`) lints changed C++ lines only — api-shape, ownership/lifetime Doxygen on raw pointers, runtime lookup bans, hot-path primitives, `@cost`. There is **no** hand-maintained JSON catalogue. Mark hot paths in `HOT_PATH_GLOBS` inside `scripts/check_architecture_contracts.py`. Design notes: [`docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`](../../dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md).
 
 ## Include dependencies and trimming
 

@@ -406,6 +406,7 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    cascadeUvScale: vec4f,
     localVP: array<mat4x4f, 4>,
     localSlot01: vec4f,
     localSlot23: vec4f,
@@ -436,6 +437,15 @@ struct FSIn {
 @group(0) @binding(12) var decalAlbedoLayer: texture_2d<f32>;
 @group(0) @binding(13) var decalNormalLayer: texture_2d<f32>;
 @group(0) @binding(14) var decalParamsLayer: texture_2d<f32>;
+
+/** @brief Pack UE-style VT feedback id: pageX (12) | pageY (12) | mip (8). */
+fn packVirtualTextureFeedback(sourceUv: vec2f, mipLevel: f32) -> u32 {
+    let pageCounts = max(ubo.virtualTexture.yz, vec2f(1.0));
+    let virtualCoord = fract(sourceUv) * pageCounts;
+    let page = clamp(vec2i(floor(virtualCoord)), vec2i(0), vec2i(pageCounts) - vec2i(1));
+    let mip = u32(clamp(mipLevel, 0.0, 255.0));
+    return u32(page.x) | (u32(page.y) << 12u) | (mip << 24u);
+}
 
 /** @brief Sample virtual texture. */
 fn sampleVirtualTexture(atlas: texture_2d<f32>, sourceUv: vec2f,
@@ -654,7 +664,8 @@ fn cloudShadowFactor(worldPos: vec3f) -> f32 {
     return 1.0 - clamp(covered, 0.0, 1.0) * clamp(ubo.cloud.x, 0.0, 1.0);
 }
 /** @brief Sample shadow cascade. */
-fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
+fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
+    let lightClip = shadow.lightVP[cascade] * vec4f(worldPos, 1.0);
     let ndc = lightClip.xyz / max(lightClip.w, 1e-6);
     // Shadow-map vertices mirror clip Y for WebGPU. Undo that mirror when
     // projecting the shared Vulkan-convention light matrix for sampling.
@@ -663,7 +674,12 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;
     }
-    let texel = 1.0 / vec2f(textureDimensions(shadowMap));
+    var uvScale = shadow.cascadeUvScale.z;
+    if (cascade == 0) { uvScale = shadow.cascadeUvScale.x; }
+    else if (cascade == 1) { uvScale = shadow.cascadeUvScale.y; }
+    uvScale = max(uvScale, 1e-4);
+    let mapSize = max(shadow.cascadeUvScale.w, 1.0) * uvScale;
+    let texel = vec2f(1.0 / mapSize);
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
@@ -678,7 +694,7 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {    let
         else if (i == 7) { s = uv + vec2f(0.0, 0.6) * texel; }
         else { s = uv + vec2f(0.5, 0.5) * texel; }
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
-            sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
+            sum += textureSampleCompareLevel(shadowMap, shadowSamp, s * uvScale, cascade, zref);
         }
     }
     return sum / 9.0;
@@ -1064,6 +1080,7 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    cascadeUvScale: vec4f,
     localVP: array<mat4x4f, 4>,
     localSlot01: vec4f,
     localSlot23: vec4f,
@@ -1173,7 +1190,12 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;
     }
-    let texel = 1.0 / vec2f(textureDimensions(shadowMap));
+    var uvScale = shadow.cascadeUvScale.z;
+    if (cascade == 0) { uvScale = shadow.cascadeUvScale.x; }
+    else if (cascade == 1) { uvScale = shadow.cascadeUvScale.y; }
+    uvScale = max(uvScale, 1e-4);
+    let mapSize = max(shadow.cascadeUvScale.w, 1.0) * uvScale;
+    let texel = vec2f(1.0 / mapSize);
     var sum: f32 = 0.0;
     let zref = depth - bias;
     for (var i = 0; i < 9; i = i + 1) {
@@ -1188,7 +1210,7 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, bias: f32) -> f32 {
         else if (i == 7) { s = uv + vec2f(0.0, 0.6) * texel; }
         else { s = uv + vec2f(0.5, 0.5) * texel; }
         if (s.x >= 0.0 && s.x <= 1.0 && s.y >= 0.0 && s.y <= 1.0) {
-            sum += textureSampleCompareLevel(shadowMap, shadowSamp, s, cascade, zref);
+            sum += textureSampleCompareLevel(shadowMap, shadowSamp, s * uvScale, cascade, zref);
         }
     }
     return sum / 9.0;
@@ -2172,7 +2194,7 @@ fn vs_main(@builtin(vertex_index) vid: u32) -> VSOut {
  * PBR + CSM + clustered points; mirrors Vulkan deferred_lighting.frag).
  * @borrowed Static storage; valid for the process lifetime.
  */
-inline const char* kDeferredLightingFragWgsl = R"wgsl(
+inline const char *kDeferredLightingFragWgsl = R"wgsl(
 /** @brief Light3D public API. */
 struct Light3D {
     posRadius: vec4f,
@@ -2197,6 +2219,7 @@ struct ShadowFrame {
     bias: vec4f,
     cascadeBias: vec4f,
     cascadeTexel: vec4f,
+    cascadeUvScale: vec4f,
     localVP: array<mat4x4f, 4>,
     localSlot01: vec4f,
     localSlot23: vec4f,
@@ -2276,8 +2299,12 @@ fn sampleShadowCascade(worldPos: vec3f, cascade: i32, biasAmt: f32) -> f32 {
     if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0 || depth < 0.0 || depth > 1.0) {
         return 1.0;
     }
+    var uvScale = shadow.cascadeUvScale.z;
+    if (cascade == 0) { uvScale = shadow.cascadeUvScale.x; }
+    else if (cascade == 1) { uvScale = shadow.cascadeUvScale.y; }
+    uvScale = max(uvScale, 1e-4);
     /** @brief Texture sample compare. */
-    return textureSampleCompare(shadowMap, shadowSamp, uv, cascade, depth - biasAmt);
+    return textureSampleCompare(shadowMap, shadowSamp, uv * uvScale, cascade, depth - biasAmt);
 }
 /** @brief Sample shadow pcf. */
 fn sampleShadowPCF(worldPos: vec3f, n: vec3f, viewDepth: f32, nDotL: f32) -> f32 {

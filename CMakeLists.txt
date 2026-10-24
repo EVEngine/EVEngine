@@ -66,6 +66,8 @@ endif()
 
 project(EVEngine)
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/native_arm64.cmake")
+
 if(_eve_ccache_enabled)
     eve_finish_ccache_hardlink()
 endif()
@@ -101,7 +103,7 @@ message(STATUS "Compiler cache: ${_eve_compiler_cache_status}")
 
 set(EVENGINE_MAJOR_VERSION "0")
 set(EVENGINE_MINOR_VERSION "6")
-set(EVENGINE_PATCH_VERSION "0")
+set(EVENGINE_PATCH_VERSION "1")
 set(EVENGINE_DEV_VERSION "")
 
 set(EVENGINE_VERSION "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}${EVENGINE_DEV_VERSION}")
@@ -213,6 +215,7 @@ option(EVENGINE_ANDROID_TEST_APP
 option(EVENGINE_IOS_TEST_APP
     "Build the unit_test suite as an iOS test app (eve executable replaced by the zeroerr runner)"
     OFF)
+option(EVENGINE_BUILD_JOLT "Enable the Jolt rigid-body provider" ON)
 option(EVENGINE_ENABLE_ASSERTS
     "Keep zeroerr ASSERT checks (parameter validation, invariants) in non-Debug builds.
      Debug builds always enable them; this option is for Release-style builds."
@@ -241,9 +244,14 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
 endif()
 
 include(CTest)
+if(EVENGINE_BUILD_PROFILE_CHECKS)
+    # Hostless checks remain runnable when BUILD_TESTING disables the full host suite.
+    enable_testing()
+endif()
 
 set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
 set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
+function(eve_prepare_vkbuilder_headers)
 if(EXISTS "${_vkbuilder_header}")
     file(READ "${_vkbuilder_header}" _vkbuilder_source)
     set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
@@ -268,11 +276,39 @@ if(EXISTS "${_vkbuilder_header}")
     endif()
     string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
         "${_vkbuilder_source}")
+    include(cmake/vkbuilder_capture.cmake)
+    if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
+        set(_vkbuilder_vulkan_root "${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/vulkan")
+        if(NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.h" OR
+           NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.hpp")
+            message(FATAL_ERROR "Prebuilt third-party install is missing pinned Vulkan headers")
+        endif()
+        # The release prebuilt archives compile Vulkan-Hpp without its Debug-only
+        # DispatchLoaderBase fields. Keep that layout in Debug consumers too;
+        # otherwise an inline dispatcher call can read a function pointer 16
+        # bytes before the member that Graphics initialized.
+        string(CONCAT _vkbuilder_pinned_vulkan
+            "#include \"${_vkbuilder_vulkan_root}/vulkan.h\"\n"
+            "#if !defined(NDEBUG)\n"
+            "#include <cassert>\n"
+            "#pragma push_macro(\"assert\")\n"
+            "#undef assert\n#define assert(...) ((void)0)\n"
+            "#define NDEBUG 1\n#define EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT 1\n"
+            "#endif\n"
+            "#include \"${_vkbuilder_vulkan_root}/vulkan.hpp\"\n"
+            "#if defined(EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT)\n"
+            "#undef NDEBUG\n#pragma pop_macro(\"assert\")\n"
+            "#undef EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT\n"
+            "#endif")
+        string(REPLACE "#include <vulkan/vulkan.hpp>"
+            "${_vkbuilder_pinned_vulkan}" _vkbuilder_source "${_vkbuilder_source}")
+    endif()
     file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
         DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
 endif()
+endfunction()
 
 
 # Build order: platform -> manifest/profile -> dependencies -> engine modules
@@ -304,6 +340,7 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    eve_prepare_vkbuilder_headers()
     include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
     load_image_webp()
     load_asset_zstd()
@@ -491,19 +528,25 @@ function(main)
     # translation units and nothing orders a patch step in front of them. Skipped
     # when the submodule is absent (profiles and tools that do not use ECS), and
     # skipped without touching anything when the checkout already carries it.
+    # Runtime patches also skip fully initialized component words and avoid
+    # scanning the entity registry on commits with no deferred creation.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
-        execute_process(
-            COMMAND ${CMAKE_COMMAND}
-                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ecs-shared-default-table.patch
-                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
-                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
-            RESULT_VARIABLE _eve_ecs_patch_result)
-        if(NOT _eve_ecs_patch_result EQUAL 0)
-            message(FATAL_ERROR
-                "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
-                "The vendored submodule moved away from the pinned commit; "
-                "update cmake/patches/ecs-shared-default-table.patch.")
-        endif()
+        foreach(_eve_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime)
+            set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND}
+                    -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch
+                    -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+                RESULT_VARIABLE _eve_ecs_patch_result)
+            if(NOT _eve_ecs_patch_result EQUAL 0)
+                message(FATAL_ERROR
+                    "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
+                    "The vendored submodule moved away from the pinned commit; "
+                    "update cmake/patches/${_eve_ecs_patch}.patch.")
+            endif()
+        endforeach()
     endif()
     # set_include() generated the ECS overlay before the patch above. Refresh
     # it now so a clean checkout compiles the patched default-table API.
@@ -527,6 +570,15 @@ function(main)
 
     if(EVENGINE_BUILD_PROFILE_CHECKS)
         include(${CMAKE_SOURCE_DIR}/cmake/profile_checks.cmake)
+    endif()
+
+    include(${CMAKE_SOURCE_DIR}/cmake/native_showcase.cmake)
+    if(EVENGINE_BUILD_HOST AND TARGET EVMap AND TARGET EVImage)
+        add_subdirectory(examples/dual-grid-material-gallery EXCLUDE_FROM_ALL)
+    endif()
+
+    if(EVENGINE_BUILD_HOST AND TARGET EVProcgen AND TARGET EVGraphics)
+        add_subdirectory(examples/procedural-render-gallery EXCLUDE_FROM_ALL)
     endif()
 
     if(EVENGINE_BUILD_HOST AND BUILD_TESTING)

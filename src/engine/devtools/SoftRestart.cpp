@@ -1,9 +1,11 @@
 #include "devtools/SoftRestart.hpp"
 
 #include "common/Capability.h"
+#include "common/FrameCapture.h"
 #include "common/IStateProvider.h"
 #include "common/Resource.h"
 #include "common/ScriptError.h"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/ReloadSession.h"
 
@@ -157,9 +159,14 @@ Result<SoftRestartReport> executeSoftRestart(HSQUIRRELVM vm, SoftRestartRequest 
     report.args                = request.args ? request.args : Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     report.scriptsReloaded     = request.reloadScripts;
 
+    // Runtime world briefs are re-declared in eve_init after a full script
+    // reload. Param-only restarts keep the overlay so Discover stays stable.
+    if (request.reloadScripts) clearWorldContext();
+
     auto installed = installRestartArgs(vm, report.args);
     if (!installed) return Result<SoftRestartReport>::failure(installed.status());
 
+    if (auto* capture = cap::query<IRenderFrameCapture>()) capture->invalidate();
     auto restarted = callSoftRestartGame(vm, request.reloadScripts);
     if (!restarted) return Result<SoftRestartReport>::failure(restarted.status());
 

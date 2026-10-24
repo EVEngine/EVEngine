@@ -2,6 +2,7 @@
 
 #include "action/editor/ActionTimelineEditor.h"
 #include "editing/EditingProperty.h"
+#include "editing/PropertySchemaJson.h"
 
 namespace eve::action_editor {
 namespace {
@@ -26,17 +27,47 @@ editing::SelectionSnapshot selectionFor(editing::IEditableTarget& target) {
     return selection;
 }
 
+editing::PropertySchema actionPropertyPayloadSchema() {
+    editing::PropertySchema schema;
+    schema.typeId  = "action.property.set.v1";
+    schema.version = 1;
+    {
+        editing::PropertyDescriptor path;
+        path.path           = editing::PropertyPath("path");
+        path.displayNameKey = "Path";
+        path.type           = editing::PropertyType::String;
+        schema.properties.push_back(std::move(path));
+    }
+    {
+        editing::PropertyDescriptor value;
+        value.path           = editing::PropertyPath("value");
+        value.displayNameKey = "Value";
+        value.type           = editing::PropertyType::Struct;
+        schema.properties.push_back(std::move(value));
+    }
+    return schema;
+}
+
 }  // namespace
 
-editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry) {
+editing::EditingCommandDescriptor actionPropertySetCommandDescriptor() {
     editing::EditingCommandDescriptor descriptor;
     descriptor.id                = editing::CommandId("action.property.set.v1");
     descriptor.ownerModule       = "action_editor";
     descriptor.displayName       = "Set action timeline property";
     descriptor.category          = "Action";
     descriptor.automationAllowed = true;
+    descriptor.targetKinds       = {"action", "action-timeline"};
+    descriptor.payloadSchema     = actionPropertyPayloadSchema();
+    descriptor.panelCapability   = "action.timeline";
+    descriptor.panelContext      = "inspector";
+    return descriptor;
+}
+
+editing::Result<void> registerEditingCommands(editing::IEditingCommandRegistry& registry) {
     return registry.registerPlannedCommand(
-        std::move(descriptor), [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
+        actionPropertySetCommandDescriptor(),
+        [](editing::IEditableTarget& target, const editing::CommandRequest& request) {
             auto* properties = static_cast<editing::IPropertyProvider*>(
                 target.queryCapability(editor::ActionTimelineTarget::propertyCapabilityId()));
             const editing::Value* pathValue = field(request.payload, "path");

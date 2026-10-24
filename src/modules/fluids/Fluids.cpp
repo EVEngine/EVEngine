@@ -2,6 +2,7 @@
 
 #include "common/SquirrelBinding.h"
 #include "fluids/FluidGpuKernels.h"
+#include "fluids/OceanBindings.h"
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidBindings.h"
 #include "fluids/VolumeFluidCodec.h"
@@ -10,6 +11,7 @@
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
+#include "graphics/Graphics.h"
 #include "image/ImageData.h"
 
 #include <algorithm>
@@ -446,6 +448,7 @@ void Fluids::expose(ssq::Table& table) {
                                                 encodeFluidRendererSettings(FluidRendererSettings{}));
     });
     exposeVolumeFluidType(table);
+    exposeOceanTypes(table);
 
     auto sim = table.addClass<FluidSimulator>(
         "FluidSim", std::function<FluidSimulator*()>([]() -> FluidSimulator* { return nullptr; }), true);
@@ -663,6 +666,15 @@ void Fluids::expose(ssq::Table& table) {
     sw.addFunc("fillDepth", [vm = table.getHandle()](ShallowWaterField* field, float depth) {
         return eve::script::projectResult(vm, field->fillDepth(depth));
     });
+    sw.addFunc("setBed", [vm = table.getHandle()](ShallowWaterField* field, ssq::Array values) {
+        std::vector<float> beds;
+        beds.reserve(values.size());
+        for (size_t i = 0; i < values.size(); ++i) beds.push_back(values.get<float>(i));
+        return eve::script::projectResult(vm, field->setBed(beds));
+    });
+    sw.addFunc("fillSurface", [vm = table.getHandle()](ShallowWaterField* field, float surfaceY) {
+        return eve::script::projectResult(vm, field->fillSurface(surfaceY));
+    });
     sw.addFunc("addImpulse",
                [vm = table.getHandle()](ShallowWaterField* field, float x, float z, float radius, float strength) {
                    return eve::script::projectResult(vm, field->addImpulse(x, z, radius, strength));
@@ -724,6 +736,26 @@ void Fluids::expose(ssq::Table& table) {
     sw.addFunc("cellSize", [](ShallowWaterField* field) { return field->cellSize(); });
     sw.addFunc("usingGpu", [](ShallowWaterField* field) { return field->usingGpu(); });
     sw.addFunc("usedBackendFallback", [](ShallowWaterField* field) { return field->usedBackendFallback(); });
+    // Script adapter: borrowed graphics/mesh are used synchronously on the device owner thread.
+    // Build into owned temporary buffers, then publish once per presented frame; no VM array round trip.
+    sw.addFunc("syncSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field, graphics::Graphics* graphicsApi,
+                                                           graphics::Mesh* mesh, float visualHeightGain) {
+        if (!graphicsApi || !mesh)
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                      "surface sync requires graphics and mesh",
+                                                                      "fluids.surfaceSync")));
+        std::vector<float>    positions, normals, uvs;
+        std::vector<uint32_t> indices;
+        auto                  built = field->buildSurfaceMesh(positions, normals, uvs, indices, visualHeightGain);
+        if (!built) return eve::script::projectResult(vm, eve::Result<void>::failure(built.status()));
+        if (!graphicsApi->updateMeshVertices(mesh, positions.data(), normals.data(), uvs.data(),
+                                             int(positions.size() / 3u), indices.data(), int(indices.size())))
+            return eve::script::projectResult(
+                vm, eve::Result<void>::failure(eve::Diagnostic::error(
+                        eve::DiagnosticCode::Failed, "surface mesh upload rejected", "fluids.surfaceSync")));
+        return eve::script::projectResult(vm, eve::Result<void>::success());
+    });
     sw.addFunc("buildSurfaceMesh", [vm = table.getHandle()](ShallowWaterField* field, float visualHeightGain) {
         std::vector<float>    pos, nrm, uv, colors;
         std::vector<uint32_t> idx;

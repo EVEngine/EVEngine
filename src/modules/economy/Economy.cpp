@@ -1,4 +1,6 @@
 #include "economy/Economy.h"
+#include "common/SquirrelBinding.h"
+#include "transaction/AtomicBatch.h"
 
 #include "common/Capability.h"
 #include "common/SubjectRef.h"
@@ -140,6 +142,23 @@ void Economy::expose(ssq::Table& table) {
 }
 
 void Economy::expose(ssq::Class& cls) {
+    cls.addFunc("stagePayment",
+                [vm = cls.getHandle()](Economy*, transaction::AtomicBatch* batch, int player, const std::string& json) {
+                    auto result = [&]() -> Result<void> {
+                        auto retained = batch->retainScriptOwner(vm);
+                        if (!retained) return retained;
+                        auto cost = transaction::AtomicBatch::parseCost(json);
+                        if (!cost) return batch->reject(cost.status());
+                        auto bound = batch->bindAccount(EconomySystem::resourceAccount(player),
+                                                        [player](std::string_view name) -> std::optional<Value> {
+                                                            return Value(EconomySystem::get(player, std::string(name)));
+                                                        });
+                        if (!bound) return bound;
+                        return batch->add({}, std::move(cost).takeValue());
+                    }();
+                    return script::projectResult(vm, std::move(result));
+                });
+
     cls.addFunc("getName", &Economy::getName);
     cls.addFunc("registerResourceType",
                 [](Economy*, std::string id, std::string category, int stockMax,

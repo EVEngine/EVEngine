@@ -10,9 +10,6 @@ eve_declare_module(NAME particles LAYER 5 SCRIPT Particles SLOT particles
                    DEPS action animation data filesystem graphics ik stylize
                    GROUP 2d 3d)
 
-# L7 -- particles
-eve_declare_module(NAME particles_editor LAYER 7 DEPS editor particles_editing particles_graphics_editing GROUP 2d 3d)
-
 # L6 -- particles
 eve_declare_module(NAME particles_editing LAYER 6
                    DEPS editing

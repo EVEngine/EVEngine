@@ -1,10 +1,13 @@
 #include "physics/cloth/ClothModule.h"
 
+#include "common/Exception.h"
 #include "gpgpu/Gpgpu.h"
 #include "physics/cloth/Cloth.h"
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothGPU.h"
 #include "physics/cloth/ClothModel.h"
+#include "physics/cloth/LayeredCloth3D.h"
+#include "physics/cloth/LayeredClothGPU.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -40,6 +43,54 @@ void Cloth::expose(ssq::Table& table) {
     using Cloth    = eve::physics::Cloth;
     using Cloth3D  = eve::physics::Cloth3D;
     using ClothGPU = eve::physics::ClothGPU;
+    using Layered    = eve::physics::LayeredCloth3D;
+    using LayeredGpu = eve::physics::LayeredClothGPU;
+    auto layeredGpu  = table.addClass<LayeredGpu>(
+        "LayeredClothGPU",
+        std::function<LayeredGpu*(eve::gpgpu::Gpgpu*, eve::graphics::Graphics*, int, int, int, float, float, float,
+                                  float, float)>([](eve::gpgpu::Gpgpu* compute, eve::graphics::Graphics* graphics,
+                                                    int count, int cols, int rows, float spacing, float gap, float x,
+                                                    float y, float z) {
+            if (!compute || !graphics) throw eve::Exception("LayeredClothGPU: missing providers");
+            return new LayeredGpu(*compute, *graphics, count, cols, rows, spacing, gap, x, y, z);
+        }),
+        true);
+    layeredGpu.addFunc("update", [](LayeredGpu* self, float dt) {
+        auto result = self->update(dt);
+        if (!result) throw eve::Exception("%s", result.status().describe().c_str());
+    });
+    layeredGpu.addFunc("draw", [](LayeredGpu* self) {
+        auto result = self->draw();
+        if (!result) throw eve::Exception("%s", result.status().describe().c_str());
+    });
+    layeredGpu.addFunc("reset", &LayeredGpu::reset);
+    layeredGpu.addFunc("setSolver", &LayeredGpu::setSolver);
+    layeredGpu.addFunc("setGravity", &LayeredGpu::setGravity);
+    layeredGpu.addFunc("setWind", &LayeredGpu::setWind);
+    layeredGpu.addFunc("setInterCollision", &LayeredGpu::setInterCollision);
+    layeredGpu.addFunc("setSelfCollision", &LayeredGpu::setSelfCollision);
+    layeredGpu.addFunc("setContact", &LayeredGpu::setContact);
+    layeredGpu.addFunc("setFloor", &LayeredGpu::setFloor);
+    layeredGpu.addFunc("setParticleInverseMass", &LayeredGpu::setParticleInverseMass);
+    layeredGpu.addFunc("getParticleCount", &LayeredGpu::getParticleCount);
+
+    // Squirrel ABI transfers ownership of the constructed group to the VM.
+    auto layered =
+        table.addClass<Layered>("LayeredCloth3D",
+                                std::function<Layered*(int, int, int, float, float, float, float, float)>(
+                                    [](int count, int cols, int rows, float spacing, float gap, float x, float y,
+                                       float z) { return new Layered(count, cols, rows, spacing, gap, x, y, z); }),
+                                true);
+    layered.addFunc("update", &Layered::update);
+    layered.addFunc("setSolver", &Layered::setSolver);
+    layered.addFunc("setInterCollision", &Layered::setInterCollision);
+    layered.addFunc("getInterCollision", &Layered::getInterCollision);
+    layered.addFunc("getContactCount", &Layered::getContactCount);
+    layered.addFunc("getLayerCount", &Layered::getLayerCount);
+    layered.addFunc("setWindVelocity", &Layered::setWindVelocity);
+    layered.addFunc("reset", &Layered::reset);
+    layered.addFunc("draw", &Layered::draw);
+
 
     auto cloth =
         table.addClass<Cloth>("Cloth2D", std::function<Cloth*()>([]() -> Cloth* { return nullptr; }), true);
@@ -237,6 +288,9 @@ void Cloth::expose(ssq::Table& table) {
 }
 
 void Cloth::expose(ssq::Class& cls) {
+    // Every other module class exposes getName() (see Physics::expose); without it a
+    // script could not identify the module it got back from eve.Cloth().
+    cls.addFunc("getName", &eve::cloth::Cloth::getName);
     cls.addFunc("newCloth", &eve::cloth::Cloth::newCloth);
     cls.addFunc("newCloth3D", &eve::cloth::Cloth::newCloth3D);
     cls.addFunc("newClothGPU", &eve::cloth::Cloth::newClothGPU);

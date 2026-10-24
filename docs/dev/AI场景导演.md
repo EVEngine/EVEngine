@@ -61,8 +61,13 @@ flowchart LR
 | `eve_scene_director_status` | kit 状态（installed / propCount / hasCamera） | — |
 | `eve_scene_reset` | 清空道具、摄像机、恢复默认光照 | — |
 | `eve_scene_modify` | 场景动作 | `action`, `target`, `params` |
+| `eve_scene_batch` | 批量白盒搭景 / 调景（一次 round-trip） | `actions[]`, `stopOnError?` |
+| `eve_whitebox_playtest` | 快速白盒 recipe：reset + scene batch + 输入游玩 + 可选 `eve_play` | `reset?`, `scene[]`, `inputs[]`, `play[]` |
 | `eve_camera_generate` | 生成标准机位 | `count` |
 | `eve_scene_info` | 场景真值 | — |
+
+编排 CLI / 独立 stdio MCP：[`tools/whitebox-playtest/`](../../tools/whitebox-playtest/)
+（`wb_run` / `wb_apply_scene` / `wb_playtest`，支持 `--dry-run`）。
 
 ### `eve_scene_modify` 的 action
 

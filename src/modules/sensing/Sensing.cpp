@@ -1,10 +1,12 @@
 #include "sensing/Sensing.h"
 #include "common/Identity.h"
 #include "common/SquirrelBinding.h"
+#include "sensing/SensingScriptCandidateSeam.h"
 #include "sensing/TargetingPipeline.h"
 #include "spatial/SpatialHash2D.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <functional>
@@ -20,6 +22,30 @@
 
 namespace eve::sensing {
 namespace {
+struct SpatialCellQueryCache {
+    const SensingWorld*                                       owner = nullptr;
+    const eve::spatial::SpatialHash2D*                        index = nullptr;
+    std::map<std::array<int, 4>, std::vector<const Subject*>> candidates;
+    std::size_t                                               candidateCount = 0;
+
+    void invalidate(const SensingWorld* world) {
+        if (owner != world) return;
+        candidates.clear();
+        candidateCount = 0;
+    }
+
+    void select(const SensingWorld* world, const eve::spatial::SpatialHash2D* currentIndex) {
+        if (owner == world && index == currentIndex) return;
+        candidates.clear();
+        candidateCount = 0;
+        owner          = world;
+        index          = currentIndex;
+    }
+};
+
+// Queries are owner-thread-only; one bounded scratch cache avoids changing SensingWorld's ABI.
+thread_local SpatialCellQueryCache spatialCellQueryCache;
+
 std::set<std::string> csv(std::string_view s) {
     std::set<std::string> out;
     std::stringstream     in{std::string(s)};
@@ -27,6 +53,30 @@ std::set<std::string> csv(std::string_view s) {
     while (std::getline(in, v, ','))
         if (!v.empty()) out.insert(v);
     return out;
+}
+bool csvMatches(std::string_view text, const std::set<std::string>& values) {
+    const auto containsToken = [text](std::string_view value) {
+        auto remaining = text;
+        while (!remaining.empty()) {
+            const auto comma = remaining.find(',');
+            if (remaining.substr(0, comma) == value) return true;
+            if (comma == std::string_view::npos) break;
+            remaining.remove_prefix(comma + 1);
+        }
+        return false;
+    };
+    for (const auto& value : values)
+        if (!containsToken(value)) return false;
+    while (!text.empty()) {
+        const auto comma = text.find(',');
+        const auto token = text.substr(0, comma);
+        if (!token.empty() &&
+            std::none_of(values.begin(), values.end(), [token](const std::string& value) { return value == token; }))
+            return false;
+        if (comma == std::string_view::npos) break;
+        text.remove_prefix(comma + 1);
+    }
+    return true;
 }
 std::string quote(std::string_view s) {
     std::ostringstream o;
@@ -69,6 +119,8 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
     return result;
 }
 }  // namespace
+SensingWorld::~SensingWorld() { spatialCellQueryCache.invalidate(this); }
+
 namespace {
 std::vector<std::string> toVector(const std::set<std::string>& values) {
     return std::vector<std::string>(values.begin(), values.end());
@@ -242,19 +294,36 @@ eve::Result<void> SensingWorld::upsert(std::string_view id, float x, float y, st
                                                                  "subject id and finite coordinates are required",
                                                                  "subject", {}, "sensing"));
     }
-    Subject subject{std::string(id), x, y, std::string(f), csv(t), csv(v)};
-    subjects_[subject.id] = subject;
-    if (spatialIndex_) indexSubject(subjects_[subject.id]);
+    const std::string key(id);
+    auto              found = subjects_.find(key);
+    if (found != subjects_.end() && found->second.zones.empty() && found->second.faction == f &&
+        csvMatches(t, found->second.tags) && csvMatches(v, found->second.visibleTo)) {
+        const bool positionChanged = found->second.x != x || found->second.y != y;
+        found->second.x            = x;
+        found->second.y            = y;
+        if (spatialIndex_ && positionChanged) indexSubject(found->second);
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+    Subject    subject{key, x, y, std::string(f), csv(t), csv(v)};
+    const bool positionChanged = found == subjects_.end() || found->second.x != x || found->second.y != y;
+    if (found == subjects_.end()) {
+        const auto key = subject.id;
+        found          = subjects_.emplace(key, std::move(subject)).first;
+    } else {
+        found->second = std::move(subject);
+    }
+    if (spatialIndex_ && positionChanged) indexSubject(found->second);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
 eve::Result<void> SensingWorld::remove(std::string_view id) {
     results_.clear();
     const std::string key(id);
-    if (subjects_.erase(key) == 0)
+    if (!subjects_.contains(key))
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::NotFound, "subject is not registered", "subject.id", {}, "sensing"));
     unindexSubject(key);
+    subjects_.erase(key);
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
 
@@ -298,6 +367,7 @@ eve::Result<void> SensingWorld::setSpatialIndexEnabled(bool enabled, float cellS
 bool SensingWorld::spatialIndexEnabled() const noexcept { return spatialIndex_ != nullptr; }
 
 void SensingWorld::clearSpatialIndex() {
+    spatialCellQueryCache.invalidate(this);
     spatialIndex_.reset();
     subjectSpatialIds_.clear();
     spatialIdSubjects_.clear();
@@ -305,6 +375,7 @@ void SensingWorld::clearSpatialIndex() {
 }
 
 void SensingWorld::rebuildSpatialIndex() {
+    spatialCellQueryCache.invalidate(this);
     subjectSpatialIds_.clear();
     spatialIdSubjects_.clear();
     nextSpatialId_ = 1;
@@ -318,11 +389,12 @@ void SensingWorld::rebuildSpatialIndex() {
 
 void SensingWorld::indexSubject(const Subject& subject) {
     if (!spatialIndex_) return;
+    spatialCellQueryCache.invalidate(this);
     auto it = subjectSpatialIds_.find(subject.id);
     if (it == subjectSpatialIds_.end()) {
         const int sid = nextSpatialId_++;
         subjectSpatialIds_.emplace(subject.id, sid);
-        spatialIdSubjects_.emplace(sid, subject.id);
+        spatialIdSubjects_.emplace(sid, &subject);
         spatialIndex_->insert(sid, subject.x, subject.y, subject.x, subject.y);
     } else {
         spatialIndex_->update(it->second, subject.x, subject.y, subject.x, subject.y);
@@ -332,6 +404,7 @@ void SensingWorld::indexSubject(const Subject& subject) {
 void SensingWorld::unindexSubject(const std::string& id) {
     auto it = subjectSpatialIds_.find(id);
     if (it == subjectSpatialIds_.end()) return;
+    spatialCellQueryCache.invalidate(this);
     const int sid = it->second;
     if (spatialIndex_) spatialIndex_->remove(sid);
     spatialIdSubjects_.erase(sid);
@@ -341,6 +414,52 @@ void SensingWorld::unindexSubject(const std::string& id) {
 bool SensingWorld::trySpatialBroadphase(const QueryOrigin& origin, const QuerySpec& spec,
                                         std::vector<const Subject*>& out) const {
     if (!spatialIndex_) return false;
+    if (const auto* circle = std::get_if<QueryCircle>(&spec.shape)) {
+        spatialCellQueryCache.select(this, spatialIndex_.get());
+        auto&                              cache    = spatialCellQueryCache;
+        const float                        cellSize = spatialIndex_->getCellSize();
+        const std::array<int, 4>           cells{static_cast<int>(std::floor((circle->x - circle->radius) / cellSize)),
+                                       static_cast<int>(std::floor((circle->y - circle->radius) / cellSize)),
+                                       static_cast<int>(std::floor((circle->x + circle->radius) / cellSize)),
+                                       static_cast<int>(std::floor((circle->y + circle->radius) / cellSize))};
+        constexpr std::size_t              maxCachedCells           = 256;
+        constexpr std::size_t              maxCachedIdsPerCellRange = 512;
+        constexpr std::size_t              maxCachedIds             = 32768;
+        std::vector<const Subject*>        uncached;
+        const std::vector<const Subject*>* subjects = nullptr;
+        const auto                         cached   = cache.candidates.find(cells);
+        if (cached != cache.candidates.end()) {
+            subjects = &cached->second;
+        } else {
+            spatialIndex_->queryRect(cells[0] * cellSize, cells[1] * cellSize,
+                                     static_cast<float>((static_cast<double>(cells[2]) + 1.0) * cellSize),
+                                     static_cast<float>((static_cast<double>(cells[3]) + 1.0) * cellSize));
+            uncached.reserve(static_cast<std::size_t>(spatialIndex_->getResultCount()));
+            for (int i = 0; i < spatialIndex_->getResultCount(); ++i) {
+                const auto found = spatialIdSubjects_.find(spatialIndex_->getResultId(i));
+                if (found != spatialIdSubjects_.end()) uncached.push_back(found->second);
+            }
+            if (uncached.size() <= maxCachedIdsPerCellRange) {
+                if (cache.candidates.size() == maxCachedCells ||
+                    cache.candidateCount + uncached.size() > maxCachedIds) {
+                    cache.candidates.clear();
+                    cache.candidateCount = 0;
+                }
+                cache.candidateCount += uncached.size();
+                subjects = &cache.candidates.emplace(cells, std::move(uncached)).first->second;
+            } else {
+                subjects = &uncached;
+            }
+        }
+        out.clear();
+        out.reserve(subjects->size());
+        for (const Subject* subject : *subjects) {
+            if (eve::spatial::AABB2{subject->x, subject->y, subject->x, subject->y}.intersectsCircle(
+                    circle->x, circle->y, circle->radius))
+                out.push_back(subject);
+        }
+        return true;
+    }
     const bool ran = std::visit(
         [&](const auto& value) -> bool {
             using T = std::decay_t<decltype(value)>;
@@ -367,18 +486,12 @@ bool SensingWorld::trySpatialBroadphase(const QueryOrigin& origin, const QuerySp
         const int  sid = spatialIndex_->getResultId(i);
         const auto map = spatialIdSubjects_.find(sid);
         if (map == spatialIdSubjects_.end()) continue;
-        const auto subject = subjects_.find(map->second);
-        if (subject == subjects_.end()) continue;
-        out.push_back(&subject->second);
+        out.push_back(map->second);
     }
     return true;
 }
 
 bool SensingWorld::accepts(const Subject& subject, const QuerySpec& spec) const {
-    for (const auto& tag : spec.requiredTags)
-        if (!subject.tags.count(tag)) return false;
-    for (const auto& tag : spec.excludedTags)
-        if (subject.tags.count(tag)) return false;
     if (!spec.includeFactions.empty()) {
         bool included = false;
         for (const auto& faction : spec.includeFactions)
@@ -390,6 +503,10 @@ bool SensingWorld::accepts(const Subject& subject, const QuerySpec& spec) const 
     }
     for (const auto& faction : spec.excludeFactions)
         if (subject.faction == faction) return false;
+    for (const auto& tag : spec.requiredTags)
+        if (!subject.tags.count(tag)) return false;
+    for (const auto& tag : spec.excludedTags)
+        if (subject.tags.count(tag)) return false;
     if (spec.visibleTo && !subject.visibleTo.count(*spec.visibleTo)) return false;
     return insideShape(subject, spec.shape);
 }
@@ -403,11 +520,12 @@ void SensingWorld::publishResults(std::vector<RankedCandidate> ranked) {
     lastQuery_.accepted = static_cast<std::uint32_t>(ranked.size());
 }
 
-eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec) {
+eve::Result<CandidateCollection> SensingWorld::collectCandidates(const QueryOrigin& origin,
+                                                                 const QuerySpec&   spec) const {
     auto valid = spec.validate();
-    if (!valid) return eve::Result<CandidateQueryResult>::failure(valid.status());
+    if (!valid) return eve::Result<CandidateCollection>::failure(valid.status());
     if (!finite(origin.x) || !finite(origin.y)) {
-        return eve::Result<CandidateQueryResult>::failure(
+        return eve::Result<CandidateCollection>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "QueryOrigin coordinates must be finite",
                                    "query.origin", {}, "sensing"));
     }
@@ -441,6 +559,15 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
         ranked.push_back(std::move(candidate));
     }
 
+    return eve::Result<CandidateCollection>::success(
+        CandidateCollection{std::move(ranked), usedSpatial, static_cast<std::uint32_t>(candidates.size())});
+}
+
+eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin, const QuerySpec& spec) {
+    auto collected = collectCandidates(origin, spec);
+    if (!collected) return eve::Result<CandidateQueryResult>::failure(collected.status());
+    auto collection = std::move(collected).takeValue();
+    auto ranked     = std::move(collection.candidates);
     if (spec.sortKey == SortKey::DistanceAscending) {
         std::sort(ranked.begin(), ranked.end(), [](const RankedCandidate& a, const RankedCandidate& b) {
             if (a.distance != b.distance) return a.distance < b.distance;
@@ -465,8 +592,8 @@ eve::Result<CandidateQueryResult> SensingWorld::query(const QueryOrigin& origin,
                                    "candidate count violates QuerySpec count policy", "query.count", {}, "sensing"));
     }
 
-    lastQuery_.usedSpatial = usedSpatial;
-    lastQuery_.scanned     = static_cast<std::uint32_t>(candidates.size());
+    lastQuery_.usedSpatial = collection.usedSpatial;
+    lastQuery_.scanned     = collection.scanned;
     lastQuery_.originX     = origin.x;
     lastQuery_.originY     = origin.y;
     lastQuery_.shapeKind   = std::visit(
@@ -515,6 +642,11 @@ eve::Result<int> SensingWorld::executePreset(std::string_view presetId, float or
     auto rankedResult = std::move(executed).takeValue();
     std::vector<RankedCandidate> ranked(rankedResult.ranked().begin(), rankedResult.ranked().end());
     const int count = static_cast<int>(ranked.size());
+    lastQuery_.usedSpatial             = context.usedSpatial;
+    lastQuery_.scanned                 = context.scanned;
+    lastQuery_.originX                 = originX;
+    lastQuery_.originY                 = originY;
+    lastQuery_.shapeKind               = "preset";
     publishResults(std::move(ranked));
     return eve::Result<int>::success(count);
 }
@@ -542,7 +674,7 @@ std::string SensingWorld::debugLastQueryJson() const {
           << ",\"distance\":" << candidate.distance << ",\"score\":" << candidate.score
           << ",\"scoreReason\":" << quote(candidate.scoreReason) << '}';
     }
-    o << "]}";
+    o << "],\"environment\":" << lastEnvironmentQuery_ << '}';
     return o.str();
 }
 
@@ -591,6 +723,7 @@ eve::Result<void> SensingWorld::restoreJson(const std::string& j) {
     subjects_ = std::move(next.subjects_);
     results_.clear();
     lastQuery_ = {};
+    lastEnvironmentQuery_ = "null";
     if (spatialIndex_) rebuildSpatialIndex();
     return eve::Result<void>::success();
 }
@@ -623,9 +756,15 @@ struct ScriptSensingWorld {
     SensingWorldHandleRef reference;
 };
 
-Sensing::Sensing() { eve::cap::provide<eve::ISensingQuery>(this); }
+Sensing::Sensing() {
+    eve::cap::provide<eve::ISensingQuery>(this);
+    declareScriptSensingCandidateSeam();
+}
 
-Sensing::~Sensing() { eve::cap::revoke<eve::ISensingQuery>(this); }
+Sensing::~Sensing() {
+    withdrawScriptSensingCandidateSeam();
+    eve::cap::revoke<eve::ISensingQuery>(this);
+}
 
 int Sensing::worldCount() const {
     int count = 0;
@@ -766,6 +905,25 @@ void Sensing::expose(ssq::Table& t) {
                     eve::DiagnosticCode::StaleHandle, "sensing world handle is stale", "world", {}, "sensing")),
                 [](int count) { return eve::Value(static_cast<std::int64_t>(count)); });
         return projectCount(world->executePreset(presetId, originX, originY, dirX, dirY));
+    });
+    w.addFunc("queryPositions", [vm](ScriptSensingWorld* value, float originX, float originY, float targetX,
+                                     float targetY, float radius, int samples, int limit, bool requireLineOfSight) {
+        if (!value)
+            return eve::script::projectResult(
+                vm,
+                Result<Value>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "sensing world proxy is null",
+                                                         "world", {}, "sensing")),
+                [](Value data) { return data; });
+        auto world = Sensing::resolve(value->reference);
+        if (!world.isBound())
+            return eve::script::projectResult(
+                vm,
+                Result<Value>::failure(Diagnostic::error(DiagnosticCode::StaleHandle, "sensing world handle is stale",
+                                                         "world", {}, "sensing")),
+                [](Value data) { return data; });
+        return eve::script::projectResult(
+            vm, world->queryPositions(originX, originY, targetX, targetY, radius, samples, limit, requireLineOfSight),
+            [](Value data) { return data; });
     });
     w.addFunc("resultAt", [](ScriptSensingWorld* value, int i) -> Candidate* {
         if (!value) return nullptr;

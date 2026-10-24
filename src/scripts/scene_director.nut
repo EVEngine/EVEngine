@@ -509,5 +509,46 @@ scene_director.modify <- function(action,target,p) {
     }
     return {ok=false,error="unknown action: "+action};
 };
+// Batch white-box authoring: apply many modify actions in one MCP round-trip.
+// stopOnError (default true) aborts on the first non-ok result; otherwise every
+// action runs and failures are collected. Returns applied/failed counts + results.
+scene_director.batch <- function(actions, options) {
+    if(options==null) options={};
+    sd_require(scene_director.install());
+    if(typeof actions!="array") return {ok=false,error="batch requires an actions array"};
+    local stopOnError=!("stopOnError" in options) || options.stopOnError;
+    local results=[],applied=0,failed=0;
+    for(local i=0;i<actions.len();i++) {
+        local item=actions[i];
+        if(typeof item!="table") {
+            local err={ok=false,index=i,error="actions["+i+"] must be a table"};
+            results.append(err);failed+=1;
+            if(stopOnError) return {ok=false,applied=applied,failed=failed,stoppedAt=i,results=results};
+            continue;
+        }
+        local action=("action" in item)?item.action:"";
+        local target=("target" in item)?item.target:"";
+        local params=("params" in item)?item.params:{};
+        if(typeof action!="string" || action.len()==0) {
+            local err={ok=false,index=i,error="actions["+i+"].action is required"};
+            results.append(err);failed+=1;
+            if(stopOnError) return {ok=false,applied=applied,failed=failed,stoppedAt=i,results=results};
+            continue;
+        }
+        local out=null;
+        try {out=scene_director.modify(action,target,params);}
+        catch(e) {out={ok=false,error=e.tostring()};}
+        if(typeof out!="table") out={ok=true,value=out};
+        out.index <- i;out.action <- action;out.target <- target;
+        results.append(out);
+        if(("ok" in out) && out.ok) applied+=1;
+        else {
+            failed+=1;
+            if(stopOnError) return {ok=false,applied=applied,failed=failed,stoppedAt=i,results=results};
+        }
+    }
+    return {ok=(failed==0),applied=applied,failed=failed,count=actions.len(),results=results,
+        revision=scene_director.session!=null?scene_director.session.getRevision():0};
+};
 function scene_director_install() {return scene_director.install();}
 sd_require(scene_director.install());

@@ -10,6 +10,7 @@
 #include "graphics/PrimitiveTypes.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 
 #if defined(__EMSCRIPTEN__) && __has_include(<webgpu/webgpu_cpp.h>)
@@ -966,6 +967,7 @@ private:
     wgpu::RenderPipeline getPrimitive3DPipeline(PrimitiveDepthMode depth, BlendMode blend, PrimitiveCullMode cull,
                                                 WGPUTextureFormat format, uint32_t sampleCount);
     void flushShadowPass(wgpu::RenderPassEncoder pass, int cascade);
+    void                 recordDirectionalShadowPasses(wgpu::CommandEncoder encoder);
     void flushGbufferPass(wgpu::RenderPassEncoder pass);
     void flushDecalPass(wgpu::RenderPassEncoder pass);
     void submitPendingDeferredPasses();

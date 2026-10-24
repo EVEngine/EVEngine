@@ -1,19 +1,29 @@
 #pragma once
+#include <array>
 #include "common/Export.h"
+#include "common/Result.h"
 
 
 #include "physics/PhysicsHandles.h"
 
-#include <box3d/id.h>
+#include <memory>
+#include "physics/backend/JointBackend3D.h"
 
 #include <string>
 
 namespace eve::physics {
+namespace box3d {
+struct Access;
+}
+namespace box3d {
+class WorldBackend;
+}
 
 class Body3D;
 class World3D;
 
-/** @brief Script-facing Box3D joint owned by a World3D. */
+
+/** @brief Script-facing joint owned by a World3D. Legacy scalar/void methods adapt the checked backend contract. */
 class EVENGINE_API_WORLD Joint3D {
 public:
     /** @brief Supported joint geometry.
@@ -21,11 +31,11 @@ public:
      *          0 Distance, 1 Revolute, 2 Prismatic, 3 Spherical, 4 Wheel,
      *          5 Weld, 6 Motor, 7 Parallel, 8 Filter.
      */
-    enum class Kind { Distance, Revolute, Prismatic, Spherical, Wheel, Weld, Motor, Parallel, Filter };
+    using Kind = JointKind3D;
 
     /** @brief Internal wrapper constructor; use World3D::new*Joint. */
-    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, b3JointId jointId, PhysicsJointHandle runtimeHandle,
-            Kind kind, int id);
+    Joint3D(World3D *world, Body3D *bodyA, Body3D *bodyB, std::unique_ptr<IJointBackend3D> backend,
+            PhysicsJointHandle runtimeHandle, Kind kind, int id);
     ~Joint3D();
 
     Joint3D(const Joint3D &) = delete;
@@ -43,6 +53,16 @@ public:
     int getBodyBId() const;
     /** @brief Owning world, or null after joint destruction. */
     [[nodiscard]] World3D *getWorld() const noexcept { return world_; }
+    /**
+     * @brief Reads both body-local constraint frames without exposing native IDs.
+     * @return Owning frame values, or StaleHandle after joint invalidation.
+     * @ownership The result owns all frame components.
+     * @lifetime Independent of later joint or world destruction.
+     * @thread Call on the owning simulation thread, between steps.
+     * @reentrancy Does not invoke callbacks or mutate the solver.
+     */
+    [[nodiscard]] eve::Result<JointFrames3D> localFrames() const;
+
     /** @brief Enables or disables collision between the attached bodies. */
     void setCollideConnected(bool collide);
     /** @brief Whether attached bodies may collide. */
@@ -194,19 +214,19 @@ public:
     bool isValid() const;
     /** @brief Internal invalidation used by body/world destruction. */
     void invalidate();
-    /** @brief Internal raw Box3D identifier. */
-    b3JointId raw() const { return jointId_; }
 
 private:
+    friend struct box3d::Access;
+    friend class box3d::WorldBackend;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class Body3D;
     friend class World3D;
-    void requireKind(Kind expected, const char *operation) const;
 
     World3D *world_ = nullptr;
     Body3D *bodyA_ = nullptr;
     Body3D *bodyB_ = nullptr;
-    b3JointId jointId_{};
+    std::unique_ptr<IJointBackend3D> backend_{};
     PhysicsJointHandle runtimeHandle_ = PhysicsJointHandle::invalid();
     Kind kind_ = Kind::Distance;
     int id_ = 0;

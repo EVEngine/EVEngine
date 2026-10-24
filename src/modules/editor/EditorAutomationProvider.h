@@ -15,6 +15,7 @@ namespace eve::editor {
 
 class EditorTargetCoordinator;
 class EditorCommandService;
+class EditorHost;
 
 /** @brief MCP/DevTools adapter over command discovery and target coordination. */
 class EditorAutomationProvider final : public eve::IEditorAutomation {
@@ -29,6 +30,15 @@ public:
 
     /** @brief Clear automation state that still borrows an unregistered target. */
     void targetUnregistered(const TargetId& target);
+
+    /**
+     * @brief Attach a borrowed EditorHost as the MCP projection scope (Mode A).
+     * @ownership Borrowed; host must outlive the attachment or call detachHost.
+     */
+    [[nodiscard]] Result<void> attachHost(EditorHost* host);
+
+    /** @brief Clear the Host-scoped MCP projection filter. */
+    void detachHost();
 
 private:
     struct ObservationSession;

@@ -1,5 +1,7 @@
 #include "editor/ScriptEditorTool.h"
 
+#include "common/SquirrelBinding.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::editor {
@@ -21,13 +23,9 @@ void invoke(const ssq::Object &callback, const Args &...args) {
     if (callback.isEmpty()) return;
     ssq::Function function = callback.toFunction();
     if (function.isEmpty()) return;
-    HSQUIRRELVM vm = function.getHandle();
-    const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, function.getRaw());
-    sq_pushroottable(vm);
-    (ssq::detail::pushValue(vm, args), ...);
-    sq_call(vm, sizeof...(Args) + 1, SQFalse, SQTrue);
-    sq_settop(vm, top);
+    // The call result used to be discarded outright, so a tool callback that threw was
+    // indistinguishable from one that ran to completion.
+    script::callFunction(function.getHandle(), function.getRaw(), script::rootTable, args...);
 }
 
 template <typename... Args>
@@ -37,11 +35,10 @@ int invokeFlags(const ssq::Object &callback, const Args &...args) {
     if (function.isEmpty()) return 0;
     HSQUIRRELVM vm = function.getHandle();
     const SQInteger top = sq_gettop(vm);
-    sq_pushobject(vm, function.getRaw());
-    sq_pushroottable(vm);
-    (ssq::detail::pushValue(vm, args), ...);
     int flags = 0;
-    if (SQ_SUCCEEDED(sq_call(vm, sizeof...(Args) + 1, SQTrue, SQTrue))) {
+    // A throwing callback used to collapse into the same "no flags" answer as a callback
+    // that returned 0.
+    if (SQ_SUCCEEDED(script::callFunctionResult(vm, function.getRaw(), script::rootTable, args...))) {
         SQInteger result = 0;
         if (SQ_SUCCEEDED(sq_getinteger(vm, -1, &result))) flags = static_cast<int>(result);
     }

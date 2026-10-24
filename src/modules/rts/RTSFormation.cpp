@@ -219,6 +219,49 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
         available.erase(best);
     }
 
+    // An existing layout translated to another anchor should preserve spatial order.
+    // Seed a second candidate in formation-local axes; retain the cheaper assignment.
+    const double cosine = std::cos(double(resolved.rotationRadians)), sine = std::sin(double(resolved.rotationRadians));
+    const auto   local = [&](WorldPosition point) {
+        return std::pair<double, double>{-double(point.x) * sine + double(point.y) * cosine,
+                                         double(point.x) * cosine + double(point.y) * sine};
+    };
+    auto spatialOrder = assignmentOrder;
+    std::sort(spatialOrder.begin(), spatialOrder.end(), [&](std::size_t a, std::size_t b) {
+        const auto ma = selected[a]->motion(), mb = selected[b]->motion();
+        const auto pa = local({ma->x, ma->y}), pb = local({mb->x, mb->y});
+        if (pa != pb) return pa < pb;
+        return selected[a]->identity()->subject.persistentId() < selected[b]->identity()->subject.persistentId();
+    });
+    std::vector<AvailableSlot> spatialSlots;
+    for (std::size_t index = 0; index < plannedTargets.size(); ++index)
+        spatialSlots.push_back({plannedTargets[index], static_cast<int>(index)});
+    std::sort(spatialSlots.begin(), spatialSlots.end(), [&](const auto& a, const auto& b) {
+        const auto pa = local(a.position), pb = local(b.position);
+        return pa != pb ? pa < pb : a.index < b.index;
+    });
+    std::vector<AvailableSlot> spatialAssignment(selected.size());
+    double                     greedyCost = 0.0, spatialCost = 0.0, greedySquared = 0.0, spatialSquared = 0.0;
+    for (std::size_t rank = 0; rank < spatialOrder.size(); ++rank) {
+        const auto index         = spatialOrder[rank];
+        spatialAssignment[index] = spatialSlots[rank];
+        const auto motion        = selected[index]->motion();
+        const auto distance      = [&](WorldPosition point) {
+            const double dx = double(motion->x) - point.x, dy = double(motion->y) - point.y;
+            return dx * dx + dy * dy;
+        };
+        const double g = distance(assignedSlots[index].position), p = distance(spatialAssignment[index].position);
+        greedyCost += std::sqrt(g);
+        spatialCost += std::sqrt(p);
+        greedySquared += g;
+        spatialSquared += p;
+    }
+    const double seedTolerance = 1e-7 * std::max(1.0, greedyCost);
+    if (spatialCost + seedTolerance < greedyCost ||
+        (std::abs(spatialCost - greedyCost) <= seedTolerance &&
+         spatialSquared + 1e-7 * std::max(1.0, greedySquared) < greedySquared))
+        assignedSlots = std::move(spatialAssignment);
+
     // Greedy placement can reserve a nearby unit's slot for a distant unit,
     // creating unnecessary crossings. Relax pair assignments before issuing
     // orders; keep both the original slot identity and position together.
@@ -237,7 +280,21 @@ Result<FanOutReceipt> CommandFanOutSystem::fanOut(std::span<const ecs::EntityHan
                     travelDistance(a, assignedSlots[a].position) + travelDistance(b, assignedSlots[b].position);
                 const double after =
                     travelDistance(a, assignedSlots[b].position) + travelDistance(b, assignedSlots[a].position);
-                if (after + 1e-7 * std::max(1.0, before) < before) {
+                const double tolerance = 1e-7 * std::max(1.0, before);
+                const auto   squared   = [&](std::size_t unitIndex, WorldPosition target) {
+                    const auto   motion = selected[unitIndex]->motion();
+                    const double dx = double(motion->x) - target.x, dy = double(motion->y) - target.y;
+                    return dx * dx + dy * dy;
+                };
+                const double beforeSquared =
+                    squared(a, assignedSlots[a].position) + squared(b, assignedSlots[b].position);
+                const double afterSquared =
+                    squared(a, assignedSlots[b].position) + squared(b, assignedSlots[a].position);
+                // Equal total distance can still reverse a whole marching row. Balance travel
+                // in that tie so one arbitrary long assignment cannot freeze cohort pacing.
+                const bool balancedTie = std::abs(after - before) <= tolerance &&
+                                         afterSquared + 1e-7 * std::max(1.0, beforeSquared) < beforeSquared;
+                if (after + tolerance < before || balancedTie) {
                     std::swap(assignedSlots[a], assignedSlots[b]);
                     changed = true;
                 }

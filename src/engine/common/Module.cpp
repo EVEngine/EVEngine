@@ -108,6 +108,17 @@ void bindUntilKeyExists(HSQUIRRELVM vm, SQInteger tableIdx, const char* key, ssq
         runExposer(it->second, table, name.c_str());
         if (eveRawHas(vm, tableIdx, key)) return;
     }
+    // A name can be provided by a post-ECS hook rather than by any module exposer
+    // (eve.SceneEntity is: the Scene module registers a hook at static-init that
+    // creates it). Hooks only run once the script ECS base exists -- flushPostEcsHooks
+    // is gated on it -- so a first lazy access to such a name scanned every module
+    // without ever injecting that base and then failed with "the index
+    // 'SceneEntity' does not exist", which is exactly the natural opening line
+    // `class MyThing extends eve.SceneEntity`. Inject the base script as the last
+    // step: every module has had its chance by now, so ensureScriptEcsInTable()'s
+    // precedence rules (it replaces a module-provided eve.System with the canonical
+    // one) are applied in the right order.
+    if (!eveRawHas(vm, tableIdx, key)) ensureScriptEcsInTable(table);
 }
 
 void bindOnDemand(HSQUIRRELVM vm, SQInteger tableIdx, const char* key) {
@@ -180,6 +191,10 @@ void ModuleManager::exposeVM(ssq::VM& vm) {
     // domain-module convenience. Expose it before module constructors run so
     // every checked binding observes the same `eve.result` helper.
     script::exposeResultBindings(table);
+    // Script-side provider publication is the same kind of common contract: it is
+    // how user script answers a native extension point, and it must exist before
+    // any module constructor declares a capability seam.
+    script::exposeProviderBindings(table);
     installLazyClassGet(table);
     table.addFunc("_bindAllNativeClasses", []() { return ModuleManager::exposeAllForCompatibility(); });
     table.addFunc("_ensureScriptECS", []() { return ModuleManager::ensureScriptEcs(); });

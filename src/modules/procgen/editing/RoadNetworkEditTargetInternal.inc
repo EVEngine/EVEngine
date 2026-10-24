@@ -29,11 +29,13 @@ EditorResult<T> roadFailure(const eve::Status& status) {
 }
 
 const EditorValue* field(const EditorValue& value, const char* name);
-bool readId(const EditorValue& value, const char* name, std::uint32_t& output);
-bool readNumber(const EditorValue& value, const char* name, float& output);
-bool readSmallInt(const EditorValue& value, const char* name, int minimum, int maximum, int& output);
+bool               readId(const EditorValue& value, const char* name, std::uint32_t& output);
+bool               readNumber(const EditorValue& value, const char* name, float& output);
+bool               readOptionalNumber(const EditorValue& value, const char* name, float& output);
+bool               readOptionalBool(const EditorValue& value, const char* name, bool& output);
+bool               readSmallInt(const EditorValue& value, const char* name, int minimum, int maximum, int& output);
 struct RoadIntersection {
-    int count = 0;
+    int                             count           = 0;
     float firstParameter = 0.f;
     float secondParameter = 0.f;
     procgen::road::RoadControlPoint firstPoint;
@@ -50,12 +52,14 @@ EditorValue encodeNodeControl(std::uint32_t id, procgen::road::RoadJunctionContr
 bool decodeNodeControl(const EditorValue& value, std::uint32_t& id, procgen::road::RoadJunctionControl& control);
 EditorValue encodeEdge(std::uint32_t id, const std::vector<procgen::road::RoadControlPoint>& points);
 EditorValue encodeStyle(std::uint32_t id, const procgen::road::RoadStyle& style);
-bool decodeStyle(const EditorValue& value, std::uint32_t& id, procgen::road::RoadStyle& style);
+bool        decodeStyle(const EditorValue& value, std::uint32_t& id, procgen::road::RoadStyle& style);
 bool decodeEdge(const EditorValue& value, std::uint32_t& id, std::vector<procgen::road::RoadControlPoint>& points);
 EditorValue encodeNodeRecord(const procgen::road::RoadNode& node);
-bool decodeNodeRecord(const EditorValue& value, procgen::road::RoadNode& node);
+EditorValue encodeConnection(const procgen::road::RoadConnection& connection);
+bool        decodeConnection(const EditorValue& value, procgen::road::RoadConnection& connection);
+bool        decodeNodeRecord(const EditorValue& value, procgen::road::RoadNode& node);
 EditorValue encodeLink(const procgen::road::RoadLaneConnection& link);
-bool decodeLink(const EditorValue& value, procgen::road::RoadLaneConnection& link);
+bool        decodeLink(const EditorValue& value, procgen::road::RoadLaneConnection& link);
 EditorValue encodeBlockedLink(const procgen::road::RoadLaneConnection& link, bool restoreActive);
 bool decodeBlockedLink(const EditorValue& value, procgen::road::RoadLaneConnection& link, bool& restoreActive);
 bool sameLink(const procgen::road::RoadLaneConnection& left, const procgen::road::RoadLaneConnection& right);

@@ -1,0 +1,66 @@
+{
+  "generator": "built-in image_gen",
+  "purpose": "concept references, not engine screenshots",
+  "images": [
+    {
+      "id": "beam",
+      "order": 1,
+      "path": "beam.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 1 of 10. Primary request: Concrete beam bridge, three spans, horizontal road deck carried by visible parallel longitudinal rectangular concrete girders underneath, two pairs of solid concrete piers, metal edge railings. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "slab",
+      "order": 2,
+      "path": "slab.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 2 of 10. Primary request: Short single span reinforced concrete slab bridge, broad thin solid slab deck without deep longitudinal girders, two simple end abutments, plain concrete parapets, no intermediate piers. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "arch",
+      "order": 3,
+      "path": "arch.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 3 of 10. Primary request: Single span open spandrel stone arch bridge, road deck on top, two elegant stone arch ribs BELOW the deck, vertical spandrel columns linking arch ribs to deck, masonry abutments. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "tiedArch",
+      "order": 4,
+      "path": "tiedArch.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 4 of 10. Primary request: Single span tied arch bridge, two steel arch ribs rising ABOVE the flat deck, straight vertical slender hangers from arches to deck, arch ends connected by deck ties, no river piers. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "throughTruss",
+      "order": 5,
+      "path": "throughTruss.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 5 of 10. Primary request: Single span steel Warren THROUGH TRUSS bridge, large triangular repeating diagonal trusses along both sides ABOVE the deck, transverse overhead cross braces, deck passes through truss. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "deckTruss",
+      "order": 6,
+      "path": "deckTruss.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 6 of 10. Primary request: Three span steel DECK TRUSS bridge, clearly visible deep repeating triangular trusses entirely BELOW the deck, open road on top, two intermediate concrete piers. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "suspension",
+      "order": 7,
+      "path": "suspension.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 7 of 10. Primary request: Classic two tower suspension bridge, two main cables in smooth sagging parabolic curves from tall towers, vertical suspenders connecting main cables to deck, side anchorage cables, flat road. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "cableStayed",
+      "order": 8,
+      "path": "cableStayed.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 8 of 10. Primary request: Two pylon cable stayed bridge, A-shaped towers, straight taut diagonal fan cables individually connecting tower tops to regular deck attachment points, no curved suspension cable. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "cantilever",
+      "order": 9,
+      "path": "cantilever.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 9 of 10. Primary request: Balanced cantilever steel truss bridge, two large pier-top triangular cantilever arms tapering outward toward a short suspended central truss span, variable-depth underdeck truss, clearly taller over piers. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    },
+    {
+      "id": "trestle",
+      "order": 10,
+      "path": "trestle.png",
+      "prompt": "Use case: stylized-concept. Asset type: bridge generator structural reference 10 of 10. Primary request: Timber railway-style pedestrian trestle bridge, horizontal wood plank deck on many closely spaced timber A-frame bents and diagonal cross braces BELOW deck, timber edge railings, no metal towers. Style: clean realistic game-engine architectural 3D asset render, all structural members clearly legible. Entire bridge in three-quarter elevated side view, long axis left to right, both ends and all foundations visible, consistent neutral pale gray studio ground, very shallow river ribbon for scale, overcast soft daylight, restrained material colors. Single bridge only, no buildings, no people, no vegetation obscuring structure, no labels, no text, no logo, no watermark. Aim for coherent mechanically reproducible geometry, useful as reference for a parameterized game engine mesh generator."
+    }
+  ]
+}

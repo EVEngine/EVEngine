@@ -206,6 +206,19 @@ public:
     [[nodiscard]] Result<void> editAnimationSectionSource(const LogicalId& sectionId, Duration sourceStart,
                                                                 Duration                 sourceEnd,
                                                                 action::ActionBlendCurve blendCurve);
+    /**
+     * @brief Atomically edit independent incoming and outgoing section envelopes.
+     * @param sectionId Stable id of the section edited on the owner thread.
+     * @param blendIn Incoming envelope duration.
+     * @param blendOut Outgoing envelope duration.
+     * @param blendInCurve Deterministic incoming curve.
+     * @param blendOutCurve Deterministic outgoing curve.
+     * @return Applied with one undo entry, or a validation diagnostic without mutation.
+     */
+    [[nodiscard]] Result<void> editAnimationSectionEnvelope(const LogicalId& sectionId, Duration blendIn,
+                                                            Duration blendOut,
+                                                            action::ActionBlendCurve blendInCurve,
+                                                            action::ActionBlendCurve blendOutCurve);
     /** @brief Replace every editable animation-section field in one undo step. */
     [[nodiscard]] Result<void> editAnimationSectionFull(action::ActionAnimationSection section);
     /** @brief Remove one animation section from the montage lane. */

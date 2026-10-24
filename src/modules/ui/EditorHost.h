@@ -134,6 +134,19 @@ public:
 
 private:
     EditorHost();
+    /**
+     * @brief Record one startup resource outcome so hotReloadStatus() can report it.
+     *
+     * `loadEditorsFromDisk()` used to discard the ViewModel's load result (and swallow the
+     * manifest parse exception), so a project whose editor script fails at startup looked
+     * healthy to an MCP client. Startup failures now go through the same bookkeeping as
+     * `reloadResource()`.
+     *
+     * @param path Project-relative resource path the outcome belongs to.
+     * @param result "ok", or an `"error: ..."` diagnostic.
+     * @note Thread affinity: any thread; the state is mutex-guarded.
+     */
+    void                  recordHostResourceOutcome(const std::string& path, const std::string& result);
     std::unique_ptr<Impl> impl_;
     bool                  running_       = false;
     bool                  allowWindow_   = true;

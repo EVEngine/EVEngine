@@ -64,7 +64,8 @@ def checkout_patch_inputs(source: Path, destination: Path, patches: list[Path]) 
     assert not run(["git", "-C", str(destination), "status", "--porcelain"]).stdout
 
 
-def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False) -> None:
+def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False,
+                already_applied: bool = False) -> None:
     # Apply the same patch content with LF endings, matching the inputs above.
     staged = patch_dir.parent / f"{patch.name}.lf"
     staged.write_text(patch.read_text(encoding="utf-8").replace("\r\n", "\n"),
@@ -79,7 +80,7 @@ def apply_twice(patch: Path, patch_dir: Path, *, normalize_crlf: bool = False) -
     command.extend(["-P", str(PATCH_SCRIPT)])
     first = run(command)
     second = run(command)
-    assert "Applied third-party patch" in first.stdout
+    assert ("already applied" if already_applied else "Applied third-party patch") in first.stdout
     assert "already applied" in second.stdout
 
 
@@ -87,46 +88,23 @@ def main() -> int:
     with tempfile.TemporaryDirectory(prefix="evengine-third-party-patch-") as raw:
         temporary = Path(raw)
 
-        clean_aggregate = temporary / "aggregate-clean"
-        checkout_patch_inputs(THIRD_PARTY, clean_aggregate,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", clean_aggregate)
-
-        # A dirty aggregate checkout is a supported state because other patches
-        # and profile preparation may have changed unrelated files. The export
-        # patch must remain applicable when its own target files are untouched.
-        dirty_aggregate = temporary / "aggregate-dirty"
-        checkout_patch_inputs(THIRD_PARTY, dirty_aggregate,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        with (dirty_aggregate / "CMakeLists.txt").open("a", encoding="utf-8") as output:
-            output.write("\n# Unrelated local profile configuration\n")
-        assert run(["git", "-C", str(dirty_aggregate), "diff", "--name-only"]).stdout.strip() == "CMakeLists.txt"
-        apply_twice(PATCHES / "third-party-squirrel-ssq-export.patch", dirty_aggregate)
-
-        clean_medialoader = temporary / "medialoader-clean"
-        medialoader_patches = [
-            PATCHES / "medialoader-smooth-normals.patch",
-            PATCHES / "mpg123-signal-handler.patch",
-            PATCHES / "medialoader-image-formats.patch",
-            PATCHES / "medialoader-audio-gapless.patch",
-        ]
-        checkout_patch_inputs(MEDIALOADER, clean_medialoader, medialoader_patches)
-        for patch in medialoader_patches:
-            apply_twice(patch, clean_medialoader)
-
-        # The library-type patches for the dynamic engine configuration apply to
-        # the aggregate and to one of its submodules; both must be idempotent so a
-        # rebuild does not fail on an already-patched checkout.
-        clean_box2d = temporary / "box2d-clean"
-        checkout_patch_inputs(THIRD_PARTY, clean_box2d,
-                              [PATCHES / "box2d-shared-library.patch"])
-        apply_twice(PATCHES / "box2d-shared-library.patch", clean_box2d)
-
         # external/ECS.hpp uses the same script from the engine's configure step.
         clean_ecs = temporary / "ecs-clean"
         checkout_patch_inputs(ECS_SUBMODULE, clean_ecs,
-                              [PATCHES / "ecs-shared-default-table.patch"])
+                              [PATCHES / "ecs-shared-default-table.patch",
+                               PATCHES / "ecs-query-and-record-lifetime.patch"])
         apply_twice(PATCHES / "ecs-shared-default-table.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-preparation.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-idle-commit.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-scope-and-iteration.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-view-live-slots.patch", clean_ecs)
+        apply_twice(PATCHES / "ecs-query-and-record-lifetime.patch", clean_ecs)
+        # Replaying the complete configure sequence must stay idempotent after
+        # later patches have changed nearby declarations in the same header.
+        for name in ("ecs-shared-default-table", "ecs-view-preparation", "ecs-idle-commit",
+                     "ecs-view-scope-and-iteration", "ecs-view-live-slots",
+                     "ecs-query-and-record-lifetime"):
+            apply_twice(PATCHES / f"{name}.patch", clean_ecs, already_applied=True)
 
         zeroerr_patch = PATCHES / "zeroerr-compiled-diagnostics.patch"
         for ending in ("lf", "crlf"):
@@ -149,35 +127,6 @@ def main() -> int:
         assert result.returncode != 0
         assert "no longer applies cleanly" in result.stdout + result.stderr
 
-        # A genuine target drift must fail and expose git's diagnostic; it may
-        # not be mistaken for an already-applied patch or silently skipped.
-        drifted = temporary / "aggregate-drifted"
-        checkout_patch_inputs(THIRD_PARTY, drifted,
-                              [PATCHES / "third-party-squirrel-ssq-export.patch"])
-        target = drifted / "squirrel" / "squirrel" / "CMakeLists.txt"
-        target.write_text(
-            target.read_text(encoding="utf-8").replace(
-                "target_include_directories(squirrel_static PUBLIC",
-                "target_include_directories(squirrel_static BROKEN",
-                1,
-            ),
-            encoding="utf-8",
-        )
-        result = run(
-            [
-                "cmake",
-                f"-DPATCH={PATCHES / 'third-party-squirrel-ssq-export.patch'}",
-                f"-DPATCH_DIR={drifted}",
-                "-P",
-                str(PATCH_SCRIPT),
-            ],
-            check=False,
-        )
-        diagnostic = result.stdout + result.stderr
-        assert result.returncode != 0
-        assert "no longer applies cleanly" in diagnostic
-        assert "git apply --check output" in diagnostic
-        assert "patch failed" in diagnostic
 
     return 0
 

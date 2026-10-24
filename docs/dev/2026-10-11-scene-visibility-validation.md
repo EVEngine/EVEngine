@@ -51,7 +51,7 @@ WebGPU 等尚无实现的 backend 走结构化 Unsupported，不退回包围盒�
 
 原生 smoke 包含 0/25/50/100% 遮挡、前后深度交换、offscreen、多个网格聚合、透明拒绝、
 失效句柄、token 重复消费、物理候选渲染、文档与历史隔离；截图来自引擎捕获。
-`test/scene_visibility.cpp` 包含 schema、相机退化、未知字段、预算、provider 缺失及失效 query 测试。
+`test/unit/scene/scene_tests.cpp` 包含 schema、相机退化、未知字段、预算、provider 缺失及失效 query 测试。
 同一流程在 SHARED/OBJECT 分别通过 46 个局部合约测试与实际引擎 smoke。
 已知目标 fullPixels=1936，四档 visibleFraction 精确为 1、0.75、0.5、0；遮挡来源均为 blocker。
 候选移到后方 visibleFraction=1，offscreen 为 Unmeasurable；查询前后实时截图逐像素一致。

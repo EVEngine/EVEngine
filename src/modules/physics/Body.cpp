@@ -39,7 +39,7 @@ Body::~Body() {
     if (body_ && world_ && world_->raw()) {
         std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
         for (Joint2D *joint : joints) {
-            if (joint && joint->isValid() && (joint->bodyA_ == this || joint->bodyB_ == this))
+            if (joint && joint->isValid() && (joint->getBodyAId() == getId() || joint->getBodyBId() == getId()))
                 joint->destroy();
         }
         // Invalidate fixture wrappers before DestroyBody frees b2Fixtures.
@@ -54,6 +54,7 @@ Body::~Body() {
             f = next;
         }
         body_->SetUserData(nullptr);
+        world_->releaseBodyJoints2D(*this);
         world_->raw()->DestroyBody(body_);
         world_->forgetBody(this);
     }
@@ -76,7 +77,7 @@ void Body::destroy() {
     }
     std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
     for (Joint2D *joint : joints) {
-        if (joint && joint->isValid() && (joint->bodyA_ == this || joint->bodyB_ == this))
+        if (joint && joint->isValid() && (joint->getBodyAId() == getId() || joint->getBodyBId() == getId()))
             joint->destroy();
     }
     b2Fixture *f = body_->GetFixtureList();
@@ -90,6 +91,7 @@ void Body::destroy() {
         f = next;
     }
     body_->SetUserData(nullptr);
+    world_->releaseBodyJoints2D(*this);
     world_->raw()->DestroyBody(body_);
     world_->forgetBody(this);
     body_  = nullptr;

@@ -338,10 +338,11 @@ composed dependency contract, see
   At 5000 lines or more, decide whether to split along stable sections based on
   that review. Do not merge actively edited files owned by different agents
   merely to reduce the OBJ count. Shared catalogues still put module-scoped
-  architecture-contract entries and user-manual topics in
-  module-owned fragments (`cmake/module_manifest/modules/<host>.cmake`,
-  `scripts/architecture_contracts/<host>.json`), and keep only
-  order/composition in the hub file.
+  user-manual topics in module-owned fragments
+  (`cmake/module_manifest/modules/<host>.cmake`), and keep only
+  order/composition in the hub file. Architecture shape checks are code-first
+  (`scripts/check_architecture_contracts.py`); do not reintroduce a parallel
+  JSON catalogue.
 - **Mechanical cross-module sweeps are their own PR.** Repo-wide renames,
   export-macro annotation, and Doxygen sweeps must not ride along inside a
   feature branch; land them alone (preferably batched by host package) so
@@ -457,10 +458,13 @@ make check
 
 That includes architecture contracts against `CI_BASE` (default `origin/dev`).
 Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
-`scripts/architecture_contracts/` (per-module shards; composed snapshot at
-`scripts/architecture_contracts.json`) is the single catalogue for contract
-evidence; do not silence a finding with a new baseline, allowlist, or broad
-scope. A compatibility facade may retain a legacy shape only when the public
+`make check/architecture-contracts` is a **changed-line code lint**
+(`scripts/check_architecture_contracts.py`: api-shape, raw-pointer lifetime
+tags, runtime `getModInst` ban, hot-path primitive ban, `@cost`). There is no
+JSON contract catalogue — do not reintroduce hand-copied `provides`/`requires`/
+`systems` lists. Hot-path files live in `HOT_PATH_GLOBS` inside that script.
+See `docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`.
+A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical
 Result/status API is the inward implementation. New debt markers still require the
 owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

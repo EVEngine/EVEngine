@@ -26,4 +26,3 @@ eve_declare_module(NAME tilelayer_target DIR map/tilelayer_target LAYER 7
 eve_declare_module(NAME level_editor LAYER 7 DEPS editor level_editing
                    SCRIPT LevelEditorModule SLOT levelEditor GROUP 2d 3d web)
 
-eve_declare_module(NAME map_editor LAYER 7 DEPS editor map_editing GROUP 2d 3d web)

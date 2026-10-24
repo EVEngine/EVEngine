@@ -45,9 +45,10 @@ struct TerrainProbeTile {
     std::string name;
     PointSet* probes = nullptr;
     const Heightmap* heights = nullptr;
-    double originX = 0, originZ = 0, width = 1, depth = 1;
-    int resolutionX = 0, resolutionY = 0;
-    bool worldMap = false;
+    double           originX = 0, originZ = 0, width = 1, depth = 1;
+    int              resolutionX = 0, resolutionY = 0;
+    bool             worldMap = false;
+    double originY = 0;  ///< Added to sampled terrain height; explicit sea/custom height modes remain world absolute.
 };
 
 /**

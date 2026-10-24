@@ -1,4 +1,5 @@
 #pragma once
+#include <span>
 
 #include <cstdint>
 #include <memory>
@@ -7,6 +8,11 @@
 #include "common/Result.h"
 
 namespace eve::procgen {
+class MeshBuild;
+namespace road {
+struct RoadTerrainWriteOptions;
+struct RoadTerrainWrite;
+}  // namespace road
 class Heightmap;
 class PointSet;
 class TerrainDetailLayer;
@@ -37,9 +43,10 @@ struct TerrainWorldCreationSettings {
     int objectResolution = 1024;
     int splatLayers = 1, defaultSplatLayer = 0;
     int defaultDetailDensity = 0;
-    bool worldMap = false;
-    std::string namePrefix = "Terrain";
+    bool        worldMap             = false;
+    std::string namePrefix           = "Terrain";
     std::string nameSuffix;
+    float       originY = 0.f;  ///< Finite world baseline shared by road projection and terrain-relative placements.
 };
 
 /** @brief Select Pcg spawn domains to clear in one atomic world operation. */
@@ -73,6 +80,27 @@ public:
     TerrainWorldWorkspace& operator=(const TerrainWorldWorkspace&) = delete;
     /** @brief Atomically replace the world with a zero-height centered tile grid. */
     [[nodiscard]] Result<int> create(const TerrainWorldCreationSettings& settings);
+    /** @brief Write baked road height, texture weights, details, trees and explicit holes as one world transaction.
+     * @param mesh Borrowed road mesh, retained only for this synchronous call.
+     * @param options Explicit channel policy and shared all-tile work budget.
+     * @return Changed channel elements; failures preserve every world channel, history and redo branch.
+     * @cost Linear in bounded terrain history and road raster work, amortized per explicit world build.
+     * @note Owner-thread only, no callbacks; native tree attributes and unrelated objects/probes are preserved.
+     */
+    [[nodiscard]] Result<int> conformRoad(const MeshBuild& mesh, const road::RoadTerrainWriteOptions& options);
+    /** @brief Publish ordered per-road terrain writes in one native World undo frame.
+     * @param writes Borrowed nonempty operation span; meshes must live until this synchronous call returns.
+     * @param maximumWork Shared raster budget in addition to each operation's own cap.
+     * @return Changed channel elements; failure preserves all World resources and redo history.
+     * @cost One complete-world candidate and bounded per-operation raster work, amortized per explicit road build.
+     * @note Owner-thread only, no callbacks; no borrowed input is retained.
+     */
+    [[nodiscard]] Result<int> conformRoadBatch(std::span<const road::RoadTerrainWrite> writes, std::size_t maximumWork);
+    /** @brief Copy one tile's binary hole mask (one denotes missing terrain).
+     * @return Owning heightmap value or a structured invalid tile diagnostic; no borrowed view survives a call.
+     * @cost Linear in this tile's hole samples, amortized at terrain publication boundaries.
+     */
+    [[nodiscard]] Result<Heightmap> copyHoles(int index) const;
     /** @brief Apply one height stamp and record a complete-world snapshot. */
     [[nodiscard]] Result<int> stamp(const Heightmap& stamp, const TerrainStampSettings& settings,
                                     const Heightmap& localMask, const Heightmap& globalMask);
@@ -120,7 +148,7 @@ public:
     [[nodiscard]] Result<int> flatten();
     /**
      * @brief Set every owned height sample from a world-unit elevation using Pcg's Clamp01 conversion.
-     * @param heightWorldUnits Requested world elevation.
+     * @param heightWorldUnits Requested absolute world elevation; originY is subtracted before normalization.
      * @param worldHeightSpan Positive vertical size represented by normalized height 1.
      * @return Changed sample count; validation failure leaves the complete world and history unchanged.
      */
@@ -145,6 +173,8 @@ public:
     [[nodiscard]] Result<double> getTileOriginX(int index) const;
     /** @brief Return a tile's world Z origin. */
     [[nodiscard]] Result<double> getTileOriginZ(int index) const;
+    /** @brief Return the owning world height baseline for a valid tile index; no borrowed state escapes. */
+    [[nodiscard]] Result<double> getTileOriginY(int index) const;
     /** @brief Restore the previous complete-world snapshot. */
     [[nodiscard]] Result<int> undo();
     /** @brief Restore the next complete-world snapshot. */

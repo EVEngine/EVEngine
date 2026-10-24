@@ -128,6 +128,10 @@ eve::editing::Result<void> EditorTargetCoordinator::registerPlannedCommand(
     hostDescriptor.displayName       = std::move(descriptor.displayName);
     hostDescriptor.category          = std::move(descriptor.category);
     hostDescriptor.automationAllowed = descriptor.automationAllowed;
+    hostDescriptor.targetKinds       = std::move(descriptor.targetKinds);
+    hostDescriptor.payloadSchema     = std::move(descriptor.payloadSchema);
+    hostDescriptor.panelCapability   = std::move(descriptor.panelCapability);
+    hostDescriptor.panelContext      = std::move(descriptor.panelContext);
     auto registered = impl_->commands->registerPlannedCommand(
         std::move(hostDescriptor),
         [state = impl_.get(), planner = std::move(planner)](const CommandRequest& request) {

@@ -6,16 +6,41 @@
  */
 
 #include "physics/PhysicsHandles.h"
+#include "physics/backend/RigidTypes3D.h"
 
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 namespace eve::physics {
 
-/** @brief Allocation-free owning three-dimensional physics value. */
-struct PhysicsVector3D {
-    float x = 0.f, y = 0.f, z = 0.f;
+
+/** @brief Whether a bounded contact query observed every available point. */
+enum class ContactQueryCoverage3D { Complete, Truncated };
+
+/** @brief Owning contact point, oriented from the queried body toward its neighbour. */
+struct BodyContactPoint3D {
+    int      shapeId       = -1;
+    int      shapeTag      = 0;
+    int      otherBodyId   = -1;
+    int      otherShapeId  = -1;
+    int      otherShapeTag = 0;
+    uint32_t featureId     = 0;
+    float    x = 0.f, y = 0.f, z = 0.f;
+    float    normalX = 0.f, normalY = 0.f, normalZ = 0.f;
+    float    separation         = 0.f;
+    float    normalImpulse      = 0.f;
+    float    totalNormalImpulse = 0.f;
+    float    normalVelocity     = 0.f;
+    bool     persisted          = false;
+};
+
+/** @brief Snapshot of current contacts; values survive later queries and world destruction. */
+struct BodyContacts3D {
+    PhysicsBodyHandle               body     = PhysicsBodyHandle::invalid();
+    ContactQueryCoverage3D          coverage = ContactQueryCoverage3D::Complete;
+    std::vector<BodyContactPoint3D> points;
 };
 
 /** @brief Query filter applied atomically for one owning query operation. */

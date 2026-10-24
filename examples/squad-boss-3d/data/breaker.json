@@ -1,0 +1,26 @@
+{
+  "schema": "eve.action.timeline",
+  "schemaVersion": 4,
+  "actionId": "squad-action:breaker",
+  "durationNs": 1200000000,
+  "animationUri": "",
+  "animationSections": [],
+  "splitTimestampsNs": [
+    450000000,
+    750000000
+  ],
+  "metadata": {},
+  "tracks": [],
+  "montage": {
+    "basePlayRate": 1.0,
+    "looping": false,
+    "footIk": false,
+    "animationLayer": 0,
+    "defaultBlendInNs": 0,
+    "defaultBlendOutNs": 0,
+    "blendOutOffsetNs": 0,
+    "rootMotionHorizontal": false,
+    "rootMotionVertical": false,
+    "rootMotionRotation": false
+  }
+}

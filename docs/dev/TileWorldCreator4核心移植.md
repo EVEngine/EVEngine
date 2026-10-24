@@ -66,12 +66,12 @@ Unity Renderer/Collider 组件或示例美术资产；这些是宿主编辑器�
   地面与对象场景缓存直接消费 8×8 格子簇的 upsert/removal delta，不再额外执行完整 build stack。
   同一 delta 还驱动每簇静态三角网格碰撞体的替换/回收。运行时会选取可行走端点、执行
   `grid.path`，并验证 MeshBuild 上传、空对象簇、热重载和换 seed 重建。
-- `test/procgen_grid_graph.cpp`：生成器、选择器、寻路、autotile、TilePreset 精确配置、Grid→PointGraph、Grid/Point→Mesh、
+- `test/unit/procgen/procgen_foundation_tests.cpp`：生成器、选择器、寻路、autotile、TilePreset 精确配置、Grid→PointGraph、Grid/Point→Mesh、
   类型拒绝、环、缓存失效和两种定义格式回读。
-- `test/procgen_object_build_layer.cpp`：加权资产、确定性随机变换、朝向、place-on-top、子对象和失败路径。
+- `test/unit/procgen/procgen_foundation_tests.cpp`：加权资产、确定性随机变换、朝向、place-on-top、子对象和失败路径。
 - `test/procgen_build_layer_stack.cpp`：层顺序/启用状态、混合 artifact、版本往返、未知字段和损坏配置原子拒绝。
-- `test/procgen_incremental_build.cpp`：稳定缓存、簇内与边界脏区传播、删除 delta、全局坐标网格分片、
+- `test/unit/procgen/procgen_foundation_tests.cpp`：稳定缓存、簇内与边界脏区传播、删除 delta、全局坐标网格分片、
   参数拒绝以及失败时事务回滚。
-- `test/procgen_result_contract.cpp`：Squirrel 创建拥有型 Grid2D 并直接绑定 GridGraph，随后执行
+- `test/integration/concurrency/concurrency_graphics_tests.cpp`：Squirrel 创建拥有型 Grid2D 并直接绑定 GridGraph，随后执行
   GridGraph/MeshGraph 并取得拥有型 MeshBuild，覆盖跨图代理的生命周期与类型契约。
 - `src/modules/procgen/GridGraphAlgorithms.cpp`：独立确定性算法实现。

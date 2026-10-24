@@ -1,8 +1,12 @@
 #pragma once
 #include "common/Value.h"
 #include "rts/RTSSystems.h"
+#include "transaction/Transaction.h"
 namespace ssq {
 class Class;
+}
+namespace eve::definitions {
+class DefinitionRegistry;
 }
 namespace eve::rts::script_internal {
 inline Result<SubjectRef> parseScriptSubject(std::string_view text, std::string_view path) {
@@ -37,6 +41,18 @@ inline Value fanOutValue(FanOutReceipt receipt) {
                                {"orderIds", Value(std::move(orderIds))}});
 }
 
+Result<RTSEffectDefinition> resolveEffectDefinition(definitions::DefinitionRegistry& registry, std::string_view id,
+                                                    SubjectRef source, double durationOverride = -1.0);
+Result<std::unique_ptr<transaction::ITransactionParticipant>> stageAbility(Unit& caster, AbilitySpec spec,
+                                                                           ecs::EntityHandle target,
+                                                                           WorldPosition     point);
+
 // Private binding registration; the owning RTS class controls lifetime and VM.
 void exposeFormationBindings(ssq::Class& cls);
+/** @brief Compose explicit, atomic placement operations at the movement binding boundary. */
+void exposeRelocationBindings(ssq::Class& cls);
+/** @brief Compose checked automatic surface tracking bindings. */
+void exposeCrowdSurfaceBindings(ssq::Class& cls);
+void exposeEconomyBindings(ssq::Class& cls);
+void exposeStageBindings(ssq::Class& cls);
 }  // namespace eve::rts::script_internal

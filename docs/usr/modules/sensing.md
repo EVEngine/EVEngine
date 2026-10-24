@@ -111,6 +111,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 | 拥有型 World | `ownership()` / `ownerEpoch()` / `handle()` / `isStale()` / `release()` | 查询世代生命周期或释放 World。 |
 | World | `upsert` / `remove` / `setZones` | 写入/删除主体事实，或更新逻辑 Zone 成员。 |
 | World | `query` / `circle` / `box` / `executePreset` / `resultAt` | 查询候选并读取缓存结果。 |
+| World | `queryPositions` | 圆环位置候选与距离评分，返回拥有型结果；可选 LOS。 |
 | World | `setSpatialIndexEnabled` / `spatialIndexEnabled` / `debugLastQueryJson` | 可选空间广相与上次查询调试 JSON。 |
 | World | `snapshotJson` / `restoreJson` | 确定性快照或事务性恢复 Result。 |
 | `SensingCandidate` | `getId()` / `getX()` / `getY()` / `getDistance()` | `resultAt` 返回的只读候选字段。 |
@@ -118,7 +119,7 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 
 **源码：** [`src/modules/sensing/`](../../../src/modules/sensing/)  
 **设计文档：** [`docs/dev/感知与目标选择系统设计.md`](../../dev/感知与目标选择系统设计.md)  
-**相关测试：** [`test/sensing.cpp`](../../../test/sensing.cpp)、[`test/targeting.cpp`](../../../test/targeting.cpp)
+**相关测试：** [`test/integration/script-api/script_api_graphics_scene_tests.cpp`](../../../test/integration/script-api/script_api_graphics_scene_tests.cpp)、[`test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp`](../../../test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp)、[`test/integration/sensing/environment_query_tests.cpp`](../../../test/integration/sensing/environment_query_tests.cpp)
 
 ## 消费者迁移（Phase 3）
 
@@ -132,6 +133,130 @@ auto ranked = pipeline.executePreset(ctx, "sensing.builtin.coneSelect");
 - `debugLastQueryJson()` 返回上次成功查询的确定性 JSON（`eve.sensing.lastQuery`）：origin、shape、spatial.enabled/used/scanned/accepted、ranked scores。可供 MCP/debug overlay 消费；sensing 不依赖 editor。
 - 当前查询路径保持同步；异步 request 未引入。
 
+## 编译式环境查询
+
+`EnvironmentQuery.h` 提供位置与主体共用的测量执行器。入口分为
+`EnvironmentQueryPlan::compile(definition)` → `plan.instantiate(request)` →
+`instance.run(services)`。计划拥有不可变配置和测量实现，实例拥有 Context 快照、
+候选和诊断；两者均不借用定义对象。实例只运行一次，返回值不设置 primary。
+
+`SensingWorld::executeEnvironmentQuery(plan, request, services)` 是带 MCP 诊断发布的
+组合入口，调用相同执行器。它不修改旧的 `resultAt()` 缓存；环境查询返回拥有型结果。
+`environmentInput(origin, spec)` 用既有空间广相收集主体，不排序、不应用最终数量限制，
+也不发布中间结果。主体键是 World 内的事实键，不冒充持久 UUID。
+
+### 查询定义与 Context
+
+- `contexts` 声明名字；请求提供同名的非空、同坐标空间位置集合。实例创建时按槽位解析一次。
+- `Input` 生成器使用请求里的主体或位置；`Ring` / `Grid` 在 World2D 或 World3D 的 XY 平面生成点。
+  3D 点保留中心 Z，**不自动投影导航网格**。Grid2D/3D 可使用 Input 和距离测试。
+- `maxItems` 是资源硬上限，超过会失败，不静默截断；`maxResults` 只限制最终返回量。
+- Option 有优先级：当前 Option 没有合格候选才尝试下一项；错误立即传播，不转换为兜底。
+- Context 是本次请求的值快照；LOS 后端仍读实时世界。消费方使用位置前应按玩法需要再次验证。
+
+### 测试与评分
+
+内置 Distance 和 LineOfSight；C++ 可实现 `IEnvironmentMetric` 返回有限原始数值。
+一次测量由框架同时用于过滤和评分，不要求自定义实现再次遍历或重写归一化。
+
+| 配置 | 行为 |
+|---|---|
+| `purpose` | Filter / Score / FilterAndScore |
+| `filterOp` | 每个 Context 的范围判断取 All 或 Any |
+| `aggregate` | 所有 Context 原始值取 Average / Minimum / Maximum，独立于过滤组合 |
+| `normalization` | FixedRange 或 ActivePopulation（当前测试通过的有效候选） |
+| `preference` | Higher / Lower / Reference（靠近 referenceValue） |
+| `curve` | Linear / Square / SquareRoot |
+| `weight` | 非负有限权重，贡献累加为总分 |
+
+相对归一化遇到相同上下界时贡献为零；同分按候选 ID 排序。缺失指标、NaN、溢出
+是结构化失败。测试完成即固定该测试的归一化范围，后续过滤不会追溯改写评分。
+
+### 安全优化
+
+`optimize` 只重排声明 `reorderable` 的连续测试段，有依赖的自定义测试构成屏障。
+固定范围评分时，纯过滤测试优先，并按成本排序；所有参与评分的测试保留相对顺序，
+避免浮点累加次序改变同分边界。存在 ActivePopulation 评分时
+保留作者顺序，避免改变归一化语义。
+
+`mode = Best` 只返回一个最优合格候选，仍不设置 primary。所有测试可重排且没有相对
+归一化时，可以把一个昂贵纯过滤测试延后，按既有分数顺序验证直到首个通过者。
+All 模式和有顺序屏障的查询不执行这一早停。该模式不是取一次 top-1 后再过滤。
+
+### 脚本位置查询与 MCP
+
+```squirrel
+local world = eve.Sensing().newWorld().value;
+local result = world.queryPositions(0.0, 0.0, 10.0, 0.0, 3.0, 16, 1, false);
+if (result.ok && result.value.ranked.len() > 0) {
+    local position = result.value.ranked[0].location;
+    // 消费者自行决定是否移动到 position.x / position.y。
+}
+```
+
+参数依次是 originX、originY、targetX、targetY、radius、samples、limit、requireLineOfSight，
+脚本必须传满。该便利入口每次编译并执行圆环查询；频繁的 C++ 调用应保留计划。
+开启 LOS 时检查的是 target → candidate，缺少后端返回 Unsupported。
+圆环查询按到 origin 的直线距离评分，不保证可达、不提供路径规划。
+
+`debugLastQueryJson()` 保留 `eve.sensing.lastQuery` v1 既有字段，并增添可空 `environment`。
+其内部 `eve.sensing.environmentTrace` v1 包含计划 revision、状态、实际执行阶段、测量次数、
+被淘汰测试和各项分数贡献；成功时附 `eve.sensing.environmentResult` v1。
+`None/Summary/Detailed` 控制记录，详细候选达到 `maxTraceItems` 后标记 truncated。
+没有某测试贡献表示尚未测试，不能推断为通过。执行失败也发布失败 trace，旧主体结果不变。
+这些是输出协议，读者应忽略未知字段；没有反序列化入口或持久化查询资产格式。
+
+运行示例见 [`environment-query`](../../../examples/environment-query/README.md)。
+
+### 旧 Preset 的兼容行为
+
+`TargetingPipeline::compile()` 返回拥有任务引用的 `TargetingPlan`；`registerPreset` 编译后
+事务替换注册计划，已持有的旧计划继续使用旧定义。旧任务仍保持顺序，不参与环境测试优化。
+Select 的 min/maxCount 延后到管线末尾；显式 truncate 必须是最后一步。
+Select 只调用 `collectCandidates`，不再提前排序、截断或发布 World 结果。
+无显式排序的旧管线在末尾按距离排序；仅配置 truncate 时，在截断前补上距离排序。
+`SensingWorld::executePreset()` 只在整条成功后发布。
+
 ## Zone 成员
 
 `setZones(id, "ns:name,...")` 写入主体的逻辑 Zone 成员（`LogicalId` 文本）。`SensingWorldCandidateProvider` 将其投影为 `TargetCandidate.zones`，并支持 `TargetingSpec.zone` 过滤。几何 Zone 文档仍由 crowd/editor 等模块拥有；sensing 只镜像成员关系。
+
+## 用脚本提供候选（不用写 C++）
+
+`ISensingCandidateProvider` 这条插座可以由脚本实现：脚本发布一个对象、实现 `queryCandidates(query)`，
+`eve.sensing.TargetingResolver` 式的消费者就会用它来粗筛候选。
+
+```squirrel
+class MyCandidates {
+    function queryCandidates(query) {
+        // query.space         → "world2d" | "world3d" | "grid2d" | "grid3d"
+        // query.origin        → 发起查询的主体 uuid
+        // query.originLocation→ { space, x, y, z }
+        // query.domain        → "any" | "self" | "ally" | "enemy" | "neutral"
+        // query.minRange / query.maxRange（null = 无界）
+        // query.requiredTags / query.excludedTags / query.zone / query.area
+        local out = []
+        foreach (id in myEnemyIds()) {
+            out.append({ subject = id,
+                         location = { space = query.space, x = 3.0, y = 4.0 },
+                         domain = "enemy", tags = ["unit"], zones = ["arena:central"] })
+        }
+        return out
+    }
+}
+
+eve.provider.publishFor("eve.sensing.ISensingCandidateProvider", "game.candidates", MyCandidates())
+```
+
+要点：
+
+- **位置一律自带 `space`，且必须与 `query.space` 一致**。格子与世界单位不可互换，不一致时本次查询
+  返回 `Unsupported`（提示显式换算），而不是猜一个单位。格子坐标必须是整数。
+- `domain` 缺省 `neutral`，`tags`/`zones` 缺省为空；`zones` 用 `LogicalId` 文本（如 `arena:central`）。
+- **可见性与数量策略不由提供方负责**：`lineOfSight` / `minCount` / `maxCount` / `countPolicy` 是
+  消费者的策略，不会下发；脚本只返回粗筛候选，过滤与排序由消费者完成。
+- `query.area` 是可选的空间约束，形状有 `circle2d` / `box2d` / `sphere3d` / `box3d` / `cone2d` /
+  `gridBox2d` / `gridBox3d`；字段见 `SensingScriptCandidateSeam.h`。
+- 失败不静默：脚本没实现该方法 → `Unsupported`；脚本抛错 → 查询失败（`Failed`）；答案形状不对
+  （不是数组、主体不是规范 uuid、坐标不是数）→ `Rejected`。发布脚本 sink 会顶掉原生提供方，并在
+  `eve.log` 里留一行 `warn`。

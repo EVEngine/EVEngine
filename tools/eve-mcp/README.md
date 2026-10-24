@@ -63,6 +63,11 @@ forwards stdio. On client disconnect / SIGTERM it stops the child process.
 | `eve_input_status` | Whether injection / UI / capture providers are live |
 | `eve_input_batch` | Inject `key` / `mouse_move` / `mouse_button` / `wheel` / `text` / `ui_click` / `wait`; optional `waitFrames` + `capture` |
 | `eve_input_poll` | Drain a pending wait/capture across game-loop polls |
+| `eve_scene_batch` | Apply many `eve_scene_modify`-shaped white-box actions in one round-trip |
+| `eve_whitebox_playtest` | Recipe: optional reset + scene batch + input playtest + optional `eve_play` batch |
+
+For a Cursor-facing stdio MCP that auto-polls input and evaluates `assert[]`, see
+[`tools/whitebox-playtest/`](../whitebox-playtest/).
 
 Example closed loop:
 

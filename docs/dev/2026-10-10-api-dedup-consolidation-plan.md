@@ -44,7 +44,7 @@
 | 容器转移 | `eve::container::IContainer` | inventory/card/building/vehicle adapters |
 | 结算 | `settlement::Settlement` | 领域 policy + adapter |
 | 跨模块事件 | `game_event::GameEventLog` | 本地队列可保留，重要结果应上报 |
-| 决策原语 | `decision::Condition` / `DecisionContext` | |
+| 决策原语 | `condition::Condition` / `npc_ai::DecisionContext` | |
 | 物理查询 | `physics::World` / `World3D` | LoS 用既有 adapter |
 | CPU 资源缓存 | `ResourceManager` | GPU path cache 仍在 Graphics，分层保留 |
 | 向上依赖 | `eve::cap::provide/query` | 禁止新的向上 `#include` |

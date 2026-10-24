@@ -139,7 +139,7 @@ Godot 4.x 内置网络栈，差距集中在「游戏网络层」：UDP 可靠性
 | `src/modules/network/Network.cpp` | `pollSockets` flush + `newWriter` / `newReader` 绑定 |
 | `src/modules/network/HttpRequest.cpp` | TLS 分支（`EVE_HAVE_NETSSL`，待依赖） |
 | `CMakeLists.txt` | NetSSL/OpenSSL 检测（待依赖） |
-| `test/network.cpp` | 部分发送、序列化用例 |
+| `test/integration/concurrency/concurrency_graphics_tests.cpp` | 部分发送、序列化用例 |
 | `docs/usr/modules/network.md` | API 快查同步 |
 
 ## 验证
@@ -172,7 +172,7 @@ Godot 4.x 内置网络栈，差距集中在「游戏网络层」：UDP 可靠性
 - 独立验证程序（`build/win32-debug/net_standalone_test.cpp`，绕过引擎事件栈，
   仅链接 network 模块 + Poco + 脚本库）四项全绿：
   序列化往返 / 越界安全 / 2 MiB TCP 冲刷（逐字节校验）/ 512 KiB Channel 帧重组。
-- `test/network.cpp` 新增同套用例，单独编译通过；全量 `unit_test` 本机受阻于
+- `test/integration/concurrency/concurrency_graphics_tests.cpp` 新增同套用例，单独编译通过；全量 `unit_test` 本机受阻于
   **既有** `src/modules/scene/loader/SceneLoader.cpp` 编译错误（引用 `SceneNode`
   不存在的成员，主仓库该文件已更新、本 worktree 落后），与本改动无关。
 
@@ -248,6 +248,6 @@ type：0=ReliableData 1=UnreliableData 2=UnreliableOrderedData 3=Ack 4=Ping 5=Po
 - RPC：双向 `call`/`registerHandler` 往返正确。
 - NetHost：客户端建链（peerId=1）→ 双向消息 → 客户端失联（丢包率 1.0）后
   `peer_disconnected` 触发、peer 移除。
-- `test/network.cpp` 同步新增同名用例，单独编译通过。
+- `test/integration/concurrency/concurrency_graphics_tests.cpp` 同步新增同名用例，单独编译通过。
 
 阶段 3（复制与权威）设计要点已在「后续阶段设计要点」中，随实现补充。

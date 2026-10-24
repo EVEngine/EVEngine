@@ -1,7 +1,9 @@
 #include "common/Capability.h"
 #include "common/CrashHandler.h"
 #include "common/Exception.h"
+#include "common/GpuInfo.h"
 #include "common/GpuTimer.h"
+#include "common/Profile.h"
 #include "graphics/Color.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
@@ -9,6 +11,7 @@
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
+#include "image/ImageData.h"
 #include "window/Window.h"
 
 #if defined(EVENGINE_BENCH_PARTICLES)
@@ -18,6 +21,10 @@
 #endif
 
 #include <SDL2/SDL.h>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
+#include <assimp/Importer.hpp>
+#include <stdexcept>
 
 #include <algorithm>
 #include <chrono>
@@ -25,7 +32,11 @@
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
+#include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -172,9 +183,79 @@ void spawnCubes(Mesh *mesh, Texture *tex, std::size_t count, bool lit, bool shad
     }
 }
 
+// Benchmark-only geometry; generation/import/upload are outside timed frames.
+Mesh *highPolyMesh(Graphics *gfx, int side, const char *path) {
+    std::vector<float>         pos, normals, uv;
+    std::vector<std::uint32_t> indices;
+    if (path && path[0]) {
+        Assimp::Importer importer;
+        const auto      *scene = importer.ReadFile(
+            path, aiProcess_Triangulate | aiProcess_PreTransformVertices | aiProcess_GenSmoothNormals);
+        if (!scene || !scene->HasMeshes()) throw std::runtime_error(importer.GetErrorString());
+        for (unsigned m = 0; m < scene->mNumMeshes; ++m) {
+            const auto &mesh = *scene->mMeshes[m];
+            if (!mesh.HasNormals()) throw std::runtime_error("model mesh has no surface normals");
+            const auto base = static_cast<std::uint32_t>(pos.size() / 3);
+            for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
+                const auto &v = mesh.mVertices[i];
+                const auto &n = mesh.mNormals[i];
+                pos.insert(pos.end(), {v.x, v.y, v.z});
+                normals.insert(normals.end(), {n.x, n.y, n.z});
+                uv.insert(uv.end(), {0.f, 0.f});
+            }
+            for (unsigned f = 0; f < mesh.mNumFaces; ++f) {
+                const auto &face = mesh.mFaces[f];
+                if (face.mNumIndices != 3) continue;
+                for (unsigned j = 0; j < 3; ++j) indices.push_back(base + face.mIndices[j]);
+            }
+        }
+        if (indices.empty()) throw std::runtime_error("model contains no triangles");
+        float lo[3] = {pos[0], pos[1], pos[2]}, hi[3] = {pos[0], pos[1], pos[2]};
+        for (std::size_t i = 0; i < pos.size(); ++i) {
+            lo[i % 3] = std::min(lo[i % 3], pos[i]);
+            hi[i % 3] = std::max(hi[i % 3], pos[i]);
+        }
+        const float extent = std::max({hi[0] - lo[0], hi[1] - lo[1], hi[2] - lo[2]});
+        if (!(extent > 0.f)) throw std::runtime_error("model bounds are empty");
+        for (std::size_t i = 0; i < pos.size(); ++i) pos[i] = (pos[i] - (lo[i % 3] + hi[i % 3]) * 0.5f) / extent;
+    } else {
+        // Six gridded cube faces projected onto a sphere: exactly 12*side*side triangles.
+        for (int face = 0; face < 6; ++face) {
+            const auto base = static_cast<std::uint32_t>(pos.size() / 3);
+            for (int y = 0; y <= side; ++y)
+                for (int x = 0; x <= side; ++x) {
+                    float     v[3]    = {};
+                    const int axis    = face / 2;
+                    v[axis]           = face % 2 ? -1.f : 1.f;
+                    v[(axis + 1) % 3] = 2.f * float(x) / float(side) - 1.f;
+                    v[(axis + 2) % 3] = 2.f * float(y) / float(side) - 1.f;
+                    const float len   = std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+                    for (float c : v) {
+                        pos.push_back(c / len * 0.5f);
+                        normals.push_back(c / len);
+                    }
+                    uv.insert(uv.end(), {float(x) / float(side), float(y) / float(side)});
+                }
+            for (int y = 0; y < side; ++y)
+                for (int x = 0; x < side; ++x) {
+                    const auto a = base + std::uint32_t(y * (side + 1) + x);
+                    const auto b = a + 1, c = a + std::uint32_t(side + 1), d = c + 1;
+                    if (face % 2)
+                        indices.insert(indices.end(), {a, c, b, b, c, d});
+                    else
+                        indices.insert(indices.end(), {a, b, c, b, d, c});
+                }
+        }
+    }
+    return gfx->newMeshFromArrays(pos.data(), normals.data(), uv.data(), int(pos.size() / 3), indices.data(),
+                                  int(indices.size()));
+}
+
 struct FrameStats {
     std::vector<double> cpuMs;
     std::vector<double> gpuMs;
+    std::map<std::string, eve::prof::ZoneSample> zones;
+    double                                       aggregationMs = 0.0;
 };
 
 void recordGpu(FrameStats &stats) {
@@ -191,6 +272,8 @@ FrameStats measureFrames(int warmup, int timed, Fn &&draw) {
         draw();
         pumpEvents();
     }
+    const bool diagnostics = std::getenv("EVENGINE_BENCH_PROFILE") != nullptr;
+    eve::prof::Profiler::setEnabled(diagnostics);
     using Clock = std::chrono::steady_clock;
     for (int i = 0; i < timed; ++i) {
         const auto started = Clock::now();
@@ -198,7 +281,20 @@ FrameStats measureFrames(int warmup, int timed, Fn &&draw) {
         pumpEvents();
         stats.cpuMs.push_back(std::chrono::duration<double, std::milli>(Clock::now() - started).count());
         recordGpu(stats);
+        if (diagnostics) {
+            stats.aggregationMs += eve::prof::Profiler::frameMark();
+            for (const auto &zone : eve::prof::Profiler::lastFrame()) {
+                auto &sum  = stats.zones[zone.module + "/" + zone.name + "/" + zone.thread];
+                sum.module = zone.module;
+                sum.name   = zone.name;
+                sum.thread = zone.thread;
+                sum.selfMs += zone.selfMs;
+                sum.totalMs += zone.totalMs;
+                sum.count += zone.count;
+            }
+        }
     }
+    eve::prof::Profiler::setEnabled(false);
     return stats;
 }
 
@@ -217,36 +313,54 @@ double mean(const std::vector<double> &values) {
     return sum / double(values.size());
 }
 
-void printJson(std::string_view workload, std::size_t items, int frames, int width, int height,
-               bool vsync, std::string_view backend, const FrameStats &stats) {
+void printJson(std::string_view workload, std::size_t items, int frames, int width, int height, bool vsync,
+               std::string_view backend, const FrameStats &stats, Mesh *measuredMesh = nullptr, double setupMs = 0.0) {
     const double p50 = percentile(stats.cpuMs, 50);
     const double p95 = percentile(stats.cpuMs, 95);
     const double avgMs = mean(stats.cpuMs);
     const double avgFps = avgMs > 0.0 ? 1000.0 / avgMs : 0.0;
     const double gpuP50 = percentile(stats.gpuMs, 50);
     const double gpuP95 = percentile(stats.gpuMs, 95);
+    const auto       *gpu     = eve::cap::query<eve::caps::IGpuInfo>();
+    const std::string gpuName = gpu && gpu->gpuReady() ? gpu->gpuName() : "unknown";
     std::cout << "RENDER_BENCHMARK_JSON={\"workload\":\"" << workload << "\",\"items\":" << items
               << ",\"frames\":" << frames << ",\"width\":" << width << ",\"height\":" << height
-              << ",\"vsync\":" << (vsync ? 1 : 0) << ",\"backend\":\"" << backend
-              << "\",\"p50Ms\":" << p50 << ",\"p95Ms\":" << p95 << ",\"avgMs\":" << avgMs
-              << ",\"avgFps\":" << avgFps << ",\"gpuSamples\":" << stats.gpuMs.size()
-              << ",\"gpuP50Ms\":" << gpuP50 << ",\"gpuP95Ms\":" << gpuP95 << "}\n";
+              << ",\"vsync\":" << (vsync ? 1 : 0) << ",\"backend\":\"" << backend << "\",\"p50Ms\":" << p50
+              << ",\"p95Ms\":" << p95 << ",\"avgMs\":" << avgMs << ",\"activeGpu\":" << std::quoted(gpuName)
+              << ",\"meshTriangles\":" << (measuredMesh ? measuredMesh->indexCount / 3 : 0)
+              << ",\"sceneTriangles\":" << (measuredMesh ? std::uint64_t(measuredMesh->indexCount / 3) * items : 0)
+              << ",\"setupMs\":" << setupMs << ",\"avgFps\":" << avgFps << ",\"gpuSamples\":" << stats.gpuMs.size()
+              << ",\"gpuTimingScope\":\"graphics-queue-span-delayed\""
+              << ",\"gpuP50Ms\":" << gpuP50 << ",\"gpuP95Ms\":" << gpuP95
+              << ",\"profilerAggregationMeanMs\":" << stats.aggregationMs / frames << ",\"cpuZones\":[";
+    bool first = true;
+    for (const auto &[key, zone] : stats.zones) {
+        (void)key;
+        if (!first) std::cout << ",";
+        first = false;
+        std::cout << "{\"name\":" << std::quoted(zone.name) << ",\"module\":" << std::quoted(zone.module)
+                  << ",\"thread\":" << std::quoted(zone.thread) << ",\"selfMeanMs\":" << zone.selfMs / frames
+                  << ",\"totalMeanMs\":" << zone.totalMs / frames << ",\"calls\":" << zone.count << "}";
+    }
+    std::cout << "]}\n";
 }
 
 void usage() {
-    std::cerr
-        << "Usage: render_benchmark [workload] [frames] [items] [width] [height]\n"
-           "  workload: all|clear|2d-rects|2d-textured|2d-sprites|3d-cubes|3d-lit|3d-shadows"
+    std::cerr << "Usage: render_benchmark [workload] [frames] [items] [width] [height]\n"
+                 "  workload: "
+                 "all|clear|2d-rects|2d-textured|2d-sprites|3d-cubes|3d-lit|3d-shadows|3d-highpoly|3d-highpoly-shadows"
 #if defined(EVENGINE_BENCH_PARTICLES)
-           "|gpu-particles"
+                 "|gpu-particles"
 #endif
-           "\n"
-           "  EVENGINE_PERF_FRAMES overrides [frames] (default 60).\n"
-           "  Build with -DEVENGINE_BUILD_RENDER_BENCHMARK=ON.\n";
+                 "\n"
+                 "  EVENGINE_PERF_FRAMES overrides [frames] (default 60).\n"
+                 "  Highpoly: EVENGINE_BENCH_SUBDIV=1..512 (default 128), EVENGINE_BENCH_MODEL=path.\n"
+                 "  Build with -DEVENGINE_BUILD_RENDER_BENCHMARK=ON.\n";
 }
 
 std::size_t defaultItems(std::string_view workload, std::size_t requested) {
     if (requested > 0) return requested;
+    if (workload.rfind("3d-highpoly", 0) == 0) return 1;
     if (workload.rfind("3d-", 0) == 0) return 1024;
     if (workload == "gpu-particles") return 16384;
     if (workload == "clear") return 0;
@@ -264,6 +378,8 @@ int runWorkload(Graphics *gfx, std::string_view workload, int frames, std::size_
     Texture *tint = makeSolid(gfx, 180, 90, 40);
     Mesh *cube = gfx->newMeshCube(1.f);
 
+    Mesh      *measuredMesh = nullptr;
+    double     setupMs      = 0.0;
     FrameStats stats;
     if (workload == "clear") {
         stats = measureFrames(warmup, frames, [&] {
@@ -297,6 +413,18 @@ int runWorkload(Graphics *gfx, std::string_view workload, int frames, std::size_
     } else if (workload == "2d-sprites") {
         spawnSprites(gfx, white, items);
         stats = measureFrames(warmup, frames, [&] { RenderSystem::render(*gfx); });
+    } else if (workload == "3d-highpoly" || workload == "3d-highpoly-shadows") {
+        const auto started       = std::chrono::steady_clock::now();
+        const auto requestedSide = parsePositive(std::getenv("EVENGINE_BENCH_SUBDIV"), 128);
+        if (requestedSide > 512 || items > 256) throw std::runtime_error("subdiv <= 512 and items <= 256 required");
+        measuredMesh = highPolyMesh(gfx, int(requestedSide), std::getenv("EVENGINE_BENCH_MODEL"));
+        if (!measuredMesh) throw std::runtime_error("mesh upload failed");
+        spawnCubes(measuredMesh, tint, items, true, workload == "3d-highpoly-shadows");
+        setupMs = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count();
+        stats   = measureFrames(60, frames, [&] {
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+        });
     } else if (workload == "3d-cubes" || workload == "3d-lit" || workload == "3d-shadows") {
         spawnCubes(cube, tint, items, workload != "3d-cubes", workload == "3d-shadows");
         stats = measureFrames(warmup, frames, [&] {
@@ -335,8 +463,26 @@ int runWorkload(Graphics *gfx, std::string_view workload, int frames, std::size_
         return 2;
     }
 
-    printJson(workload, items, frames, gfx->getWidth(), gfx->getHeight(), gfx->isVSync(),
-              gfx->getBackendName(), stats);
+    printJson(workload, items, frames, gfx->getWidth(), gfx->getHeight(), gfx->isVSync(), gfx->getBackendName(), stats,
+              measuredMesh, setupMs);
+    if (measuredMesh) {
+        if (const char *path = std::getenv("EVENGINE_BENCH_CAPTURE")) {
+            // Read back only after timing, through the engine's presented-frame path.
+            gfx->setScreenReadbackEnabled(true);
+            for (int i = 0; i < 3; ++i) {
+                RenderSystem3D::render(*gfx);
+                RenderSystem::render(*gfx);
+            }
+            std::unique_ptr<eve::image::ImageData> pixels(gfx->newImageData());
+            if (!pixels || pixels->getSize() != std::size_t(gfx->getWidth()) * std::size_t(gfx->getHeight()) * 4)
+                throw std::runtime_error("presented frame readback failed");
+            std::ofstream file(path, std::ios::binary);
+            file << "P6\n" << gfx->getWidth() << " " << gfx->getHeight() << "\n255\n";
+            const auto *bytes = static_cast<const char *>(pixels->getData());
+            for (std::size_t p = 0; p < pixels->getSize(); p += 4) file.write(bytes + p, 3);
+            if (!file) throw std::runtime_error("capture write failed");
+        }
+    }
     return 0;
 }
 
@@ -375,6 +521,11 @@ int main(int argc, char **argv) {
             return 1;
         }
         win->setWindowTitle("EVEngine render benchmark");
+        // Preserve the production surface/swapchain path while keeping benchmark
+        // windows off the desktop. This is hidden-window rendering, not headless.
+        if (const char *hidden = std::getenv("EVENGINE_BENCH_HIDDEN"); hidden && std::strcmp(hidden, "0") != 0)
+            SDL_HideWindow(static_cast<SDL_Window *>(win->getHandle()));
+        std::cout << "BENCHMARK_WINDOW_VISIBLE=" << (win->isVisible() ? 1 : 0) << '\n';
         gfx->setVSync(false);
 
         int status = 0;
@@ -394,7 +545,7 @@ int main(int argc, char **argv) {
         }
         win->close();
         return status;
-    } catch (const eve::Exception &ex) {
+    } catch (const std::exception &ex) {
         std::cerr << "render benchmark failed: " << ex.what() << '\n';
         return 1;
     }

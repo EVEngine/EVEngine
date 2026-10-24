@@ -173,7 +173,7 @@ tint, camera, lit 相关字段
 - 投影：ortho / iso / staggered / hex 的 `tileToWorld` / `worldToTile` / `depthY` 固定样例
 - 解码：明文数组 + base64+zlib 往返
 - 对象层：最小 JSON 读出 name/type/xy
-- 回归：现有 `test/map.cpp` 正交用例
+- 回归：现有 `test/integration/asset-import/asset_import_graphics_tests.cpp` 正交用例
 
 ## 主要改动文件（预期）
 
@@ -183,7 +183,7 @@ tint, camera, lit 相关字段
 - `src/modules/map/Map.h` / `Map.cpp` — 对象缓存 API、渲染入口协调
 - `src/modules/map/TileSystem.cpp` — 贡献 tile draw items
 - `src/modules/graphics/RenderSystem.h` / `.cpp` — 统一队列 + depthY 排序
-- `test/map.cpp`（及必要时新测试文件）
+- `test/integration/asset-import/asset_import_graphics_tests.cpp`（及必要时新测试文件）
 
 ## 成功标准
 
