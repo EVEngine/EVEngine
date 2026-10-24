@@ -15,7 +15,7 @@ REVISION = "0d25db97cb9b8f725e4c95e4553001710e7fc39d"
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required")
 class DawnSpirvHeadersTests(unittest.TestCase):
     def configure(self, root, *, revision=REVISION, missing_header=False,
-                  missing_support=None, broken_jinja=False, support_revision=REVISION):
+                  missing_support=None, broken_jinja=False, support_revision=REVISION, unsupported_modules=False):
         dawn = root / "dawn"
         headers = root / "headers"
         dawn.mkdir()
@@ -62,6 +62,21 @@ class DawnSpirvHeadersTests(unittest.TestCase):
         header.parent.mkdir(parents=True)
         if not missing_header:
             header.write_text("// fixture\n", encoding="utf-8")
+        module_fixture = ""
+        if unsupported_modules:
+            (dawn / "dawn.cppm").write_text("export module dawn;\n", encoding="utf-8")
+            module_fixture = '''
+# Model Dawn's successful -fmodules-ts probe on a compiler without CMake's
+# module dependency scanner. Its cached result must be disabled by the host.
+if(NOT DEFINED DAWN_SUPPORTS_CXX_MODULES)
+    set(DAWN_SUPPORTS_CXX_MODULES ON CACHE BOOL "")
+endif()
+if(DAWN_SUPPORTS_CXX_MODULES)
+    add_library(dawncpp_module OBJECT)
+    target_sources(dawncpp_module PUBLIC FILE_SET modules TYPE CXX_MODULES FILES dawn.cppm)
+    target_compile_features(dawncpp_module PUBLIC cxx_std_20)
+endif()
+'''
         (dawn / "CMakeLists.txt").write_text(
             '''if(NOT DAWN_SPIRV_HEADERS_DIR STREQUAL SPIRV-Headers_SOURCE_DIR)
     message(FATAL_ERROR "Dawn and SPIRV-Tools header paths diverged")
@@ -79,7 +94,7 @@ add_subdirectory("${DAWN_GLFW_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
 add_subdirectory("${DAWN_SPIRV_HEADERS_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/headers")
 add_library(native_dawn INTERFACE)
 add_library(dawn::webgpu_dawn ALIAS native_dawn)
-''', encoding="utf-8",
+''' + module_fixture, encoding="utf-8",
         )
         overrides = "\n".join(
             f'set(FETCHCONTENT_SOURCE_DIR_EVE_DAWN_{name.upper()} "{(support / name).as_posix()}")'
@@ -87,7 +102,8 @@ add_library(dawn::webgpu_dawn ALIAS native_dawn)
         )
         (root / "CMakeLists.txt").write_text(
             f'''cmake_minimum_required(VERSION 3.24)
-project(DawnDependencyFixture NONE)
+project(DawnDependencyFixture {"LANGUAGES CXX" if unsupported_modules else "NONE"})
+{"set(CMAKE_CXX_SCANDEP_SOURCE)" if unsupported_modules else ""}
 set(EVENGINE_BUILD_HOST ON)
 set(BUILD_PLATFORM webgpu)
 set(FETCHCONTENT_SOURCE_DIR_DAWN "{dawn.as_posix()}")
@@ -102,7 +118,7 @@ endif()
 ''', encoding="utf-8",
         )
         return subprocess.run(
-            ["cmake", "-S", str(root), "-B", str(root / "build")],
+            ["cmake", *(["-G", "Ninja"] if unsupported_modules else []), "-S", str(root), "-B", str(root / "build")],
             capture_output=True, text=True, encoding="utf-8", check=False,
         )
 
@@ -110,6 +126,13 @@ endif()
         with tempfile.TemporaryDirectory() as temporary:
             result = self.configure(Path(temporary))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_header_integration_does_not_require_optional_cpp_module_scanner(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self.configure(Path(temporary), unsupported_modules=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            cache = (Path(temporary) / "build/CMakeCache.txt").read_text(encoding="utf-8")
+            self.assertIn("DAWN_SUPPORTS_CXX_MODULES:BOOL=OFF", cache)
 
     def test_incomplete_archive_fails_before_dawn_configuration(self):
         with tempfile.TemporaryDirectory() as temporary:
