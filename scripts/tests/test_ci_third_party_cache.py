@@ -176,3 +176,62 @@ class ThirdPartyCacheTests(unittest.TestCase):
         self.assertNotEqual(baseline, fingerprint(ANDROID_STL="c++_static"))
         properties.write_text("Pkg.Revision = 28.0.0\n", encoding="utf-8")
         self.assertNotEqual(baseline, fingerprint())
+
+
+@unittest.skipUnless(os.name == "posix" and shutil.which("pwsh"), "POSIX PowerShell is required for the cache probe fixture")
+class WindowsCompilerCacheProbeTests(unittest.TestCase):
+    def test_embedded_debug_spellings_reach_cache_reuse_but_pdb_flags_are_rejected(self):
+        for flag, accepted in (("-Z7", True), ("/Z7", True), ("/Zi", False)):
+            with self.subTest(flag=flag), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                build = root / "build with spaces"
+                (build / "CMakeFiles").mkdir(parents=True)
+                (build / "CMakeCache.txt").write_text(
+                    "EVENGINE_COMPILER_CACHE:STRING=SCCACHE\nCMAKE_CXX_COMPILER:FILEPATH=cl.exe\n", encoding="utf-8"
+                )
+                (build / "build.ninja").write_text(f"FLAGS = {flag}\n", encoding="utf-8")
+                (build / "CMakeFiles/rules.ninja").write_text("command = sccache cl.exe\n", encoding="utf-8")
+                binaries = root / "bin"
+                binaries.mkdir()
+                fake_cache = binaries / "sccache"
+                fake_cache.write_text(
+                    '''#!/usr/bin/env python3
+import json
+import os
+from pathlib import Path
+import sys
+
+state = Path(os.environ['SCCACHE_DIR']).parent / 'compile-count'
+count = int(state.read_text()) if state.exists() else 0
+if '--start-server' in sys.argv:
+    assert 'SCCACHE_GHA_VERSION' not in os.environ, 'Inherited GHA version still enables the remote backend'
+    assert os.environ.get('SCCACHE_GHA_ENABLED') == 'false'
+elif '--show-stats' in sys.argv:
+    print(json.dumps({'stats': {'cache_hits': {'counts': {'C/C++': max(0, count - 1)}}}}))
+elif '--start-server' not in sys.argv and '--stop-server' not in sys.argv:
+    output = next(arg[3:] for arg in sys.argv if arg.startswith('/Fo'))
+    Path(output).write_bytes(b'cached object')
+    state.write_text(str(count + 1))
+''', encoding="utf-8"
+                )
+                fake_cache.chmod(0o755)
+                result = subprocess.run(
+                    ["pwsh", "-NoProfile", "-File", str(ROOT / ".github/scripts/verify-windows-compiler-cache.ps1"), "-BuildDir", str(build)],
+                    env={
+                        **os.environ,
+                        "PATH": str(binaries) + os.pathsep + os.environ["PATH"],
+                        "SCCACHE_GHA_VERSION": "inherited-ci-cache-namespace",
+                        "XDG_CONFIG_HOME": str(root / "config"),
+                        "XDG_CACHE_HOME": str(root / "cache"),
+                        "XDG_DATA_HOME": str(root / "data"),
+                    },
+                    capture_output=True, text=True, encoding="utf-8",
+                )
+                if accepted:
+                    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                    self.assertIn("Windows compiler cache verified: 1 cache hit", result.stdout)
+                    self.assertEqual((build / "cache-probe/compile-count").read_text(encoding="utf-8"), "2")
+                else:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertIn("embedded debug information", result.stderr)
+                    self.assertFalse((build / "cache-probe").exists())
