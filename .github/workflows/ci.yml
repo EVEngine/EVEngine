@@ -304,8 +304,25 @@ jobs:
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
-          make "build/macosx-x86_64${suffix}" JOBS=4 \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          mkdir -p build
+          log="build/macosx-x86_64${suffix}.log"
+          if make "build/macosx-x86_64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            tail -n 30 "$log"
+          else
+            awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
+            tail -n 40 "$log"
+            exit 1
+          fi
+
+      - name: Upload Intel macOS build diagnostics
+        if: failure()
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-x86_64-${{ matrix.configuration }}-build-logs
+          path: build/macosx-x86_64*.log
+          if-no-files-found: ignore
 
   # Native ARM64 lanes also run the process-isolated tests and validate SDKs.
   windows-arm64:
