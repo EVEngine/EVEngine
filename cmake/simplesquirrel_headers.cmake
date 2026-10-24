@@ -11,9 +11,9 @@ function(eve_prepare_simplesquirrel_headers)
     if(NOT EXISTS "${_source}/class.hpp")
         message(FATAL_ERROR "Missing pinned SimpleSquirrel class.hpp: ${_source}")
     endif()
-    # ExternalProject patches the dependency after this configure. Generate
-    # from a private header snapshot with the same canonical header patches,
-    # so clean source builds and prebuilt dependency builds have identical ABI.
+    # The aggregate supplies the canonical constructor and type-hash patches
+    # before this configure. Apply only the engine's generation-aware extension
+    # to a private snapshot, leaving source and installed headers read-only.
     set(_snapshot "${_root}/vendor")
     foreach(_header IN LISTS _headers)
         configure_file("${_source}/${_header}"
@@ -30,8 +30,7 @@ function(eve_prepare_simplesquirrel_headers)
             message(FATAL_ERROR "Cannot initialize generated SimpleSquirrel patch root")
         endif()
     endif()
-    foreach(_patch IN ITEMS simplesquirrel-constructor-exceptions simplesquirrel-stable-type-hash
-                            simplesquirrel-module-type-identity)
+    foreach(_patch IN ITEMS simplesquirrel-module-type-identity)
         execute_process(
             COMMAND "${CMAKE_COMMAND}"
                 "-DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/${_patch}.patch"
