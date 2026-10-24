@@ -67,7 +67,9 @@ class MobileSdkReleaseGateTests(unittest.TestCase):
         cleanup = self.apk_runner.index("adb uninstall com.evengine.example")
         self.assertGreater(cleanup, proof)
         self.assertNotIn("|| true", self.apk_runner[cleanup : self.apk_runner.index("\ndone", cleanup)])
+        # The macOS consumer matrix contributes two APKs; Windows/Linux one each.
         self.assertEqual(3, self.workflow.count("name: android-apk-${{ env.HOST }}"))
+        self.assertIn("script: bash .github/scripts/run-consumer-apks.sh apk 4", block)
 
     def test_ios_artifact_and_simulator_are_hard_gates(self) -> None:
         ios_build = job_block(self.workflow, "ios", "linux")

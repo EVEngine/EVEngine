@@ -20,7 +20,11 @@ phone or as a universal multi-platform kit.
 - `share/eve/ai/` — Binding Contract catalog (`eve-api.json`), agent skill, MCP stdio bridge
 - `llms.txt` / `.cursor/skills/evescript/SKILL.md` — entry files so an unzipped SDK is agent-readable
 
-`share/eve/TARGET_PLATFORM` must match the SDK directory name.
+`share/eve/TARGET_PLATFORM` identifies the operating platform. macOS archives use
+`macosx-arm64` or `macosx-x86_64` directory names, keep `TARGET_PLATFORM=macosx`,
+and add `share/eve/TARGET_ARCHITECTURE` (`arm64` or `x86_64`). The published macOS
+SDKs require macOS 13+. Choose the archive matching the target Mac CPU; the old
+architecture-neutral `eve-sdk-macosx-<version>.zip` is no longer published.
 
 ## Quick start (script-only game, no compilation)
 
@@ -43,21 +47,22 @@ repository and in the [online docs](https://evengine.github.io/EVEngine/).
 This section is only for **engine developers** who build the SDK themselves:
 
 ```bash
-cmake --install build/macosx-debug --prefix dist/eve-sdk/macosx-debug
+make sdk/macosx-arm64-debug
+make sdk/macosx-x86_64-debug
 cmake --install build/android-debug --prefix dist/eve-sdk/android-debug
 ```
 
-Or: `make sdk/macosx-debug` / `make sdk/android-debug`.
+For Android: `make sdk/android-debug`.
 
 Do **not** install multiple platforms into the same prefix.
 
 ## Native plugin
 
 Only needed when you want to extend the engine with C++ code. The plugin must be
-built against the **same platform and version** of the SDK:
+built against the **same platform, architecture and version** of the SDK:
 
 ```cmake
-find_package(EVEngine REQUIRED PATHS /path/to/eve-sdk/macosx-debug)
+find_package(EVEngine REQUIRED PATHS /path/to/eve-sdk/macosx-arm64-debug)
 add_eve_plugin(myplugin SOURCES myplugin.cpp)
 ```
 

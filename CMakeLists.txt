@@ -67,6 +67,7 @@ endif()
 project(EVEngine)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/native_arm64.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/native_macos_x86_64.cmake")
 
 if(_eve_ccache_enabled)
     eve_finish_ccache_hardlink()

@@ -1356,3 +1356,4 @@ rpg-classic/skill:
 # 	mkdir -p build && touch $@
 
 include cmake/native_arm64.mk
+include cmake/native_macos.mk

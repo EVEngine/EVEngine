@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi]
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi|macos-arch]
+# macos-arch is required for macOS: arm64 or x86_64.
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
@@ -175,6 +176,11 @@ if [ -n "$EXPECTED" ]; then
 fi
 echo "OK: SDK version marker -> $VERSION_FILE"
 
+if [ "$PLAT" = macosx ]; then
+  MACOS_ARCH="${4:?macOS SDK test requires arm64 or x86_64}"
+  bash "$(dirname "$0")/check-macos-sdk.sh" "$SDK" "$MACOS_ARCH"
+fi
+
 # --- 2. Host runtime runs ------------------------------------------------------
 VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || true
 echo "  eve -v -> ${VER:-<empty>}"
@@ -250,6 +256,9 @@ EVE_PLUGIN_EXPORT int eve_plugin_init(void) { return 0; }
 EOF
 
 CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
+if [ "$PLAT" = macosx ]; then
+  CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES="$MACOS_ARCH" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0)
+fi
 if [ "$PLAT" = "win32" ]; then
   # Default generator: GitHub-hosted windows images ship VS 2026, local dev
   # machines may have 2022/2026. Let CMake pick the installed instance.
@@ -269,6 +278,9 @@ case "$PLAT" in
   *)       PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.so' | head -1)" ;;
 esac
 [ -n "$PLUGIN_OUT" ] || fail "plugin shared library not produced"
+if [ "$PLAT" = macosx ]; then
+  [ "$(lipo -archs "$PLUGIN_OUT")" = "$MACOS_ARCH" ] || fail "native plugin architecture mismatch"
+fi
 echo "OK: native C++ plugin compiled: $(basename "$PLUGIN_OUT")"
 
 # --- Best-effort: run the packaged game from memory -----------------------------
