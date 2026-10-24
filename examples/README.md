@@ -1,5 +1,7 @@
 # EVEngine 示例总览
 
+- [pcm-2a03](pcm-2a03/README.md)：通用 PCM 流式播放，脚本合成 2A03 风格跳跃、金币和受伤音效，实时波形与缓冲计数。
+
 - [stylized-meadow](stylized-meadow/README.md)：三阶卡通草坪，可调蓝噪声覆盖、GPU 实例化、两组四帧摇曳、同帧阴影取色与稀疏蓝噪声变色。
 
 - [modern-battlefield](modern-battlefield/README.md)：现代陆空动态战场，24 类独立细化资源与逐件检视截图、可转炮塔/炮管、射击弹道、直升机旋翼与飞行编队。
