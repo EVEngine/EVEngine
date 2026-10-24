@@ -1,6 +1,6 @@
 # macosx target SDK notes
 
-This directory is the packaging template shipped inside `dist/eve-sdk/macosx[-debug]`.
+This directory is the packaging template shipped inside `dist/eve-sdk/macosx-<arm64|x86_64>[-debug]`.
 
 Publish a macOS game by shipping:
 
@@ -17,9 +17,14 @@ self-contained: **the player does not need the LunarG Vulkan SDK or any
 Vulkan environment variables.** At startup eve points SDL and the Vulkan
 loader at the bundled files (`eve::macosx::bootstrapBundledVulkan` in
 `platform/macosx/macosx.mm`). The player machine only needs a Metal-capable
-macOS (the engine requires macOS 12+).
+macOS (the published SDKs require macOS 13+).
 
 For an `.app` bundle, copy the same three Vulkan files into
 `Contents/Frameworks/` (the bootstrap also checks `../Frameworks` next to the
 executable) and set `Contents/MacOS/eve`'s rpath to
 `@executable_path/../Frameworks`.
+
+Download the matching `eve-sdk-macosx-arm64-<version>.zip` or
+`eve-sdk-macosx-x86_64-<version>.zip`. `share/eve/TARGET_PLATFORM` is `macosx`;
+`share/eve/TARGET_ARCHITECTURE` identifies the CPU. Native plugins must use that
+same architecture (`find_package(EVEngine)` exports `EVENGINE_TARGET_ARCHITECTURE`).

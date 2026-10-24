@@ -8,6 +8,25 @@ include(GNUInstallDirs)
 set(EVENGINE_SDK_VERSION
     "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}")
 
+# load_third_party resolves both downloaded and source-built install trees.
+set(_eve_sdk_tp_prefix "${EVENGINE_TP_INSTALL_PREFIX}")
+if(NOT _eve_sdk_tp_prefix)
+    message(FATAL_ERROR "SDK install requires a resolved EVENGINE_TP_INSTALL_PREFIX")
+endif()
+
+set(EVENGINE_TARGET_ARCHITECTURE "")
+if(BUILD_PLATFORM STREQUAL "macosx")
+    if(CMAKE_OSX_ARCHITECTURES)
+        set(EVENGINE_TARGET_ARCHITECTURE "${CMAKE_OSX_ARCHITECTURES}")
+    else()
+        string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" EVENGINE_TARGET_ARCHITECTURE)
+    endif()
+    if(NOT EVENGINE_TARGET_ARCHITECTURE MATCHES "^(arm64|x86_64)$")
+        message(FATAL_ERROR "macOS SDKs require one architecture: arm64 or x86_64")
+    endif()
+    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/share/eve/TARGET_ARCHITECTURE\" \"${EVENGINE_TARGET_ARCHITECTURE}\\n\")")
+endif()
+
 # ---- Host binary ----
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     install(TARGETS ${EVENGINE_NATIVE_TARGET}
@@ -53,11 +72,7 @@ endif()
 # MoltenVK are bundled by cmake/macosx_bundle_vulkan.cmake, so players do not
 # need to install the Vulkan SDK. SDL2 is linked statically.
 if(BUILD_PLATFORM STREQUAL "macosx")
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_eve_mac_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib")
-    else()
-        set(_eve_mac_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/macosx/lib")
-    endif()
+    set(_eve_mac_tp_lib "${_eve_sdk_tp_prefix}/lib")
     install(CODE "
         file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
         file(GLOB _eve_tp_dylibs \"${_eve_mac_tp_lib}/*.dylib\")
@@ -256,14 +271,7 @@ endif()
 
 # ---- Android runtime shared libs needed to assemble an APK ----
 if(BUILD_PLATFORM STREQUAL "android")
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_eve_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-    else()
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-    endif()
-    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-    endif()
+    set(_eve_tp_lib "${_eve_sdk_tp_prefix}")
     # `deps` is built after the first configure on clean CI runners, so these
     # files do not exist while install rules are being generated. Resolve them
     # at install time and fail instead of publishing an unusable Android SDK.
@@ -305,14 +313,7 @@ if(BUILD_PLATFORM STREQUAL "android")
 endif()
 
 # ---- Selected third-party headers needed to compile plugins (SSQ bindings) ----
-if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-    set(_eve_tp_inc "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-else()
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-endif()
-if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-endif()
+set(_eve_tp_inc "${_eve_sdk_tp_prefix}")
 get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
 # The third-party tree is built by the deps target *after* configure, so the
 # existence check must run at install time, not configure time (a configure-time
