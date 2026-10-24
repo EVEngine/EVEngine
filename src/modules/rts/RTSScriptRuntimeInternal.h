@@ -32,6 +32,7 @@ struct RTS::ScriptRuntime {
     };
 
     struct Checkpoint {
+        crowd::Crowd::Snapshot                                  crowdState;
         RTSStateSnapshot                                        roots;
         std::map<std::string, economy::EconomyLedger::Snapshot> economies;
         std::map<std::string, map::Fov::Snapshot>               fovs;

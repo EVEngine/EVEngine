@@ -207,6 +207,7 @@ public:
 
 private:
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
     friend class World;
     friend class Fixture;
 

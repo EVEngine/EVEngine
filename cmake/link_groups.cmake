@@ -147,8 +147,12 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # downward closure with no import cycle.
     target_link_libraries(${_eve_group} PRIVATE ${_eve_lower_groups})
     target_link_libraries(${_eve_group} PRIVATE
-        EVScripts zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
+        zeroerr ${_eve_group_tp_libs} ${_eve_group_system_libs}
         ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    if(EVENGINE_BUILD_HOST)
+        # Built-in host resources are created later by src/scripts; core profiles do not create that archive.
+        target_link_libraries(${_eve_group} PRIVATE EVScripts)
+    endif()
     if(NOT EVENGINE_PROFILE_HOSTLESS)
         add_dependencies(${_eve_group} third-party)
         # The shared third-party runtime (SDL, box2d/box3d twins on Windows) is

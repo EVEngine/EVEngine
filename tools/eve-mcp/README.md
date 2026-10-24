@@ -91,10 +91,20 @@ Then call `eve_input_poll` until `status=ready`.
 | Variable | Meaning |
 |----------|---------|
 | `EVE_MCP_TOOLSET` | Comma tags: `all` (default) or `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_PROFILE` | Named task profile: `verify.play`, `content.scene`, `content.map`, `script.bind`, `fix.compile`, `workshop.rpg` |
 | `EVE_MCP_READONLY` | `1` hides mutating tools |
 | `EVE_MCP_EXCLUDE` | Comma-separated exact tool names to drop |
 
-Filtered tools are omitted from `tools/list` and rejected on `tools/call` with `hint` / `nextTools`.
+CLI shorthand (sets `EVE_MCP_PROFILE` and, if unset, `EVE_MCP_TOOLSET`):
+
+```bash
+node tools/eve-mcp/server.js --profile=verify.play
+```
+
+Filtered tools are omitted from `tools/list` and rejected on `tools/call` with
+`hint` / `nextTools` / optional `escalate`. Session start also installs a profile
+via `eve_agent_session_start` (`taskKind` / `profile`; default `verify` /
+`verify.play`). See `docs/dev/2026-10-20-agent-task-profile-mcp-plan.md`.
 
 ## Bridge env
 

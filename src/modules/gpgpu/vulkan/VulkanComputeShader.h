@@ -60,7 +60,13 @@ public:
 
     // Sets superseded by newer flushes; still referenced by pending command
     // buffers until the owning Sequence submits and waits.
-    std::vector<vk::DescriptorSet> pendingSets_;
+    struct DescriptorLease {
+        vk::DescriptorPool pool;
+        vk::DescriptorSet  set;
+    };
+    std::vector<DescriptorLease>    pendingSets_;
+    std::vector<vk::DescriptorPool> retiredPools_;
+    uint32_t                        allocatedSets_       = 0;
     uint32_t                       activeSequenceCount_ = 0;
 };
 

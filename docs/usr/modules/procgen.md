@@ -384,6 +384,9 @@ local ao = maps.getAo();
 maps.destroy();
 ```
 
+日常材质专用生成器与参数见 [日常材质生成](procgen/everyday-materials.md)。
+`ProcgenPbrMaterial.getTransmission()` 和 `getIor()` 分别返回透射率和折射率。
+
 当前 `Material` 可直接使用 albedo、normal、height 纹理以及 scalar roughness / metallic。
 roughness、metallic、AO 图仍可导出或交给自定义 shader；默认材质还没有对应纹理槽。
 
@@ -589,3 +592,13 @@ v1 无前驱迁移，不恢复 placement；调用成本随 JSON/连接器大小�
 先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
 不能只以脚本没有语法错误作为渲染或玩法正确的证据。
 详细流程：[专题](procgen/guides.md)。
+
+房屋与三维洞穴的脚本分阶段生成见[可编辑生成流程](procgen/generation-stages.md)。
+
+### 原生道路作者地形策略
+
+`RoadStyle::terrainPolicy` 保存高度融合距离、最大高度差、纹理层和透明度、植被清理及隧道开孔规则；`enabled=false` 保留该道路的所有地形通道。策略随网络保存、预设父子继承及作者历史恢复。预设按整条策略覆盖，缺失则继承；执行预算不属于作者数据。
+
+原生调用 `RoadTerrainPlan::prepare(network, bakeOptions, sharedPolicy, maximumPreparedElements)` 从同一网络快照烘焙并按来源区间生成拥有网格的不可变计划。路段消费自己的策略，路口及网络派生几何消费显式 `sharedPolicy`；关闭共享策略可只应用路段。随后 `apply(workspace, maximumWork)` 或 `applyWorld(world, maximumWork)` 通过已有完整通道事务发布一次撤销记录，后续道路失败也不留下部分写回。准备之后的作者修改不会改变已有计划；加载作者数据后重新准备计划，不保存派生网格或运行时指针。
+
+准备包含完整道路烘焙和来源网格压缩，执行包含三角形覆盖及地形过滤；在明确重建/提交边界调用。生产网格未与其他作者网络按局部id拼接；来源顺序沿用烘焙顺序。共享区域及重叠道路的EasyRoads优先级仍未确认；此入口目前是原生API，不代表脚本或编辑器按钮已经接通。

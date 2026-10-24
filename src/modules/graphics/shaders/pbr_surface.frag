@@ -32,7 +32,7 @@ layout(set=0,binding=0,std140) uniform Params {
 layout(set=0,binding=1) uniform sampler2D maps[11];
 layout(set=0,binding=4) uniform samplerCube environmentMap;
 layout(set=0,binding=5,std140) uniform Shadows {
- mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel;
+ mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel; vec4 cascadeUvScale;
 } shadow;
 layout(set=0,binding=6) uniform sampler2DArrayShadow shadowMap;
 layout(set=0,binding=7) uniform sampler2D detailMaps[3];
@@ -84,9 +84,15 @@ float visibility() {
  vec4 p=shadow.lightVP[c]*vec4(worldPosition,1); vec3 q=p.xyz/p.w;
  q.xy=q.xy*.5+.5;
  if(any(lessThan(q,vec3(0)))||any(greaterThan(q,vec3(1)))) return 1;
- float sum=0; float stepUV=1.0/float(textureSize(shadowMap,0).x);
- for(int x=-1;x<=1;x++) for(int y=-1;y<=1;y++)
-  sum+=texture(shadowMap,vec4(q.xy+vec2(x,y)*stepUV,c,q.z-shadow.cascadeBias[c]));
+ float uvScale=c==0?shadow.cascadeUvScale.x:(c==1?shadow.cascadeUvScale.y:shadow.cascadeUvScale.z);
+ uvScale=max(uvScale,1e-4);
+ float mapSize=max(shadow.cascadeUvScale.w,1.0)*uvScale;
+ float sum=0; float stepUV=1.0/mapSize;
+ for(int x=-1;x<=1;x++) for(int y=-1;y<=1;y++){
+  vec2 s=q.xy+vec2(x,y)*stepUV;
+  if(any(lessThan(s,vec2(0)))||any(greaterThan(s,vec2(1)))) continue;
+  sum+=texture(shadowMap,vec4(s*uvScale,c,q.z-shadow.cascadeBias[c]));
+ }
  return mix(1,sum/9,shadow.splits.w);
 }
 void main() {

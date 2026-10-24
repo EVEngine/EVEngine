@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionGameplayEventBlock.h @brief Typed instantaneous gameplay-event action contract. */
+/** @file ActionGameplayEventBlock.h
+ *  @brief Typed instantaneous gameplay-event action contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 

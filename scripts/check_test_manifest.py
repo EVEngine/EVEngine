@@ -18,9 +18,12 @@ rule -- or two rules -- fails in CI as well.
 from __future__ import annotations
 
 import re
+import json
 import sys
 from pathlib import Path
 import utf8_stdio
+import test_levels
+import test_module_coverage
 
 # Re-exported so this module stays the single entry point for the test manifest
 # contract. The implementation is shared with the configure step.
@@ -76,6 +79,8 @@ def discovery_contract_errors(cmake_text: str, makefile_text: str = "") -> list[
         )
     if not GLOB_RE.search(cmake_text):
         errors.append("all_test_cpp must glob test/*.cpp at configure time")
+    if '"${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp"' not in cmake_text or '"${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp"' not in cmake_text:
+        errors.append("organized unit/integration sources must be automatically discovered")
     if not TEST_SRC_TXT_RE.search(cmake_text):
         errors.append("configure must write test_src.txt for added/removed test sources")
     if not MAKE_TEST_CPP_RE.search(makefile_text) or not TEST_SRC_TXT_RE.search(makefile_text):
@@ -138,6 +143,12 @@ def main() -> int:
 
     buckets, partition_errors = partition(tables)
     errors.extend(partition_errors)
+    level_inventory = test_levels.source_inventory(TEST_DIR)
+    level_catalogue = json.loads(test_levels.CATALOGUE.read_text(encoding="utf-8"))
+    errors.extend(test_levels.catalogue_errors(level_catalogue, level_inventory))
+    _, module_errors = test_module_coverage.audit(
+        level_catalogue, level_inventory, test_module_coverage.check_module_manifest.parse_manifest())
+    errors.extend(module_errors)
 
     if errors:
         for error in errors:
@@ -146,6 +157,7 @@ def main() -> int:
 
     total = sum(len(members) for members in buckets.values())
     print(f"test auto-discovery OK: test_src.txt covers {total + 1 + len(SHARED_SOURCES)} sources")
+    print(f"test level catalogue OK: {len(level_inventory)} C++ sources; all literal cases classified")
     print(
         f"test domains OK: {len(buckets)} domains, {total} tests + 1 shared runner "
         f"+ {len(SHARED_SOURCES)} shared helper TU"

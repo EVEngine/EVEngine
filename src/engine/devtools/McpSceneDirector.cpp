@@ -7,11 +7,17 @@
 
 #include <squirrel.h>
 
+#include <atomic>
+#include <mutex>
+
 namespace eve::dev {
 namespace {
 
 constexpr const SQChar* kMcpSnippetSource       = _SC("memory://mcp/snippet");
 constexpr const SQChar* kMcpSceneDirectorSource = _SC("memory://mcp/scene-director");
+
+std::mutex       g_installMu;
+std::atomic_bool g_installPending{false};
 
 std::string snippetErrorText(HSQUIRRELVM vm, bool compile, const SQChar* source) {
     eve::script::ScriptErrorContext ctx =
@@ -26,6 +32,21 @@ std::string snippetErrorText(HSQUIRRELVM vm, bool compile, const SQChar* source)
                          "\nmessage: " + (compile ? ctx.message : eve::script::formatScriptError(ctx));
     mcpRecordSnippetError(report);
     return report;
+}
+
+bool sceneDirectorPresent(HSQUIRRELVM vm) {
+    const std::string check = "return (\"scene_director\" in getroottable()) ? (scene_director != null) : false;";
+    const std::string out   = callSceneDirectorReturn(vm, check, nullptr);
+    return !out.empty() && out.find("true") != std::string::npos;
+}
+
+bool installSceneDirectorNow(HSQUIRRELVM vm, std::string* err) {
+    const char* kit = eve::scene_director_content;
+    if (!kit || !*kit) {
+        if (err) *err = "scene_director.nut not embedded (rebuild EVScripts)";
+        return false;
+    }
+    return runMcpVmSnippet(vm, kit, err);
 }
 
 }  // namespace
@@ -75,18 +96,47 @@ std::string callSceneDirectorReturn(HSQUIRRELVM vm, const std::string& snippet, 
 }
 
 bool ensureSceneDirectorInstalled(HSQUIRRELVM vm, std::string* err) {
-    const std::string check = "return (\"scene_director\" in getroottable()) ? (scene_director != null) : false;";
-    const std::string out   = callSceneDirectorReturn(vm, check, nullptr);
-    if (!out.empty() && out.find("true") != std::string::npos) return true;
-    const char* kit = eve::scene_director_content;
-    if (!kit || !*kit) {
-        if (err) *err = "scene_director.nut not embedded (rebuild EVScripts)";
-        return false;
-    }
-    return runMcpVmSnippet(vm, kit, err);
+    return ensureSceneDirectorInstalled(vm, err, /*allowHeavyWork=*/true);
 }
 
+bool ensureSceneDirectorInstalled(HSQUIRRELVM vm, std::string* err, bool allowHeavyWork) {
+    if (!vm) {
+        if (err) *err = "no VM";
+        return false;
+    }
+    if (sceneDirectorPresent(vm)) {
+        g_installPending.store(false);
+        return true;
+    }
+    if (!allowHeavyWork) {
+        g_installPending.store(true);
+        if (err) *err = "deferred-to-update";
+        return false;
+    }
+    std::lock_guard lock(g_installMu);
+    if (sceneDirectorPresent(vm)) {
+        g_installPending.store(false);
+        return true;
+    }
+    const bool ok = installSceneDirectorNow(vm, err);
+    if (ok) g_installPending.store(false);
+    return ok;
+}
+
+void flushPendingSceneDirectorInstall(HSQUIRRELVM vm) {
+    if (!g_installPending.load() || !vm) return;
+    std::string err;
+    (void)ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/true);
+}
+
+bool sceneDirectorInstallPending() { return g_installPending.load(); }
+
 std::string sceneDirectorToolError(const std::string& name, const std::string& err) {
+    if (err == "deferred-to-update") {
+        return std::string("{\"ok\":false,\"retryable\":true,\"reason\":\"deferred-to-update\",\"tool\":\"") + name +
+               "\",\"hint\":\"scene_director install was queued for the next eve.dev.poll / eve_update; retry this "
+               "tool\"}";
+    }
     return "error: " + name + ": " + (err.empty() ? "unknown" : err);
 }
 

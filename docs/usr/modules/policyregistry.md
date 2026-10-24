@@ -44,7 +44,7 @@ borrowed entry 跨 replace 保留。禁用策略与删除策略是不同操作�
 注册目录在加载/工具阶段操作；热路径缓存经过验证的解析结果，并通过 generation 失效
 检测更新。源码：[PolicyRegistry.cpp](../../../src/modules/policyregistry/PolicyRegistry.cpp)，
 脚本发现、选择、恢复且不保存回调的证据：
-[policyregistry.cpp](../../../test/policyregistry.cpp)。
+[policyregistry.cpp](../../../test/integration/script-api/script_api_graphics_mcp_tests.cpp)。
 
 ## 补充绑定参考
 

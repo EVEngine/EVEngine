@@ -1,7 +1,9 @@
 #include "scene/NodeDesc.h"
 
 #include "scene/SceneHost.h"
+#include "scene/SceneTransformInternal.h"
 
+#include <cmath>
 #include <functional>
 #include <stdexcept>
 #include <unordered_map>
@@ -298,8 +300,18 @@ eve::Result<SceneHost::Tree> SceneHost::buildDetachedTree(const Tree* previous, 
         validateUniqueIds(root);
         Tree target;
         target.root = appendDetachedNode(target, std::move(root), -1);
+        for (auto &node : target.nodes) {
+            const auto parentWorld = node.parent < 0 ? glm::mat4(1.f) : target.nodes[size_t(node.parent)].world;
+            node.world             = parentWorld * detail::localMatrix(node);
+            for (unsigned column = 0; column < 4; ++column)
+                for (unsigned row = 0; row < 4; ++row)
+                    if (!std::isfinite(node.world[column][row]))
+                        return eve::Result<Tree>::failure(eve::Diagnostic::error(
+                            eve::DiagnosticCode::InvalidArgument,
+                            "detached scene transform must produce a finite world matrix", node.id));
+        }
         if (previous) {
-            std::unordered_map<std::string, const SceneNode*> preserved;
+            std::unordered_map<std::string, const SceneNode *> preserved;
             preserved.reserve(previous->nodes.size());
             for (const auto& node : previous->nodes)
                 if (!node.id.empty()) preserved.emplace(node.id, &node);

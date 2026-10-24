@@ -26,8 +26,8 @@ std::mutex                   g_modulesMutex;
 std::vector<std::string>     g_moduleNames{""};  // index 0 = "default"
 std::unordered_map<std::string, uint32_t> g_moduleIds;
 
-uint64_t zoneKey(uint32_t module, const char* name) {
-    return (static_cast<uint64_t>(module) << 32) ^ std::hash<const char*>{}(name);
+std::string zoneKey(uint32_t module, uint32_t threadId, const char* name) {
+    return std::to_string(module) + ":" + std::to_string(threadId) + ":" + (name ? name : "");
 }
 }  // namespace
 
@@ -51,11 +51,9 @@ std::mutex                      g_threadsMutex;
 Profiler::ThreadBuffer& Profiler::currentBuffer() {
     static thread_local ThreadBuffer tb;
     if (tb.threadId == 0) {
-        tb.threadId =
-            static_cast<uint32_t>(std::hash<std::thread::id>{}(std::this_thread::get_id()));
-        const bool isMain = std::this_thread::get_id() == std::thread::id();
-        tb.threadName = isMain ? "main" : "worker";
+        tb.threadId = static_cast<uint32_t>(std::hash<std::thread::id>{}(std::this_thread::get_id()));
         std::lock_guard<std::mutex> lock(g_threadsMutex);
+        tb.threadName = threads().empty() ? "main" : "worker/" + std::to_string(tb.threadId);
         threads().push_back(&tb);
     }
     return tb;
@@ -89,7 +87,10 @@ uint32_t Profiler::moduleId(const char* module) {
 
 // --- public API -------------------------------------------------------------
 
-void Profiler::setEnabled(bool on) { g_enabled.store(on, std::memory_order_relaxed); }
+void Profiler::setEnabled(bool on) {
+    if (on) (void)currentBuffer();
+    g_enabled.store(on, std::memory_order_relaxed);
+}
 
 bool Profiler::enabled() { return g_enabled.load(std::memory_order_relaxed); }
 
@@ -166,13 +167,17 @@ double Profiler::frameMark() {
         std::string name;
         std::string thread;
     };
-    std::unordered_map<uint64_t, Agg> aggMap;
+    std::unordered_map<std::string, Agg> aggMap;
+    int64_t                              spanBegin = t0;
+    int64_t                              spanEnd   = t0;
 
     for (const auto& s : snaps) {
         const size_t n = s.records.size();
         std::vector<int64_t> total(n, 0);
         std::vector<int64_t> child(n, 0);
         for (size_t i = 0; i < n; ++i) {
+            spanBegin = std::min(spanBegin, s.records[i].startNs);
+            spanEnd   = std::max(spanEnd, s.records[i].endNs);
             int64_t t = s.records[i].endNs - s.records[i].startNs;
             if (t < 0) t = 0;
             total[i] = t;
@@ -184,7 +189,7 @@ double Profiler::frameMark() {
         for (size_t i = 0; i < n; ++i) {
             const auto& r     = s.records[i];
             const int64_t self = total[i] - child[i];
-            Agg& a            = aggMap[zoneKey(r.module, r.name)];
+            Agg&          a     = aggMap[zoneKey(r.module, r.threadId, r.name)];
             a.selfMs += static_cast<double>(self) / 1'000'000.0;
             a.totalMs += static_cast<double>(total[i]) / 1'000'000.0;
             ++a.count;
@@ -196,7 +201,7 @@ double Profiler::frameMark() {
     }
 
     Frame f;
-    f.beginNs = t0;
+    f.beginNs = spanBegin;
     for (auto& kv : aggMap) {
         Agg& a = kv.second;
         ZoneSample sm;
@@ -212,11 +217,11 @@ double Profiler::frameMark() {
     }
     std::sort(f.samples.begin(), f.samples.end(),
               [](const ZoneSample& x, const ZoneSample& y) { return x.selfMs > y.selfMs; });
-    f.endNs = nowNs();
+    f.endNs = spanEnd;
 
     lastFrameStorage() = std::move(f);
     hasFrameFlag()  = true;
-    return static_cast<double>(lastFrameStorage().endNs - lastFrameStorage().beginNs) / 1'000'000.0;
+    return static_cast<double>(nowNs() - t0) / 1'000'000.0;
 }
 
 bool Profiler::hasFrame() { return hasFrameFlag(); }
@@ -230,7 +235,7 @@ std::string Profiler::textReport() {
     const double totalMs =
         static_cast<double>(lastFrameStorage().endNs - lastFrameStorage().beginNs) / 1'000'000.0;
     std::snprintf(buf, sizeof(buf), "%.2f", totalMs);
-    os << "=== Profiler frame (" << buf << " ms) ===\n";
+    os << "=== Profiler captured CPU span (" << buf << " ms) ===\n";
     os << "-- Per-module / per-zone (self time, sorted) --\n";
     for (const auto& s : lastFrameStorage().samples) {
         std::snprintf(buf, sizeof(buf), "%.3f", s.selfMs);

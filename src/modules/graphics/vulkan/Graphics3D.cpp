@@ -274,6 +274,38 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreenPrimitive3DDrawIndex = 0;
     vk::CommandBufferBeginInfo beginInfo{};
     offscreen3DCB.begin(beginInfo);
+    if (mesh3dShadows.active && shadowPendingMask != 0) {
+        // Offscreen previews submit synchronously, before any swapchain pass.
+        // Replay pending shadows on this same command buffer so color samples
+        // this camera's maps, including headless and repeated previews per frame.
+        waitForSharedGpuResources();
+        auto &slot = currentShadowMap();
+        slot.image.beginDepthAttachment();
+        vk::ClearValue clear{};
+        clear.depthStencil = vk::ClearDepthStencilValue{1.f, 0};
+        for (int cascade = 0; cascade < ShadowConfig::kTotalLayers; ++cascade) {
+            if ((shadowPendingMask & (1u << cascade)) == 0) continue;
+            vk::RenderPassBeginInfo shadowBegin{};
+            shadowBegin.renderPass      = shadowRenderPass;
+            shadowBegin.framebuffer     = slot.framebuffers[cascade];
+            const uint32_t atlasSize =
+                uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowConfig::kMapSize);
+            uint32_t viewportSize = atlasSize;
+            if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+                viewportSize = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+            }
+            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {atlasSize, atlasSize}};
+            shadowBegin.clearValueCount = 1;
+            shadowBegin.pClearValues    = &clear;
+            offscreen3DCB.beginRenderPass(shadowBegin, vk::SubpassContents::eInline);
+            recordShadowCascadeDraws(offscreen3DCB, cascade, viewportSize);
+            offscreen3DCB.endRenderPass();
+            shadowCascadeDraws[cascade].clear();
+        }
+        slot.image.endSampledLayout();
+        shadowPendingMask = 0;
+    }
+
     lastOffscreen3DGpuDurationMs = 0.f;
     if (offscreen3DTimestampQueryPool) {
         offscreen3DCB.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
@@ -636,8 +668,18 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
     cb.endRenderPass();
     sceneColorPassOpen = false;
     source.color.endSampledLayout();
-    source.color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+    const vk::ImageSubresourceRange       range{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    std::array<vk::ImageMemoryBarrier, 2> before{};
+    before[0] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eTransferRead,
+                                       vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal,
+                                       VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    before[1] = vk::ImageMemoryBarrier(
+        snapshot.color.currentLayout() == vk::ImageLayout::eUndefined ? vk::AccessFlags{}
+                                                                      : vk::AccessFlagBits::eShaderRead,
+        vk::AccessFlagBits::eTransferWrite, snapshot.color.currentLayout(), vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eFragmentShader,
+                       vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, before);
     vk::ImageCopy copy{};
     copy.srcSubresource =
         vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
@@ -647,9 +689,20 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
                               static_cast<uint32_t>(sceneColorHeight), 1};
     cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
                  snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
-
-    source.color.setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+    std::array<vk::ImageMemoryBarrier, 2> after{};
+    after[0] =
+        vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferRead,
+                               vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                               vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eColorAttachmentOptimal,
+                               VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    after[1] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+                                      vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal,
+                                      VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                       vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                       {}, {}, {}, after);
+    source.color.setCurrentLayout(vk::ImageLayout::eColorAttachmentOptimal);
+    snapshot.color.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
                            vk::ImageAspectFlagBits::eDepth);
     vk::RenderPassBeginInfo resume{};
@@ -694,7 +747,8 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
-    if (!shadowPipeline) createShadowResources();
+    // Recreate when scheme map size changes (dynamic shadow resolution).
+    createShadowResources();
     if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kTotalLayers) {
         throw Exception("beginShadowPass: cascadeIndex out of range");
     }

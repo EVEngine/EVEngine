@@ -110,3 +110,54 @@ int World3D::closestPoint(float x, float y, float z, float maxDistance) {
 
 
 }  // namespace eve::physics
+
+namespace eve::physics {
+eve::Result<std::vector<eve::WorldSphereContact>> World3D::sweepSphereOwned(double x, double y, double z, double endX,
+                                                                            double endY, double endZ,
+                                                                            eve::WorldSphereSweepSettings settings) {
+    using Output          = eve::Result<std::vector<eve::WorldSphereContact>>;
+    const double values[] = {x, y, z, endX, endY, endZ, endX - x, endY - y, endZ - z};
+    for (double value : values)
+        if (!std::isfinite(value) || std::abs(value) > FLT_MAX)
+            return Output::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                          "Sweep coordinates exceed the finite physics float domain",
+                                                          "motion"));
+    if (!isValid() || !std::isfinite(settings.radius) || settings.radius <= 0 || settings.ignoredBodyId < -1)
+        return Output::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                      "Sphere sweep requires a live world and valid radius/filter",
+                                                      "worldSweep"));
+    world3d_detail::ScopedQueryState3D scoped(*this,
+                                              {settings.categoryBits, settings.maskBits, settings.ignoredBodyId, -1});
+    auto cast = rigidBackend_->castSphereAll(static_cast<float>(x), static_cast<float>(y), static_cast<float>(z),
+                                             settings.radius, static_cast<float>(endX - x),
+                                             static_cast<float>(endY - y), static_cast<float>(endZ - z), 257);
+    if (!cast) return Output::failure(cast.status());
+    if (cast.value() > 256)
+        return Output::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "Sphere sweep contact budget exceeded", "contacts"));
+    std::vector<eve::WorldSphereContact> output;
+    for (int i = 0; i < cast.value(); ++i) {
+        // Sweeps report new crossings only. Backends may return an initial overlap with
+        // fraction zero and no usable normal; it is not a new impact after a bounce.
+        if (getShapeCastResultFraction(i) == 0.0f) continue;
+        const int bodyId = getShapeCastResultBodyId(i);
+        auto*     body   = findBodyById(bodyId);
+        if (!body)
+            return Output::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Sweep returned a stale body", "body"));
+        eve::WorldSphereContact contact;
+        contact.identity = {runtimeHandle().packed(), body->runtimeHandle().packed()};
+        contact.bodyId   = bodyId;
+        contact.shapeId  = getShapeCastResultShapeId(i);
+        contact.fraction = getShapeCastResultFraction(i);
+        contact.x        = x + (endX - x) * contact.fraction;
+        contact.y        = y + (endY - y) * contact.fraction;
+        contact.z        = z + (endZ - z) * contact.fraction;
+        contact.nx       = getShapeCastResultNormalX(i);
+        contact.ny       = getShapeCastResultNormalY(i);
+        contact.nz       = getShapeCastResultNormalZ(i);
+        output.push_back(contact);
+    }
+    return Output::success(std::move(output));
+}
+}  // namespace eve::physics

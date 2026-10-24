@@ -105,6 +105,19 @@ void exposeVolumeFluidType(ssq::Table& table) {
         if (!decoded) return script::projectStatusResult(vm, decoded.status());
         return script::projectResult(vm, self->attach(*body, decoded.value()[0]));
     });
+    coupling.addFunc("attachSdf", [vm](VolumeFluidCoupling* self, physics::Body3D* body, ssq::Object object) {
+        if (!body)
+            return script::projectStatusResult(
+                vm, Status::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "Missing rigid body",
+                                                      "fluids.volume.coupling")));
+        auto value = script::valueFromSquirrel(object);
+        if (!value) return script::projectStatusResult(vm, value.status());
+        Value::Array batch;
+        batch.push_back(std::move(value).takeValue());
+        auto decoded = decodeVolumeFluidSdfColliders(Value(std::move(batch)));
+        if (!decoded) return script::projectStatusResult(vm, decoded.status());
+        return script::projectResult(vm, self->attachSdf(*body, decoded.value()[0]));
+    });
     coupling.addFunc("detach", [](VolumeFluidCoupling* self, int label) { self->detach(unsigned(label)); });
     coupling.addFunc("setImpulseLimits", [vm](VolumeFluidCoupling* self, float linear, float angular) {
         return script::projectResult(vm, self->setImpulseLimits(linear, angular));

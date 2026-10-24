@@ -1,0 +1,44 @@
+ZeroErr Unit Test
+TEST CASE [ecs_container_instances.cpp:26] ecs.containers_keep_table_isolation_and_stale_handle_detection  ✅
+
+
+TEST CASE [ecs_container_instances.cpp:49] ecs.containers_publish_deferred_inherited_components  ✅
+
+
+TEST CASE [ecs_container_instances.cpp:73] ecs.handle_containers_preserve_generation_and_table_projection  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:50] ecs.viewPreparationPreservesWordAndPrefixBoundaries  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:74] ecs.viewPreparationRetriesThrowingConstruction  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:94] ecs.viewPreparationObservesConstructorChangesWithinWord  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:113] ecs.viewPreparationKeepsInheritanceDeferAndTableIsolation  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:157] ecs.viewPreparationDoesNotRequireDefaultConstruction  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:173] ecs.idleCommitKeepsNestedAndExplicitPublication  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:205] ecs.idleCommitCancelsStagedAndRearmsAfterReuse  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:226] ecs.failedViewPreparationReleasesItsDeferScope  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:255] ecs.failedNestedViewPreservesTheOuterDeferScope  ✅
+
+
+TEST CASE [ecs_view_preparation.cpp:278] ecs.entityOnlyViewKeepsDeferredIterationAndEmptyComparison  ✅
+
+
+----------------------------------------------------------------
+             PASSED   |   WARNING   |   FAILED   |   SKIPPED
+TEST CASE:       13             0            0             0
+ASSERTION:     1012             0            0             0

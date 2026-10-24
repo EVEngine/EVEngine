@@ -102,7 +102,7 @@ void Graphics::drawDeferredLighting() {
     }
     const auto deferredLightingSet = frame.set;
 
-    if (!shadowPipeline) createShadowResources();
+    createShadowResources();
     vk::ImageView shadowView = currentShadowArrayView();
     if (!shadowView || !shadowSampler) return;
 

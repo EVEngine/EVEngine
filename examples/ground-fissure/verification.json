@@ -1,0 +1,132 @@
+{
+  "status": {
+    "contractId": "examples/ground-fissure",
+    "contractLoaded": true,
+    "domains": [
+      "rts",
+      "tactics"
+    ],
+    "hostFrame": 0,
+    "op": "status",
+    "paused": false,
+    "schemaId": "evengine.play-response",
+    "schemaVersion": 1
+  },
+  "presets": {
+    "earth": {
+      "depth": 1.600000023841858,
+      "paused": true,
+      "preset": "DRY FAULT",
+      "replays": 2,
+      "seed": 37,
+      "time": 4.400000095367432,
+      "width": 0.8500000238418579
+    },
+    "radial": {
+      "depth": 1.600000023841858,
+      "paused": true,
+      "preset": "RADIAL SHATTER",
+      "replays": 3,
+      "seed": 37,
+      "time": 3.700000047683716,
+      "width": 1.600000023841858
+    },
+    "lava": {
+      "depth": 1.600000023841858,
+      "paused": true,
+      "preset": "LAVA RIFT",
+      "replays": 4,
+      "seed": 37,
+      "time": 4.400000095367432,
+      "width": 1.25
+    }
+  },
+  "captures": [
+    "earth.png",
+    "radial.png",
+    "lava.png"
+  ],
+  "backend": "engine-readback",
+  "widthCheck": {
+    "before": 1.25,
+    "narrow": 1.0,
+    "restored": 1.25
+  },
+  "replayMeanPixelError": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "frameCount": 96,
+  "uniqueSceneFrames": 96,
+  "gif": "ground-fissure.gif",
+  "evidenceSession": {
+    "active": false,
+    "criteria": [
+      {
+        "description": "Three presets, width changes and paused time stepping work",
+        "id": "controls",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Same seed and time reproduce scene pixels",
+        "id": "replay",
+        "passed": true,
+        "required": true
+      },
+      {
+        "description": "Actual engine PNG and evolving GIF frames are captured",
+        "id": "visual",
+        "passed": true,
+        "required": true
+      }
+    ],
+    "evidence": [
+      {
+        "criterionId": "controls",
+        "kind": "runtime-observation",
+        "sequence": 1,
+        "status": "pass",
+        "summary": "Verified controls through native UI/Play Host; see verification.json"
+      },
+      {
+        "artifact": "replay.png",
+        "criterionId": "replay",
+        "kind": "test",
+        "sequence": 2,
+        "status": "pass",
+        "summary": "Verified replay through native UI/Play Host; see verification.json"
+      },
+      {
+        "artifact": "lava.png",
+        "criterionId": "visual",
+        "kind": "screenshot",
+        "sequence": 3,
+        "status": "pass",
+        "summary": "Verified visual through native UI/Play Host; see verification.json"
+      }
+    ],
+    "objective": "Validate parametric ground fissure, replay and engine-rendered output",
+    "phase": "complete",
+    "readyToComplete": true,
+    "schema": "eve.agent-development-session",
+    "schemaVersion": 1,
+    "sessionId": "agent.dev.1",
+    "status": "applied",
+    "summary": "Presets, parameter changes, replay and actual rendered animation verified"
+  },
+  "runtimeErrors": {
+    "attached": true,
+    "count": 0,
+    "cursor": 0,
+    "droppedThrough": 0,
+    "firstSeq": 1,
+    "lines": [],
+    "nextSeq": 49,
+    "ok": true,
+    "stderrCaptured": true,
+    "truncated": false
+  },
+  "evidenceOrigin": "Native Windows Vulkan engine readback captured during example development; retained evidence, not a CI assertion."
+}

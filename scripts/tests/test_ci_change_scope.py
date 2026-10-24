@@ -79,10 +79,10 @@ class CiChangeScopeTests(unittest.TestCase):
 
     def test_changed_zeroerr_sources_select_their_source_labels(self):
         mode, label = ci_change_scope.classify_tests(
-            ["test/math.cpp", "test/procgen.cpp"]
+            ["test/unit/math/math_tests.cpp", "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp"]
         )
         self.assertEqual("selected", mode)
-        self.assertEqual(r"^source:(math[.]cpp|procgen[.]cpp)$", label)
+        self.assertEqual(r"^source:(math_tests[.]cpp|render_presentation_graphics_procgen_tests[.]cpp)$", label)
 
     def test_production_change_runs_full_test_suite(self):
         mode, label = ci_change_scope.classify_tests(

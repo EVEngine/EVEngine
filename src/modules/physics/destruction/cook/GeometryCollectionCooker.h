@@ -14,9 +14,10 @@ namespace eve::physics::destruction_cook {
 /**
  * @brief Cook an owning canonical mesh into a geometry-collection asset.
  *
- * P1 produces box-proxy bones and a connection graph from the fracture pattern.
- * Full triangle CSG with interior caps is deferred to graphics-backed cook; the
- * collision proxies and neighbor graph are bit-exact for a fixed recipe/seed.
+ * Compatibility-only proxy cook: Voronoi mode names here describe site placement,
+ * not a tessellation. Use cookVoronoi from VoronoiCook.h for actual closed convex
+ * fragments, shared-face adjacency, interior caps and exact convex collision.
+ * The legacy proxy shape and seed behavior remain unchanged.
  *
  * @param mesh Borrowed immutable mesh retained only for this synchronous call.
  * @param recipe Validated fracture recipe; randomness uses only seed+stream name.
