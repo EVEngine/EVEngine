@@ -3265,7 +3265,8 @@ TEST_CASE("thread.postMain.fromWorkerThread") {
     task->wait();
     CHECK_EQ(task->getStatus(), std::string("done"));
     CHECK_EQ(ev->pollName(), std::string("thread.worker.done"));
-    CHECK_EQ(ev->pollData(), std::string("w"));
+    CHECK_EQ(ev->getLastData(), std::string("w"));
+    CHECK_EQ(ev->pollName(), std::string());
 }
 
 TEST_CASE("thread.pool.submitSleep") {

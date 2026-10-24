@@ -1042,7 +1042,13 @@ TEST_CASE("map.tileset.loadsExternalTsjRelativeToMap") {
     REQUIRE(layer->tileset()->atlases.size() == 2);
     CHECK_EQ(layer->tileset()->atlases[1].firstGid, 30);
     CHECK_EQ(layer->getTileDataType(20, "wet"), std::string("bool"));
+    CHECK(layer->getTileDataBool(20, "wet"));
     CHECK_EQ(layer->getTileDataType(30, "walkable"), std::string("bool"));
+    REQUIRE(layer->tileset()->animations.size() == 1);
+    CHECK_EQ(layer->tileset()->animations[0].gid, 20);
+    REQUIRE(layer->tileset()->animations[0].frames.size() == 2);
+    CHECK_EQ(layer->tileset()->animations[0].frames[0].gid, 21);
+    CHECK_EQ(layer->tileset()->animations[0].frames[1].gid, 20);
     REQUIRE(layer->tileset()->terrainRules.size() == 1);
     CHECK_EQ(layer->tileset()->terrainRules[0].gid, 20);
     CHECK_EQ(layer->tileset()->terrainRules[0].neighborMask, 1 << 3);
