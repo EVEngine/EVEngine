@@ -1,5 +1,16 @@
 # EVEngine
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
 
 Evolutionary Vision Engine
@@ -24,8 +35,7 @@ Linux ARM64 的 OBJECT 单体测试程序还需要 `lld`（`sudo apt-get install
 Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
 Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
 Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
-Linux 使用原生 GCC/G++、Ninja 和用于大型 Release 链接的 LLD，
-安装与普通 Linux 构建相同的 aarch64 开发依赖。
+Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
 这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
 
 third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
@@ -47,17 +57,7 @@ CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner
 构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
 第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
 依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
-两种配置都会运行进程隔离单测（含图形测试），使用 OpenAL null 音频后端。
-Linux 使用 aarch64 Lavapipe + Xvfb；Windows 从固定提交构建并缓存原生 ARM64
-SwiftShader。运行环境缺失或启动失败会令任务失败。Release 任务还会安装 SDK，
-编译原生 C++ 消费端插件，并要求打包游戏持续运行且输出脚本启动标记。
-
-`make sdk/win32-arm64`、`make sdk/linux-arm64` 将 Release SDK 安装到
-`dist/eve-sdk/<平台>-arm64`；开发 SDK 追加 `-debug`。Release 使用 OBJECT，
-运行时 `TARGET_PLATFORM` 保持 `win32` / `linux`。发布流程增加两个 `-arm64`
-压缩包，与既有五个包统一校验版本及 SHA256SUMS。上传前和下载真实 Release
-产物后均验证 PE/ELF 架构、插件编译链接、游戏打包及运行；失败阻止正式晋级。
-具体门禁见[发布流程](docs/dev/发布流程.md#windows--linux-arm64)。
+目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
 
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
@@ -112,9 +112,7 @@ SwiftShader。运行环境缺失或启动失败会令任务失败。Release 任�
 | 目标平台 | 下载文件 | 说明 |
 |----------|----------|------|
 | Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
-| Windows ARM64 | `eve-sdk-win32-arm64-<版本>.zip` | Windows 11 ARM64 原生运行 |
 | Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
-| Linux ARM64 | `eve-sdk-linux-arm64-<版本>.zip` | aarch64 Linux 原生运行（需 Vulkan 驱动） |
 | macOS | `eve-sdk-macosx-<版本>.zip` | macOS 12+（Apple Silicon / Intel） |
 | Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
 | iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
