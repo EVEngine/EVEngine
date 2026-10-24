@@ -1,4 +1,5 @@
 #include "building/BuildingSnapshot.h"
+#include <array>
 #include <cmath>
 #include <limits>
 #include <set>
