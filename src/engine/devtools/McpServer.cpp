@@ -23,6 +23,7 @@
 #include "devtools/McpSceneLiteral.hpp"
 #include "devtools/McpScriptTools.hpp"
 #include "devtools/McpSquirrelJson.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/RenderVision.hpp"
@@ -179,18 +180,16 @@ std::string renderStatusText(eve::IRenderCapture* cap) {
     return mcpStringify(Poco::Dynamic::Var(o));
 }
 
-eve::IRenderCapture*    mcpCapture() { return eve::cap::query<eve::IRenderCapture>(); }
-eve::ISceneQuery*       mcpScene() { return eve::cap::query<eve::ISceneQuery>(); }
-eve::IPhysicsQuery*     mcpPhysics() { return eve::cap::query<eve::IPhysicsQuery>(); }
-eve::IProcgenQuery*     mcpProcgen() { return eve::cap::query<eve::IProcgenQuery>(); }
-eve::IParticlesQuery*   mcpParticles() { return eve::cap::query<eve::IParticlesQuery>(); }
-eve::IAudioQuery*       mcpAudio() { return eve::cap::query<eve::IAudioQuery>(); }
-eve::IEditorHost*       mcpHost() { return eve::cap::query<eve::IEditorHost>(); }
-eve::IUIAutomation*     mcpUI() { return eve::cap::query<eve::IUIAutomation>(); }
-eve::IEditorAutomation* mcpEditor() { return eve::cap::query<eve::IEditorAutomation>(); }
-eve::IPixelWorldAutomation* mcpPixelWorld() {
-    return eve::cap::query<eve::IPixelWorldAutomation>();
-}
+eve::IRenderCapture*        mcpCapture() { return eve::cap::query<eve::IRenderCapture>(); }
+eve::ISceneQuery*           mcpScene() { return eve::cap::query<eve::ISceneQuery>(); }
+eve::IPhysicsQuery*         mcpPhysics() { return eve::cap::query<eve::IPhysicsQuery>(); }
+eve::IProcgenQuery*         mcpProcgen() { return eve::cap::query<eve::IProcgenQuery>(); }
+eve::IParticlesQuery*       mcpParticles() { return eve::cap::query<eve::IParticlesQuery>(); }
+eve::IAudioQuery*           mcpAudio() { return eve::cap::query<eve::IAudioQuery>(); }
+eve::IEditorHost*           mcpHost() { return eve::cap::query<eve::IEditorHost>(); }
+eve::IUIAutomation*         mcpUI() { return eve::cap::query<eve::IUIAutomation>(); }
+eve::IEditorAutomation*     mcpEditor() { return eve::cap::query<eve::IEditorAutomation>(); }
+eve::IPixelWorldAutomation* mcpPixelWorld() { return eve::cap::query<eve::IPixelWorldAutomation>(); }
 
 /**
  * @brief Run a pending breakpoint/error vision dump on the game-loop thread.
@@ -206,8 +205,8 @@ void runPendingVisionDump() {
 
 Poco::JSON::Object::Ptr renderableObservation(eve::IRenderCapture& capture, int entityId, int generation) {
     Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
-    auto inspected = capture.inspectRenderable3D(static_cast<std::uint32_t>(entityId),
-                                                  static_cast<std::uint32_t>(generation));
+    auto                    inspected =
+        capture.inspectRenderable3D(static_cast<std::uint32_t>(entityId), static_cast<std::uint32_t>(generation));
     if (!inspected) {
         output->set("status", "stale");
         output->set("entityId", entityId);
@@ -313,22 +312,18 @@ Poco::JSON::Object::Ptr runtimeObservation(Poco::JSON::Object::Ptr args, std::st
 }
 
 struct ExpectationMatch {
-    bool valid = true;
-    double maxError = 0.0;
+    bool                     valid    = true;
+    double                   maxError = 0.0;
     std::vector<std::string> mismatches;
-    std::string error;
+    std::string              error;
 };
 
-bool isJsonObject(const Poco::Dynamic::Var& value) {
-    return value.type() == typeid(Poco::JSON::Object::Ptr);
-}
+bool isJsonObject(const Poco::Dynamic::Var& value) { return value.type() == typeid(Poco::JSON::Object::Ptr); }
 
-bool isJsonArray(const Poco::Dynamic::Var& value) {
-    return value.type() == typeid(Poco::JSON::Array::Ptr);
-}
+bool isJsonArray(const Poco::Dynamic::Var& value) { return value.type() == typeid(Poco::JSON::Array::Ptr); }
 
-void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::Var& expected,
-                        const std::string& path, double tolerance, ExpectationMatch* match) {
+void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::Var& expected, const std::string& path,
+                        double tolerance, ExpectationMatch* match) {
     if (!match || !match->valid) return;
     if (isJsonObject(expected)) {
         if (!isJsonObject(actual)) {
@@ -336,7 +331,7 @@ void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::V
             match->error = "Expected object at " + path;
             return;
         }
-        auto actualObject = actual.extract<Poco::JSON::Object::Ptr>();
+        auto actualObject   = actual.extract<Poco::JSON::Object::Ptr>();
         auto expectedObject = expected.extract<Poco::JSON::Object::Ptr>();
         for (const auto& item : *expectedObject) {
             const std::string childPath = path.empty() ? item.first : path + "." + item.first;
@@ -355,7 +350,7 @@ void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::V
             match->error = "Expected array at " + path;
             return;
         }
-        auto actualArray = actual.extract<Poco::JSON::Array::Ptr>();
+        auto actualArray   = actual.extract<Poco::JSON::Array::Ptr>();
         auto expectedArray = expected.extract<Poco::JSON::Array::Ptr>();
         if (actualArray->size() < expectedArray->size()) {
             match->valid = false;
@@ -376,7 +371,7 @@ void compareExpectation(const Poco::Dynamic::Var& actual, const Poco::Dynamic::V
             return;
         }
         const double error = std::abs(actual.convert<double>() - expected.convert<double>());
-        match->maxError = std::max(match->maxError, error);
+        match->maxError    = std::max(match->maxError, error);
         if (error > tolerance) match->mismatches.push_back(path);
         return;
     }
@@ -418,8 +413,7 @@ Poco::JSON::Object::Ptr expectationValue(const ExpectationMatch& match) {
     return output;
 }
 
-Poco::JSON::Object::Ptr observationEvent(Poco::JSON::Object::Ptr descriptor,
-                                         Poco::JSON::Object::Ptr observation,
+Poco::JSON::Object::Ptr observationEvent(Poco::JSON::Object::Ptr descriptor, Poco::JSON::Object::Ptr observation,
                                          std::string* error) {
     Poco::JSON::Object::Ptr event = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     event->set("observation", observation);
@@ -491,8 +485,21 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const std::string                   method      = getArgString(args, "method");
         const auto&                         registry    = eve::script::generatedBindingContracts();
         const eve::script::BindingContract* contract    = nullptr;
+        std::string                         lookupKey   = key;
         if (!key.empty()) {
             contract = registry.find(key);
+            // Agents often write slot.method or module.Class.method; accept those spellings.
+            if (!contract) {
+                const auto slash = key.find('/');
+                if (slash == std::string::npos) {
+                    const auto firstDot = key.find('.');
+                    if (firstDot != std::string::npos) {
+                        lookupKey           = key;
+                        lookupKey[firstDot] = '/';
+                        contract            = registry.find(lookupKey);
+                    }
+                }
+            }
         } else if (!scriptClass.empty() && !method.empty()) {
             contract = registry.findMethod(scriptClass, method);
         } else if (!method.empty()) {
@@ -500,7 +507,26 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         } else {
             return "{\"ok\":false,\"error\":\"missing key or method\"}";
         }
-        if (!contract) return "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"}";
+        if (!contract) {
+            std::string needle = !key.empty() ? key : (!scriptClass.empty() ? scriptClass + "." + method : method);
+            for (char& ch : needle) {
+                if (ch == '/' || ch == '.') ch = ' ';
+            }
+            const auto         hits = registry.search(needle, {}, {}, 5);
+            std::ostringstream json;
+            json << "{\"ok\":false,\"error\":\"binding not found or method name is ambiguous\"";
+            if (!hits.empty()) {
+                json << ",\"suggestions\":[";
+                for (size_t i = 0; i < hits.size(); ++i) {
+                    if (i != 0) json << ',';
+                    json << "{\"score\":" << hits[i].score << ",\"key\":\"" << mcpJsonEscape(hits[i].contract.key())
+                         << "\"}";
+                }
+                json << "]";
+            }
+            json << "}";
+            return json.str();
+        }
         return std::string("{\"ok\":true,\"schema\":\"eve.binding-api\",\"schemaVersion\":1,\"contract\":") +
                contract->toJson() + "}";
     }
@@ -520,8 +546,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             return std::string("error: invalid request: ") + error.what();
         }
         auto response = eve::executeGameplayControlJson(request);
-        return response ? std::move(response).takeValue()
-                        : std::string("error: ") + response.status().describe();
+        return response ? std::move(response).takeValue() : std::string("error: ") + response.status().describe();
     }
 
     if (name == "eve_play") {
@@ -533,8 +558,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             return std::string("error: invalid request: ") + error.what();
         }
         auto response = executePlayJson(request);
-        return response ? std::move(response).takeValue()
-                        : std::string("error: ") + response.status().describe();
+        return response ? std::move(response).takeValue() : std::string("error: ") + response.status().describe();
     }
 
     if (name.rfind("eve_pixelworld_", 0) == 0) {
@@ -573,11 +597,10 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_editor_observe_start") {
         auto* editor = mcpEditor();
         if (!editor) return "error: editor module not available";
-        std::string error;
+        std::string             error;
         Poco::JSON::Object::Ptr observation = runtimeObservation(args, &error);
         if (!observation) return "error: " + error;
-        if (observation->getValue<std::string>("status") != "ok")
-            return mcpStringify(Poco::Dynamic::Var(observation));
+        if (observation->getValue<std::string>("status") != "ok") return mcpStringify(Poco::Dynamic::Var(observation));
         Poco::JSON::Object::Ptr event = observationEvent(args, observation, &error);
         if (!event) {
             Poco::JSON::Object::Ptr invalid = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -596,13 +619,13 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!editor) return "error: editor module not available";
         try {
             Poco::JSON::Parser describeParser;
-            Poco::Dynamic::Var described = describeParser.parse(editor->invoke(
-                "observe-describe", mcpStringify(Poco::Dynamic::Var(args))));
+            Poco::Dynamic::Var described =
+                describeParser.parse(editor->invoke("observe-describe", mcpStringify(Poco::Dynamic::Var(args))));
             auto describedObject = described.extract<Poco::JSON::Object::Ptr>();
             if (!describedObject || describedObject->optValue<std::string>("status", "") != "applied")
                 return mcpStringify(described);
-            auto descriptor = describedObject->getObject("descriptor");
-            std::string error;
+            auto                    descriptor = describedObject->getObject("descriptor");
+            std::string             error;
             Poco::JSON::Object::Ptr observation = runtimeObservation(descriptor, &error);
             if (!observation) {
                 observation = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
@@ -620,8 +643,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             publish->set("sessionId", getArgString(args, "sessionId"));
             publish->set("event", event);
             Poco::JSON::Parser publishParser;
-            Poco::Dynamic::Var published = publishParser.parse(editor->invoke(
-                "observe-publish", mcpStringify(Poco::Dynamic::Var(publish))));
+            Poco::Dynamic::Var published =
+                publishParser.parse(editor->invoke("observe-publish", mcpStringify(Poco::Dynamic::Var(publish))));
             auto publishedObject = published.extract<Poco::JSON::Object::Ptr>();
             if (!publishedObject || publishedObject->optValue<std::string>("status", "") != "applied")
                 return mcpStringify(published);
@@ -634,16 +657,15 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_editor_execute_observe") {
         auto* editor = mcpEditor();
         if (!editor) return "error: editor module not available";
-        std::string error;
+        std::string             error;
         Poco::JSON::Object::Ptr before = runtimeObservation(args, &error);
         if (!before) return "error: " + error;
-        if (before->getValue<std::string>("status") != "ok")
-            return mcpStringify(Poco::Dynamic::Var(before));
+        if (before->getValue<std::string>("status") != "ok") return mcpStringify(Poco::Dynamic::Var(before));
 
         Poco::JSON::Object::Ptr output = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         output->set("before", before);
         const bool hasExpectation = args && args->has("expect");
-        double tolerance = 0.001;
+        double     tolerance      = 0.001;
         if (args && args->has("tolerance")) {
             try {
                 tolerance = args->get("tolerance").convert<double>();
@@ -676,7 +698,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         bool transactionAccepted = false;
         try {
             Poco::JSON::Parser parser;
-            Poco::Dynamic::Var transaction = parser.parse(editor->invoke("execute", mcpStringify(Poco::Dynamic::Var(args))));
+            Poco::Dynamic::Var transaction =
+                parser.parse(editor->invoke("execute", mcpStringify(Poco::Dynamic::Var(args))));
             output->set("transaction", transaction);
             Poco::JSON::Object::Ptr transactionObject = transaction.extract<Poco::JSON::Object::Ptr>();
             transactionAccepted = transactionObject && transactionObject->optValue<bool>("accepted", false);
@@ -710,7 +733,8 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         }
         try {
             Poco::JSON::Parser parser;
-            Poco::Dynamic::Var editorState = parser.parse(editor->invoke("inspect", mcpStringify(Poco::Dynamic::Var(args))));
+            Poco::Dynamic::Var editorState =
+                parser.parse(editor->invoke("inspect", mcpStringify(Poco::Dynamic::Var(args))));
             output->set("editor", editorState);
         } catch (const std::exception& exception) {
             output->set("editorError", std::string("Could not parse Editor observation: ") + exception.what());
@@ -775,7 +799,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         auto lookedUp = scene->getNode(id);
         if (!lookedUp) return "error: node not found: " + id;
         const eve::SceneNodeInfo n = std::move(lookedUp).value();
-        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        Poco::JSON::Object::Ptr  o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("id", n.id);
         o->set("name", n.name);
         o->set("path", n.path);
@@ -862,7 +886,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
             return "error: " + (diag ? diag->message() : built.status().describe());
         }
         const std::string       json = std::move(built).value();
-        Poco::JSON::Object::Ptr o = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
+        Poco::JSON::Object::Ptr o    = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
         o->set("recipe", recipe);
         try {
             Poco::JSON::Parser      parser;
@@ -1232,7 +1256,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         const int         line   = getArgInt(args, "line");
         if (source.empty() || line <= 0) return "error: need source and line";
         const std::string condition = getArgString(args, "condition");
-        const int id = dbg.setBreakpoint(source, line, true, condition);
+        const int         id        = dbg.setBreakpoint(source, line, true, condition);
         return "ok id=" + std::to_string(id);
     }
     if (name == "eve_clear_breakpoint") {
@@ -1311,7 +1335,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_error_slice") {
         const std::string& last = mcpLastReport();
         if (!last.empty()) return last;
-        return mcpFormatError("no prior error; callgraph slice at latest site");
+        return "no prior error";
     }
 
     if (name == "eve_run_script") {
@@ -1338,7 +1362,9 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        // Explicit install is allowed to do heavy work; agents that hit other scene tools
+        // first get deferred-to-update instead of blocking JSON-RPC (EM1).
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/true)) return sceneDirectorToolError(name, err);
         return "ok";
     }
 
@@ -1346,7 +1372,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         return callSceneDirectorReturn(vm, "return ::scene_director.status();", &err);
     }
 
@@ -1354,7 +1380,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
@@ -1364,7 +1390,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const std::string  action = getArgString(args, "action");
         const std::string  target = getArgString(args, "target");
         Poco::Dynamic::Var paramsVar;
@@ -1383,7 +1409,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         if (!paramsLiteral.ok()) return sceneDirectorToolError(name, paramsLiteral.status().describe());
         const std::string snippet = "return ::scene_director.modify(" + actionLiteral.value() + "," +
                                     targetLiteral.value() + "," + paramsLiteral.value() + ");";
-        const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
+        const std::string out = callSceneDirectorReturn(vm, snippet, &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
     }
@@ -1393,7 +1419,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         if (!args || !args->has("actions")) return sceneDirectorToolError(name, "actions array is required");
         Poco::Dynamic::Var actionsVar;
         try {
@@ -1426,7 +1452,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const int         count   = getArgInt(args, "count", 6);
         const std::string snippet = "return ::scene_director.cameras(" + std::to_string(count) + ");";
         const std::string out     = callSceneDirectorReturn(vm, snippet, &err);
@@ -1438,7 +1464,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
         HSQUIRRELVM vm = dbg.vm();
         if (!vm) return "error: no VM";
         std::string err;
-        if (!ensureSceneDirectorInstalled(vm, &err)) return sceneDirectorToolError(name, err);
+        if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) return sceneDirectorToolError(name, err);
         const std::string out = callSceneDirectorReturn(vm, "return ::scene_director.info();", &err);
         if (!err.empty()) return sceneDirectorToolError(name, err);
         return out;
@@ -1572,7 +1598,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.1\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
@@ -1635,6 +1661,7 @@ std::string handleToolsCall(McpServer& mcp, const std::string& idJson, Poco::JSO
     if (!mcpToolAllowed(name)) {
         return makeResult(idJson, textContentResult(mcpToolFilteredPayload(name), true));
     }
+    mcpFilterNoteCall(true, 0, false);
 
     if (const auto route = compiledMcpToolCatalog().find(name)) {
         try {
@@ -1705,9 +1732,9 @@ std::string handleResourcesRead(const std::string& idJson, Poco::JSON::Object::P
         auto snapshot = liveGameWorldSnapshot();
         if (!snapshot) {
             const auto* diag = snapshot.status().primaryDiagnostic();
-            return makeError(idJson, -32002,
-                             diag && !diag->message().empty() ? diag->message()
-                                                              : std::string("game world snapshot failed"));
+            return makeError(
+                idJson, -32002,
+                diag && !diag->message().empty() ? diag->message() : std::string("game world snapshot failed"));
         }
         auto json = snapshot.value().toJson();
         if (!json) {
@@ -2004,12 +2031,14 @@ void McpServer::poll() {
             resetMcpFrameCapture();
             initialized_ = false;
         }
+        flushPendingSceneDirectorInstall(Debugger::instance().vm());
         pollMcpInputBatches();
         runPendingVisionDump();
         return;
     }
     acceptNonBlocking();
     readAndDispatch();
+    flushPendingSceneDirectorInstall(Debugger::instance().vm());
     pollMcpInputBatches();
     runPendingVisionDump();
 }

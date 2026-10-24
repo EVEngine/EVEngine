@@ -41,6 +41,21 @@ REPO = Path(__file__).resolve().parent.parent
 CMAKE_LIST = TEST_DIR / "CMakeLists.txt"
 MAKEFILE = REPO / "Makefile"
 
+
+def composed_makefile(path: Path, root: Path | None = None, seen: set[Path] | None = None) -> str:
+    """Read literal recipe includes so moving an ensure-built rule keeps its audit."""
+    root = root or path.parent
+    seen = set() if seen is None else seen
+    path = path.resolve()
+    if path in seen:
+        return ""
+    path.relative_to(root.resolve())
+    seen.add(path)
+    text = path.read_text(encoding="utf-8")
+    for include in re.findall(r"^include\s+([\w./-]+\.mk)\s*$", text, re.MULTILINE):
+        text += "\n" + composed_makefile(root / include, root, seen)
+    return text
+
 CONFIGURE_DEPENDS_GLOB_RE = re.compile(
     r"file\(GLOB\s+all_test_cpp\s+CONFIGURE_DEPENDS\b",
     re.MULTILINE,
@@ -132,7 +147,7 @@ def main() -> int:
         return 1
 
     cmake_text = CMAKE_LIST.read_text(encoding="utf-8")
-    makefile_text = MAKEFILE.read_text(encoding="utf-8")
+    makefile_text = composed_makefile(MAKEFILE)
 
     errors = discovery_contract_errors(cmake_text, makefile_text)
     errors.extend(domain_wiring_errors(cmake_text))

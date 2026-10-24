@@ -26,10 +26,11 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_development_session)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Parser.h>
+#include "PrivateTestScope.h"
 #include "devtools/AgentDevelopmentMcp.hpp"
 #include "devtools/AgentDevelopmentSession.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // agent_development_session.cpp
@@ -118,20 +119,59 @@ TEST_CASE("devtools.agentDevelopmentSession.mcpAdapterReturnsVersionedSnapshot")
     REQUIRE(response);
     CHECK_EQ(response->getValue<std::string>("status"), "applied");
     CHECK_EQ(response->getValue<std::string>("schema"), "eve.agent-development-session");
-    CHECK_EQ(response->getValue<int>("schemaVersion"), 1);
+    CHECK_EQ(response->getValue<int>("schemaVersion"), 2);
     CHECK_EQ(response->getValue<std::string>("phase"), "discover");
+    CHECK_EQ(response->getValue<std::string>("taskKind"), "verify");
+    CHECK_EQ(response->getValue<std::string>("profile"), "verify.play");
     CHECK_EQ(response->getArray("criteria")->size(), std::size_t{1});
+    REQUIRE(response->has("metrics"));
+}
+
+TEST_CASE("devtools.agentDevelopmentSession.defaultsToVerifyProfileAndEscalates") {
+    auto& session = AgentDevelopmentSession::instance();
+    session.reset();
+    REQUIRE(session.start("Narrow by default", {{"play", "Playable", true, false}}).isAccepted());
+    CHECK_EQ(session.taskKind(), "verify");
+    CHECK_EQ(session.profile(), "verify.play");
+    CHECK(mcpProfileAllowsTool(session.profile(), "eve_play"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
+
+    const std::string id      = session.sessionId();
+    const auto        unknown = session.escalate(id, "no.such");
+    CHECK_EQ(unknown.code, "invalid-profile");
+    const auto toContent = session.escalate(id, "content.scene");
+    REQUIRE(toContent.isAccepted());
+    CHECK_EQ(session.profile(), "content.scene");
+    CHECK_EQ(session.taskKind(), "content");
+    CHECK_EQ(session.escalateCount(), std::uint64_t{1});
+    CHECK(mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
+    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
+    const auto illegal = session.escalate(id, "script.bind");
+    CHECK_EQ(illegal.code, "invalid-escalate");
+    session.reset();
+    CHECK(mcpSessionProfile().empty());
+}
+
+TEST_CASE("devtools.agentDevelopmentSession.rejectsMismatchedProfile") {
+    auto& session = AgentDevelopmentSession::instance();
+    session.reset();
+    const auto mismatch = session.start("Bad combo", {{"x", "y", true, false}}, "verify", "content.scene");
+    CHECK_EQ(mismatch.code, "profile-task-mismatch");
+    REQUIRE(
+        session.start("Content layout", {{"layout", "Placed", true, false}}, "content", "content.scene").isAccepted());
+    CHECK_EQ(session.profile(), "content.scene");
 }
 }  // namespace test_agent_development_session
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_callgraph)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <cstdio>
 #include <set>
 #include <string>
 #include <unordered_set>
+#include "PrivateTestScope.h"
 #include "devtools/CallGraph.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -626,9 +666,9 @@ TEST_CASE("devtools.callgraph.parentEventIdChain") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_console)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
 #include "zeroerr/assert.h"
@@ -992,21 +1032,24 @@ TEST_CASE("devtools.debugger.breakpointConditionReplaceAndEnableById") {
 }  // namespace test_debugger_unit
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_architecture_graph) || \
-    defined(EVE_TEST_ORIGIN_mcp_whitebox)
-#include "PrivateTestScope.h"
+    defined(EVE_TEST_ORIGIN_mcp_whitebox) || defined(EVE_TEST_ORIGIN_mcp_recipe_workshop)
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
 #include <chrono>
 #include <sstream>
 #include <string>
 #include <thread>
+#include "PrivateTestScope.h"
 #include "common/BindingContracts.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/McpArchitectureTools.hpp"
 #include "devtools/McpInputTools.hpp"
+#include "devtools/McpRecipeTools.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/McpTaskProfile.hpp"
 #include "devtools/McpToolFilter.hpp"
 #include "devtools/McpWhiteboxTools.hpp"
+#include "devtools/McpWorkshopTools.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: devtools_whitebox_model
@@ -1164,14 +1207,119 @@ TEST_CASE("devtools.mcp.whiteboxPlaytestRequiresLiveVm") {
 }
 }  // namespace mcp_whitebox
 }  // namespace
+
+// mcp_recipe_workshop.cpp
+namespace {
+namespace mcp_recipe_workshop {
+using eve::dev::callMcpRecipeTool;
+using eve::dev::callMcpWorkshopTool;
+using eve::dev::isMcpRecipeTool;
+using eve::dev::isMcpWorkshopTool;
+using eve::dev::mcpProfileAllowsTool;
+using eve::dev::mcpRecipeToolSchemas;
+using eve::dev::mcpToolMutates;
+using eve::dev::mcpToolTags;
+using eve::dev::mcpWorkshopToolSchemas;
+using eve::dev::resetMcpWorkshopStateForTest;
+
+namespace {
+
+Poco::JSON::Object::Ptr parseObject(const std::string& json) {
+    Poco::JSON::Parser parser;
+    auto               root = parser.parse(json);
+    if (root.type() != typeid(Poco::JSON::Object::Ptr)) return {};
+    return root.extract<Poco::JSON::Object::Ptr>();
+}
+
+Poco::JSON::Object::Ptr unwrapToolText(const std::string& envelope) {
+    auto outer = parseObject(envelope);
+    REQUIRE(outer);
+    auto content = outer->getArray("content");
+    REQUIRE(content);
+    REQUIRE(content->size() > 0);
+    return parseObject(content->getObject(0)->getValue<std::string>("text"));
+}
+
+}  // namespace
+
+TEST_CASE("devtools.mcp.recipeToolsListAndTag") {
+    CHECK(isMcpRecipeTool("eve_recipe_list"));
+    CHECK(isMcpRecipeTool("eve_recipe_apply"));
+    CHECK(!isMcpRecipeTool("eve_procgen_recipes"));
+    CHECK(mcpToolMutates("eve_recipe_apply"));
+    CHECK(!mcpToolMutates("eve_recipe_list"));
+    CHECK(mcpToolTags("eve_recipe_list")[0] == "scene");
+    const std::string schemas(mcpRecipeToolSchemas());
+    CHECK(schemas.find("eve_recipe_list") != std::string::npos);
+    CHECK(schemas.find("eve_recipe_apply") != std::string::npos);
+    CHECK(schemas.find("ruins.moonlit") == std::string::npos);  // ids come from list, not schema enum
+    auto listed = unwrapToolText(callMcpRecipeTool("eve_recipe_list", {}));
+    REQUIRE(listed);
+    CHECK(listed->getValue<bool>("ok"));
+    CHECK(listed->getValue<int>("count") >= 2);
+    auto recipes = listed->getArray("recipes");
+    REQUIRE(recipes);
+    bool foundRuins = false;
+    for (std::size_t i = 0; i < recipes->size(); ++i) {
+        auto item = recipes->getObject(static_cast<unsigned>(i));
+        if (item && item->optValue<std::string>("id", "") == "ruins.moonlit") foundRuins = true;
+    }
+    CHECK(foundRuins);
+    CHECK(mcpProfileAllowsTool("content.scene", "eve_recipe_apply"));
+    CHECK(!mcpProfileAllowsTool("verify.play", "eve_recipe_apply"));
+}
+
+TEST_CASE("devtools.mcp.recipeApplyRequiresLiveVm") {
+    Poco::JSON::Parser      parser;
+    Poco::JSON::Object::Ptr args =
+        parser.parse(R"({"id":"ruins.moonlit","params":{"seed":7,"trees":2}})").extract<Poco::JSON::Object::Ptr>();
+    auto result = unwrapToolText(callMcpRecipeTool("eve_recipe_apply", args));
+    REQUIRE(result);
+    CHECK(!result->getValue<bool>("ok"));
+    CHECK(result->has("error"));
+}
+
+TEST_CASE("devtools.mcp.workshopFacadeOpsAndProfile") {
+    resetMcpWorkshopStateForTest();
+    CHECK(isMcpWorkshopTool("eve_workshop"));
+    CHECK(!isMcpWorkshopTool("eve_recipe_list"));
+    CHECK(mcpToolMutates("eve_workshop"));
+    CHECK(mcpProfileAllowsTool("workshop.rpg", "eve_workshop"));
+    CHECK(!mcpProfileAllowsTool("content.scene", "eve_workshop"));
+    CHECK(!mcpProfileAllowsTool("verify.play", "eve_workshop"));
+    const std::string schemas(mcpWorkshopToolSchemas());
+    CHECK(schemas.find("eve_workshop") != std::string::npos);
+    CHECK(schemas.find("recipe.apply") != std::string::npos);
+
+    Poco::JSON::Parser parser;
+    auto               statusArgs = parser.parse(R"({"op":"status"})").extract<Poco::JSON::Object::Ptr>();
+    auto               status     = unwrapToolText(callMcpWorkshopTool("eve_workshop", statusArgs));
+    REQUIRE(status);
+    CHECK(status->getValue<bool>("ok"));
+    CHECK(status->getValue<std::string>("mode") == "play");
+
+    auto modeArgs = parser.parse(R"({"op":"set_mode","mode":"edit"})").extract<Poco::JSON::Object::Ptr>();
+    auto mode     = unwrapToolText(callMcpWorkshopTool("eve_workshop", modeArgs));
+    REQUIRE(mode);
+    CHECK(mode->getValue<bool>("ok"));
+    CHECK(mode->getValue<std::string>("mode") == "edit");
+
+    auto brushArgs = parser.parse(R"({"op":"map.brush"})").extract<Poco::JSON::Object::Ptr>();
+    auto brush     = unwrapToolText(callMcpWorkshopTool("eve_workshop", brushArgs));
+    REQUIRE(brush);
+    CHECK(!brush->getValue<bool>("ok"));
+    CHECK(brush->optValue<std::string>("errorCode", "") == "Unsupported");
+}
+}  // namespace mcp_recipe_workshop
+}  // namespace
 }  // namespace test_devtools_whitebox_model
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_frame_stats)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
 #include <string>
+#include "PrivateTestScope.h"
 #include "devtools/FrameStatsPanel.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1217,9 +1365,9 @@ TEST_CASE("devtools.frameStats.sampleAndFormat") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_language_index)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <string>
+#include "PrivateTestScope.h"
 #include "devtools/LanguageIndex.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1346,8 +1494,8 @@ TEST_CASE("languageIndex.semanticTokensLiteralsAndSelf") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_language_text)
-#include "PrivateTestScope.h"
 #include <string>
+#include "PrivateTestScope.h"
 #include "devtools/LanguageText.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1390,7 +1538,6 @@ TEST_CASE("devtools.languageText.incrementalFormatAndFold") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_console)
-#include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -1402,6 +1549,7 @@ TEST_CASE("devtools.languageText.incrementalFormatAndFold") {
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -1569,7 +1717,6 @@ TEST_CASE("devtools.mcp.consoleCursorSurvivesEvictionAndClear") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_tool_filter)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
 #include <Poco/JSON/Parser.h>
@@ -1579,6 +1726,7 @@ TEST_CASE("devtools.mcp.consoleCursorSurvivesEvictionAndClear") {
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "devtools/McpServer.hpp"
 #include "devtools/McpToolFilter.hpp"
 #include "zeroerr/assert.h"
@@ -1696,9 +1844,9 @@ TEST_CASE("devtools.mcp.toolTagsClassifyFamilies") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_play_trace)
-#include "PrivateTestScope.h"
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"
 #include "common/GameplayControl.h"
