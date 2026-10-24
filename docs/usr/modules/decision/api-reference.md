@@ -7,11 +7,11 @@
 
 ## Decision
 
-- `getName()` → `string`；[绑定实现 L658](../../../../src/modules/decision/Decision.cpp#L658)。
+- `getName()` → `string`；[绑定实现 L658](../../../../src/modules/npc_ai/Decision.cpp#L658)。
 
 ## DecisionContextProxy
 
-- `ownership()` → `dynamic`；[绑定实现 L531](../../../../src/modules/decision/Decision.cpp#L531)。
+- `ownership()` → `dynamic`；[绑定实现 L531](../../../../src/modules/npc_ai/Decision.cpp#L531)。
 
 
 重建：`python3 scripts/generate_binding_contracts.py --json-output eve-api.json`，

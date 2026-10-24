@@ -8,6 +8,8 @@ docs/dev/模块编排与裁剪架构.md for how the output is interpreted.
     python3 scripts/module_depgraph.py            # graph + layers
     python3 scripts/module_depgraph.py --cycles   # cycles only
     python3 scripts/module_depgraph.py --check    # exit 1 on unlisted back-edge
+    python3 scripts/module_depgraph.py --check --check-layers --report
+                                                  # both checks and graph, one scan
     python3 scripts/module_depgraph.py --check-layers
                                                   # exit 1 when an include edge
                                                   # climbs above the LAYER the
@@ -225,6 +227,7 @@ def main():
     parser.add_argument("--check-layers", action="store_true",
                         help="fail when an include edge climbs above the module's "
                              "declared manifest LAYER")
+    parser.add_argument("--report", action="store_true", help="print graph alongside checks")
     args = parser.parse_args()
 
     modules, edges, header_edges = scan()
@@ -240,6 +243,7 @@ def main():
 
     depth = layers(modules, edges, KNOWN_BACK_EDGES)
 
+    status = 0
     if args.check:
         actual = {(a, b) for a, deps in edges.items() for b in deps}
         # A back-edge points from a lower layer up to a higher one.
@@ -253,12 +257,15 @@ def main():
         for a, b in stale:
             print(f"note: {a} -> {b} is fixed; drop it from KNOWN_BACK_EDGES", file=sys.stderr)
         if offenders:
-            return 1
-        print(f"ok: no new back-edges ({len(KNOWN_BACK_EDGES)} known, {len(stale)} now stale)")
-        return 0
+            status = 1
+        else:
+            print(f"ok: no new back-edges ({len(KNOWN_BACK_EDGES)} known, {len(stale)} now stale)")
 
     if args.check_layers:
-        return check_declared_layers(edges, header_edges)
+        status |= check_declared_layers(edges, header_edges)
+
+    if (args.check or args.check_layers) and not args.report:
+        return status
 
     by_layer = defaultdict(list)
     for module in modules:
@@ -286,7 +293,7 @@ def main():
     isolated = [m for m in modules if not edges[m] and not reverse[m]]
     print("\n=== isolated (trimmable with no graph impact) ===")
     print(", ".join(isolated) if isolated else "(none)")
-    return 0
+    return status
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 #include "graphics/Bloom.h"
+#include "common/Profile.h"
 
 #include <algorithm>
 #include <string>
@@ -116,6 +117,7 @@ Texture *Bloom::build(Texture *source, float threshold, float scatter) {
 }
 
 Texture *Bloom::apply(Texture *source, float intensity, float threshold, float scatter) {
+    EV_PROFILE_MODULE("graphics", "PostProcess.Bloom");
     if (!source) throw eve::Exception("Bloom.apply: null source");
     if (intensity <= 0.f) return source;
     Texture *bloom = build(source, threshold, scatter);

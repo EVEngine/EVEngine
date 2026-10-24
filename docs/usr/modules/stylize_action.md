@@ -27,5 +27,5 @@ Action attack_vfx payload 的 recipeId 与 uri 二选一；不能两者都给或
 与取消，再逐层接入资源。测试中的 `particles://missing` 是失败注入，不能当成可用资源。
 
 源码：[StylizeAction.cpp](../../../src/modules/stylize/action/StylizeAction.cpp)；可复用的
-recipe 与 provider 测试：[stylize_action_attack_vfx.cpp](../../../test/stylize_action_attack_vfx.cpp)。
-完整资源层组合见 [stylize_attack_vfx_audio_decal.cpp](../../../test/stylize_attack_vfx_audio_decal.cpp)。
+recipe 与 provider 测试：[stylize_action_attack_vfx.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp)。
+完整资源层组合见 [stylize_attack_vfx_audio_decal.cpp](../../../test/integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp)。

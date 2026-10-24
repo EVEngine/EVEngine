@@ -190,6 +190,7 @@ config <- {
     width = 800
     height = 600
     title = "EVEngine"
+    vsync = true
     debug = false
     hotReload = false
     // Remote hot reload: set to the `eve dev` URL of the host machine, e.g.
@@ -289,6 +290,12 @@ if (!has_module("win") || !has_module("gfx")) {
 }
 
 local editor_host = ("editorHost" in config) && config.editorHost;
+
+// Apply before either window owner creates its swapchain. A project may replace
+// the entire default table, so absence must still select the enabled default.
+if (!("vsync" in config)) config.vsync <- true;
+if (typeof config.vsync != "bool") throw "config.vsync must be a bool";
+gfx.setVSyncCount(config.vsync ? 1 : 0);
 
 function boot_create_window() {
     local s = eve.WindowSettings();

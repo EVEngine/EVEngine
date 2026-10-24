@@ -1,0 +1,221 @@
+GPU 多层布料验证记录 — 2026-10-19
+
+当前版本：第三轮 15 cases / 3900 assertions 全通过（14 项 Vulkan 专项 + 1 项独立几何 oracle 校验）。
+下列首版记录保留历史证据；连续接触升级与密集接触稳定化的现状以文件末尾相应章节为准。
+
+配置：Linux / GCC / Debug / Vulkan Lavapipe / Xvfb。
+使用本工作树新编译的引擎与动态库；没有用 CPU 求解器替代 GPU 测试。
+Lavapipe 是软件 Vulkan：这份记录证明真实 compute dispatch 与 VBO 通路，
+不证明实体显卡帧率、显存性能或跨设备数值等价。
+
+构建 PASS
+source /workspace/.evengine-env/activate.sh
+cmake -S . -B build/linux-debug \
+  -DEVENGINE_PROFILE=minimal -DEVENGINE_MODULE_physics_cloth=ON \
+  -DEVENGINE_MODULE_font=ON -DEVENGINE_MODULE_devtools=ON \
+  -DEVENGINE_BUILD_JOLT=OFF \
+  -DEVENGINE_THIRD_PARTY_BINARY_DIR=/workspace/EVEngine/build/third-party-binary/linux-debug
+cmake --build build/linux-debug --target eve -j 4
+末次输出：Built target EVPhysics_cloth / EVDomains / eve。
+GLSL 经 glslangValidator -V 编译通过；运行时又通过 Gpgpu.newShader 编译实际程序。
+
+GPU 专项 PASS：5 cases / 339 assertions / 0 warning / 0 failed / 0 skipped。
+- 自由落体：GPU 与独立积分公式及 CPU 参考在 1e-4 m 容差内一致；NaN、过小正 dt
+  被拒绝，状态不变，关闭接触时诊断为零。
+- 三层固定点、有限状态和 reset 恢复初态。
+- 两层不同逆质量的反作用和质量中心守恒；关闭接触保持原间距。
+- 刻意使三角形覆盖超过 64 个 hash cell：GPU 溢出标记及事件非零，执行 GPU
+  全扫描，状态仍有限；没有 CPU fallback。
+- 计算生成的驻留顶点绘制：真实 GPU 受力更新后绘制，再 reset 并绘制，呈现图
+  不同；排除了始终绘制初始化静态网格却声称 GPU 动态绘制的情况。
+
+使用 test/physics_layered_cloth_gpu.cpp、test/main.cpp、GraphicsWindowFixtures.cpp
+原始源码，按 compile_commands.json 的编译选项构建临时专项 zeroerr runner，链接
+本次编译的真实 libEVDomains / EVWorld / EVBackends / EVPlatform / EVFoundation。
+过滤：--testcase=PhysicsLayeredClothGPU.*（全匹配正则，不能省略 .*）。
+当前精简环境的完整 unit_test_physics 仍依赖缺失的 -lEVDemo，沿用上版的专项运行
+方式，没有宣称完整物理域通过。正式完整配置应运行域级目标；新的 GPU 测试已归入
+physics 域，并接入共享 GraphicsWindowFixtures；WebGPU 配置明确排除 Vulkan 专项。
+
+GPU 演示 PASS
+xvfb-run -a -s '-screen 0 1280x800x24' \
+  env MIN_RUN_SECONDS=2 RUN_SECONDS=12 bash scripts/smoke_examples.sh layered-cloth-gpu
+输出：PASS layered-cloth-gpu (alive through the 12s window)
+Summary: 1 passed, 0 failed。
+例中有 3*20*16 = 960 个模拟粒子、双面驻留顶点与层颜色，无逐帧状态读回。
+
+视觉证据 PASS
+启动新引擎 eve run --mcp-port=7538，通过引擎 eve_screenshot 接口截取真实呈现帧，
+在 no-presented-frame 后等待下一帧重试。
+docs/images/examples/layered-cloth-gpu.png：1100*720，18244 字节。
+人工检查：三种颜色布料的下垂、弯曲、分层可见。不是 Xvfb framebuffer 截图，
+未做后期处理。测试还保存 /tmp/layered-cloth-gpu-test.png 和 reset 对照图。
+静态截图不证明零穿透；当前没有 edge-edge CCD。
+
+源码门禁 PASS
+PYTHONPATH=/tmp/cloth-tools PATH=/tmp/cloth-ninja/bin:/tmp/cloth-tools/bin:$PATH \
+  make check CI_BASE=HEAD
+结果：Ran 313 tests ... OK；source-quality gate passed (base=HEAD)。
+包含分层、绑定覆盖、目录和测试清单、nodiscard、架构约束、ruff 与脚本测试。
+最终修改另复查 architecture contracts、module_depgraph、check_examples、
+check_test_manifest、changed-line clang-format 与 git diff --check，均通过。
+完整绑定目录：11299 contracts，0 unresolved，0 placeholder；构建目录的运行时
+BindingContracts.generated.cpp / eve-api.json / eve-api.d.ts 已刷新并链接到新引擎。
+
+边界与未验证项
+- 仅 Vulkan 规则网格；无 WebGPU 求解器、CPU/GPU 材料与全接触精确等价。
+- 没有边边 CCD、服装缝合/导入、skin/backstop 或刚体双向耦合。
+- 没有实体 GPU 性能基准，也未运行 Khronos validation layer（当前环境仅有
+  Intel/Mesa explicit layers）；不宣称验证层零报错或全平台通过。
+- update 每次同步等待一个 Sequence fence，尚未做异步计算/渲染重叠。
+
+架构规则：现有模块依赖方向不变；Pimpl 独占 GPU 状态；引用 provider 必须活到组
+析构之后；resident view 只借用且生产者必须活到帧完成；错误 Result 必须处理；
+无新 ECS/System、持久化协议或跨域 registry；未故意豁免仓库规则。
+
+
+连续接触升级 — 2026-10-19
+
+实现
+- GPU 点和三角形的子步运动 AABB，容量 32*(N+T)，查询使用交集首 cell 去重。
+- 点面与边边保守推进 CCD；起始接触壳保留原侧；三角形唯一拥有拓扑边。
+- 边对双方按统一顺序计算，四端点逆质量/重心梯度分配；无浮点原子累加。
+- 接触之后再次处理地面夹取；无新公开 API、模块依赖、ECS、跨域所有权或持久化格式。
+
+构建与专项
+source /workspace/.evengine-env/activate.sh
+cmake --build build/linux-debug --target eve -j 4
+PASS：实际重新编译并链接 EVPhysics_cloth / EVDomains / eve。
+glslangValidator -V /tmp/layered.comp -o /tmp/layered-ccd.spv
+PASS：提取当前生产 GLSL 编译通过，运行时还编译并执行相同代码。
+专项继续使用上文原源码临时 runner；编译脚本从 compile_commands.json 读取真实参数。
+MESA_SHADER_CACHE_DIR=/tmp/cloth-mesa-cache xvfb-run -a /tmp/gpu-cloth-tests \
+  '--testcase=PhysicsLayeredClothGPU.*'
+PASS：11 cases / 757 assertions / 0 warning / 0 failed / 0 skipped。
+- 保留首版全部测试；绘制用例现为 12 步明显变形，再与 reset 呈现比较，并检查底边下垂。
+- 正/反向高速穿面、从接触壳出发、移动面穿过静止点、三角形外高速轨迹不误判。
+- 端点均远离对方的边中段交叉、退化边有限状态。
+- 全散列与真正耗尽引用容量后的 GPU 扫描，均在 48 轮内把穿越点推回原侧的厚度位置；
+  分别断言 overflow=0/1，避免两条路径实际上都走全扫描而测试仍声称对照。
+- 不等质量边响应；所有相关顶点自由时的质量中心守恒。固定顶点是外部支撑，
+  不能错误地要求仅移动部分的质量中心不变。
+- 摩擦修正上限、分离运动、不相邻自接触开启/关闭、局部拓扑过滤。
+- 3 层 48 粒子，124 步（约 2.07 秒模拟时间）有限状态、固定点和同步更新计时。
+  这是短稳定性检查，尚未覆盖分钟级剧烈折叠和密集接触。
+
+软件 Vulkan 耗时基线
+4 步预热后采样 120 步，2 子步、8 次迭代，仅包围同步 update：
+median=64.6077 ms，p95=71.5277 ms，max=78.3179 ms；末步 hash overflow events=0。
+原始 120 条记录：docs/dev/layered-cloth-gpu-benchmark.csv。
+计时包括 CPU 录制、驱动、等待和软件设备执行；不是 GPU timestamp，不推算实体 GPU FPS。
+当前没有实体 GPU 和 Khronos validation layer，未执行硬件性能/同步验证，
+不宣称跨厂商或验证层零错误；新的计时用例可在目标机重跑。
+
+源码门禁
+PYTHONPATH=/tmp/cloth-tools PATH=/tmp/cloth-ninja/bin:/tmp/cloth-tools/bin:$PATH \
+  make check CI_BASE=HEAD
+PASS：313 tests ... OK，source-quality gate passed (base=HEAD)。
+当前四个 GPU 实现/测试文件 clang-format --dry-run --Werror 与 git diff --check PASS。
+全物理域缺 EVDemo 的环境限制未改变；没有宣称全套测试通过。
+
+仍需按顺序继续
+- CCD 检测不等于有限次迭代的零穿透保证；高速回归使用 48 轮，默认 8 轮可能残留。
+- 保守推进有 64 轮上限和浮点容差；无精确几何谓词、初始交叉修复或上限专用计数。
+- 持久接触缓存、静/动摩擦、密集多接触收敛与长时间折叠回归尚未补齐。
+- 散列溢出仍全局 GPU 扫描；同步等待、宽屏障、材料/阻尼标定和服装/场景接入未完成。
+- 本轮未重新截图 960 粒子演示；原截图仅为首版视觉证据，不作 CCD 正确性证据。
+
+本轮架构适用规则：内部 GPU 状态仍由 Pimpl 独占，同一渲染/提交线程；
+保留 provider/mesh 生命周期契约与显式 Result 检查，测试不添加公开测试接口。
+没有新 ECS/System、Link、schema 或跨域机制；无故意豁免。
+
+
+密集接触稳定化 — 2026-10-19
+
+问题复现
+八层 2*2 网格、1 mm 层距、0.1 m 接触厚度，全部自由，单轮直接累加：
+旧 GLSL 最大修正 0.8064 m。新增的独立位移上界回归真实失败，未用静态图片代替证据。
+
+实现
+- mode 6 gather 接触修正及质量缩放块行和权重，uint atomicMax 归约全局正浮点位模式。
+- mode 4 使用共同系数 min(0.2,0.9/(max(1,R)*(1+mu)))，保留配对反作用。
+- 重用最终 VBO 前 16*N 字节作为更新期间 scratch；最终 pack 全量覆盖，绘制仍在 update 后。
+- 内部 Stats 16 -> 32 字节，公开 readDiagnostics 前四项 ABI 不变；每轮重置内部上界。
+- 每次接触迭代新增一个 dispatch，没有额外提交、逐帧 CPU 读回或浮点原子需求。
+- 新实现同场景最大修正 0.0432 m；质量中心误差 6.98492e-10 m，门槛 1e-6 m。
+
+构建与测试
+使用 /workspace/.evengine-env/activate.sh 的 GCC / 软件 Vulkan / Xvfb 环境。
+cmake --build build/linux-debug --target eve -j 4 PASS。
+特别确认 LayeredClothGPU.cpp 重新编译；更改 .inc 后触碰包含它的 TU，规避仓库 unscanned 依赖问题。
+glslangValidator -V /tmp/cloth-stage3.comp -o /tmp/cloth-stage3.spv PASS。
+临时专项 runner 仍编译原 test/main.cpp、GraphicsWindowFixtures.cpp 和当前 GPU 测试文件，
+从当前 compile_commands.json / unit_test_graphics 的 link.txt 提取参数，链接新生产动态库。
+这次未运行完整 graphics/physics 域或其它平台，未新增公开测试 API。
+MESA_SHADER_CACHE_DIR=/tmp/cloth-mesa-cache xvfb-run -a /tmp/gpu-cloth-tests \
+  '--testcase=PhysicsLayeredClothGPU.*'
+PASS：15 cases / 3900 assertions / 0 warning / 0 failed / 0 skipped。
+其中 14 项使用真实 Vulkan，另 1 项独立验证 CPU 双精度几何距离 oracle。
+
+新增覆盖
+- 八层密集接触：单轮修正 <= 接触厚度，封闭系统质量中心保持。
+- 单层回折、自接触、4:1 质量比：96 轮后端排间距 0.08 m，最大修正 0.0570403 m，有限状态与守恒。
+- 四层自由下落：16 粒子 / 2 子步 / 8 迭代 / 摩擦 0.4 / 地面 0，
+  1800 个 1/30 s 步长，即一分钟模拟时间；每 120 步检查有限状态、地面和实际几何距离。
+  最高采样高度 0.226028 m，15 次采样最小几何间距 0.0353227 m，结束时 0.0795983 m。
+  约束厚度 0.08 m；测试要求采样间距 >0.03 m，最终间距 >0.075 m。
+  reset 后再推进并检查有限状态，排除工作缓冲残留导致重启失败。
+- 双精度 oracle 使用投影、边/面相交、边界距离；已知平行面、面相交、退化点、共线三角形均验证。
+  初始平均高度判据曾失败；检查质心轨迹发现无侧向约束布料滑开，
+  改为实际三角形距离，未把“都落地”误判成穿透，也没有放宽原 0.03 m 距离门槛。
+- 原有高速穿越、边边反作用、摩擦过滤、hash/scan 对照、VBO 呈现与 reset 全部保留并通过。
+
+本轮软件 Vulkan 墙钟基线
+48 粒子 / 2 子步 / 8 迭代，4 步预热 + 120 步记录，仅计同步 update：
+median=65.8254 ms，p95=74.506 ms，max=78.9523 ms；末步 overflow events=0。
+原始数据：docs/dev/layered-cloth-gpu-stability-benchmark.csv。
+上轮 CSV 保留历史数据；两次单机软件测量不构成硬件性能或统计显著的快慢结论。
+无实体 GPU、无 Khronos validation layer；仍未做 GPU timestamp、跨厂商和同步验证。
+
+源码与架构
+最终 make check CI_BASE=HEAD PASS：313 项脚本测试通过，source-quality gate passed (base=HEAD)。
+当前 GPU 实现、内核及测试的 clang-format --dry-run --Werror 和 git diff --check PASS。
+本轮仅改私有求解流程、工作布局、测试和文档，没有新增公开 API、ECS/System、
+跨域 Link、持久化 schema 或 provider。Pimpl 唯一所有权、同提交线程和渲染生命周期契约不变；
+update/draw 的 Result 仍显式处理，同队列屏障覆盖 scratch -> pack -> draw。
+没有故意豁免架构规则。
+
+剩余限制
+- 全局 R 会降低其它接触岛的收敛速度；需要岛级预算/缩放与硬件剖析。
+- 低迭代预算仍有残余厚度误差；保守推进 64 轮上限与浮点容差不变。
+- 分离指标是每 4 秒采样的端点几何距离，不能证明全部中间时刻无相交。
+- 本轮没有持久接触流形、静/动摩擦分离、地面切向摩擦或初始交叉修复。
+- 一分钟用例是小网格自由下落；没有宣称复杂服装一分钟剧烈折叠已验证。
+
+
+PR 同步 dev — 2026-10-19
+
+已将实现 rebase 到 dev 8278b361e2ba88a33959c533147dafd09c182052，无合并冲突。
+上文运行时数值与 15/3900 专项结果来自同步前的完整构建（基线 10f6faa7509e）。
+算法与用例未因 rebase 改变；最新 dev 增加了测试清单，已在 test/test_levels.json
+逐项登记 8 个 CPU/脚本用例与 15 个 GPU/几何用例及 unit/integration、窗口资源分类。
+python3 scripts/test_levels.py 通过，所有新增字面量 case 均有明确分类。
+
+同步后使用构建数据库的实际参数重新编译 5 个修改过的生产 TU：Cloth3D.cpp、
+LayeredClothGPU.cpp、ClothModule.cpp、GraphicsMesh.cpp、VulkanSequence.cpp，全部通过。
+完整 eve 重建在 CMake 配置阶段被本机旧依赖缓存阻断：缓存/checkout 仍为 third-party
+54725d0ae7c4，而 dev 默认 pin 已升级到 477333b3e404，旧缓存缺少新 apply_patches.cmake。
+没有修改依赖 pin 或替换校验来绕过约束，没有宣称同步后的整引擎运行时已复测。
+此项需干净 CI/匹配新 pin 的依赖环境继续验证；原 GPU 验证不是新 dev 全平台验证。
+
+为符合最新 dev 的布局与合并规则，测试最终位置如下（上文旧路径为历史运行时记录）：
+- test/unit/physics_cloth/physics_cloth_unit.cpp：新增 7 个 CPU 算法用例及 1 个几何 oracle 用例；
+  与既有模块单元测试合并，并保留旧源名 origin 解析。
+- test/integration/layered-cloth/physics_layered_cloth_gpu.cpp：14 个真实窗口/Vulkan 用例。
+- test/integration/layered-cloth/physics_layered_cloth_script.cpp：脚本绑定用例。
+- test/LayeredClothGeometryOracle.h：两种用例共用的独立几何辅助实现。
+已生成 test/MODULE_TEST_COVERAGE.md；test-level catalogue、模块证据与测试发现清单校验通过。
+重组后的 3 个测试 TU 使用当前头文件单独编译通过；没有用旧动态库冒充新 dev 运行时复测。
+
+最终发布前门禁：make check CI_BASE=origin/dev PASS，458 项脚本测试通过，
+source-quality gate passed (base=origin/dev)。新增文件另行手工 clang-format 检查通过。

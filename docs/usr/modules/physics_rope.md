@@ -34,7 +34,7 @@ setCollideWorld/setCollideSdf 的引用，最后释放 provider。newRope3D 的�
 管理；没有脚本 destroy 方法，不能照搬 Body 的释放协议。JSON 构造错误会抛脚本错误，
 不是返回一个可继续使用的空绳。源代码与断裂、边界条件证据见
 [Rope.cpp](../../../src/modules/physics/rope/Rope.cpp)、
-[physics_rope.cpp](../../../test/physics_rope.cpp)。
+[physics_rope.cpp](../../../test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp)。
 
 主要参数与观测：`update()`、`setGravity()`、`getGravityX()`、`getGravityY()`、
 `getGravityZ()`、`setStretchCompliance()`、`setDistanceConstraintsEnabled()`、

@@ -1,4 +1,5 @@
 #include "graphics/AntiAliasing.h"
+#include "common/Profile.h"
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
@@ -522,6 +523,7 @@ void AntiAliasing::apply(Graphics *gfx, Texture *source) {
 void AntiAliasing::applyTo(Graphics *gfx, Texture *source, Canvas *dest) {
     if (!gfx) throw eve::Exception("AntiAliasing.applyTo: null graphics");
     if (!dest) throw eve::Exception("AntiAliasing.applyTo: null dest");
+    EV_PROFILE_MODULE("graphics", "PostProcess.Antialiasing");
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     apply(gfx, source);

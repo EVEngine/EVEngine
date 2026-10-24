@@ -50,7 +50,7 @@ Prefer headless fixtures for parameters/resources/pipeline behavior and computed
 GfxFixture fixture(w, h, /*useHeadless=*/true);
 ```
 
-Alternatively use `openHeadlessGfx()`. `Graphics::initHeadless()` creates a windowless Vulkan device; drawing uses an offscreen Canvas and `newImageData()` readback. `present()` is a no-op. See `test/graphics_headless.cpp`, `test/graphics_font.cpp` and `test/TextureSampler.cpp`.
+Alternatively use `openHeadlessGfx()`. `Graphics::initHeadless()` creates a windowless Vulkan device; drawing uses an offscreen Canvas and `newImageData()` readback. `present()` is a no-op. See `test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp`, `test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp` and `test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp`.
 
 Initialization is idempotent for the shared Graphics singleton: later calls update the logical viewport rather than creating a second device. Headless GPU tests still need Vulkan.
 

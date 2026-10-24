@@ -14,14 +14,13 @@ b3SurfaceMaterial nativeMaterial(SurfaceMaterial3D value) {
     material.rollingResistance = value.rollingResistance;
     material.tangentVelocity   = {value.tangentVelocity.x, value.tangentVelocity.y, value.tangentVelocity.z};
     material.userMaterialId    = value.userMaterialId;
+    material.customColor       = value.customColor;
     return material;
 }
 SurfaceMaterial3D materialValue(b3SurfaceMaterial value) {
-    return {value.friction,
-            value.restitution,
-            value.rollingResistance,
-            {value.tangentVelocity.x, value.tangentVelocity.y, value.tangentVelocity.z},
-            value.userMaterialId};
+    return {value.friction,          value.restitution,
+            value.rollingResistance, {value.tangentVelocity.x, value.tangentVelocity.y, value.tangentVelocity.z},
+            value.userMaterialId,    value.customColor};
 }
 class Box3DShape final : public IShapeBackend3D {
     template <class F>

@@ -4,6 +4,7 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 
+#include <algorithm>
 #include <cmath>
 
 namespace eve::graphics {
@@ -13,6 +14,31 @@ eve::Diagnostic invalidMaterial(std::string message) {
     return eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, message);
 }
 }  // namespace
+
+eve::Result<void> Material::enableVirtualTexture(const VirtualTextureStreamingConfig& config) {
+    auto created = VirtualTextureStreaming::create(config);
+    if (!created.ok()) return eve::Result<void>::failure(created.status());
+    virtualStreaming_             = std::move(created).value();
+    virtualStreamingEpoch_        = 0;
+    virtualStreamingInitialized_  = false;
+    virtualTextureEnabled_        = false;
+    virtualPageCountX_       = 0;
+    virtualPageCountY_       = 0;
+    virtualAtlasSlotsX_      = 0;
+    virtualAtlasSlotsY_      = 0;
+    virtualBorderFraction_   = 0.f;
+    pbr_.textures[0].texture = nullptr;
+    pbr_.textures[2].texture = nullptr;
+    height_                  = nullptr;
+    return eve::Result<void>::success();
+}
+
+eve::Result<std::uint32_t> Material::addVirtualTextureLayer(const VirtualTextureBlendLayer& layer) {
+    if (!virtualStreaming_)
+        return eve::Result<std::uint32_t>::failure(
+            invalidMaterial("enableVirtualTexture must be called before addVirtualTextureLayer"));
+    return virtualStreaming_->addLayer(layer);
+}
 
 eve::Result<void> Material::setVirtualTexture(Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable,
                                               int pageCountX, int pageCountY, int atlasSlotsX, int atlasSlotsY,
@@ -38,12 +64,38 @@ eve::Result<void> Material::setVirtualTexture(Texture* albedoAtlas, Texture* nor
 }
 
 void Material::clearVirtualTexture() {
-    virtualTextureEnabled_ = false;
+    virtualStreaming_.reset();
+    virtualStreamingEpoch_        = 0;
+    virtualStreamingInitialized_  = false;
+    virtualTextureEnabled_        = false;
     virtualPageCountX_     = 0;
     virtualPageCountY_     = 0;
     virtualAtlasSlotsX_    = 0;
     virtualAtlasSlotsY_    = 0;
     virtualBorderFraction_ = 0.f;
+}
+
+eve::Result<void> Material::tickVirtualTexture(Graphics& gfx) const {
+    if (!virtualStreaming_) return eve::Result<void>::success();
+    const std::uint64_t epoch = gfx.mesh3dDrawEpoch();
+    if (virtualStreamingEpoch_ == epoch && virtualTextureEnabled_) return eve::Result<void>::success();
+    virtualStreamingEpoch_ = epoch;
+
+    // Bootstrap physical cache lazily after at least one layer is present.
+    if (!virtualStreamingInitialized_) {
+        auto initialized = virtualStreaming_->initializePhysicalCache();
+        if (!initialized.ok()) return initialized;
+        virtualStreamingInitialized_ = true;
+    }
+
+    // Engine-owned feedback: request the full mip-zero domain; decode budget + LRU stream residency.
+    const int pagesX = std::max(1, virtualStreaming_->pageCountX());
+    const int pagesY = std::max(1, virtualStreaming_->pageCountY());
+    auto      feedback = virtualStreaming_->recordFeedbackGrid(pagesX, pagesY, 0);
+    if (!feedback.ok()) return feedback;
+    auto updated = virtualStreaming_->update();
+    if (!updated.ok()) return eve::Result<void>::failure(updated.status());
+    return virtualStreaming_->syncToMaterial(gfx, const_cast<Material&>(*this));
 }
 
 void Material::setShadingModel(const std::string& model) {
@@ -234,6 +286,8 @@ Result<void> Material::setFoliageWindTime(float seconds) {
 }
 
 Result<void> Material::bind(Graphics& gfx) const {
+    auto vtTick = tickVirtualTexture(gfx);
+    if (!vtTick.ok()) return vtTick;
     auto snapshot  = pbr_;
     snapshot.unlit = shadingModel_ == "unlit";
     auto pbrStatus = gfx.setMesh3DPbrSurface(pbrEnabled_ ? &snapshot : nullptr);

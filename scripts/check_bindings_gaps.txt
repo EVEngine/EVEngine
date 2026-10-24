@@ -1,4 +1,0 @@
-# Known 'bound but not documented' gaps (module:binding), one per line.
-# Regenerate with: python3 scripts/check_bindings.py --strict --write-gaps
-# Remove a line when the doc chapter catches up; new gaps not listed here
-# fail the CI binding check.

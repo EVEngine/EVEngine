@@ -1,0 +1,21 @@
+{
+  "assets/garden/leaf-spray.png": "f26d279d36482eea3e9d66c8cdd51bdec2e6754e88bc7826ef6736f60f52948c",
+  "assets/garden/LICENSE-EZ-TREE.txt": "dfcc723b09e99427663fb35ad5a86a39667255d3d6ea35a1efe0d8235d24cb40",
+  "assets/garden/tree-0.bin": "b0ff1d018a8de887f716d9de5ad59d07d6abb09e10b2f3c8ca21a8beb8de4d42",
+  "assets/garden/tree-0.gltf": "ace081dc29e574be760cc45ba654a5ebaa0f0cceede088fae1ff5ee7b7f1e2a9",
+  "assets/garden/tree-1.bin": "d51a4c9fde1193ed1761559c01c24adfd129f54267240f511b5cabae266b285e",
+  "assets/garden/tree-1.gltf": "818c401d301476e068c7c9aa6b75cab8fa6c451e78ae8a8e6a85c49d0f69322e",
+  "assets/garden/tree-2.bin": "b392e4084c6f5f8fa38eaa384a81f93a0f424415ebef280271f137840337ca41",
+  "assets/garden/tree-2.gltf": "6d895bd1a25abd00ae72bb52f4581b0743e7f32c74ca4d2873ab81430dd3c889",
+  "assets/grass-normal.png": "523e027ac19cedebf4de9bbcb2954db58b408193c4222d02414bcec238ae6abd",
+  "assets/grass.png": "dccb2c6e0d21fe77d9854b55192587fdb5fd863458c873d977230973579cf054",
+  "assets/gravel-albedo.png": "21366fcf631298866b1e390699016aa08c77bdf4998be86e166de22d1017d3fb",
+  "assets/reeds.png": "52398af1d397f42edd167c76dfe3bb17c2e4fdea49a148a6eda8a4ae8f4b59a2",
+  "assets/sand-normal.png": "438bb3b9c8db2e80bb5bcbda2c4b025c765d6f6bb4fab1ea099c0ef06a220a31",
+  "assets/sand.png": "d8f7285069e812a7c32dd38c86a4589564dbb45dfca2856391ffe94993d736c3",
+  "assets/stone-normal.png": "523e027ac19cedebf4de9bbcb2954db58b408193c4222d02414bcec238ae6abd",
+  "assets/stone.png": "c39a6a4e557b1aaf427c23a785ac7770174d81ad2775d2852d67544414216e98",
+  "assets/tree-atlas.png": "e18202f388c5400867fcc20ddf48ed6d0d4e34835d85da4bab200e7499fbc584",
+  "assets/wood-normal.png": "715d022ec1b8c8dd7007fa80683897c24e59987a0ff231aff5865ec4c45017c4",
+  "assets/wood.png": "fe3ce90cdaf5c0b6552d241d369d0135103a7a2056363ae9ed9fa5464f57e1a6"
+}

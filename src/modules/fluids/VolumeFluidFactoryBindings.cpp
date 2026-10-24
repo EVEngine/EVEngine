@@ -72,6 +72,50 @@ void exposeVolumeFluidFactory(ssq::Class& cls) {
         collider.sdf = MeshSdf::makeFromTriangles(vertices, indices, {resolution, resolution, resolution});
         return script::projectStatusResult(vm, Status::success(), encodeVolumeFluidSdfCollider(collider));
     });
+    cls.addFunc("sdfField3DBlobFromModel", [vm](Fluids*, model3d::ModelData* model, int meshIndex, float sx, float sy,
+                                                float sz, int resolution) {
+        const auto failure = [&](const char* message) {
+            return script::projectStatusResult(
+                vm, Status::failure(
+                        Diagnostic::error(DiagnosticCode::InvalidArgument, message, "fluids.sdf.field3dFromModel")));
+        };
+        if (!model || meshIndex < 0 || meshIndex >= model->getMeshCount() || resolution < 8 || resolution > 128)
+            return failure("Invalid model mesh slot or SDF resolution");
+        const int      vertexCount = model->getVertexCount(meshIndex), faceCount = model->getFaceCount(meshIndex);
+        const uint64_t samples = uint64_t(resolution) * uint64_t(resolution) * uint64_t(resolution);
+        if (vertexCount <= 0 || vertexCount > 1000000 || faceCount <= 0 || faceCount > 65536 ||
+            samples * uint64_t(faceCount) > 4000000)
+            return failure("Model SDF bake exceeds geometry or 4M sample/triangle budget");
+        if (!std::isfinite(sx) || !std::isfinite(sy) || !std::isfinite(sz) || sx == 0 || sy == 0 || sz == 0)
+            return failure("Invalid model SDF scale");
+        std::vector<glm::vec3> vertices(static_cast<size_t>(vertexCount), glm::vec3(0.f));
+        std::vector<uint32_t>  indices;
+        indices.reserve(size_t(faceCount) * 3);
+        try {
+            for (int i = 0; i < vertexCount; ++i)
+                vertices[size_t(i)] = {model->getVertexPosition(meshIndex, i, 0) * sx,
+                                       model->getVertexPosition(meshIndex, i, 1) * sy,
+                                       model->getVertexPosition(meshIndex, i, 2) * sz};
+            for (int i = 0; i < faceCount; ++i)
+                for (int corner = 0; corner < 3; ++corner) {
+                    const int index = model->getFaceVertexIndex(meshIndex, i, corner);
+                    if (index < 0 || index >= vertexCount) return failure("Model contains invalid SDF triangle index");
+                    indices.push_back(uint32_t(index));
+                }
+            for (size_t i = 0; i < indices.size(); i += 3)
+                if (glm::length(glm::cross(vertices[indices[i + 1]] - vertices[indices[i]],
+                                           vertices[indices[i + 2]] - vertices[indices[i]])) < 1e-8f)
+                    return failure("Model contains degenerate SDF triangle");
+        } catch (const std::exception&) {
+            return failure("Could not read model mesh for SDF bake");
+        }
+        const MeshSdf sdf  = MeshSdf::makeFromTriangles(vertices, indices, {resolution, resolution, resolution});
+        auto          blob = sdfField3DBlobFromMeshSdf(sdf);
+        if (!blob) return script::projectStatusResult(vm, blob.status());
+        auto encoded = encodeSdfField3DBlob(blob.value());
+        if (!encoded) return script::projectStatusResult(vm, encoded.status());
+        return script::projectStatusResult(vm, Status::success(), std::move(encoded).takeValue());
+    });
     cls.addFunc("volumeEmissionFromModel", [vm](Fluids*, model3d::ModelData* model, int meshIndex, float sx, float sy,
                                                 float sz, float spacing) {
         const auto failure = [&](const char* message) {

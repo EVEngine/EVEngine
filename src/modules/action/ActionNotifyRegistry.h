@@ -2,7 +2,14 @@
 #include "common/Export.h"
 
 
-/** @file ActionNotifyRegistry.h @brief Extensible notify descriptors, validation and runtime routing. */
+/** @file ActionNotifyRegistry.h
+ *  @brief Extensible notify descriptors, validation and runtime routing.
+ *
+ *  Descriptor ownership lives here. Typed payload schemas live in the
+ *  `Action*Block.h` / `ActionNotifyContracts.h` catalogue (L1, no domain mutation).
+ *  Presentation and combat modules install handlers through `IActionNotifyProvider`
+ *  or capability sinks; missing providers fail observably at dispatch.
+ */
 
 #include "action/Action.h"
 #include "common/AttachmentPoint.h"

@@ -1,0 +1,615 @@
+bash scripts/check_source_quality.sh "origin/dev"
+==> changed lines are clang-format clean
+warning: new file 'external/ECS.hpp' is not checked (format it by hand)
+ok: changed lines are clang-format clean
+==> module dependency layering
+ok: no new back-edges (0 known, 0 now stale)
+==> script bindings have guide or generated API coverage
+ok  action: 19 bindings covered by guide or generated API
+ok  action_editor: 203 bindings covered by guide or generated API
+ok  agent: 10 bindings covered by guide or generated API
+ok  agent_tensor: 1 bindings covered by guide or generated API
+ok  animation: 718 bindings covered by guide or generated API
+ok  animation_editor: 67 bindings covered by guide or generated API
+ok  animation_tensor: 1 bindings covered by guide or generated API
+ok  archspace: 11 bindings covered by guide or generated API
+ok  attributes: 19 bindings covered by guide or generated API
+ok  audio: 43 bindings covered by guide or generated API
+ok  audio_editor: 24 bindings covered by guide or generated API
+ok  authority: 39 bindings covered by guide or generated API
+ok  avatar: 126 bindings covered by guide or generated API
+ok  avatar_editor: 47 bindings covered by guide or generated API
+ok  building: 234 bindings covered by guide or generated API
+ok  buildingfx: 32 bindings covered by guide or generated API
+ok  camera: 125 bindings covered by guide or generated API
+ok  card: 173 bindings covered by guide or generated API
+ok  climbing: 36 bindings covered by guide or generated API
+ok  combat: 19 bindings covered by guide or generated API
+ok  crowd: 75 bindings covered by guide or generated API
+ok  data: 12 bindings covered by guide or generated API
+ok  database: 21 bindings covered by guide or generated API
+ok  daynight: 50 bindings covered by guide or generated API
+ok  decal: 18 bindings covered by guide or generated API
+ok  decision: 21 bindings covered by guide or generated API
+ok  definitions: 24 bindings covered by guide or generated API
+ok  demo: 3 bindings covered by guide or generated API
+ok  dialogue: 198 bindings covered by guide or generated API
+ok  economy: 41 bindings covered by guide or generated API
+ok  editor: 225 bindings covered by guide or generated API
+ok  effects: 50 bindings covered by guide or generated API
+ok  emergence: 18 bindings covered by guide or generated API
+ok  filesystem: 55 bindings covered by guide or generated API
+ok  fluids: 170 bindings covered by guide or generated API
+ok  font: 21 bindings covered by guide or generated API
+ok  game_event: 36 bindings covered by guide or generated API
+ok  gpgpu: 58 bindings covered by guide or generated API
+ok  gpuagents: 18 bindings covered by guide or generated API
+ok  graphics: 973 bindings covered by guide or generated API
+ok  graphics_editor: 12 bindings covered by guide or generated API
+ok  graphics_fog: 17 bindings covered by guide or generated API
+ok  graphics_raytracing: 2 bindings covered by guide or generated API
+ok  hd2d: 60 bindings covered by guide or generated API
+ok  hexmap: 99 bindings covered by guide or generated API
+ok  i18n: 27 bindings covered by guide or generated API
+ok  ik: 59 bindings covered by guide or generated API
+ok  image: 43 bindings covered by guide or generated API
+ok  inventory: 97 bindings covered by guide or generated API
+ok  joystick: 32 bindings covered by guide or generated API
+ok  keyboard: 10 bindings covered by guide or generated API
+ok  map: 214 bindings covered by guide or generated API
+ok  level_editor: 71 bindings covered by guide or generated API
+ok  tilelayer_target: 9 bindings covered by guide or generated API
+ok  math: 140 bindings covered by guide or generated API
+ok  model3d: 71 bindings covered by guide or generated API
+ok  mouse: 17 bindings covered by guide or generated API
+ok  network: 89 bindings covered by guide or generated API
+ok  npc_ai: 18 bindings covered by guide or generated API
+ok  orders: 45 bindings covered by guide or generated API
+ok  os: 23 bindings covered by guide or generated API
+ok  particles: 219 bindings covered by guide or generated API
+ok  physics: 665 bindings covered by guide or generated API
+ok  physics_cloth: 107 bindings covered by guide or generated API
+ok  physics_destruction: 25 bindings covered by guide or generated API
+ok  physics_destruction_graphics: 9 bindings covered by guide or generated API
+ok  physics_rope: 75 bindings covered by guide or generated API
+ok  pixelworld: 14 bindings covered by guide or generated API
+ok  pixelworld_editor: 3 bindings covered by guide or generated API
+ok  pixelworld_graphics: 11 bindings covered by guide or generated API
+ok  pixelworld_physics: 5 bindings covered by guide or generated API
+ok  platform_event: 6 bindings covered by guide or generated API
+ok  plugins: 4 bindings covered by guide or generated API
+ok  policyregistry: 30 bindings covered by guide or generated API
+ok  procgen: 1410 bindings covered by guide or generated API
+ok  procgen_animation: 7 bindings covered by guide or generated API
+ok  biome_editor: 35 bindings covered by guide or generated API
+ok  procgen_editor: 44 bindings covered by guide or generated API
+ok  heightmap_target: 17 bindings covered by guide or generated API
+ok  procgen_physics: 6 bindings covered by guide or generated API
+ok  production: 41 bindings covered by guide or generated API
+ok  profiler: 12 bindings covered by guide or generated API
+ok  rpg: 321 bindings covered by guide or generated API
+ok  rts: 123 bindings covered by guide or generated API
+ok  rx: 25 bindings covered by guide or generated API
+ok  scene: 192 bindings covered by guide or generated API
+ok  scene_editor: 29 bindings covered by guide or generated API
+ok  sceneloader: 29 bindings covered by guide or generated API
+ok  scene_physics: 3 bindings covered by guide or generated API
+ok  schema: 35 bindings covered by guide or generated API
+ok  sensing: 23 bindings covered by guide or generated API
+ok  settlement: 13 bindings covered by guide or generated API
+ok  social: 45 bindings covered by guide or generated API
+ok  sound: 17 bindings covered by guide or generated API
+ok  spatial: 30 bindings covered by guide or generated API
+ok  spritestack: 35 bindings covered by guide or generated API
+ok  statepatch: 48 bindings covered by guide or generated API
+ok  stylize: 45 bindings covered by guide or generated API
+ok  stylize_action: 8 bindings covered by guide or generated API
+ok  tactics: 66 bindings covered by guide or generated API
+ok  tags: 25 bindings covered by guide or generated API
+ok  tensor: 163 bindings covered by guide or generated API
+ok  thread: 27 bindings covered by guide or generated API
+ok  timer: 4 bindings covered by guide or generated API
+ok  touch: 4 bindings covered by guide or generated API
+ok  transaction: 36 bindings covered by guide or generated API
+ok  ui: 369 bindings covered by guide or generated API
+ok  ui_editor: 21 bindings covered by guide or generated API
+ok  vehicle: 61 bindings covered by guide or generated API
+ok  virtualgeometry: 17 bindings covered by guide or generated API
+ok  voxel: 50 bindings covered by guide or generated API
+ok  voxel_editor: 35 bindings covered by guide or generated API
+ok  voxelworld_target: 13 bindings covered by guide or generated API
+ok  weapon: 103 bindings covered by guide or generated API
+ok  weather: 67 bindings covered by guide or generated API
+ok  window: 14 bindings covered by guide or generated API
+WARN animation: documented but not bound: animateHostPos
+WARN animation: documented but not bound: animateItemOpacity
+WARN dialogue: documented but not bound: publishFor
+WARN map: documented but not bound: publishFor
+WARN sensing: documented but not bound: publishFor
+checked 10030 bindings across 190 module dirs
+==> binding gap ownership metadata
+binding gap metadata OK: 0 entries, baseline 859, no net growth
+==> declared module layers vs includes
+ok: no declared-layer violations (0 known back-edges, 0 now stale)
+==> test source manifest
+test auto-discovery OK: test_src.txt covers 763 sources
+test domains OK: 31 domains, 759 tests + 1 shared runner + 3 shared helper TU
+  core             72  + shared: GraphicsWindowFixtures
+  scripts          12
+  graphics        152  + shared: GraphicsWindowFixtures, RenderImageAuditIo, water_scene_fixture
+  ui               29
+  editor           28
+  scene            17
+  animation        30
+  physics          48
+  fluids           12
+  gpuagents         2
+  procgen          52  + shared: GraphicsWindowFixtures, RenderImageAuditIo, water_scene_fixture
+  map              13  + shared: GraphicsWindowFixtures
+  voxel             4  + shared: GraphicsWindowFixtures, RenderImageAuditIo
+  particles         9
+  rpg              66
+  combat           39
+  tactics_rts      36
+  climbing          1
+  card             10
+  npc_ai           14
+  building          8
+  dialogue         10
+  asset            30
+  audio             7
+  platform          8
+  weather           7  + shared: GraphicsWindowFixtures
+  tensor            1
+  agent             5
+  pixelworld        7
+  network           2
+  devtools         28
+==> examples layout and overview registration
+examples layout OK: 156 examples (147 runnable, 9 reviewed non-runnable)
+==> critical return-value diagnostics
+nodiscard fixture OK: result
+nodiscard fixture OK: squirrel_value
+nodiscard fixture OK: subscription
+nodiscard fixture OK: identity
+nodiscard fixture OK: scene_ownership
+==> no new ad-hoc Result tables
+ad-hoc Result tables OK: 12 allowlisted sites (baseline 12), 1 projector exempt files
+==> release version consistency
+WARN: tools/eve-mcp/package.json: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/vscode-eve-debug/package.json: '0.3.0' != expected '0.6.0' (triple)
+WARN: modelconverter/python/eve_blender_converter/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/asset-pipeline-agent/asset_pipeline_agent/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/scene-qc-agent/scene_qc_agent/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/vision-prefilter/vision_prefilter/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+OK: 6 required version touchpoints match 0.6.0-dev
+==> bounded quality debt
+quality metadata: fallback-contract-inventory=71, soft-skip-contracts=5, todo-markers-legacy=5; findings=81
+==> profile matrix (source-only)
+profile minimal           : 52 modules; third-party groups: squirrel, poco, lz4, xxhash, physfs, zlib, sdl2, medialoader_image, webp, assimp
+profile 2d                : 103 modules; third-party groups: squirrel, poco, lz4, xxhash, physfs, zlib, sdl2, box2d, medialoader_image, webp, assimp, medialoader_sound, audio_codecs, openal, freetype, box3d, jolt
+profile 3d                : 186 modules; third-party groups: squirrel, poco, lz4, xxhash, physfs, zlib, sdl2, box2d, medialoader_image, webp, assimp, medialoader_model, medialoader_sound, audio_codecs, openal, freetype, box3d, jolt
+profile runtime-3d        : 117 modules; third-party groups: squirrel, poco, lz4, xxhash, physfs, zlib, sdl2, box2d, medialoader_image, webp, assimp, medialoader_model, medialoader_sound, audio_codecs, openal, freetype, box3d, jolt
+profile web               : 143 modules; third-party groups: squirrel, poco, lz4, xxhash, physfs, zlib, sdl2, box2d, medialoader_image, webp, assimp, freetype, box3d, jolt
+profile procgen-core-only :  1 modules; third-party groups: squirrel
+profile physics-core-only :  2 modules; third-party groups: squirrel, sdl2
+profile asset-core-only   :  3 modules; third-party groups: squirrel, lz4, poco, xxhash, zlib
+profile headless          :  4 modules; third-party groups: squirrel, lz4, poco, xxhash, sdl2
+profile server            : 22 modules; third-party groups: squirrel, lz4, poco, xxhash, sdl2
+profile matrix contract OK: 10 profiles
+==> architecture contracts
+architecture contracts OK: no new high-signal violations
+==> architecture contract fixtures
+test_container_data_member_is_not_an_owned_return_api (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_container_data_member_is_not_an_owned_return_api) ... ok
+test_default_path_diffs_against_head (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_default_path_diffs_against_head) ... ok
+test_hot_path_list_is_non_empty (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_hot_path_list_is_non_empty) ... ok
+test_invalid_api_fixture_reports_all_high_signal_shapes (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_invalid_api_fixture_reports_all_high_signal_shapes) ... ok
+test_multiply_assignment_is_not_a_pointer_api (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_multiply_assignment_is_not_a_pointer_api) ... ok
+test_named_pointer_apis_still_require_lifetime_contracts (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_named_pointer_apis_still_require_lifetime_contracts) ... ok
+test_owned_container_members_are_not_returning_apis (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_owned_container_members_are_not_returning_apis) ... ok
+test_owned_container_method_still_requires_cost (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_owned_container_method_still_requires_cost) ... ok
+test_runtime_lookup_and_hot_path_and_cost_without_catalogue (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_runtime_lookup_and_hot_path_and_cost_without_catalogue) ... ok
+test_valid_api_fixture_has_no_shape_findings (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_valid_api_fixture_has_no_shape_findings) ... ok
+test_valid_module_interface_fixture_has_cost (scripts.tests.test_architecture_contracts.ArchitectureContractTests.test_valid_module_interface_fixture_has_cost) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.020s
+
+OK
+architecture contracts OK: no new high-signal violations
+==> ruff lint repository scripts
+All checks passed!
+==> repository script tests
+test_ambiguous_owner_is_rejected (test_agent_repair_router.AgentRepairRouterTest.test_ambiguous_owner_is_rejected) ... ok
+test_attempt_limit_is_bounded (test_agent_repair_router.AgentRepairRouterTest.test_attempt_limit_is_bounded) ... ok
+test_comment_pagination_reaches_later_pages (test_agent_repair_router.AgentRepairRouterTest.test_comment_pagination_reaches_later_pages) ... ok
+test_failed_ci_is_eligible_with_complete_opt_in (test_agent_repair_router.AgentRepairRouterTest.test_failed_ci_is_eligible_with_complete_opt_in) ... ok
+test_fork_is_rejected_even_when_opted_in (test_agent_repair_router.AgentRepairRouterTest.test_fork_is_rejected_even_when_opted_in) ... ok
+test_invalid_state_comment_is_ignored (test_agent_repair_router.AgentRepairRouterTest.test_invalid_state_comment_is_ignored) ... ok
+test_signed_state_is_bound_to_repository_pr_and_payload (test_agent_repair_router.AgentRepairRouterTest.test_signed_state_is_bound_to_repository_pr_and_payload) ... ok
+test_stale_run_is_rejected (test_agent_repair_router.AgentRepairRouterTest.test_stale_run_is_rejected) ... ok
+test_container_data_member_is_not_an_owned_return_api (test_architecture_contracts.ArchitectureContractTests.test_container_data_member_is_not_an_owned_return_api) ... ok
+test_default_path_diffs_against_head (test_architecture_contracts.ArchitectureContractTests.test_default_path_diffs_against_head) ... ok
+test_hot_path_list_is_non_empty (test_architecture_contracts.ArchitectureContractTests.test_hot_path_list_is_non_empty) ... ok
+test_invalid_api_fixture_reports_all_high_signal_shapes (test_architecture_contracts.ArchitectureContractTests.test_invalid_api_fixture_reports_all_high_signal_shapes) ... ok
+test_multiply_assignment_is_not_a_pointer_api (test_architecture_contracts.ArchitectureContractTests.test_multiply_assignment_is_not_a_pointer_api) ... ok
+test_named_pointer_apis_still_require_lifetime_contracts (test_architecture_contracts.ArchitectureContractTests.test_named_pointer_apis_still_require_lifetime_contracts) ... ok
+test_owned_container_members_are_not_returning_apis (test_architecture_contracts.ArchitectureContractTests.test_owned_container_members_are_not_returning_apis) ... ok
+test_owned_container_method_still_requires_cost (test_architecture_contracts.ArchitectureContractTests.test_owned_container_method_still_requires_cost) ... ok
+test_runtime_lookup_and_hot_path_and_cost_without_catalogue (test_architecture_contracts.ArchitectureContractTests.test_runtime_lookup_and_hot_path_and_cost_without_catalogue) ... ok
+test_valid_api_fixture_has_no_shape_findings (test_architecture_contracts.ArchitectureContractTests.test_valid_api_fixture_has_no_shape_findings) ... ok
+test_valid_module_interface_fixture_has_cost (test_architecture_contracts.ArchitectureContractTests.test_valid_module_interface_fixture_has_cost) ... ok
+test_alias_maps_actual_target_but_lambda_is_unknown (test_binding_architecture.BindingArchitectureTests.test_alias_maps_actual_target_but_lambda_is_unknown) ... ok
+test_comment_is_not_an_implementation (test_binding_architecture.BindingArchitectureTests.test_comment_is_not_an_implementation) ... ok
+test_commented_test_is_rejected (test_binding_architecture.BindingArchitectureTests.test_commented_test_is_rejected) ... ok
+test_evidence_change_invalidates_hash_and_output_is_repeatable (test_binding_architecture.BindingArchitectureTests.test_evidence_change_invalidates_hash_and_output_is_repeatable) ... ok
+test_missing_state_and_escaped_evidence_are_rejected (test_binding_architecture.BindingArchitectureTests.test_missing_state_and_escaped_evidence_are_rejected) ... ok
+test_removed_binding_in_enabled_module_is_rejected (test_binding_architecture.BindingArchitectureTests.test_removed_binding_in_enabled_module_is_rejected) ... ok
+test_reviewed_reads_and_writes_remain_distinct (test_binding_architecture.BindingArchitectureTests.test_reviewed_reads_and_writes_remain_distinct) ... ok
+test_same_cpp_spelling_in_other_module_does_not_inherit_owner (test_binding_architecture.BindingArchitectureTests.test_same_cpp_spelling_in_other_module_does_not_inherit_owner) ... ok
+test_trimmed_module_is_absent_and_does_not_claim_a_mapping (test_binding_architecture.BindingArchitectureTests.test_trimmed_module_is_absent_and_does_not_claim_a_mapping) ... ok
+test_catalogue_and_native_generation_keep_semantic_schema (test_binding_semantics.BindingSemanticsTests.test_catalogue_and_native_generation_keep_semantic_schema) ... ok
+test_invalid_schema_shape_rejected (test_binding_semantics.BindingSemanticsTests.test_invalid_schema_shape_rejected) ... ok
+test_missing_method_argument_and_return_class_rejected (test_binding_semantics.BindingSemanticsTests.test_missing_method_argument_and_return_class_rejected) ... ok
+test_trimmed_module_never_adds_phantom_contracts (test_binding_semantics.BindingSemanticsTests.test_trimmed_module_never_adds_phantom_contracts) ... ok
+test_wrong_factory_and_role_rejected (test_binding_semantics.BindingSemanticsTests.test_wrong_factory_and_role_rejected) ... ok
+test_collects_components_with_unreal_to_evengine_transform (test_build_level_recipe.BuildLevelRecipeTests.test_collects_components_with_unreal_to_evengine_transform) ... ok
+test_collects_instances_and_applies_radius_and_exclusions (test_build_level_recipe.BuildLevelRecipeTests.test_collects_instances_and_applies_radius_and_exclusions) ... ok
+test_converts_each_unreal_rotation_axis_to_evengine_basis (test_build_level_recipe.BuildLevelRecipeTests.test_converts_each_unreal_rotation_axis_to_evengine_basis) ... ok
+test_filters_prefix_and_output_is_deterministic (test_build_level_recipe.BuildLevelRecipeTests.test_filters_prefix_and_output_is_deterministic) ... ok
+test_fragment_sampling_is_deterministic_and_asset_specific (test_build_level_recipe.BuildLevelRecipeTests.test_fragment_sampling_is_deterministic_and_asset_specific) ... ok
+test_minimum_radius_builds_an_annulus (test_build_level_recipe.BuildLevelRecipeTests.test_minimum_radius_builds_an_annulus) ... ok
+test_net_growth_fails (test_check_adhoc_result_tables.AdhocResultTablesTest.test_net_growth_fails) ... ok
+test_ok_set_regex (test_check_adhoc_result_tables.AdhocResultTablesTest.test_ok_set_regex) ... ok
+test_projector_exempt_and_allowlist_pass (test_check_adhoc_result_tables.AdhocResultTablesTest.test_projector_exempt_and_allowlist_pass) ... ok
+test_unallowlisted_hit_fails (test_check_adhoc_result_tables.AdhocResultTablesTest.test_unallowlisted_hit_fails) ... ok
+test_empty_module_is_not_covered (test_check_bindings.GeneratedCoverageTests.test_empty_module_is_not_covered) ... ok
+test_only_selected_module_sources_count (test_check_bindings.GeneratedCoverageTests.test_only_selected_module_sources_count) ... ok
+test_same_method_in_another_module_does_not_cover_binding (test_check_bindings.GeneratedCoverageTests.test_same_method_in_another_module_does_not_cover_binding) ... ok
+test_commented_out_calls_are_not_promises (test_check_bindings.ReverseDirectionTests.test_commented_out_calls_are_not_promises) ... ok
+test_cpp_fence_between_nut_fences_does_not_leak_prose (test_check_bindings.ReverseDirectionTests.test_cpp_fence_between_nut_fences_does_not_leak_prose) ... ok
+test_only_lowercase_instance_receivers_are_promises (test_check_bindings.ReverseDirectionTests.test_only_lowercase_instance_receivers_are_promises) ... ok
+test_pushstring_without_a_closure_is_not_a_binding (test_check_bindings.ReverseDirectionTests.test_pushstring_without_a_closure_is_not_a_binding) ... ok
+test_raw_closure_binding_is_recognised (test_check_bindings.ReverseDirectionTests.test_raw_closure_binding_is_recognised) ... ok
+test_repository_reverse_list_is_short_enough_to_read (test_check_bindings.ReverseDirectionTests.test_repository_reverse_list_is_short_enough_to_read) ... ok
+test_squirrel_fences_exclude_other_languages (test_check_bindings.ReverseDirectionTests.test_squirrel_fences_exclude_other_languages) ... ok
+test_addclass_is_recognised (test_check_bindings.ScriptDefinedNamesTests.test_addclass_is_recognised) ... ok
+test_function_member_is_recognised (test_check_bindings.ScriptDefinedNamesTests.test_function_member_is_recognised) ... ok
+test_header_chunks_are_scanned (test_check_bindings.ScriptDefinedNamesTests.test_header_chunks_are_scanned) ... ok
+test_plain_addfunc_is_not_a_script_definition (test_check_bindings.ScriptDefinedNamesTests.test_plain_addfunc_is_not_a_script_definition) ... ok
+test_repository_reverse_check_stays_below_the_old_noise_floor (test_check_bindings.ScriptDefinedNamesTests.test_repository_reverse_check_stays_below_the_old_noise_floor) ... ok
+test_shipped_scripts_are_scanned (test_check_bindings.ScriptDefinedNamesTests.test_shipped_scripts_are_scanned) ... ok
+test_slot_assignment_is_recognised (test_check_bindings.ScriptDefinedNamesTests.test_slot_assignment_is_recognised) ... ok
+test_variable_function_and_class_are_recognised (test_check_bindings.ScriptDefinedNamesTests.test_variable_function_and_class_are_recognised) ... ok
+test_config_field_assignment_is_accepted (test_check_examples.ExampleLayoutTests.test_config_field_assignment_is_accepted) ... ok
+test_config_nut_must_assign_the_config_table (test_check_examples.ExampleLayoutTests.test_config_nut_must_assign_the_config_table) ... ok
+test_conforming_tree_reports_nothing (test_check_examples.ExampleLayoutTests.test_conforming_tree_reports_nothing) ... ok
+test_dead_index_link_is_reported (test_check_examples.ExampleLayoutTests.test_dead_index_link_is_reported) ... ok
+test_directory_without_main_nut_must_be_exempted (test_check_examples.ExampleLayoutTests.test_directory_without_main_nut_must_be_exempted) ... ok
+test_every_example_needs_a_readme (test_check_examples.ExampleLayoutTests.test_every_example_needs_a_readme) ... ok
+test_example_missing_from_the_overview_is_reported (test_check_examples.ExampleLayoutTests.test_example_missing_from_the_overview_is_reported) ... ok
+test_exemption_for_a_runnable_example_is_reported (test_check_examples.ExampleLayoutTests.test_exemption_for_a_runnable_example_is_reported) ... ok
+test_exemption_without_reason_is_reported (test_check_examples.ExampleLayoutTests.test_exemption_without_reason_is_reported) ... ok
+test_linked_examples_reads_only_example_readme_links (test_check_examples.ExampleLayoutTests.test_linked_examples_reads_only_example_readme_links) ... ok
+test_missing_index_rows_are_ready_to_paste (test_check_examples.ExampleLayoutTests.test_missing_index_rows_are_ready_to_paste) ... ok
+test_missing_overview_file_is_reported (test_check_examples.ExampleLayoutTests.test_missing_overview_file_is_reported) ... ok
+test_repository_examples_satisfy_the_contract (test_check_examples.ExampleLayoutTests.test_repository_examples_satisfy_the_contract) ... ok
+test_repository_exemptions_describe_real_directories (test_check_examples.ExampleLayoutTests.test_repository_exemptions_describe_real_directories) ... ok
+test_runnable_example_needs_config_nut (test_check_examples.ExampleLayoutTests.test_runnable_example_needs_config_nut) ... ok
+test_stale_exemption_is_reported (test_check_examples.ExampleLayoutTests.test_stale_exemption_is_reported) ... ok
+test_case_without_assertions_is_not_reported (test_check_test_assert_level.AssertLevelTests.test_case_without_assertions_is_not_reported) ... ok
+test_check_only_case_is_flagged (test_check_test_assert_level.AssertLevelTests.test_check_only_case_is_flagged) ... ok
+test_digit_separator_is_not_a_character_literal (test_check_test_assert_level.AssertLevelTests.test_digit_separator_is_not_a_character_literal) ... ok
+test_engine_assert_counts_as_failure (test_check_test_assert_level.AssertLevelTests.test_engine_assert_counts_as_failure) ... ok
+test_fixture_and_method_macros_are_scanned (test_check_test_assert_level.AssertLevelTests.test_fixture_and_method_macros_are_scanned) ... ok
+test_helper_in_another_file_does_not_exempt (test_check_test_assert_level.AssertLevelTests.test_helper_in_another_file_does_not_exempt) ... ok
+test_macro_inside_comment_or_string_is_ignored (test_check_test_assert_level.AssertLevelTests.test_macro_inside_comment_or_string_is_ignored) ... ok
+test_masking_keeps_offsets_stable (test_check_test_assert_level.AssertLevelTests.test_masking_keeps_offsets_stable) ... ok
+test_raw_string_with_braces_does_not_end_the_body_early (test_check_test_assert_level.AssertLevelTests.test_raw_string_with_braces_does_not_end_the_body_early) ... ok
+test_require_case_is_not_flagged (test_check_test_assert_level.AssertLevelTests.test_require_case_is_not_flagged) ... ok
+test_same_file_require_helper_exempts_the_caller (test_check_test_assert_level.AssertLevelTests.test_same_file_require_helper_exempts_the_caller) ... ok
+test_stray_apostrophe_does_not_swallow_the_file (test_check_test_assert_level.AssertLevelTests.test_stray_apostrophe_does_not_swallow_the_file) ... ok
+test_check_is_a_violation_even_beside_a_require (test_check_test_assert_level.StrictFileTests.test_check_is_a_violation_even_beside_a_require) ... ok
+test_missing_file_is_a_violation (test_check_test_assert_level.StrictFileTests.test_missing_file_is_a_violation) ... ok
+test_require_only_file_is_clean (test_check_test_assert_level.StrictFileTests.test_require_only_file_is_clean) ... ok
+test_the_repository_list_is_actually_clean (test_check_test_assert_level.StrictFileTests.test_the_repository_list_is_actually_clean) ... ok
+test_warning_level_assertions_outside_any_case_are_reported (test_check_test_assert_level.StrictFileTests.test_warning_level_assertions_outside_any_case_are_reported) ... ok
+test_case_inside_a_comment_or_string_is_ignored (test_check_test_case_names.CaseNameTests.test_case_inside_a_comment_or_string_is_ignored) ... ok
+test_duplicate_name_is_reported (test_check_test_case_names.CaseNameTests.test_duplicate_name_is_reported) ... ok
+test_escaped_quote_in_a_name_is_read_back (test_check_test_case_names.CaseNameTests.test_escaped_quote_in_a_name_is_read_back) ... ok
+test_macro_definition_body_is_not_a_case (test_check_test_case_names.CaseNameTests.test_macro_definition_body_is_not_a_case) ... ok
+test_name_inside_a_raw_string_is_ignored (test_check_test_case_names.CaseNameTests.test_name_inside_a_raw_string_is_ignored) ... ok
+test_plain_and_fixture_names_are_extracted (test_check_test_case_names.CaseNameTests.test_plain_and_fixture_names_are_extracted) ... ok
+test_script_test_idiom_resolves_the_fixture_name (test_check_test_case_names.CaseNameTests.test_script_test_idiom_resolves_the_fixture_name) ... ok
+test_unique_names_are_not_reported (test_check_test_case_names.CaseNameTests.test_unique_names_are_not_reported) ... ok
+test_accepts_src_list_discovery (test_check_test_manifest.CheckTestManifestTest.test_accepts_src_list_discovery) ... ok
+test_exact_rule_is_not_shadowed_by_longer_name (test_check_test_manifest.CheckTestManifestTest.test_exact_rule_is_not_shadowed_by_longer_name) ... ok
+test_include_decides_domain_not_file_name (test_check_test_manifest.CheckTestManifestTest.test_include_decides_domain_not_file_name) ... ok
+test_package_override_wins_over_root (test_check_test_manifest.CheckTestManifestTest.test_package_override_wins_over_root) ... ok
+test_parses_domain_table (test_check_test_manifest.CheckTestManifestTest.test_parses_domain_table) ... ok
+test_real_table_classifies_every_test_source (test_check_test_manifest.CheckTestManifestTest.test_real_table_classifies_every_test_source) ... ok
+test_rejects_configure_depends_glob (test_check_test_manifest.CheckTestManifestTest.test_rejects_configure_depends_glob) ... ok
+test_rejects_glob_without_stale_makefile_check (test_check_test_manifest.CheckTestManifestTest.test_rejects_glob_without_stale_makefile_check) ... ok
+test_rejects_prefix_shadowing_across_domains (test_check_test_manifest.CheckTestManifestTest.test_rejects_prefix_shadowing_across_domains) ... ok
+test_rejects_undeclared_domain (test_check_test_manifest.CheckTestManifestTest.test_rejects_undeclared_domain) ... ok
+test_requires_cmake_to_compile_shared_helpers (test_check_test_manifest.CheckTestManifestTest.test_requires_cmake_to_compile_shared_helpers) ... ok
+test_requires_demo_to_remain_conditional (test_check_test_manifest.CheckTestManifestTest.test_requires_demo_to_remain_conditional) ... ok
+test_shared_helper_is_not_a_domain_member (test_check_test_manifest.CheckTestManifestTest.test_shared_helper_is_not_a_domain_member) ... ok
+test_shared_runner_is_not_a_domain_member (test_check_test_manifest.CheckTestManifestTest.test_shared_runner_is_not_a_domain_member) ... ok
+test_shared_source_names_a_real_file_and_domain (test_check_test_manifest.CheckTestManifestTest.test_shared_source_names_a_real_file_and_domain) ... ok
+test_unclassified_source_is_an_error (test_check_test_manifest.CheckTestManifestTest.test_unclassified_source_is_an_error) ... ok
+test_android_only_change_selects_android (test_ci_change_scope.CiChangeScopeTests.test_android_only_change_selects_android) ... ok
+test_changed_zeroerr_sources_select_their_source_labels (test_ci_change_scope.CiChangeScopeTests.test_changed_zeroerr_sources_select_their_source_labels) ... ok
+test_cmake_lists_is_never_treated_as_plain_text (test_ci_change_scope.CiChangeScopeTests.test_cmake_lists_is_never_treated_as_plain_text) ... ok
+test_deleted_test_source_runs_full_remaining_suite (test_ci_change_scope.CiChangeScopeTests.test_deleted_test_source_runs_full_remaining_suite) ... ok
+test_direct_diff_reports_changes_when_new_head_is_ancestor (test_ci_change_scope.CiChangeScopeTests.test_direct_diff_reports_changes_when_new_head_is_ancestor) ... ok
+test_docs_and_python_scripts_skip_native_builds_and_tool_tests (test_ci_change_scope.CiChangeScopeTests.test_docs_and_python_scripts_skip_native_builds_and_tool_tests) ... ok
+test_docs_only_change_has_no_native_tests (test_ci_change_scope.CiChangeScopeTests.test_docs_only_change_has_no_native_tests) ... ok
+test_fixture_only_source_uses_fast_lane_label (test_ci_change_scope.CiChangeScopeTests.test_fixture_only_source_uses_fast_lane_label) ... ok
+test_forced_run_uses_full_test_suite (test_ci_change_scope.CiChangeScopeTests.test_forced_run_uses_full_test_suite) ... ok
+test_gameplay_change_does_not_build_secondary_dawn_host (test_ci_change_scope.CiChangeScopeTests.test_gameplay_change_does_not_build_secondary_dawn_host) ... ok
+test_metal_host_and_shared_renderer_changes_select_metal (test_ci_change_scope.CiChangeScopeTests.test_metal_host_and_shared_renderer_changes_select_metal) ... ok
+test_mixed_deleted_and_modified_test_sources_run_full_suite (test_ci_change_scope.CiChangeScopeTests.test_mixed_deleted_and_modified_test_sources_run_full_suite) ... ok
+test_native_source_change_is_conservatively_full (test_ci_change_scope.CiChangeScopeTests.test_native_source_change_is_conservatively_full) ... ok
+test_non_pr_run_forces_full_matrix (test_ci_change_scope.CiChangeScopeTests.test_non_pr_run_forces_full_matrix) ... ok
+test_production_change_runs_full_test_suite (test_ci_change_scope.CiChangeScopeTests.test_production_change_runs_full_test_suite) ... ok
+test_standalone_tool_change_selects_only_tool_tests (test_ci_change_scope.CiChangeScopeTests.test_standalone_tool_change_selects_only_tool_tests) ... ok
+test_test_infrastructure_change_runs_full_test_suite (test_ci_change_scope.CiChangeScopeTests.test_test_infrastructure_change_runs_full_test_suite) ... ok
+test_unknown_path_is_conservatively_full (test_ci_change_scope.CiChangeScopeTests.test_unknown_path_is_conservatively_full) ... ok
+test_webgpu_change_selects_webgpu (test_ci_change_scope.CiChangeScopeTests.test_webgpu_change_selects_webgpu) ... ok
+test_workflow_change_runs_builds_and_tool_tests (test_ci_change_scope.CiChangeScopeTests.test_workflow_change_runs_builds_and_tool_tests) ... ok
+test_android_jobs_start_sccache_before_the_build (test_ci_release_timeouts.ReleaseJobTimeoutTests.test_android_jobs_start_sccache_before_the_build) ... ok
+test_benchmark_filter_is_part_of_the_ctest_command (test_ci_release_timeouts.ReleaseJobTimeoutTests.test_benchmark_filter_is_part_of_the_ctest_command) ... ok
+test_cold_native_build_steps_have_observed_headroom (test_ci_release_timeouts.ReleaseJobTimeoutTests.test_cold_native_build_steps_have_observed_headroom) ... ok
+test_multi_phase_job_budgets_cover_observed_cold_runs (test_ci_release_timeouts.ReleaseJobTimeoutTests.test_multi_phase_job_budgets_cover_observed_cold_runs) ... ok
+test_release_job_budgets_cover_cold_builds_and_tests (test_ci_release_timeouts.ReleaseJobTimeoutTests.test_release_job_budgets_cover_cold_builds_and_tests) ... ok
+test_failure_has_stable_schema_and_kind (test_ci_result.CIResultTest.test_failure_has_stable_schema_and_kind) ... ok
+test_success_has_no_failure_classification (test_ci_result.CIResultTest.test_success_has_no_failure_classification) ... ok
+test_module_targets_and_generated_headers (test_cmake_build_helpers.BuildHelperTests.test_module_targets_and_generated_headers) ... ok
+test_contract_rejects_backend_tolerance_disagreement (test_compare_render_backends.CompareRenderBackendsTest.test_contract_rejects_backend_tolerance_disagreement) ... ok
+test_contract_rejects_missing_candidate_manifest (test_compare_render_backends.CompareRenderBackendsTest.test_contract_rejects_missing_candidate_manifest) ... ok
+test_contract_rejects_missing_image (test_compare_render_backends.CompareRenderBackendsTest.test_contract_rejects_missing_image) ... ok
+test_contract_rejects_unversioned_manifest (test_compare_render_backends.CompareRenderBackendsTest.test_contract_rejects_unversioned_manifest) ... ok
+test_identical_images_pass (test_compare_render_backends.CompareRenderBackendsTest.test_identical_images_pass) ... ok
+test_large_color_difference_fails (test_compare_render_backends.CompareRenderBackendsTest.test_large_color_difference_fails) ... ok
+test_scene_contract_controls_tolerance (test_compare_render_backends.CompareRenderBackendsTest.test_scene_contract_controls_tolerance) ... ok
+test_server_documents_auto_start_and_filters (test_eve_mcp_bridge.EveMcpBridgeTests.test_server_documents_auto_start_and_filters) ... ok
+test_bind_method_literal_names_are_scraped (test_generate_binding_contracts.BindMethodScrapeTests.test_bind_method_literal_names_are_scraped) ... ok
+test_json_and_dts_export_round_trip_fields (test_generate_binding_contracts.CatalogExportTests.test_json_and_dts_export_round_trip_fields) ... ok
+test_export_macro_between_class_key_and_name_is_not_the_class_name (test_generate_binding_contracts.ClassBlocksTests.test_export_macro_between_class_key_and_name_is_not_the_class_name) ... ok
+test_macro_free_declarations_still_parse (test_generate_binding_contracts.ClassBlocksTests.test_macro_free_declarations_still_parse) ... ok
+test_free_function_prefers_named_parameters_independent_of_source_order (test_generate_binding_contracts.SignatureIndexTests.test_free_function_prefers_named_parameters_independent_of_source_order) ... ok
+test_member_signature_resolves_nodiscard_inline_getters (test_generate_binding_contracts.SignatureIndexTests.test_member_signature_resolves_nodiscard_inline_getters) ... ok
+test_member_signature_resolves_through_the_export_macro (test_generate_binding_contracts.SignatureIndexTests.test_member_signature_resolves_through_the_export_macro) ... ok
+test_nodiscard_message_paren_is_not_the_parameter_list (test_generate_binding_contracts.SignatureIndexTests.test_nodiscard_message_paren_is_not_the_parameter_list)
+[[nodiscard("...")]] contains '('; that must not become arg0. ... ok
+test_install_sdk_ships_binding_catalog_and_skill (test_install_sdk.InstallSdkAgentPackTests.test_install_sdk_ships_binding_catalog_and_skill) ... ok
+test_sdk_llms_txt_points_at_installed_paths (test_install_sdk.InstallSdkAgentPackTests.test_sdk_llms_txt_points_at_installed_paths) ... ok
+test_does_not_migrate_nested_dynamic_guard (test_migrate_evescript.MigrateEveScriptTests.test_does_not_migrate_nested_dynamic_guard) ... ok
+test_does_not_touch_capability_check (test_migrate_evescript.MigrateEveScriptTests.test_does_not_touch_capability_check) ... ok
+test_migrates_legacy_persist_call (test_migrate_evescript.MigrateEveScriptTests.test_migrates_legacy_persist_call) ... ok
+test_migrates_multiline_guard (test_migrate_evescript.MigrateEveScriptTests.test_migrates_multiline_guard) ... ok
+test_migrates_root_guard_with_nested_initializer (test_migrate_evescript.MigrateEveScriptTests.test_migrates_root_guard_with_nested_initializer) ... ok
+test_android_apk_abi_is_overridable_for_native_emulator_gate (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_android_apk_abi_is_overridable_for_native_emulator_gate) ... ok
+test_android_emulator_is_a_hard_gate_for_every_consumer_host (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_android_emulator_is_a_hard_gate_for_every_consumer_host) ... ok
+test_android_script_output_is_observable_in_logcat (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_android_script_output_is_observable_in_logcat) ... ok
+test_android_sdk_requires_sdl_runtime_at_install_and_consume_time (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_android_sdk_requires_sdl_runtime_at_install_and_consume_time) ... ok
+test_ios_artifact_and_simulator_are_hard_gates (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_ios_artifact_and_simulator_are_hard_gates) ... ok
+test_mobile_sdk_checks_do_not_skip_when_prerequisites_are_missing (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_mobile_sdk_checks_do_not_skip_when_prerequisites_are_missing) ... ok
+test_vulkan_feature_query_matches_negotiated_instance_version (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_vulkan_feature_query_matches_negotiated_instance_version) ... ok
+test_x86_android_build_disables_arm_neon_probe (test_mobile_sdk_release_gates.MobileSdkReleaseGateTests.test_x86_android_build_disables_arm_neon_probe) ... ok
+test_deep_upward_edge_is_reported (test_module_depgraph.CheckDeclaredLayersTest.test_deep_upward_edge_is_reported) ... error: layer violation base(L0) -> top(L6)
+ok
+test_downward_and_same_layer_edges_pass (test_module_depgraph.CheckDeclaredLayersTest.test_downward_and_same_layer_edges_pass) ... ok
+test_known_back_edge_is_whitelisted (test_module_depgraph.CheckDeclaredLayersTest.test_known_back_edge_is_whitelisted) ... ok
+test_stale_known_edge_is_noted_but_passes (test_module_depgraph.CheckDeclaredLayersTest.test_stale_known_edge_is_noted_but_passes) ... note: top -> base no longer violates the declared layers; drop it from KNOWN_BACK_EDGES
+ok
+test_upward_edge_is_reported (test_module_depgraph.CheckDeclaredLayersTest.test_upward_edge_is_reported) ... error: layer violation base(L0) -> mid(L3)
+ok
+test_manifest_parses_declared_layers (test_module_depgraph.DeclaredLayersTest.test_manifest_parses_declared_layers) ... ok
+test_expired_metadata_is_rejected (test_quality_metadata.QualityMetadataFixtureTest.test_expired_metadata_is_rejected) ... ok
+test_fixture_passes_with_exact_baseline (test_quality_metadata.QualityMetadataFixtureTest.test_fixture_passes_with_exact_baseline) ... ok
+test_net_growth_is_rejected (test_quality_metadata.QualityMetadataFixtureTest.test_net_growth_is_rejected) ... ok
+test_required_metadata_field_is_enforced (test_quality_metadata.QualityMetadataFixtureTest.test_required_metadata_field_is_enforced) ... ok
+test_unmatched_kind_is_rejected (test_quality_metadata.QualityMetadataFixtureTest.test_unmatched_kind_is_rejected) ... ok
+test_delimiter_selection_and_roundtrip (test_raw_string_literal.RawStringLiteralTest.test_delimiter_selection_and_roundtrip) ... ok
+test_read_dev (test_release.CMakeVersionTest.test_read_dev) ... ok
+test_write_bump_then_dev (test_release.CMakeVersionTest.test_write_bump_then_dev) ... ok
+test_write_official_roundtrip (test_release.CMakeVersionTest.test_write_official_roundtrip) ... ok
+test_docs_pr_posts_success_check (test_release.CheckMainPrTest.test_docs_pr_posts_success_check) ... ok
+test_engine_pr_fails_and_posts_failure_check (test_release.CheckMainPrTest.test_engine_pr_fails_and_posts_failure_check) ... error: PRs to main must be documentation-only or come from a `promote/vMAJOR.MINOR.PATCH` release branch. Got 'dev': src/engine/main.cpp
+ok
+test_current_tree_is_consistent (test_release.CheckVersionsTest.test_current_tree_is_consistent) ... ok
+test_required_mismatch_fails (test_release.CheckVersionsTest.test_required_mismatch_fails) ... error: docs/CMakeLists.txt: '6' != expected '1' (minor)
+error: platform/android/apk/app/build.gradle.kts: '9.9.9' != expected '0.1.0' (triple)
+error: platform/android/apk/app/build.gradle.kts: version pattern not found ((versionCode = )(\d+)([^\n]*))
+error: src/engine/devtools/McpServer.cpp: '0.6.0' != expected '0.1.0' (triple)
+error: examples/basic/root.nut: '0.6.0' != expected '0.1.0' (triple)
+error: platform/ios/game-shell/root.nut: '0.6.0' != expected '0.1.0' (triple)
+error: platform/android/game-shell/root.nut: '0.6.0' != expected '0.1.0' (triple)
+error: tree version 0.1.0-dev is not consistent across required touchpoints (fix by hand or rerun `release.py start`)
+ok
+test_deletes_merged_branches_only (test_release.CleanupBranchesTest.test_deletes_merged_branches_only) ... ok
+test_dry_run_never_pushes (test_release.CleanupBranchesTest.test_dry_run_never_pushes) ... ok
+test_require_gh_before_start (test_release.CliTest.test_require_gh_before_start) ... error: GitHub CLI (gh) not found on PATH. Install from https://cli.github.com/
+ok
+test_rejects_engine (test_release.DocPathTest.test_rejects_engine) ... ok
+test_whitelist (test_release.DocPathTest.test_whitelist) ... ok
+test_newer_patch_ok (test_release.DowngradeTest.test_newer_patch_ok) ... ok
+test_older_patch_is_downgrade (test_release.DowngradeTest.test_older_patch_is_downgrade) ... ok
+test_same_is_not_downgrade (test_release.DowngradeTest.test_same_is_not_downgrade) ... ok
+test_finish_opens_main_and_rebase_prs (test_release.FinishTest.test_finish_opens_main_and_rebase_prs) ... ok
+test_finish_rebase_conflict_opens_pr (test_release.FinishTest.test_finish_rebase_conflict_opens_pr) ... ok
+test_finish_reuses_existing_main_pr (test_release.FinishTest.test_finish_reuses_existing_main_pr) ... ok
+test_finish_skips_main_pr_when_already_on_main (test_release.FinishTest.test_finish_skips_main_pr_when_already_on_main) ... ok
+test_finish_skips_rebase_pr_when_dev_up_to_date (test_release.FinishTest.test_finish_skips_rebase_pr_when_dev_up_to_date) ... ok
+test_dev_engine_pr_rejected (test_release.MainPrAllowedTest.test_dev_engine_pr_rejected) ... ok
+test_docs_only_allowed (test_release.MainPrAllowedTest.test_docs_only_allowed) ... ok
+test_empty_non_promote_rejected (test_release.MainPrAllowedTest.test_empty_non_promote_rejected) ... ok
+test_isolation_branch_not_a_promote_head (test_release.MainPrAllowedTest.test_isolation_branch_not_a_promote_head) ... ok
+test_promote_head_allows_engine_files (test_release.MainPrAllowedTest.test_promote_head_allows_engine_files) ... ok
+test_ok (test_release.ParseTagTest.test_ok) ... ok
+test_rejects_prerelease_suffix (test_release.ParseTagTest.test_rejects_prerelease_suffix) ... ok
+test_rejects_v_prefix_missing (test_release.ParseTagTest.test_rejects_v_prefix_missing) ... ok
+test_missing_exits (test_release.RequireGhTest.test_missing_exits) ... error: GitHub CLI (gh) not found on PATH. Install from https://cli.github.com/
+ok
+test_start_formal_and_already_official_ok (test_release.StartTest.test_start_formal_and_already_official_ok) ... ok
+test_start_formal_mismatch_fails (test_release.StartTest.test_start_formal_mismatch_fails) ... error: release is already formal but the tree is not the official version; will not rewrite a published tag
+ok
+test_start_idempotent_when_already_official (test_release.StartTest.test_start_idempotent_when_already_official) ... ok
+test_start_rejects_downgrade (test_release.StartTest.test_start_rejects_downgrade) ... error: refusing to downgrade 0.2.0-dev to 0.1.0
+ok
+test_start_syncs_required_version_touchpoints (test_release.StartTest.test_start_syncs_required_version_touchpoints) ... ok
+test_start_writes_official_and_moves_tag (test_release.StartTest.test_start_writes_official_and_moves_tag) ... ok
+test_allows_release_commit_and_skips_sync (test_release.SyncDocsTest.test_allows_release_commit_and_skips_sync) ... ok
+test_dry_run_never_mutates (test_release.SyncDocsTest.test_dry_run_never_mutates) ... ok
+test_nothing_to_sync (test_release.SyncDocsTest.test_nothing_to_sync) ... ok
+test_rejects_non_doc_change (test_release.SyncDocsTest.test_rejects_non_doc_change) ... error: main is ahead of dev with non-doc files: src/engine/main.cpp. Land those changes on dev instead.
+ok
+test_reuses_existing_pr (test_release.SyncDocsTest.test_reuses_existing_pr) ... ok
+test_syncs_docs_via_pr (test_release.SyncDocsTest.test_syncs_docs_via_pr) ... ok
+test_cleanup_branches_after_prs_merged (test_release_git_integration.ReleaseGitIntegrationTest.test_cleanup_branches_after_prs_merged) ... ok
+test_finish_rebase_conflict_keeps_dev_untouched (test_release_git_integration.ReleaseGitIntegrationTest.test_finish_rebase_conflict_keeps_dev_untouched) ... ok
+test_start_is_idempotent (test_release_git_integration.ReleaseGitIntegrationTest.test_start_is_idempotent) ... ok
+test_start_then_finish_happy_path (test_release_git_integration.ReleaseGitIntegrationTest.test_start_then_finish_happy_path) ... ok
+test_sync_docs_after_release_does_not_fail (test_release_git_integration.ReleaseGitIntegrationTest.test_sync_docs_after_release_does_not_fail) ... ok
+test_sync_docs_copies_doc_commit_via_pr (test_release_git_integration.ReleaseGitIntegrationTest.test_sync_docs_copies_doc_commit_via_pr) ... ok
+test_disabled_test_is_not_success (test_resource_format_suite.ResourceSuiteTests.test_disabled_test_is_not_success) ... ok
+test_extensions_include_uncovered_routing (test_resource_format_suite.ResourceSuiteTests.test_extensions_include_uncovered_routing) ... ok
+test_failed_runtime_is_not_green (test_resource_format_suite.ResourceSuiteTests.test_failed_runtime_is_not_green) ... ok
+test_fixture_tampering_is_detected (test_resource_format_suite.ResourceSuiteTests.test_fixture_tampering_is_detected) ... ok
+test_inventory_is_not_execution (test_resource_format_suite.ResourceSuiteTests.test_inventory_is_not_execution) ... ok
+test_missing_cases_fail_before_execution (test_resource_format_suite.ResourceSuiteTests.test_missing_cases_fail_before_execution) ... ok
+test_missing_junit_cannot_pass (test_resource_format_suite.ResourceSuiteTests.test_missing_junit_cannot_pass) ... ok
+test_real_ctest_skip_is_not_pass (test_resource_format_suite.ResourceSuiteTests.test_real_ctest_skip_is_not_pass) ... ok
+test_real_ctest_success_has_per_case_evidence (test_resource_format_suite.ResourceSuiteTests.test_real_ctest_success_has_per_case_evidence) ... ok
+test_real_ctest_warning_assertion_log_is_success (test_resource_format_suite.ResourceSuiteTests.test_real_ctest_warning_assertion_log_is_success) ... ok
+test_real_ctest_zero_exit_with_assertion_log_is_failure (test_resource_format_suite.ResourceSuiteTests.test_real_ctest_zero_exit_with_assertion_log_is_failure) ... ok
+test_vrm_routing_has_real_import_contract (test_resource_format_suite.ResourceSuiteTests.test_vrm_routing_has_real_import_contract) ... ok
+test_baseline_file_is_valid_json (test_script_binding_arity.BaselineTest.test_baseline_file_is_valid_json) ... /workspace/EVEngine/scripts/tests/test_script_binding_arity.py:144: ResourceWarning: unclosed file <_io.TextIOWrapper name='/workspace/EVEngine/scripts/script_binding_arity_baseline.json' mode='r' encoding='utf-8'>
+  data = json.loads(io.open(arity.BASELINE, encoding="utf-8").read())
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_baseline_is_sorted_and_unique (test_script_binding_arity.BaselineTest.test_baseline_is_sorted_and_unique) ... ok
+test_repository_is_clean_against_its_baseline (test_script_binding_arity.BaselineTest.test_repository_is_clean_against_its_baseline) ... ok
+test_default_argument_is_reported (test_script_binding_arity.ScanTest.test_default_argument_is_reported) ... ok
+test_definition_style_declaration_is_matched (test_script_binding_arity.ScanTest.test_definition_style_declaration_is_matched) ... ok
+test_export_macro_before_the_class_name_is_skipped (test_script_binding_arity.ScanTest.test_export_macro_before_the_class_name_is_skipped) ... ok
+test_inline_export_macro_before_the_class_name_is_skipped (test_script_binding_arity.ScanTest.test_inline_export_macro_before_the_class_name_is_skipped) ... ok
+test_no_default_argument_is_clean (test_script_binding_arity.ScanTest.test_no_default_argument_is_clean) ... ok
+test_same_named_method_on_another_class_is_not_reported (test_script_binding_arity.ScanTest.test_same_named_method_on_another_class_is_not_reported) ... ok
+test_bgra_swizzle_preserves_each_voxel_and_alpha (test_sky_reference_dds.DdsTests.test_bgra_swizzle_preserves_each_voxel_and_alpha) ... ok
+test_cube_faces_and_volume_mips_keep_exact_offsets (test_sky_reference_dds.DdsTests.test_cube_faces_and_volume_mips_keep_exact_offsets) ... ok
+test_float32_and_unorm16_preserve_source_precision (test_sky_reference_dds.DdsTests.test_float32_and_unorm16_preserve_source_precision) ... ok
+test_half_float_hdr_is_not_quantized_or_clamped (test_sky_reference_dds.DdsTests.test_half_float_hdr_is_not_quantized_or_clamped) ... ok
+test_reject_excessive_mips_and_bad_headers (test_sky_reference_dds.DdsTests.test_reject_excessive_mips_and_bad_headers) ... ok
+test_reject_path_escape_without_writing_a_manifest (test_sky_reference_dds.DdsTests.test_reject_path_escape_without_writing_a_manifest) ... ok
+test_reject_truncated_extra_compressed_and_oversized_payloads (test_sky_reference_dds.DdsTests.test_reject_truncated_extra_compressed_and_oversized_payloads) ... ok
+test_validate_manifest_preserves_hdr_and_detects_tampering (test_sky_reference_dds.DdsTests.test_validate_manifest_preserves_hdr_and_detects_tampering) ... ok
+test_manifest_fragments_follow_entrypoint_include_order (test_split_metadata_sources.SplitMetadataSourceTests.test_manifest_fragments_follow_entrypoint_include_order) ... ok
+test_module_doc_includes_topic_directory (test_split_metadata_sources.SplitMetadataSourceTests.test_module_doc_includes_topic_directory) ... ok
+test_engine_and_required_runtimes_are_staged (test_sync_android_libs.AndroidLibraryStagingTests.test_engine_and_required_runtimes_are_staged) ... ok
+test_make_target_stages_libraries_from_a_path_with_spaces (test_sync_android_libs.AndroidLibraryStagingTests.test_make_target_stages_libraries_from_a_path_with_spaces) ... ok
+test_missing_ndk_runtime_fails (test_sync_android_libs.AndroidLibraryStagingTests.test_missing_ndk_runtime_fails) ... ok
+test_missing_required_library_does_not_publish_partial_files (test_sync_android_libs.AndroidLibraryStagingTests.test_missing_required_library_does_not_publish_partial_files) ... ok
+test_supported_abis_use_their_target_runtime (test_sync_android_libs.AndroidLibraryStagingTests.test_supported_abis_use_their_target_runtime) ... ok
+test_test_runner_takes_precedence_and_hidapi_is_optional (test_sync_android_libs.AndroidLibraryStagingTests.test_test_runner_takes_precedence_and_hidapi_is_optional) ... ok
+test_unknown_abi_fails (test_sync_android_libs.AndroidLibraryStagingTests.test_unknown_abi_fails) ... ok
+test_asset_audit_selects_every_static_mesh (test_unreal_uasset_converter.UnrealUassetConverterTests.test_asset_audit_selects_every_static_mesh) ... ok
+test_asset_list_supports_comments_and_utf8 (test_unreal_uasset_converter.UnrealUassetConverterTests.test_asset_list_supports_comments_and_utf8) ... ok
+test_colliding_asset_names_are_rejected (test_unreal_uasset_converter.UnrealUassetConverterTests.test_colliding_asset_names_are_rejected) ... ok
+test_exclude_asset_filters_audited_failure (test_unreal_uasset_converter.UnrealUassetConverterTests.test_exclude_asset_filters_audited_failure) ... ok
+test_export_command_enables_material_baking (test_unreal_uasset_converter.UnrealUassetConverterTests.test_export_command_enables_material_baking) ... ok
+test_failed_batch_never_publishes_partial_output (test_unreal_uasset_converter.UnrealUassetConverterTests.test_failed_batch_never_publishes_partial_output) ... ok
+test_gltf_sidecars_are_validated_and_hashed (test_unreal_uasset_converter.UnrealUassetConverterTests.test_gltf_sidecars_are_validated_and_hashed) ... ok
+test_material_parity_repair_restores_ue_core_flags_and_manifest_hash (test_unreal_uasset_converter.UnrealUassetConverterTests.test_material_parity_repair_restores_ue_core_flags_and_manifest_hash) ... ok
+test_plugin_mount_asset_reference_is_supported (test_unreal_uasset_converter.UnrealUassetConverterTests.test_plugin_mount_asset_reference_is_supported) ... ok
+test_preserve_path_names_disambiguates_colliding_assets (test_unreal_uasset_converter.UnrealUassetConverterTests.test_preserve_path_names_disambiguates_colliding_assets) ... ok
+test_publication_staging_inherits_destination_access_and_cleans_up (test_unreal_uasset_converter.UnrealUassetConverterTests.test_publication_staging_inherits_destination_access_and_cleans_up) ... ok
+test_quantized_weights_become_float_without_changing_other_payload (test_unreal_uasset_converter.UnrealUassetConverterTests.test_quantized_weights_become_float_without_changing_other_payload) ... ok
+test_request_carries_bounded_texture_size (test_unreal_uasset_converter.UnrealUassetConverterTests.test_request_carries_bounded_texture_size) ... ok
+test_rights_confirmation_is_required_before_process_launch (test_unreal_uasset_converter.UnrealUassetConverterTests.test_rights_confirmation_is_required_before_process_launch) ... ok
+test_static_mesh_parity_accepts_exporter_suffix_and_unused_ue_slots (test_unreal_uasset_converter.UnrealUassetConverterTests.test_static_mesh_parity_accepts_exporter_suffix_and_unused_ue_slots) ... ok
+test_static_mesh_uses_general_asset_manifest_without_skin (test_unreal_uasset_converter.UnrealUassetConverterTests.test_static_mesh_uses_general_asset_manifest_without_skin) ... ok
+test_success_publishes_validated_artifact_and_manifest_atomically (test_unreal_uasset_converter.UnrealUassetConverterTests.test_success_publishes_validated_artifact_and_manifest_atomically) ... ok
+test_uasset_under_project_content_maps_to_game_reference (test_unreal_uasset_converter.UnrealUassetConverterTests.test_uasset_under_project_content_maps_to_game_reference) ... ok
+test_unknown_result_fields_are_rejected (test_unreal_uasset_converter.UnrealUassetConverterTests.test_unknown_result_fields_are_rejected) ... ok
+test_a_reconfigure_that_fails_is_not_fatal (test_utf8_stdio.HelperBehaviourTests.test_a_reconfigure_that_fails_is_not_fatal) ... ok
+test_enable_is_idempotent (test_utf8_stdio.HelperBehaviourTests.test_enable_is_idempotent) ... architecture contracts OK: no new high-signal violations
+flat: alpha=0.0000% mean=0.000000 p99=0.000000 color_space=srgb-linearized
+flat: alpha=0.0000% mean=1.000000 p99=1.000000 color_space=srgb-linearized
+flat: alpha=0.0000% mean=1.000000 p99=1.000000 color_space=srgb-linearized
+ok: no declared-layer violations (0 known back-edges, 0 now stale)
+ok: no declared-layer violations (1 known back-edges, 0 now stale)
+ok: no declared-layer violations (1 known back-edges, 1 now stale)
+WARN: tools/eve-mcp/package.json: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/vscode-eve-debug/package.json: '0.3.0' != expected '0.6.0' (triple)
+WARN: modelconverter/python/eve_blender_converter/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/asset-pipeline-agent/asset_pipeline_agent/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/scene-qc-agent/scene_qc_agent/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+WARN: tools/vision-prefilter/vision_prefilter/__init__.py: '0.1.0' != expected '0.6.0' (triple)
+OK: 6 required version touchpoints match 0.6.0-dev
+WARN: tools/eve-mcp/package.json: file missing
+WARN: tools/vscode-eve-debug/package.json: file missing
+WARN: modelconverter/python/eve_blender_converter/__init__.py: file missing
+WARN: tools/asset-pipeline-agent/asset_pipeline_agent/__init__.py: file missing
+WARN: tools/scene-qc-agent/scene_qc_agent/__init__.py: file missing
+WARN: tools/vision-prefilter/vision_prefilter/__init__.py: file missing
+deleted v0.1.0 (merged into dev)
+keep v0.2.0: not merged into dev
+deleted promote/v0.1.0 (merged into main)
+deleted rebase/v0.1.0 (merged into dev)
++ delete v0.1.0 (merged into dev)
+keep v0.2.0: not merged into dev
++ delete promote/v0.1.0 (merged into main)
++ delete rebase/v0.1.0 (merged into dev)
+PR already open: https://example/pr/9
+main already contains v0.1.0
+dev already contains the rebased history
+nothing to sync
+syncing 1 documentation path(s) from main:
+  README.md
+nothing to sync
+syncing 1 documentation path(s) from main:
+  README.md
+PR already open: https://example/pr/9
+syncing 2 documentation path(s) from main:
+  README.md
+  docs/usr/guide.md
+deleted promote/v0.1.0 (merged into main)
+deleted rebase/v0.1.0 (merged into dev)
+deleted v0.1.0 (merged into dev)
+nothing to sync
+syncing 1 documentation path(s) from main:
+  Readme.md
+failed: 11 source tests; /tmp/tmpuemce93u/report.json
+not-run: 11 source tests; /tmp/tmptlzkbl8o/report.json
+failed: 11 source tests; /tmp/tmp3td02ziw/report.json
+ok
+test_piped_output_is_utf8_under_a_cp936_locale (test_utf8_stdio.HelperBehaviourTests.test_piped_output_is_utf8_under_a_cp936_locale)
+With the guard, text CP936 cannot encode survives a CP936 stdout. ... ok
+test_plain_streams_without_reconfigure_are_ignored (test_utf8_stdio.HelperBehaviourTests.test_plain_streams_without_reconfigure_are_ignored) ... ok
+test_stderr_is_covered_too (test_utf8_stdio.HelperBehaviourTests.test_stderr_is_covered_too) ... ok
+test_without_the_guard_the_same_line_aborts (test_utf8_stdio.HelperBehaviourTests.test_without_the_guard_the_same_line_aborts)
+Pins the motivation: the un-guarded child dies instead of printing. ... ok
+test_every_script_program_enables_utf8_stdio (test_utf8_stdio.RepositoryConventionTests.test_every_script_program_enables_utf8_stdio) ... ok
+test_modules_without_an_entry_point_do_not_print (test_utf8_stdio.RepositoryConventionTests.test_modules_without_an_entry_point_do_not_print)
+The exemption for non-program modules has to stay justified. ... ok
+test_no_module_inherits_the_locale_for_text_io (test_utf8_stdio.RepositoryConventionTests.test_no_module_inherits_the_locale_for_text_io) ... ok
+test_the_guard_is_not_installed_as_an_import_side_effect (test_utf8_stdio.RepositoryConventionTests.test_the_guard_is_not_installed_as_an_import_side_effect) ... ok
+test_accepts_varied_pixels (test_validate_render_frame.ValidateRenderFrameTest.test_accepts_varied_pixels) ... ok
+test_rejects_blank (test_validate_render_frame.ValidateRenderFrameTest.test_rejects_blank) ... ok
+test_content_drift_is_rejected (test_verify_webgpu_dependencies.VerifyWebgpuDependenciesTest.test_content_drift_is_rejected) ... ok
+test_matching_identity_passes (test_verify_webgpu_dependencies.VerifyWebgpuDependenciesTest.test_matching_identity_passes) ... ok
+test_version_drift_is_rejected (test_verify_webgpu_dependencies.VerifyWebgpuDependenciesTest.test_version_drift_is_rejected) ... ok
+test_classic_assets_report_skips_and_full_fps_sweep_is_labeled (test_zeroerr_discovery.ZeroerrDiscoveryTests.test_classic_assets_report_skips_and_full_fps_sweep_is_labeled) ... ok
+test_composition_prefix_preserves_filters_and_bundle_labels (test_zeroerr_discovery.ZeroerrDiscoveryTests.test_composition_prefix_preserves_filters_and_bundle_labels) ... ok
+test_duplicate_names_report_both_sources_before_registration (test_zeroerr_discovery.ZeroerrDiscoveryTests.test_duplicate_names_report_both_sources_before_registration) ... ok
+test_empty_listing_cannot_silently_register_zero_tests (test_zeroerr_discovery.ZeroerrDiscoveryTests.test_empty_listing_cannot_silently_register_zero_tests) ... ok
+test_unique_names_keep_exact_filters_and_opt_in_bundles (test_zeroerr_discovery.ZeroerrDiscoveryTests.test_unique_names_keep_exact_filters_and_opt_in_bundles) ... ok
+
+----------------------------------------------------------------------
+Ran 313 tests in 187.288s
+
+OK
+ok: source-quality gate passed (base=origin/dev)

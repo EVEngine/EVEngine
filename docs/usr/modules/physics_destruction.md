@@ -117,5 +117,5 @@ v1 文档在加载时迁移为 `clusterId=0`。完整父子层级 Body 仍延期
 - 设计：[`docs/dev/2026-09-29-chaos-destruction-geometry-collection设计.md`](../../dev/2026-09-29-chaos-destruction-geometry-collection设计.md)
 - 物理宿主：[physics.md](physics.md)
 - 表现卫星：[physics_destruction_graphics.md](physics_destruction_graphics.md)
-- 测试：`test/physics_destruction.cpp`、`test/physics_destruction_cook.cpp`、
-  `test/physics_destruction_graphics.cpp`、`test/physics_destruction_p3.cpp`
+- 测试：`test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp`、`test/unit/physics_destruction_cook/physics_destruction_cook.cpp`、
+  `test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp`、`test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp`
