@@ -4458,6 +4458,17 @@
         "sensing_environment.cpp"
       ]
     },
+    "integration/ui-hud/hud_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "ui_editing",
+      "cases": {
+        "ui-render": [
+          "UI.hud.renderScalesHitRectAndRestoresDesignMetrics",
+          "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry"
+        ]
+      }
+    },
     "integration/audio-playback/PcmStream.cpp": {
       "role": "tests",
       "default": "platform-audio",
