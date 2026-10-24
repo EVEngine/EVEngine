@@ -35,6 +35,8 @@ esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
 ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
+SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
+SDK_TEST_CONFIG="${SDK_TEST_CONFIG:-Release}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
@@ -166,6 +168,14 @@ esac
 TP="$(cat "$SDK/share/eve/TARGET_PLATFORM")"
 [ "$TP" = "$PLAT" ] || fail "TARGET_PLATFORM '$TP' != expected '$PLAT'"
 echo "OK: SDK layout + markers"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$SDK/bin"
+  if [ "$PLAT" = win32 ]; then
+    for dll in vulkan-1.dll msvcp140.dll vcruntime140.dll; do
+      [ -f "$SDK/bin/$dll" ] || fail "ARM64 SDK missing runtime $dll"
+    done
+  fi
+fi
 
 VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
 [ -n "$VERSION_FILE" ] || fail "share/eve/VERSION is empty"
@@ -176,7 +186,7 @@ fi
 echo "OK: SDK version marker -> $VERSION_FILE"
 
 # --- 2. Host runtime runs ------------------------------------------------------
-VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || true
+VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || fail "eve -v failed: $VER"
 echo "  eve -v -> ${VER:-<empty>}"
 if [ -n "$EXPECTED" ]; then
   echo "$VER" | grep -qF "$EXPECTED" || \
@@ -249,17 +259,21 @@ void SdkTestPlugin::expose(ssq::Class& cls) {
 EVE_PLUGIN_EXPORT int eve_plugin_init(void) { return 0; }
 EOF
 
-CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
+CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE="$SDK_TEST_CONFIG")
 if [ "$PLAT" = "win32" ]; then
   # Default generator: GitHub-hosted windows images ship VS 2026, local dev
   # machines may have 2022/2026. Let CMake pick the installed instance.
-  CMAKE_ARGS+=(-A x64)
+  if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+    CMAKE_ARGS+=(-A ARM64)
+  else
+    CMAKE_ARGS+=(-A x64)
+  fi
 fi
 cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
   tail -n 30 "$WORK/plugin-cmake.log"
   fail "plugin cmake configure failed"
 }
-cmake --build "$PLUGIN/build" --config Release --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
+cmake --build "$PLUGIN/build" --config "$SDK_TEST_CONFIG" --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
   tail -n 40 "$WORK/plugin-build.log"
   fail "plugin cmake build failed"
 }
@@ -270,6 +284,15 @@ case "$PLAT" in
 esac
 [ -n "$PLUGIN_OUT" ] || fail "plugin shared library not produced"
 echo "OK: native C++ plugin compiled: $(basename "$PLUGIN_OUT")"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$PLUGIN_OUT"
+fi
+
+if [ "${SDK_TEST_REQUIRE_RUN:-0}" = 1 ]; then
+  python3 "$SCRIPTS/run-sdk-game.py" "$PKG/$RUNTIME"
+  echo "== [test-sdk] PASS ($PLAT, required runtime) =="
+  exit 0
+fi
 
 # --- Best-effort: run the packaged game from memory -----------------------------
 echo "== best-effort in-memory run =="
