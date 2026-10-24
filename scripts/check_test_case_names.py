@@ -110,14 +110,16 @@ def declared_names(path: Path) -> list[tuple[str, int]]:
         name = read_string_literal(text, match.end())
         if name is not None:
             found.append((name, text.count("\n", 0, match.start()) + 1))
-    fixture = FIXTURE_MACRO.search(masked)
-    if fixture:
-        base = fixture.group(1)
-        for match in SCRIPT_CASE_MACRO.finditer(masked):
-            if in_macro_definition(masked, match.start()):
-                continue
-            name = f"{base}.{match.group(1)}"
-            found.append((name, text.count("\n", 0, match.start()) + 1))
+    fixtures = list(FIXTURE_MACRO.finditer(masked))
+    fixture_index = -1
+    for match in SCRIPT_CASE_MACRO.finditer(masked):
+        while fixture_index + 1 < len(fixtures) and fixtures[fixture_index + 1].start() < match.start():
+            fixture_index += 1
+        if fixture_index < 0 or in_macro_definition(masked, match.start()):
+            continue
+        base = fixtures[fixture_index].group(1)
+        name = f"{base}.{match.group(1)}"
+        found.append((name, text.count("\n", 0, match.start()) + 1))
     return found
 
 

@@ -78,6 +78,12 @@ endif()
 # so a packaged game is self-contained and can be produced from ANY host
 # (Linux/macOS cross-packaging included) without a Visual Studio install.
 if(BUILD_PLATFORM STREQUAL "win32")
+    # Install scripts run later; preserve the configured target architecture.
+    if(EVENGINE_NATIVE_ARM64)
+        install(CODE "set(EVE_RUNTIME_ARCH arm64)")
+    else()
+        install(CODE "set(EVE_RUNTIME_ARCH x64)")
+    endif()
     install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
 endif()
 
@@ -196,6 +202,12 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
 )
 
+# ---- Reusable rendering styles -------------------------------------------
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/styles/"
+    DESTINATION share/eve/styles
+    COMPONENT styles
+)
+
 # ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
 # eve-api.json / eve-api.d.ts are generated next to BindingContracts.generated.cpp.
 install(FILES
@@ -303,9 +315,12 @@ if(EVENGINE_THIRD_PARTY_BINARY_DIR)
     set(_eve_tp_inc "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
 else()
     set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
+    if(EVENGINE_NATIVE_ARM64)
+        string(APPEND _eve_tp_inc "-arm64")
+    endif()
 endif()
 if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
+    string(APPEND _eve_tp_inc "-debug")
 endif()
 get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
 # The third-party tree is built by the deps target *after* configure, so the

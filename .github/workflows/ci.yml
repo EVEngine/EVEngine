@@ -133,7 +133,7 @@ jobs:
           sudo apt-get "${apt_sources[@]}" update
           sudo apt-get "${apt_sources[@]}" install -y clang-format-18
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
-          python3 -m pip install --user --quiet pillow ruff
+          python3 -m pip install --user --quiet numpy pillow ruff
 
       - name: Run source-quality gate
         # Same entry point as local `make check`. Groups inside
@@ -154,11 +154,6 @@ jobs:
           fi
           echo "Source-quality comparison base: $base"
           make check CI_BASE="$base"
-
-      - name: Report dependency graph
-        timeout-minutes: 5
-        if: always()
-        run: python3 scripts/module_depgraph.py
 
   profile-matrix:
     name: Profile ${{ matrix.profile }}
@@ -257,6 +252,228 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
+  # Native ARM64 lanes build and run the same process-isolated test suite.
+  # Installed SDKs also compile a consumer plugin and run a packaged game.
+  windows-arm64:
+    name: Windows ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
+    runs-on: windows-11-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') {
+            throw 'This lane requires a native Windows ARM64 host'
+          }
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install native ARM64 Vulkan SDK
+        timeout-minutes: 20
+        # This pinned action selects the Windows ARM64 SDK from the host arch.
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Probe native Vulkan driver and loader surface extensions
+        timeout-minutes: 5
+        env:
+          VK_LOADER_DEBUG: error,warn
+        run: |
+          cmake/with-msvc.cmd --arm64 cmake -G Ninja -S .github/scripts/vulkan-probe -B build/arm64-vulkan-probe -DCMAKE_BUILD_TYPE=Release
+          cmake/with-msvc.cmd --arm64 cmake --build build/arm64-vulkan-probe
+          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$EVE_VULKAN_LOADER"
+
+      - name: Build Windows ARM64
+        timeout-minutes: 190
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/win32-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          # Executable-local lookup precedes any system Vulkan loader.
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/test/vulkan-1.dll"
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/src/engine/vulkan-1.dll"
+
+      - name: Probe real SDL Vulkan window with loader diagnostics
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          VK_LOADER_DEBUG: all
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          ctest --test-dir "build/win32-arm64${suffix}" --no-tests=error -V -R '^WindowTest\.basicWindow$'
+
+      - name: Run Windows ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "test/win32-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Windows ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/win32-arm64${suffix}" --prefix "dist/eve-sdk/win32-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/win32-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py win32-arm64 ci
+          bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-win32-arm64-ci.zip win32 "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: win32-arm64-${{ matrix.configuration }}-test-logs
+          path: build/win32-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
+  linux-arm64:
+    name: Linux ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        run: test "$(uname -m)" = aarch64
+
+      - name: Install native system packages
+        timeout-minutes: 25
+        # Preserve the ARM ports mirror supplied by the runner image.
+        run: |
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build lld gdb \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            libvulkan-dev glslc glslang-tools \
+            mesa-vulkan-drivers vulkan-tools vulkan-validationlayers xvfb xauth
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Build Linux ARM64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/linux-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Probe ray tracing with validation and backtraces
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          bash .github/scripts/probe-arm64-blas.sh
+          python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
+
+      - name: Run Linux ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Linux ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/linux-arm64${suffix}" --prefix "dist/eve-sdk/linux-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/linux-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py linux-arm64 ci
+          xvfb-run -a bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-linux-arm64-ci.zip linux "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-arm64-${{ matrix.configuration }}-test-logs
+          path: build/linux-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
   windows:
     name: Windows
     needs: [source-quality, change-scope]
@@ -321,17 +538,14 @@ jobs:
         timeout-minutes: 15
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/third-party-binary/win32-debug
-          key: third-party-v1-${{ runner.os }}-${{ runner.arch }}-win32-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
-
-      - name: Verify restored win32 third-party cache
-        if: steps.third-party-cache.outputs.cache-hit == 'true'
-        timeout-minutes: 5
-        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
+          path: |
+            build/third-party-releases
+            build/third-party-binary/win32-debug
+          key: third-party-v2-${{ runner.os }}-${{ runner.arch }}-win32-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake') }}
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -347,20 +561,15 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build win32 debug
-        # A PR that changes the third-party patch/cache key must do a full cold
-        # dependency plus engine/test build. Release run 35419568563 was still
-        # compiling normally when the former 60-minute guard terminated it.
+        # Dependencies come from the pinned independent release; this job
+        # compiles the engine/tests and caches verified downloaded packages.
         timeout-minutes: 100
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tp_args=""
-          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
-            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/win32-debug"
-          fi
           make build/win32-debug JOBS="${NUMBER_OF_PROCESSORS:-8}" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
-              -DEVENGINE_COMPILER_CACHE=OFF $tp_args"
+              -DEVENGINE_COMPILER_CACHE=OFF"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -369,7 +578,9 @@ jobs:
 
       - name: Verify built win32 third-party cache
         timeout-minutes: 5
-        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/win32-debug win32 Debug
+        run: |
+          tp_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/win32-debug/CMakeCache.txt)"
+          bash .github/scripts/verify-third-party-cache.sh "$tp_prefix" win32 Debug
 
       - name: Save win32 third-party cache
         if: >-
@@ -378,20 +589,33 @@ jobs:
         timeout-minutes: 15
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/third-party-binary/win32-debug
+          path: |
+            build/third-party-releases
+            build/third-party-binary/win32-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Run win32 unit tests
-        # Run 35519931809 reached 5548/5550 passing cases when the 40-minute
-        # guard fired. Keep a bounded margin for the final structural tests and
-        # normal hosted-runner variance when CI/build files require a full run.
-        timeout-minutes: 50
+        # Run 39399072292 reached only 5042/7039 cases before the 50-minute
+        # guard fired. The expanded full suite needs room for the remaining
+        # cases; individual CTest timeouts still bound hung tests.
+        timeout-minutes: 90
         # Headless runners have no WASAPI endpoint (0x80070490); OpenAL Soft null backend.
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
           make test/win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Windows test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: windows-test-failure-logs
+          path: |
+            build/win32-debug/Testing/Temporary/LastTestsFailed.log
+            build/win32-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Capture Vulkan parity artifacts
         timeout-minutes: 10
@@ -401,12 +625,13 @@ jobs:
         run: ctest --test-dir build/win32-debug -R '^graphics\.backendParity\.' --output-on-failure
 
       - name: Configure native Dawn parity lane
-        # Same googlesource shallow-clone flake as the macOS Metal lane: abseil
-        # can land without CMakeLists.txt. Retry after wiping the incomplete tree.
+        # CMake validates pinned dependency archives before configuring Dawn.
+        # Retry a failed download/configure using a fresh tree.
         timeout-minutes: 25
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
+          $thirdPartyPrefix = ((Get-Content build/win32-debug/CMakeCache.txt | Select-String '^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=').Line -split '=', 2)[1]
           function Invoke-DawnConfigure {
             & cmake\with-msvc.cmd cmake.exe -S . -B build/webgpu-native -G Ninja `
               -DCMAKE_BUILD_TYPE=Debug `
@@ -414,18 +639,16 @@ jobs:
               -DCMAKE_CXX_COMPILER="$PWD/cmake/msvc-cl.cmd" `
               -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON `
               -DEVENGINE_COMPILER_CACHE=SCCACHE `
-              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/win32-debug" `
+              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$thirdPartyPrefix" `
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF `
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
             if ($LASTEXITCODE -ne 0) { throw "cmake configure exited $LASTEXITCODE" }
           }
-          $abseilCmake = 'build/webgpu-native/_deps/dawn-src/third_party/abseil-cpp/CMakeLists.txt'
           foreach ($attempt in 1..3) {
             Write-Host "Dawn parity configure attempt $attempt/3"
             try {
               Invoke-DawnConfigure
-              if (Test-Path $abseilCmake) { exit 0 }
-              Write-Host "Dawn abseil-cpp checkout incomplete" -ForegroundColor Yellow
+              exit 0
             } catch {
               Write-Host $_ -ForegroundColor Yellow
             }
@@ -547,7 +770,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -639,9 +862,11 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Explicit start catches GHA/ghac egress flakes before the NDK build.
+      # Retries, then switches to a local disk cache (see start-sccache.sh).
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -724,9 +949,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      # Same retry / local-disk path as the Android debug job.
       - name: Start C/C++ compilation cache
         timeout-minutes: 5
-        run: sccache --start-server
+        run: bash .github/scripts/start-sccache.sh
 
       - name: Setup Java 17
         timeout-minutes: 10
@@ -806,7 +1032,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -833,7 +1059,9 @@ jobs:
           CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Run macosx unit tests
-        timeout-minutes: 60
+        # Run 39701509245 completed 6597/7063 cases at the 60m guard
+        # while tests were still progressing. Keep room for the full suite.
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -848,38 +1076,54 @@ jobs:
             sed -n '/NetHostPeers .*: .* ms/p' "$log"
           fi
 
+      - name: Upload macOS test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: macos-test-failure-logs
+          path: |
+            build/macosx-debug/Testing/Temporary/LastTestsFailed.log
+            build/macosx-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Setup Dawn generator Python
+        if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
       - name: Configure native Dawn Metal lane
         if: ${{ needs.change-scope.outputs.dawn_metal == 'true' }}
-        # Dawn's DAWN_FETCH_DEPENDENCIES shallow-clones abseil/glfw3 (and friends)
-        # from chromium.googlesource.com. That clone can land an empty
-        # directory without CMakeLists.txt (run 34850493956 / job 103997514884;
-        # glfw3 empty tree: run 37870280409 / job 113637632268), so retry after
-        # wiping incomplete third_party checkouts.
+        # CMake validates the exact DEPS revisions and generator imports.
+        # Retry a failed download/configure using a fresh tree.
         timeout-minutes: 30
         run: |
           set -euo pipefail
+          tp_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/macosx-debug/CMakeCache.txt)"
           configure_dawn() {
             cmake -S . -B build/webgpu-macos -G Ninja \
               -DCMAKE_BUILD_TYPE=Debug \
               -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
               -DEVENGINE_COMPILER_CACHE=SCCACHE \
-              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$PWD/build/third-party-binary/macosx-debug" \
+              -DEVENGINE_THIRD_PARTY_BINARY_DIR="$tp_prefix" \
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
           }
           dawn_tp=build/webgpu-macos/_deps/dawn-src/third_party
           dawn_deps_ok() {
             [[ -f "$dawn_tp/abseil-cpp/CMakeLists.txt" ]] &&
-              [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]]
+              [[ -f "$dawn_tp/glfw3/CMakeLists.txt" || -f "$dawn_tp/glfw3/src/CMakeLists.txt" ]] &&
+              [[ -f "$dawn_tp/spirv-headers/CMakeLists.txt" || -f "$dawn_tp/spirv-headers/src/CMakeLists.txt" ||
+                 -f build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt ]]
           }
           for attempt in 1 2 3; do
             echo "Dawn Metal configure attempt ${attempt}/3"
-            if configure_dawn && dawn_deps_ok; then
+            if configure_dawn; then
               exit 0
             fi
-            echo "Dawn dependency checkout incomplete; clearing for retry" >&2
-            rm -rf "$dawn_tp/abseil-cpp" "$dawn_tp/glfw3"
-            rm -f build/webgpu-macos/CMakeCache.txt
+            echo "Dawn dependency checkout incomplete; clearing configure tree for retry" >&2
+            rm -rf build/webgpu-macos
             sleep $((attempt * 10))
           done
           echo "Dawn Metal configure failed after 3 attempts" >&2
@@ -968,7 +1212,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1041,7 +1285,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1101,7 +1345,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1222,17 +1466,14 @@ jobs:
         timeout-minutes: 15
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/third-party-binary/linux-debug
-          key: third-party-v1-ubuntu-24.04-${{ runner.arch }}-linux-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake') }}
-
-      - name: Verify restored linux third-party cache
-        if: steps.third-party-cache.outputs.cache-hit == 'true'
-        timeout-minutes: 5
-        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+          path: |
+            build/third-party-releases
+            build/third-party-binary/linux-debug
+          key: third-party-v2-ubuntu-24.04-${{ runner.arch }}-linux-debug-${{ steps.third-party-toolchain.outputs.id }}-${{ hashFiles('cmake/third_party_pin.cmake') }}
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1244,20 +1485,15 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Build linux debug
-        # PRs are sccache READ_ONLY and cannot refill the shared cache. A cold
-        # third-party restore plus a full engine rebuild regularly exceeds 40m.
-        # (Also observed on PR #389: timed out at ~94% under the old 40m budget.)
+        # PR compilation caches are read-only. Keep the budget for a full engine
+        # rebuild; dependency libraries are downloaded from their own release.
         timeout-minutes: 60
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          tp_args=""
-          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
-            tp_args="-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/linux-debug"
-          fi
           make build/linux-debug JOBS="$(nproc)" \
             CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
-              -DEVENGINE_COMPILER_CACHE=SCCACHE $tp_args"
+              -DEVENGINE_COMPILER_CACHE=SCCACHE"
 
       - name: Report C/C++ compilation cache
         if: always()
@@ -1266,7 +1502,9 @@ jobs:
 
       - name: Verify built linux third-party cache
         timeout-minutes: 5
-        run: bash .github/scripts/verify-third-party-cache.sh build/third-party-binary/linux-debug linux Release
+        run: |
+          tp_prefix="$(sed -n 's/^EVENGINE_TP_INSTALL_PREFIX:INTERNAL=//p' build/linux-debug/CMakeCache.txt)"
+          bash .github/scripts/verify-third-party-cache.sh "$tp_prefix" linux Release
 
       - name: Save linux third-party cache
         if: >-
@@ -1275,7 +1513,9 @@ jobs:
         timeout-minutes: 15
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: build/third-party-binary/linux-debug
+          path: |
+            build/third-party-releases
+            build/third-party-binary/linux-debug
           key: ${{ steps.third-party-cache.outputs.cache-primary-key }}
 
       - name: Verify resource format fixture integrity
@@ -1283,7 +1523,9 @@ jobs:
         run: python3 scripts/resource_format_suite.py --report build/resource-format-inventory.json
 
       - name: Run linux unit tests
-        timeout-minutes: 30
+        # Run 39399072292 passed 6628/7045 cases before the 30-minute
+        # guard fired. Keep headroom for the expanded suite and runner variance.
+        timeout-minutes: 45
         env:
           ALSOFT_DRIVERS: "null"
           EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
@@ -1293,6 +1535,17 @@ jobs:
           # SEGFAULT) that is not reproducible in isolation.
           xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
+
+      - name: Upload Linux test failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-test-failure-logs
+          path: |
+            build/linux-debug/Testing/Temporary/LastTestsFailed.log
+            build/linux-debug/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Verify resource test results without skipped or warning-only cases
         timeout-minutes: 20
@@ -1322,8 +1575,13 @@ jobs:
           ctest --test-dir build/linux-debug --output-on-failure -j 2 \
             -R '^bundle/(graphics_font|TextureSampler|gpgpu|tensor|virtualgeometry_gpu|graphics_headless)\.cpp$'
 
+      # 150 headless Lavapipe smokes have finished green then still hit the old
+      # 20-minute step guard during teardown (PR #586 run 38844868063;
+      # run 38775560674). Keep headroom above the ~15+ minute live window.
       - name: Smoke all examples (headless, >=2s alive each)
-        timeout-minutes: 20
+        # 151 examples take up to 151 * (6s run + 3s termination grace),
+        # already over 22 minutes before process/display setup overhead.
+        timeout-minutes: 30
         env:
           ALSOFT_DRIVERS: "null"
           # Contract for examples/README.md "示例规范": every runnable example
@@ -1403,7 +1661,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1522,7 +1780,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -1619,7 +1877,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true

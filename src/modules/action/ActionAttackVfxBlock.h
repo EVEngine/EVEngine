@@ -1,7 +1,11 @@
 #pragma once
 #include "common/Export.h"
 
-/** @file ActionAttackVfxBlock.h @brief Typed AttackVfx action-block payload contract. */
+/** @file ActionAttackVfxBlock.h
+ *  @brief Typed AttackVfx action-block payload contract.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionSpatialBlock.h"
 #include "common/Identity.h"

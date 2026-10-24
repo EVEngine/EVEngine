@@ -1,0 +1,93 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/neon-racing",
+  "entry": "main.nut",
+  "smoke": {
+    "scene": "default",
+    "seed": 17,
+    "maxHostFrames": 180,
+    "mustReach": [
+      "race"
+    ]
+  },
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "race",
+      "kind": "script-root",
+      "path": "race",
+      "fields": [
+        "tick",
+        "ready",
+        "x",
+        "z",
+        "heading",
+        "speed",
+        "lap",
+        "checkpoint",
+        "time",
+        "lastLap",
+        "bestLap",
+        "offTrack"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "accelerate",
+        "script": "setDrive(1.0,0.0,0.0)"
+      },
+      {
+        "id": "left",
+        "script": "setDrive(0.55,-0.65,0.0)"
+      },
+      {
+        "id": "right",
+        "script": "setDrive(0.55,0.65,0.0)"
+      },
+      {
+        "id": "reverse",
+        "script": "setDrive(-0.4,0.0,0.0)"
+      },
+      {
+        "id": "brake",
+        "script": "setDrive(0.0,0.0,1.0)"
+      },
+      {
+        "id": "coast",
+        "script": "setDrive(0.0,0.0,0.0)"
+      },
+      {
+        "id": "reset",
+        "script": "resetRace()"
+      },
+      {
+        "id": "recover",
+        "script": "respawn()"
+      },
+      {
+        "id": "assist",
+        "script": "toggleAssist()"
+      },
+      {
+        "id": "camera",
+        "script": "toggleCamera()"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 0.001
+  }
+}

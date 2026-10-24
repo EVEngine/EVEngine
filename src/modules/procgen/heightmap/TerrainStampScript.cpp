@@ -37,6 +37,8 @@
 #include <functional>
 
 namespace eve::procgen {
+void exposeTerrainWorldCreationBindings(ssq::Table& table);
+void exposeTerrainWorldBindings(ssq::Table& table);
 namespace {
 Result<int> missingRaster() {
     return Result<int>::failure(
@@ -440,32 +442,13 @@ void exposeHeightmap(ssq::Table& table) {
     multiObject.addFunc("getOperationCount", [](const TerrainMultiObjectWorkspace* workspace) {
         return workspace->getOperationCount();
     });
-    multiObject.addFunc("getAppliedCount", [](const TerrainMultiObjectWorkspace* workspace) {
-        return workspace->getAppliedCount();
-    });
+    multiObject.addFunc("getAppliedCount",
+                        [](const TerrainMultiObjectWorkspace* workspace) { return workspace->getAppliedCount(); });
 
-    auto worldSettings =
-        table.addClass("TerrainWorldCreationSettings", ssq::Class::Ctor<TerrainWorldCreationSettings()>());
-    worldSettings.addVar("tilesX", &TerrainWorldCreationSettings::tilesX);
-    worldSettings.addVar("tilesZ", &TerrainWorldCreationSettings::tilesZ);
-    worldSettings.addVar("tileSize", &TerrainWorldCreationSettings::tileSize);
-    worldSettings.addVar("tileHeight", &TerrainWorldCreationSettings::tileHeight);
-    worldSettings.addVar("centerX", &TerrainWorldCreationSettings::centerX);
-    worldSettings.addVar("centerZ", &TerrainWorldCreationSettings::centerZ);
-    worldSettings.addVar("heightmapResolution", &TerrainWorldCreationSettings::heightmapResolution);
-    worldSettings.addVar("controlTextureResolution", &TerrainWorldCreationSettings::controlTextureResolution);
-    worldSettings.addVar("detailResolution", &TerrainWorldCreationSettings::detailResolution);
-    worldSettings.addVar("treeResolution", &TerrainWorldCreationSettings::treeResolution);
-    worldSettings.addVar("objectResolution", &TerrainWorldCreationSettings::objectResolution);
-    worldSettings.addVar("splatLayers", &TerrainWorldCreationSettings::splatLayers);
-    worldSettings.addVar("defaultSplatLayer", &TerrainWorldCreationSettings::defaultSplatLayer);
-    worldSettings.addVar("defaultDetailDensity", &TerrainWorldCreationSettings::defaultDetailDensity);
-    worldSettings.addVar("worldMap", &TerrainWorldCreationSettings::worldMap);
-    worldSettings.addVar("namePrefix", &TerrainWorldCreationSettings::namePrefix);
-    worldSettings.addVar("nameSuffix", &TerrainWorldCreationSettings::nameSuffix);
+    exposeTerrainWorldCreationBindings(table);
 
-    auto probeSettings = table.addClass("TerrainProbePlacementSettings",
-                                        ssq::Class::Ctor<TerrainProbePlacementSettings()>());
+    auto probeSettings =
+        table.addClass("TerrainProbePlacementSettings", ssq::Class::Ctor<TerrainProbePlacementSettings()>());
     probeSettings.addVar("name", &TerrainProbePlacementSettings::name);
     probeSettings.addVar("originX", &TerrainProbePlacementSettings::originX);
     probeSettings.addVar("originZ", &TerrainProbePlacementSettings::originZ);
@@ -678,199 +661,11 @@ void exposeHeightmap(ssq::Table& table) {
         return eve::script::projectResult(vm, self->snapshotJson(),
                                            [](const std::string& value) { return eve::Value(value); });
     });
-    biomePreset.addFunc("restoreJson", [vm = table.getHandle()](TerrainBiomePreset* self,
-                                                                   const std::string& json) {
+    biomePreset.addFunc("restoreJson", [vm = table.getHandle()](TerrainBiomePreset* self, const std::string& json) {
         return eve::script::projectResult(vm, self->restoreJson(json));
     });
 
-    auto world = table.addClass("TerrainWorldWorkspace", ssq::Class::Ctor<TerrainWorldWorkspace()>());
-    world.addFunc("create", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                       const TerrainWorldCreationSettings* settings) {
-        auto result = settings ? self->create(*settings) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("stamp", [vm = table.getHandle()](TerrainWorldWorkspace* self, const Heightmap* stamp,
-                                                      const TerrainStampSettings* settings, const Heightmap* local,
-                                                      const Heightmap* global) {
-        auto result = stamp && settings && local && global ? self->stamp(*stamp, *settings, *local, *global)
-                                                           : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("paintSplat", [vm = table.getHandle()](TerrainWorldWorkspace* self, const Heightmap* paint,
-                                                           int layer, const TerrainStampSettings* operation) {
-        auto result = paint && operation ? self->paintSplat(*paint, layer, *operation) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("spawn", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                       const TerrainSpawnPlan* plan) {
-        auto result = plan ? self->spawn(*plan) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("spawnBiome", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                             const TerrainBiomePreset* preset) {
-        auto result = preset ? self->spawnBiome(*preset) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("spawnStamper", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                               const TerrainBiomePreset* preset) {
-        auto result = preset ? self->spawnStamper(*preset) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("beginSpawn", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                             const TerrainSpawnPlan* plan) {
-        auto result = plan ? self->beginSpawn(*plan)
-                           : Result<TerrainWorldRunStatus>::failure(Diagnostic::error(
-                                 DiagnosticCode::InvalidArgument, "terrain.world.beginSpawn: plan required"));
-        return eve::script::projectResult(vm, std::move(result),
-                                           [](TerrainWorldRunStatus status) { return eve::Value(int(status)); });
-    });
-    world.addFunc("beginSpawnBiome", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                                  const TerrainBiomePreset* preset) {
-        auto result = preset ? self->beginSpawnBiome(*preset)
-                             : Result<TerrainWorldRunStatus>::failure(Diagnostic::error(
-                                   DiagnosticCode::InvalidArgument,
-                                   "terrain.world.beginSpawnBiome: preset required"));
-        return eve::script::projectResult(vm, std::move(result),
-                                           [](TerrainWorldRunStatus status) { return eve::Value(int(status)); });
-    });
-    world.addFunc("beginSpawnStamper", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                                    const TerrainBiomePreset* preset) {
-        auto result = preset ? self->beginSpawnStamper(*preset)
-                             : Result<TerrainWorldRunStatus>::failure(Diagnostic::error(
-                                   DiagnosticCode::InvalidArgument,
-                                   "terrain.world.beginSpawnStamper: preset required"));
-        return eve::script::projectResult(vm, std::move(result),
-                                           [](TerrainWorldRunStatus status) { return eve::Value(int(status)); });
-    });
-    world.addFunc("stepSpawn", [vm = table.getHandle()](TerrainWorldWorkspace* self, int maxRules) {
-        return eve::script::projectResult(vm, self->stepSpawn(maxRules),
-                                           [](TerrainWorldRunStatus status) { return eve::Value(int(status)); });
-    });
-    world.addFunc("cancelSpawn", [vm = table.getHandle()](TerrainWorldWorkspace* self) {
-        return eve::script::projectResult(vm, self->cancelSpawn(),
-                                           [](TerrainWorldRunStatus status) { return eve::Value(int(status)); });
-    });
-    world.addFunc("getSpawnStatus", [](const TerrainWorldWorkspace* self) { return int(self->getSpawnStatus()); });
-    world.addFunc("getSpawnCompletedRules",
-                  [](const TerrainWorldWorkspace* self) { return self->getSpawnCompletedRules(); });
-    world.addFunc("applyDetail", [vm = table.getHandle()](TerrainWorldWorkspace* self, const Heightmap* fitness,
-                                                            const TerrainDetailSettings* settings,
-                                                            const TerrainStampSettings* operation, int mode,
-                                                            int seed) {
-        auto result = fitness && settings && operation
-                          ? self->applyDetail(*fitness, *settings, *operation,
-                                              static_cast<TerrainDetailMode>(mode), seed)
-                          : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("applyTrees", [vm = table.getHandle()](TerrainWorldWorkspace* self, const Heightmap* fitness,
-                                                           const TerrainTreePlacementSettings* settings,
-                                                           const TerrainStampSettings* operation, int mode) {
-        auto result = fitness && settings && operation
-                          ? self->applyTrees(*fitness, *settings, *operation,
-                                             static_cast<TerrainTreeOperationMode>(mode))
-                          : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("applyObjects", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                             const Heightmap* fitness,
-                                                             const TerrainObjectPlacementSettings* settings,
-                                                             const TerrainStampSettings* operation, int mode) {
-        auto result = fitness && settings && operation
-                          ? self->applyObjects(*fitness, *settings, *operation,
-                                               static_cast<TerrainObjectOperationMode>(mode))
-                          : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("applyProbes", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                            const Heightmap* fitness,
-                                                            const TerrainProbePlacementSettings* settings,
-                                                            const TerrainStampSettings* operation, int mode,
-                                                            int type) {
-        auto result = [&]() -> Result<int> {
-            if (!fitness || !settings || !operation) return missingRaster();
-            auto copy = *settings;
-            copy.type = static_cast<TerrainProbeType>(type);
-            return self->applyProbes(*fitness, copy, *operation,
-                                     static_cast<TerrainProbeOperationMode>(mode));
-        }();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    auto worldClear = table.addClass("TerrainWorldClearSettings", ssq::Class::Ctor<TerrainWorldClearSettings()>());
-    worldClear.addVar("details", &TerrainWorldClearSettings::details);
-    worldClear.addVar("trees", &TerrainWorldClearSettings::trees);
-    worldClear.addVar("objects", &TerrainWorldClearSettings::objects);
-    worldClear.addVar("probes", &TerrainWorldClearSettings::probes);
-    worldClear.addVar("sourceNamespace", &TerrainWorldClearSettings::sourceNamespace);
-    world.addFunc("flatten", [vm = table.getHandle()](TerrainWorldWorkspace* self) {
-        return eve::script::projectResult(vm, self->flatten(), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("setHeightWorldUnits",
-                  [vm = table.getHandle()](TerrainWorldWorkspace* self, float heightWorldUnits,
-                                           float worldHeightSpan) {
-        return eve::script::projectResult(vm, self->setHeightWorldUnits(heightWorldUnits, worldHeightSpan),
-                                          [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("clearSpawns", [vm = table.getHandle()](TerrainWorldWorkspace* self,
-                                                             const TerrainWorldClearSettings* settings) {
-        auto result = settings ? self->clearSpawns(*settings) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copyHeightmap", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                              Heightmap* output) {
-        auto result = output ? self->copyHeightmap(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copySplatmap", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                             TerrainSplatmap* output) {
-        auto result = output ? self->copySplatmap(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copyDetail", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                           TerrainDetailLayer* output) {
-        auto result = output ? self->copyDetail(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copyTrees", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                          PointSet* output) {
-        auto result = output ? self->copyTrees(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copyObjects", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                            PointSet* output) {
-        auto result = output ? self->copyObjects(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("copyProbes", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index,
-                                                           PointSet* output) {
-        auto result = output ? self->copyProbes(index, *output) : missingRaster();
-        return eve::script::projectResult(vm, std::move(result), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("getTileName", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index) {
-        return eve::script::projectResult(vm, self->getTileName(index),
-                                           [](const std::string& value) { return eve::Value(value); });
-    });
-    world.addFunc("getTileOriginX", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index) {
-        return eve::script::projectResult(vm, self->getTileOriginX(index),
-                                           [](double value) { return eve::Value(value); });
-    });
-    world.addFunc("getTileOriginZ", [vm = table.getHandle()](const TerrainWorldWorkspace* self, int index) {
-        return eve::script::projectResult(vm, self->getTileOriginZ(index),
-                                           [](double value) { return eve::Value(value); });
-    });
-    world.addFunc("undo", [vm = table.getHandle()](TerrainWorldWorkspace* self) {
-        return eve::script::projectResult(vm, self->undo(), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("redo", [vm = table.getHandle()](TerrainWorldWorkspace* self) {
-        return eve::script::projectResult(vm, self->redo(), [](int n) { return eve::Value(n); });
-    });
-    world.addFunc("getTileCount", [](const TerrainWorldWorkspace* self) { return self->getTileCount(); });
-    world.addFunc("getLastChangedSamples",
-                  [](const TerrainWorldWorkspace* self) { return self->getLastChangedSamples(); });
-    world.addFunc("getLastAffectedTiles",
-                  [](const TerrainWorldWorkspace* self) { return self->getLastAffectedTiles(); });
-    world.addFunc("getOperationCount", [](const TerrainWorldWorkspace* self) { return self->getOperationCount(); });
-    world.addFunc("getAppliedCount", [](const TerrainWorldWorkspace* self) { return self->getAppliedCount(); });
+    exposeTerrainWorldBindings(table);
 
     auto tree = table.addClass("TerrainTreePlacementSettings", ssq::Class::Ctor<TerrainTreePlacementSettings()>());
     tree.addVar("originX", &TerrainTreePlacementSettings::originX);

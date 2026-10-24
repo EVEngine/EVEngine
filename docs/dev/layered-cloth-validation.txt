@@ -1,0 +1,65 @@
+多层布料验证记录（2026-10-19）
+
+环境：Linux / GCC / Debug / Vulkan Lavapipe / Xvfb / null audio。
+构建基于当前工作树，没有使用原有 cloud-minimal 二进制代替新代码。
+
+1. 引擎构建：PASS
+source /workspace/.evengine-env/activate.sh
+cmake -S . -B build/linux-debug \
+  -DEVENGINE_PROFILE=minimal \
+  -DEVENGINE_MODULE_physics_cloth=ON \
+  -DEVENGINE_MODULE_font=ON -DEVENGINE_MODULE_devtools=ON \
+  -DEVENGINE_BUILD_JOLT=OFF \
+  -DEVENGINE_THIRD_PARTY_BINARY_DIR=/workspace/EVEngine/build/third-party-binary/linux-debug
+cmake --build build/linux-debug --target eve -j 4
+结果：Built target EVPhysics_cloth / EVDomains / eve。
+说明：使用已有预编译第三方库。完整默认配置的 third-party/cmake/Jolt.cmake
+在此环境缺失，因此该验证配置关闭 Jolt；层间布料求解不依赖 Jolt。
+
+2. 新增专项测试：8 PASS，227 assertions，0 warning / failure / skipped。
+运行过滤器：--testcase=PhysicsLayeredCloth.*（必须带 .*，否则正则全匹配会选择零用例）。
+覆盖：脚本绑定、面分离/质量中心、固定点/双向过滤、关闭碰撞/零 dt、非法输入、
+三层 240 步双实例回放与有限值、内部面接触/摩擦、重合/全固定接触。
+
+本环境的 unit_test_physics 聚合目标链接失败：cannot find -lEVDemo。
+没有把它报告为全物理测试通过。为运行本次用例，使用 compile_commands.json
+中的相同编译选项，编译未改写的 test/physics_layered_cloth.cpp、
+test/physics_cloth.cpp、test/main.cpp；将 physics_cloth.nut 作为原样字符串 fixture，
+链接此次构建的真实 EVDomains / EVWorld / EVBackends / EVPlatform / EVFoundation
+与 zeroerr。没有替换求解器或使用碰撞 mock。链接时不包含不被这些专项测试使用的
+-lEVDemo 和其它物理测试对象，得到临时 focused runner。
+
+3. 既有布料 C++ 回归：8 PASS，1 WARNING，0 FAILED。
+过滤：--testcase=PhysicsCloth.* --testcase-exclude=PhysicsCloth.scriptBindings
+警告：physics_cloth.cpp 的 xpbdComplianceProducesTimeStepAwareMaterialResponse：
+compliant.getParticleY(10) < rigid.getParticleY(10) - 0.05f
+观察值 -1.01337 < -1.1744 不成立。此任务未修改单层材料求解路径，未将此项算作通过。
+最初尝试原 basic() 脚本失败于当前精简构建不提供 eve.Rope；新增 layered() 独立脚本用例
+已通过。未宣称原 basic() 在该裁剪配置通过。
+
+4. 示例冒烟：PASS
+xvfb-run -a -s '-screen 0 1280x800x24' \
+  env MIN_RUN_SECONDS=2 RUN_SECONDS=10 bash scripts/smoke_examples.sh layered-cloth
+输出：PASS layered-cloth (alive through the 10s window)
+Summary: 1 passed, 0 failed。
+最初未启动 Xvfb 的运行因 No available video device 失败；以上为补齐显示后的结果。
+
+5. 视觉验证：PASS（仅限可见性与早期下垂，不是无穿透或性能证明）
+运行 eve run --mcp-port=7537，通过 newline JSON-RPC 调用 eve_screenshot。
+初次 no-presented-frame 后等待真实帧重试，保存 docs/images/examples/layered-cloth.png。
+1100x720；三层不同颜色布料和固定端横杆可见。截图未经编辑，不读取 Xvfb framebuffer。
+初次纯背景截图已替换：示例加入 Renderable3D 参考横杆，建立正常场景相机/材质状态。
+另外使用真实 Graphics 和当前 LayeredCloth3D 渲染 5 顶点、4 三角形非网格模型，
+保存并检查 640x420 的引擎截图，确认任意拓扑绘制路径不再依赖 cols*rows。
+
+6. 源码门禁：PASS
+PYTHONPATH=/tmp/cloth-tools PATH=/tmp/cloth-ninja/bin:/tmp/cloth-tools/bin:$PATH \
+  make check CI_BASE=HEAD
+输出：Ran 313 tests ... OK；ok: source-quality gate passed (base=HEAD)。
+包括分层、绑定、目录/测试清单、nodiscard、架构约束、ruff 和脚本测试。
+最初两项 CMake fixture 测试因没有 Ninja 失败，安装到 /tmp 后完整门禁通过。
+后续绘制索引修正另通过 changed-line clang-format，并重建 eve；末次提交前仍应由 CI
+在正常完整配置复跑物理测试。未做全平台或性能基准验证。
+
+架构：修改位于既有 physics_cloth 内；无新模块依赖、持久化格式、ECS System、
+跨域 Link 或 provider；新增 owner 独占层，脚本不持有层 observer；无故意规范例外。

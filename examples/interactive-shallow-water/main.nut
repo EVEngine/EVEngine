@@ -1,442 +1,264 @@
-// Interactive shallow-water lake with character-leg capsules.
-// Simulation: eve.Fluids().newShallowWater (height + momentum).
-// Presentation: gfx.newWater() transparent stylized shader (refraction /
-// depth fade / foam / Fresnel). Field RGBA texture is data-only (legend boards).
-
-persist fluids = null
-persist imageApi = null
-persist sim = null
-persist waterFx = null
-persist waterMat = null
-persist waterMesh = null
-persist waterObj = null
-persist fieldImage = null
-persist fieldTex = null
-persist fieldBoard = null
-persist fieldBoardVert = null
-persist showFieldBoards = false
-persist ground = null
-persist cam = null
-persist leftLeg = null
-persist rightLeg = null
-persist body = null
-persist paused = false
-persist prevKeys = {}
-persist prevMouse = false
-persist characterX = 4.0
-persist characterZ = 4.0
-persist characterVx = 0.0
-persist characterVz = 0.0
-persist elapsed = 0.0
-persist nextAmbientSplash = 1.2
-persist prevStrideS = 0.0
-persist hud = ""
-
-const RES = 96;
-const CELL = 0.1333333; // LAKE / RES ≈ 12.8
-const LAKE = 12.8;
-const HALF = 6.4; // LAKE * 0.5 — water mesh is centered; sim is [0, LAKE]
-const WATER_DEPTH = 0.55;
-const LEG_RADIUS = 0.12;
-const LEG_HALF = 0.42;
-const MOVE_SPEED = 1.55;
-const VEL_SCALE = 0.75;
-const DEPTH_CONTRAST = 0.06;
-// Display gain: high enough to read rings, low enough to avoid one giant mound.
-const VISUAL_GAIN = 7.0;
-const STRIDE_FREQ_WALK = 3.0; // was 8 — about 0.5 Hz gait
-const STRIDE_FREQ_IDLE = 1.4; // slow in-place march when standing
-const STRIDE_AMP_WALK = 0.22;
-const STRIDE_AMP_IDLE = 0.10;
-const FOOT_LIFT = 0.12;
-const COLLIDER_DISPLACE = 2.2;
-const COLLIDER_DRAG = 1.25;
-const FOOT_SPLASH_RADIUS = 0.55;
-const FOOT_SPLASH_STRENGTH = 0.22;
-
-const WATER_STYLE_JSON = @"
-{
-  ""schema"": ""eve.graphics.stylized-water"",
-  ""schemaVersion"": 1,
-  ""unknownFields"": ""reject"",
-  ""colors"": {
-    ""deep"": [0.02, 0.14, 0.22],
-    ""shallow"": [0.14, 0.55, 0.62],
-    ""foam"": [0.90, 0.96, 1.0],
-    ""reflectionTint"": [0.70, 0.85, 1.0]
-  },
-  ""waves"": {
-    ""speed"": 0.55,
-    ""amplitude"": 0.012,
-    ""scale"": 7.0,
-    ""sharpness"": 1.0,
-    ""rippleAmplitude"": 0.012,
-    ""rippleCount"": 1,
-    ""rippleInterval"": 3.5
-  },
-  ""depth"": { ""distance"": 1.8, ""opacity"": 0.62 },
-  ""foam"": { ""width"": 0.55, ""softness"": 0.12, ""strength"": 0.95 },
-  ""lighting"": {
-    ""fresnelPower"": 3.5,
-    ""reflectionIntensity"": 0.45,
-    ""sunIntensity"": 0.90,
-    ""screenSpaceReflection"": false,
-    ""screenSpaceReflectionStrength"": 0.85
-  },
-  ""refraction"": { ""strength"": 0.06 },
-  ""caustics"": { ""strength"": 0.05, ""scale"": 3.0 }
+// Kinematic bone colliders transfer measured velocity into the shallow-water solver.
+dofile("scene.nut");
+dofile("water_shader.nut");
+dofile("character.nut");
+persist footfallCount=0
+persist pondColliderDebug=false
+persist pondColliderBoxes=[]
+persist pondColliderSamples=[]
+persist pondProbe=null
+persist pondProbeObject=null
+persist pondProbePrevious=null
+persist pondPhysics={colliderCount=0,leftSpeed=0.0,rightSpeed=0.0,probeX=6.4,probeZ=6.4,flowX=0.0,flowZ=0.0,frontHeight=0.55,backHeight=0.55}
+persist pondPerf={frame=0,frameMs=0.0,updateMs=0.0,renderMs=0.0,
+    surfaceSyncMs=0.0,collisionMs=0.0,scanMs=0.0,characterMs=0.0,solverMs=0.0}
+persist pondScopeStack=[]
+function pondBegin(label) {pondScopeStack.append([label,timer.getTime()]);}
+function pondEnd() {
+    local item=pondScopeStack.pop();pondPerf[item[0]]+=(timer.getTime()-item[1])*1000.0;
 }
-";
+persist fluids=null
+persist imageApi=null
+persist sim=null
+persist waterFx=null
+persist waterMesh=null
+persist cam=null
+persist fieldImage=null
+persist fieldTex=null
+persist pondGradient=null
+persist pondBeds=[]
+persist shoreTelemetry={tick=0,depth=0.0,speed=0.0,outwardFlow=0.0,surface=0.55,wetFront=0.0}
+persist showFieldBoards=false
+persist paused=false
+persist autoWalk=true
+persist pondShorePath=false
+persist elapsed=0.0
+persist fixedTick=0
+persist accumulator=0.0
+persist characterX=6.4
+persist characterZ=6.4
+persist characterVx=0.0
+persist characterVz=0.0
+persist prevMouse=false
+persist pondView=1
+persist pondEye=[16.0,9.8,18.0]
+persist pondTarget=[6.4,0.25,6.4]
+persist pondTelemetry={tick=0,time=0.0,paused=false,autowalk=true,backend="",centerHeight=0.55,sampledDeviation=0.0,character={x=6.4,z=6.4}}
+const RES=128;
+const CELL=0.1;
+const LAKE=12.8;
+const WATER_DEPTH=0.55;
+const VISUAL_GAIN=1.8;
+const MOVE_SPEED=0.85;
+const FIXED_DT=0.016666667;
+local POND_STYLE=@"{""schema"": ""eve.graphics.stylized-water"", ""schemaVersion"": 1, ""unknownFields"": ""reject"", ""colors"": {""deep"": [0.012, 0.055, 0.07], ""shallow"": [0.09, 0.24, 0.19], ""foam"": [0.91, 0.95, 0.91], ""reflectionTint"": [0.95, 0.98, 1.0]}, ""waves"": {""speed"": 0.65, ""amplitude"": 0.0, ""scale"": 1.0, ""sharpness"": 1.0, ""rippleAmplitude"": 0.0, ""rippleCount"": 0, ""rippleInterval"": 3.5}, ""depth"": {""distance"": 1.0, ""opacity"": 0.38}, ""foam"": {""width"": 0.12, ""softness"": 0.05, ""strength"": 0.95}, ""lighting"": {""fresnelPower"": 5.0, ""reflectionIntensity"": 1.6, ""sunIntensity"": 0.8, ""screenSpaceReflection"": false, ""screenSpaceReflectionStrength"": 0.85}, ""refraction"": {""strength"": 0.014}, ""caustics"": {""strength"": 0.45, ""scale"": 3.2}}";
 
-function edgePressed(name) {
-    local down = keyboard.isDown(name);
-    local was = (name in prevKeys) ? prevKeys[name] : false;
-    prevKeys[name] <- down;
-    return down && !was;
-}
-
-function mouseClicked() {
-    local down = mouse.isDown(1);
-    local clicked = down && !prevMouse;
-    prevMouse = down;
-    return clicked;
-}
-
-function requireOk(result, label) {
-    if (result == null || !result.ok) {
-        local detail = "";
-        if (result != null && ("status" in result) && result.status != null && ("summary" in result.status))
-            detail = " (" + result.status.summary + ")";
-        throw label + " failed" + detail;
-    }
+function requireOk(result,label) {
+    if(!result.ok) throw label+": "+result.status.summary;
     return result;
 }
-
-function makeUvPlane(size) {
-    local half = size * 0.5;
-    local pos = [
-        -half, 0.0, -half,
-         half, 0.0, -half,
-         half, 0.0,  half,
-        -half, 0.0,  half
-    ];
-    local nrm = [
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0
-    ];
-    local uv = [
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0
-    ];
-    local idx = [0, 1, 2, 0, 2, 3];
-    return gfx.newMeshFromArrays(pos, nrm, uv, 4, idx, 6);
+function pondDistance(x,z) {
+    local dx=(x-6.4)/6.05,dz=(z-6.4)/5.55;
+    return (1.0-sqrt(dx*dx+dz*dz))*5.6+0.08*sin(x*1.4+z*0.7);
 }
-
-function syncFieldLegend() {
-    requireOk(sim.copyFieldToImage(fieldImage, VEL_SCALE, DEPTH_CONTRAST), "copyFieldToImage");
-    gfx.updateTextureFromImageData(fieldTex, fieldImage);
-    if (fieldBoard != null) {
-        fieldBoard.setTexture(fieldTex);
-        fieldBoard.setVisible(showFieldBoards);
-    }
-    if (fieldBoardVert != null) {
-        fieldBoardVert.setTexture(fieldTex);
-        fieldBoardVert.setVisible(showFieldBoards);
-    }
+function pondBed(x,z) {
+    local distance=pondDistance(x,z);
+    return WATER_DEPTH-sceneClamp(distance*0.18,-0.7,WATER_DEPTH)+0.008*sceneNoise(x,z);
 }
-
-function syncWaterMesh() {
-    // Write sim heights in world XZ into the Water mesh. waterFx.draw() uses identity
-    // model, so vertices must stay in world space (not createPlane's centered local frame).
-    local built = requireOk(sim.buildSurfaceMesh(VISUAL_GAIN), "buildSurfaceMesh");
-    local mesh = built.value;
-    waterMesh = waterFx.getMesh();
-    if (!gfx.updateMeshVertices(waterMesh, mesh.positions, mesh.normals, mesh.uvs,
-                                mesh.vertexCount, mesh.indices, mesh.indexCount)) {
-        throw "updateMeshVertices failed";
-    }
-    syncFieldLegend();
+function pondCamera() {
+    if(pondView==0) {pondEye=[16.0,9.8,18.0];pondTarget=[6.4,0.25,6.4];}
+    else if(pondView==1) {pondEye=[characterX+3.2,3.2,characterZ+4.4];pondTarget=[characterX,0.7,characterZ];}
+    else if(pondView==2) {pondEye=[6.4,17.0,9.0];pondTarget=[6.4,0.0,6.4];}
+    else {pondEye=[15.3,3.2,10.6];pondTarget=[10.9,0.65,6.8];}
+    cam.setEye(pondEye[0],pondEye[1],pondEye[2]);cam.setTarget(pondTarget[0],pondTarget[1],pondTarget[2]);
 }
-
-function resetLake() {
-    requireOk(sim.fillDepth(WATER_DEPTH), "fillDepth");
-    characterX = LAKE * 0.35;
-    characterZ = LAKE * 0.45;
-    characterVx = 0.0;
-    characterVz = 0.0;
-    requireOk(sim.addImpulse(LAKE * 0.65, LAKE * 0.55, 2.8, 0.32), "seedImpulse");
-    syncWaterMesh();
+function pondReset() {
+    requireOk(sim.fillSurface(WATER_DEPTH),"level lake over shore bed");elapsed=0.0;fixedTick=0;accumulator=0.0;
+    characterX=6.4;characterZ=6.4;pondShorePath=false;footfallCount=0;wader.previous.clear();pondProbe=null;pondProbePrevious=null;
+    requireOk(sim.clearColliders(),"reset colliders");
 }
-
-function updateLegs(dt) {
-    local surface = sim.surfaceHeightAt(characterX, characterZ);
-    local visualSurface = WATER_DEPTH + (surface - WATER_DEPTH) * VISUAL_GAIN;
-    local physHipY = surface + 0.15;
-    local visHipY = visualSurface + 0.15;
-
-    local speed = sqrt(characterVx * characterVx + characterVz * characterVz);
-    local walking = speed > 0.08;
-    local freq = walking ? STRIDE_FREQ_WALK : STRIDE_FREQ_IDLE;
-    local amp = walking ? STRIDE_AMP_WALK : STRIDE_AMP_IDLE;
-    local phase = elapsed * freq;
-    local s = sin(phase);
-    local c = cos(phase);
-    // Analytic foot velocity so drag / downward plant write momentum + height.
-    local stride = s * amp;
-    local strideVel = c * freq * amp;
-    local leftLift = (s > 0.0) ? s * FOOT_LIFT : 0.0;
-    local rightLift = (s < 0.0) ? (-s) * FOOT_LIFT : 0.0;
-    local leftVy = (s > 0.0) ? c * freq * FOOT_LIFT : 0.0;
-    local rightVy = (s < 0.0) ? (-c) * freq * FOOT_LIFT : 0.0;
-
-    local leftX = characterX - 0.16;
-    local rightX = characterX + 0.16;
-    local leftZ = characterZ + stride;
-    local rightZ = characterZ - stride;
-    local physLeftY = physHipY - LEG_HALF + leftLift;
-    local physRightY = physHipY - LEG_HALF + rightLift;
-    local visLeftY = visHipY - LEG_HALF + leftLift;
-    local visRightY = visHipY - LEG_HALF + rightLift;
-
-    local leftVx = characterVx;
-    local rightVx = characterVx;
-    local leftVz = characterVz + strideVel;
-    local rightVz = characterVz - strideVel;
-
-    requireOk(sim.setColliderCapsule(1, leftX, physLeftY, leftZ, LEG_HALF, LEG_RADIUS,
-                                     leftVx, leftVy, leftVz, COLLIDER_DISPLACE, COLLIDER_DRAG), "leftLeg");
-    requireOk(sim.setColliderCapsule(2, rightX, physRightY, rightZ, LEG_HALF, LEG_RADIUS,
-                                     rightVx, rightVy, rightVz, COLLIDER_DISPLACE, COLLIDER_DRAG), "rightLeg");
-
-    // Ring splash when a foot plants (stride phase crosses zero).
-    if (prevStrideS > 0.0 && s <= 0.0) {
-        requireOk(sim.addImpulse(leftX, leftZ, FOOT_SPLASH_RADIUS, FOOT_SPLASH_STRENGTH), "leftPlant");
+function pondShoreWalk() {
+    pondReset();characterX=10.6;characterZ=6.4;pondShorePath=true;autoWalk=true;paused=false;
+    wader.previous.clear();pondView=3;pondCamera();
+}
+function pondSplash(x,z) {
+    if(pondDistance(x,z)<0.2) return;
+    pondProbe={x=x,z=z,age=0.0,vx=0.0,vz=0.0,plunge=true};pondProbePrevious=null;
+}
+function pondStartProbe(vx,vz) {
+    pondReset();autoWalk=false;paused=true;wader.collisions=false;
+    pondProbe={x=6.4,z=6.4,age=0.0,vx=vx,vz=vz,plunge=false};pondProbePrevious=null;
+}
+function pondPick(mx,my) {
+    local fx=pondTarget[0]-pondEye[0],fy=pondTarget[1]-pondEye[1],fz=pondTarget[2]-pondEye[2];
+    local len=sqrt(fx*fx+fy*fy+fz*fz);fx/=len;fy/=len;fz/=len;
+    local rx=-fz,rz=fx;local rlen=sqrt(rx*rx+rz*rz);rx/=rlen;rz/=rlen;
+    local ux=-rz*fy,uy=rz*fx-rx*fz,uz=rx*fy;
+    local sx=(mx/gfx.getWidth().tofloat()*2.0-1.0)*gfx.getWidth().tofloat()/gfx.getHeight()*0.41421356;
+    local sy=(1.0-my/gfx.getHeight().tofloat()*2.0)*0.41421356;
+    local dx=fx+rx*sx+ux*sy,dy=fy+uy*sy,dz=fz+rz*sx+uz*sy;
+    if(dy>=-0.001) return null;
+    local travel=(WATER_DEPTH-pondEye[1])/dy;
+    return [pondEye[0]+dx*travel,pondEye[2]+dz*travel];
+}
+function pondSyncMesh() {
+    pondBegin("surfaceSyncMs");
+    requireOk(sim.syncSurfaceMesh(gfx,waterMesh,VISUAL_GAIN),"native surface presentation");
+    pondEnd();
+    requireOk(sim.copyFieldToImage(fieldImage,1.5,0.0),"physical depth and flow");
+    gfx.updateTextureFromImageData(fieldTex,fieldImage);
+}
+// Colliders are rebuilt as owned value samples each fixed tick before sim.step.
+// Static immersion does not emit a source every tick; motion supplies momentum.
+function pondCollider(label,shape,x,y,z,rx,ry,rz,vx,vy,vz) {
+    local length=sqrt(vx*vx+vy*vy+vz*vz);
+    if(length>4.0) {local scale=4.0/length;vx*=scale;vy*=scale;vz*=scale;}
+    local surface=sim.surfaceHeightAt(x,z),fraction=sceneClamp((surface-(y-ry))/(ry*2.0),0.0,1.0);
+    local entering=vy<0.0?-vy:0.0;
+    local horizontal=sqrt(vx*vx+vz*vz);
+    // Approximate the volume swept by the moving limb as well as downward entry.
+    local displacement=sceneClamp(entering*0.45+horizontal*0.10,0.0,2.0);
+    local drag=4.0*fraction;
+    if(shape=="capsule") requireOk(sim.setColliderCapsule(label,x,y,z,ry-rx,rx,vx,vy,vz,displacement,drag),"bone capsule");
+    else requireOk(sim.setColliderSphere(label,x,y,z,rx,vx,vy,vz,displacement,drag),"bone sphere");
+    pondColliderSamples.append([x,y,z,rx,ry,rz,vx,vy,vz]);
+}
+function pondUpdateProbe(dt) {
+    if(pondProbe==null) {if(pondProbeObject!=null) pondProbeObject.setVisible(false);return;}
+    local p=pondProbe;p.age+=dt;
+    if(p.plunge && p.age>0.65) {pondProbe=null;pondProbeObject.setVisible(false);return;}
+    p.x+=p.vx*dt;p.z+=p.vz*dt;
+    local y=WATER_DEPTH-0.10;
+    if(p.plunge) y=WATER_DEPTH+0.30-(p.age<0.32?p.age:0.64-p.age)*2.0;
+    local vy=0.0;if(pondProbePrevious!=null && dt>0.0) vy=(y-pondProbePrevious)/dt;
+    pondProbePrevious=y;
+    pondCollider(101,"sphere",p.x,y,p.z,0.19,0.19,0.19,p.vx,vy,p.vz);
+    pondProbeObject.setVisible(true);pondProbeObject.setPosition(p.x,y,p.z);
+    pondPhysics.probeX=p.x;pondPhysics.probeZ=p.z;
+}
+function pondDebugBoxes() {
+    if(!pondColliderDebug) {foreach(box in pondColliderBoxes) box.setVisible(false);return;}
+    local cube=null;if(pondColliderBoxes.len()<pondColliderSamples.len()*12) cube=gfx.newMeshCube(1.0);
+    while(pondColliderBoxes.len()<pondColliderSamples.len()*12) {
+        local box=sceneProp(cube,"",[1.0,0.3,0.04],0.0,0.0,0.0,0.01,0.01,0.01,cam);
+        box.setCastShadow(false);box.setReceiveLight(false);box.setVisible(false);pondColliderBoxes.append(box);
     }
-    if (prevStrideS < 0.0 && s >= 0.0) {
-        requireOk(sim.addImpulse(rightX, rightZ, FOOT_SPLASH_RADIUS, FOOT_SPLASH_STRENGTH), "rightPlant");
-    }
-    prevStrideS = s;
-
-    if (leftLeg != null) {
-        leftLeg.setPosition(leftX, visLeftY, leftZ);
-        leftLeg.setScale(LEG_RADIUS * 2.0, LEG_HALF * 2.0 + LEG_RADIUS * 2.0, LEG_RADIUS * 2.0);
-    }
-    if (rightLeg != null) {
-        rightLeg.setPosition(rightX, visRightY, rightZ);
-        rightLeg.setScale(LEG_RADIUS * 2.0, LEG_HALF * 2.0 + LEG_RADIUS * 2.0, LEG_RADIUS * 2.0);
-    }
-    if (body != null) {
-        body.setPosition(characterX, visHipY + 0.55, characterZ);
+    foreach(i,box in pondColliderBoxes) box.setVisible(false);
+    if(!pondColliderDebug) return;
+    foreach(i,c in pondColliderSamples) {
+        local edge=0;
+        for(local axis=0;axis<3;++axis) for(local a=-1;a<=1;a+=2) for(local b=-1;b<=1;b+=2) {
+            local u=(axis+1)%3,v=(axis+2)%3,pos=[c[0],c[1],c[2]],scale=[0.008,0.008,0.008];
+            pos[u]+=a*c[u+3];pos[v]+=b*c[v+3];scale[axis]=c[axis+3]*2.0;
+            local box=pondColliderBoxes[i*12+edge++];box.setPosition(pos[0],pos[1],pos[2]);box.setScale(scale[0],scale[1],scale[2]);box.setVisible(true);
+        }
     }
 }
-
-function screenToLake(mx, my) {
-    local nx = mx / gfx.getWidth().tofloat();
-    local ny = my / gfx.getHeight().tofloat();
-    local x = nx * LAKE;
-    local z = (1.0 - ny) * LAKE;
-    if (x < 0.2) x = 0.2;
-    if (z < 0.2) z = 0.2;
-    if (x > LAKE - 0.2) x = LAKE - 0.2;
-    if (z > LAKE - 0.2) z = LAKE - 0.2;
-    return [x, z];
+function pondSamplePhysics() {
+    pondPhysics.colliderCount=pondColliderSamples.len();
+    shoreTelemetry.tick=fixedTick;shoreTelemetry.depth=sim.depthAt(12.05,6.4);shoreTelemetry.surface=sim.surfaceHeightAt(12.05,6.4);
+    local ux=sim.velocityXAt(12.05,6.4),uz=sim.velocityZAt(12.05,6.4);shoreTelemetry.speed=sqrt(ux*ux+uz*uz);shoreTelemetry.outwardFlow=ux;
+    shoreTelemetry.wetFront=0.0;
+    for(local x=11.7;x<12.6;x+=0.05) if(sim.depthAt(x,6.4)>0.008) shoreTelemetry.wetFront=x;
+    if(pondProbe==null) {pondPhysics.flowX=0.0;pondPhysics.flowZ=0.0;pondPhysics.frontHeight=WATER_DEPTH;pondPhysics.backHeight=WATER_DEPTH;return;}
+    local p=pondProbe,speed=sqrt(p.vx*p.vx+p.vz*p.vz),dx=speed>0.001?p.vx/speed:1.0,dz=speed>0.001?p.vz/speed:0.0;
+    pondPhysics.frontHeight=sim.surfaceHeightAt(p.x+dx*0.35,p.z+dz*0.35);
+    pondPhysics.backHeight=sim.surfaceHeightAt(p.x-dx*0.35,p.z-dz*0.35);
+    pondPhysics.flowX=sim.velocityXAt(p.x,p.z);pondPhysics.flowZ=sim.velocityZAt(p.x,p.z);
 }
-
-eve_init = function() {
-    print("examples/interactive-shallow-water ready\n");
-    gfx.setBackgroundColor(0.42, 0.58, 0.72, 1.0);
-    // Depth buffer helps the water shader's opacity / shore foam path when available.
-    gfx.getRenderControl().enable("gbuffer");
-
-    if (fluids == null) fluids = eve.Fluids();
-    if (imageApi == null) imageApi = eve.Image();
-    if (sim == null) {
-        sim = fluids.newShallowWater(RES, RES, CELL, true);
-        if (sim == null) throw "newShallowWater failed";
+function pondAdvance(count) {
+    for(local i=0;i<count;++i) pondStep();pondSyncMesh();pondSamplePhysics();pondDebugBoxes();
+}
+eve_init=function() {
+    gfx.setBackgroundColor(0.12,0.24,0.39,1.0);local rc=gfx.getRenderControl();rc.disable("gbuffer");rc.enable("shadow");
+    profiler.setEnabled(true);
+    sceneLoadMaterials();cam=eve.Camera3D();cam.setFov(45.0);cam.setClipPlanes(0.1,450.0);
+    cam.setAmbient(0.16,0.19,0.22);cam.setActive(true);pondCamera();
+    gfx.setDirectionalLight(-0.60,0.90,-0.80,1.12,1.02,0.86);sceneSunLight();
+    sceneTerrain(cam,-5.0,19.0,-5.0,19.0,120,pondDistance,pondBed,WATER_DEPTH);
+    scenePebbleBed(cam,0.0,12.8,0.0,12.8,pondDistance,pondBed);
+    local rocks=[[1.0,4.4,0.7],[2.3,1.8,0.8],[6.2,0.65,0.7],[10.2,1.8,0.55],[12.0,5.3,0.8],[10.4,10.8,0.75],[3.0,11.1,0.65]];
+    foreach(i,r in rocks) {
+        local scale=r[2];local rock=sceneProp(sceneBoulder(i+2.0),"stone",[0.86,0.89,0.85],r[0],pondBed(r[0],r[1])+scale*0.4,r[1],scale,scale*0.67,scale*0.8,cam);
+        rock.setYaw(i*1.7);
     }
-
-    if (fieldImage == null) {
-        fieldImage = imageApi.newEmptyImageData(RES, RES, "RGBA8");
-        fieldTex = gfx.newTexture(fieldImage, false, false);
-        gfx.setTextureSampler(fieldTex, "nearest", "none", 1.0, 0.0);
+    for(local i=0;i<10;++i) {
+        local a=i*0.6283185,x=6.4+6.4*cos(a),z=6.4+5.8*sin(a);
+        sceneReeds(cam,x,pondBed(x,z),z,0.85,i.tofloat());
     }
-
-    if (waterFx == null) {
-        waterFx = gfx.newWater();
-        // Matching vertex count: (RES-1)+1 squared == RES*RES.
-        waterFx.createPlane(LAKE, LAKE, RES - 1, RES - 1);
-        requireOk(waterFx.applyConfigJson(WATER_STYLE_JSON), "water style");
-        // Keep procedural displacement tiny so sim mesh heights / normals read.
-        waterFx.setWaveAmplitude(0.008);
-        waterFx.setRippleAmplitude(0.0);
-        waterFx.setViewport(gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
-    }
-
-    if (cam == null) {
-        cam = eve.Camera3D();
-        // Lower side angle so heightfield ripples silhouette against the bed.
-        cam.setEye(LAKE * 0.55, 5.8, LAKE * 1.15);
-        cam.setTarget(LAKE * 0.5, 0.45, LAKE * 0.45);
-        cam.setUp(0.0, 1.0, 0.0);
-        cam.setFov(40.0);
-        cam.setAmbient(0.40, 0.46, 0.52);
-        cam.setActive(true);
-        gfx.setDirectionalLight(-0.35, -1.0, -0.25, 1.15, 1.1, 1.0);
-    }
-
-    if (ground == null) {
-        ground = eve.Renderable3D();
-        ground.setMesh(gfx.newMeshCube(1.0));
-        ground.setScale(LAKE + 2.0, 0.12, LAKE + 2.0);
-        ground.setPosition(LAKE * 0.5, -0.12, LAKE * 0.5);
-        // Bright sand so refraction / depth fade has something to show through.
-        ground.setTint(0.55, 0.48, 0.32, 1.0);
-        ground.setCastShadow(false);
-    }
-
-    // Water is drawn explicitly via waterFx.draw() after opaques so the stylized
-    // shader gets scene-color refraction + gbuffer depth (see Water::drawWithReflection).
-    if (waterObj == null) {
-        waterObj = eve.Renderable3D();
-        waterObj.setMesh(waterFx.getMesh());
-        waterObj.setVisible(false);
-        waterMesh = waterFx.getMesh();
-    }
-
-    // Optional data boards: R=depth crest heat, G/B=velocity (not the lake albedo).
-    if (fieldBoard == null) {
-        fieldBoard = eve.Renderable3D();
-        fieldBoard.setMesh(makeUvPlane(3.2));
-        fieldBoard.setTexture(fieldTex);
-        fieldBoard.setPosition(LAKE * 0.18, 4.0, LAKE * 0.18);
-        fieldBoard.setTint(1.0, 1.0, 1.0, 1.0);
-        fieldBoard.setMetallic(0.0);
-        fieldBoard.setRoughness(1.0);
-        fieldBoard.setCastShadow(false);
-        fieldBoard.setReceiveLight(false);
-    }
-    if (fieldBoardVert == null) {
-        fieldBoardVert = eve.Renderable3D();
-        fieldBoardVert.setMesh(makeUvPlane(3.2));
-        fieldBoardVert.setTexture(fieldTex);
-        fieldBoardVert.setPosition(LAKE * 0.82, 3.2, LAKE * 0.16);
-        fieldBoardVert.setRotation(0.0, 90.0, 0.0);
-        fieldBoardVert.setTint(1.0, 1.0, 1.0, 1.0);
-        fieldBoardVert.setMetallic(0.0);
-        fieldBoardVert.setRoughness(1.0);
-        fieldBoardVert.setCastShadow(false);
-        fieldBoardVert.setReceiveLight(false);
-    }
-
-    if (body == null) {
-        body = eve.Renderable3D();
-        body.setMesh(gfx.newMeshCube(1.0));
-        body.setScale(0.45, 0.7, 0.28);
-        body.setTint(0.85, 0.55, 0.35, 1.0);
-    }
-    if (leftLeg == null) {
-        leftLeg = eve.Renderable3D();
-        leftLeg.setMesh(gfx.newMeshCube(1.0));
-        leftLeg.setTint(0.35, 0.3, 0.28, 1.0);
-    }
-    if (rightLeg == null) {
-        rightLeg = eve.Renderable3D();
-        rightLeg.setMesh(gfx.newMeshCube(1.0));
-        rightLeg.setTint(0.35, 0.3, 0.28, 1.0);
-    }
-
-    resetLake();
-    updateLegs(0.0);
-    local backend = sim.usingGpu() ? "GPU" : (sim.usedBackendFallback() ? "CPU-fallback" : "CPU");
-    hud = "Shallow water (" + backend + ")  WASD  LMB splash  Space pause  R reset  F field boards";
-    print(hud + "\n");
-    print("presentation: transparent Water shader; field boards = R/G/B/A data\n");
+    sceneTrees(cam,[[-0.5,1.0,-0.8],[4.2,1.0,-1.9],[10.0,1.0,-0.7],[-1.8,1.1,5.5]]);
+    sceneSky(cam);
+    sceneEnvironment(cam,6.4,1.0,6.4);
+    fluids=eve.Fluids();imageApi=eve.Image();sim=fluids.newShallowWater(RES,RES,CELL,true);
+    if(sim==null) throw "Shallow-water solver unavailable";
+    for(local z=0;z<RES;++z) for(local x=0;x<RES;++x) pondBeds.append(pondBed((x+0.5)*CELL,(z+0.5)*CELL));
+    requireOk(sim.setBed(pondBeds),"shared visible and physical shore bed");
+    waterFx=gfx.newWater();waterFx.createPlane(LAKE,LAKE,RES-1,RES-1);
+    installWaterSurface(waterFx.getShader());requireOk(waterFx.applyConfigJson(POND_STYLE),"pond water style");waterMesh=waterFx.getMesh();
+    fieldImage=imageApi.newEmptyImageData(RES,RES,"RGBA8");
+    pondGradient=eve.WaterDepthGradient();
+    requireOk(pondGradient.addColorStop(0.0,0.0,0.0,0.0),"field allocation color");
+    requireOk(pondGradient.addAlphaStop(0.0,1.0),"field allocation alpha");
+    requireOk(waterFx.setDepthGradient(pondGradient,RES),"solver field texture allocation");
+    fieldTex=waterFx.getDepthGradientTexture();
+    gfx.setTextureSampler(fieldTex,"linear","linear",1.0,0.0);
+    pondProbeObject=sceneProp(gfx.newMeshSphere(16,10),"wood",[0.8,0.65,0.35],6.4,0.5,6.4,0.19,0.19,0.19,cam);
+    pondProbeObject.setVisible(false);pondCharacterInit();pondReset();pondCharacterPose(0.0);pondSyncMesh();
+    pondTelemetry.backend=sim.usingGpu()?"GPU":(sim.usedBackendFallback()?"CPU-fallback":"CPU");
+    print("interactive-shallow-water ready: "+pondTelemetry.backend+"; WASD move, LMB splash, P auto walk, V view, Space pause, R reset, F data\n");
 };
-
-eve_update = function(dt) {
-    if (dt <= 0.0) return;
-    if (dt > 0.05) dt = 0.05;
-    if (edgePressed("space") || edgePressed("Space")) paused = !paused;
-    if (edgePressed("r") || edgePressed("R")) resetLake();
-    if (edgePressed("f") || edgePressed("F")) {
-        showFieldBoards = !showFieldBoards;
-        if (fieldBoard != null) fieldBoard.setVisible(showFieldBoards);
-        if (fieldBoardVert != null) fieldBoardVert.setVisible(showFieldBoards);
-        print(showFieldBoards ? "field boards: on\n" : "field boards: off\n");
+function pondStep() {
+    characterVx=0.0;characterVz=0.0;
+    if(keyboard.isDown("a")) characterVx-=MOVE_SPEED;if(keyboard.isDown("d")) characterVx+=MOVE_SPEED;
+    if(keyboard.isDown("w")) characterVz-=MOVE_SPEED;if(keyboard.isDown("s")) characterVz+=MOVE_SPEED;
+    if(characterVx==0.0 && characterVz==0.0 && autoWalk) {
+        if(pondShorePath) {characterVx=0.08*cos(elapsed*0.4);characterVz=0.65*cos(elapsed*0.6);}
+        else {characterVx=0.42*cos(elapsed*0.22);characterVz=0.30*sin(elapsed*0.22);}
     }
-    if (edgePressed("g") || edgePressed("G")) {
-        local backend = sim.usingGpu() ? "GPU" : (sim.usedBackendFallback() ? "CPU-fallback" : "CPU");
-        print("shallow-water backend: " + backend + "\n");
+    local oldX=characterX,oldZ=characterZ,nextX=characterX+characterVx*FIXED_DT,nextZ=characterZ+characterVz*FIXED_DT;
+    if(pondDistance(nextX,nextZ)>1.0) {characterX=nextX;characterZ=nextZ;}
+    characterVx=(characterX-oldX)/FIXED_DT;characterVz=(characterZ-oldZ)/FIXED_DT;
+    pondColliderSamples.clear();requireOk(sim.clearColliders(),"tick collider set");
+    elapsed+=FIXED_DT;++fixedTick;pondBegin("characterMs");pondCharacterPose(FIXED_DT);pondEnd();
+    pondBegin("collisionMs");pondUpdateProbe(FIXED_DT);pondEnd();
+    pondBegin("solverMs");requireOk(sim.step(FIXED_DT),"shallow water step");pondEnd();waterFx.update(FIXED_DT);
+}
+eve_update=function(dt) {
+    local updateStart=timer.getTime();++pondPerf.frame;pondPerf.frameMs=dt*1000.0;
+    foreach(key in ["surfaceSyncMs","collisionMs","scanMs","characterMs","solverMs"]) pondPerf[key]=0.0;
+    if(key_just_pressed("space")) paused=!paused;if(key_just_pressed("r")) pondReset();
+    if(key_just_pressed("h")) pondShoreWalk();
+    if(key_just_pressed("p")) autoWalk=!autoWalk;if(key_just_pressed("f")) showFieldBoards=!showFieldBoards;
+    if(key_just_pressed("v")) {pondView=(pondView+1)%4;pondCamera();}
+    if(key_just_pressed("c")) {pondColliderDebug=!pondColliderDebug;pondDebugBoxes();}
+    if(key_just_pressed("b")) {pondView=pondView==3?1:3;pondCamera();}
+    if(key_just_pressed("g")) print("shallow-water backend: "+pondTelemetry.backend+"\n");
+    local down=mouse.isDown(1);
+    if(down && !prevMouse && !paused) {local hit=pondPick(mouse.getX(),mouse.getY());if(hit!=null) pondSplash(hit[0],hit[1]);}
+    prevMouse=down;
+    if(!paused) {
+        accumulator+=dt>0.1?0.1:dt;
+        local steps=0;while(accumulator>=FIXED_DT && steps<6) {pondStep();accumulator-=FIXED_DT;++steps;}
+        if(steps>0) pondSyncMesh();
+        pondSamplePhysics();
     }
-
-    characterVx = 0.0;
-    characterVz = 0.0;
-    if (!paused) {
-        local steered = false;
-        if (keyboard.isDown("a") || keyboard.isDown("A") || keyboard.isDown("Left")) {
-            characterVx -= MOVE_SPEED;
-            steered = true;
-        }
-        if (keyboard.isDown("d") || keyboard.isDown("D") || keyboard.isDown("Right")) {
-            characterVx += MOVE_SPEED;
-            steered = true;
-        }
-        if (keyboard.isDown("w") || keyboard.isDown("W") || keyboard.isDown("Up")) {
-            characterVz -= MOVE_SPEED;
-            steered = true;
-        }
-        if (keyboard.isDown("s") || keyboard.isDown("S") || keyboard.isDown("Down")) {
-            characterVz += MOVE_SPEED;
-            steered = true;
-        }
-        // Gentle auto patrol so idle viewing still shows a wake / ripples.
-        if (!steered) {
-            local patrol = sin(elapsed * 0.35);
-            characterVz = MOVE_SPEED * 0.55 * ((patrol >= 0.0) ? 1.0 : -1.0);
-            characterVx = MOVE_SPEED * 0.18 * sin(elapsed * 0.22);
-        }
-        characterX += characterVx * dt;
-        characterZ += characterVz * dt;
-        if (characterX < 0.6) characterX = 0.6;
-        if (characterZ < 0.6) characterZ = 0.6;
-        if (characterX > LAKE - 0.6) characterX = LAKE - 0.6;
-        if (characterZ > LAKE - 0.6) characterZ = LAKE - 0.6;
-
-        if (mouseClicked()) {
-            local p = screenToLake(mouse.getX(), mouse.getY());
-            requireOk(sim.addImpulse(p[0], p[1], 2.6, 0.38), "mouseImpulse");
-        }
-
-        // Occasional ambient ripple away from the character (not a continuous drizzle).
-        if (elapsed >= nextAmbientSplash) {
-            requireOk(sim.addImpulse(LAKE * 0.72, LAKE * 0.30, 1.6, 0.16), "pulseImpulse");
-            nextAmbientSplash = elapsed + 2.6;
-        }
-
-        elapsed += dt;
-        updateLegs(dt);
-        requireOk(sim.step(dt), "step");
-        syncWaterMesh();
-        waterFx.update(dt);
-        waterFx.bindParams();
-
-        // Follow the walker so the wake stays framed.
-        if (cam != null) {
-            cam.setTarget(characterX, 0.40, characterZ);
-            cam.setEye(characterX + 0.8, 5.6, characterZ + 6.8);
-        }
+    if(pondView==1) pondCamera();
+    if(pondColliderDebug) pondDebugBoxes();
+    pondTelemetry.backend=sim.usingGpu()?"GPU":(sim.usedBackendFallback()?"CPU-fallback":"CPU");
+    pondTelemetry.tick=fixedTick;pondTelemetry.time=elapsed;pondTelemetry.paused=paused;pondTelemetry.autowalk=autoWalk;
+    pondTelemetry.footfalls<-footfallCount;
+    pondBegin("scanMs");local sampled=0.0;
+    foreach(offset in [[0.0,0.0],[-0.35,0.0],[0.35,0.0],[0.0,-0.35],[0.0,0.35]]) {
+        local deviation=sim.surfaceHeightAt(characterX+offset[0],characterZ+offset[1])-WATER_DEPTH;
+        if(deviation<0.0) deviation=-deviation;if(deviation>sampled) sampled=deviation;
     }
+    pondTelemetry.sampledDeviation=sampled*VISUAL_GAIN;pondEnd();
+    pondTelemetry.centerHeight=sim.surfaceHeightAt(6.4,6.4);pondTelemetry.character.x=characterX;pondTelemetry.character.z=characterZ;
+    pondPerf.updateMs=(timer.getTime()-updateStart)*1000.0;
 };
-
-eve_render = function() {
-    gfx.clear();
-    gfx.render3D();
-    // Transparent water pass on top of ground/character (scene color + depth bound).
-    waterFx.setViewport(gfx.getWidth().tofloat(), gfx.getHeight().tofloat());
-    waterFx.bindParams();
-    waterFx.draw();
+eve_render=function() {
+    local renderStart=timer.getTime();
+    gfx.clear();gfx.render3D();waterFx.setViewport(gfx.getWidth().tofloat(),gfx.getHeight().tofloat());waterFx.draw();
+    if(showFieldBoards) gfx.drawTexturedRect(fieldTex,20.0,20.0,192.0,192.0,1.0,1.0,1.0,1.0);
+    pondPerf.renderMs=(timer.getTime()-renderStart)*1000.0;
 };

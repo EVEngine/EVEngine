@@ -1,4 +1,5 @@
 #include "graphics/webgpu/Graphics.h"
+#include "common/FrameCapture.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
@@ -94,6 +95,9 @@ int nextPOT(int v) {
 void fillMeshAttributes(WGPUVertexAttribute (&attrs)[6]);
 
 Graphics::Graphics() {
+    FrameCaptureCapabilities caps;
+    caps.backend = "webgpu";
+    frameCaptures().configure(std::move(caps));
     for (uint32_t i = 0; i < kFramesInFlight; ++i) {
         uboArenas.emplace_back();
         vertexArenas.emplace_back();
@@ -2570,6 +2574,16 @@ Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const aiMatrix4x4& world
             std::string name = am->mName.C_Str();
             if (name.empty()) name = "morph" + std::to_string(a);
             m->addMorphTargetAbsolute(name, absPos.data());
+            if (am->mNormals) {
+                std::vector<float> deltas(am->mNumVertices * 3u);
+                for (unsigned i = 0; i < am->mNumVertices; ++i) {
+                    deltas[i * 3]     = am->mNormals[i].x - nrm[i * 3];
+                    deltas[i * 3 + 1] = am->mNormals[i].y - nrm[i * 3 + 1];
+                    deltas[i * 3 + 2] = am->mNormals[i].z - nrm[i * 3 + 2];
+                }
+                auto normals = m->setMorphNormalDeltas(name, deltas);
+                if (!normals.ok()) throw Exception("Invalid imported morph normals: %s", name.c_str());
+            }
         }
     }
     return m;
@@ -3310,6 +3324,7 @@ void Graphics::end3DFrameToCanvas() {
     }
 
     wgpu::CommandEncoder          encoder = device.CreateCommandEncoder();
+    recordDirectionalShadowPasses(encoder);
     WGPURenderPassColorAttachment color{};
     color.view              = canvas->colorView.Get();
     color.depthSlice        = WGPU_DEPTH_SLICE_UNDEFINED;
@@ -3547,6 +3562,7 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 }
 
 void Graphics::beginShadowPass(int cascadeIndex) {
+    createShadowResources();
     shadowPassCascade = cascadeIndex;
     shadowPassDraws.clear();
 }
@@ -3831,10 +3847,14 @@ void Graphics::setMsaaSamples(int samples) {
 
 void Graphics::createShadowResources() {
     if (!device) return;
-    if (shadowDepthArray) return;
-    shadowMapSize = ShadowConfig::kMapSize;
+    const int wantSize = ShadowSchemeSettings::current().resolvedAtlasMapSize();
+    if (shadowDepthArray) {
+        if (shadowMapSize == wantSize) return;
+        destroyShadowResources();
+    }
+    shadowMapSize = wantSize;
 
-    // Depth array: 3 cascade layers, renderable + sampleable.
+    // Depth array: CSM + local layers, renderable + sampleable.
     auto*                 gpu = new GpuTexture();
     WGPUTextureDescriptor td{};
     td.label         = sv("eve_shadow_depth");
@@ -3871,7 +3891,10 @@ void Graphics::createShadowResources() {
     shadowDepthArray = gpu;
 }
 
-void Graphics::destroyShadowResources() { shadowDepthArray = nullptr; }
+void Graphics::destroyShadowResources() {
+    shadowDepthArray = nullptr;
+    shadowMapSize    = 0;
+}
 
 void Graphics::createGbufferResources(int width, int height) {
     if (!device) return;
@@ -4221,10 +4244,55 @@ void Graphics::flushMesh3D(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
     mesh3dDraws.clear();
 }
 
+void Graphics::recordDirectionalShadowPasses(wgpu::CommandEncoder encoder) {
+    // 1. Shadow passes (CSM cascade layers).
+    if (shadowDepthArray) {
+        // Every cascade is sampled by receivers, including cascades with no
+        // caster draw this frame. Clear all layers while shadows are active so
+        // an empty cascade deterministically means fully lit (depth 1) instead
+        // of retaining undefined or previous-frame depth.
+        if (mesh3dShadows.active) {
+            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
+                WGPUTextureViewDescriptor lvd{};
+                lvd.format          = WGPUTextureFormat_Depth32Float;
+                lvd.dimension       = WGPUTextureViewDimension_2D;
+                lvd.baseMipLevel    = 0;
+                lvd.mipLevelCount   = 1;
+                lvd.baseArrayLayer  = static_cast<uint32_t>(c);
+                lvd.arrayLayerCount = 1;
+                wgpu::TextureView layerView =
+                    shadowDepthArray->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&lvd));
+                WGPURenderPassDepthStencilAttachment ds{};
+                ds.view              = layerView.Get();
+                ds.depthClearValue   = 1.f;
+                ds.depthLoadOp       = WGPULoadOp_Clear;
+                ds.depthStoreOp      = WGPUStoreOp_Store;
+                ds.stencilClearValue = 0;
+                ds.stencilLoadOp     = WGPULoadOp_Undefined;
+                ds.stencilStoreOp    = WGPUStoreOp_Undefined;
+                WGPURenderPassDescriptor rp{};
+                rp.depthStencilAttachment = &ds;
+                wgpu::RenderPassEncoder pass =
+                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
+                flushShadowPass(pass, c);
+                pass.End();
+            }
+        }
+    }
+}
+
 void Graphics::flushShadowPass(wgpu::RenderPassEncoder pass, int cascade) {
     auto& uboArena = currentUboArena();
     if (cascade < 0 || cascade >= ShadowConfig::kTotalLayers) return;
     if (!mesh3dShadowPipeline) createShadowPipelines();
+    // Adaptive CSM: render into a top-left viewport matching the cascade's
+    // allocated map size; shaders remap UVs via cascadeUvScale.
+    float viewport = float(shadowMapSize > 0 ? shadowMapSize : ShadowConfig::kMapSize);
+    if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+        viewport = float(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+    }
+    pass.SetViewport(0.f, 0.f, viewport, viewport, 0.f, 1.f);
+    pass.SetScissorRect(0, 0, uint32_t(viewport), uint32_t(viewport));
     ensureUboArena(uboArena, uboArena.used + shadowCascadeDraws[cascade].size() * 256);
     for (auto& d : shadowCascadeDraws[cascade]) {
         auto* gpuMesh = static_cast<GpuMesh*>(d.mesh->gpuHandle);
@@ -4637,40 +4705,7 @@ void Graphics::present() {
     // pass establishes the required WebGPU storage-to-indirect dependency.
     recordGpuDrivenCompute(encoder);
 
-    // 1. Shadow passes (CSM cascade layers).
-    if (shadowDepthArray) {
-        // Every cascade is sampled by receivers, including cascades with no
-        // caster draw this frame. Clear all layers while shadows are active so
-        // an empty cascade deterministically means fully lit (depth 1) instead
-        // of retaining undefined or previous-frame depth.
-        if (mesh3dShadows.active) {
-            for (int c = 0; c < ShadowConfig::kCascades; ++c) {
-                WGPUTextureViewDescriptor lvd{};
-                lvd.format          = WGPUTextureFormat_Depth32Float;
-                lvd.dimension       = WGPUTextureViewDimension_2D;
-                lvd.baseMipLevel    = 0;
-                lvd.mipLevelCount   = 1;
-                lvd.baseArrayLayer  = static_cast<uint32_t>(c);
-                lvd.arrayLayerCount = 1;
-                wgpu::TextureView layerView =
-                    shadowDepthArray->texture.CreateView(reinterpret_cast<const wgpu::TextureViewDescriptor*>(&lvd));
-                WGPURenderPassDepthStencilAttachment ds{};
-                ds.view              = layerView.Get();
-                ds.depthClearValue   = 1.f;
-                ds.depthLoadOp       = WGPULoadOp_Clear;
-                ds.depthStoreOp      = WGPUStoreOp_Store;
-                ds.stencilClearValue = 0;
-                ds.stencilLoadOp     = WGPULoadOp_Undefined;
-                ds.stencilStoreOp    = WGPUStoreOp_Undefined;
-                WGPURenderPassDescriptor rp{};
-                rp.depthStencilAttachment = &ds;
-                wgpu::RenderPassEncoder pass =
-                    encoder.BeginRenderPass(reinterpret_cast<const wgpu::RenderPassDescriptor*>(&rp));
-                flushShadowPass(pass, c);
-                pass.End();
-            }
-        }
-    }
+    recordDirectionalShadowPasses(encoder);
 
     // Stage-3 visibility pass consumes the compute-compacted instance table
     // before the scene pass resolves material shading.

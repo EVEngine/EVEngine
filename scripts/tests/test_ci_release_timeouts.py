@@ -55,13 +55,16 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("windows-release", "Build win32 release"): 210,
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
-            ("macos", "Run macosx unit tests"): 60,
+            ("macos", "Run macosx unit tests"): 90,
             ("macos", "Build native Dawn Metal lane"): 75,
             ("windows", "Build native Dawn parity lane"): 150,
             ("linux-release", "Build linux release"): 105,
             ("android-release", "Build android release"): 120,
             ("profile-matrix", "Build independent profile smoke target"): 60,
             ("linux-asan", "Build linux RelWithDebInfo (ASan+UBSan)"): 180,
+            # Full example smoke under Lavapipe has reached the former 20-minute
+            # guard after a green 150/150 PASS summary; keep margin.
+            ("linux", "Smoke all examples (headless, >=2s alive each)"): 30,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
@@ -84,6 +87,15 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 self.assertGreaterEqual(int(match.group(1)), minimum)
 
     def test_android_jobs_start_sccache_before_the_build(self) -> None:
+        # Android uniquely starts sccache before the NDK build so a GHA/ghac
+        # storage outage is visible early. The helper retries transient errors
+        # and switches to a local disk cache when needed.
+        helper = ROOT / ".github" / "scripts" / "start-sccache.sh"
+        self.assertTrue(helper.is_file(), msg=f"missing {helper}")
+        helper_text = helper.read_text(encoding="utf-8")
+        self.assertIn("sccache --start-server", helper_text)
+        self.assertIn("SCCACHE_GHA_ENABLED=false", helper_text)
+
         for job in ("android", "android-release"):
             with self.subTest(job=job):
                 block = job_block(self.workflow, job)
@@ -91,7 +103,10 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
                 build_name = "android debug" if job == "android" else "android release"
                 build = block.index(f"      - name: Build {build_name}\n")
                 self.assertLess(start, build)
-                self.assertIn("        run: sccache --start-server\n", block[start:build])
+                self.assertIn(
+                    "        run: bash .github/scripts/start-sccache.sh\n",
+                    block[start:build],
+                )
 
     def test_benchmark_filter_is_part_of_the_ctest_command(self) -> None:
         for job in ("windows-release", "macos-release", "linux-release"):

@@ -48,7 +48,7 @@ eventAt 用于观察 definition_registered/reloaded 等变化，消费后由一�
 定义是否符合某个游戏 schema，需要业务域或 SchemaRegistry 显式验证；“JSON 可解析”
 不等于完整的兵种/技能数据已经合法。避免每帧加载 JSON 与 replace；加载阶段一次验证，
 模拟阶段使用受验证的定义。源码：[Definitions.cpp](../../../src/modules/definitions/Definitions.cpp)，
-脚本插入、替换、枚举与恢复证据：[definitions.cpp](../../../test/definitions.cpp)。
+脚本插入、替换、枚举与恢复证据：[definitions.cpp](../../../test/integration/script-api/script_api_graphics_dap_tests.cpp)。
 
 ## 补充绑定参考
 

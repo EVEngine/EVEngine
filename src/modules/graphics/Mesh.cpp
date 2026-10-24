@@ -214,6 +214,22 @@ int Mesh::getVertexCount() const {
     return gpuVertexCount;
 }
 
+Result<void> Mesh::setMorphNormalDeltas(std::string_view name, std::span<const float> deltas) {
+    const auto target =
+        std::find_if(morphs_.begin(), morphs_.end(), [&](const auto &morph) { return morph.name == name; });
+    if (target == morphs_.end())
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::NotFound, "Morph target was not found", std::string(name)));
+    if ((!deltas.empty() && deltas.size() != baseNrm_.size()) ||
+        std::any_of(deltas.begin(), deltas.end(), [](float x) { return !std::isfinite(x); }))
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                       "Expected finite normal deltas matching the morph base"));
+    std::vector<float> owned(deltas.begin(), deltas.end());
+    target->deltaNrm.swap(owned);
+    morphDirty_ = true;
+    return Result<void>::success();
+}
+
 int Mesh::getMorphCount() const { return int(morphs_.size()); }
 
 std::string Mesh::getMorphName(int index) const {
@@ -255,13 +271,31 @@ void Mesh::computeMorphedPositions(std::vector<float> &outPos, std::vector<float
     outPos = basePos_;
     outNrm = baseNrm_;
     if (outPos.empty()) return;
+    bool normalsChanged = false;
     for (const MorphTarget &t : morphs_) {
         auto it = morphWeights_.find(t.name);
         const float w = (it == morphWeights_.end()) ? 0.f : it->second;
         if (std::fabs(w) < 1e-8f) continue;
         for (size_t i = 0; i < outPos.size() && i < t.deltaPos.size(); ++i)
             outPos[i] += t.deltaPos[i] * w;
+        if (!t.deltaNrm.empty()) {
+            normalsChanged = true;
+            for (size_t i = 0; i < outNrm.size(); ++i) outNrm[i] += t.deltaNrm[i] * w;
+        }
     }
+    if (normalsChanged)
+        for (size_t i = 0; i + 2 < outNrm.size(); i += 3) {
+            const float length = std::hypot(outNrm[i], outNrm[i + 1], outNrm[i + 2]);
+            if (length > 1e-8f) {
+                outNrm[i] /= length;
+                outNrm[i + 1] /= length;
+                outNrm[i + 2] /= length;
+            } else {
+                outNrm[i]     = baseNrm_[i];
+                outNrm[i + 1] = baseNrm_[i + 1];
+                outNrm[i + 2] = baseNrm_[i + 2];
+            }
+        }
 }
 
 }  // namespace eve::graphics

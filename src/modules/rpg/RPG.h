@@ -57,9 +57,13 @@ class EVENGINE_API_PLATFORM RPG : public Module {
 public:
     Module_REG(RPG);
     /** @brief Rpg. */
-    RPG() = default;
-    /** @brief Rpg. */
-    ~RPG() override = default;
+    RPG();
+    /** @brief Drop retained gameplay controls before module teardown. */
+    ~RPG() override;
+    RPG(const RPG&)            = delete;
+    RPG& operator=(const RPG&) = delete;
+    RPG(RPG&&) noexcept;
+    RPG& operator=(RPG&&) noexcept;
 
     /**
      * @brief 创建一个空白 RPGActor。
@@ -352,6 +356,29 @@ public:
         SubjectRef instance, GameState *gameState, Tracker *tracker, inventory::Bag *bag);
 
     /**
+     * @brief Publish a battle onto the shared gameplay protocol (`eve_gameplay` domain `rpg.battle`).
+     * @param battle Borrowed battle that must outlive the published control.
+     * @param instanceId Canonical persistent id for the gameplay instance.
+     * @return Applied, or structured failure (invalid id / null battle / duplicate).
+     * @ownership RPG retains the BattleControl until unpublish/clear/module teardown.
+     */
+    [[nodiscard]] Result<void> publishBattleGameplay(Battle* battle, const std::string& instanceId);
+    /**
+     * @brief Publish shop/quest/loot product loops (`eve_gameplay` domain `rpg.product`).
+     * @ownership RPG retains the ProductControl until unpublish/clear/module teardown.
+     */
+    [[nodiscard]] Result<void> publishProductGameplay(const std::string& instanceId, GameState* gameState,
+                                                      Tracker* tracker, inventory::Bag* bag);
+    /** @brief Drop one published battle gameplay instance. */
+    [[nodiscard]] Result<void> unpublishBattleGameplay(const std::string& instanceId);
+    /** @brief Drop one published product gameplay instance. */
+    [[nodiscard]] Result<void> unpublishProductGameplay(const std::string& instanceId);
+    /** @brief Drop every RPG-owned gameplay control adapter. */
+    void clearGameplayControls();
+    /** @brief Number of published battle + product gameplay adapters retained by this module. */
+    [[nodiscard]] int gameplayControlCount() const;
+
+    /**
      * @brief 创建一份新的游戏状态（开关/变量）。
      * @return Owned nullable GameState; the caller must destroy it.
      * @ownership The caller owns the returned state and is responsible for its destruction.
@@ -476,6 +503,8 @@ private:
     std::vector<SkillCastEvent> casts_;
     std::vector<LevelUpEvent> levelUps_;
     std::vector<VitalsEvent> vitals_;
+    std::vector<std::unique_ptr<BattleControl>>  battleControls_;
+    std::vector<std::unique_ptr<ProductControl>> productControls_;
 };
 
 }  // namespace eve::rpg

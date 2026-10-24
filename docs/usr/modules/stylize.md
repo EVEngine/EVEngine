@@ -179,3 +179,15 @@ mat.setShadingModel("custom");
 - `supports(style, "gbuffer")` 可查询 definition 是否要求 depth 或 normal。
 - 内置风格 id：`cartoon` / `watercolor` / `ink` / `pixel` / `xray`。
 - Mesh 风格扩展：`rim` / `dissolve` / `hologram` / `snow` / `slash` / `ember` / `aura`。
+
+
+### Impasto 厚涂油彩
+
+
+`stylize.newMeshShader(gfx, "impasto")` 创建独立 mesh 风格；现有风格不变。
+参数、操作和限制见 [impasto-paint 示例](../../../examples/impasto-paint/README.md)。
+采用 RGBA 笔触贴图、三段光照、视差、笔触化解析 SDF 遮蔽及独立反光色阶。
+实体侵蚀、外扩倒壳和两条错位描线共同构成轮廓；`layer` 控制几何层。
+SDF 支持显式输入的地面、两个球和一个轴对齐盒体，不声称支持任意网格距离场。
+演示直接加载同源编译的 SPIR-V；既有运行时即可运行，无需先重编整个引擎。
+同场景可与普通材质混用，不依赖全屏后处理。Vulkan 与 WebGPU 使用对应 shader 实现。

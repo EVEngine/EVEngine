@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import re
+import json
 import shlex
 import shutil
 import subprocess
@@ -12,11 +13,29 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
 DISCOVERY = ROOT / "cmake" / "ZeroErrDiscoverTestsImpl.cmake"
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+from test_levels import CATALOGUE, CLASSIFICATIONS, classified_cases, emit_cmake, expanded_catalogue, source_inventory  # noqa: E402
 
 
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required for discovery tests")
 class ZeroerrDiscoveryTests(unittest.TestCase):
-    def discover(self, entries, listing_format, name_prefix=""):
+    def test_local_logic_and_composition_cases_have_exclusive_levels(self):
+        result, generated = self.discover(
+            [("math.local", "math.cpp", 10),
+             ("composition.local", "composition.cpp", 20)], "plain",
+            levels={"math.local": "local-logic"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in ("math.local", "bundle/math.cpp"):
+            labels = self.labels_of(generated, name)
+            self.assertIn("unit", labels)
+            self.assertNotIn("integration", labels)
+        for name in ("composition.local", "bundle/composition.cpp"):
+            labels = self.labels_of(generated, name)
+            self.assertIn("integration", labels)
+            self.assertNotIn("unit", labels)
+
+    def discover(self, entries, listing_format, name_prefix="", levels=None, omit_metadata=False, catalogue=None):
         with tempfile.TemporaryDirectory(prefix="eve discovery ") as directory:
             root = Path(directory)
             listing = root / "listing.py"
@@ -49,6 +68,13 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 )
                 runner.chmod(0o755)
             registry = root / "discovered.cmake"
+            sources = {}
+            for name, file, _ in entries:
+                policy = sources.setdefault(file, {"role": "tests", "default": "module-composition", "cases": {}})
+                category = (levels or {}).get(name, "module-composition")
+                policy["cases"].setdefault(category, []).append(name)
+            metadata = root / "levels.cmake"
+            emit_cmake(catalogue or {"sources": {} if omit_metadata else sources}, metadata)
             result = subprocess.run(
                 [
                     "cmake",
@@ -56,13 +82,16 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                     f"-DCTEST_FILE={registry.as_posix()}",
                     f"-DZEROERR_WORKING_DIRECTORY={root.as_posix()}",
                     f"-DZEROERR_NAME_PREFIX={name_prefix}",
+                    f"-DZEROERR_LEVEL_FILE={metadata.as_posix()}",
                     "-P",
                     str(DISCOVERY),
                 ],
                 capture_output=True,
                 text=True,
                 check=False,
-                timeout=30,
+                # The full repository catalogue takes over 30s on native ARM64
+                # Windows; keep small fixtures fast while allowing its CMake scan.
+                timeout=120 if catalogue is not None else 30,
             )
             generated = registry.read_text(encoding="utf-8") if registry.exists() else None
             return result, generated
@@ -96,16 +125,75 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 self.assertEqual(generated.count("add_test("), 5)
                 for name, _, _ in entries:
                     self.assertEqual(generated.count(f'add_test("{name}"'), 1)
-                    self.assertIn(f'"--testcase=^{name}$"', generated)
+                    escaped = re.escape(name).replace("\\", "\\\\")
+                    self.assertIn(f'"--testcase=^{escaped}$"', generated)
                 self.assertIn("bundle", self.labels_of(generated, "bundle/fluid.cpp"))
 
     def test_composition_prefix_preserves_filters_and_bundle_labels(self):
         result, generated = self.discover([("fixture.lifecycle", "fixture.cpp", 7)], "plain", "authoring-contract/")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('add_test("authoring-contract/fixture.lifecycle"', generated)
-        self.assertIn('"--testcase=^fixture.lifecycle$"', generated)
+        self.assertIn(r'"--testcase=^fixture\\.lifecycle$"', generated)
         self.assertIn("bundle", self.labels_of(generated, "authoring-contract/bundle/fixture.cpp"))
         self.assertNotIn('add_test("fixture.lifecycle"', generated)
+
+    def test_mixed_bundle_cannot_enter_either_level_or_no_render_lane(self):
+        result, generated = self.discover(
+            [("rules.local", "mixed.cpp", 1), ("rules.draw", "mixed.cpp", 9)],
+            "plain", levels={"rules.local": "local-logic", "rules.draw": "render-window"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertIn("unit", self.labels_of(generated, "rules.local"))
+        self.assertIn("no-render", self.labels_of(generated, "rules.local"))
+        self.assertIn("requires:graphics", self.labels_of(generated, "rules.draw"))
+        unit_properties = next(line for line in generated.splitlines()
+                               if line.startswith('set_tests_properties("rules.local" PROPERTIES LABELS'))
+        integration_properties = next(line for line in generated.splitlines()
+                                      if line.startswith('set_tests_properties("rules.draw" PROPERTIES LABELS'))
+        self.assertIn("EVENGINE_TEST_NO_RENDER=1", unit_properties)
+        self.assertNotIn("EVENGINE_TEST_NO_RENDER", integration_properties)
+        bundle = self.labels_of(generated, "bundle/mixed.cpp")
+        self.assertIn("mixed", bundle)
+        self.assertIn("requires:graphics", bundle)
+        self.assertTrue(bundle.isdisjoint({"unit", "integration", "no-render"}))
+
+    def test_unknown_discovered_case_fails_instead_of_defaulting_to_integration(self):
+        result, generated = self.discover([("new.case", "new.cpp", 1)], "plain", omit_metadata=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unclassified C++ test", result.stderr)
+        self.assertIsNone(generated)
+
+    def test_literal_case_and_file_filters_cannot_cross_test_levels(self):
+        result, generated = self.discover(
+            [("rules.local+", "data.cpp", 1), ("rulesXlocal+", "metadata.cpp", 9)],
+            "plain", levels={"rules.local+": "local-logic"})
+        self.assertEqual(result.returncode, 0, result.stderr)
+        pattern = re.search(r'"--testcase=([^"\n]+)"', generated)[1].replace("\\\\", "\\")
+        self.assertIsNotNone(re.fullmatch(pattern, "rules.local+"))
+        self.assertIsNone(re.fullmatch(pattern, "rulesXlocal+"))
+        file_pattern = re.search(r'"--file=([^"\n]+)"', generated)[1].replace("\\\\", "\\")
+        for filename in ("data.cpp", "/test/data.cpp", r"C:\test\data.cpp"):
+            self.assertIsNotNone(re.fullmatch(file_pattern, filename))
+        self.assertIsNone(re.fullmatch(file_pattern, "metadata.cpp"))
+
+    def test_complete_catalogue_and_generator_policies_are_accepted_by_runtime_discovery(self):
+        catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+        catalogue = expanded_catalogue(catalogue, source_inventory(CATALOGUE.parent))
+        entries, expected = [], {}
+        for source, policy in catalogue["sources"].items():
+            for name, category in classified_cases(policy).items():
+                entries.append((name, Path(source).name, 1))
+                expected[name] = CLASSIFICATIONS[category][0]
+            for prefix in policy.get("generated", []):
+                name = prefix + "catalogueProbe"
+                entries.append((name, Path(source).name, 1))
+                expected[name] = CLASSIFICATIONS[policy["default"]][0]
+        result, generated = self.discover(entries, "plain", catalogue=catalogue)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        case_lines = re.findall(r'set_tests_properties\("([^"\n]+)" PROPERTIES LABELS "([^"\n]+)"', generated)
+        found = {name: set(labels.split(";")) for name, labels in case_lines if not name.startswith("bundle/")}
+        self.assertEqual(set(found), set(expected))
+        for name, level in expected.items():
+            self.assertEqual(found[name] & {"unit", "integration"}, {level}, name)
 
     def test_classic_assets_report_skips_and_full_fps_sweep_is_labeled(self):
         entries = [("ClassicScenes.perf.maxFps", "ClassicScenes.cpp", 20),

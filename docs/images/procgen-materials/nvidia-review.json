@@ -1,0 +1,56 @@
+{
+  "device": "NVIDIA GeForce RTX 3090",
+  "backend": "Vulkan",
+  "driver_manifest": "/usr/share/vulkan/icd.d/nvidia_icd.json",
+  "software_rasterizer": false,
+  "generator_source": "current workspace EverydayMaterials + EverydayPatterns + shared PbrMaterial pipeline",
+  "seed": 42,
+  "map_size": [
+    1024,
+    1024
+  ],
+  "runtime_binary": "/home/sunxiaofan/.codex/worktrees/1782/EVEngine/build/linux-debug/src/engine/eve",
+  "capture": "engine MCP eve_screenshot",
+  "display": "GPU linear-to-sRGB conversion of lookdev render canvas",
+  "glass": "solid-sphere-specific two-interface refraction and known pedestal intersection, not general mesh volume rendering",
+  "layout_only": [
+    "crop",
+    "resize",
+    "labels"
+  ],
+  "reference_sha256": "2b12fac94cedec58d5eed5ca112ebf1edd5e9e4c80209c1267fff7366b936d3f",
+  "render_sha256": "c23d334ebba753cb9ceaebdd94b2513e486f7616946f9814f2b6e90db18b34d2",
+  "driver": "595.99.02",
+  "cpu_tests": {
+    "cases": 7,
+    "assertions": 57258,
+    "passed": true,
+    "asan_ubsan": "passed"
+  },
+  "quality_acceptance": "Reference appearance not yet matched",
+  "comparison_changes": [
+    "material microstructure",
+    "1024 map resolution",
+    "PBR pedestal path",
+    "studio environment",
+    "sphere-only optical preview"
+  ],
+  "generator_sources": {
+    "src/modules/procgen/texture/EverydayMaterials.cpp": "f5f5fa5d2851027e79b19772e83e49159d8deaf733e6c9bc3c40842198b14882",
+    "src/modules/procgen/texture/EverydayPatterns.cpp": "1f4f1dfc101a497ed9a264a485f293f997716628e302e3c4c75a68f9bab77f11",
+    "src/modules/procgen/texture/PbrMaterial.cpp": "735b64ae486c17bc457738c6f3d7d517e1bd321c5a3d8ef01cb4d332086e99d8"
+  },
+  "asset_checks": {
+    "maps": 78,
+    "size": [
+      1024,
+      1024
+    ],
+    "shader_spirv_matches_running_scene": true
+  },
+  "source_gate": {
+    "incremental": "make check CI_BASE=HEAD: passed including new files through isolated temporary index",
+    "python_tests": 179,
+    "default_origin_dev": "failed: 71 historical architecture findings"
+  }
+}
