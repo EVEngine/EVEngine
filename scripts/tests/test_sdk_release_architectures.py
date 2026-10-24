@@ -26,7 +26,7 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
         with zipfile.ZipFile(path, "w") as archive:
             root = f"eve-sdk/{target}/share/eve"
             archive.writestr(f"{root}/VERSION", version)
-            archive.writestr(f"{root}/TARGET_PLATFORM", "macosx" if target.startswith("macosx-") else target)
+            archive.writestr(f"{root}/TARGET_PLATFORM", target.removesuffix("-arm64").removesuffix("-x86_64"))
             if target.startswith("macosx-"):
                 archive.writestr(f"{root}/TARGET_ARCHITECTURE", architecture or target.removeprefix("macosx-"))
         return path
@@ -45,6 +45,16 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
         self.write_archive("macosx")
         with self.assertRaisesRegex(ValueError, "archive set mismatch"):
             release.verify(self.root, "v1.2.3")
+
+    def test_requires_windows_and_linux_arm64_releases(self):
+        self.complete_release()
+        for target in ("win32-arm64", "linux-arm64"):
+            with self.subTest(target=target):
+                archive = self.root / f"eve-sdk-{target}-v1.2.3.zip"
+                archive.unlink()
+                with self.assertRaisesRegex(ValueError, target):
+                    release.verify(self.root, "v1.2.3")
+                self.write_archive(target)
 
     def test_rejects_wrong_architecture_and_version(self):
         self.complete_release()

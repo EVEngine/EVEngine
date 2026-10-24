@@ -4310,3 +4310,359 @@ TEST_CASE("animation.HairDynamicBones.setupChainsAndHeadCollider") {
 }
 }  // namespace test_hair_dynamic_bones_unit
 #endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_control_rig)
+#include <cmath>
+#include <limits>
+#include "PrivateTestScope.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/ControlRig.h"
+#include "common/Value.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+namespace test_animation_control_rig {
+using namespace eve::animation;
+namespace {
+RigDefinition fkRig() {
+    RigDefinition d;
+    RigControl    c;
+    c.id                   = "rootControl";
+    c.initial.px           = 2;
+    c.keys                 = {{0, c.initial}, {2, c.initial}};
+    c.keys[1].transform.px = 4;
+    d.controls.push_back(c);
+    RigNode n;
+    n.id      = "rootFK";
+    n.control = c.id;
+    n.bone    = "root";
+    d.nodes.push_back(n);
+    return d;
+}
+}  // namespace
+TEST_CASE("animation.controlRig.fkTimelineBakeAndOwnedSkeleton") {
+    std::unique_ptr<ControlRig> rig;
+    {
+        AnimSkeleton skeleton;
+        skeleton.addBone("root");
+        auto compiled = ControlRig::compile(fkRig(), skeleton);
+        REQUIRE(compiled.ok());
+        rig = std::move(compiled).takeValue();
+    }
+    AnimPose input(1), output;
+    REQUIRE(rig->evaluate(1, input, output).ok());
+    CHECK(std::abs(output.local(0).px - 3) < 1e-5f);
+    auto baked = rig->bake(30, input);
+    REQUIRE(baked.ok());
+    AnimPose sampled;
+    baked.value()->sample(1, &sampled);
+    CHECK(std::abs(sampled.local(0).px - output.local(0).px) < 1e-5f);
+    auto matched = rig->matchFK(output);
+    REQUIRE(matched.ok());
+    CHECK(std::abs(matched.value()[0].px - 3) < 1e-5f);
+    auto encoded = encodeControlRig(fkRig());
+    REQUIRE(encoded.ok());
+    auto decoded = decodeControlRig(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK(decoded.value().controls[0].keys.size() == 2);
+    encoded.value().set("unknown", true);
+    CHECK(!decodeControlRig(encoded.value()).ok());
+}
+TEST_CASE("animation.controlRig.rejectsCyclesAndPreservesOutputOnFailure") {
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    auto d               = fkRig();
+    d.controls[0].parent = "rootControl";
+    CHECK(!ControlRig::compile(d, skeleton).ok());
+    d                = fkRig();
+    d.nodes[0].after = {"rootFK"};
+    CHECK(!ControlRig::compile(d, skeleton).ok());
+    d               = fkRig();
+    d.nodes[0].bone = "missing";
+    CHECK(!ControlRig::compile(d, skeleton).ok());
+    d                          = fkRig();
+    d.controls[0].keys[1].time = 0;
+    CHECK(!validateRigDefinition(d).ok());
+    d                        = fkRig();
+    d.controls[0].initial.sz = 1.0000012f;
+    CHECK(validateRigDefinition(d).ok());
+    d.controls[0].initial.sz = 1.01f;
+    CHECK(!validateRigDefinition(d).ok());
+    auto compiled = ControlRig::compile(fkRig(), skeleton);
+    REQUIRE(compiled.ok());
+    AnimPose input(1), output(1);
+    output.local(0).px = 99;
+    CHECK(!compiled.value()->evaluate(std::numeric_limits<double>::quiet_NaN(), input, output).ok());
+    CHECK(output.local(0).px == 99);
+    input.local(0).sx = 0;
+    CHECK(!compiled.value()->evaluate(0, input, output).ok());
+    CHECK(output.local(0).px == 99);
+}
+TEST_CASE("animation.controlRig.ikAndReparent") {
+    AnimSkeleton skeleton;
+    const int    root = skeleton.addBone("root");
+    const int    mid = skeleton.addBone("mid", root), tip = skeleton.addBone("tip", mid);
+    skeleton.setBindPosition(mid, 0, 1, 0);
+    skeleton.setBindPosition(tip, 0, 1, 0);
+    RigDefinition d;
+    RigControl    c;
+    c.id         = "hand";
+    c.initial.px = 1;
+    c.initial.py = 1;
+    d.controls.push_back(c);
+    RigNode n;
+    n.id        = "ik";
+    n.control   = "hand";
+    n.bone      = "root";
+    n.middle    = "mid";
+    n.tip       = "tip";
+    n.operation = RigOperation::TwoBoneIK;
+    d.nodes.push_back(n);
+    auto compiled = ControlRig::compile(d, skeleton);
+    REQUIRE(compiled.ok());
+    AnimPose input, output;
+    skeleton.applyBindPose(&input);
+    REQUIRE(compiled.value()->evaluate(0, input, output).ok());
+    CHECK(std::abs(output.world(tip).px - 1) < 1e-4f);
+    CHECK(std::abs(output.world(tip).py - 1) < 1e-4f);
+    CHECK(!compiled.value()->matchFK(output).ok());
+    RigControl parent;
+    parent.id         = "space";
+    parent.initial.px = 5;
+    d.controls.push_back(parent);
+    REQUIRE(reparentRigControl(d, "hand", "space").ok());
+    CHECK(std::abs(d.controls[0].initial.px + 4) < 1e-5f);
+    CHECK(!reparentRigControl(d, "space", "hand").ok());
+    CHECK(d.controls[1].parent.empty());
+    auto moved = ControlRig::compile(d, skeleton);
+    REQUIRE(moved.ok());
+    REQUIRE(moved.value()->evaluate(0, input, output).ok());
+    CHECK(std::abs(output.world(tip).px - 1) < 1e-4f);
+}
+
+TEST_CASE("animation.controlRig.aimComposesOverInputAndFailsAtomically") {
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("unaffected");
+    auto d = fkRig();
+    d.controls[0].keys.clear();
+    d.controls[0].initial.px = 1;
+    d.nodes[0].operation     = RigOperation::Aim;
+    auto compiled            = ControlRig::compile(d, skeleton);
+    REQUIRE(compiled.ok());
+    AnimPose input(2), output;
+    input.local(1).py = 7;
+    REQUIRE(compiled.value()->evaluate(0, input, output).ok());
+    CHECK(std::abs(output.local(0).qy - std::sqrt(0.5f)) < 1e-4f);
+    CHECK(output.local(1).py == 7);
+    std::vector<TransformTRS> overrides(1);
+    CHECK(!compiled.value()->evaluate(0, input, output, overrides).ok());
+    CHECK(output.local(1).py == 7);
+    CHECK(std::abs(output.local(0).qy - std::sqrt(0.5f)) < 1e-4f);
+}
+
+TEST_CASE("animation.controlRig.quaternionShortestPathAndBakeEndpoints") {
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    auto d                             = fkRig();
+    d.controls[0].keys[1].transform.qw = -1;
+    auto compiled                      = ControlRig::compile(d, skeleton);
+    REQUIRE(compiled.ok());
+    auto sampled = compiled.value()->sampleControls(1);
+    REQUIRE(sampled.ok());
+    CHECK(std::abs(std::abs(sampled.value()[0].qw) - 1) < 1e-5f);
+    AnimPose input(1), direct, bakedPose;
+    auto     clip = compiled.value()->bake(29.5, input);
+    REQUIRE(clip.ok());
+    for (double t : {0.0, 1.0, 2.0}) {
+        REQUIRE(compiled.value()->evaluate(t, input, direct).ok());
+        clip.value()->sample(static_cast<float>(t), &bakedPose);
+        CHECK(std::abs(direct.local(0).px - bakedPose.local(0).px) < 1e-4f);
+    }
+}
+}  // namespace test_animation_control_rig
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_control_rig_limits)
+#include <cmath>
+#include <limits>
+#include "PrivateTestScope.h"
+#include "animation/AnimClip.h"
+#include "animation/AnimPose.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/ControlRig.h"
+#include "common/Value.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+namespace test_animation_control_rig_limits {
+using namespace eve::animation;
+
+TEST_CASE("animation.controlRig.limits.axesExtensionAndInvalidConfiguration") {
+    RigControlLimits l;
+    l.reference.py        = 2;
+    l.translation[0].mode = RigAxisMode::Locked;
+    l.translation[1]      = {RigAxisMode::Limited, -0.5f, 0.5f};
+    l.rotation[0].mode = l.rotation[1].mode = RigAxisMode::Locked;
+    l.rotation[2]                           = {RigAxisMode::Limited, -30, 45};
+    l.scale                                 = {RigAxisMode::Limited, 0.8f, 1.2f};
+    TransformTRS t;
+    t.px = 9;
+    t.py = 7;
+    t.qz = 0.70710678f;
+    t.qw = 0.70710678f;
+    t.sx = t.sy = t.sz = 3;
+    auto p             = constrainRigControl(l, t);
+    REQUIRE(p.ok());
+    CHECK(p.value().px == 0);
+    CHECK(p.value().py == 2.5f);
+    CHECK(std::abs(p.value().qz - std::sin(3.14159265f / 8)) < 1e-5f);
+    CHECK(std::abs(p.value().sx - 1.2f) < 1e-5f);
+    l.extension = true;
+    CHECK(!constrainRigControl(l, t).ok());
+    l.translation   = {};
+    l.minimumLength = 0.5f;
+    l.maximumLength = 1.5f;
+    p               = constrainRigControl(l, t);
+    REQUIRE(p.ok());
+    CHECK(p.value().px == 0);
+    CHECK(p.value().py == 3);
+    t.py = -8;
+    p    = constrainRigControl(l, t);
+    REQUIRE(p.ok());
+    CHECK(p.value().py == 1);
+    l.reference.py = 0;
+    CHECK(!constrainRigControl(l, t).ok());
+    l.extension   = false;
+    l.rotation[1] = {RigAxisMode::Limited, -100, 100};
+    CHECK(!constrainRigControl(l, t).ok());
+    l.rotation[1] = {};
+    t.px          = std::numeric_limits<float>::quiet_NaN();
+    CHECK(!constrainRigControl(l, t).ok());
+}
+TEST_CASE("animation.controlRig.limits.referenceRotationAndInterpolation") {
+    RigControlLimits limits;
+    limits.reference.qz = limits.reference.qw = std::sqrt(0.5f);
+    limits.rotation[0]                        = {RigAxisMode::Limited, -30, 30};
+    limits.rotation[1].mode = limits.rotation[2].mode = RigAxisMode::Locked;
+    TransformTRS t;
+    t.qx = t.qy = t.qz = t.qw = 0.5f;
+    auto projected            = constrainRigControl(limits, t);
+    REQUIRE(projected.ok());
+    CHECK(std::abs(projected.value().qx - std::sin(3.14159265f / 12) * std::sqrt(0.5f)) < 1e-5f);
+    auto again = constrainRigControl(limits, projected.value());
+    REQUIRE(again.ok());
+    CHECK(again.value().qx == projected.value().qx);
+    RigDefinition d;
+    RigControl    c;
+    c.id                   = "root";
+    c.limits.rotation[2]   = {RigAxisMode::Limited, -170, 170};
+    c.keys                 = {{0, {}}, {2, {}}};
+    c.keys[0].transform.qz = std::sin(160 * 3.14159265f / 360);
+    c.keys[1].transform.qz = -c.keys[0].transform.qz;
+    c.keys[0].transform.qw = c.keys[1].transform.qw = std::cos(160 * 3.14159265f / 360);
+    d.controls.push_back(c);
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    auto rig = ControlRig::compile(d, skeleton);
+    REQUIRE(rig.ok());
+    auto middle = rig.value()->sampleControls(1);
+    REQUIRE(middle.ok());
+    const auto &q = middle.value()[0];
+    CHECK(std::abs(2 * std::atan2(q.qz, q.qw) * 180 / 3.14159265f) <= 170.001f);
+}
+TEST_CASE("animation.controlRig.limits.codecMigrationSamplingAndBake") {
+    RigDefinition d;
+    RigControl    c;
+    c.id                    = "root";
+    c.limits.translation[0] = {RigAxisMode::Limited, -1, 1};
+    c.keys                  = {{0, {}}, {2, {}}};
+    c.keys[1].transform.px  = 9;
+    d.controls.push_back(c);
+    RigNode n;
+    n.id      = "fk";
+    n.control = n.bone = "root";
+    d.nodes.push_back(n);
+    auto encoded = encodeControlRig(d);
+    REQUIRE(encoded.ok());
+    auto decoded = decodeControlRig(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK(decoded.value().controls[0].keys[1].transform.px == 1);
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    auto rig = ControlRig::compile(decoded.value(), skeleton);
+    REQUIRE(rig.ok());
+    AnimPose input(1), out;
+    REQUIRE(rig.value()->evaluate(1, input, out).ok());
+    CHECK(std::abs(out.local(0).px - 0.5f) < 1e-5f);
+    auto clip = rig.value()->bake(30, input);
+    REQUIRE(clip.ok());
+    AnimPose baked;
+    clip.value()->sample(1, &baked);
+    CHECK(std::abs(baked.local(0).px - out.local(0).px) < 1e-5f);
+    auto legacy = eve::Value::fromJson(
+        R"({"schema":"eve.control-rig","version":1,"duration":2,"controls":[{"id":"old","parent":"","initial":[0,2,0,0,0,0,1,1,1,1],"shapeSize":0.1,"keys":[]}],"nodes":[]})");
+    REQUIRE(legacy.ok());
+    auto migrated = decodeControlRig(legacy.value());
+    REQUIRE(migrated.ok());
+    CHECK(migrated.value().controls[0].limits.reference.py == 2);
+    CHECK(migrated.value().controls[0].limits.translation[0].mode == RigAxisMode::Free);
+    encoded.value().find("controls")->at(0).find("limits")->set("unknown", true);
+    CHECK(!decodeControlRig(encoded.value()).ok());
+}
+TEST_CASE("animation.controlRig.limits.ikCannotBypassLockedJoints") {
+    AnimSkeleton skeleton;
+    skeleton.addBone("root");
+    skeleton.addBone("mid", 0);
+    skeleton.addBone("tip", 1);
+    skeleton.setBindPosition(1, 1, 0, 0);
+    skeleton.setBindPosition(2, 1, 0, 0);
+    RigDefinition d;
+    for (int i = 0; i < 3; ++i) {
+        RigControl c;
+        c.id               = skeleton.getBoneName(i);
+        c.parent           = i ? skeleton.getBoneName(i - 1) : "";
+        c.initial          = skeleton.bindLocal(i);
+        c.limits.reference = c.initial;
+        for (auto &axis : c.limits.translation) axis.mode = RigAxisMode::Locked;
+        for (auto &axis : c.limits.rotation) axis.mode = RigAxisMode::Locked;
+        d.controls.push_back(c);
+        RigNode n;
+        n.id      = "fk" + std::to_string(i);
+        n.control = n.bone = c.id;
+        if (i) n.after = {"fk" + std::to_string(i - 1)};
+        d.nodes.push_back(n);
+    }
+    RigControl target;
+    target.id         = "target";
+    target.initial.py = 1.5f;
+    target.initial.px = 0.5f;
+    d.controls.push_back(target);
+    RigNode ik;
+    ik.id        = "ik";
+    ik.control   = "target";
+    ik.bone      = "root";
+    ik.middle    = "mid";
+    ik.tip       = "tip";
+    ik.operation = RigOperation::TwoBoneIK;
+    ik.after     = {"fk2"};
+    d.nodes.push_back(ik);
+    auto rig = ControlRig::compile(d, skeleton);
+    REQUIRE(rig.ok());
+    AnimPose input, out;
+    skeleton.applyBindPose(&input);
+    REQUIRE(rig.value()->evaluate(0, input, out).ok());
+    CHECK(std::abs(out.world(2).px - 2) < 1e-5f);
+    CHECK(std::abs(out.world(2).py) < 1e-5f);
+    RigNode duplicate = d.nodes[0];
+    duplicate.id      = "duplicate";
+    duplicate.control = "target";
+    d.nodes.push_back(duplicate);
+    CHECK(!ControlRig::compile(d, skeleton).ok());
+    d.nodes.pop_back();
+    d.controls[1].parent = "";
+    CHECK(!ControlRig::compile(d, skeleton).ok());
+}
+}  // namespace test_animation_control_rig_limits
+#endif

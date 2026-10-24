@@ -8,7 +8,7 @@ import zipfile
 
 import utf8_stdio
 
-SDK_TARGETS = ("win32", "linux", "android", "ios", "macosx-arm64", "macosx-x86_64")
+SDK_TARGETS = ("win32", "win32-arm64", "linux", "linux-arm64", "android", "ios", "macosx-arm64", "macosx-x86_64")
 
 
 def verify(directory: Path, tag: str) -> None:
@@ -21,7 +21,7 @@ def verify(directory: Path, tag: str) -> None:
             root = f"eve-sdk/{target}/share/eve"
             version = archive.read(f"{root}/VERSION").decode("utf-8").strip()
             platform = archive.read(f"{root}/TARGET_PLATFORM").decode("utf-8").strip()
-            expected_platform = "macosx" if target.startswith("macosx-") else target
+            expected_platform = target.removesuffix("-arm64").removesuffix("-x86_64")
             if version != tag.removeprefix("v") or platform != expected_platform:
                 raise ValueError(f"SDK version/platform mismatch in {target}: {version}/{platform}")
             if expected_platform == "macosx":

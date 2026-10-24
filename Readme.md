@@ -1,5 +1,16 @@
 # EVEngine
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
 
 Evolutionary Vision Engine
@@ -51,6 +62,10 @@ Debug SDK 对应 `sdk/macosx-arm64-debug` 和 `sdk/macosx-x86_64-debug`。
 | --- | --- | --- |
 | Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
 | Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Linux ARM64 的 OBJECT 单体测试程序还需要 `lld`（`sudo apt-get install lld`），
+以便为大型测试链接生成远距离分支跳板；C/C++ 仍由 GCC/G++ 编译，
+引擎程序和 SHARED/按域测试的链接方式不变。
 
 Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
 Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。

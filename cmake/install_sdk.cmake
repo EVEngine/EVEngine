@@ -93,6 +93,12 @@ endif()
 # so a packaged game is self-contained and can be produced from ANY host
 # (Linux/macOS cross-packaging included) without a Visual Studio install.
 if(BUILD_PLATFORM STREQUAL "win32")
+    # Install scripts run later; preserve the configured target architecture.
+    if(EVENGINE_NATIVE_ARM64)
+        install(CODE "set(EVE_RUNTIME_ARCH arm64)")
+    else()
+        install(CODE "set(EVE_RUNTIME_ARCH x64)")
+    endif()
     install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
 endif()
 

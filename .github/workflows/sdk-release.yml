@@ -446,9 +446,17 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  arm64:
+    name: Native ARM64 SDKs
+    uses: ./.github/workflows/arm64-sdk.yml
+    with:
+      tag: ${{ inputs.tag }}
+      ref: ${{ inputs.ref }}
+    secrets: inherit
+
   publish:
     name: Attach SDKs
-    needs: [windows, android, macos, ios, linux]
+    needs: [windows, android, macos, ios, linux, arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -528,6 +536,58 @@ jobs:
   # Cross-packaging (linux -> win32, macosx -> win32/linux) is exercised by
   # setting EVE_CROSS_TARGETS; combos that cannot cross-compile are simply not
   # listed (see run-*-cross jobs for the combos we promise).
+  consumer-arm64:
+    name: Native ARM64 released SDK consumer (${{ matrix.platform }})
+    needs: publish
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win32
+            runner: windows-11-arm
+          - platform: linux
+            runner: ubuntu-24.04-arm
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ inputs.tag }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ALSOFT_DRIVERS: "null"
+    steps:
+      - name: Checkout consumer checks
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+      - name: Install Linux runtime dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -o Acquire::Retries=2
+          sudo apt-get install -y --no-install-recommends cmake build-essential \
+            mesa-vulkan-drivers libvulkan1 xvfb xauth libasound2t64 libx11-6 \
+            libxi6 libxcursor1 libxrandr2 libxinerama1 libxss1 libgl1
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+      - name: Download released SDK and checksums
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p artifacts
+          gh release download "$TAG" --repo "$REPO" --dir artifacts \
+            --pattern "eve-sdk-$PLATFORM-arm64-$TAG.zip" --pattern SHA256SUMS
+          (cd artifacts && grep "eve-sdk-$PLATFORM-arm64-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
+      - name: Build consumer plugin and run packaged game from released SDK
+        timeout-minutes: 15
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          command=(bash .github/scripts/test-arm64-sdk.sh "artifacts/eve-sdk-$PLATFORM-arm64-$TAG.zip" "$PLATFORM" "${TAG#v}")
+          if [ "$PLATFORM" = linux ]; then xvfb-run -a "${command[@]}"; else "${command[@]}"; fi
+
   consumer-win32:
     name: Consumer win32 (get android + build + run)
     needs: publish
