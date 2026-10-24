@@ -43,6 +43,17 @@ ROOT = Path(__file__).resolve().parent.parent
 # primitives on changed lines. Migrated once from the retired JSON catalogue;
 # edit this list (not a parallel JSON) when marking a new hot path.
 HOT_PATH_GLOBS: tuple[str, ...] = (
+    "src/modules/physics/bake/DeformTrack.cpp",
+    "src/modules/physics/bake/DeformPlayback.cpp",
+    "src/modules/physics/bake/graphics/DeformMeshPresentation.cpp",
+    "src/modules/physics/bake/graphics_script/PhysicsBakeGraphics.cpp",
+    "src/modules/physics/bake/collapse/CollapseAnimation.cpp",
+    "src/modules/physics/bake/collapse/CollapsePlayback.cpp",
+    "src/modules/physics/bake/RigidPoseTrack.cpp",
+    "src/modules/physics/bake/BakePlaybackClock.cpp",
+    "src/modules/physics/bake/BakeRigidTransform.cpp",
+    "src/modules/physics/bake/RigidPlayback.cpp",
+    "src/modules/physics/bake/graphics/RigidBakePresentation.cpp",
     "src/modules/weapon/CombatCarrier.cpp",
     "src/modules/physics/WorldSphereSweep.cpp",
     "src/modules/physics/World3DQueries.cpp",
@@ -70,6 +81,10 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/keyboard/sdl/EventSink.cpp",
     "src/modules/model3d/ModelRenderer.cpp",
     "src/modules/particles/ParticleSystem.cpp",
+    "src/modules/particles/ParticleAppearance.cpp",
+    "src/modules/physics/bake/ParticleTrack.cpp",
+    "src/modules/physics/bake/BakedParticlePlayback.cpp",
+    "src/modules/physics/bake/graphics/ParticleBakePresentation.cpp",
     "src/modules/physics/World3DContacts.cpp",
     "src/modules/physics/box3d/Box3DWorld.cpp",
     "src/modules/physics/box3d/Box3DWorldContacts.cpp",

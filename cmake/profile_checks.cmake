@@ -14,6 +14,15 @@ include("${CMAKE_SOURCE_DIR}/cmake/TestLevels.cmake")
 eve_configure_test_levels(EVE_TEST_LEVEL_FILE)
 include("${EVE_TEST_LEVEL_FILE}")
 
+if(EVENGINE_PROFILE MATCHES "^physics-bake(-script)?-only$")
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/physics_bake_check" "${CMAKE_BINARY_DIR}/profile/physics_bake")
+endif()
+
+if(EVENGINE_PROFILE STREQUAL "physics-bake-render")
+    enable_testing()
+    add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/physics_bake_render_check" "${CMAKE_BINARY_DIR}/profile/bake_render")
+endif()
+
 # The real crowd solver and bindings link without graphics, window or RTS.
 if(TARGET EVCrowd)
     add_subdirectory("${CMAKE_SOURCE_DIR}/cmake/crowd_check" "${CMAKE_BINARY_DIR}/profile/crowd")
@@ -119,6 +128,15 @@ set(_eve_profile_smoke_dependencies
     eve_public_header_checks
     eve_capability_present_check
     eve_capability_absent_check)
+if(TARGET eve_bake_playback_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_bake_playback_check eve_bake_measure eve_bake_collapse_inspect)
+endif()
+if(TARGET eve_bake_script_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_bake_script_check)
+endif()
+if(TARGET eve_bake_render_check)
+    list(APPEND _eve_profile_smoke_dependencies eve_bake_render_check)
+endif()
 if(TARGET eve_crowd_check)
     list(APPEND _eve_profile_smoke_dependencies eve_crowd_check)
 endif()

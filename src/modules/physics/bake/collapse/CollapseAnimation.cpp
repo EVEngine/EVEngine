@@ -1,4 +1,4 @@
-#include "physics/destruction/CollapseAnimation.h"
+#include "physics/bake/collapse/CollapseAnimation.h"
 #include <algorithm>
 #include <bit>
 #include <cmath>
@@ -6,40 +6,24 @@
 #include <filesystem>
 #include <fstream>
 #include <limits>
-#include "physics/destruction/FractureGeometry.h"
+#include <sstream>
+#if defined(__linux__)
+#include <fcntl.h>
+#include <unistd.h>
+#include <cerrno>
+#endif
+#include "physics/bake/BakeRecipe.h"
+#include "physics/bake/BakedAssetFile.h"
+#include "physics/bake/collapse/CollapseAnimationInternal.h"
+#include "physics/bake/collapse/FractureGeometry.h"
 
 namespace eve::physics {
-std::string CollapseAnimation::contentKey(std::string_view source) {
-    std::uint64_t a = 14695981039346656037ull, b = 0x9e3779b97f4a7c15ull;
-    for (unsigned char c : source) {
-        a = (a ^ c) * 1099511628211ull;
-        b = (b ^ c) * 0x100000001b3ull;
-        b ^= b >> 29;
-    }
-    constexpr char digits[] = "0123456789abcdef";
-    std::string    key(32, '0');
-    for (unsigned i = 0; i < 16; ++i) {
-        key[i]      = digits[(a >> ((15 - i) * 4)) & 15];
-        key[16 + i] = digits[(b >> ((15 - i) * 4)) & 15];
-    }
-    return key;
-}
+using namespace collapse_detail;
+std::string CollapseAnimation::contentKey(std::string_view source) { return bakedAssetContentKey(source); }
 
 namespace {
-constexpr std::uint32_t MaxSamples = 2000000;
-Diagnostic              invalid(const char* message) {
-    return Diagnostic::error(DiagnosticCode::InvalidArgument, message, "collapseAnimation");
-}
-bool valid(const BonePresentation& b) {
-    const float values[] = {b.halfExtentX, b.halfExtentY, b.halfExtentZ, b.worldX, b.worldY,
-                            b.worldZ,      b.rotX,        b.rotY,        b.rotZ,   b.rotW};
-    for (float v : values)
-        if (!std::isfinite(v)) return false;
-    const float norm = b.rotX * b.rotX + b.rotY * b.rotY + b.rotZ * b.rotZ + b.rotW * b.rotW;
-    return b.halfExtentX > 0 && b.halfExtentY > 0 && b.halfExtentZ > 0 && std::isfinite(norm) && norm > 0.5f &&
-           norm < 1.5f && static_cast<unsigned>(b.state) <= 2 && b.clusterId >= 0 && b.fractureLevel >= 0;
-}
-void write32(std::ostream& out, std::uint32_t v) {
+constexpr std::streamoff MaxFileBytes = static_cast<std::streamoff>(MaxSamples) * 56 + 16000056 + MaxRecipeBytes + 4;
+void                     write32(std::ostream& out, std::uint32_t v) {
     for (unsigned i = 0; i < 4; ++i) out.put(static_cast<char>((v >> (i * 8)) & 255));
 }
 std::uint32_t read32(std::istream& in) {
@@ -57,39 +41,41 @@ std::uint32_t read32(std::istream& in) {
 void  writeFloat(std::ostream& out, float v) { write32(out, std::bit_cast<std::uint32_t>(v)); }
 float readFloat(std::istream& in) { return std::bit_cast<float>(read32(in)); }
 }  // namespace
+Result<void> CollapseAnimation::beginBake(const CollapseBakeRecipe& recipe) {
+    if (!frames_.empty())
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
+                                                       "provenance must be set before capturing any frame",
+                                                       "collapseAnimation"));
+    if (recipe.coordinates() != BakeCoordinates::MetresRightHandedYUp)
+        return Result<void>::failure(invalid("collapse requires metre-space provenance"));
+    auto encoded = recipe.encode();
+    if (!encoded) return Result<void>::failure(encoded.status());
+    recipe_ = std::make_shared<const CollapseBakeRecipe>(recipe);
+    return Result<void>::success();
+}
+std::shared_ptr<const CollapseBakeRecipe> CollapseAnimation::recipe() const noexcept { return recipe_; }
+Result<CollapseAnimation> CollapseAnimation::loadForRecipe(std::string_view path, const CollapseBakeRecipe& expected) {
+    auto expectedBytes = expected.encode();
+    if (!expectedBytes) return Result<CollapseAnimation>::failure(expectedBytes.status());
+    auto loaded = load(path);
+    if (!loaded) return loaded;
+    if (!loaded.value().recipe_)
+        return Result<CollapseAnimation>::failure(Diagnostic::error(
+            DiagnosticCode::PreconditionViolation,
+            "legacy animation has no bake provenance; explicit migration or rebake required", "collapseAnimation"));
+    auto actual = loaded.value().recipe_->encode();
+    if (!actual) return Result<CollapseAnimation>::failure(actual.status());
+    if (actual.value() != expectedBytes.value())
+        return Result<CollapseAnimation>::failure(Diagnostic::error(
+            DiagnosticCode::Conflict, "bake provenance does not match the expected recipe", "collapseAnimation"));
+    return loaded;
+}
 std::shared_ptr<const FractureGeometry> CollapseAnimation::fragmentGeometry() const noexcept { return geometry_; }
 float CollapseAnimation::duration() const noexcept { return frames_.empty() ? 0 : frames_.back().seconds; }
 int   CollapseAnimation::boneCount() const noexcept {
     return frames_.empty() ? 0 : static_cast<int>(frames_.front().bones.size());
 }
-int          CollapseAnimation::frameCount() const noexcept { return static_cast<int>(frames_.size()); }
-Result<void> CollapseAnimation::capture(const GeometryCollectionInstance& source, float seconds) {
-    const auto sourceGeometry = source.fragmentGeometry();
-    if (!frames_.empty() && sourceGeometry != geometry_)
-        return Result<void>::failure(invalid("recording source geometry changed"));
-    const int count = source.boneCount();
-    if (!std::isfinite(seconds) || (frames_.empty() ? seconds != 0 : seconds <= duration()) || count <= 0 ||
-        (!frames_.empty() && count != boneCount()) || (frames_.size() + 1) * static_cast<size_t>(count) > MaxSamples)
-        return Result<void>::failure(invalid("invalid capture time, topology or sample budget"));
-    Frame frame{seconds, {}};
-    frame.bones.reserve(static_cast<size_t>(count));
-    for (int i = 0; i < count; ++i) {
-        auto pose = source.bonePresentation(i);
-        if (!pose) return Result<void>::failure(pose.status());
-        if (!valid(pose.value())) return Result<void>::failure(invalid("invalid fragment pose"));
-        if (!frames_.empty()) {
-            const auto& a = frames_.front().bones[static_cast<size_t>(i)];
-            const auto& b = pose.value();
-            if (a.halfExtentX != b.halfExtentX || a.halfExtentY != b.halfExtentY || a.halfExtentZ != b.halfExtentZ ||
-                a.clusterId != b.clusterId || a.fractureLevel != b.fractureLevel)
-                return Result<void>::failure(invalid("fragment topology changed while recording"));
-        }
-        frame.bones.push_back(pose.value());
-    }
-    if (frames_.empty()) geometry_ = sourceGeometry;
-    frames_.push_back(std::move(frame));
-    return Result<void>::success();
-}
+int                      CollapseAnimation::frameCount() const noexcept { return static_cast<int>(frames_.size()); }
 Result<BonePresentation> CollapseAnimation::sample(float seconds, int bone) const {
     if (!std::isfinite(seconds) || bone < 0 || bone >= boneCount())
         return Result<BonePresentation>::failure(invalid("invalid sample time or fragment"));
@@ -120,15 +106,24 @@ Result<BonePresentation> CollapseAnimation::sample(float seconds, int bone) cons
     return Result<BonePresentation>::success(result);
 }
 Result<void> CollapseAnimation::save(std::string_view path) const {
-    std::error_code error;
-    if (frames_.empty() || path.empty() || std::filesystem::exists(std::filesystem::path(path), error) || error)
-        return Result<void>::failure(invalid("save requires frames and a new writable path"));
-    std::ofstream out(std::filesystem::path(path), std::ios::binary);
+    if (frames_.empty() || path.empty() || path.find('\0') != std::string_view::npos)
+        return Result<void>::failure(invalid("save requires frames and a nonempty path without NUL"));
+    std::string recipeBytes;
+    if (recipe_) {
+        auto encoded = recipe_->encode();
+        if (!encoded) return Result<void>::failure(encoded.status());
+        recipeBytes = std::move(encoded).takeValue();
+    }
+    std::ostringstream out(std::ios::binary);
     out.write("EVECOLL1", 8);
-    write32(out, 2);
+    write32(out, recipe_ ? 4U : 3U);
     write32(out, static_cast<std::uint32_t>(boneCount()));
     write32(out, static_cast<std::uint32_t>(frameCount()));
     write32(out, geometry_ ? static_cast<std::uint32_t>(geometry_->fragments.size()) : 0U);
+    if (recipe_) {
+        write32(out, static_cast<std::uint32_t>(recipeBytes.size()));
+        out.write(recipeBytes.data(), static_cast<std::streamsize>(recipeBytes.size()));
+    }
     if (geometry_)
         for (const auto& mesh : geometry_->fragments) {
             write32(out, static_cast<std::uint32_t>(mesh.positions.size() / 3));
@@ -148,28 +143,66 @@ Result<void> CollapseAnimation::save(std::string_view path) const {
             write32(out, static_cast<std::uint32_t>(b.fractureLevel));
         }
     }
-    out.close();
-    if (!out) {
-        std::filesystem::remove(std::filesystem::path(path), error);
-        return Result<void>::failure(invalid("animation file write failed"));
-    }
-    return Result<void>::success();
+    if (!out) return Result<void>::failure(invalid("animation encoding failed"));
+    auto bytes = std::move(out).str();
+    bytes += contentKey(bytes);
+    if (bytes.size() > static_cast<std::size_t>(MaxFileBytes))
+        return Result<void>::failure(invalid("encoded animation exceeds file budget"));
+    return publishBakedAsset(path, bytes);
 }
+
 Result<CollapseAnimation> CollapseAnimation::load(std::string_view path) {
-    std::ifstream in(std::filesystem::path(path), std::ios::binary | std::ios::ate);
-    const auto    bytes = in.tellg();
-    if (bytes < 20 || bytes > static_cast<std::streamoff>(MaxSamples) * 56 + 16000024)
+    if (path.empty() || path.find('\0') != std::string_view::npos)
+        return Result<CollapseAnimation>::failure(invalid("load requires a path without NUL"));
+    std::ifstream file(std::filesystem::path(path), std::ios::binary | std::ios::ate);
+    if (!file.is_open()) {
+        std::error_code error;
+        const auto      status = std::filesystem::status(std::filesystem::path(path), error);
+        const bool      missing =
+            error == std::errc::no_such_file_or_directory || (!error && !std::filesystem::exists(status));
+        return Result<CollapseAnimation>::failure(Diagnostic::error(
+            missing ? DiagnosticCode::NotFound : DiagnosticCode::Failed,
+            missing ? "animation file not found" : "animation file cannot be opened", "collapseAnimation"));
+    }
+    const auto fileBytes = file.tellg();
+    if (fileBytes < 20 || fileBytes > MaxFileBytes)
         return Result<CollapseAnimation>::failure(invalid("invalid animation file size"));
-    in.seekg(0);
-    char magic[8];
+    file.seekg(0);
+    std::string encoded(static_cast<std::size_t>(fileBytes), '\0');
+    if (!file.read(encoded.data(), static_cast<std::streamsize>(encoded.size())) || file.peek() != EOF)
+        return Result<CollapseAnimation>::failure(invalid("animation changed or read failed"));
+    std::istringstream in(std::move(encoded), std::ios::binary);
+    const auto         encodedView = in.view();
+    std::streamoff     bytes       = fileBytes;
+    char               magic[8];
     in.read(magic, 8);
     const auto version = read32(in), bones = read32(in), frames = read32(in);
-    if (std::string(magic, 8) != "EVECOLL1" || (version != 1 && version != 2) || bones == 0 || frames == 0 ||
+    if (std::string(magic, 8) != "EVECOLL1" || (version < 1 || version > 4) || bones == 0 || frames == 0 ||
         bones > MaxSamples / frames)
         return Result<CollapseAnimation>::failure(invalid("unsupported schema, counts or trailing data"));
+    if (version >= 3) {
+        if (encodedView.size() < 56 ||
+            contentKey(encodedView.substr(0, encodedView.size() - 32)) != encodedView.substr(encodedView.size() - 32))
+            return Result<CollapseAnimation>::failure(invalid("animation content checksum mismatch"));
+        bytes -= 32;
+    }
     CollapseAnimation clip;
-    if (version == 2) {
+    if (version >= 2) {
         const auto meshes = read32(in);
+        if (version == 4) {
+            const auto recipeSize = read32(in);
+            const auto position   = in.tellg();
+            if (!in || recipeSize == 0 || recipeSize > MaxRecipeBytes || position < 0 || position > bytes ||
+                static_cast<std::streamoff>(recipeSize) > bytes - position)
+                return Result<CollapseAnimation>::failure(invalid("invalid bake provenance size"));
+            auto decoded =
+                CollapseBakeRecipe::decode(encodedView.substr(static_cast<std::size_t>(position), recipeSize));
+            if (!decoded) return Result<CollapseAnimation>::failure(decoded.status());
+            if (decoded.value().coordinates() != BakeCoordinates::MetresRightHandedYUp)
+                return Result<CollapseAnimation>::failure(invalid("collapse requires metre-space provenance"));
+            clip.recipe_ = std::make_shared<const CollapseBakeRecipe>(std::move(decoded).takeValue());
+            in.seekg(static_cast<std::streamoff>(recipeSize), std::ios::cur);
+        }
         if (meshes != 0 && (meshes != bones || meshes > 4096))
             return Result<CollapseAnimation>::failure(invalid("mesh count mismatch"));
         if (meshes) {
@@ -201,6 +234,10 @@ Result<CollapseAnimation> CollapseAnimation::load(std::string_view path) {
         Frame frame{readFloat(in), {}};
         if (!std::isfinite(frame.seconds) || (f == 0 ? frame.seconds != 0 : frame.seconds <= clip.duration()))
             return Result<CollapseAnimation>::failure(invalid("invalid frame time"));
+        if (clip.recipe_) {
+            auto timing = clip.recipe_->validateSampleTime(f, frame.seconds);
+            if (!timing) return Result<CollapseAnimation>::failure(timing.status());
+        }
         frame.bones.reserve(bones);
         for (std::uint32_t i = 0; i < bones; ++i) {
             BonePresentation b;

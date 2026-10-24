@@ -155,6 +155,52 @@ jobs:
           echo "Source-quality comparison base: $base"
           make check CI_BASE="$base"
 
+  physics-bake-codec:
+    name: Physics bake codec (${{ matrix.os }}, ${{ matrix.build_type }})
+    needs: [source-quality]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest, macos-latest]
+        build_type: [Debug, Release]
+        include:
+          - os: ubuntu-24.04
+            compiler_args: -DCMAKE_C_COMPILER=gcc -DCMAKE_CXX_COMPILER=g++
+          - os: windows-latest
+            compiler_args: ""
+          - os: macos-latest
+            compiler_args: ""
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - name: Initialize standalone test dependency
+        run: git submodule update --init external/zeroerr
+
+      - name: Configure pure playback runtime
+        run: cmake -S test/profile/physics_bake -B build/physics-bake-codec -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ${{ matrix.compiler_args }}
+
+      - name: Build pure playback runtime
+        run: cmake --build build/physics-bake-codec --config ${{ matrix.build_type }} --parallel 2
+
+      - name: Run isolated codec and playback contracts
+        run: ctest --test-dir build/physics-bake-codec -C ${{ matrix.build_type }} -LE bundle --no-tests=error --output-on-failure
+
+      - name: Upload codec diagnostics
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: physics-bake-codec-${{ matrix.os }}-${{ matrix.build_type }}
+          path: |
+            build/physics-bake-codec/Testing/Temporary/
+            build/physics-bake-codec/CMakeFiles/CMakeConfigureLog.yaml
+          if-no-files-found: ignore
+
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     # Pull requests already run the toolchain-free profile contract check in

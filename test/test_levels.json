@@ -4472,6 +4472,157 @@
         ]
       },
       "module": "audio"
+    },
+    "integration/physics-bake/collapse_collision_reference.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_destruction"
+    },
+    "unit/physics_bake_collapse/physics_bake_collapse_values.cpp": {
+      "role": "tests",
+      "default": "local-logic",
+      "task": "physics-bake"
+    },
+    "integration/physics-bake/script_particle_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_bake_graphics_script"
+    },
+    "integration/physics-bake/script_deform_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_bake_graphics_script"
+    },
+    "integration/physics-bake/script_presentation.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "physics_bake_graphics_script"
+    },
+    "integration/physics-bake/particle_script_recording.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "physics_bake_particle_script"
+    },
+    "integration/physics-bake/script_recording.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "physics_bake_recording_script"
+    },
+    "integration/physics-bake/script_playback.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "physics_bake_script"
+    },
+    "integration/physics-bake/track_storage.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "module": "physics_bake"
+    },
+    "integration/physics-bake/rigid_presentation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_bake_graphics"
+    },
+    "integration/physics-bake/particle_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_bake_graphics"
+    },
+    "integration/physics-bake/graphics_owner_retirement.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_bake_graphics"
+    },
+    "integration/physics-bake/deform_presentation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_bake_graphics"
+    },
+    "integration/physics-bake/particle_reference.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_bake_particle_capture"
+    },
+    "integration/physics-bake/particle_capture.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "physics_bake_particle_capture"
+    },
+    "integration/physics-bake/particle_identity.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "particles"
+    },
+    "integration/physics-bake/resampling_error.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics_bake"
+    },
+    "integration/physics-bake/deform_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics_bake_deform_capture"
+    },
+    "integration/physics-bake/rigid_capture.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics_bake_capture"
+    },
+    "unit/physics_bake/physics_bake_values.cpp": {
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "profile/physics_bake/durability.cpp": {
+      "role": "probe",
+      "default": "platform-file",
+      "module": "physics_destruction",
+      "task": "house-collapse"
+    },
+    "profile/physics_bake/script_manifest.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_bake_script",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/manifest.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/allocation.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_bake_collapse",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/collapse_error.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_bake_collapse",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/measure.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_bake",
+      "task": "physics-bake"
+    },
+    "profile/physics_bake/inspect.cpp": {
+      "role": "probe",
+      "default": "module-composition",
+      "module": "physics_destruction",
+      "task": "house-collapse"
+    },
+    "integration/house-collapse/physics_bake_storage.cpp": {
+      "role": "tests",
+      "default": "platform-file",
+      "module": "physics_destruction",
+      "cases": {
+        "concurrency": [
+          "physics.bake.concurrentPublicationHasOneWinner"
+        ]
+      }
     }
   }
 }
