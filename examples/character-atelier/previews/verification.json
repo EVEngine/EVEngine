@@ -1,0 +1,18 @@
+{
+  "renderer": "ysa",
+  "facialJoints": 15,
+  "posePresets": 6,
+  "realMouseLandmarkDrag": true,
+  "mirroredEdit": true,
+  "singleDragUndo": true,
+  "saveLoad": true,
+  "invalidInputAtomic": true,
+  "metrics": {
+    "eyeDrag": 4.11581561461794,
+    "undo": 0.0,
+    "faceSkin": 1.7834169435215945,
+    "bodySkin": 16.304036544850497,
+    "waveMotion": 0.8032923588039868
+  },
+  "screenshots": 16
+}

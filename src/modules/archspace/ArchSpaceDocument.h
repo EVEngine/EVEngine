@@ -12,7 +12,11 @@
 namespace eve::archspace {
 
 /**
- * @brief Authoritative architectural space document (Pascal-like node graph).
+ * @brief Authoritative ArchSpace document (Pascal-like node graph).
+ *
+ * Supports architectural, dungeon and cave topology dialects. Presentation
+ * (mesh / tile grid / HD2D) is rebuilt via projectors; this document is the
+ * single authority.
  *
  * @ownership The document exclusively owns its nodes. Borrowed pointers returned by
  *            find() are invalidated by any mutating call.
@@ -29,6 +33,14 @@ public:
     [[nodiscard]] const std::unordered_map<std::string, Node>& nodes() const noexcept { return nodes_; }
     /** @brief Node count. */
     [[nodiscard]] std::size_t                                  nodeCount() const noexcept { return nodes_.size(); }
+
+    /** @brief Topology dialect for authoring helpers and SpaceQuery. */
+    [[nodiscard]] TopologyKind topology() const noexcept { return topology_; }
+    /**
+     * @brief Set topology dialect.
+     * @return Applied always; dialect does not rewrite existing nodes.
+     */
+    [[nodiscard]] eve::Result<void> setTopology(TopologyKind topology);
 
     /**
      * @brief Borrow a node by id.
@@ -101,6 +113,23 @@ public:
                                               std::string itemName, std::string catalogId, Vec3 position,
                                               double yawDegrees = 0.0);
 
+    /**
+     * @brief Create a Region (Zone) without perimeter walls — dungeon rooms / cave chambers.
+     * @param polygon Level-local XZ loop; the first vertex should not be repeated.
+     * @return Applied on success; Rejected when the level is missing or geometry is invalid.
+     */
+    [[nodiscard]] eve::Result<void> createRegion(const std::string& levelId, const std::string& regionId,
+                                                 std::string regionName, std::vector<Vec2> polygon);
+
+    /**
+     * @brief Create a level-hosted portal connecting two regions.
+     * @param regionBId May be empty for a one-sided / exterior portal.
+     * @return Applied on success; Rejected when level/regions are missing or ids collide.
+     */
+    [[nodiscard]] eve::Result<void> createPortal(const std::string& levelId, const std::string& portalId,
+                                                 std::string portalName, std::string regionAId, std::string regionBId,
+                                                 PassageMask passageMask, Vec3 position);
+
     /** @brief Collect structural and geometric diagnostics as human-readable lines. */
     [[nodiscard]] std::vector<std::string> diagnostics() const;
 
@@ -119,6 +148,7 @@ private:
     void               collectDescendants(const std::string& id, std::vector<std::string>& out) const;
 
     std::string                           rootId_;
+    TopologyKind                          topology_ = TopologyKind::Architectural;
     std::unordered_map<std::string, Node> nodes_;
 };
 

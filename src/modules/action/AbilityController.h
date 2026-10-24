@@ -4,7 +4,7 @@
 
 /** @file AbilityController.h @brief Shared player and AI ability-intent routing. */
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 
 #include <cstddef>
 #include <deque>

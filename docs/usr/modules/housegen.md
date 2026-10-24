@@ -41,7 +41,7 @@ if (generation.ok) {
 ### 接入体素/模型渲染
 
 遍历 `toJson()` 的实例（墙/屋顶/门窗盒体），映射到 `voxel` 方块或
-`Renderable3D` 立方体。参考 `test/housegen_render.cpp` 的预览路径。
+`Renderable3D` 立方体。参考 `test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp` 的预览路径。
 
 ## 绑定与行为说明
 

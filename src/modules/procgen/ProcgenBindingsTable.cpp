@@ -5,6 +5,7 @@
 #include "common/Capability.h"
 #include "common/SquirrelBinding.h"
 #include "procgen/BiomeScript.h"
+#include "procgen/GenerationStageScript.h"
 #include "procgen/GridMeshGraphScript.h"
 #include "procgen/ModuleAssemblyScript.h"
 #include "procgen/PointGraphScript.h"
@@ -44,6 +45,7 @@
 #include "procgen/shaders/terrain_material_compat_frag_spv.inc"
 #include "procgen/shaders/terrain_water_compat_frag_spv.inc"
 #include "procgen/texture/PbrMaterial.h"
+#include "procgen/texture/PbrMaterialScript.h"
 #include "procgen/texture/TextureRecipe.h"
 
 #include "data/ByteData.h"
@@ -75,6 +77,7 @@ void Procgen::expose(ssq::Table& table) {
     exposeMeshModifierGraph(table);
     exposeGridMeshGraphs(table);
     housegen::exposeHouseGeneration(table);
+    exposeGenerationStages(table);
     exposeShapeGrammar(table);
     exposePcgFrameRateManagerBindings(table);
     exposePcgTaskQueueBindings(table);
@@ -1501,25 +1504,7 @@ void Procgen::expose(ssq::Table& table) {
     cloudShadow.addFunc("setStrength", &CloudShadow::setStrength);
     cloudShadow.addFunc("coverageAt", &CloudShadow::coverageAt);
     cloudShadow.addFunc("shadowFactorAt", &CloudShadow::shadowFactorAt);
-    auto pbr = table.addClass<PbrTextureSet>(
-        "ProcgenPbrMaterial", std::function<PbrTextureSet*()>([]() -> PbrTextureSet* { return nullptr; }), true);
-    pbr.addFunc("destroy", &PbrTextureSet::destroy);
-    pbr.addFunc("getAlbedo", &PbrTextureSet::getAlbedo);
-    pbr.addFunc("getNormal", &PbrTextureSet::getNormal);
-    pbr.addFunc("getRoughness", &PbrTextureSet::getRoughness);
-    pbr.addFunc("getMetallic", &PbrTextureSet::getMetallic);
-    pbr.addFunc("getHeight", &PbrTextureSet::getHeight);
-    pbr.addFunc("getAo", &PbrTextureSet::getAo);
-    pbr.addFunc("getAlbedoWidth", [](const PbrTextureSet* s) { return s->albedo->getWidth(); });
-    pbr.addFunc("getAlbedoHeight", [](const PbrTextureSet* s) { return s->albedo->getHeight(); });
-    pbr.addFunc("getNormalWidth", [](const PbrTextureSet* s) { return s->normal->getWidth(); });
-    pbr.addFunc("getRoughnessWidth", [](const PbrTextureSet* s) { return s->roughness->getWidth(); });
-    pbr.addFunc("getMetallicWidth", [](const PbrTextureSet* s) { return s->metallic->getWidth(); });
-    pbr.addFunc("getHeightWidth", [](const PbrTextureSet* s) { return s->height->getWidth(); });
-    pbr.addFunc("getAoWidth", [](const PbrTextureSet* s) { return s->ao->getWidth(); });
-    pbr.addFunc("hasAllMaps", [](const PbrTextureSet* s) {
-        return s->albedo && s->normal && s->roughness && s->metallic && s->height && s->ao;
-    });
+    exposePbrMaterial(table);
 }
 
 

@@ -27,6 +27,15 @@ public:
      */
     [[nodiscard]] Result<void> restoreNode(RoadNode node);
     /**
+     * @brief Atomically attach or clear an owning custom connection mesh and its port bindings.
+     * @param nodeId Live node identity; the node owns the copied/moved asset values.
+     * @param connection Local geometry/ports; empty restores the procedural junction.
+     * @return Success or geometry/binding diagnostic without changing revision on failure.
+     * @cost Linear in bounded mesh size plus quadratic port-section validation; authoring only.
+     * @note Synchronous owner-thread call, no callbacks; bake separately checks spline/port seam compatibility.
+     */
+    [[nodiscard]] Result<void> setNodeConnection(std::uint32_t nodeId, RoadConnection connection);
+    /**
      * @brief Insert a non-degenerate directed edge between two distinct live nodes.
      * @return Stable edge id or a structured diagnostic; failure leaves the network unchanged.
      */
@@ -112,6 +121,8 @@ public:
      * @param edgeId Stable edge identity.
      * @param controlPoints Owning finite control-point sequence containing at least one non-degenerate segment.
      * @return Success or a structured validation diagnostic; failure leaves the edge unchanged.
+     * @cost Copies point authoring; bound custom ports additionally validate an owning graph candidate.
+     * @note Synchronous owner-thread call; borrowed views expire after success.
      */
     [[nodiscard]] Result<void> setEdgeControlPoints(std::uint32_t edgeId, std::vector<RoadControlPoint> controlPoints);
     /**
@@ -206,15 +217,20 @@ public:
      * @cost Linear in edge control points plus topology and lane-link count; authoring only.
      */
     [[nodiscard]] Result<RoadEdgeSplitResult> splitEdgeAtSplineParameter(std::uint32_t edgeId, float parameter,
-                                                                         float junctionRadius = 6.f,
-                                                                         std::uint32_t nodeId = 0,
-                                                                         std::uint32_t secondEdgeId = 0);
-    /** @brief Replace edge style atomically. */
+                                                                         float         junctionRadius = 6.f,
+                                                                         std::uint32_t nodeId         = 0,
+                                                                         std::uint32_t secondEdgeId   = 0);
+    /**
+     * @brief Replace owning style/section/interval authoring atomically.
+     * @return Success or structured validation failure; custom socket mismatches leave revision unchanged.
+     * @cost Copies style data; bound asset seams additionally validate a full owning graph candidate.
+     * @note Synchronous owner-thread call; use editing candidate/preflight for grouped changes.
+     */
     [[nodiscard]] Result<void> setEdgeStyle(std::uint32_t edgeId, RoadStyle style);
     /**
      * @brief Remove an edge and every lane link that references it.
      * @param edgeId Stable edge identity.
-     * @return Success or NotFound; failure leaves the network unchanged.
+     * @return Success, NotFound or PreconditionViolation; clear custom port bindings before removing a bound edge.
      */
     [[nodiscard]] Result<void> removeEdge(std::uint32_t edgeId);
     /**
@@ -237,9 +253,11 @@ public:
     /** @brief Revision. */
     [[nodiscard]] std::uint64_t revision() const noexcept { return revision_; }
 
-    /** @brief Node result. */
+    /** @brief Return an owning node snapshot. @cost Copies the node-owned custom mesh and port sections; authoring
+     * queries only. */
     [[nodiscard]] Result<RoadNode> nodeResult(std::uint32_t id) const;
-    /** @brief Edge result. */
+    /** @brief Return an owning edge snapshot. @cost Copies control points, custom sections and bounded
+     * interval/facility authoring. */
     [[nodiscard]] Result<RoadEdge> edgeResult(std::uint32_t id) const;
     /** @brief Nodes. */
     [[nodiscard]] const std::vector<RoadNode>& nodes() const noexcept { return nodes_; }
@@ -294,9 +312,10 @@ public:
                                                        float bridgeHeight = 6.f, int lanes = 2, std::uint32_t seed = 1);
 
 private:
+    void                       normalizeLaneLinkOrder();
     [[nodiscard]] Result<void> validateStyle(const RoadStyle& style) const;
-    [[nodiscard]] int findNodeIndex(std::uint32_t id) const;
-    [[nodiscard]] int findEdgeIndex(std::uint32_t id) const;
+    [[nodiscard]] int          findNodeIndex(std::uint32_t id) const;
+    [[nodiscard]] int          findEdgeIndex(std::uint32_t id) const;
     [[nodiscard]] Result<void> validateLaneConnection(const RoadLaneConnection& link) const;
 
     std::vector<RoadNode>     nodes_;

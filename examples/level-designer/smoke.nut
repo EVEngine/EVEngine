@@ -13,6 +13,8 @@
 // declaration is a compile error inside an earlier function body.
 if (!("smokeFailures" in getroottable())) smokeFailures <- 0;
 smokeFailures = 0;
+// The editor opens a sample courtyard; each test starts from its own baseline.
+levelNewDocument();
 
 function smokeCheck(name, condition) {
     if (condition) { print("  ok   " + name + "\n"); return true; }
@@ -249,14 +251,17 @@ local previousMode = reference.mode, previousPath = reference.path;
 reference.mode = "asset";
 reference.path = "assets/terrain/ridge.evtrn";
 reference.format = "auto";
+level.terrainDraft=levelCopy(reference);
 levelRebuildTerrain();
 smokeCheck("asset terrain referenced", level.terrain != null && level.terrain.width == 65);
 smokeCheck("asset spacing from file", smokeApprox(level.terrain.spacingX, 3.0, 0.001));
 reference.path = "assets/terrain/does-not-exist.evtrn";
+level.terrainDraft=levelCopy(reference);
 levelRebuildTerrain();
 smokeCheck("bad asset path keeps previous terrain", level.terrain != null);
 smokeCheck("bad asset path reports failure", level.status.find("failed") != null);
 reference.mode = previousMode; reference.path = previousPath;
+level.terrainDraft=levelCopy(reference);
 levelRebuildTerrain();
 
 print("level-designer smoke: " + (smokeFailures == 0 ? "PASS" : ("FAIL (" + smokeFailures + ")")) + "\n");

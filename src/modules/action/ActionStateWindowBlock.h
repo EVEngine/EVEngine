@@ -2,7 +2,11 @@
 #include "common/Export.h"
 
 
-/** @file ActionStateWindowBlock.h @brief Typed combat/input/collision action-state window contracts. */
+/** @file ActionStateWindowBlock.h
+ *  @brief Typed combat/input/collision action-state window contracts.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 

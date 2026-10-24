@@ -1,8 +1,11 @@
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
 
+#include "common/Assert.h"
 #include "graphics/Color.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/RenderSystem3D.h"
+#include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
 
 #include <glm/gtc/matrix_transform.hpp>
@@ -64,7 +67,12 @@ void clampColor(float& r, float& g, float& b, float& a) {
 GeometryCollectionRenderer::GeometryCollectionRenderer(GeometryCollectionInstance* instance) noexcept
     : instance_(instance) {}
 
-GeometryCollectionRenderer::~GeometryCollectionRenderer() { releaseOwnedMeshes(meshOwner_); }
+GeometryCollectionRenderer::~GeometryCollectionRenderer() {
+    depthRegistration_.reset();
+    graphics::RenderSystem3D::removeForwardExtraDrawer(forwardToken_);
+    graphics::RenderSystem3D::removeShadowExtraDrawer(shadowToken_);
+    releaseOwnedMeshes(meshOwner_);
+}
 
 void GeometryCollectionRenderer::setInstance(GeometryCollectionInstance* instance) {
     instance_ = instance;
@@ -96,9 +104,18 @@ void GeometryCollectionRenderer::setSleepColor(float r, float g, float b, float 
 }
 
 void GeometryCollectionRenderer::releaseOwnedMeshes(graphics::Graphics* graphics) {
+    releaseFragmentMeshes(graphics);
     if (graphics) {
-        if (sleepBatch_) (void)graphics->releaseMesh(sleepBatch_);
-        if (unitBox_) (void)graphics->releaseMesh(unitBox_);
+        if (sleepBatch_) {
+            const bool released = graphics->releaseMesh(sleepBatch_);
+            EV_ASSERT(released, "sleep mesh ownership changed");
+            if (released) delete sleepBatch_;
+        }
+        if (unitBox_) {
+            const bool released = graphics->releaseMesh(unitBox_);
+            EV_ASSERT(released, "box mesh ownership changed");
+            if (released) delete unitBox_;
+        }
     }
     sleepBatch_ = nullptr;
     unitBox_ = nullptr;
@@ -108,7 +125,11 @@ void GeometryCollectionRenderer::releaseOwnedMeshes(graphics::Graphics* graphics
 }
 
 void GeometryCollectionRenderer::invalidateSleepBatch(graphics::Graphics* graphics) {
-    if (graphics && sleepBatch_) (void)graphics->releaseMesh(sleepBatch_);
+    if (graphics && sleepBatch_) {
+        const bool released = graphics->releaseMesh(sleepBatch_);
+        EV_ASSERT(released, "sleep mesh ownership changed");
+        if (released) delete sleepBatch_;
+    }
     sleepBatch_ = nullptr;
     sleepBatchRevision_ = 0;
     sleepBatchBoneCount_ = 0;
@@ -178,6 +199,22 @@ eve::Result<void> GeometryCollectionRenderer::draw(graphics::Graphics* graphics)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "geometry-collection world is gone", "world"));
 
+    if (auto geometry = instance_->fragmentGeometry()) {
+        if (preparedGeometry_ != geometry || meshOwner_ != graphics)
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                     "prepareInstance is required before mesh draws",
+                                                                     "geometry"));
+        poseScratch_.clear();
+        for (int i = 0; i < instance_->boneCount(); ++i) {
+            auto pose = instance_->bonePresentation(i);
+            if (!pose) return eve::Result<void>::failure(pose.status());
+            poseScratch_.push_back(pose.value());
+            ++lastActiveDrawCount_;
+        }
+        auto updated = updateGeometry(*graphics);
+        if (!updated) return updated;
+        return drawGeometry(*graphics);
+    }
     ensureUnitBox(*graphics);
     if (!unitBox_)
         return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -211,4 +248,42 @@ eve::Result<void> GeometryCollectionRenderer::draw(graphics::Graphics* graphics)
     return eve::Result<void>::success();
 }
 
+eve::Result<void> GeometryCollectionRenderer::drawAnimation(const CollapseAnimation& animation,
+                                                            graphics::Graphics* graphics, float seconds, float offsetX,
+                                                            float offsetY, float offsetZ) {
+    if (!graphics || animation.boneCount() == 0 || !std::isfinite(seconds) || !std::isfinite(offsetX) ||
+        !std::isfinite(offsetY) || !std::isfinite(offsetZ))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
+                                                                 "invalid animation draw arguments", "animation"));
+    const auto geometry = animation.fragmentGeometry();
+    if (geometry && (preparedGeometry_ != geometry || meshOwner_ != graphics))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::PreconditionViolation,
+                                                                 "prepareAnimation is required before mesh playback",
+                                                                 "geometry"));
+    if (!geometry) ensureUnitBox(*graphics);
+    if (!geometry && !unitBox_)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed, "box allocation failed", "mesh"));
+    if (geometry) poseScratch_.clear();
+    for (int i = 0; i < animation.boneCount(); ++i) {
+        auto sampled = animation.sample(seconds, i);
+        if (!sampled) return eve::Result<void>::failure(sampled.status());
+        auto bone = sampled.value();
+        bone.worldX += offsetX;
+        bone.worldY += offsetY;
+        bone.worldZ += offsetZ;
+        if (geometry) {
+            poseScratch_.push_back(bone);
+            continue;
+        }
+        auto model = glm::scale(boneModel(bone), glm::vec3(bone.halfExtentX, bone.halfExtentY, bone.halfExtentZ));
+        graphics->drawMesh(unitBox_, model, nullptr, graphics::Color(exteriorR_, exteriorG_, exteriorB_, exteriorA_));
+    }
+    if (geometry) {
+        auto updated = updateGeometry(*graphics);
+        if (!updated) return updated;
+        return drawGeometry(*graphics);
+    }
+    return eve::Result<void>::success();
+}
 }  // namespace eve::physics

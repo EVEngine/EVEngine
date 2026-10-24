@@ -2,16 +2,6 @@
   "schema_version": 1,
   "entries": [
     {
-      "id": "binding-gaps-legacy",
-      "kind": "binding_gap",
-      "scope": "scripts/check_bindings_gaps.txt",
-      "owner": "engine-scripting",
-      "issue": "EVENGINE-QUALITY-BASELINE",
-      "reason": "Pre-existing binding documentation gaps are tracked by the binding checker and are reduced incrementally.",
-      "expiry": "2027-12-31",
-      "max_net_growth": 0
-    },
-    {
       "id": "todo-markers-legacy",
       "kind": "todo",
       "scope": "*",

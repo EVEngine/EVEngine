@@ -31,7 +31,13 @@ public:
  * @brief In-process authority for a single editable runtime or document target.
  *
  * The target is non-owning and must outlive the authority. Operations are
- * rolled back in reverse order if a later operation fails.
+ * applied to a detached candidate and published once when the target implements
+ * IDomainOperationTargetStaging. Failure preserves target state and revision.
+ * Legacy targets without staging use inverse-operation compensation and cannot
+ * promise strict atomicity. Use a staging target for automated atomic batches.
+ * @thread Owner-thread-only; callers must serialize calls and must not re-enter
+ * this authority from target lifecycle methods or publication callbacks.
+ * @cost Candidate creation copies target state per transaction; batch related edits.
  */
 class EVENGINE_API_PLATFORM LocalWorldAuthority final : public IEditAuthority {
 public:

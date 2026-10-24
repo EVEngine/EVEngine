@@ -11,6 +11,7 @@
  * rebuilt from persistent identity during restore or hot reload.
  */
 
+#include "common/BorrowedRef.h"
 #include "common/Result.h"
 #include "physics/PhysicsHandles.h"
 
@@ -19,6 +20,7 @@ namespace eve::physics {
 class Body;
 class Body3D;
 class Joint3D;
+class Joint2D;
 class Shape3D;
 class World;
 class World3D;
@@ -67,7 +69,7 @@ struct EVENGINE_API_WORLD PhysicsLink {
  * This link is stale when the shape is destroyed or its owning world is gone;
  * it never stores a raw pointer and is not persistent data.
  */
-struct PhysicsShapeLink {
+struct EVENGINE_API_WORLD PhysicsShapeLink {
     PhysicsWorldHandle world = PhysicsWorldHandle::invalid();
     PhysicsShapeHandle shape = PhysicsShapeHandle::invalid();
 
@@ -90,7 +92,7 @@ struct PhysicsShapeLink {
  * Joint links are invalidated before either attached body or the world is
  * destroyed, so both destruction orders resolve as StaleHandle.
  */
-struct PhysicsJointLink {
+struct EVENGINE_API_WORLD PhysicsJointLink {
     PhysicsWorldHandle world = PhysicsWorldHandle::invalid();
     PhysicsJointHandle joint = PhysicsJointHandle::invalid();
 
@@ -102,6 +104,12 @@ struct PhysicsJointLink {
     /** @brief Creates a link from a live joint. */
     [[nodiscard("check the joint-link construction outcome")]]
     static eve::Result<PhysicsJointLink> fromJoint(const Joint3D& joint);
+    /** @brief Create a world-qualified link from a live planar joint; no ownership transfer. */
+    [[nodiscard]] static eve::Result<PhysicsJointLink> fromJoint(const Joint2D& joint);
+    /** @brief Borrow a planar joint synchronously on its simulation thread; stale owner/generation rejects.
+     * @return Non-owning reference valid until joint/body/world destruction; no callbacks or reentry.
+     */
+    [[nodiscard]] eve::ResultRef<Joint2D> resolve(World& world) const;
     /** @brief Resolves a live joint or returns StaleHandle. */
     [[nodiscard("check stale joint-link resolution")]]
     eve::Result<Joint3D*> resolve(World3D& world) const;

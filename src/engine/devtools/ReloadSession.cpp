@@ -1,4 +1,5 @@
 #include "devtools/ReloadSession.h"
+#include "devtools/McpFrameCapture.hpp"
 
 #include "devtools/Snapshot.hpp"
 
@@ -42,6 +43,7 @@ bool ReloadSession::begin(HSQUIRRELVM vm, std::string* err) {
     // Best-effort manual rollback point (same file as the F6/F7 snapshot).
     std::string saveErr;
     Snapshot::instance().saveFile(vm, "eve_snapshot.json", &saveErr);
+    resetMcpFrameCapture();
     active_ = true;
     return true;
 }

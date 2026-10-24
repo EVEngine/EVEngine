@@ -12,10 +12,16 @@
 namespace eve::animation {
 namespace {
 
+template <class T>
+Result<T> coordinatorError(DiagnosticCode code, std::string message, std::string path) {
+    return Result<T>::failure(Diagnostic::error(code, std::move(message), std::move(path)));
+}
+
 }  // namespace
 
 MontageCoordinator::MontageCoordinator(AnimSkeleton& skeleton)
-    : skeleton_(skeleton), composedPose_(std::make_unique<AnimPose>(skeleton.getBoneCount())) {
+    : skeleton_(skeleton), composedPose_(std::make_unique<AnimPose>(skeleton.getBoneCount())),
+      upperBodyOrientation_(skeleton) {
     skeleton_.applyBindPose(composedPose_.get());
 }
 
@@ -33,7 +39,8 @@ void MontageCoordinator::ensureLayer(std::size_t layer) {
 }
 
 void MontageCoordinator::retireSlot(Slot& slot) noexcept {
-    slot.player.reset();
+    if (slot.player) slot.player->stop();
+    slot.live = false;
     auto next = MontageHandle::nextGeneration(slot.generation);
     if (next)
         slot.generation = *next;
@@ -68,14 +75,15 @@ Result<MontageHandle> MontageCoordinator::play(std::size_t layer, action::Action
     const Duration blendOut  = timeline.montage.defaultBlendIn;
     auto           prepared  = candidate->prepare(std::move(timeline), std::move(clips));
     if (!prepared) return Result<MontageHandle>::failure(prepared.status());
-    auto started = candidate->play(executionId);
+    next.player = std::move(candidate);
+    auto started = next.player->play(executionId);
     if (!started) return Result<MontageHandle>::failure(started.status());
     Slot& previous = entry.slots[entry.active];
-    if (previous.player && (previous.player->isPlaying() || previous.player->isFinished())) {
+    if (previous.live && (previous.player->isPlaying() || previous.player->isFinished())) {
         auto fading = previous.player->beginBlendOut(blendOut, tick);
         if (!fading) return Result<MontageHandle>::failure(fading.status());
     }
-    next.player  = std::move(candidate);
+    next.live    = true;
     entry.active = nextIndex;
     return Result<MontageHandle>::success(
         MontageHandle(static_cast<MontageHandle::index_type>(handleIndex(layer, nextIndex)), next.generation),
@@ -88,7 +96,7 @@ MontageCoordinator::Slot* MontageCoordinator::slotFor(MontageHandle handle) noex
     const std::size_t slot  = handle.index() % 2U;
     if (layer >= layers_.size()) return nullptr;
     Slot& candidate = layers_[layer].slots[slot];
-    return candidate.player && candidate.generation == handle.generation() ? &candidate : nullptr;
+    return candidate.live && candidate.player && candidate.generation == handle.generation() ? &candidate : nullptr;
 }
 
 const MontageCoordinator::Slot* MontageCoordinator::slotFor(MontageHandle handle) const noexcept {
@@ -118,10 +126,17 @@ Result<MontageAdvance> MontageCoordinator::present(MontageHandle handle, const a
     return player.value().get().present(advance, tick);
 }
 
+Result<MontageAdvance> MontageCoordinator::present(MontageHandle handle, action::ActionAdvance&& advance,
+                                                   SimulationTick tick) {
+    auto player = resolve(handle);
+    if (!player) return Result<MontageAdvance>::failure(player.status());
+    return player.value().get().present(std::move(advance), tick);
+}
+
 Result<void> MontageCoordinator::advanceBlendOuts(Duration delta, SimulationTick tick, MontageHandle except) {
     for (Layer& layer : layers_) {
         for (Slot& slot : layer.slots) {
-            if (!slot.player || !slot.player->isBlendingOut()) continue;
+            if (!slot.live || !slot.player || !slot.player->isBlendingOut()) continue;
             const MontageHandle handle(static_cast<MontageHandle::index_type>(&layer - layers_.data()) * 2U +
                                            static_cast<MontageHandle::index_type>(&slot - layer.slots),
                                        slot.generation);
@@ -154,7 +169,8 @@ Result<void> MontageCoordinator::setLayerBoneMask(std::size_t layer, std::vector
         return Result<void>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "montage layer mask weights must be finite and within [0,1]", "weights"));
     ensureLayer(layer);
-    layers_[layer].boneMask = std::move(weights);
+    layers_[layer].boneMask       = std::move(weights);
+    layers_[layer].boneMaskSource = MontageBoneMaskSource::Custom;
     return Result<void>::success(Status::success(StatusCode::Applied));
 }
 
@@ -174,7 +190,61 @@ Result<void> MontageCoordinator::clearLayerBoneMask(std::size_t layer) {
             Diagnostic::error(DiagnosticCode::NotFound, "montage layer does not exist", "layer"));
     if (layers_[layer].boneMask.empty()) return Result<void>::success(Status::success(StatusCode::NoOp));
     layers_[layer].boneMask.clear();
+    layers_[layer].boneMaskSource = MontageBoneMaskSource::None;
     return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<void> MontageCoordinator::setLayerProceduralUpperBodyMask(std::size_t layer, const AnimBoneMask& mask) {
+    auto configured = setLayerBoneMask(layer, mask);
+    if (!configured) return configured;
+    layers_[layer].boneMaskSource = MontageBoneMaskSource::ProceduralUpperBody;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<MontageBoneMaskSource> MontageCoordinator::layerBoneMaskSource(std::size_t layer) const {
+    if (layer >= layers_.size())
+        return coordinatorError<MontageBoneMaskSource>(DiagnosticCode::NotFound, "montage layer does not exist",
+                                                       "layer");
+    return Result<MontageBoneMaskSource>::success(layers_[layer].boneMaskSource);
+}
+
+Result<void> MontageCoordinator::setLayerRole(std::size_t layer, MontageLayerRole role) {
+    if (layer > static_cast<std::size_t>(std::numeric_limits<MontageHandle::index_type>::max() / 2U))
+        return coordinatorError<void>(DiagnosticCode::InvalidArgument, "montage layer is too large", "layer");
+    if (role == MontageLayerRole::UpperBody || role == MontageLayerRole::FullBody) {
+        for (std::size_t index = 0; index < layers_.size(); ++index) {
+            if (index != layer && layers_[index].role == role)
+                return coordinatorError<void>(DiagnosticCode::Conflict,
+                                              "montage coordinator already has a layer with this unique role",
+                                              "role");
+        }
+    }
+    ensureLayer(layer);
+    if (layers_[layer].role == role) return Result<void>::success(Status::success(StatusCode::NoOp));
+    layers_[layer].role = role;
+    if (role == MontageLayerRole::Additive)
+        layers_[layer].additive = true;
+    else if (role == MontageLayerRole::UpperBody || role == MontageLayerRole::FullBody)
+        layers_[layer].additive = false;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+Result<MontageLayerRole> MontageCoordinator::layerRole(std::size_t layer) const {
+    if (layer >= layers_.size())
+        return coordinatorError<MontageLayerRole>(DiagnosticCode::NotFound, "montage layer does not exist", "layer");
+    return Result<MontageLayerRole>::success(layers_[layer].role);
+}
+
+Result<void> MontageCoordinator::configureUpperBodyOrientation(const UpperBodyOrientationProfile& profile) {
+    auto configured = upperBodyOrientation_.configure(profile);
+    if (!configured) return configured;
+    upperBodyOrientationStatus_ = UpperBodyOrientationStatus::Inactive;
+    return Result<void>::success(Status::success(StatusCode::Applied));
+}
+
+void MontageCoordinator::clearUpperBodyOrientation() noexcept {
+    upperBodyOrientation_.clear();
+    upperBodyOrientationStatus_ = UpperBodyOrientationStatus::Unconfigured;
 }
 
 Result<std::vector<float>> MontageCoordinator::layerBoneMask(std::size_t layer) const {
@@ -278,7 +348,7 @@ double MontageCoordinator::evaluateLayerPose(Layer& layer) const {
     const Slot* second = nullptr;
     double      total  = 0.0;
     for (const Slot& slot : layer.slots) {
-        if (!slot.player || slot.player->weight() <= 0.0) continue;
+        if (!slot.live || !slot.player || slot.player->weight() <= 0.0) continue;
         total += slot.player->weight();
         if (!first) first = &slot;
         else second = &slot;
@@ -322,7 +392,43 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::compose(const AnimP
         return Result<std::reference_wrapper<AnimPose>>::failure(Diagnostic::error(
             DiagnosticCode::InvalidArgument, "montage base pose must match the coordinator skeleton", "basePose"));
     composedPose_->copyFrom(&basePose);
+    upperBodyOrientationStatus_ = upperBodyOrientation_.isConfigured() ? UpperBodyOrientationStatus::Inactive
+                                                                       : UpperBodyOrientationStatus::Unconfigured;
+    Layer* upperBody = nullptr;
+    float upperBodyWeight = 0.0f;
+    bool fullBodyDominant = false;
     for (Layer& layer : layers_) {
+        const double rawWeight   = evaluateLayerPose(layer);
+        const float  layerWeight = clampf(static_cast<float>(rawWeight), 0.0f, 1.0f) * layer.weight;
+        if (layerWeight <= 0.0f) continue;
+        if (!layer.additive && layer.role == MontageLayerRole::FullBody) fullBodyDominant = true;
+        if (!layer.additive && layer.role == MontageLayerRole::UpperBody) {
+            upperBody = &layer;
+            upperBodyWeight = layerWeight;
+        }
+        if (layer.additive) continue;
+        for (int bone = 0; bone < composedPose_->getBoneCount(); ++bone) {
+            const float maskWeight = layer.boneMask.empty() ? 1.0f : layer.boneMask[static_cast<std::size_t>(bone)];
+            const float weight     = clampf(layerWeight * maskWeight, 0.0f, 1.0f);
+            if (weight <= 0.0f) continue;
+            composedPose_->local(bone) = blendTRS(composedPose_->local(bone), layer.rawPose->local(bone), weight);
+        }
+    }
+    if (upperBody && upperBodyOrientation_.isConfigured()) {
+        if (fullBodyDominant) {
+            upperBodyOrientationStatus_ = UpperBodyOrientationStatus::BypassedFullBody;
+        } else if (upperBody->boneMaskSource == MontageBoneMaskSource::Custom) {
+            upperBodyOrientationStatus_ = UpperBodyOrientationStatus::BypassedCustomMask;
+        } else {
+            auto corrected = upperBodyOrientation_.apply(*composedPose_, *upperBody->rawPose, upperBodyWeight);
+            if (!corrected) return Result<std::reference_wrapper<AnimPose>>::failure(corrected.status());
+            upperBodyOrientationStatus_ = corrected.status().code() == StatusCode::NoOp
+                                              ? UpperBodyOrientationStatus::Inactive
+                                              : UpperBodyOrientationStatus::Applied;
+        }
+    }
+    for (Layer& layer : layers_) {
+        if (!layer.additive) continue;
         const double rawWeight   = evaluateLayerPose(layer);
         const float  layerWeight = clampf(static_cast<float>(rawWeight), 0.0f, 1.0f) * layer.weight;
         if (layerWeight <= 0.0f) continue;
@@ -330,12 +436,8 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::compose(const AnimP
             const float maskWeight = layer.boneMask.empty() ? 1.0f : layer.boneMask[static_cast<std::size_t>(bone)];
             const float weight     = clampf(layerWeight * maskWeight, 0.0f, 1.0f);
             if (weight <= 0.0f) continue;
-            if (layer.additive) {
-                applyAdditiveTRS(composedPose_->local(bone), layer.rawPose->local(bone), skeleton_.bindLocal(bone),
-                                 weight);
-            } else {
-                composedPose_->local(bone) = blendTRS(composedPose_->local(bone), layer.rawPose->local(bone), weight);
-            }
+            applyAdditiveTRS(composedPose_->local(bone), layer.rawPose->local(bone), skeleton_.bindLocal(bone),
+                             weight);
         }
     }
     composedPose_->computeWorld(&skeleton_);
@@ -345,7 +447,7 @@ Result<std::reference_wrapper<AnimPose>> MontageCoordinator::compose(const AnimP
 void MontageCoordinator::collectFinished() noexcept {
     for (Layer& layer : layers_)
         for (Slot& slot : layer.slots)
-            if (slot.player && !slot.player->isPlaying() && !slot.player->isBlendingOut() &&
+            if (slot.live && slot.player && !slot.player->isPlaying() && !slot.player->isBlendingOut() &&
                 slot.player->weight() <= 0.0)
                 retireSlot(slot);
 }

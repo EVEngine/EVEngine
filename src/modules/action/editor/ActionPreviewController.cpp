@@ -22,6 +22,17 @@ ActionPreviewController::ActionPreviewController(ActionTimelineEditor& editor, a
                                                  const action::IActionRootMotionSource* rootMotion)
     : editor_(editor), sink_(sink), rootMotion_(rootMotion) {}
 
+Result<void> ActionPreviewController::configureProfile(ActionPreviewProfile profile) {
+    auto valid = profile.validate();
+    if (!valid)
+        return previewError(EditorStatus::Rejected, "editor.action.preview.profile",
+                            diagnosticMessage(valid.status(), "Could not validate the preview profile"));
+    profile_ = std::move(profile);
+    return eve::editing::applied<void>();
+}
+
+void ActionPreviewController::clearProfile() noexcept { profile_.reset(); }
+
 Result<void> ActionPreviewController::setRootMotionSampleCount(std::uint32_t sampleCount) {
     if (sampleCount < 2 || sampleCount > 1024)
         return previewError(EditorStatus::Rejected, "editor.action.preview.root-samples",
@@ -56,13 +67,25 @@ Result<action::ActionPreviewFrame> ActionPreviewController::buildFrame(
     }
     frame.previous = previous;
     frame.current  = current;
+    if (profile_) {
+        frame.previewModelUri     = profile_->previewModelUri;
+        frame.baseMotionUri       = profile_->baseMotionUri;
+        frame.animationProfileUri = profile_->animationProfileUri;
+        frame.boneMaskUri         = profile_->boneMaskUri;
+        frame.footIk              = profile_->footIk;
+        frame.showRootMotion      = profile_->showRootMotion;
+        frame.showGrid            = profile_->showGrid;
+        frame.showSkeleton        = profile_->showSkeleton;
+        frame.showJointNames      = profile_->showJointNames;
+        frame.litShading          = profile_->shading == ActionPreviewShading::Lit;
+    }
     auto activeBlocks = editor_.target().timeline().activeBlocks(current);
     if (!activeBlocks) return Result<action::ActionPreviewFrame>::failure(activeBlocks.status());
     frame.activeBlocks = std::move(activeBlocks).takeValue();
     frame.cues.reserve(events.size());
     for (const auto& event : events)
         frame.cues.push_back({cueKind(event), event.itemId, event.type, event.time, event.payload});
-    if (rootMotion_) {
+    if (rootMotion_ && frame.showRootMotion) {
         auto path = rootMotion_->sampleRootMotion(frame.animationUri, rootMotionDuration, rootMotionSampleCount_);
         if (!path) return Result<action::ActionPreviewFrame>::failure(path.status());
         frame.rootMotionState = action::RootMotionPreviewState::Available;

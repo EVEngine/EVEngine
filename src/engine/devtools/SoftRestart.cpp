@@ -1,10 +1,11 @@
 #include "devtools/SoftRestart.hpp"
 
 #include "common/Capability.h"
+#include "common/FrameCapture.h"
 #include "common/IStateProvider.h"
-#include "devtools/GameWorldContext.hpp"
 #include "common/Resource.h"
 #include "common/ScriptError.h"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpSquirrelJson.hpp"
 #include "devtools/ReloadSession.h"
 
@@ -165,6 +166,7 @@ Result<SoftRestartReport> executeSoftRestart(HSQUIRRELVM vm, SoftRestartRequest 
     auto installed = installRestartArgs(vm, report.args);
     if (!installed) return Result<SoftRestartReport>::failure(installed.status());
 
+    if (auto* capture = cap::query<IRenderFrameCapture>()) capture->invalidate();
     auto restarted = callSoftRestartGame(vm, request.reloadScripts);
     if (!restarted) return Result<SoftRestartReport>::failure(restarted.status());
 

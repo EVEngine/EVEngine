@@ -28,6 +28,26 @@ bool readString(const Value::Object& object, const char* name, std::string& outp
 }
 
 /** @brief Absent → nullopt; present invalid → diagnostic; present valid → value. */
+Result<void> decodeCollision(const Value::Object& object, CarrierRecipe& recipe) {
+    const auto* value = field(object, "collision");
+    if (!value) return Result<void>::success();
+    const auto* config = value->getIf<Value::Object>();
+    if (!config)
+        return Result<void>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "collision must be an object", "collision"));
+    for (const auto& [key, item] : *config) {
+        const auto* flag = item.getIf<bool>();
+        if (!flag || (key != "enabled" && key != "worldSweep"))
+            return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                           "Expected enabled/worldSweep boolean", "collision." + key));
+        if (key == "enabled")
+            recipe.collisionEnabled = *flag;
+        else
+            recipe.physicsWorldSweep = *flag;
+    }
+    return Result<void>::success();
+}
+
 Result<std::optional<double>> optionalDouble(const Value::Object& object, const char* name, std::string_view path) {
     const auto* value = field(object, name);
     if (!value) return Result<std::optional<double>>::success(std::nullopt);
@@ -116,6 +136,18 @@ Result<CarrierMotionOpKind> parseMotionKind(std::string_view text, std::string_v
     if (text == "sway" || text == "CurveSway") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::CurveSway);
     if (text == "helix" || text == "CurveHelix") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::CurveHelix);
     if (text == "avoidBody" || text == "SteerAvoidBody") return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SteerAvoidBody);
+    if (text == "rotate" || text == "RotateVelocity")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::RotateVelocity);
+    if (text == "orbit" || text == "SteerOrbit")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SteerOrbit);
+    if (text == "drag" || text == "ApplyDrag")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::ApplyDrag);
+    if (text == "speedOscillate" || text == "SpeedOscillate")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SpeedOscillate);
+    if (text == "predictive" || text == "SteerPredictive")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SteerPredictive);
+    if (text == "wander" || text == "SteerWander")
+        return Result<CarrierMotionOpKind>::success(CarrierMotionOpKind::SteerWander);
     return Result<CarrierMotionOpKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown motion kind"), std::string(path), {},
                                                 "weapon.carrier.recipe"));
 }
@@ -126,11 +158,18 @@ Result<CarrierTriggerKind> parseTriggerKind(std::string_view text, std::string_v
     if (text == "onInterval" || text == "OnInterval") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnInterval);
     if (text == "onHit" || text == "OnHit") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnHit);
     if (text == "onProximity" || text == "OnProximity") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnProximity);
+    if (text == "onDistance" || text == "OnDistance")
+        return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnDistance);
+    if (text == "onSpeedBelow" || text == "OnSpeedBelow")
+        return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnSpeedBelow);
+    if (text == "onApex" || text == "OnApex") return Result<CarrierTriggerKind>::success(CarrierTriggerKind::OnApex);
     return Result<CarrierTriggerKind>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Unknown trigger kind"), std::string(path), {},
                                                 "weapon.carrier.recipe"));
 }
 
 Result<CarrierImpactKind> parseImpactKind(std::string_view text, std::string_view path) {
+    if (text == "emitTrigger" || text == "EmitTrigger")
+        return Result<CarrierImpactKind>::success(CarrierImpactKind::EmitTrigger);
     if (text == "emitHit" || text == "hit" || text == "EmitHit") return Result<CarrierImpactKind>::success(CarrierImpactKind::EmitHit);
     if (text == "splash" || text == "Splash") return Result<CarrierImpactKind>::success(CarrierImpactKind::Splash);
     if (text == "pierce" || text == "Pierce") return Result<CarrierImpactKind>::success(CarrierImpactKind::Pierce);
@@ -149,6 +188,12 @@ const char* motionKindName(CarrierMotionOpKind kind) {
         case CarrierMotionOpKind::Accelerate: return "accelerate";
         case CarrierMotionOpKind::CurveSway: return "sway";
         case CarrierMotionOpKind::CurveHelix: return "helix";
+        case CarrierMotionOpKind::RotateVelocity: return "rotate";
+        case CarrierMotionOpKind::SteerOrbit: return "orbit";
+        case CarrierMotionOpKind::ApplyDrag: return "drag";
+        case CarrierMotionOpKind::SpeedOscillate: return "speedOscillate";
+        case CarrierMotionOpKind::SteerPredictive: return "predictive";
+        case CarrierMotionOpKind::SteerWander: return "wander";
         case CarrierMotionOpKind::IntegrateLinear: return "linear";
     }
     return "linear";
@@ -156,6 +201,9 @@ const char* motionKindName(CarrierMotionOpKind kind) {
 
 const char* triggerKindName(CarrierTriggerKind kind) {
     switch (kind) {
+        case CarrierTriggerKind::OnDistance: return "onDistance";
+        case CarrierTriggerKind::OnSpeedBelow: return "onSpeedBelow";
+        case CarrierTriggerKind::OnApex: return "onApex";
         case CarrierTriggerKind::OnExpire: return "onExpire";
         case CarrierTriggerKind::OnFuse: return "onFuse";
         case CarrierTriggerKind::OnInterval: return "onInterval";
@@ -173,6 +221,7 @@ const char* impactKindName(CarrierImpactKind kind) {
         case CarrierImpactKind::Bounce: return "bounce";
         case CarrierImpactKind::Release: return "release";
         case CarrierImpactKind::SpawnChild: return "spawnChild";
+        case CarrierImpactKind::EmitTrigger: return "emitTrigger";
     }
     return "release";
 }
@@ -236,6 +285,26 @@ Result<CarrierMotionOp> decodeMotionOp(const Value& value, std::string path) {
             !assigned)
             return Result<CarrierMotionOp>::failure(assigned.status());
     }
+    if (auto assigned =
+            assignOptionalDouble(*object, "angularRateDegrees", op.angularRateDegrees, path + ".angularRateDegrees");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "orbitRadius", op.orbitRadius, path + ".orbitRadius"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "drag", op.drag, path + ".drag"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "axisX", op.axis.x, path + ".axisX"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "axisY", op.axis.y, path + ".axisY"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "axisZ", op.axis.z, path + ".axisZ"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned = assignOptionalInt(*object, "randomSeed", op.randomSeed, path + ".randomSeed"); !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
+    if (auto assigned =
+            assignOptionalDouble(*object, "predictionSeconds", op.predictionSeconds, path + ".predictionSeconds");
+        !assigned)
+        return Result<CarrierMotionOp>::failure(assigned.status());
     return Result<CarrierMotionOp>::success(op);
 }
 
@@ -286,6 +355,8 @@ Result<CarrierTrigger> decodeTrigger(const Value& value, std::string path) {
             !assigned)
             return Result<CarrierTrigger>::failure(assigned.status());
     }
+    if (auto assigned = assignOptionalDouble(*object, "threshold", trigger.threshold, path + ".threshold"); !assigned)
+        return Result<CarrierTrigger>::failure(assigned.status());
     return Result<CarrierTrigger>::success(trigger);
 }
 
@@ -327,6 +398,16 @@ Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
     if (auto assigned = assignOptionalDouble(*object, "restitution", impact.restitution, path + ".restitution");
         !assigned)
         return Result<CarrierImpact>::failure(assigned.status());
+    if (auto assigned =
+            assignOptionalDouble(*object, "bounceFriction", impact.bounceFriction, path + ".bounceFriction");
+        !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (auto assigned = assignOptionalDouble(*object, "bounceSpreadDegrees", impact.bounceSpreadDegrees,
+                                             path + ".bounceSpreadDegrees");
+        !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
+    if (auto assigned = assignOptionalInt(*object, "randomSeed", impact.randomSeed, path + ".randomSeed"); !assigned)
+        return Result<CarrierImpact>::failure(assigned.status());
     (void)readString(*object, "damageType", impact.damageType);
     (void)readString(*object, "element", impact.element);
     if (const auto* child = field(*object, "childRecipeId")) {
@@ -346,6 +427,8 @@ Result<CarrierImpact> decodeImpact(const Value& value, std::string path) {
 
 Result<CarrierRecipe> decodePreset(const Value::Object& object) {
     CarrierRecipe recipe;
+    auto          collision = decodeCollision(object, recipe);
+    if (!collision) return Result<CarrierRecipe>::failure(collision.status());
     auto id = readLogicalId(object, "id", "id");
     if (!id.ok()) return Result<CarrierRecipe>::failure(id.status());
     recipe.id = id.value();
@@ -487,6 +570,8 @@ Result<CarrierRecipe> decodePreset(const Value::Object& object) {
 
 Result<CarrierRecipe> decodeFull(const Value::Object& object) {
     CarrierRecipe recipe;
+    auto          collision = decodeCollision(object, recipe);
+    if (!collision) return Result<CarrierRecipe>::failure(collision.status());
     auto id = readLogicalId(object, "id", "id");
     if (!id.ok()) return Result<CarrierRecipe>::failure(id.status());
     recipe.id = id.value();
@@ -566,6 +651,8 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
     object.emplace("id", Value(recipe.id.format()));
     object.emplace("lifetime", Value(recipe.lifetime.seconds()));
     object.emplace("speed", Value(recipe.speed));
+    object.emplace("collision", Value(Value::Object{{"enabled", Value(recipe.collisionEnabled)},
+                                                    {"worldSweep", Value(recipe.physicsWorldSweep)}}));
 
     Value::Array motion;
     for (const auto& op : recipe.motionOps) {
@@ -579,6 +666,14 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         if (op.avoidRadiusPadding != 0.0) entry.emplace("avoidRadiusPadding", Value(op.avoidRadiusPadding));
         if (op.curveAmplitude != 0.0) entry.emplace("curveAmplitude", Value(op.curveAmplitude));
         if (op.curveFrequencyHz != 0.0) entry.emplace("curveFrequencyHz", Value(op.curveFrequencyHz));
+        entry.emplace("angularRateDegrees", Value(op.angularRateDegrees));
+        entry.emplace("orbitRadius", Value(op.orbitRadius));
+        entry.emplace("drag", Value(op.drag));
+        entry.emplace("axisX", Value(op.axis.x));
+        entry.emplace("axisY", Value(op.axis.y));
+        entry.emplace("axisZ", Value(op.axis.z));
+        entry.emplace("randomSeed", Value(static_cast<std::int64_t>(op.randomSeed)));
+        entry.emplace("predictionSeconds", Value(op.predictionSeconds));
         motion.push_back(Value(std::move(entry)));
     }
     object.emplace("motion", Value(std::move(motion)));
@@ -590,6 +685,7 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         if (trigger.fuse > Duration::zero()) entry.emplace("fuse", Value(trigger.fuse.seconds()));
         if (trigger.interval > Duration::zero()) entry.emplace("interval", Value(trigger.interval.seconds()));
         if (trigger.proximityRadius > 0.0) entry.emplace("proximityRadius", Value(trigger.proximityRadius));
+        if (trigger.threshold != 0.0) entry.emplace("threshold", Value(trigger.threshold));
         triggers.push_back(Value(std::move(entry)));
     }
     object.emplace("triggers", Value(std::move(triggers)));
@@ -607,6 +703,9 @@ Result<Value> encodeCarrierRecipe(const CarrierRecipe& recipe) {
         if (!impact.damageType.empty()) entry.emplace("damageType", Value(impact.damageType));
         if (!impact.element.empty()) entry.emplace("element", Value(impact.element));
         if (impact.childRecipeId.isValid()) entry.emplace("childRecipeId", Value(impact.childRecipeId.format()));
+        if (impact.bounceFriction != 0.0) entry.emplace("bounceFriction", Value(impact.bounceFriction));
+        if (impact.bounceSpreadDegrees != 0.0) entry.emplace("bounceSpreadDegrees", Value(impact.bounceSpreadDegrees));
+        if (impact.randomSeed != 0) entry.emplace("randomSeed", Value(static_cast<std::int64_t>(impact.randomSeed)));
         impacts.push_back(Value(std::move(entry)));
     }
     object.emplace("impacts", Value(std::move(impacts)));

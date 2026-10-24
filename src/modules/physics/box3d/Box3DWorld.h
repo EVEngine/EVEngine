@@ -5,6 +5,7 @@
 #include "physics/rigid/WorldBackend3D.h"
 namespace eve::physics::box3d {
 class WorldBackend final : public IWorldBackend3D {
+    friend struct Access;
     template <class F>
     auto checked(const char* path, F&& operation) const -> decltype(operation()) {
         using R = decltype(operation());

@@ -44,7 +44,11 @@ std::optional<ItemView> findItem(const action::ActionTimeline& timeline, const L
             *LogicalId::fromParts("animation", "section"),
             section.start,
             section.end,
-            {{"animationUri", Value(section.animationUri)}, {"blendInNs", Value(section.blendIn.nanoseconds())}},
+            {{"animationUri", Value(section.animationUri)},
+             {"blendInNs", Value(section.blendIn.nanoseconds())},
+             {"blendOutNs", Value(section.blendOut.nanoseconds())},
+             {"blendInCurve", Value(std::string(action::actionBlendCurveName(section.blendInCurve)))},
+             {"blendOutCurve", Value(std::string(action::actionBlendCurveName(section.blendOutCurve)))}},
             true,
             false,
             true};
@@ -390,6 +394,38 @@ void ActionTimelineWidget::draw(IEditorOverlay& overlay) const {
             item.selected ? 0xf2b84bffU : (animationSection ? 0xa66bd4ffU : (item.state ? 0x568bd7ffU : 0x61c28bffU));
         overlay.rectangle({item.minimumX, item.minimumY, 0.0f}, {item.maximumX, item.maximumY, 0.0f},
                           {color, 1.0f, true});
+        if (animationSection) {
+            const auto section = std::find_if(timeline.animationSections.begin(), timeline.animationSections.end(),
+                                              [&](const auto& value) { return value.id == item.itemId; });
+            if (section != timeline.animationSections.end()) {
+                constexpr int gradientSteps = 12;
+                const auto drawEnvelope = [&](float minimum, float maximum, action::ActionBlendCurve curve,
+                                              bool outgoing) {
+                    if (maximum <= minimum) return;
+                    const float step = (maximum - minimum) / static_cast<float>(gradientSteps);
+                    for (int index = 0; index < gradientSteps; ++index) {
+                        const double input = (static_cast<double>(index) + 0.5) / gradientSteps;
+                        const double weight = action::evaluateActionBlendCurve(curve, outgoing ? 1.0 - input : input);
+                        const auto alpha = static_cast<unsigned int>(std::clamp((1.0 - weight) * 150.0, 0.0, 150.0));
+                        overlay.rectangle({minimum + step * index, item.minimumY, 0.0f},
+                                          {minimum + step * (index + 1), item.maximumY, 0.0f},
+                                          {alpha, 1.0f, true});
+                    }
+                };
+                if (!section->blendIn.isZero()) {
+                    const Duration blendEnd = Duration::fromNanoseconds(
+                        std::min(section->end.nanoseconds(),
+                                 section->start.nanoseconds() + section->blendIn.nanoseconds()));
+                    drawEnvelope(item.minimumX, timeToX(blendEnd), section->blendInCurve, false);
+                }
+                if (!section->blendOut.isZero()) {
+                    const Duration blendStart = Duration::fromNanoseconds(
+                        std::max(section->start.nanoseconds(),
+                                 section->end.nanoseconds() - section->blendOut.nanoseconds()));
+                    drawEnvelope(timeToX(blendStart), item.maximumX, section->blendOutCurve, true);
+                }
+            }
+        }
         if (item.maximumX - item.minimumX >= 48.0f)
             overlay.text({item.minimumX + 5.0f, item.minimumY + 3.0f, 0.0f}, item.displayName,
                          {0xffffffffU, 1.0f, false});
@@ -638,41 +674,50 @@ Result<void> ActionTimelineWidget::inspectSelection(IEditorInspector& inspector)
                                "Animation section no longer exists", EditorStatus::Conflict);
         float       startSeconds       = static_cast<float>(section->start.seconds());
         float       endSeconds         = static_cast<float>(section->end.seconds());
-        float       blendSeconds       = static_cast<float>(section->blendIn.seconds());
+        float       blendInSeconds     = static_cast<float>(section->blendIn.seconds());
+        float       blendOutSeconds    = static_cast<float>(section->blendOut.seconds());
         float       sourceStartSeconds = static_cast<float>(section->sourceStart.seconds());
         float       sourceEndSeconds   = static_cast<float>(section->sourceEnd.seconds());
         std::string animationUri       = section->animationUri;
-        std::string blendCurve         = std::string(action::actionBlendCurveName(section->blendCurve));
+        std::string blendInCurve       = std::string(action::actionBlendCurveName(section->blendInCurve));
+        std::string blendOutCurve      = std::string(action::actionBlendCurveName(section->blendOutCurve));
         const float maximum            = static_cast<float>(editor_.target().timeline().duration.seconds());
         inspector.beginGroup("action.timeline.animation-section", "Animation Section");
         bool changed = inspector.scalar("start", "Start", startSeconds, 0.0f, maximum);
         changed      = inspector.scalar("end", "End", endSeconds, 0.0f, maximum) || changed;
-        changed      = inspector.scalar("blendIn", "Blend In", blendSeconds, 0.0f, maximum) || changed;
+        changed      = inspector.scalar("blendIn", "Blend In", blendInSeconds, 0.0f, maximum) || changed;
+        changed      = inspector.scalar("blendOut", "Blend Out", blendOutSeconds, 0.0f, maximum) || changed;
         changed =
             inspector.scalar("sourceStart", "Trim In", sourceStartSeconds, 0.0f, std::numeric_limits<float>::max()) ||
             changed;
         changed = inspector.scalar("sourceEnd", "Trim Out (0 = clip end)", sourceEndSeconds, 0.0f,
                                    std::numeric_limits<float>::max()) ||
                   changed;
-        changed = inspector.string("blendCurve", "Blend Curve", blendCurve) || changed;
+        changed = inspector.string("blendInCurve", "Blend In Curve", blendInCurve) || changed;
+        changed = inspector.string("blendOutCurve", "Blend Out Curve", blendOutCurve) || changed;
         changed = inspector.string("animationUri", "Animation", animationUri) || changed;
         inspector.endGroup();
         if (!changed) return eve::editing::applied<void>();
         auto start       = Duration::fromSeconds(startSeconds);
         auto end         = Duration::fromSeconds(endSeconds);
-        auto blend       = Duration::fromSeconds(blendSeconds);
+        auto blendIn     = Duration::fromSeconds(blendInSeconds);
+        auto blendOut    = Duration::fromSeconds(blendOutSeconds);
         auto sourceStart = Duration::fromSeconds(sourceStartSeconds);
         auto sourceEnd   = Duration::fromSeconds(sourceEndSeconds);
-        auto parsedCurve = action::actionBlendCurveFromName(blendCurve);
-        if (!start || !end || !blend || !sourceStart || !sourceEnd || !parsedCurve)
+        auto parsedInCurve  = action::actionBlendCurveFromName(blendInCurve);
+        auto parsedOutCurve = action::actionBlendCurveFromName(blendOutCurve);
+        if (!start || !end || !blendIn || !blendOut || !sourceStart || !sourceEnd || !parsedInCurve ||
+            !parsedOutCurve)
             return widgetError("editor.action.timeline.widget.time-invalid", "Animation section time is invalid");
         action::ActionAnimationSection edited = *section;
         edited.start                          = start.value();
         edited.end                            = end.value();
-        edited.blendIn                        = blend.value();
+        edited.blendIn                        = blendIn.value();
+        edited.blendOut                       = blendOut.value();
         edited.sourceStart                    = sourceStart.value();
         edited.sourceEnd                      = sourceEnd.value();
-        edited.blendCurve                     = *parsedCurve;
+        edited.blendInCurve                   = *parsedInCurve;
+        edited.blendOutCurve                  = *parsedOutCurve;
         edited.animationUri                   = std::move(animationUri);
         return editor_.editAnimationSectionFull(std::move(edited));
     }

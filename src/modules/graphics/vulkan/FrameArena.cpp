@@ -1,8 +1,11 @@
 #include "graphics/vulkan/FrameArena.h"
 #include <chrono>
+#include <cstdlib>
+#include <cstring>
 #include <functional>
 #include <thread>
 #include <vector>
+#include "common/Profile.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "thread/JobSystem.h"
 
@@ -81,7 +84,11 @@ vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs) {
             return;
         }
         auto *group = jobs->createFrameTaskGroup();
-        for (uint32_t order : layerPasses) group->fork([recordOne, order] { recordOne(order); });
+        for (uint32_t order : layerPasses)
+            group->fork([recordOne, order] {
+                EV_PROFILE_MODULE("graphics", "DeferredGraph.RecordPass");
+                recordOne(order);
+            });
         // Join without help-execution: TaskGroup::wait() help-executes on the
         // waiting thread, and that path races with the arena lifecycle in
         // beginFrame/endFrame (a help-run job's completion can observe
@@ -95,8 +102,25 @@ vkb::PassRecordExecutor jobSystemPassExecutor(eve::thread::JobSystem *jobs) {
     };
 }
 
-void recordFrameGraphWithJobSystem(vkb::FrameGraph &graph, eve::thread::JobSystem *jobs) {
-    graph.record(jobSystemPassExecutor(jobs));
+void recordFrameGraphWithJobSystem(vkb::FrameGraph &graph, eve::thread::JobSystem *jobs,
+                                   FrameGraphRecordingState &state) {
+    enum class Mode { Adaptive, Serial, Parallel };
+    static const Mode mode = [] {
+        const char *request = std::getenv("EVENGINE_FRAMEGRAPH_RECORDING");
+        if (request && std::strcmp(request, "serial") == 0) return Mode::Serial;
+        if (request && std::strcmp(request, "parallel") == 0) return Mode::Parallel;
+        return Mode::Adaptive;
+    }();
+    if (!jobs || mode == Mode::Serial || (mode == Mode::Adaptive && !state.isParallelWorthwhile())) {
+        EV_PROFILE_MODULE("graphics", "DeferredGraph.SerialRecord");
+        const auto begin = std::chrono::steady_clock::now();
+        graph.record();
+        state.serialCost     = std::chrono::steady_clock::now() - begin;
+        state.parallelFrames = 0;
+    } else {
+        graph.record(jobSystemPassExecutor(jobs));
+        ++state.parallelFrames;
+    }
 }
 
 }  // namespace eve::graphics::vulkan

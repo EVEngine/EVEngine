@@ -279,3 +279,8 @@ alone can switch between distributed retreat and localized conduits.
 
 The first stable rendered frame is saved to `build/cave-debug/cave-generator.png`
 for engine-owned visual QA; the build directory is ignored by Git.
+## Editable generation
+
+Edit `generators/cave.nut` to change the geological preset, reorder/omit surface operators or disable
+deposition. It uses native three-dimensional generation stages and preserves the original schedule
+by default. See [generation stages](../../docs/usr/modules/procgen/generation-stages.md).
