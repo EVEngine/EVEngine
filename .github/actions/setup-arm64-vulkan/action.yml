@@ -32,6 +32,10 @@ runs:
         if [ ! -f "$icd" ]; then icd=/usr/share/vulkan/icd.d/lvp_icd.json; fi
         test -f "$icd"
         echo "VK_ICD_FILENAMES=$icd" >> "$GITHUB_ENV"
+        # Mesa 25.2's Lavapipe radix-sort BVH kernels require eight lanes
+        # (subgroup_size_log2=3); AArch64 defaults to four 32-bit lanes.
+        # LLVM legalizes this logical vector width to native ARM instructions.
+        echo "LP_NATIVE_VECTOR_WIDTH=256" >> "$GITHUB_ENV"
         mkdir -p "$RUNNER_TEMP/eve-xdg"
         chmod 700 "$RUNNER_TEMP/eve-xdg"
         echo "XDG_RUNTIME_DIR=$RUNNER_TEMP/eve-xdg" >> "$GITHUB_ENV"
