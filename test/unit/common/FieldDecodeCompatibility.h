@@ -45,8 +45,10 @@ inline void jsonFieldsKeepWireKindsAndBytes(zeroerr::TestContext* _ZEROERR_TEST_
     CHECK(real.value() == 1.5f);
 }
 inline void jsonNumbersKeepFloatBoundariesAndRounding(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
+    // Use a normal Double that underflows only when converted to Float;
+    // std::stod can reject subnormal Doubles before the reader is reached.
     auto decoded =
-        eve::Value::fromJson(R"([-0.0,3.4028234663852886e38,3.402823466385289e38,1e-320,1152921573326323713])");
+        eve::Value::fromJson(R"([-0.0,3.4028234663852886e38,3.402823466385289e38,1e-100,1152921573326323713])");
     REQUIRE(decoded.ok());
     const auto* values = decoded.value().getIf<eve::Value::Array>();
     REQUIRE(values != nullptr);
@@ -60,6 +62,9 @@ inline void jsonNumbersKeepFloatBoundariesAndRounding(zeroerr::TestContext* _ZER
     CHECK(maximum.value() == std::numeric_limits<float>::max());
     auto overflow = eve::readFiniteFloatValue((*values)[2]);
     CHECK(!overflow.ok());
+    const auto* smallDouble = (*values)[3].getIf<double>();
+    REQUIRE(smallDouble != nullptr);
+    CHECK(std::isnormal(*smallDouble));
     auto underflow = eve::readFiniteFloatValue((*values)[3]);
     REQUIRE(underflow.ok());
     CHECK(underflow.value() == 0.0f);
