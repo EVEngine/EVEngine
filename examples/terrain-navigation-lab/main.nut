@@ -3,7 +3,9 @@ local keep = [];
 local heights = null, baseCosts = null, world = null, models = null;
 local overview = null, closeup = null;
 local actors = [], elapsed = 0.0, fixed = 0.0, steps = 0, arrivals = 0;
-local captured = false, frames = 0;
+local captured = false, frames = 0, nextReport = 5.0;
+local function smaller(a,b) { return a < b ? a : b; }
+local function larger(a,b) { return a > b ? a : b; }
 function own(v) { if (v == null) throw "terrain-lab: missing resource"; keep.append(v); return v; }
 function value(r) { if (!r.ok) throw "terrain-lab: operation failed"; return own(r.value); }
 function raster() { return value(procgen.newHeightmap(65,65)); }
@@ -60,9 +62,9 @@ eve_init = function() {
     heights=raster(); baseCosts=raster();
     local collision=[];
     for(local z=0; z<65; ++z) for(local x=0; x<65; ++x) {
-        local ridge=max(0.0,7.0-fabs(x-32.0));
+        local ridge=larger(0.0,7.0-fabs(x-32.0));
         // A gentle pass at the far end forces the low-slope actor to detour.
-        local factor=z>44 ? max(0.20,1.0-(z-44)*0.10) : 1.0;
+        local factor=z>44 ? larger(0.20,1.0-(z-44)*0.10) : 1.0;
         local h=1.8*ridge*factor;
         heights.setHeight(x,z,h); baseCosts.setHeight(x,z,1.0); collision.append(h);
     }
@@ -104,11 +106,15 @@ eve_init = function() {
     ui.end(); ui.button("Reset routes","reset");
     ui.beginRow("views",8.0);
     ui.viewport("overview",810.0,570.0); ui.viewport("character",390.0,570.0);
-    ui.end(); ui.text("Starting","status"); ui.end(); ui.endBuild();
+    ui.end(); ui.text("Starting","status"); ui.end();
+    ui.mountBuildAs("terrain-lab"); ui.select("terrain-lab");
+    ui.setHostPos(0.0,0.0,0.0,0.0);
+    ui.setHostSize(config.width.tofloat(),config.height.tofloat());
+    ui.setHostOverlay(false);
     print("terrain-lab READY\n");
 };
 eve_update = function(dt) {
-    elapsed+=dt; fixed+=min(dt,0.10);
+    elapsed+=dt; fixed+=smaller(dt,0.10);
     ui.select("terrain-lab");
     local click=ui.consumeClick();
     while(click!="") {
@@ -131,10 +137,11 @@ eve_update = function(dt) {
                 if(a.index>=a.path.getLength()) { ++arrivals; print("terrain-lab ARRIVED "+a.limit+"\n"); }
                 continue;
             }
-            local travel=min(dist,3.5/60.0);
+            local travel=smaller(dist,3.5/60.0);
             world.setMoverSlopeLimit(a.limit);
             world.moveCapsule(a.x,a.y+0.3,a.z,a.x,a.y+1.3,a.z,0.3,
-                dx/dist*travel,-0.04,dz/dist*travel);
+                // A small downward probe maintains ground contact without cancelling uphill intent.
+                dx/dist*travel,-0.01,dz/dist*travel);
             local mx=world.getMoverDeltaX(), my=world.getMoverDeltaY(), mz=world.getMoverDeltaZ();
             a.x+=mx; a.y+=my; a.z+=mz;
             if(fabs(mx)+fabs(mz)<0.0001) a.stalled+=1.0/60.0; else a.stalled=0.0;
@@ -146,7 +153,10 @@ eve_update = function(dt) {
     closeup.setEye(a.x+7.0,a.y+6.0,a.z+9.0); closeup.setTarget(a.x,a.y+1.0,a.z);
     ui.setText("status","Time "+elapsed.tointeger()+"s | steps "+steps+" | arrivals "+arrivals+
         " | Reset applies edited policies");
-    if(steps%300==0) print("terrain-lab PROGRESS steps="+steps+" arrivals="+arrivals+"\n");
+    if(elapsed >= nextReport) {
+        nextReport += 5.0;
+        print("terrain-lab PROGRESS steps="+steps+" arrivals="+arrivals+"\n");
+    }
 };
 eve_render = function() {
     gfx.clear(); ++frames;

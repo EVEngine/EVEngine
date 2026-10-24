@@ -22,7 +22,7 @@ def main():
     log = artifacts / "runtime.txt"
     samples = []
     with log.open("w", encoding="utf-8") as output:
-        process = subprocess.Popen(["xvfb-run", "-a", str(args.engine.resolve()), "run"],
+        process = subprocess.Popen(["xvfb-run", "-a", str((root / args.engine).resolve()), "run"],
                                    cwd=root, stdout=output, stderr=subprocess.STDOUT,
                                    start_new_session=True)
         start = time.monotonic()
@@ -49,7 +49,9 @@ def main():
                     os.killpg(process.pid, signal.SIGKILL)
                     process.wait()
     text = log.read_text(encoding="utf-8", errors="replace")
-    errors = re.findall(r"AN ERROR HAS OCCURRED|\bERROR\b|actor stalled|Segmentation fault|Assertion.*failed", text)
+    errors = re.findall(
+        r"eve_init failed|frame error:|Run failed:|AN ERROR HAS OCCURRED|"
+        r"\bERROR\b|actor stalled|Segmentation fault|Assertion.*failed", text)
     checks = {"survived": not premature, "ready": "terrain-lab READY" in text,
               "bothArrived": text.count("terrain-lab ARRIVED") >= 2,
               "progress": "terrain-lab PROGRESS" in text, "noDiagnostics": not errors}
