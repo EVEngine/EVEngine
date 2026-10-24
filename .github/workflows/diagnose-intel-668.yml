@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   logs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 5
     steps:
       - name: Extract Intel compiler and linker errors
