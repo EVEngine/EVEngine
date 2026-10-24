@@ -339,17 +339,17 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
     REQUIRE(!session.commit(vm.getHandle(), &err));
-    REQUIRE_EQ(provider.restoreCount, 1);
+    REQUIRE_EQ(provider.restoreCount, 2);  // Failed restore plus rollback.
 
     err.clear();
     REQUIRE(session.abort(vm.getHandle(), &err));
     REQUIRE(err.empty());
-    REQUIRE_EQ(provider.restoreCount, 2);
+    REQUIRE_EQ(provider.restoreCount, 3);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
 
-TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
+TEST_CASE("reloadScript.nativeResetPolicyBacksUpBeforeReset") {
     ssq::VM vm(2048, ssq::Libs::ALL);
     eve::dev::Snapshot::instance().clearRoots();
 
@@ -360,7 +360,7 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
     REQUIRE(session.commit(vm.getHandle(), &err));
-    REQUIRE_EQ(provider.captureCount, 0);
+    REQUIRE_EQ(provider.captureCount, 1);  // Backup at commit; begin still skips Reset providers.
     REQUIRE_EQ(provider.restoreCount, 0);
     REQUIRE_EQ(provider.resetCount, 1);
 
