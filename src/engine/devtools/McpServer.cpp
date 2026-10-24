@@ -1605,7 +1605,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.1\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "

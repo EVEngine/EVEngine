@@ -72,6 +72,8 @@ if(_has_devtools)
     target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 endif()
 create_module(EVCmdLine cmdline)
+# Derived from the resolved manifest, not a separately configurable feature flag.
+target_compile_definitions(EVCmdLine PRIVATE EVENGINE_CMDLINE_DEVTOOLS=$<BOOL:${_has_devtools}>)
 target_sources(EVCmdLine PRIVATE cmdline/Sha256.cpp)
 # DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
 # keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
