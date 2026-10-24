@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.21)
+project(NativeVulkanLoaderProbe LANGUAGES CXX)
+find_package(Vulkan REQUIRED)
+add_executable(vulkan_probe main.cpp)
+target_compile_features(vulkan_probe PRIVATE cxx_std_20)
+target_include_directories(vulkan_probe PRIVATE ${Vulkan_INCLUDE_DIRS})
+target_compile_definitions(vulkan_probe PRIVATE VK_NO_PROTOTYPES VK_USE_PLATFORM_WIN32_KHR)

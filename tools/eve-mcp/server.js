@@ -24,7 +24,10 @@
  * }
  *
  * Env filters forwarded to the engine process when auto-starting:
- *   EVE_MCP_TOOLSET, EVE_MCP_READONLY, EVE_MCP_EXCLUDE
+ *   EVE_MCP_TOOLSET, EVE_MCP_READONLY, EVE_MCP_EXCLUDE, EVE_MCP_PROFILE
+ *
+ * CLI: --profile=verify.play (or --profile verify.play) sets EVE_MCP_PROFILE
+ * and, when EVE_MCP_TOOLSET is unset, the matching tag list.
  */
 
 'use strict';
@@ -33,6 +36,40 @@ const net = require('net');
 const path = require('path');
 const readline = require('readline');
 const { spawn } = require('child_process');
+
+/** @type {Record<string, string>} */
+const PROFILE_TOOLSETS = {
+  'content.scene': 'agent,core,scene',
+  'content.map': 'agent,core,editor',
+  'script.bind': 'agent,core,debug',
+  'verify.play': 'agent,core,play,input',
+  'fix.compile': 'agent,core,debug',
+  'workshop.rpg': 'agent,core,play,input,editor,scene',
+};
+
+function parseCliProfile(argv) {
+  for (let i = 0; i < argv.length; ++i) {
+    const arg = argv[i];
+    if (arg.startsWith('--profile=')) return arg.slice('--profile='.length);
+    if (arg === '--profile' && i + 1 < argv.length) return argv[i + 1];
+  }
+  return '';
+}
+
+const CLI_PROFILE = parseCliProfile(process.argv.slice(2));
+if (CLI_PROFILE) {
+  if (!PROFILE_TOOLSETS[CLI_PROFILE]) {
+    process.stderr.write(
+      `eve-mcp: unknown --profile=${CLI_PROFILE}\n` +
+        `known: ${Object.keys(PROFILE_TOOLSETS).join(', ')}\n`
+    );
+    process.exit(2);
+  }
+  process.env.EVE_MCP_PROFILE = CLI_PROFILE;
+  if (!process.env.EVE_MCP_TOOLSET) {
+    process.env.EVE_MCP_TOOLSET = PROFILE_TOOLSETS[CLI_PROFILE];
+  }
+}
 
 const HOST = process.env.EVE_MCP_HOST || '127.0.0.1';
 const PORT = Number(process.env.EVE_MCP_PORT || '7529');
@@ -168,7 +205,8 @@ function bridge(sock) {
     shutdown(0);
   });
 
-  log(`eve-mcp: bridged stdio ↔ ${HOST}:${PORT}` + (child ? ' (auto-started)' : ''));
+  const profileNote = process.env.EVE_MCP_PROFILE ? ` profile=${process.env.EVE_MCP_PROFILE}` : '';
+  log(`eve-mcp: bridged stdio ↔ ${HOST}:${PORT}` + (child ? ' (auto-started)' : '') + profileNote);
 }
 
 function shutdown(code) {
