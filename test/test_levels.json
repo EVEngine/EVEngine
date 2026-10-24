@@ -4404,6 +4404,7 @@
       "role": "tests",
       "default": "physics-backend",
       "module": "climbing"
+    },
     "integration/control-rig/editor_control_rig.cpp": {
       "role": "tests",
       "default": "module-composition",
