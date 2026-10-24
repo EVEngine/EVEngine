@@ -93,7 +93,15 @@ struct WidgetDesc {
     float borderT = 0.f;
     float borderR = 0.f;
     float borderB = 0.f;
+    FillDirection fillDirection    = FillDirection::Right;
+    bool          fillStretch      = false;
+    float         fillStartDegrees = -90.f;
+    bool          fillClockwise    = true;
+    float         fillInnerRadius  = 0.f;  // fraction of outer radius, [0,1]
     float cornerRadius = 0.f;
+    float         fontSize         = 0.f;  // zero inherits host font; positive values are logical UI units
+    float         textR = 1.f, textG = 1.f, textB = 1.f, textA = 1.f;
+    float         textAlignX = 0.f, textAlignY = 0.f;
     float wrapWidth = 0.f;
     float itemHeight = 0.f;  // ScrollList uniform row height
     FlexDirection flexDirection = FlexDirection::Row;
@@ -476,6 +484,24 @@ EVENGINE_API_WORLD WidgetDesc image(std::string id = "", float width = 0.f, floa
 /** @brief Stretchable textured container with asset-defined content padding. */
 WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id = "",
                           uint64_t textureId = 0);
+/**
+ * @brief Linear filled image; value is a fraction, layout retains width/height at zero fill.
+ * @thread UI thread. @reentrancy Invokes no callbacks; returned description owns its data.
+ */
+EVENGINE_API_WORLD WidgetDesc filledImage(std::string id, float width, float height, float fraction);
+/**
+ * @brief Solid radial cooldown overlay; supports sectors and rings (no texture sampling).
+ * @thread UI thread. @reentrancy Invokes no callbacks; returned description owns its data.
+ */
+EVENGINE_API_WORLD WidgetDesc radialFill(std::string id, float width, float height, float fraction);
+/** @brief Composes a display-only resource bar; child IDs are /background, /trail, /value and /label.
+ * @thread UI thread. @reentrancy No callbacks. @return Owning widget description; values are presentation only. */
+EVENGINE_API_WORLD WidgetDesc resourceBar(std::string id, float width, float height, float fraction);
+/** @brief Composes an interactive skill slot; /activate emits clicks, /cooldown is a solid radial overlay.
+ * @thread UI thread. @reentrancy No callbacks. @return Owning widget description; caller retains registered icon
+ * texture. */
+EVENGINE_API_WORLD WidgetDesc skillSlot(std::string id, float size, uint64_t iconTexture, float cooldown,
+                                        std::string key);
 /** Clickable image (renders via ImGui ImageButton). */
 /** @brief Image button. */
 EVENGINE_API_WORLD WidgetDesc imageButton(std::string id, float width, float height,
