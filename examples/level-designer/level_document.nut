@@ -205,6 +205,9 @@ function levelDocumentApply(document) {
         foreach(id,piece in stagedPieces) levelReleaseRenderable(piece.entity);
         throw error;
     }
+    whiteboxCancelDrag();
+    foreach(id,piece in level.pieceHistory) levelReleaseRenderable(piece.entity);
+    level.pieceHistory = {};
     terrainDispose();level.terrain=stagedTerrain;stagedTerrain.entity.setVisible(true);
     foreach(id,piece in level.pieces) levelReleaseRenderable(piece.entity);
     foreach(id,spawn in level.spawns) {
@@ -275,6 +278,9 @@ function levelNewDocument() {
     foreach (id, spawn in level.spawns) {
         spawnReleaseProjection(spawn);
     }
+    whiteboxCancelDrag();
+    foreach(id,piece in level.pieceHistory) levelReleaseRenderable(piece.entity);
+    level.pieceHistory = {};
     spawnReleaseRigCache();
     level.pieces = {};
     level.spawns = {};

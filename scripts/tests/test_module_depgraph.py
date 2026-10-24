@@ -1,5 +1,6 @@
 """Unit tests for scripts/module_depgraph.py."""
 
+from collections import defaultdict
 import unittest
 import sys
 from pathlib import Path
@@ -12,6 +13,22 @@ import module_depgraph as md
 
 
 class DeclaredLayersTest(unittest.TestCase):
+    def test_combined_checks_scan_once_and_report_on_failure(self):
+        for graph_status, declared_status in [(True, 0), (False, 1), (False, 0)]:
+            with self.subTest(graph_failure=graph_status, declared_status=declared_status):
+                edges = defaultdict(dict, {"base": {"top": {"top/Header.h"}}} if graph_status else {})
+                header_edges = defaultdict(set)
+                with mock.patch.object(sys, "argv", ["module_depgraph", "--check", "--check-layers", "--report"]), \
+                     mock.patch.object(md, "scan", return_value=(["base", "top"], edges, header_edges)) as scan, \
+                     mock.patch.object(md, "layers", return_value={"base": 0, "top": 1}), \
+                     mock.patch.object(md, "check_declared_layers", return_value=declared_status) as declared, \
+                     mock.patch("builtins.print") as output:
+                    self.assertEqual(md.main(), int(graph_status or declared_status))
+                    scan.assert_called_once()
+                    declared.assert_called_once_with(edges, header_edges)
+                    self.assertTrue(any(call.args[0] == "=== layers (back-edges removed) ==="
+                                        for call in output.call_args_list))
+
     def test_manifest_parses_declared_layers(self):
         layers = md.declared_layers()
         self.assertEqual(layers.get("graphics"), 3)

@@ -550,8 +550,8 @@ TEST_CASE("decision.blackboardsAndFsmAreExplicit") {
 }
 
 TEST_CASE("decision.utilityIsDeterministic") {
-    CHECK(std::abs(DecisionContext::utility("1:2,0:1") - .6666667f) < .001f);
-    CHECK_EQ(DecisionContext::choose("retreat=0.8:1;attack=0.8:1"), std::string("attack"));
+    REQUIRE(std::abs(DecisionContext::utility("1:2,0:1") - .6666667f) < .001f);
+    REQUIRE_EQ(DecisionContext::choose("retreat=0.8:1;attack=0.8:1"), std::string("attack"));
 }
 
 TEST_CASE("decision.influenceAndSnapshotRoundTrip") {

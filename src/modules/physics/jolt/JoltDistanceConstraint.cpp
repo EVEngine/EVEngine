@@ -5,6 +5,9 @@
 #include <Jolt/Physics/StateRecorder.h>
 #include "physics/jolt/JoltDistanceConstraint.h"
 namespace eve::physics::jolt {
+// Jolt SIMD members require alignment padding on MSVC ARM64.
+JPH_SUPPRESS_WARNING_PUSH
+JPH_MSVC_SUPPRESS_WARNING(4324)
 class DistanceConstraint final : public JPH::TwoBodyConstraint {
 public:
     DistanceConstraint(JPH::Body&, JPH::Body&, const JPH::DistanceConstraintSettings&);
@@ -35,6 +38,8 @@ private:
     float                   hertz = 0, damping = 0, length = 0, minimum = 0, maximum = FLT_MAX, speed = 0, maxForce = 0;
     void                    configure();
 };
+
+JPH_SUPPRESS_WARNING_POP
 
 DistanceConstraint::DistanceConstraint(JPH::Body& a, JPH::Body& b, const JPH::DistanceConstraintSettings& settings)
     : TwoBodyConstraint(a, b, settings), spring(a, b, settings), limits(a, b, settings), length(settings.mMinDistance) {
