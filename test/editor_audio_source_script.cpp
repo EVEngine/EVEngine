@@ -1,3 +1,4 @@
+#include "editor_preview_script_test_support.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
@@ -18,10 +19,17 @@ TEST_CASE("editor.audio.source_editor_script_composes_workspace_and_transactions
         audioEditor <- created.value;
         configured <- audioEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        panel0 <- ""; cap0 <- ""; ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "audio.sources") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         viewport <- audioEditor.setViewportWidth(400.0);
+    )"));
+    REQUIRE(preview_test::finishScript(vm, "audioEditor").ok());
+    vm.run(vm.compileSource(R"(
         beforeVolume <- audioEditor.getFloat("play.volume");
         volumeResult <- audioEditor.setFloat("play.volume", 0.2);
         afterVolume <- audioEditor.getFloat("play.volume");

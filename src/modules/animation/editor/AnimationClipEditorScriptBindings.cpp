@@ -1,4 +1,6 @@
 #include "animation/editor/AnimationClipEditorScriptBindings.h"
+#include "animation/editor/AnimationClipPresentation.h"
+#include "editor/presentation/WorkspacePresentationBindings.h"
 
 #include "animation/editor/AnimationClipEditor.h"
 #include "animation/editor/AnimationEditorModule.h"
@@ -34,11 +36,14 @@ class ScriptAnimationClipEditor {
 public:
     explicit ScriptAnimationClipEditor(std::string targetId) : editor_(std::move(targetId)) {}
 
+    editor::WorkspacePresentation& presentation() noexcept { return presentation_; }
+
     AnimationClipEditor&       editor() noexcept { return editor_; }
     const AnimationClipEditor& editor() const noexcept { return editor_; }
 
 private:
     AnimationClipEditor editor_;
+    editor::WorkspacePresentation presentation_;
 };
 
 }  // namespace
@@ -48,6 +53,8 @@ void exposeAnimationClipEditorScriptBindings(ssq::Table& table, ssq::Class& modu
     auto clipEditor      = table.addClass<ScriptAnimationClipEditor>(
         "AnimationClipEditor",
         std::function<ScriptAnimationClipEditor*()>([]() -> ScriptAnimationClipEditor* { return nullptr; }), true);
+
+    editor::exposeWorkspacePresentation<ScriptAnimationClipEditor, AnimationClipPresentation>(clipEditor, vm);
 
     clipEditor.addFunc("configureWorkspace",
                        [vm](ScriptAnimationClipEditor* self, editor::EditorWorkspace* workspace) {

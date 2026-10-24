@@ -12,7 +12,8 @@ using eve::voxel_editing::VoxelModelValue;
 using eve::voxel_editing::VoxelSocketKind;
 
 namespace {
-void apply(VoxelCatalogTarget& target, EditorResult<DomainOperation> operation) {
+void apply(VoxelCatalogTarget& target, EditorResult<DomainOperation> operation,
+           zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
     REQUIRE(operation.ok());
     REQUIRE(target.applyDomainOperation(operation.value()).ok());
 }
@@ -33,8 +34,8 @@ VoxelModelValue cube(const std::string& id, int n) {
 
 TEST_CASE("editor.voxel.catalog_classifies_filled_and_partial_occupancy") {
     VoxelCatalogTarget target("project");
-    apply(target, target.makeCreateModel(cube("block", 4)));
-    CHECK_EQ(eve::voxel_editing::voxelClassifyModelFill(*target.findModel(ObjectId("block"))), VoxelCellFill::Filled);
+    apply(target, target.makeCreateModel(cube("block", 4)), _ZEROERR_TEST_CONTEXT);
+    REQUIRE_EQ(eve::voxel_editing::voxelClassifyModelFill(*target.findModel(ObjectId("block"))), VoxelCellFill::Filled);
 
     VoxelModelValue bed;
     bed.id    = ObjectId("bed");
@@ -44,39 +45,49 @@ TEST_CASE("editor.voxel.catalog_classifies_filled_and_partial_occupancy") {
     bed.sizeZ = 6;
     for (int x = 0; x < 8; ++x)
         for (int z = 0; z < 6; ++z) bed.voxels.push_back({x, 0, z});
-    apply(target, target.makeCreateModel(bed));
-    CHECK_EQ(eve::voxel_editing::voxelClassifyModelFill(*target.findModel(ObjectId("bed"))), VoxelCellFill::Partial);
+    apply(target, target.makeCreateModel(bed), _ZEROERR_TEST_CONTEXT);
+    REQUIRE_EQ(eve::voxel_editing::voxelClassifyModelFill(*target.findModel(ObjectId("bed"))), VoxelCellFill::Partial);
 
     const auto pick = eve::voxel_editing::pickVoxelModel(*target.findModel(ObjectId("block")), -2.f, 1.5f, 1.5f, 1.f,
                                                          0.f, 0.f, 16.f);
-    CHECK(pick.hit);
-    CHECK(pick.canAttach);
-    CHECK_EQ(pick.hitX, 0);
-    CHECK_EQ(pick.prevX, -1);
+    REQUIRE(pick.hit);
+    REQUIRE(!pick.canAttach);
+    REQUIRE_EQ(pick.hitX, 0);
+    REQUIRE_EQ(pick.prevX, -1);
+    // The previous cell must be empty and inside the bounded model to permit attach.
+    auto sparse       = cube("sparse", 4);
+    sparse.voxels     = {{1, 1, 1}};
+    const auto attach = eve::voxel_editing::pickVoxelModel(sparse, -2.f, 1.5f, 1.5f, 1.f, 0.f, 0.f, 16.f);
+    REQUIRE(attach.hit);
+    REQUIRE(attach.canAttach);
+    REQUIRE_EQ(attach.hitX, 1);
+    REQUIRE_EQ(attach.prevX, 0);
+    REQUIRE_EQ(attach.prevY, 1);
+    REQUIRE_EQ(attach.prevZ, 1);
 }
 
 TEST_CASE("editor.voxel.catalog_snapshot_roundtrip_preserves_occupancy") {
     VoxelCatalogTarget target("project");
-    apply(target, target.makeCreateModel(cube("block", 2)));
+    apply(target, target.makeCreateModel(cube("block", 2)), _ZEROERR_TEST_CONTEXT);
     VoxelCatalogTarget restored("copy");
     REQUIRE(restored.loadSnapshot(target.snapshotValue()).ok());
     REQUIRE(restored.findModel(ObjectId("block")));
-    CHECK_EQ(restored.findModel(ObjectId("block"))->voxels.size(), static_cast<std::size_t>(8));
+    REQUIRE_EQ(restored.findModel(ObjectId("block"))->voxels.size(), static_cast<std::size_t>(8));
 }
 
 TEST_CASE("editor.voxel.catalog_join_sockets_match_opposite_faces") {
-    CHECK(eve::voxel_editing::canJoinVoxelSockets({"bed-rail", VoxelSocketKind::Male},
-                                                  {"bed-rail", VoxelSocketKind::Female}));
+    REQUIRE(eve::voxel_editing::canJoinVoxelSockets({"bed-rail", VoxelSocketKind::Male},
+                                                    {"bed-rail", VoxelSocketKind::Female}));
     VoxelCatalogTarget target("project");
     VoxelModelValue head = cube("head", 2);
     head.sockets[0]      = {"bed-rail", VoxelSocketKind::Male};
     VoxelModelValue foot = cube("foot", 2);
     foot.sockets[1]      = {"bed-rail", VoxelSocketKind::Female};
-    apply(target, target.makeCreateModel(head));
-    apply(target, target.makeCreateModel(foot));
+    apply(target, target.makeCreateModel(head), _ZEROERR_TEST_CONTEXT);
+    apply(target, target.makeCreateModel(foot), _ZEROERR_TEST_CONTEXT);
     const auto partners = target.hullJoinPartners(ObjectId("head"), 0);
     REQUIRE_EQ(partners.size(), static_cast<std::size_t>(1));
-    CHECK_EQ(partners.front().value(), std::string("foot"));
+    REQUIRE_EQ(partners.front().value(), std::string("foot"));
 }
 
 TEST_CASE("editor.voxel.catalog_empty_canvas_attaches_first_in_bounds_cell") {
@@ -87,9 +98,9 @@ TEST_CASE("editor.voxel.catalog_empty_canvas_attaches_first_in_bounds_cell") {
     empty.sizeY = 4;
     empty.sizeZ = 4;
     const auto pick = eve::voxel_editing::pickVoxelModel(empty, -2.f, 1.5f, 1.5f, 1.f, 0.f, 0.f, 16.f);
-    CHECK(!pick.hit);
-    CHECK(pick.canAttach);
-    CHECK_EQ(pick.prevX, 0);
-    CHECK_EQ(pick.prevY, 1);
-    CHECK_EQ(pick.prevZ, 1);
+    REQUIRE(!pick.hit);
+    REQUIRE(pick.canAttach);
+    REQUIRE_EQ(pick.prevX, 0);
+    REQUIRE_EQ(pick.prevY, 1);
+    REQUIRE_EQ(pick.prevZ, 1);
 }

@@ -1,4 +1,6 @@
 #include "audio/editor/AudioSourceEditorScriptBindings.h"
+#include "audio/editor/AudioSourcePresentation.h"
+#include "editor/presentation/WorkspacePresentationBindings.h"
 
 #include "audio/editor/AudioEditorModule.h"
 #include "audio/editor/AudioSourceEditor.h"
@@ -30,11 +32,14 @@ class ScriptAudioSourceEditor {
 public:
     explicit ScriptAudioSourceEditor(std::string targetId) : editor_(std::move(targetId)) {}
 
+    editor::WorkspacePresentation& presentation() noexcept { return presentation_; }
+
     AudioSourceEditor&       editor() noexcept { return editor_; }
     const AudioSourceEditor& editor() const noexcept { return editor_; }
 
 private:
     AudioSourceEditor editor_;
+    editor::WorkspacePresentation presentation_;
 };
 
 const char* transportLabel(audio_editing::AudioTransportState state) {
@@ -53,6 +58,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
     auto sourceEditor    = table.addClass<ScriptAudioSourceEditor>(
         "AudioSourceEditor",
         std::function<ScriptAudioSourceEditor*()>([]() -> ScriptAudioSourceEditor* { return nullptr; }), true);
+
+    editor::exposeWorkspacePresentation<ScriptAudioSourceEditor, AudioSourcePresentation>(sourceEditor, vm);
 
     sourceEditor.addFunc("configureWorkspace", [vm](ScriptAudioSourceEditor* self, editor::EditorWorkspace* workspace) {
         if (!self || !workspace)

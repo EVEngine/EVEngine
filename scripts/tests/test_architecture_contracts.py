@@ -15,9 +15,25 @@ import check_architecture_contracts as contracts  # noqa: E402
 
 
 class ArchitectureContractTests(unittest.TestCase):
-    def test_repository_catalogue_covers_all_ten_rules(self):
+    def test_repository_catalogue_covers_all_rules(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
         self.assertEqual([], contracts.validate_catalogue(metadata, today=date(2026, 8, 26)))
+
+    def test_module_interface_requires_declared_faces(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        reduced = copy.deepcopy(metadata)
+        entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
+        del entry["hard_dependencies"]
+        errors = contracts.validate_catalogue(reduced, today=date(2026, 10, 23))
+        self.assertTrue(any("hard_dependencies" in error for error in errors))
+
+    def test_module_interface_rejects_unknown_binding_method(self):
+        metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")
+        reduced = copy.deepcopy(metadata)
+        entry = next(item for item in reduced["entries"] if item["rule"] == "module-interface")
+        entry["binds"][0]["methods"].append("notARealPresentationMethod")
+        errors = contracts.validate_catalogue(reduced, today=date(2026, 10, 23))
+        self.assertTrue(any("method not found" in error for error in errors))
 
     def test_missing_required_contract_field_is_rejected(self):
         metadata = contracts.load_json(ROOT / "scripts" / "architecture_contracts.json")

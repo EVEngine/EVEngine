@@ -593,6 +593,242 @@
       ],
       "removal_condition": "remove the debt entry when the corresponding migration or documentation is complete; expiry forces review before renewal.",
       "max_net_growth": 0
+    },
+    {
+      "id": "animation-editor-workspace-presentation-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/animation/editor/**",
+      "owner": "editor-maintainers",
+      "issue": "EVENGINE-EDITOR-UI-FRAMEWORK",
+      "reason": "Audio and Animation share presentation validation, draft lifecycle and the existing domain history; this entry records the changed boundary faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/animation/editor/AnimationClipPresentation.h",
+        "docs/dev/2026-09-22-editor-ui-framework.md",
+        "src/modules/editor/presentation/WorkspacePresentationBindings.h",
+        "src/modules/animation/editor/AnimationClipEditorScriptBindings.cpp",
+        "src/modules/animation/editor/AnimationClipPreview.h",
+        "src/modules/animation/editor/AnimationClipPreview.cpp",
+        "docs/dev/2026-10-24-async-editor-preview.md"
+      ],
+      "tests": [
+        "test/editor_workspace_presentation.cpp",
+        "test/editor_async_preview.cpp",
+        "test/editor_presentation/CMakeLists.txt"
+      ],
+      "module": "animation_editor",
+      "hard_dependencies": [
+        "animation_editing",
+        "editor"
+      ],
+      "provides": [],
+      "requires": [
+        "IAnimationClipPreviewProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "AnimationClipEditor",
+          "methods": [
+            "presentationState",
+            "presentationSnapshot",
+            "presentationEdit",
+            "presentationCommit",
+            "presentationCancel",
+            "presentationAction",
+            "presentationClose"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owner/VM thread for requests and atomic publication; retained immutable provider and owning snapshots on the editing task worker. Cancellation is cooperative and close invalidates publication immediately.",
+      "hot_path": [
+        "src/modules/animation/editor/AnimationClipPresentation.*",
+        "src/modules/animation/editor/AnimationClipPreview.cpp"
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d",
+        "evidence": "Source-only profile check; native source composition without audio/graphics is tested in test/editor_presentation. Full runtime-3d link evidence is required before claiming L2 runtime-profile trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "WorkspacePresentation::snapshot",
+          "shape": "owned-result",
+          "why": "Owning schema/value rows rebuilt only after revision/selection changes or playback pauses; state polling does not read properties."
+        },
+        {
+          "api": "AnimationClipEditor::requestPreview",
+          "shape": "two-step",
+          "why": "Copy immutable PCM/clip inputs once, queue computation, poll typed completion without copying full payload; provider generation and request mailbox identity reject stale completions."
+        }
+      ]
+    },
+    {
+      "id": "audio-editor-workspace-presentation-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/audio/editor/**",
+      "owner": "editor-maintainers",
+      "issue": "EVENGINE-EDITOR-UI-FRAMEWORK",
+      "reason": "Audio and Animation share presentation validation, draft lifecycle and the existing domain history; this entry records the changed boundary faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/audio/editor/AudioSourcePresentation.h",
+        "docs/dev/2026-09-22-editor-ui-framework.md",
+        "src/modules/editor/presentation/WorkspacePresentationBindings.h",
+        "src/modules/audio/editor/AudioSourceEditorScriptBindings.cpp",
+        "src/modules/audio/editor/AudioSourcePreview.h",
+        "src/modules/audio/editor/AudioSourcePreview.cpp",
+        "docs/dev/2026-10-24-async-editor-preview.md"
+      ],
+      "tests": [
+        "test/editor_workspace_presentation.cpp",
+        "test/editor_async_preview.cpp",
+        "test/editor_presentation/CMakeLists.txt"
+      ],
+      "module": "audio_editor",
+      "hard_dependencies": [
+        "audio_editing",
+        "editor"
+      ],
+      "provides": [],
+      "requires": [
+        "IAudioSourcePreviewProvider"
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "AudioSourceEditor",
+          "methods": [
+            "presentationState",
+            "presentationSnapshot",
+            "presentationEdit",
+            "presentationCommit",
+            "presentationCancel",
+            "presentationAction",
+            "presentationClose"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Owner/VM thread for requests and atomic publication; retained immutable provider and owning snapshots on the editing task worker. Cancellation is cooperative and close invalidates publication immediately.",
+      "hot_path": [
+        "src/modules/audio/editor/AudioSourcePresentation.*",
+        "src/modules/audio/editor/AudioSourcePreview.cpp"
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d",
+        "evidence": "Source-only profile check; native source composition without audio/graphics is tested in test/editor_presentation. Full runtime-3d link evidence is required before claiming L2 runtime-profile trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "WorkspacePresentation::snapshot",
+          "shape": "owned-result",
+          "why": "Owning schema/value rows rebuilt only after revision/selection changes or playback pauses; state polling does not read properties."
+        },
+        {
+          "api": "AudioSourceEditor::requestPreview",
+          "shape": "two-step",
+          "why": "Copy immutable PCM/clip inputs once, queue computation, poll typed completion without copying full payload; provider generation and request mailbox identity reject stale completions."
+        }
+      ]
+    },
+    {
+      "id": "editing-task-discard-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/editing/EditingTaskService.*",
+      "owner": "editor-maintainers",
+      "issue": "EVENGINE-EDITOR-UI-FRAMEWORK",
+      "reason": "Typed asynchronous preview sessions need bounded cancellation and task ownership cleanup using the existing executor rather than another scheduler.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/editing/EditingTaskService.h",
+        "src/modules/editing/EditingTaskService.cpp",
+        "docs/dev/2026-10-24-async-editor-preview.md"
+      ],
+      "tests": [
+        "test/editor_workspace_presentation.cpp",
+        "test/editor_async_preview.cpp",
+        "test/editor_presentation/CMakeLists.txt"
+      ],
+      "module": "editing",
+      "hard_dependencies": [
+        "common"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Thread-safe TaskService lifecycle; unknown callbacks and provider capture destructors execute outside the service mutex.",
+      "hot_path": [],
+      "trim": {
+        "absent_profile": "runtime-3d",
+        "evidence": "Source-only profile check; native source composition without audio/graphics is tested in test/editor_presentation. Full runtime-3d link evidence is required before claiming L2 runtime-profile trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "TaskService::discard",
+          "shape": "owned-result",
+          "why": "Cancel and release a task record; running callbacks retain their own inputs until return; queued work is removed without invoking callbacks under the service lock."
+        }
+      ]
+    },
+    {
+      "id": "editor-workspace-presentation-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/editor/presentation/**",
+      "owner": "editor-maintainers",
+      "issue": "EVENGINE-EDITOR-UI-FRAMEWORK",
+      "reason": "Audio and Animation share presentation validation, draft lifecycle and the existing domain history; this entry records the changed boundary faces.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/editor/presentation/WorkspacePresentation.h",
+        "docs/dev/2026-09-22-editor-ui-framework.md",
+        "src/modules/editor/presentation/WorkspacePresentationBindings.h",
+        "src/modules/editor/presentation/AsyncPreview.h",
+        "src/modules/editor/presentation/PreviewState.h",
+        "docs/dev/2026-10-24-async-editor-preview.md"
+      ],
+      "tests": [
+        "test/editor_workspace_presentation.cpp",
+        "test/editor_async_preview.cpp",
+        "test/editor_presentation/CMakeLists.txt"
+      ],
+      "module": "editor",
+      "hard_dependencies": [
+        "editing",
+        "property_access"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [],
+      "thread_affinity": "Owner thread lifecycle; TaskService worker invokes providers outside locks using owning captures. Owner polls a private completion mailbox without provider registry or task-snapshot lookup.",
+      "hot_path": [
+        "src/modules/editor/presentation/**",
+        "src/scripts/editor_workspace_presenter.nut"
+      ],
+      "trim": {
+        "absent_profile": "runtime-3d",
+        "evidence": "Source-only profile check; native source composition without audio/graphics is tested in test/editor_presentation. Full runtime-3d link evidence is required before claiming L2 runtime-profile trimming."
+      },
+      "cost_notes": [
+        {
+          "api": "WorkspacePresentation::snapshot",
+          "shape": "owned-result",
+          "why": "Owning schema/value rows rebuilt only after revision/selection changes or playback pauses; state polling does not read properties."
+        },
+        {
+          "api": "AsyncPreview::request",
+          "shape": "two-step",
+          "why": "TaskService runs owning work; one active and one latest queued request per session; cancelled task records and captures are discarded rather than accumulated."
+        }
+      ]
     }
   ]
 }

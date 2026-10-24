@@ -3,6 +3,7 @@
 #include "audio/editing/AudioTarget.h"
 #include "common/Exception.h"
 #include "common/Module.h"
+#include "editor/presentation/PreviewState.h"
 
 #if defined(EVE_AUDIO_EDITOR_LIVE)
 #include "audio/Audio.h"
@@ -86,10 +87,11 @@ void AudioClockTransportBackend::advance(double deltaSeconds) {
 
 AudioSourceEditor::AudioSourceEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {
+    initializePreview();
     seedPreviewDocument();
     generateTonePcm();
     clock_.setDuration(static_cast<double>(pcm_.samples.size()) / static_cast<double>(pcm_.sampleRate));
-    auto rebuilt = rebuildWaveform();
+    auto rebuilt = rebuildWaveform(viewportWidth_);
     if (!rebuilt.ok()) rebuilt.ignore("preview waveform uses an empty envelope when generation is rejected");
     auto bound = bindClockAudition();
     if (!bound.ok()) bound.ignore("clock audition bind is retried after workspace setup");
@@ -101,6 +103,8 @@ AudioSourceEditor::AudioSourceEditor(std::string targetId)
 }
 
 AudioSourceEditor::~AudioSourceEditor() {
+    closePreview();
+    previewSession_.reset();
     transport_.unbind();
     liveAudition_.reset();
 }
@@ -162,18 +166,11 @@ audio_editing::Revision AudioSourceEditor::auditionRevision() const {
     return audio_editing::Revision(pcmRevision_);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::rebuildWaveform() {
-    const int width = std::max(8, static_cast<int>(std::lround(viewportWidth_)));
-    audio_editing::AudioWaveformRequest request;
-    request.asset          = "asset://preview/tone.sine";
-    request.sourceRevision = auditionRevision();
-    request.pixelWidth     = width;
-    request.loopStart      = readNumber(target_, selection(), "play.loop-start", 0.0);
-    request.loopEnd        = readNumber(target_, selection(), "play.loop-end", duration());
-    waveform_              = waveforms_.generate(request, pcm_);
-    if (waveform_.status != audio_editing::EditorStatus::Applied)
-        return editorError(waveform_.status, "editor.audio.waveform", "Could not rebuild the source waveform");
-    return eve::editing::applied<void>();
+audio_editing::EditorResult<void> AudioSourceEditor::rebuildWaveform(float viewportWidth) {
+    requestedViewportWidth_ = viewportWidth;
+    const auto phase        = previewState().phase;
+    if (phase == editor::PreviewPhase::Unavailable || phase == editor::PreviewPhase::Closed) return editing::noOp();
+    return requestPreview();
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::bindClockAudition() {
@@ -191,7 +188,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::syncLoop() {
     if (end <= 0.0) end = duration();
     auto applied = transport_.setLoop(auditionRevision(), loop, start, end);
     if (!applied.ok()) return applied;
-    return rebuildWaveform();
+    return rebuildWaveform(requestedViewportWidth_);
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::publishLive() {
@@ -233,11 +230,11 @@ audio_editing::EditorResult<void> AudioSourceEditor::configureWorkspace(editor::
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::setViewportWidth(float width) {
-    if (!std::isfinite(width) || width < 8.0f)
+    if (!std::isfinite(width) || width < 8.0f ||
+        width > static_cast<float>(audio_editing::AudioWaveformService::maximumPreviewPixels))
         return editorError(audio_editing::EditorStatus::Rejected, "editor.audio.viewport",
-                           "Waveform viewport width must be at least 8 pixels");
-    viewportWidth_ = width;
-    return rebuildWaveform();
+                           "Waveform viewport width must be within the service pixel limits");
+    return rebuildWaveform(width);
 }
 
 audio_editing::EditorResult<void> AudioSourceEditor::seekX(float x) {
@@ -262,6 +259,25 @@ audio_editing::EditorResult<void> AudioSourceEditor::setProperty(const std::stri
                                      audio_editing::PropertySetMode::Absolute);
     if (!operation.ok())
         return audio_editing::EditorResult<void>::failure(operation.status());
+    if (path == "play.loop" || path == "play.loop-start" || path == "play.loop-end") {
+        // Validate with the canonical transport contract before publishing a document/history entry.
+        AudioClockTransportBackend candidateClock;
+        candidateClock.setDuration(duration());
+        audio_editing::AudioAuditionTransport candidateTransport;
+        auto bound = candidateTransport.bind(audio_editing::StableId(target_.targetId().value()), auditionRevision(),
+                                             &candidateClock);
+        if (!bound.ok()) return bound;
+        auto number = [&](const std::string& field) {
+            if (path != field) return readNumber(target_, selection(), field.c_str(), 0.0);
+            if (const auto* real = value.getIf<double>()) return *real;
+            return static_cast<double>(*value.getIf<std::int64_t>());
+        };
+        const bool loop =
+            path == "play.loop" ? *value.getIf<bool>() : readFlag(target_, selection(), "play.loop", false);
+        auto checked =
+            candidateTransport.setLoop(auditionRevision(), loop, number("play.loop-start"), number("play.loop-end"));
+        if (!checked.ok()) return checked;
+    }
     editor::TransactionSpec spec;
     spec.id           = editor::TransactionId("audio.source.tx." + std::to_string(++txSequence_));
     spec.label        = "Set " + path;
@@ -333,6 +349,9 @@ audio_editing::EditorResult<void> AudioSourceEditor::stop() {
 }
 
 audio_editing::EditorResult<audio_editing::AudioTransportSnapshot> AudioSourceEditor::update(double deltaSeconds) {
+    auto previewed = pollPreview();
+    if (!previewed.ok())
+        return audio_editing::EditorResult<audio_editing::AudioTransportSnapshot>::failure(previewed.status());
     if (!liveBound_) clock_.advance(deltaSeconds);
     auto observed = transport_.update(auditionRevision());
     if (observed.ok()) lastTransport_ = observed.value();

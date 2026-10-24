@@ -1,10 +1,12 @@
 #include "audio/editor/AudioSourceEditor.h"
 #include "editor/EditorWorkspace.h"
+#include "editor_preview_test_support.h"
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
 #include <cmath>
+#include <map>
 
 using eve::audio_editor::AudioSourceEditor;
 using eve::editor::EditorWorkspace;
@@ -14,14 +16,19 @@ TEST_CASE("editor.audio.source_editor_installs_workspace_and_reverses_volume") {
     EditorWorkspace   workspace("audio.preview", "Audio Source Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("audio.sources"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("audio.source"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("transport"));
+    const std::map<std::string, std::string> expected = {{"audio.sources", "list"},
+                                                         {"audio.waveform", "preview"},
+                                                         {"audio.inspector", "inspector"},
+                                                         {"audio.transport", "transport"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        const auto id = workspace.getPanelId(i);
+        REQUIRE(expected.contains(id));
+        CHECK_EQ(workspace.getPanelCapability(i), std::string("audio.source"));
+        CHECK_EQ(workspace.getPanelContext(i), expected.at(id));
+    }
 
     REQUIRE(editor.setViewportWidth(320.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.bucketCount() > 8);
     CHECK(editor.duration() > 1.9);
 

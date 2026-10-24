@@ -50,9 +50,11 @@ struct AudioWaveformResult {
 /** @brief Codec-neutral waveform generation and loop QA service. */
 class AudioWaveformService {
 public:
+    /** @brief Maximum pixel width accepted by the standard waveform preview. */
+    static constexpr int maximumPreviewPixels = 16384;
     /** @brief Build bounded per-channel envelopes from already-decoded PCM. */
     AudioWaveformResult generate(const AudioWaveformRequest& request, const EditorAudioPcm& pcm,
-                                 int maxPixels = 16384, std::size_t maxSamples = 100000000) const;
+                                 int maxPixels = maximumPreviewPixels, std::size_t maxSamples = 100000000) const;
 };
 
 }  // namespace eve::audio_editing

@@ -17,9 +17,13 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         avatarEditor <- created.value;
         configured <- avatarEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx4 <- workspace.getPanelContext(4);
+        panel0 <- ""; cap0 <- ""; ctx4 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "avatar.layers") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "expressions") ctx4 = workspace.getPanelContext(i);
+        }
         selectParam <- avatarEditor.selectParameter("smile");
         beforeY <- avatarEditor.getPreviewY(1);
         deleted <- avatarEditor.deleteSelectedParameter();
@@ -31,19 +35,19 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         channels <- avatarEditor.getExpressionChannelCount(0);
     )"));
 
-    CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
-    CHECK(vm.find("configured").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("workspacePanelCount").toInt(), 5);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
-    CHECK_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
-    CHECK_EQ(vm.find("ctx4").toString(), std::string("expressions"));
-    CHECK(vm.find("selectParam").toTable().get<bool>("ok"));
-    CHECK(!vm.find("deleted").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("afterCount").toInt(), 1);
-    CHECK_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
-    CHECK(vm.find("valueResult").toTable().get<bool>("ok"));
-    CHECK(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
-    CHECK_EQ(vm.find("expressions").toInt(), 1);
-    CHECK(vm.find("channels").toInt() >= 1);
+    REQUIRE(vm.find("created").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    REQUIRE(vm.find("configured").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("workspacePanelCount").toInt(), 5);
+    REQUIRE_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
+    REQUIRE_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
+    REQUIRE_EQ(vm.find("ctx4").toString(), std::string("expressions"));
+    REQUIRE(vm.find("selectParam").toTable().get<bool>("ok"));
+    REQUIRE(!vm.find("deleted").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("afterCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
+    REQUIRE(vm.find("valueResult").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
+    REQUIRE_EQ(vm.find("expressions").toInt(), 1);
+    REQUIRE(vm.find("channels").toInt() >= 1);
 }

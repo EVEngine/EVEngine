@@ -17,7 +17,12 @@
 #include <memory>
 #include <string>
 
+namespace eve::editor {
+struct PreviewState;
+}
+
 namespace eve::audio_editor {
+class IAudioSourcePreviewProvider;
 
 /**
  * @brief Clock-backed audition used when no live OpenAL Source is attached.
@@ -70,6 +75,31 @@ public:
     AudioSourceEditor& operator=(const AudioSourceEditor&) = delete;
     ~AudioSourceEditor();
 
+    /**
+     * @brief Replace the owned immutable preview provider and invalidate all previous work, even for the same instance.
+     * @ownership Retains shared ownership; null explicitly disables previews, preserving the last successful payload.
+     * @thread Owner thread; providers run on a worker with owning immutable inputs and must cooperate with
+     * cancellation.
+     * @reentrancy Provider callbacks never run under editor locks or access this editor.
+     */
+    [[nodiscard]] audio_editing::EditorResult<void> setPreviewProvider(
+        std::shared_ptr<const IAudioSourcePreviewProvider> provider);
+    /**
+     * @brief Queue a preview of the current domain inputs; accepted work returns Pending.
+     * @cost Copies the PCM/clip input once per request; computation runs on the editing task worker, amortized over
+     * polls.
+     */
+    [[nodiscard]] audio_editing::EditorResult<void> requestPreview();
+    /** @brief Publish the current completed preview atomically; Pending while work runs, NoOp when idle. Owner thread
+     * only. */
+    [[nodiscard]] audio_editing::EditorResult<void> pollPreview();
+    /** @brief Cancel pending publication while keeping the last valid preview; a new explicit request may resume. */
+    [[nodiscard]] audio_editing::EditorResult<void> cancelPreview();
+    /** @brief Permanently cancel and close preview publication; idempotent. Destruction joins cooperative work. */
+    void closePreview();
+    /** @brief Observe request sequence, provider generation and phase without copying preview payloads. */
+    editor::PreviewState previewState() const noexcept;
+
     /** @brief Borrow the authoritative source document. */
     const audio_editing::AudioSourceTarget& target() const noexcept { return target_; }
 
@@ -81,7 +111,8 @@ public:
 
     /**
      * @brief Rebuild waveform envelopes for the given pixel width.
-     * @param width Viewport width in pixels; must be positive and finite.
+     * @param width Viewport width in pixels; finite, at least 8, and within waveform service limits.
+     * @return Rejected on invalid input; failed rebuilds preserve the last valid waveform and layout.
      */
     [[nodiscard]] audio_editing::EditorResult<void> setViewportWidth(float width);
 
@@ -147,8 +178,14 @@ public:
     audio_editing::EditorValue snapshot() const { return target_.snapshotValue(); }
 
 private:
+    struct PreviewSession;
+    struct PreviewSessionDeleter {
+        void operator()(PreviewSession*) const;
+    };
+    std::unique_ptr<PreviewSession, PreviewSessionDeleter> previewSession_;
+    void                                                   initializePreview();
     [[nodiscard]] editor::SelectionSnapshot selection() const;
-    [[nodiscard]] audio_editing::EditorResult<void> rebuildWaveform();
+    [[nodiscard]] audio_editing::EditorResult<void>        rebuildWaveform(float viewportWidth);
     [[nodiscard]] audio_editing::EditorResult<void> bindClockAudition();
     [[nodiscard]] audio_editing::EditorResult<void> syncLoop();
     [[nodiscard]] audio_editing::EditorResult<void> publishLive();
@@ -159,7 +196,6 @@ private:
     audio_editing::AudioSourceTarget         target_;
     editor::LocalWorldAuthority              authority_;
     editor::LocalTransactionBackend          transactions_;
-    audio_editing::AudioWaveformService      waveforms_;
     audio_editing::EditorAudioPcm            pcm_;
     audio_editing::AudioWaveformResult       waveform_;
     AudioClockTransportBackend               clock_;
@@ -171,6 +207,7 @@ private:
     std::uint64_t                            pcmRevision_  = 1;
     std::uint64_t                            txSequence_   = 0;
     float                                    viewportWidth_ = 640.0f;
+    float                                    requestedViewportWidth_ = 640.0f;
 };
 
 }  // namespace eve::audio_editor

@@ -11,7 +11,7 @@ silently publishing arg0/arg1 placeholders.
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import json
 from pathlib import Path
 import re
@@ -385,6 +385,10 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
+    helper_contracts: dict[str, list[Contract]] = {}
+    helper_pattern = re.compile(
+        r"template\s*<[^>]+>\s*void\s+(\w+)\s*\(\s*ssq::Class\s*&\s*(\w+)"
+    )
     call_pattern = re.compile(r"\b([A-Za-z_]\w*)\.addFunc\s*\(")
     for path, source in sources.items():
         relative = path.relative_to(ROOT).parts
@@ -393,6 +397,12 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
             continue
         bindings = class_bindings(source)
         masked = mask_comments(source)
+        helpers = []
+        for helper in helper_pattern.finditer(masked):
+            opening = masked.find("{", helper.end())
+            closing = matching(source, opening, "{", "}") if opening >= 0 else None
+            if closing is not None:
+                helpers.append((opening, closing, helper.group(1), helper.group(2)))
         for match in call_pattern.finditer(masked):
             opening = source.find("(", match.start())
             closing = matching(source, opening)
@@ -430,11 +440,37 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                                 "main", [platform] if platform else [],
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
                                 f"{path.relative_to(ROOT).as_posix()}:{source.count(chr(10), 0, match.start()) + 1}")
+            helper_name = next((name for start, end, name, receiver in helpers
+                                if start < match.start() < end and receiver == match.group(1)), None)
+            if helper_name:
+                helper_contracts.setdefault(helper_name, []).append(contract)
+                continue
             existing = contracts.get(contract.key)
             if existing is None or sum(p.name.startswith("arg") for p in contract.parameters) < sum(
                 p.name.startswith("arg") for p in existing.parameters
             ):
                 contracts[contract.key] = contract
+    # Expand shared template binders at actual class-registration call sites.
+    # The methods still come from addFunc declarations, so no duplicate API list
+    # or per-domain registration wrapper is needed for discovery/LSP.
+    for name, methods in helper_contracts.items():
+        pattern = re.compile(r"\b" + re.escape(name) + r"\s*(?:<[^{}();]+>)?\s*\(\s*(\w+)\s*[,)]")
+        for path, source in sources.items():
+            relative = path.relative_to(ROOT).parts
+            if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
+                    and relative[2] not in enabled_modules):
+                continue
+            bindings = class_bindings(source)
+            for call in pattern.finditer(mask_comments(source)):
+                bound_class = next((bound for position, receiver, bound in reversed(bindings)
+                                    if position < call.start() and receiver == call.group(1)), "")
+                if not bound_class:
+                    continue
+                module = module_for(path)
+                for method in methods:
+                    contract = replace(method, module=module, script_class=bound_class,
+                                       documentation_id=f"{module}.{bound_class}.{method.method}")
+                    contracts[contract.key] = contract
     return sorted(contracts.values(), key=lambda item: item.key), unresolved
 
 

@@ -56,6 +56,7 @@ RULES = (
     "optional-capability",
     "backend-contract",
     "debt-metadata",
+    "module-interface",
 )
 
 COMMON_REQUIRED = {
@@ -68,6 +69,10 @@ COMMON_REQUIRED = {
 }
 RULE_REQUIRED = {
     "api-shape": {"result_policy", "nodiscard_policy", "pointer_policy"},
+    "module-interface": {
+        "module", "hard_dependencies", "provides", "requires", "emits", "observes",
+        "binds", "protocol", "thread_affinity", "hot_path", "trim", "cost_notes",
+    },
     "link": {"symbols", "create", "ownership", "destroy_order", "restore", "stale"},
     "state-owner": {"state", "authoritative_owner", "projections"},
     "ecs-system": {
@@ -200,6 +205,7 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
             "scripts/sort_architecture_contracts.py"
         )
 
+    scope_roots: dict[str, list[Path]] = {}
     seen: set[str] = set()
     covered: set[str] = set()
     for index, entry in enumerate(entries):
@@ -224,10 +230,18 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
                 errors.append(f"{prefix}.{field} must be a non-empty string")
         scope = entry.get("scope")
         if nonempty_string(scope):
+            # Scope validation must not traverse generated build/dependency trees
+            # for every entry. Cache only the named repository surface per call.
+            root_name = scope.split("/", 1)[0]
+            if root_name not in scope_roots:
+                surface = ROOT / root_name
+                scope_roots[root_name] = (
+                    [surface] if surface.is_file() else
+                    [candidate for candidate in surface.rglob("*") if candidate.is_file()]
+                )
             scoped_files = [
-                candidate
-                for candidate in ROOT.rglob("*")
-                if candidate.is_file() and path_matches(relative(candidate), scope)
+                candidate for candidate in scope_roots[root_name]
+                if path_matches(relative(candidate), scope)
             ]
             if not scoped_files:
                 errors.append(f"{prefix}.scope matches no repository file: {scope}")
@@ -265,6 +279,28 @@ def validate_catalogue(metadata: Any, today: date | None = None) -> list[str]:
             for field in COMMON_REQUIRED | RULE_REQUIRED[rule]:
                 if field not in entry:
                     errors.append(f"{prefix} ({rule}) is missing {field}")
+            if rule == "module-interface":
+                for field in ("hard_dependencies", "provides", "requires", "emits", "observes",
+                              "binds", "protocol", "hot_path", "cost_notes"):
+                    if not isinstance(entry.get(field), list):
+                        errors.append(f"{prefix}.{field} must be an array")
+                for field in ("module", "thread_affinity"):
+                    if not nonempty_string(entry.get(field)):
+                        errors.append(f"{prefix}.{field} must be a non-empty string")
+                trim = entry.get("trim")
+                if not isinstance(trim, Mapping) or not nonempty_string(trim.get("absent_profile")):
+                    errors.append(f"{prefix}.trim requires an absent_profile")
+                evidence_text = "\n".join(
+                    (ROOT / path).read_text(encoding="utf-8", errors="replace")
+                    for path in entry.get("evidence", []) if (ROOT / path).is_file()
+                )
+                for binding in entry.get("binds", []):
+                    if not isinstance(binding, Mapping) or not nonempty_list(binding.get("methods")):
+                        errors.append(f"{prefix}.binds requires methods")
+                        continue
+                    for method in binding["methods"]:
+                        if f'"{method}"' not in evidence_text:
+                            errors.append(f"{prefix}.binds method not found in evidence: {method}")
             if rule == "debt-metadata":
                 growth = entry.get("max_net_growth")
                 if not isinstance(growth, int) or growth < 0:
