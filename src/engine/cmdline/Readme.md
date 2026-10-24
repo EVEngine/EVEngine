@@ -82,8 +82,10 @@ It builds into a private sibling directory, then launches that candidate's runti
 and `game.eve` for 30 update/render/present frames, with a 60-second timeout.
 Initialization and frame exceptions fail acceptance. A display/Vulkan/audio setup
 is required just as for `eve run`; on headless Linux use the documented Xvfb setup.
-The target runtime must run on the packaging host. Foreign SDKs and older runtimes
-without the acceptance protocol fail instead of producing a verified package.
+The target runtime must run on the packaging host. The browser/WASM host reports
+`package` as unsupported because it cannot launch a native SDK runtime. Foreign
+SDKs and older runtimes without the acceptance protocol fail instead of producing
+a verified package.
 Editor-host games are currently unsupported by this bounded acceptance loop.
 
 Only a successful candidate replaces the output directory. Failures preserve the

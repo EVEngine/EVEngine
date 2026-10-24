@@ -1,7 +1,11 @@
+#include <CLI11.hpp>
+#include <iostream>
+#include "cmdline.h"
+
+#if !defined(__EMSCRIPTEN__)
 #include <Poco/PipeStream.h>
 #include <Poco/Process.h>
 #include <Poco/UnicodeConverter.h>
-#include <CLI11.hpp>
 #include <algorithm>
 #include <chrono>
 #include <cwchar>
@@ -13,7 +17,6 @@
 #include <sstream>
 #include <thread>
 #include "Sha256.h"
-#include "cmdline.h"
 #include "common/Runtime.h"
 #include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
@@ -27,11 +30,14 @@
 #endif
 
 using namespace std::filesystem;
+#endif
+
 using namespace std;
 
 namespace eve::cmd
 {
 
+#if !defined(__EMSCRIPTEN__)
 namespace {
 
 // Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
@@ -237,10 +243,11 @@ std::string resolveSdkRoot(const std::string& sdkArg) {
 }
 
 }  // namespace
+#endif
 
 struct PackageArgs : Handler {
     string sdkPath, outputPath;
-    void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
+    void   setup(CLI::App& app, std::shared_ptr<CLI::Formatter>) override {
         auto subcmd = app.add_subcommand("package", "Package a game into a runnable game folder.");
         subcmd->allow_extras();
         subcmd->add_option("-o,--output", outputPath, "output folder path");
@@ -260,6 +267,13 @@ struct PackageArgs : Handler {
 
 CMD_REG(PackageArgs);
 
+#if defined(__EMSCRIPTEN__)
+int Cmdline::Package(std::string, std::string, std::string) {
+    cerr << "eve package requires a native host that can run the target SDK runtime; "
+            "desktop packaging is unavailable in the browser.\n";
+    return 8;
+}
+#else
 int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) try {
     error_code ec;
     if (!is_directory(gamePath, ec)) {
@@ -542,5 +556,7 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     cerr << "Package failed: " << error.what() << '\n';
     return 8;
 }
+
+#endif
 
 }  // namespace eve::cmd
