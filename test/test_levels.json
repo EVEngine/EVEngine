@@ -2754,7 +2754,9 @@
         "animation_retarget_compression.cpp",
         "animation_root_motion_policy.cpp",
         "animation_skinned.cpp",
-        "animation_smr_retarget.cpp"
+        "animation_smr_retarget.cpp",
+        "animation_control_rig.cpp",
+        "animation_control_rig_limits.cpp"
       ]
     },
     "unit/archspace/archspace_space_query.cpp": {
@@ -4388,6 +4390,52 @@
       "default": "render-window",
       "module": "weather"
     },
+    "integration/control-rig/editor_control_rig.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.transactionHistoryAndRoundTrip",
+          "editor.controlRig.documentRejectsForeignPublication",
+          "editor.controlRig.genericGraphRoundTripAndStaleRevision",
+          "editor.controlRig.dragPreviewDoesNotMutateHistory",
+          "editor.controlRig.matchPoseIsOneUndoableEdit",
+          "editor.controlRig.failedHistoryPreviewRestoresDocument"
+        ],
+        "script-binding": [
+          "editor.controlRig.scriptFacadeProjectsNumericTimeAndOwnedResults"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
+    },
+    "integration/control-rig/editor_control_rig_automation.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.automation.sharedDocumentHistoryAndSchema",
+          "editor.controlRig.automation.plansRejectStaleAndInvalidAtomically",
+          "editor.controlRig.automation.lifecycleAndAbsentHost",
+          "editor.controlRig.automation.keysNodesAndGeneration",
+          "editor.controlRig.automation.oldOwnerCannotRemoveReplacement",
+          "editor.controlRig.automation.nestedSchemaUsesSharedProjection"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
+    },
+    "integration/control-rig/editor_control_rig_limits.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "editor.controlRig.limits.sharedHistoryAndAtomicRejection"
+        ]
+      },
+      "module": "animation",
+      "task": "control-rig"
+    },
     "unit/procgen/procgen_everyday_materials.cpp": {
       "role": "tests",
       "default": "local-logic"
@@ -4420,6 +4468,21 @@
           "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry"
         ]
       }
+    },
+    "integration/audio-playback/PcmStream.cpp": {
+      "role": "tests",
+      "default": "platform-audio",
+      "cases": {
+        "script-binding": [
+          "audio.pcm.scriptResultAndOwnership"
+        ],
+        "platform-audio": [
+          "audio.pcm.validationAndBackpressureAreAtomic",
+          "audio.pcm.starvationPauseResumeAndDrain",
+          "audio.pcm.bothDestructionOrders"
+        ]
+      },
+      "module": "audio"
     }
   }
 }

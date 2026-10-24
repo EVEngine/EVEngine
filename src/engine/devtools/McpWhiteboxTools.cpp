@@ -27,6 +27,7 @@ std::string errorPayload(const std::string& message, const std::string& hint = {
     Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     out->set("ok", false);
     out->set("error", message);
+    if (message == "deferred-to-update") out->set("retryable", true);
     if (!hint.empty()) out->set("hint", hint);
     return textPayload(out, true);
 }
@@ -77,8 +78,14 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
     if (!vm) return errorPayload("no VM", "Attach a live eve run --mcp-port session first");
 
     std::string err;
-    if (!ensureSceneDirectorInstalled(vm, &err))
+    if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) {
+        if (err == "deferred-to-update") {
+            return errorPayload(
+                "deferred-to-update",
+                "scene_director install was queued for the next eve.dev.poll; retry eve_whitebox_playtest");
+        }
         return errorPayload(err.empty() ? "scene_director kit unavailable" : err);
+    }
 
     Poco::JSON::Object::Ptr report = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     report->set("schemaId", "eve.whitebox.playtest-report");
@@ -88,8 +95,10 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
     if (doReset) {
         const std::string resetOut = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
         if (!err.empty()) return errorPayload(err);
-        if (auto resetObj = parseJsonObject(resetOut)) report->set("reset", resetObj);
-        else report->set("reset", resetOut);
+        if (auto resetObj = parseJsonObject(resetOut))
+            report->set("reset", resetObj);
+        else
+            report->set("reset", resetOut);
     }
 
     if (args->has("scene")) {
@@ -130,7 +139,8 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
         }
         if (args->has("waitFrames")) inputArgs->set("waitFrames", getArgInt(args, "waitFrames", 0));
         if (args->has("capture")) inputArgs->set("capture", getArgBool(args, "capture", false));
-        if (args->has("capturePath")) inputArgs->set("capturePath", getArgString(args, "capturePath", "wb_playtest.png"));
+        if (args->has("capturePath"))
+            inputArgs->set("capturePath", getArgString(args, "capturePath", "wb_playtest.png"));
         auto inputObj = parseToolTextObject(callMcpInputTool("eve_input_batch", inputArgs));
         if (!inputObj) return errorPayload("input batch returned an unexpected payload");
         report->set("input", inputObj);
@@ -175,8 +185,10 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
             return textPayload(report, true);
         }
         auto playObj = parseJsonObject(playResponse.value());
-        if (playObj) report->set("play", playObj);
-        else report->set("play", playResponse.value());
+        if (playObj)
+            report->set("play", playObj);
+        else
+            report->set("play", playResponse.value());
     }
 
     // Fresh scene truth for assertions / agent follow-up.
