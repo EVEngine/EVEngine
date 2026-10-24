@@ -179,6 +179,7 @@ void installLazyClassGet(ssq::Table& eveTable) {
 
 
 void ModuleManager::exposeVM(ssq::VM& vm) {
+    inst().state_->active_vm_ = &vm;
     for (auto& entry : inst().state_->registered_modules) entry.second.exposed = false;
     prepareEcsScriptInjection();
 
@@ -210,10 +211,7 @@ void ModuleManager::expose(ssq::VM& vm) {
     exposeVM(vm);
 }
 
-ssq::VM* ModuleManager::vm() {
-    Runtime* active = runtime();
-    return active ? &active->vm() : nullptr;
-}
+ssq::VM* ModuleManager::vm() { return inst().state_->active_vm_; }
 
 int ModuleManager::expose_pending() {
     Runtime* active = inst().state_->active_runtime_;

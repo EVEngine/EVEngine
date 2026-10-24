@@ -11,6 +11,38 @@ function(eve_prepare_simplesquirrel_headers)
     if(NOT EXISTS "${_source}/class.hpp")
         message(FATAL_ERROR "Missing pinned SimpleSquirrel class.hpp: ${_source}")
     endif()
+    # ExternalProject patches the dependency after this configure. Generate
+    # from a private header snapshot with the same canonical header patches,
+    # so clean source builds and prebuilt dependency builds have identical ABI.
+    set(_snapshot "${_root}/vendor")
+    foreach(_header IN LISTS _headers)
+        configure_file("${_source}/${_header}"
+            "${_snapshot}/simplesquirrel/include/simplesquirrel/${_header}" COPYONLY)
+    endforeach()
+    # Profile builds can put CMAKE_BINARY_DIR outside the source checkout.
+    # Give the private snapshot its own patch root for the existing git-apply
+    # runner; this repository contains only generated, untracked headers.
+    find_package(Git REQUIRED)
+    if(NOT EXISTS "${_snapshot}/.git")
+        execute_process(COMMAND "${GIT_EXECUTABLE}" init --quiet "${_snapshot}"
+            RESULT_VARIABLE _snapshot_result)
+        if(NOT _snapshot_result EQUAL 0)
+            message(FATAL_ERROR "Cannot initialize generated SimpleSquirrel patch root")
+        endif()
+    endif()
+    foreach(_patch IN ITEMS simplesquirrel-constructor-exceptions simplesquirrel-stable-type-hash
+                            simplesquirrel-module-type-identity)
+        execute_process(
+            COMMAND "${CMAKE_COMMAND}"
+                "-DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/${_patch}.patch"
+                "-DPATCH_DIR=${_snapshot}"
+                -P "${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake"
+            RESULT_VARIABLE _patch_result)
+        if(NOT _patch_result EQUAL 0)
+            message(FATAL_ERROR "Patching generated SimpleSquirrel headers failed: ${_patch}")
+        endif()
+    endforeach()
+    set(_source "${_snapshot}/simplesquirrel/include/simplesquirrel")
     # The aggregate applies its own patches before this function runs; its
     # release archive contains those same installed headers.
     foreach(_header IN LISTS _headers)

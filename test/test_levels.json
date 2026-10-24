@@ -426,6 +426,26 @@
       "default": "local-logic",
       "module": "common"
     },
+    "fixtures/reload_test_plugin.cpp": {
+      "role": "helper",
+      "default": "local-logic",
+      "cases": {},
+      "module": "plugins"
+    },
+    "integration/plugins/plugins_reload.cpp": {
+      "role": "tests",
+      "task": "plugins",
+      "default": "runtime-lifecycle",
+      "cases": {
+        "runtime-lifecycle": [
+          "plugins.reload.replacesCodeAndPreservesCapturedGenerations",
+          "plugins.reload.failedCandidatesPreserveOldBindings",
+          "plugins.reload.repeatedReplacementUsesFreshInstances",
+          "plugins.load.failedCandidateCanBeRetried"
+        ]
+      },
+      "module": "plugins"
+    },
     "fuzz/json_fuzz.cpp": {
       "role": "fuzz",
       "default": "fuzz-property",
