@@ -371,6 +371,13 @@ eve::Result<eve::Value> ClimbingRuntime::snapshot() const {
         {"anchor", anchorValue(execution_->anchorGraph, execution_->anchorNode,
                                 execution_->anchorReservation)},
     };
+    state.emplace(
+        "sourceAnchor",
+        execution_->sourceAnchorNode
+            ? eve::Value::object({{"graphId", execution_->sourceAnchorNode->graphId},
+                                  {"nodeId", execution_->sourceAnchorNode->nodeId},
+                                  {"generation", std::to_string(execution_->sourceAnchorNode->graphGeneration)}})
+            : eve::Value());
     root.emplace("execution", eve::Value(std::move(state)));
     return eve::Result<eve::Value>::success(eve::Value(std::move(root)));
 }
@@ -526,6 +533,24 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
                                                                          "runtime anchor identities are inconsistent",
                                                                          "execution.anchor", {}, "climbing.snapshot"));
         }
+        const eve::Value* sourceField = field(*state, "sourceAnchor");
+        if (version >= 5 && !sourceField)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "transition source field is required",
+                                       "execution.sourceAnchor", {}, "climbing.snapshot"));
+        if (sourceField && !sourceField->isNull()) {
+            ClimbingAnchorNodeRef source;
+            const auto*           object = sourceField->getIf<eve::Value::Object>();
+            if (version < 5 || !object || !parsed.anchorGraph.isValid() ||
+                !readString(*object, "graphId", source.graphId) || !readString(*object, "nodeId", source.nodeId) ||
+                source.nodeId.empty() || !readUint64String(*object, "generation", source.graphGeneration) ||
+                source.graphId != parsed.anchorNode.graphId ||
+                source.graphGeneration != parsed.anchorNode.graphGeneration)
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "transition source must belong to the target graph generation",
+                    "execution.sourceAnchor", {}, "climbing.snapshot"));
+            parsed.sourceAnchorNode = std::move(source);
+        }
         parsed.elapsed  = eve::Duration::fromNanoseconds(elapsedNs);
         parsed.duration = eve::Duration::fromNanoseconds(durationNs);
         parsed.lastTick = eve::SimulationTick(lastTick);
@@ -548,6 +573,10 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
             auto resolved = graph->resolveNode(world, parsed.anchorNode);
             if (!resolved)
                 return eve::Result<void>::failure(resolved.status());
+            if (parsed.sourceAnchorNode) {
+                auto source = graph->resolveNode(world, *parsed.sourceAnchorNode);
+                if (!source) return eve::Result<void>::failure(source.status());
+            }
             auto reservation = graph->validateReservation(parsed.anchorReservation);
             if (!reservation && (!reservation.error() || reservation.error()->code() != eve::DiagnosticCode::NotFound))
                 return eve::Result<void>::failure(reservation.status());

@@ -14,6 +14,7 @@
 #include "zeroerr/unittest.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_vulkan.h>
 #include <chrono>
 #include <cstdio>
 #include <memory>
@@ -74,7 +75,22 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
             settings.width  = 160;
             settings.height = 96;
             SDL_SetWindowSize(static_cast<SDL_Window *>(win->getHandle()), 160, 96);
-            gfx->setViewportSize(160, 96, 160, 96);
+            // Native resize events update the Metal drawable asynchronously.
+            // Do not rebuild the swapchain against a requested size while its
+            // surface still has the old extent. Keep the first resized frame's
+            // color assertion below: only window synchronization may wait.
+            int        drawableWidth = 0, drawableHeight = 0;
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            do {
+                SDL_PumpEvents();
+                SDL_Vulkan_GetDrawableSize(static_cast<SDL_Window *>(win->getHandle()), &drawableWidth,
+                                           &drawableHeight);
+                if (drawableWidth == 160 && drawableHeight == 96) break;
+                SDL_Delay(1);
+            } while (std::chrono::steady_clock::now() < deadline);
+            REQUIRE_EQ(drawableWidth, 160);
+            REQUIRE_EQ(drawableHeight, 96);
+            gfx->setViewportSize(160, 96, drawableWidth, drawableHeight);
         }
         entity->setTexture(frame % 2 ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);

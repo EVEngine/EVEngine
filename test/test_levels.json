@@ -4390,6 +4390,20 @@
       "default": "render-window",
       "module": "weather"
     },
+    "integration/gameplay-composition/climbing_contact_presentation.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "climbing"
+    },
+    "integration/gameplay-composition/climbing_pose_contacts.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "climbing"
+    },
+    "integration/physics-simulation/climbing_foot_contacts.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "climbing"
     "integration/control-rig/editor_control_rig.cpp": {
       "role": "tests",
       "default": "module-composition",
