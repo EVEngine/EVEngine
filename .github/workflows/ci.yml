@@ -436,8 +436,7 @@ jobs:
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
-          g++ -std=c++20 -g .github/scripts/vulkan-probe/blas.cpp -lvulkan -o build/arm64-blas-probe
-          gdb --batch --return-child-result -ex run -ex 'thread apply all bt' --args build/arm64-blas-probe
+          bash .github/scripts/probe-arm64-blas.sh
           python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
 
       - name: Run Linux ARM64 tests

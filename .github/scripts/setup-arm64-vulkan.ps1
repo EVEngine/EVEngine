@@ -36,4 +36,11 @@ if (!(Test-Path $dll) -or !(Test-Path $icd)) {
 }
 python3 .github/scripts/verify-arm64-sdk.py $dll
 if ($LASTEXITCODE -ne 0) { throw 'ICD is not a native ARM64 DLL' }
+# Hosted Windows runners are elevated: Vulkan-Loader intentionally ignores
+# VK_ICD_FILENAMES there. Register the ICD on this disposable runner instead.
+if ($env:GITHUB_ACTIONS -eq 'true') {
+    $driversKey = 'HKLM:\SOFTWARE\Khronos\Vulkan\Drivers'
+    New-Item -Path $driversKey -Force | Out-Null
+    New-ItemProperty -Path $driversKey -Name $icd -PropertyType DWord -Value 0 -Force | Out-Null
+}
 "VK_ICD_FILENAMES=$icd" >> $env:GITHUB_ENV
