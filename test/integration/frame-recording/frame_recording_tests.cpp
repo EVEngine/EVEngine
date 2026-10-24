@@ -74,23 +74,28 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         if (frame == 6) {
             settings.width  = 160;
             settings.height = 96;
-            SDL_SetWindowSize(static_cast<SDL_Window *>(win->getHandle()), 160, 96);
-            // Native resize events update the Metal drawable asynchronously.
-            // Do not rebuild the swapchain against a requested size while its
-            // surface still has the old extent. Keep the first resized frame's
-            // color assertion below: only window synchronization may wait.
-            int        drawableWidth = 0, drawableHeight = 0;
+            auto *native    = static_cast<SDL_Window *>(win->getHandle());
+            SDL_SetWindowSize(native, settings.width, settings.height);
+            // Cocoa applies the content-view / Metal-layer resize while pumping
+            // native events. A logical SDL size alone does not prove the Vulkan
+            // drawable is ready. Keep the first-frame assertion below, but only
+            // render after the real drawable has reached the requested 1x size.
+            int        logicalWidth = 0, logicalHeight = 0, pixelWidth = 0, pixelHeight = 0;
             const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
             do {
                 SDL_PumpEvents();
-                SDL_Vulkan_GetDrawableSize(static_cast<SDL_Window *>(win->getHandle()), &drawableWidth,
-                                           &drawableHeight);
-                if (drawableWidth == 160 && drawableHeight == 96) break;
-                SDL_Delay(1);
+                SDL_GetWindowSize(native, &logicalWidth, &logicalHeight);
+                SDL_Vulkan_GetDrawableSize(native, &pixelWidth, &pixelHeight);
+                if (logicalWidth == settings.width && logicalHeight == settings.height &&
+                    pixelWidth == settings.width && pixelHeight == settings.height)
+                    break;
+                SDL_Delay(10);
             } while (std::chrono::steady_clock::now() < deadline);
-            REQUIRE_EQ(drawableWidth, 160);
-            REQUIRE_EQ(drawableHeight, 96);
-            gfx->setViewportSize(160, 96, drawableWidth, drawableHeight);
+            REQUIRE_EQ(logicalWidth, settings.width);
+            REQUIRE_EQ(logicalHeight, settings.height);
+            REQUIRE_EQ(pixelWidth, settings.width);
+            REQUIRE_EQ(pixelHeight, settings.height);
+            gfx->setViewportSize(logicalWidth, logicalHeight, pixelWidth, pixelHeight);
         }
         entity->setTexture(frame % 2 ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);
@@ -100,6 +105,9 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         REQUIRE_EQ(image->getSize(), size_t(gfx->getWidth() * gfx->getHeight() * 4));
         const auto  *pixels = static_cast<const uint8_t *>(image->getData());
         const size_t center = size_t((gfx->getHeight() / 2) * gfx->getWidth() + gfx->getWidth() / 2) * 4;
+        std::fprintf(stderr, "FRAME_RECORDING frame=%d size=%dx%d centerRGBA=%u,%u,%u,%u\n", frame, gfx->getWidth(),
+                     gfx->getHeight(), unsigned(pixels[center]), unsigned(pixels[center + 1]),
+                     unsigned(pixels[center + 2]), unsigned(pixels[center + 3]));
         REQUIRE_GT(pixels[center + (frame % 2 ? 1 : 0)], pixels[center + (frame % 2 ? 0 : 1)]);
     }
     // Steady-state default post path must no longer drain every in-flight frame.
