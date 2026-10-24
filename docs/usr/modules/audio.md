@@ -4,6 +4,23 @@
 
 创建可播放 Source，控制音量、音高、循环、进度和 3D 声源位置。
 
+## 脚本生成 PCM 音频
+
+`audio.newPcmStream(sampleRate, channels)` 返回 Result，成功时 `value` 是脚本拥有的
+`PcmStream`。采样率为 8000..192000，声道数为 1 或 2。`submit(samples)` 接收有限的
+`[-1,1]` 浮点/整数采样数组，双声道按 L,R 交错，统一转为 PCM16；返回 Result 的 value
+为接受的采样帧数。每块最多 4096 帧、最多排队 8 块，满队列返回 `conflict`，不会部分提交。
+
+`play/pause/finishInput/reset` 都返回须检查的 Result；`finishInput` 后排空即 finished，
+欠载为 starved，补入数据后自动续播。`reset` 清空并重新开放输入，`close` 永久释放且幂等。
+`getInfo()` 查询 phase、sampleRate、channels、availableBlocks、maxBlockFrames、queuedFrames、
+playedFrames（已完成整块帧数）。引擎每帧自动 pump，脚本只在主线程提前按块生成。
+Audio 先销毁时会关闭流，脚本先释放流也安全；`stopAll()` 关闭所有 PCM 流。
+流不持久化，热重载时关闭并重建。该路径无需 SoundData、文件或 Decoder。
+
+完整调用、错误处理和容量/生命周期契约见
+[pcm-2a03 示例](../../../examples/pcm-2a03/README.md)。所有波形、包络、变调和噪声合成都在脚本侧。
+
 ## 基本用法
 
 ```squirrel
