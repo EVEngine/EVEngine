@@ -19,10 +19,12 @@ void check(bool value) {
     if (!value) throw std::runtime_error("allocation contract failed");
 }
 }  // namespace
-// Isolated executable: fail exactly one allocation, allowing diagnostics to allocate.
+// Isolated executable: fail one asset-sized allocation, allowing diagnostics to allocate.
 // This models a recoverable admission failure, not sustained system-wide exhaustion.
 void* operator new(std::size_t size) {
-    if (failNextAllocation) {
+    // Debug STL moves can allocate small iterator proxies before prepare's body.
+    // The shared asset/control block must contain the complete CollapseAnimation.
+    if (failNextAllocation && size >= sizeof(eve::physics::CollapseAnimation)) {
         failNextAllocation = false;
         throw std::bad_alloc();
     }
@@ -41,6 +43,10 @@ int  main() {
         existing.seek(.5).expect("existing time");
         auto candidate     = clip;
         failNextAllocation = true;
+        // Model an iterator-proxy allocation during argument movement.
+        void* proxy = ::operator new(1);
+        ::operator delete(proxy);
+        check(failNextAllocation);
         auto rejected      = eve::physics::CollapsePlayback::prepare(std::move(candidate));
         check(!failNextAllocation);
         check(!rejected.ok());

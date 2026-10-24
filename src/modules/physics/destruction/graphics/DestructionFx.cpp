@@ -76,15 +76,15 @@ void DestructionFx::expose(ssq::Table& table) {
     renderer.addFunc("setSleepColor", &GeometryCollectionRenderer::setSleepColor);
     renderer.addFunc("draw", drawScript);
     renderer.addFunc("preparePlayback",
-                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& argument,
+                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& playbackObject,
                                               graphics::Graphics* graphics) {
-                         auto player = collapse_detail::scriptValue<CollapsePlayback>(argument);
+                         auto player = collapse_detail::scriptValue<CollapsePlayback>(playbackObject);
                          if (!player) return script::projectResult(vm, Result<void>::failure(player.status()));
                          return script::projectResult(vm, self->preparePlayback(player.value().get(), graphics));
                      });
     renderer.addFunc("submitPlayback",
-                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& argument) {
-                         auto player = collapse_detail::scriptValue<CollapsePlayback>(argument);
+                     [vm = table.getHandle()](GeometryCollectionRenderer* self, const ssq::Object& playbackObject) {
+                         auto player = collapse_detail::scriptValue<CollapsePlayback>(playbackObject);
                          if (!player) return script::projectResult(vm, Result<void>::failure(player.status()));
                          return script::projectResult(vm, self->submitPlayback(player.value().get()));
                      });
