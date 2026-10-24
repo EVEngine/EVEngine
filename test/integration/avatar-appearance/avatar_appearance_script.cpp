@@ -26,11 +26,11 @@ TEST_CASE("avatar.appearance.scriptBoundaryUsesCheckedResults") {
         copiedPbr <- targetMaterial.copyPbrSurfaceFrom(sourceMaterial).ok;
         targetRoughness <- targetMaterial.getRoughness();
     )"));
-    CHECK(vm.find("configured").toBool());
-    CHECK(vm.find("applied").toBool());
-    CHECK(vm.find("rejected").toBool());
-    CHECK(vm.find("restored").toBool());
-    CHECK(std::abs(vm.find("value").toFloat() - 0.7f) < 1e-6f);
-    CHECK(vm.find("copiedPbr").toBool());
-    CHECK(std::abs(vm.find("targetRoughness").toFloat() - 0.7f) < 1e-6f);
+    REQUIRE(vm.find("configured").toBool());
+    REQUIRE(vm.find("applied").toBool());
+    REQUIRE(vm.find("rejected").toBool());
+    REQUIRE(vm.find("restored").toBool());
+    REQUIRE(std::abs(vm.find("value").toFloat() - 0.7f) < 1e-6f);
+    REQUIRE(vm.find("copiedPbr").toBool());
+    REQUIRE(std::abs(vm.find("targetRoughness").toFloat() - 0.7f) < 1e-6f);
 }

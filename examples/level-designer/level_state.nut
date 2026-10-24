@@ -23,6 +23,7 @@ function levelInit() {
         tool = "select",        // select | whitebox | spawn | terrain | blocks
         gizmoMode = "translate", // translate | rotate | scale
         piece = "prototype.cube",
+        buildDrag = null, gridSnap = 0.5,
         recipes = [],           // whitebox palette (ProcgenKit prototype recipes)
         selected = "", selection = [], scope = "root",
         library = [], blockIndex = -1,
@@ -31,6 +32,7 @@ function levelInit() {
         brushTarget = 0.0, brushClock = 0.0, terrainDirty = false,
         objects = [],
         pieces = {},            // objectId -> {recipe, values, entity, half}
+        pieceHistory = {},          // detached recipe metadata for scene undo/redo
         spawns = {},            // objectId -> {yaw, character, motionSet, entity, facing}
         gizmoPrims = [],        // live TransformGizmo overlays (Primitive3D)
         rigCache = {},          // "character|motionSet" -> rigged character

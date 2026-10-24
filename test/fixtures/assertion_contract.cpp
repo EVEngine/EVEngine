@@ -3,6 +3,11 @@
 #include "zeroerr/unittest.h"
 
 namespace {
+// Negative actions are invoked by the cases below; the parent process checks
+// their failure diagnostics and exit codes. Keep the active case context so
+// these also cover accounting separately from the context-free helper.
+void failingCheck(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) { CHECK(false); }
+void failingComparison(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) { CHECK_EQ(1, 2); }
 void failingHelper() { CHECK(false); }
 void failingInvariant() { ASSERT(false); }
 }  // namespace
@@ -22,8 +27,8 @@ TEST_CASE("assertionProbe.singleEvaluation") {
     CHECK_GT(left + 1, right);
     CHECK_GE(left, right);
 }
-TEST_CASE("assertionProbe.checkFails") { CHECK(false); }
-TEST_CASE("assertionProbe.comparisonFails") { CHECK_EQ(1, 2); }
+TEST_CASE("assertionProbe.checkFails") { failingCheck(_ZEROERR_TEST_CONTEXT); }
+TEST_CASE("assertionProbe.comparisonFails") { failingComparison(_ZEROERR_TEST_CONTEXT); }
 TEST_CASE("assertionProbe.requireFails") { REQUIRE(false); }
 TEST_CASE("assertionProbe.assertFails") { ASSERT(false); }
 TEST_CASE("assertionProbe.helperFails") { failingHelper(); }

@@ -176,8 +176,8 @@ TEST_CASE("rts.terrainNarrowRidgeBlocksShotsInBothDirections") {
 
 TEST_CASE("rts.terrainHighGroundCanShootOverLowerRidge") {
     const auto ridge = [](int x, int) { return x == 1 ? 2.f : 0.f; };
-    CHECK(firstTerrainImpact(0.5f, 0.5f, 1.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
-    CHECK(!firstTerrainImpact(0.5f, 0.5f, 5.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
+    REQUIRE(firstTerrainImpact(0.5f, 0.5f, 1.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
+    REQUIRE(!firstTerrainImpact(0.5f, 0.5f, 5.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
 }
 
 TEST_CASE("rts.terrainDescendingProjectileHitsInsideCell") {
