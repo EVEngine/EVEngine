@@ -4473,6 +4473,11 @@
       },
       "module": "audio"
     },
+    "integration/sprite-atlas/animation_atlas_rotation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "animation"
+    },
     "integration/physics-bake/collapse_collision_reference.cpp": {
       "role": "tests",
       "default": "module-composition",

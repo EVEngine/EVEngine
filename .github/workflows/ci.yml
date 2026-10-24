@@ -263,6 +263,8 @@ jobs:
       - name: Checkout
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
 
       - name: Install Python test dependencies
         timeout-minutes: 10
@@ -843,8 +845,9 @@ jobs:
         timeout-minutes: 5
         run: sccache --show-stats
 
+      # SwiftShader reached only 2992/7147 cases in the former 45-minute budget.
       - name: Run win32 release unit tests
-        timeout-minutes: 45
+        timeout-minutes: 120
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
@@ -852,6 +855,7 @@ jobs:
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -864,7 +868,7 @@ jobs:
             | tee build/settlement-benchmark-windows.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-windows-release
@@ -1292,6 +1296,7 @@ jobs:
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -1304,7 +1309,7 @@ jobs:
             | tee build/settlement-benchmark-macos.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-macos-release
@@ -1740,6 +1745,7 @@ jobs:
         run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
 
       - name: Sample settlement release benchmark
+        id: settlement-benchmark
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
@@ -1752,7 +1758,7 @@ jobs:
             | tee build/settlement-benchmark-linux.log
 
       - name: Upload settlement benchmark sample
-        if: always()
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
         uses: actions/upload-artifact@v7
         with:
           name: settlement-benchmark-linux-release
@@ -1869,9 +1875,9 @@ jobs:
     needs: [source-quality]
     if: ${{ needs.source-quality.result == 'success' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
-    # The build plus half of the coverage test suite consumed the former
-    # 90-minute job budget in release run 35436382201.
-    timeout-minutes: 150
+    # Coverage reached 6409/7169 cases at its former 60-minute test guard.
+    # Leave room for the cold build, complete suite and report generation.
+    timeout-minutes: 210
     env:
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64-coverage
@@ -1882,6 +1888,7 @@ jobs:
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ inputs.ref || github.ref }}
           submodules: recursive
 
       - name: Install system packages
@@ -1948,7 +1955,7 @@ jobs:
         run: sccache --show-stats
 
       - name: Run linux unit tests (coverage)
-        timeout-minutes: 60
+        timeout-minutes: 90
         env:
           ALSOFT_DRIVERS: "null"
         run: |

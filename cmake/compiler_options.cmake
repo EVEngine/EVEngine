@@ -90,3 +90,15 @@ function(eve_configure_ipo)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE PARENT_SCOPE)
     message(STATUS "IPO / LTO enabled")
 endfunction()
+
+# The OBJECT test runner contains the entire engine and test catalogue. On Linux
+# AArch64 its cold exception paths can exceed CALL26's +/-128 MiB range. Keep GCC
+# compilation and use LLD's range-extension thunks only for this test executable.
+function(eve_configure_monolithic_test_linker target)
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _eve_test_arch)
+    if(CMAKE_SYSTEM_NAME STREQUAL "Linux"
+       AND _eve_test_arch MATCHES "^(aarch64|arm64)$"
+       AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        target_link_options(${target} PRIVATE "-fuse-ld=lld")
+    endif()
+endfunction()
