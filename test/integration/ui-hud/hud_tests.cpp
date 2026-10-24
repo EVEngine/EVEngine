@@ -16,7 +16,7 @@ namespace ui = eve::ui;
 TEST_CASE("UI.hud.linearFillCropsUvsAndKeepsReverseEdge") {
     const auto left = ui::linearFillRect(.25f, ui::FillDirection::Left, false);
     CHECK_EQ(left.x, .75f);
-    CHECK_EQ(left.w, .25f);
+    REQUIRE((left.x == .75f && left.w == .25f && left.u0 == .75f && left.u1 == 1.f));
     CHECK_EQ(left.u0, .75f);
     CHECK_EQ(left.u1, 1.f);
     const auto up = ui::linearFillRect(.5f, ui::FillDirection::Up, true);
@@ -51,7 +51,7 @@ TEST_CASE("UI.hud.canvasFitsSafeAreaAndPreservesUltrawideAnchors") {
     const auto fit   = ui::resolveHudCanvas(canvas, 1000.f, 540.f);
     CHECK_EQ(fit.x, 20.f);
     CHECK_EQ(fit.width, 960.f);
-    CHECK_EQ(fit.scale, .5f);
+    REQUIRE((fit.x == 20.f && fit.width == 960.f && fit.scale == .5f));
     const auto wide = ui::resolveHudCanvas(canvas, 2600.f, 1080.f);
     CHECK_EQ(wide.width, 2560.f);
     CHECK_EQ(wide.scale, 1.f);
@@ -61,7 +61,7 @@ TEST_CASE("UI.hud.ninePatchScalePreservesSourceTexelBorders") {
     const auto axis = ui::ninePatchAxis(50.f, 8.f, 12.f, 0.f, 1.f, 100.f, .5f);
     CHECK_EQ(axis.nearSize, 4.f);
     CHECK_EQ(axis.farSize, 6.f);
-    CHECK(std::abs(axis.nearUv - .08f) < 1e-5f);
+    REQUIRE((std::abs(axis.nearUv - .08f) < 1e-5f && std::abs(axis.farUv - .88f) < 1e-5f));
     CHECK(std::abs(axis.farUv - .88f) < 1e-5f);
     const auto tiny = ui::ninePatchAxis(4.f, 8.f, 12.f, 0.f, 1.f, 100.f, .5f);
     CHECK_EQ(tiny.nearSize, 2.f);
