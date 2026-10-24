@@ -14,6 +14,7 @@
 namespace eve::editor {
 
 class EditorSession;
+class IEditorTransactionBackend;
 
 /**
  * @brief Coordinates editable targets, per-target histories and domain commands.
@@ -41,6 +42,18 @@ public:
         const std::string& ownerModule) override;
     /** @brief Registers target. */
     [[nodiscard]] Result<void> registerTarget(IEditableTarget& target);
+    /** @brief Register a borrowed target and its existing history, rejecting conflicting registrations.
+     * @ownership Both arguments must outlive registration; unregister before either is destroyed.
+     * @thread Owner thread only; no callbacks. Existing history is preserved.
+     */
+    [[nodiscard]] Result<void> registerSharedHistoryTarget(IEditableTarget& target, IEditorTransactionBackend& backend);
+    /** @brief Remove only this exact borrowed target/backend registration; absent or replaced entries are NoOp.
+     * @thread Owner thread only. Call before destroying either borrowed object.
+     */
+    [[nodiscard]] Result<void> unregisterSharedHistoryTarget(IEditableTarget&           target,
+                                                             IEditorTransactionBackend& backend);
+    /** @brief Weak owner-thread lifetime sentinel; expires before coordinator teardown. */
+    [[nodiscard]] std::weak_ptr<void> lifetime() const;
     /** @brief Unregisters target. */
     [[nodiscard]] Result<void> unregisterTarget(const TargetId& target);
     /** @brief Binds . */
