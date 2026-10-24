@@ -1742,8 +1742,10 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
         zeroerr::TestContext context(*reporter);
-        auto*                _ZEROERR_TEST_CONTEXT = &context;
-        CHECK(2 == 3);
+        zeroerr::assert_info   info{zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false};
+        zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3", info);
+        failure.setResult({false, "2 == 3"});
+        zeroerr::detail::context_helper<zeroerr::TestContext*, false>::setContext(failure, &context);
         return context.warning_as;
     };
     CHECK(knownFailure() == 1);
@@ -2552,6 +2554,8 @@ TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
         "/* export function hidden() {}\n"
         "persist ignored = 1 */\n"
         "local text = \"// await remains text\"\n"
+        "local escaped = \"\\\" await remains text too\"\n"
+        "local single = 'await'\n"
         "import { answer } from \"game:/real.nut\"\n",
         "game:/comments.nut");
     CHECK_EQ(metadata.imports.size(), size_t(1));
@@ -2559,6 +2563,10 @@ TEST_CASE("scriptCompiler.metadataIgnoresCommentedLanguageForms") {
     CHECK(metadata.exports.empty());
     CHECK(metadata.persistRoots.empty());
     CHECK(metadata.awaitLocations.empty());
+    const auto withAwait = script::ScriptCompiler::analyze("local text = \"await\"\nawait task()\n", "game:/await.nut");
+    REQUIRE_EQ(withAwait.awaitLocations.size(), size_t(1));
+    CHECK_EQ(withAwait.awaitLocations[0].line, size_t(2));
+    CHECK_EQ(withAwait.awaitLocations[0].column, size_t(1));
 }
 
 
@@ -3735,6 +3743,20 @@ TEST_CASE("Capability.leaseMovedFromIsEmpty") {
     CHECK(!lease.operator bool());
     CHECK(lease.handle().id.empty());
     CHECK_EQ(lease.handle().generation, std::uint64_t{0});
+
+    lease = std::move(moved);
+    REQUIRE(lease.operator bool());
+    CHECK_EQ(lease->value(), 21);
+    CHECK(lease.handle() == published.value());
+    CHECK(!moved.operator bool());
+    CHECK(moved.handle().id.empty());
+    CHECK_EQ(moved.handle().generation, std::uint64_t{0});
+    auto copy = lease;
+    CHECK(copy.get() == lease.get());
+    auto& self = lease;
+    lease      = std::move(self);
+    CHECK(lease.get() == copy.get());
+    CHECK(lease.handle() == copy.handle());
 }
 }  // namespace test_capability_owned
 #endif

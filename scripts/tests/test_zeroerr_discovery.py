@@ -35,13 +35,18 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
             self.assertIn("integration", labels)
             self.assertNotIn("unit", labels)
 
-    def discover(self, entries, listing_format, name_prefix="", levels=None, omit_metadata=False, catalogue=None):
+    def discover(self, entries, listing_format, name_prefix="", levels=None, omit_metadata=False, catalogue=None,
+                 runtime_output=None):
         with tempfile.TemporaryDirectory(prefix="eve discovery ") as directory:
             root = Path(directory)
             listing = root / "listing.py"
             listing.write_text(
                 "import sys\n"
                 f"entries = {entries!r}\n"
+                f"runtime_output = {runtime_output!r}\n"
+                "if runtime_output is not None and not any(a.startswith('--list') for a in sys.argv):\n"
+                "    print(runtime_output)\n"
+                "    raise SystemExit(0)\n"
                 "plain = '--list-format=plain' in sys.argv\n"
                 f"if plain and {listing_format!r} == 'legacy':\n"
                 "    print('legacy runner: no plain listing available')\n"
@@ -92,7 +97,25 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 timeout=30,
             )
             generated = registry.read_text(encoding="utf-8") if registry.exists() else None
+            if runtime_output is not None:
+                (root / "CTestTestfile.cmake").write_text(generated, encoding="utf-8")
+                execution = subprocess.run(
+                    ["ctest", "--test-dir", str(root), "--no-tests=error", "-V"],
+                    capture_output=True, text=True, encoding="utf-8", timeout=30,
+                )
+                return result, generated, execution
             return result, generated
+
+    def test_zero_exit_assertion_output_fails_case_and_bundle(self):
+        for severity in ("WARN", "ERROR"):
+            with self.subTest(severity=severity):
+                result, _, execution = self.discover(
+                    [("fixture.assertion", "fixture.cpp", 1)], "plain",
+                    runtime_output=severity + " Assertion Failed: deliberate failure",
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotEqual(execution.returncode, 0, execution.stdout + execution.stderr)
+                self.assertIn("0% tests passed, 2 tests failed", execution.stdout)
 
     @staticmethod
     def labels_of(generated, test_name):

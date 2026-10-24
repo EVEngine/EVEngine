@@ -57,7 +57,7 @@ void appendUnique(std::vector<std::string>& values, std::string value) {
     if (std::find(values.begin(), values.end(), value) == values.end()) values.push_back(std::move(value));
 }
 
-std::string maskComments(std::string_view source) {
+std::string maskComments(std::string_view source, bool maskStrings = false) {
     std::string result(source);
     char        quote        = 0;
     bool        lineComment  = false;
@@ -79,12 +79,15 @@ std::string maskComments(std::string_view source) {
                 result[i] = ' ';
             }
         } else if (quote != 0) {
-            if (c == '\\')
+            if (maskStrings && c != '\n') result[i] = ' ';
+            if (c == '\\' && next != 0) {
+                if (maskStrings && next != '\n') result[i + 1] = ' ';
                 ++i;
-            else if (c == quote)
+            } else if (c == quote)
                 quote = 0;
         } else if (c == '"' || c == '\'') {
             quote = c;
+            if (maskStrings) result[i] = ' ';
         } else if (c == '/' && next == '/') {
             result[i] = result[i + 1] = ' ';
             ++i;
@@ -807,6 +810,7 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     result.sourceMap.canonicalUri = result.canonicalUri;
     result.sourceMap.entries.push_back({{1, 1}, {1, 1}});
     const std::string scanned = maskComments(source);
+    const std::string code    = maskComments(source, true);
 
     static const std::regex importPattern(
         R"(\bimport\s+(?:\*\s+as\s+[A-Za-z_]\w*|\{[^}]*\})\s+from\s+[\"']([^\"']+)[\"'])");
@@ -835,7 +839,7 @@ ScriptMetadata ScriptCompiler::analyze(std::string_view source, std::string_view
     });
     forMatches(scanned, asyncPattern,
                [&](const std::smatch& match, size_t) { appendUnique(result.asyncFunctions, match[1].str()); });
-    forMatches(scanned, awaitPattern,
+    forMatches(code, awaitPattern,
                [&](const std::smatch&, size_t offset) { result.awaitLocations.push_back(positionAt(source, offset)); });
     forMatches(scanned, propertyPattern, [&](const std::smatch& match, size_t offset) {
         ScriptPropertyMetadata property;

@@ -16,7 +16,8 @@ TEST_CASE("gameplayTags.registryValidatesStableNamesAndIds") {
     GameplayTagRegistry registry;
     auto                attack = registry.registerTag("Combat.Action.Attack", "An offensive combat action");
     REQUIRE(attack.ok());
-    CHECK_EQ(attack.value().value(), std::uint64_t(0x1b587da31236aa15ull));
+    // FNV-1a 64-bit vector for the canonical UTF-8 name, including case and dots.
+    CHECK_EQ(attack.value().value(), std::uint64_t(0x5fd0e8ccf2e3cf33ull));
     auto duplicate = registry.registerTag("Combat.Action.Attack", "An offensive combat action");
     REQUIRE(duplicate.ok());
     CHECK(duplicate.status().code() == eve::StatusCode::NoOp);
