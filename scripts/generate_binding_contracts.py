@@ -16,15 +16,40 @@ from dataclasses import dataclass, field
 import json
 from pathlib import Path
 import re
+import shlex
 import sys
 import utf8_stdio
 from binding_architecture import attach_architecture
 from binding_semantics import attach_semantics
+from check_module_manifest import (
+    DECLARATION_START,
+    DIR_RE,
+    MANIFEST,
+    NAME_RE,
+    _balanced_block,
+    default_module_dir,
+    manifest_files,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE_ROOTS = (ROOT / "src" / "engine", ROOT / "src" / "modules")
 SOURCE_SUFFIXES = {".h", ".hpp", ".cpp"}
+_MANIFEST_KEYWORDS = {
+    "NAME",
+    "LIB",
+    "LAYER",
+    "DIR",
+    "DEPS",
+    "OPTIONAL_DEPS",
+    "THIRDPARTY",
+    "SCRIPT",
+    "SLOT",
+    "GROUP",
+    "REQUIRED",
+    "CORE",
+    "HEADER_ONLY",
+}
 
 # C++ attributes such as [[nodiscard]] / [[nodiscard("...")]] may precede a
 # declaration. Skip them before matching the return type so member bindings to
@@ -371,6 +396,108 @@ def module_for(path: Path) -> str:
     return "engine"
 
 
+@dataclass(frozen=True)
+class SlotIndex:
+    """SCRIPT→SLOT pairs and single-SLOT directory prefixes from the module manifest.
+
+    Module_REG bindings use ``addClass(name, …)`` so the generator cannot see the
+    runtime root slot in source. Contract keys must still match that slot
+    (``dialogueFlow/publishGameplay``, ``levelEditor/newTileBuffer``).
+    """
+
+    script_to_slot: dict[str, str]
+    dir_slots: tuple[tuple[str, str], ...]
+
+
+def load_slot_index(manifest: Path = MANIFEST) -> SlotIndex:
+    script_to_slot: dict[str, str] = {}
+    dir_slots: list[tuple[str, str]] = []
+    for manifest_file in manifest_files(manifest):
+        lines = manifest_file.read_text(encoding="utf-8").splitlines(keepends=True)
+        index = 0
+        while index < len(lines):
+            if not DECLARATION_START.match(lines[index]):
+                index += 1
+                continue
+            block, end = _balanced_block(lines, index)
+            index = end + 1
+            name_match = NAME_RE.search(block)
+            if not name_match:
+                continue
+            declared_dir = DIR_RE.search(block)
+            directory = declared_dir.group(1) if declared_dir else default_module_dir(name_match.group(1))
+            tokens = shlex.split(block.replace("\n", " "))
+            if tokens and tokens[0].startswith("eve_declare_module("):
+                tokens[0] = tokens[0][len("eve_declare_module(") :]
+                if not tokens[0]:
+                    tokens.pop(0)
+            scripts: list[str] = []
+            slots: list[str] = []
+            cursor = 0
+            while cursor < len(tokens):
+                key = tokens[cursor].rstrip(")")
+                cursor += 1
+                if key in {"REQUIRED", "CORE", "HEADER_ONLY"}:
+                    continue
+                if key in {"NAME", "LIB", "LAYER", "DIR"}:
+                    if cursor < len(tokens):
+                        cursor += 1
+                    continue
+                if key in {"DEPS", "OPTIONAL_DEPS", "THIRDPARTY", "GROUP"}:
+                    while cursor < len(tokens) and tokens[cursor].rstrip(")") not in _MANIFEST_KEYWORDS:
+                        cursor += 1
+                    continue
+                if key == "SCRIPT":
+                    while cursor < len(tokens) and tokens[cursor].rstrip(")") not in _MANIFEST_KEYWORDS:
+                        scripts.append(tokens[cursor].rstrip(")"))
+                        cursor += 1
+                    continue
+                if key == "SLOT":
+                    while cursor < len(tokens) and tokens[cursor].rstrip(")") not in _MANIFEST_KEYWORDS:
+                        slots.append(tokens[cursor].rstrip(")"))
+                        cursor += 1
+                    continue
+                # Unknown token: skip one value if present so a new flag cannot abort the scan.
+                if cursor < len(tokens) and tokens[cursor].rstrip(")") not in _MANIFEST_KEYWORDS:
+                    cursor += 1
+            for script_name, slot in zip(scripts, slots):
+                if script_name and slot:
+                    script_to_slot[script_name] = slot
+            # Only nested package DIRs (map/level/editor → levelEditor). Host roots such as
+            # animation/graphics keep their directory module id in contract keys even when the
+            # runtime SLOT spelling differs (anim/gfx); SCRIPT→SLOT covers Module_REG methods.
+            normalized_dir = directory.replace("\\", "/").strip("/")
+            if len(slots) == 1 and slots[0] and "/" in normalized_dir:
+                dir_slots.append((normalized_dir, slots[0]))
+    dir_slots.sort(key=lambda item: len(item[0]), reverse=True)
+    return SlotIndex(script_to_slot=script_to_slot, dir_slots=tuple(dir_slots))
+
+
+def resolve_slot_module(path: Path, host_module: str, cpp_class: str, script_class: str,
+                        index: SlotIndex) -> str:
+    """Prefer the manifest SLOT over the host package directory when known.
+
+    Module_REG roots bind with an empty ``scriptClass``; their contract module must
+    be the runtime SLOT (``dialogueFlow``, ``gfx``, ``levelEditor``). Named script
+    classes keep the host package id (``graphics/AlphaMask.*``) unless a nested
+    package DIR maps the file.
+    """
+
+    if not script_class:
+        if cpp_class and cpp_class in index.script_to_slot:
+            return index.script_to_slot[cpp_class]
+    elif script_class in index.script_to_slot:
+        return index.script_to_slot[script_class]
+    try:
+        relative = path.relative_to(ROOT / "src" / "modules").as_posix()
+    except ValueError:
+        return host_module
+    for directory, slot in index.dir_slots:
+        if relative == directory or relative.startswith(directory + "/"):
+            return slot
+    return host_module
+
+
 def class_bindings(source: str) -> list[tuple[int, str, str]]:
     pattern = re.compile(
         r"\b(?:auto|ssq::Class)\s+([A-Za-z_]\w*)\s*=\s*[A-Za-z_]\w*\.addClass"
@@ -383,6 +510,8 @@ def class_bindings(source: str) -> list[tuple[int, str, str]]:
             continue
         arguments = split_top_level(source[opening + 1 : closing])
         literal = re.match(r'\s*"([^"]+)"', arguments[0]) if arguments else None
+        # Do not infer scriptClass from Type::create: that rewrites contract keys
+        # (module/Class.method) and invalidates reviewed semantics maps.
         result.append((match.start(), match.group(1), literal.group(1) if literal else (match.group(2) or "")))
     return result
 
@@ -393,9 +522,11 @@ def callable_signature(expression: str, signatures: SignatureIndex) -> tuple[str
         signature = signatures.member(member.group(1), member.group(2))
         return (member.group(1).split("::")[-1], *signature) if signature else None
 
-    lambda_match = re.search(r"\[[^]]*\]\s*\(", expression)
+    # Capture lists may contain calls (`[vm = cls.getHandle()](...)`). The parameter
+    # '(' is the one that ends the `]\s*(` match — never the first '(' in the capture.
+    lambda_match = re.search(r"\[[^\]]*\]\s*\(", expression)
     if lambda_match:
-        opening = expression.find("(", lambda_match.start())
+        opening = lambda_match.end() - 1
         closing = matching(expression, opening)
         if closing is None:
             return None
@@ -413,10 +544,11 @@ def callable_signature(expression: str, signatures: SignatureIndex) -> tuple[str
 
 
 def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None = None,
-                      platform: str = "") -> tuple[list[Contract], list[str]]:
+                      platform: str = "", slot_index: SlotIndex | None = None) -> tuple[list[Contract], list[str]]:
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
+    slots = slot_index if slot_index is not None else load_slot_index()
     # SimpleSquirrel addFunc plus the table-driven helpers in SquirrelBindContext.h.
     # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
     # are not scraped. Method names stay string literals in argument 1.
@@ -482,12 +614,25 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                     break
             if not script_class:
                 script_class = cpp_class if receiver_expr not in {"table", "eve", "root", "vm", "cls"} else ""
+            # Lambdas on Module_REG roots omit a C++ class in the signature scrape
+            # (`return "", …`). Recover `T` from the leading `T* self` only when the
+            # addFunc receiver is the class variable (`cls` / `module`), not a free
+            # table helper whose first argument may be an unrelated pointer.
+            slot_owner = cpp_class
+            if (not slot_owner and receiver_expr in {"cls", "module"} and parameters
+                    and "*" in parameters[0].cpp_type):
+                pointed = re.sub(r"\bconst\b", "", parameters[0].cpp_type)
+                pointed = pointed.replace("*", " ").replace("&", " ").strip().split("::")[-1]
+                pointed = pointed.split()[-1] if pointed.split() else ""
+                if pointed:
+                    slot_owner = pointed
             if (parameters and cpp_class == "" and "*" in parameters[0].cpp_type
                     and receiver_expr not in {"table", "eve", "root", "vm"}):
                 parameters = parameters[1:]
             mapped_return, return_nullable = script_type(return_cpp)
             ownership = "borrowed" if "*" in return_cpp else "value"
-            module = module_for(path)
+            host_module = module_for(path)
+            module = resolve_slot_module(path, host_module, slot_owner, script_class, slots)
             contract = Contract(module, script_class, method, parameters, mapped_return, return_nullable, ownership,
                                 "main", [platform] if platform else [],
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
