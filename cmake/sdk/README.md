@@ -23,7 +23,7 @@ phone or as a universal multi-platform kit.
 `share/eve/TARGET_PLATFORM` identifies the operating platform. macOS archives use
 `macosx-arm64` or `macosx-x86_64` directory names, keep `TARGET_PLATFORM=macosx`,
 and add `share/eve/TARGET_ARCHITECTURE` (`arm64` or `x86_64`). The published macOS
-SDKs require macOS 13+. Choose the archive matching the target Mac CPU; the old
+SDKs require macOS 13.3+. Choose the archive matching the target Mac CPU; the old
 architecture-neutral `eve-sdk-macosx-<version>.zip` is no longer published.
 
 ## Quick start (script-only game, no compilation)

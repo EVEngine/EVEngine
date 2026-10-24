@@ -257,7 +257,7 @@ EOF
 
 CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
 if [ "$PLAT" = macosx ]; then
-  CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES="$MACOS_ARCH" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0)
+  CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES="$MACOS_ARCH" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3)
 fi
 if [ "$PLAT" = "win32" ]; then
   # Default generator: GitHub-hosted windows images ship VS 2026, local dev

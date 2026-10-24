@@ -19,8 +19,8 @@ make build/macosx-x86_64-debug JOBS=4
 make build/macosx-x86_64 JOBS=4
 ```
 
-These targets explicitly select `CMAKE_OSX_ARCHITECTURES=x86_64` and macOS 13 as
-the deployment target, matching the prebuilt dependency baseline. They reject
+These targets explicitly select `CMAKE_OSX_ARCHITECTURES=x86_64` and macOS 13.3 as
+the deployment target for floating-point `std::format` support in libc++. They reject
 other hosts, targets and compilers. Engine builds use
 `build/macosx-x86_64[-debug]`; source dependencies build into
 `build/third-party/macosx-x86_64[-debug]` and install into
@@ -155,8 +155,8 @@ Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases)
 |-----------------|----------|-------|
 | Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
-| macOS ARM64 | `eve-sdk-macosx-arm64-<version>.zip` | macOS 13+, Apple Silicon |
-| macOS x86_64 | `eve-sdk-macosx-x86_64-<version>.zip` | macOS 13+, Intel |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<version>.zip` | macOS 13.3+, Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<version>.zip` | macOS 13.3+, Intel |
 | Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
 | iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |
 
@@ -311,7 +311,7 @@ sudo apt install -y \
 
 | Component | Recommended |
 |-----------|-------------|
-| OS | macOS 13+ (Apple Silicon / Intel, matching SDK architecture) |
+| OS | macOS 13.3+ (Apple Silicon / Intel, matching SDK architecture) |
 | Toolchain | **Xcode Command Line Tools** (`xcode-select --install`) |
 | CMake | Homebrew: `brew install cmake` (≥ 3.21) |
 | Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx-<arm64|x86_64>` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |

@@ -17,7 +17,7 @@ self-contained: **the player does not need the LunarG Vulkan SDK or any
 Vulkan environment variables.** At startup eve points SDL and the Vulkan
 loader at the bundled files (`eve::macosx::bootstrapBundledVulkan` in
 `platform/macosx/macosx.mm`). The player machine only needs a Metal-capable
-macOS (the published SDKs require macOS 13+).
+macOS (the published SDKs require macOS 13.3+).
 
 For an `.app` bundle, copy the same three Vulkan files into
 `Contents/Frameworks/` (the bootstrap also checks `../Frameworks` next to the

@@ -18,8 +18,8 @@ make build/macosx-x86_64-debug JOBS=4
 make build/macosx-x86_64 JOBS=4
 ```
 
-这两个入口显式设置 `CMAKE_OSX_ARCHITECTURES=x86_64`，最低目标版本为 macOS 13，
-与预编译依赖基线一致；同时检查宿主、目标和编译器，拒绝其他平台或架构。
+这两个入口显式设置 `CMAKE_OSX_ARCHITECTURES=x86_64`，最低目标版本为 macOS 13.3，
+满足浮点数 `std::format` 所需的系统标准库版本；同时检查宿主、目标和编译器，拒绝其他平台或架构。
 引擎使用 `build/macosx-x86_64[-debug]`；源码依赖构建和安装分别使用
 `build/third-party/macosx-x86_64[-debug]` 和
 `build/third-party-binary/macosx-x86_64[-debug]`。
@@ -133,8 +133,8 @@ CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner
 |----------|----------|------|
 | Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
-| macOS ARM64 | `eve-sdk-macosx-arm64-<版本>.zip` | macOS 13+，Apple Silicon |
-| macOS x86_64 | `eve-sdk-macosx-x86_64-<版本>.zip` | macOS 13+，Intel |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<版本>.zip` | macOS 13.3+，Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<版本>.zip` | macOS 13.3+，Intel |
 | Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
 | iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
 
@@ -279,7 +279,7 @@ sudo apt install -y \
 
 | 组件 | 推荐配置 |
 |------|----------|
-| 操作系统 | macOS 13+（Apple Silicon / Intel，使用对应架构的 SDK） |
+| 操作系统 | macOS 13.3+（Apple Silicon / Intel，使用对应架构的 SDK） |
 | 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
 | CMake | Homebrew：`brew install cmake`（≥ 3.21） |
 | Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx-<arm64|x86_64>` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |

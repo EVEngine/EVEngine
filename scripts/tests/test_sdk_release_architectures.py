@@ -64,6 +64,7 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
                                             capture_output=True, encoding="utf-8", check=False)
                     self.assertEqual(result.returncode, 0, result.stderr)
                     self.assertIn(f"-DCMAKE_OSX_ARCHITECTURES={architecture}", result.stdout)
+                    self.assertIn("-DCMAKE_OSX_DEPLOYMENT_TARGET=13.3", result.stdout)
                     self.assertIn(f"cmake --install build/{target} --prefix dist/eve-sdk/{target}", result.stdout)
 
     def test_source_install_uses_resolved_architecture_prefix(self):
