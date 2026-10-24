@@ -57,7 +57,8 @@ private:
 };
 
 /**
- * @brief Build the process-owned compiled catalogue once, then borrow it until exit.
+ * @brief Build the process-immortal compiled catalogue once, then borrow it until exit.
+ * @lifetime Survives static teardown together with McpServer's detached stdio reader.
  * @thread Synchronized first construction; schema callbacks cannot reenter this function during that build.
  * @throws std::invalid_argument If a compiled declaration violates the shared catalogue contract.
  * @cost First access parses all schemas; subsequent requests reuse the immutable snapshot.

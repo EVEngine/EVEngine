@@ -1,5 +1,6 @@
 #include "devtools/McpToolFamilies.hpp"
 
+#include "devtools/Immortal.hpp"
 #include "devtools/McpJson.hpp"
 
 #include <Poco/JSON/Parser.h>
@@ -44,7 +45,11 @@ std::optional<McpToolRoute> McpToolFamilyCatalog::find(std::string_view name) co
 }
 
 const McpToolFamilyCatalog& compiledMcpToolCatalog() {
-    static const McpToolFamilyCatalog catalog(compiledMcpToolFamilies());
-    return catalog;
+    // The detached stdio reader can outlive normal static teardown, exactly
+    // like McpServer. Keep its immutable routing snapshot alive with that host.
+    struct CompiledCatalog {
+        McpToolFamilyCatalog value{compiledMcpToolFamilies()};
+    };
+    return Immortal<CompiledCatalog>::get().value;
 }
 }  // namespace eve::dev
