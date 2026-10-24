@@ -68,7 +68,7 @@ void injectUIComponentClass(ssq::Table &eveTable);
 namespace {
 
 bool validHudFields(const WidgetDesc &node) {
-    return int(node.fillDirection) >= 0 && int(node.fillDirection) <= 3 && std::isfinite(node.fillStartDegrees) &&
+    return int(node.fillDirection) <= 3 && std::isfinite(node.fillStartDegrees) &&
            std::isfinite(node.fillInnerRadius) && node.fillInnerRadius >= 0.f && node.fillInnerRadius <= 1.f &&
            std::isfinite(node.fontSize) && node.fontSize >= 0.f && std::isfinite(node.textAlignX) &&
            node.textAlignX >= 0.f && node.textAlignX <= 1.f && std::isfinite(node.textAlignY) &&
