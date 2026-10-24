@@ -876,8 +876,8 @@ void Graphics::queueUiResolve() {
     // ImGui directly). Never bind the opaque DisplayEncode path here — it would
     // replace transparent texels with the UI clear color.
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
-                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    // The overlay texture is physical pixels; the compositing batch uses logical coordinates.
+    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
     pendingUiResolve = std::move(resolve);
 }
 

@@ -50,6 +50,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 
 | 示例 | 演示能力 |
 |---|---|
+| [building_village](building_village/README.md) | 3D/平面房屋工坊、蓝图、村镇复制、独立改造与存档 |
 | [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |

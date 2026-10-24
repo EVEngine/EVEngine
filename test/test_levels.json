@@ -4409,6 +4409,21 @@
       "origins": [
         "sensing_environment.cpp"
       ]
+    },
+    "integration/building-workflow/building_assembly.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "building"
+    },
+    "integration/building-workflow/building_roof_support.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "building"
+    },
+    "integration/building-workflow/editor_building_assembly.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "building_editing"
     }
   }
 }
