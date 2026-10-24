@@ -74,7 +74,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_stack` / `eve_locals` | 栈与局部变量 |
 | `eve_set_breakpoint` / `eve_list_breakpoints` | 断点 |
 | `eve_watch_*` | Watch |
-| `eve_snapshot_*` | 脚本状态快照（AI 测试可复位） |
+| `eve_snapshot_*` | 脚本状态快照：v3 保留共享表、共享数组和循环引用，兼容读取 v1/v2 |
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
 | `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
@@ -99,6 +99,23 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
 | `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |
+
+### 快照引用与失败语义
+
+`eve_snapshot_capture` / `eve_snapshot_save` 输出 v3 对象图：每个表、数组有独立 ID，
+根和成员通过 `{ "$ref": ID }` 引用它。同一个对象只保存一次；跨根共享、自引用和
+相互循环都能恢复，恢复后通过任一别名修改对象，其他别名会观察到同一修改。
+用户表中的 `$ref`、`type`、`value` 字段仍是普通数据，不会被当作格式元数据。
+
+`eve_snapshot_restore` / `eve_snapshot_load` 先验证整个图并构造全部容器，再提交脚本根。
+悬空引用、非法节点、未知版本等错误会明确返回失败，保留恢复前的脚本值和引用关系。
+原生 provider 恢复失败时回滚本次操作；provider 必须能恢复自己刚捕获的状态，回滚失败
+会单独报告。热重载合并新默认字段时也保留对象身份；已有值和数组内容以捕获状态为准。
+
+旧 v1/v2 树格式仍可读取，但旧文件中已被写成 `null` 的引用无法补回。当前支持字符串键的
+表和数组；非字符串表键会明确拒绝。捕获最多 65536 个容器，首次遍历的嵌套深度最多 32
+条边；重复引用立即终止展开，循环不会导致无限递归。类实例、函数等活对象仍按原有
+`skipped` 规则处理。
 
 ### Resources
 

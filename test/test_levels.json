@@ -2,6 +2,17 @@
   "schema": "evengine.test-levels",
   "version": 2,
   "sources": {
+    "integration/script-api/snapshot_devtools_references_tests.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "devtools",
+      "cases": {
+        "platform-file": [
+          "devtools.snapshot.reloadMergesDefaultsWithoutBreakingGraph",
+          "devtools.snapshot.reloadDefaultAliasesToCapturedArrayChildren"
+        ]
+      }
+    },
     "integration/transaction-authority/editor_authority_atomic.cpp": {
       "role": "tests",
       "default": "module-composition",

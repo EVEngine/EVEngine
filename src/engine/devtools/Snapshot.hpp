@@ -1,6 +1,7 @@
 #pragma once
 
 #include "common/Export.h"
+#include "common/Result.h"
 #include "common/StateValue.h"
 
 #include <string>
@@ -31,11 +32,28 @@ namespace eve::dev {
  * (`hero <- Hero()`). Function and class *definitions* at the root are ordinary script
  * bindings, so they stay silently skipped rather than flooding the list.
  *
- * Format (v2): JSON object
- * `{ "version":2, "roots": { name: value, ... },
+ * Script tables (string keys) and arrays preserve identity, including aliases
+ * across roots, self references and mutual cycles. Non-string table keys are rejected.
+ * Capture rejects more than 65536 containers or first-visit nesting deeper than 32
+ * edges; repeated references close immediately without further recursion.
+ * Failed capture leaves the output and VM unchanged. Restore validates the entire
+ * graph, allocates all containers, then fills their edges before committing roots.
+ * Native providers are rolled back on failure. Providers must accept their own
+ * captured state for rollback; rollback failures are reported explicitly.
+ *
+ * @thread Owner thread during a paused reload; borrowed VM handles remain valid
+ *         for the synchronous call. Snapshot values independently own their data.
+ *
+ * Format (v3): JSON object
+ * `{ "version":3, "roots": { name: scalar_or_ref, ... },
+ *    "objects": [{ "type":"table", "value": { key: scalar_or_ref, ... } },
+ *                { "type":"array", "value": [scalar_or_ref, ...] }, ...],
  *    "native": { "<stateKind>": <captured>, ... },
- *    "skipped": ["squad[0] (class instance)", ...] }` (the last key only when non-empty;
- * readers ignore it). v1 files (roots only) are still readable.
+ *    "skipped": ["squad[0] (class instance)", ...] }`.
+ * A ref is exactly `{ "$ref": index }`, with a zero-based index into objects.
+ * User containers are always nodes, so user keys cannot collide with ref metadata.
+ * `skipped` is only emitted when non-empty. Legacy v1/v2 tree files remain readable;
+ * unknown versions and malformed/dangling references fail before live state changes.
  */
 class EVENGINE_API_FOUNDATION Snapshot {
 public:
@@ -74,19 +92,30 @@ public:
 
     /**
      * @brief Capture script roots plus every Preserve IStateProvider.
-     * @param out Receives `{ "version":2, "roots": {...}, "native": {...} }`, plus
+     * @param out Receives the owning v3 object graph described above, plus
      *            `"skipped"` (array of `path (type)` strings) when values had to be left
      *            out. Keeping the omissions inside the captured state means no extra
      *            out-parameter and one channel for whoever reads the snapshot.
-     * @return false only when the VM is null or capture itself fails; provider failures
-     *         and unserializable values are skipped.
+     * @return false on a missing VM, unsupported keys, exceeded capture limits or
+     *         provider failure. Unserializable live values are skipped as documented above.
      */
     bool captureState(HSQUIRRELVM vm, StateValue& out, std::string* error = nullptr) const;
 
     /**
+     * @brief Merge v3 script defaults while retaining captured values and identities.
+     * @param captured Borrowed owning snapshot; unchanged by this operation.
+     * @param defaults Borrowed v3 snapshot of freshly defined state; unchanged.
+     * @return An independent owning snapshot, or a diagnostic for invalid graphs/limits.
+     * @note Missing table fields are imported with their aliases/cycles; array items
+     *       and existing roots retain captured values. Native state stays captured.
+     * @thread Owner thread during a paused reload; no VM access or script callbacks.
+     */
+    [[nodiscard]] Result<StateValue> mergeDefaultsState(const StateValue& captured, const StateValue& defaults) const;
+
+    /**
      * @brief Restore a captured state; v1-shaped values restore roots only.
-     * @return false on invalid input or when a provider's restore fails (its
-     *         resetToDefaults() is attempted as a fallback).
+     * @return false on invalid input or provider failure. Script roots are unchanged
+     *         on failure; native providers are restored from pre-operation backups.
      */
     bool restoreState(HSQUIRRELVM vm, const StateValue& state, std::string* error = nullptr) const;
 
