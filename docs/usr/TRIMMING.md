@@ -28,6 +28,11 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug -DEVENGINE_PROFILE=2d
 
 档位只是起点，可以在其上继续微调（见下）。
 
+桌面 CLI 的 `eve mcp`、`eve language-server` 和 `eve run --debug`（含
+`--dap-port` / `--mcp-port`）需要启用 `devtools` 模块。未启用时，这些命令打印
+缺失模块诊断并返回退出码 4；普通 `eve run` 仍可用。需要在 `2d` 档使用这些工具时，
+增加 `-DEVENGINE_MODULE_DEVTOOLS=ON`。此选项沿用 manifest 的模块开关，不另设功能开关。
+
 ## 单个模块开关
 
 ```sh

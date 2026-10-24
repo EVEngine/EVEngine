@@ -2622,6 +2622,31 @@ TEST_CASE("scriptCompiler.generatedBindingContractsAreSearchable") {
     CHECK(hits[0].contract.toJson().find("\"method\":\"") != std::string::npos);
 }
 
+TEST_CASE("scriptCompiler.bindingContractSearchSplitsSlashAndDot") {
+    script::BindingContractRegistry registry;
+    script::BindingContract         reset;
+    reset.module          = "dialogue";
+    reset.method          = "reset";
+    reset.returnType      = "void";
+    reset.documentationId = "dialogue.reset";
+    registry.registerContract(reset);
+
+    script::BindingContract publish;
+    publish.module          = "dialogueFlow";
+    publish.method          = "publishGameplay";
+    publish.returnType      = "table";
+    publish.documentationId = "dialogueFlow.publishGameplay";
+    registry.registerContract(publish);
+
+    const auto dotted = registry.search("dialogue.reset", {}, {}, 4);
+    REQUIRE(!dotted.empty());
+    CHECK_EQ(dotted[0].contract.key(), std::string("dialogue/reset"));
+
+    const auto legacy = registry.search("dialogue publishGameplay", {}, {}, 4);
+    REQUIRE(!legacy.empty());
+    CHECK_EQ(legacy[0].contract.key(), std::string("dialogueFlow/publishGameplay"));
+}
+
 
 TEST_CASE("scriptCompiler.recordsInspectorPropertyMetadata") {
     const script::ScriptMetadata metadata = script::ScriptCompiler::analyze(

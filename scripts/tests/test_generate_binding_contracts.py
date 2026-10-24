@@ -139,6 +139,22 @@ class CatalogExportTests(unittest.TestCase):
             self.assertIn("drawSolidRect(x: float, y: float): void;", dts_path.read_text(encoding="utf-8"))
 
 
+class LambdaCaptureTests(unittest.TestCase):
+    def test_getHandle_paren_inside_capture_is_not_the_parameter_list(self) -> None:
+        """Regression: `[vm = cls.getHandle()](T* self, const std::string& id)` used to
+        parse getHandle()'s empty argument list and publish zero parameters."""
+        from generate_binding_contracts import callable_signature
+
+        expression = (
+            "[vm = cls.getHandle()](DialogueFlow* value, const std::string& id, ssq::Object bindings) {\n"
+            "    return eve::script::projectResult(vm, value->startChecked(id, std::move(bindings)));\n"
+            "}"
+        )
+        signature = callable_signature(expression, SignatureIndex({}))
+        self.assertIsNotNone(signature)
+        self.assertEqual([parameter.name for parameter in signature[2]], ["value", "id", "bindings"])
+
+
 class BindMethodScrapeTests(unittest.TestCase):
     def test_bind_method_literal_names_are_scraped(self) -> None:
         from generate_binding_contracts import extract_contracts
@@ -171,6 +187,78 @@ class BindMethodScrapeTests(unittest.TestCase):
         self.assertEqual(unresolved, [])
         self.assertIn("animation/OrientationWarping.setEnabled", keys)
         self.assertIn("animation/OrientationWarping.isEnabled", keys)
+
+
+class SlotAwareKeyTests(unittest.TestCase):
+    def test_module_reg_roots_use_manifest_slot(self) -> None:
+        """addClass(name, …) leaves scriptClass empty; keys must still match SLOT."""
+        from generate_binding_contracts import SlotIndex, extract_contracts
+
+        root = Path(__file__).resolve().parents[2]
+        sources = {
+            root / "src/modules/dialogue/DialogueFlow.h": (
+                "namespace eve::dialogue {\n"
+                "class DialogueFlow {\n"
+                "public:\n"
+                "    eve::Result<void> publishGameplay(const std::string& instanceId,\n"
+                "                                      const std::string& ownerId);\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/dialogue/DialogueFlow.cpp": (
+                "namespace eve::dialogue {\n"
+                "void DialogueFlow::expose(ssq::Table& table) {\n"
+                "    auto cls = table.addClass(name, DialogueFlow::create, false);\n"
+                '    cls.addFunc("publishGameplay",\n'
+                "                [](DialogueFlow* self, const std::string& instanceId,\n"
+                "                   const std::string& ownerId) {\n"
+                "                    return self->publishGameplay(instanceId, ownerId);\n"
+                "                });\n"
+                "}\n"
+                "}\n"
+            ),
+            root / "src/modules/map/level/editor/LevelEditorModule.h": (
+                "namespace eve::level_editing { class TileBuffer { public: int width() const; }; }\n"
+                "namespace eve::level_editor {\n"
+                "class LevelEditorModule {\n"
+                "public:\n"
+                "    std::unique_ptr<level_editing::TileBuffer> newTileBuffer(int width, int height) const;\n"
+                "};\n"
+                "}\n"
+            ),
+            root / "src/modules/map/level/editor/LevelEditorModule.cpp": (
+                "namespace eve::level_editor {\n"
+                "void LevelEditorModule::expose(ssq::Table& table) {\n"
+                "    auto buffer = table.addClass<level_editing::TileBuffer>(\n"
+                '        "TileBuffer", std::function<level_editing::TileBuffer*()>([]() { return nullptr; }), true);\n'
+                "    buffer.addFunc(\"getWidth\", &level_editing::TileBuffer::width);\n"
+                "    auto module = table.addClass(name, LevelEditorModule::create, false);\n"
+                "    expose(module);\n"
+                "}\n"
+                "void LevelEditorModule::expose(ssq::Class& cls) {\n"
+                '    cls.addFunc("newTileBuffer", [](LevelEditorModule* self, int width, int height) {\n'
+                "        return self->newTileBuffer(width, height).release();\n"
+                "    });\n"
+                "}\n"
+                "}\n"
+            ),
+        }
+        slots = SlotIndex(
+            script_to_slot={
+                "DialogueFlow": "dialogueFlow",
+                "LevelEditorModule": "levelEditor",
+            },
+            dir_slots=(("map/level/editor", "levelEditor"),),
+        )
+
+        contracts, unresolved = extract_contracts(sources, slot_index=slots)
+        keys = {contract.key for contract in contracts}
+        self.assertEqual(unresolved, [])
+        self.assertIn("dialogueFlow/publishGameplay", keys)
+        self.assertNotIn("dialogue/publishGameplay", keys)
+        self.assertIn("levelEditor/newTileBuffer", keys)
+        self.assertIn("levelEditor/TileBuffer.getWidth", keys)
+        self.assertNotIn("map/newTileBuffer", keys)
 
 
 if __name__ == "__main__":

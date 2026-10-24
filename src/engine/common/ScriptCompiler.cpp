@@ -293,7 +293,9 @@ std::vector<std::string> splitTokens(const std::string& query) {
     std::vector<std::string> tokens;
     std::string              current;
     for (char c : query) {
-        if (std::isspace(static_cast<unsigned char>(c))) {
+        // Treat path separators like spaces so `dialogue.clear` / `dialogue/reset`
+        // tokenize into module + method for ranked search and eve_api_get suggestions.
+        if (std::isspace(static_cast<unsigned char>(c)) || c == '/' || c == '.') {
             if (!current.empty()) {
                 tokens.push_back(current);
                 current.clear();
