@@ -1,3 +1,84 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-files",
+  "cases": {
+    "concurrency": [
+      "thread.resource executor bounds concurrent decoding",
+      "resource.requestAsyncThenWaitFor",
+      "resource.getJoinsInFlightRequest",
+      "resource.asyncLoadFailureSurfacesInWaitFor",
+      "SceneLoader.prewarmAsync.reusesDecodedScene"
+    ],
+    "platform-file": [
+      "animation.mixamo.anim.txtFixturesPresent",
+      "font.newFontData.ttf",
+      "font.newFontDataFromFile.cached",
+      "font.newFontData.invalidSize",
+      "model3d.newModelDataFromFile.cached",
+      "model3d.newModelData.rock1Fbx",
+      "model3d.newModelDataFromFile.sofaObjMtl",
+      "model3d.materialApi.objMtl",
+      "model3d.materialApi.gltf",
+      "spritestack.render.pure2DStack",
+      "spritestack.render.batchUses2DStacks"
+    ],
+    "render-window": [
+      "animation.mixamo.skeletonIdleRunJumpPreview",
+      "map.render.orthoAndIsoPreview",
+      "model3d.render.rock1Fbx",
+      "model3d.render.rock1ToonShader",
+      "model3d.render.sofaObjMtl",
+      "model3d.buildRenderable.objMtl",
+      "model3d.render.gltfEmbeddedUvOrientation",
+      "model3d.render.cesiumManGltf",
+      "particles.render.fireAndSmokePreview",
+      "SceneLoader.load.buildsGameObjectTreeWithRenderables",
+      "SceneLoader.load.pbrMaterialAndLightsAndCamera",
+      "SceneLoader.load.pbrTextureCacheReusesTexture",
+      "SceneLoader.load.gltfCesiumManPbrAndAnimation",
+      "SceneLoader.loadAsync.mountsOnPoll",
+      "SceneLoader.loadAsync.precodesTextures"
+    ],
+    "physics-backend": [
+      "particles.groundCulling.filtersVisitorAndControlsPlayback"
+    ]
+  },
+  "module": "filesystem",
+  "modules": [
+    "animation",
+    "editor",
+    "filesystem",
+    "font",
+    "map",
+    "model3d",
+    "particles",
+    "sceneloader",
+    "sound",
+    "spritestack"
+  ],
+  "origins": [
+    "ModelPrefetch.cpp",
+    "PreparedFile.cpp",
+    "animation_mixamo.cpp",
+    "editor_disk_asset_catalog_v2.cpp",
+    "font.cpp",
+    "map.cpp",
+    "model3d.cpp",
+    "particles.cpp",
+    "resource.cpp",
+    "resource_decoder_lifetime.cpp",
+    "resource_format_model.cpp",
+    "resource_format_sound.cpp",
+    "sceneloader.cpp",
+    "spritestack.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ModelPrefetch)

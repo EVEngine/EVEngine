@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "module-composition",
+  "module": "asset_import"
+}
+*/
+// clang-format on
+
 #include "asset/import/UnityImporter.h"
 #include "asset/import/UnitySourceInternal.h"
 

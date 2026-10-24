@@ -1,3 +1,54 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "cases": {
+    "physics-backend": [
+      "softbody.cloth.collidesWithWorld",
+      "softbody.cloth.momentumExchangeScalesWithMass",
+      "softbody.cloth3d.collidesWithWorld3D",
+      "softbody.cloth3d.momentumExchangeScalesWithMass",
+      "softbody.fluid.emitAndSettle",
+      "softbody.fluid.interactRepels",
+      "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents"
+    ],
+    "script-binding": [
+      "graphics.waterReflectionMasker.bindsRealVm"
+    ]
+  },
+  "module": "filesystem",
+  "modules": [
+    "filesystem",
+    "graphics",
+    "physics",
+    "physics_softbody",
+    "spatial",
+    "stylize",
+    "ui",
+    "voxel",
+    "weather"
+  ],
+  "origins": [
+    "shader.cpp",
+    "shader_reload.cpp",
+    "shader_reload_vulkan.cpp",
+    "softbody.cpp",
+    "spatial.cpp",
+    "stylize.cpp",
+    "stylize_anime.cpp",
+    "stylize_mesh_particles.cpp",
+    "ui_texture_bridge.cpp",
+    "voxel_face_dir.cpp",
+    "voxel_render_atlas.cpp",
+    "water_mesh.cpp",
+    "weather.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_shader)

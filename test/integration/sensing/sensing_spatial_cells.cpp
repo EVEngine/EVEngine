@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "sensing",
+  "origins": [
+    "sensing_spatial_cells.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "sensing/Sensing.h"
 #include "zeroerr/unittest.h"
 

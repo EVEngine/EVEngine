@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "local-format",
+  "origins": [
+    "editing_property_schema_json.cpp"
+  ]
+}
+*/
+// clang-format on
+
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_property_schema_json)
 #include "PrivateTestScope.h"

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_roll_policy.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include "procgen/road/RoadNetworkCodec.h"
 #include "procgen/spline/SplinePath.h"

@@ -18,7 +18,6 @@ rule -- or two rules -- fails in CI as well.
 from __future__ import annotations
 
 import re
-import json
 import sys
 from pathlib import Path
 import utf8_stdio
@@ -144,7 +143,7 @@ def main() -> int:
     buckets, partition_errors = partition(tables)
     errors.extend(partition_errors)
     level_inventory = test_levels.source_inventory(TEST_DIR)
-    level_catalogue = json.loads(test_levels.CATALOGUE.read_text(encoding="utf-8"))
+    level_catalogue = test_levels.source_catalogue()
     errors.extend(test_levels.catalogue_errors(level_catalogue, level_inventory))
     _, module_errors = test_module_coverage.audit(
         level_catalogue, level_inventory, test_module_coverage.check_module_manifest.parse_manifest())

@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "projectile_runtime.cpp",
+    "spell_fragment_compiler.cpp",
+    "weapon_infinite_reload.cpp",
+    "weapon.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_projectile_runtime)

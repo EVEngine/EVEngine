@@ -1,3 +1,29 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "animation_sprite_spine.cpp",
+    "animation_two_bone_precision.cpp",
+    "hair_dynamic_bones.cpp",
+    "animation.cpp",
+    "animation_batch_lod.cpp",
+    "animation_binary.cpp",
+    "animation_clip_editing.cpp",
+    "animation_constraints_sync.cpp",
+    "animation_curves.cpp",
+    "animation_motion_normalization.cpp",
+    "animation_motion.cpp",
+    "animation_retarget_compression.cpp",
+    "animation_root_motion_policy.cpp",
+    "animation_skinned.cpp",
+    "animation_smr_retarget.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation)

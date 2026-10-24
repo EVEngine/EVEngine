@@ -1,3 +1,61 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "ui",
+  "modules": [
+    "action",
+    "agent",
+    "agent_tensor",
+    "animation",
+    "authority",
+    "avatar",
+    "buildingfx",
+    "card",
+    "climbing",
+    "combat",
+    "common",
+    "crowd",
+    "devtools",
+    "dialogue",
+    "platform_event",
+    "ui"
+  ],
+  "origins": [
+    "DatabasePanel.cpp",
+    "ECS.cpp",
+    "EditorShell.cpp",
+    "Inspector.cpp",
+    "ReflectScript.cpp",
+    "ScriptECS.cpp",
+    "action_ability_script.cpp",
+    "agent_script.cpp",
+    "agent_tensor_script.cpp",
+    "animation_clip_editing.cpp",
+    "async.cpp",
+    "authority.cpp",
+    "avatar.cpp",
+    "binding_selfcheck.cpp",
+    "building_placement_regression.cpp",
+    "card.cpp",
+    "card_gameplay_control.cpp",
+    "climbing_anchor_authoring.cpp",
+    "combat_carrier.cpp",
+    "combat_script.cpp",
+    "composable_gameplay.cpp",
+    "console.cpp",
+    "crowd_contacts.cpp",
+    "crowd_script.cpp",
+    "crowd_spawn.cpp",
+    "dialogue_state_script_provider.cpp",
+    "script_provider.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_DatabasePanel)

@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "crowd.contactPairs.scriptExtensionsAreOptionalAndStrictInteger"
+    ]
+  },
+  "module": "crowd",
+  "origins": [
+    "crowd_contact_pairs.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "crowd/Crowd.h"

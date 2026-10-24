@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "platform-file",
+  "module": "tensor"
+}
+*/
+// clang-format on
+
 // Emit current production tensor kernels for an installed engine's real Gpgpu.
 // This validates GPU mathematics, not current module boot/registration.
 #include <fstream>

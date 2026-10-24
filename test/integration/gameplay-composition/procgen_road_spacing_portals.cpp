@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_spacing_portals.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include "editing/EditingAuthority.h"
 #include "procgen/editing/RoadNetworkEditTarget.h"
 #include "procgen/editing/RoadPresetDocument.h"

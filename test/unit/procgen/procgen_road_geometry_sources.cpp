@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_geometry_sources.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Value.h"
 #include "procgen/road/RoadBake.h"
 #include "procgen/road/RoadGeometrySources.h"

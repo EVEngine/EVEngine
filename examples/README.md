@@ -27,7 +27,7 @@ make run/<platform>-debug GAME=examples/<name>
 2. **`config.nut` 必须赋值 `config` 表**：引擎先给默认 `config`，再 `dofile("config.nut")`。
    自造的 `window_title` / `window_width` 之类全局不会被读取，窗口会静默退回默认 800×600。
 3. **每个示例目录都要有 `README.md`**：说明演示内容、运行命令、操作方式与相关文件。
-4. **每个示例都要登记在本文件的表格中**：不允许出现指向不存在目录的死链接。
+4. **新增示例无需编辑本文件**：示例由目录自动发现；本页列表在文档维护时集中整理，已有链接仍须有效。
 5. **至少运行 2 秒不报错**：`scripts/smoke_examples.sh` 逐个启动可运行示例，`MIN_RUN_SECONDS`
    （默认 2 秒，CI 同为 2 秒；每个示例实际观察 `RUN_SECONDS`，默认 6 秒）之后进程必须
    仍然存活，且日志中不得出现 `frame error`、

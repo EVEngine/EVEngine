@@ -1,3 +1,89 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "cases": {
+    "runtime-lifecycle": [
+      "devtools.procgenQuery.generateMapReportsStructuredFailure",
+      "devtools.sceneQuery.getSetReportStructuredFailure",
+      "devtools.renderCapture.savePngReportsStructuredFailure",
+      "devtools.ai.panelLog",
+      "devtools.mcp.engineLineDropsScriptEchoOnly",
+      "ModuleManager.RegistryRollbackOwnsCreatedInstance",
+      "ModuleManager.RegistryConflictPreservesCommittedInstance",
+      "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods"
+    ],
+    "platform-network": [
+      "devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime",
+      "devtools.mcp.executeObserveCorrelatesSceneEditorWithNamedHost",
+      "devtools.mcp.rxObservationSessionTracksChangesDeduplicatesAndCloses"
+    ],
+    "concurrency": [
+      "devtools.mcp.crashReportExplainsPreviousRun",
+      "procgen.worker.legacyIssueRejectsWrongThread",
+      "procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary",
+      "procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation"
+    ],
+    "render-offscreen": [
+      "moduleExpose.allBindingsPreserveProcgenRockSurface"
+    ],
+    "render-window": [
+      "procgen.animation.pcgSkinnedMesh.realGraphicsAcceptsCombinedSkinStreams"
+    ]
+  },
+  "module": "devtools",
+  "modules": [
+    "common",
+    "devtools",
+    "mouse",
+    "npc_ai",
+    "orders",
+    "physics_cloth",
+    "policyregistry",
+    "procgen",
+    "procgen_animation",
+    "production",
+    "profiler",
+    "rpg",
+    "ui"
+  ],
+  "origins": [
+    "mcp.cpp",
+    "mcp_agent_export.cpp",
+    "mcp_hot_reload.cpp",
+    "mcp_scene_literal.cpp",
+    "mcp_soft_restart.cpp",
+    "model.cpp",
+    "module_lazy_bind.cpp",
+    "mouse.cpp",
+    "npc_ai_script.cpp",
+    "orders.cpp",
+    "pcg_biome_controller.cpp",
+    "pcg_color_preview_sync.cpp",
+    "pcg_terrain_watcher.cpp",
+    "physics_cloth.cpp",
+    "policyregistry.cpp",
+    "procgen_module_assembly.cpp",
+    "procgen_runtime_generation.cpp",
+    "procgen_scene_sink.cpp",
+    "production.cpp",
+    "profiler.cpp",
+    "reload_script.cpp",
+    "rpg_classic_semantic_index.cpp",
+    "rpg_dnut_script.cpp",
+    "rpg_script.cpp",
+    "rpg_world_state_script.cpp",
+    "simplesquirrel.cpp"
+  ],
+  "generated": [
+    "Mouse."
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp)

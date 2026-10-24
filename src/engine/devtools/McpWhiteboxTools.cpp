@@ -1,4 +1,5 @@
 #include "devtools/McpWhiteboxTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "devtools/Debugger.hpp"
 #include "devtools/McpArgs.hpp"
@@ -216,4 +217,8 @@ std::string_view mcpWhiteboxToolSchemas() {
     return R"json({"name":"eve_whitebox_playtest","description":"Fast white-box recipe: optional reset, batch scene_director actions (scene), inject playtest inputs, and optionally run an eve_play batch. Does not block the game loop — when input wait/capture is pending, poll with eve_input_poll. Returns {ok,status,scene,input,play,info}.","inputSchema":{"type":"object","properties":{"reset":{"type":"boolean","description":"Clear staged props first (default true)"},"scene":{"type":"array","items":{"type":"object","properties":{"action":{"type":"string"},"target":{"type":"string"},"params":{"type":"object"}},"required":["action"]},"description":"eve_scene_batch actions"},"stopOnError":{"type":"boolean"},"inputs":{"type":"array","items":{"type":"object"},"description":"eve_input_batch actions"},"waitFrames":{"type":"integer","minimum":0},"capture":{"type":"boolean"},"capturePath":{"type":"string"},"play":{"type":"array","items":{"type":"object"},"description":"eve_play request objects executed as one batch"}}}})json";
 }
 
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Whitebox, mcpWhiteboxToolSchemas, callMcpWhiteboxTool, ContentEnvelope)
 }  // namespace eve::dev

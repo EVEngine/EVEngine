@@ -1,3 +1,25 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "graphics",
+  "modules": [
+    "graphics",
+    "thread",
+    "common",
+    "window"
+  ],
+  "cases": {
+    "module-composition": [
+      "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+    ]
+  }
+}
+*/
+// clang-format on
+
 #include "common/config.h"
 #if !defined(EVENGINE_WEBGPU)
 #include "common/Profile.h"
