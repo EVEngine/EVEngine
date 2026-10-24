@@ -60,7 +60,8 @@ target_include_directories(physics_bake_playback PRIVATE "${EVE_ROOT}/src/engine
 target_link_libraries(physics_bake_playback PRIVATE physics_bake_runtime Threads::Threads)
 foreach(target physics_bake_runtime physics_bake_playback physics_bake_inspect physics_bake_measure physics_bake_collapse_error physics_bake_allocation)
   if(MSVC)
-    target_compile_options(${target} PRIVATE /W4 /WX /utf-8)
+    # Match the engine warning policy for STL members in exported classes.
+    target_compile_options(${target} PRIVATE /W4 /WX /utf-8 /wd4251 /wd4275)
   else()
     target_compile_options(${target} PRIVATE -Wall -Wextra -Werror)
   endif()

@@ -99,16 +99,16 @@ Result<RigidPoseTrack> RigidPoseTrack::load(std::string_view path) {
         std::shared_ptr<const BakeRecipe> provenance;
         std::uint64_t                     metadataBytes = 0;
         if (version == 2) {
-            const auto size = word(in);
-            if (size == 0 || size > 65536 || size > payloadSize - 28)
+            const auto recipeSize = word(in);
+            if (recipeSize == 0 || recipeSize > 65536 || recipeSize > payloadSize - 28)
                 return Result<RigidPoseTrack>::failure(malformed("invalid rigid recipe length"));
-            std::string encoded(size, '\0');
-            in.read(encoded.data(), static_cast<std::streamsize>(size));
+            std::string encoded(recipeSize, '\0');
+            in.read(encoded.data(), static_cast<std::streamsize>(recipeSize));
             if (!in) return Result<RigidPoseTrack>::failure(malformed("truncated rigid recipe"));
             auto decoded = BakeRecipe::decode(encoded);
             if (!decoded) return Result<RigidPoseTrack>::failure(decoded.status());
             provenance    = std::make_shared<const BakeRecipe>(std::move(decoded).takeValue());
-            metadataBytes = 4ull + size;
+            metadataBytes = 4ull + recipeSize;
         }
         const auto expected =
             24 + metadataBytes + 16ull * tracks + static_cast<std::uint64_t>(frames) * (4 + 28ull * tracks);
