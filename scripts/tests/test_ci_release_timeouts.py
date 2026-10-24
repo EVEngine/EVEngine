@@ -56,8 +56,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("android", "Build android debug"): 85,
             ("macos", "Build macosx debug"): 75,
             ("macos", "Run macosx unit tests"): 90,
-            ("macos", "Build native Dawn Metal lane"): 75,
-            ("windows", "Build native Dawn parity lane"): 150,
+            ("dawn", "Build native Dawn smoke lane"): 180,
             ("linux-release", "Build linux release"): 105,
             ("android-release", "Build android release"): 120,
             ("profile-matrix", "Build independent profile smoke target"): 60,
@@ -72,7 +71,8 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
 
     def test_multi_phase_job_budgets_cover_observed_cold_runs(self) -> None:
         minimums = {
-            "windows": 300,
+            "windows": 240,
+            "dawn": 300,
             "android": 120,
             "macos": 240,
             "linux-coverage": 150,

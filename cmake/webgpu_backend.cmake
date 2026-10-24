@@ -12,6 +12,10 @@ function(load_webgpu_backend)
 
     message(STATUS "WebGPU (native): fetching Google Dawn")
     include(FetchContent)
+    # EVEngine consumes Dawn's headers, not its optional C++ module interface.
+    # Dawn's -fmodules-ts probe succeeds on GCC 13 even though CMake's Ninja
+    # module dependency scanning requires GCC 14; suppress that unused target.
+    set(DAWN_SUPPORTS_CXX_MODULES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
