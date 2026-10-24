@@ -13,6 +13,7 @@
 #include "climbing/Climbing.h"
 #include "climbing/ClimbingCodec.h"
 #include "climbing/ClimbingPose.h"
+#include "common/ValueRead.h"
 #include "physics/World3D.h"
 
 // ClimbingInput.cpp
@@ -255,10 +256,9 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const auto* value = field(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
@@ -276,10 +276,11 @@ bool readUint64String(const eve::Value::Object& object, std::string_view name, s
 }
 
 bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
-    const auto* value   = field(object, name);
-    const auto* integer = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!integer) return false;
-    output = *integer;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 

@@ -1,4 +1,5 @@
 #include "graphics/ArtifactProvider.h"
+#include "common/ValueRead.h"
 
 #include "common/Capability.h"
 #include "graphics/Graphics.h"
@@ -22,25 +23,25 @@ const eve::Value* member(const eve::Value::Object& object, const char* name) noe
 }
 
 bool readString(const eve::Value::Object& object, const char* name, std::string& output, bool allowEmpty = false) {
-    const auto* value = member(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
-    if (!text || (!allowEmpty && text->empty())) return false;
-    output = *text;
+    auto text = eve::readStringMember(object, name);
+    if (!text || (!allowEmpty && text.value().empty())) return false;
+    output = std::move(text.value());
     return true;
 }
 
 bool readU64(const eve::Value::Object& object, const char* name, std::uint64_t& output) {
-    std::string text;
-    if (!readString(object, name, text)) return false;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), output);
-    return error == std::errc{} && end == text.data() + text.size();
+    auto parsed = eve::scanUnsignedStringMember(object, name);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool readBool(const eve::Value::Object& object, const char* name, bool& output) {
-    const auto* value   = member(object, name);
-    const auto* boolean = value ? value->getIf<bool>() : nullptr;
-    if (!boolean) return false;
-    output = *boolean;
+    const auto* value = member(object, name);
+    if (!value) return false;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
