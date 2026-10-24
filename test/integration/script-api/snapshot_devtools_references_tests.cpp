@@ -31,18 +31,18 @@ struct SnapshotFixture {
         REQUIRE(snapshot.captureState(vm.getHandle(), out, &error));
         REQUIRE_EQ(out.find("version")->asInt(), int64_t(3));
         REQUIRE(out.find("objects")->isArray());
-        CHECK_EQ(sq_gettop(vm.getHandle()), top);
-        CHECK(unchanged());
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+        REQUIRE(unchanged());
         run("gameState = null; if (\"otherState\" in getroottable()) otherState = null;");
         REQUIRE(snapshot.restoreState(vm.getHandle(), out, &error));
-        CHECK_EQ(sq_gettop(vm.getHandle()), top);
-        CHECK(unchanged());
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+        REQUIRE(unchanged());
         const auto json = snapshot.capture(vm.getHandle(), &error);
         REQUIRE(!json.empty());
         run("gameState = null; if (\"otherState\" in getroottable()) otherState = null;");
         REQUIRE(snapshot.restore(vm.getHandle(), json, &error));
-        CHECK_EQ(sq_gettop(vm.getHandle()), top);
-        CHECK(unchanged());
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+        REQUIRE(unchanged());
     }
 };
 
@@ -150,12 +150,12 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.restoreDepthFailureIsAtomi
     state.set("roots", std::move(roots));
     const auto  top = sq_gettop(vm.getHandle());
     std::string error;
-    CHECK(!snapshot.restoreState(vm.getHandle(), state, &error));
-    CHECK(error.find("lateRoot") != std::string::npos);
-    CHECK_EQ(sq_gettop(vm.getHandle()), top);
-    CHECK(unchanged());
-    CHECK(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99,"lateRoot":[})", &error));
-    CHECK(unchanged());
+    REQUIRE(!snapshot.restoreState(vm.getHandle(), state, &error));
+    REQUIRE(error.find("lateRoot") != std::string::npos);
+    REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+    REQUIRE(unchanged());
+    REQUIRE(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99,"lateRoot":[})", &error));
+    REQUIRE(unchanged());
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.nativeFailureRollsBackAndKeepsRootIdentity") {
@@ -169,13 +169,13 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.nativeFailureRollsBackAndK
     for (bool throws : {false, true}) {
         second.throws = throws;
         std::string error;
-        CHECK(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99},"native":{"first":42,"second":99}})",
-                                &error));
-        CHECK(error.find("injected restore") != std::string::npos);
-        CHECK_EQ(first.value, int64_t(7));
-        CHECK_EQ(second.value, int64_t(7));
-        CHECK_EQ(sq_gettop(vm.getHandle()), top);
-        CHECK(unchanged());
+        REQUIRE(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99},"native":{"first":42,"second":99}})",
+                                  &error));
+        REQUIRE(error.find("injected restore") != std::string::npos);
+        REQUIRE_EQ(first.value, int64_t(7));
+        REQUIRE_EQ(second.value, int64_t(7));
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+        REQUIRE(unchanged());
     }
 }
 
@@ -192,7 +192,7 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.independentEqualContainers
     REQUIRE(!json.empty());
     run("gameState = null;");
     REQUIRE(snapshot.restore(vm.getHandle(), json, &error));
-    CHECK(unchanged());
+    REQUIRE(unchanged());
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.preservesArraySelfCycle") {
@@ -218,11 +218,11 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.captureDepthFailureKeepsOu
     auto        out = eve::StateValue::string("sentinel");
     const auto  top = sq_gettop(vm.getHandle());
     std::string error;
-    CHECK(!snapshot.captureState(vm.getHandle(), out, &error));
-    CHECK_EQ(out.asString(), std::string("sentinel"));
-    CHECK(error.find("depth limit exceeded at gameState[0]") != std::string::npos);
-    CHECK_EQ(sq_gettop(vm.getHandle()), top);
-    CHECK(unchanged());
+    REQUIRE(!snapshot.captureState(vm.getHandle(), out, &error));
+    REQUIRE_EQ(out.asString(), std::string("sentinel"));
+    REQUIRE(error.find("depth limit exceeded at gameState[0]") != std::string::npos);
+    REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+    REQUIRE(unchanged());
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.invalidNativeIsAtomic") {
@@ -233,10 +233,10 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.invalidNativeIsAtomic") {
     )");
     std::string error;
     const auto  top = sq_gettop(vm.getHandle());
-    CHECK(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99},"native":[]})", &error));
-    CHECK(error.find("native must be an object") != std::string::npos);
-    CHECK_EQ(sq_gettop(vm.getHandle()), top);
-    CHECK(unchanged());
+    REQUIRE(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99},"native":[]})", &error));
+    REQUIRE(error.find("native must be an object") != std::string::npos);
+    REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+    REQUIRE(unchanged());
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.resetFailureRollsBack") {
@@ -248,10 +248,10 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.resetFailureRollsBack") {
     RestoreFailureProvider provider("reset");
     provider.reset = true;
     std::string error;
-    CHECK(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99}})", &error));
-    CHECK(error.find("injected reset failure") != std::string::npos);
-    CHECK_EQ(provider.value, int64_t(7));
-    CHECK(unchanged());
+    REQUIRE(!snapshot.restore(vm.getHandle(), R"({"roots":{"gameState":99}})", &error));
+    REQUIRE(error.find("injected reset failure") != std::string::npos);
+    REQUIRE_EQ(provider.value, int64_t(7));
+    REQUIRE(unchanged());
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.literalMetadataKeysRoundTrip") {
@@ -287,11 +287,11 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.invalidGraphLeavesAllState
         R"({"version":3,"roots":{"gameState":99},"objects":[{"type":"array","value":[{"$ref":3}]}]})"};
     for (const char* json : invalid) {
         std::string error;
-        CHECK(!snapshot.restore(vm.getHandle(), json, &error));
-        CHECK(!error.empty());
-        CHECK_EQ(sq_gettop(vm.getHandle()), top);
-        CHECK_EQ(provider.value, int64_t(7));
-        CHECK(unchanged());
+        REQUIRE(!snapshot.restore(vm.getHandle(), json, &error));
+        REQUIRE(!error.empty());
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
+        REQUIRE_EQ(provider.value, int64_t(7));
+        REQUIRE(unchanged());
     }
 }
 
@@ -361,10 +361,10 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.nativeFailureWithCyclicCan
     captured.set("native", std::move(native));
     RestoreFailureProvider provider("first");
     const auto             top = sq_gettop(vm.getHandle());
-    CHECK(!snapshot.restoreState(vm.getHandle(), captured, &error));
-    CHECK(unchanged());
-    CHECK_EQ(provider.value, int64_t(7));
-    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    REQUIRE(!snapshot.restoreState(vm.getHandle(), captured, &error));
+    REQUIRE(unchanged());
+    REQUIRE_EQ(provider.value, int64_t(7));
+    REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.nonStringKeysFailExplicitly") {
@@ -372,10 +372,10 @@ TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.nonStringKeysFailExplicitl
     auto        out = eve::StateValue::string("sentinel");
     const auto  top = sq_gettop(vm.getHandle());
     std::string error;
-    CHECK(!snapshot.captureState(vm.getHandle(), out, &error));
-    CHECK(error.find("non-string table key at gameState") != std::string::npos);
-    CHECK_EQ(out.asString(), std::string("sentinel"));
-    CHECK_EQ(sq_gettop(vm.getHandle()), top);
+    REQUIRE(!snapshot.captureState(vm.getHandle(), out, &error));
+    REQUIRE(error.find("non-string table key at gameState") != std::string::npos);
+    REQUIRE_EQ(out.asString(), std::string("sentinel"));
+    REQUIRE_EQ(sq_gettop(vm.getHandle()), top);
 }
 
 TEST_CASE_FIXTURE(SnapshotFixture, "devtools.snapshot.reloadDefaultAliasesToCapturedArrayChildren") {
