@@ -113,6 +113,12 @@ public:
     std::string formatError(const std::string& errorMessage,
                             const std::vector<std::string>& hintVars = {}) const;
 
+    /** @brief Replace the latest diagnostic with an owning MCP snippet report.
+     * Main/VM thread only; synchronous, no callbacks. Clears the previous slice
+     * because transient compiler input has no runtime data-flow history.
+     */
+    void recordMcpSnippetError(std::string report);
+
     const std::string& lastReport() const { return lastReport_; }
     const std::string& lastError() const { return lastError_; }
     /** @brief Script-side slice from the last `notifyError` (empty if none). */

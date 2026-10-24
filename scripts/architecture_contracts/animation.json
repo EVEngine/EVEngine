@@ -1,0 +1,188 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-api-shape",
+      "rule": "api-shape",
+      "result_policy": "Fallible mutations and compilation return common Result; query booleans are only predicates.",
+      "nodiscard_policy": "All new fallible APIs are nodiscard.",
+      "pointer_policy": "Owned Pimpl and unique_ptr compiled artifacts; synchronous references only."
+    },
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-state-owner",
+      "rule": "state-owner",
+      "state": "Authored controls, reference poses, degrees of freedom, limits, keys, solve nodes and dependencies.",
+      "authoritative_owner": "ControlRigDocument owns mutable definition.",
+      "projections": "Compiled indices, GraphDocumentData, preview poses and script tables are rebuilt projections."
+    },
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-api-lifetime",
+      "rule": "api-lifetime",
+      "thread_affinity": "One owner thread per editor/instance.",
+      "reentrancy": "No external callbacks.",
+      "ownership_contract": "Rig owns definition and skeleton snapshots; editor owns typed document and derived previews.",
+      "lifetime": "Rig owns document and history; coordinator borrows both. Rig unregisters before destruction; weak coordinator lifetime expires before host teardown. Re-enable registers a fresh generation.",
+      "lock_callback_policy": "No locks or callbacks in solving or editing."
+    },
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-persistence",
+      "rule": "persistence",
+      "schema": "eve.control-rig",
+      "version": "2",
+      "migration": "Decode v1 as unconstrained reference=initial; write canonical v2 with limits. Reject unknown versions atomically.",
+      "unknown_fields": "Reject missing or unknown structural fields.",
+      "restore_atomicity": "Decode, validate and solve candidate before transaction publication; failure preserves authoritative document and pose."
+    },
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-backend-contract",
+      "rule": "backend-contract",
+      "contract": "Existing LocalWorldAuthority and LocalTransactionBackend staging with reversible rig replacement.",
+      "providers": "ControlRigDocument implements IDomainOperationTarget and staging.",
+      "shared_contract_tests": "editor.controlRig.transactionHistoryAndRoundTrip and documentRejectsForeignPublication",
+      "failure_injection": "Invalid schema, foreign target, graph cycles, invalid pose and missing bones leave output unchanged."
+    },
+    {
+      "scope": "src/modules/animation/*ControlRig*",
+      "owner": "animation",
+      "issue": "EVENGINE-CONTROL-RIG-AUTHORING",
+      "reason": "Native control rig authoring requested in this task; runtime, transactions and script facade share one typed definition.",
+      "expiry": "2027-10-22",
+      "evidence": [
+        "docs/dev/plans/2026-10-22-control-rig-authoring.md",
+        "src/modules/animation/ControlRig.h",
+        "src/modules/animation/editor/ControlRigEditor.h",
+        "docs/dev/plans/2026-10-23-control-rig-limits.md"
+      ],
+      "tests": [
+        "test/unit/animation/animation_tests.cpp",
+        "test/integration/control-rig/editor_control_rig.cpp",
+        "test/integration/control-rig/editor_control_rig_automation.cpp",
+        "test/integration/control-rig/editor_control_rig_limits.cpp"
+      ],
+      "id": "animation-control-rig-module-interface",
+      "rule": "module-interface",
+      "provides": [],
+      "requires": [
+        {
+          "capability": "animation runtime",
+          "kind": "hard when rig authoring bridge enabled",
+          "absent_behavior": "ControlRigDocument.cpp excluded and editor rig bindings omitted without animation."
+        },
+        {
+          "capability": "editing::IEditingCommandRegistry",
+          "kind": "optional authoring automation",
+          "absent_behavior": "enableAutomation returns Unsupported; native authoring retains its document and history."
+        }
+      ],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        "AnimationEditorModule.createRig",
+        "ControlRigEditor",
+        "ControlRigEditor.setLimitsJson"
+      ],
+      "protocol": [
+        "eve.control-rig/2 (v1 migration)",
+        "animation.rig.replace.v1",
+        "animation.control-rig graph/1"
+      ],
+      "thread_affinity": "owner thread; independent compiled rigs can solve independently",
+      "trim": {
+        "absent_profile": "Verified L1: minimal + animation_editor=ON + animation=OFF builds EVAnimation_editing and EVAnimation_editor; ControlRigDocument.cpp excluded and rig binding implementation absent. L2/L4 not claimed."
+      },
+      "cost_notes": [
+        "Compile and offline bake return new owned artifacts; per-frame solve uses compiled indices.",
+        "Document edits prepare reversible operations; JSON conversion is the existing editing Value boundary adapter, not another schema."
+      ],
+      "hot_path": [
+        "src/modules/animation/ControlRig.cpp",
+        "src/modules/animation/ControlRigLimits.cpp"
+      ]
+    }
+  ]
+}
