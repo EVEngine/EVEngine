@@ -1,0 +1,24 @@
+name: Diagnose Intel CI failure
+
+on:
+  push:
+    branches: [codex/diagnose-intel-668]
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  logs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Extract Intel compiler and linker errors
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api "repos/$GH_REPO/actions/jobs/120924993656/logs" > previous-intel.log
+          wc -c previous-intel.log
+          awk '/error:|FAILED:|Undefined symbols|ld: / {remaining=18} remaining>0 {if (shown++ < 350) print; remaining--}' previous-intel.log
+          tail -n 45 previous-intel.log
