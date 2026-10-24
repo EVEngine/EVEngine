@@ -169,10 +169,10 @@ TEST_CASE("physics.forces.scriptFieldSetsOwnValuesAndBatchRights") {
         local batch=eve.prepareFieldForces3D(fieldSet,world3(),targets3); assert(batch.ok);
         cancelledReceipt <- eve.commitForceBatch3D(batch.value,world3(),"2","10000000").value;
     )"));
-    CHECK(std::abs(b2->getLinearVelocityX() / 30 - .0270710678) < 1e-5);
-    CHECK(std::abs(b3->getLinearVelocityX() - .0270710678) < 1e-5);
-    CHECK(std::abs(b2->getLinearVelocityY() / 30 - 3 * .01 / b2->getMass()) < 1e-5);
-    CHECK(std::abs(b3->getLinearVelocityY() - 3 * .01 / b3->getMass()) < 1e-5);
+    REQUIRE(std::abs(b2->getLinearVelocityX() / 30 - .0270710678) < 1e-5);
+    REQUIRE(std::abs(b3->getLinearVelocityX() - .0270710678) < 1e-5);
+    REQUIRE(std::abs(b2->getLinearVelocityY() / 30 - 3 * .01 / b2->getMass()) < 1e-5);
+    REQUIRE(std::abs(b3->getLinearVelocityY() - 3 * .01 / b3->getMass()) < 1e-5);
     b3->destroy();
     vm.run(vm.compileSource(R"(
         assert(!eve.commitForceBatch3D(pending,world3(),"1","10000000").ok);

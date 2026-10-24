@@ -56,6 +56,7 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/vehicle/VehicleTireRuntime.cpp",
     "src/engine/common/SmoothMax.h",
     "src/modules/audio/EventSink.cpp",
+    "src/modules/audio/PcmStream.cpp",
     "src/modules/crowd/CrowdAvoidance.cpp",
     "src/modules/sensing/EnvironmentQuery.cpp",
     "src/modules/crowd/CrowdInternal.h",

@@ -155,11 +155,6 @@ jobs:
           echo "Source-quality comparison base: $base"
           make check CI_BASE="$base"
 
-      - name: Report dependency graph
-        timeout-minutes: 5
-        if: always()
-        run: python3 scripts/module_depgraph.py
-
   profile-matrix:
     name: Profile ${{ matrix.profile }}
     # Pull requests already run the toolchain-free profile contract check in
@@ -256,6 +251,228 @@ jobs:
       - name: Test vision-prefilter
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
+
+  # Native ARM64 lanes build and run the same process-isolated test suite.
+  # Installed SDKs also compile a consumer plugin and run a packaged game.
+  windows-arm64:
+    name: Windows ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.windows == 'true' }}
+    runs-on: windows-11-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') {
+            throw 'This lane requires a native Windows ARM64 host'
+          }
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install native ARM64 Vulkan SDK
+        timeout-minutes: 20
+        # This pinned action selects the Windows ARM64 SDK from the host arch.
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Probe native Vulkan driver and loader surface extensions
+        timeout-minutes: 5
+        env:
+          VK_LOADER_DEBUG: error,warn
+        run: |
+          cmake/with-msvc.cmd --arm64 cmake -G Ninja -S .github/scripts/vulkan-probe -B build/arm64-vulkan-probe -DCMAKE_BUILD_TYPE=Release
+          cmake/with-msvc.cmd --arm64 cmake --build build/arm64-vulkan-probe
+          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$EVE_VULKAN_LOADER"
+
+      - name: Build Windows ARM64
+        timeout-minutes: 190
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/win32-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          # Executable-local lookup precedes any system Vulkan loader.
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/test/vulkan-1.dll"
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/src/engine/vulkan-1.dll"
+
+      - name: Probe real SDL Vulkan window with loader diagnostics
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          VK_LOADER_DEBUG: all
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          ctest --test-dir "build/win32-arm64${suffix}" --no-tests=error -V -R '^WindowTest\.basicWindow$'
+
+      - name: Run Windows ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "test/win32-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Windows ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/win32-arm64${suffix}" --prefix "dist/eve-sdk/win32-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/win32-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py win32-arm64 ci
+          bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-win32-arm64-ci.zip win32 "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: win32-arm64-${{ matrix.configuration }}-test-logs
+          path: build/win32-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
+  linux-arm64:
+    name: Linux ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.linux == 'true' }}
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        run: test "$(uname -m)" = aarch64
+
+      - name: Install native system packages
+        timeout-minutes: 25
+        # Preserve the ARM ports mirror supplied by the runner image.
+        run: |
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build lld gdb \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            libvulkan-dev glslc glslang-tools \
+            mesa-vulkan-drivers vulkan-tools vulkan-validationlayers xvfb xauth
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Build Linux ARM64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/linux-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Probe ray tracing with validation and backtraces
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          bash .github/scripts/probe-arm64-blas.sh
+          python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
+
+      - name: Run Linux ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Linux ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/linux-arm64${suffix}" --prefix "dist/eve-sdk/linux-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/linux-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py linux-arm64 ci
+          xvfb-run -a bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-linux-arm64-ci.zip linux "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-arm64-${{ matrix.configuration }}-test-logs
+          path: build/linux-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
 
   windows:
     name: Windows

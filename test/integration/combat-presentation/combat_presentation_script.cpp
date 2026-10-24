@@ -56,9 +56,9 @@ TEST_CASE("combatPresentationScript.runtimeOwnsMovementAndDamageState") {
     CHECK(vm.find("moved").toTable().get<bool>("ok"));
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK(vm.find("playerX").toFloat() > 0.0f);
-    CHECK_EQ(vm.find("enemyHealth").toFloat(), 55.0f);
+    REQUIRE_EQ(vm.find("enemyHealth").toFloat(), 55.0f);
     CHECK(vm.find("timelineDamage").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("actualDamage").toFloat(), 18.0f);
+    REQUIRE_EQ(vm.find("actualDamage").toFloat(), 18.0f);
     CHECK(vm.find("criticalHit").toBool());
     CHECK_EQ(vm.find("damageReaction").toString(), std::string("flinch"));
     CHECK(!vm.find("invalid").toTable().get<bool>("ok"));

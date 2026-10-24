@@ -301,16 +301,16 @@ TEST_CASE("PhysicsLayeredCloth.rejectsInvalidInputBeforeMutation") {
             ++rejected;
         }
     }
-    CHECK(rejected == 3);
-    CHECK(group.layer(0).getParticleY(4) == initial);
+    REQUIRE(rejected == 3);
+    REQUIRE(group.layer(0).getParticleY(4) == initial);
     group.layer(2).destroy();
     try {
         group.update(0.01f);
     } catch (const std::exception&) {
         ++rejected;
     }
-    CHECK(rejected == 4);
-    CHECK(group.layer(0).getParticleY(4) == initial);
+    REQUIRE(rejected == 4);
+    REQUIRE(group.layer(0).getParticleY(4) == initial);
 }
 TEST_CASE("PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable") {
     LayeredCloth3D a(3, 4, 4, 0.25f, 0.08f, 0, 2, 0), b(3, 4, 4, 0.25f, 0.08f, 0, 2, 0);
@@ -322,15 +322,15 @@ TEST_CASE("PhysicsLayeredCloth.threeLayerReplayRemainsFiniteAndResettable") {
     }
     for (int l = 0; l < 3; ++l)
         for (int p = 0; p < 16; ++p) {
-            CHECK(std::isfinite(a.layer(l).getParticleY(p)));
-            CHECK(std::abs(a.layer(l).getParticleY(p) - b.layer(l).getParticleY(p)) < 1e-5f);
-            CHECK(std::abs(a.layer(l).getParticleX(p) - b.layer(l).getParticleX(p)) < 1e-5f);
-            CHECK(std::abs(a.layer(l).getParticleZ(p) - b.layer(l).getParticleZ(p)) < 1e-5f);
+            REQUIRE(std::isfinite(a.layer(l).getParticleY(p)));
+            REQUIRE(std::abs(a.layer(l).getParticleY(p) - b.layer(l).getParticleY(p)) < 1e-5f);
+            REQUIRE(std::abs(a.layer(l).getParticleX(p) - b.layer(l).getParticleX(p)) < 1e-5f);
+            REQUIRE(std::abs(a.layer(l).getParticleZ(p) - b.layer(l).getParticleZ(p)) < 1e-5f);
         }
     a.reset();
-    CHECK(a.getContactCount() == 0);
-    CHECK(std::abs(a.layer(2).getParticleY(8) - 2.16f) < 1e-5f);
-    CHECK(a.layer(0).isPinned(0));
+    REQUIRE(a.getContactCount() == 0);
+    REQUIRE(std::abs(a.layer(2).getParticleY(8) - 2.16f) < 1e-5f);
+    REQUIRE(a.layer(0).isPinned(0));
 }
 
 TEST_CASE("PhysicsLayeredCloth.interiorFaceContactAndFriction") {

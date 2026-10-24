@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "procgen-everyday-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/procgen/texture/*",
+      "owner": "procgen-maintainers",
+      "issue": "EVENGINE-ARCH-PROCGEN",
+      "reason": "Everyday CPU material generation shares the existing image pipeline without introducing module dependencies.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/procgen/texture/EverydayMaterials.h",
+        "docs/usr/modules/procgen/everyday-materials.md"
+      ],
+      "tests": [
+        "test/unit/procgen/procgen_everyday_materials.cpp",
+        "test/integration/script-api/procgen_everyday_material_optics.cpp"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [
+        {
+          "script_class": "Procgen",
+          "methods": [
+            "generatePbrMaterial",
+            "getPbrRecipeSchema",
+            "applyPbrRecipeDefaults"
+          ]
+        }
+      ],
+      "protocol": [],
+      "thread_affinity": "Factory is reentrant on independent inputs. Recipe registry remains owner-thread only.",
+      "trim": {
+        "absent_profile": "procgen-core-only",
+        "level": "L1",
+        "evidence": "No new trim claim; image-dependent generation remains outside the CPU core profile."
+      },
+      "cost_notes": [
+        {
+          "api": "EverydayMaterials::generate",
+          "shape": "owned-result",
+          "why": "Generate six CPU maps once, upload separately, reuse the owning result."
+        }
+      ]
+    }
+  ]
+}
