@@ -1,4 +1,5 @@
 #include "vehicle/ContainerAdapters.h"
+#include "common/Json.h"
 
 #include "game_event/GameEvent.h"
 
@@ -25,29 +26,7 @@ constexpr std::string_view kOccupantPrefix = "vehicle:occupant:";
 }
 
 [[nodiscard]] std::string quote(std::string_view value) {
-    std::string result;
-    result.reserve(value.size() + 2);
-    result.push_back('"');
-    for (const unsigned char byte : value) {
-        switch (byte) {
-            case '"': result += "\\\""; break;
-            case '\\': result += "\\\\"; break;
-            case '\n': result += "\\n"; break;
-            case '\r': result += "\\r"; break;
-            case '\t': result += "\\t"; break;
-            default:
-                if (byte < 0x20u) {
-                    result += "\\u00";
-                    constexpr char digits[] = "0123456789abcdef";
-                    result.push_back(digits[(byte >> 4u) & 0x0fu]);
-                    result.push_back(digits[byte & 0x0fu]);
-                } else {
-                    result.push_back(static_cast<char>(byte));
-                }
-        }
-    }
-    result.push_back('"');
-    return result;
+    return eve::json::quoteString(value, eve::json::StringEscapeStyle::UnicodeBackspaceFormFeed);
 }
 
 [[nodiscard]] int parseOccupant(const eve::container::ContainerObject& object) noexcept {
