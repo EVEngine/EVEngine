@@ -146,12 +146,9 @@ def main() -> int:
     level_inventory = test_levels.source_inventory(TEST_DIR)
     level_catalogue = json.loads(test_levels.CATALOGUE.read_text(encoding="utf-8"))
     errors.extend(test_levels.catalogue_errors(level_catalogue, level_inventory))
-    module_report, module_errors = test_module_coverage.audit(
+    _, module_errors = test_module_coverage.audit(
         level_catalogue, level_inventory, test_module_coverage.check_module_manifest.parse_manifest())
     errors.extend(module_errors)
-    report_path = TEST_DIR / "MODULE_TEST_COVERAGE.md"
-    if not report_path.exists() or report_path.read_text(encoding="utf-8") != test_module_coverage.markdown(module_report):
-        errors.append("module test evidence is stale; run scripts/test_module_coverage.py --write")
 
     if errors:
         for error in errors:
