@@ -9,10 +9,6 @@
     <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
     <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
   </tr>
-  <tr>
-    <td width="50%"><img src="docs/images/examples/housegen.gif" width="100%" alt=""></td>
-    <td width="50%"><img src="docs/images/examples/cave-generator.gif" width="100%" alt=""></td>
-  </tr>
 </table>
 
 =======================
