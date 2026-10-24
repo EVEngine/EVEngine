@@ -551,16 +551,17 @@ jobs:
           # Package downloads can exceed the old ten-minute step budget.
           # Keep bounded transport retries and signature/hash verification.
           sudo apt-get install -y --no-install-recommends \
-            build-essential cmake ninja-build \
+            build-essential cmake ninja-build pkg-config \
             libx11-dev libx11-xcb-dev libxcb1-dev libxxf86vm-dev libxi-dev libxcursor-dev \
             libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
-            libgl1-mesa-dev \
+            libgl1-mesa-dev libgbm-dev libdrm-dev \
             libbz2-dev libpng-dev \
             libwayland-dev libxkbcommon-dev libasound2-dev \
             mesa-vulkan-drivers vulkan-tools \
             xvfb xauth
-          # Fail here if the Dawn Xlib/XCB bridge headers are unavailable.
-          printf '#include <X11/Xlib-xcb.h>\n' | g++ -x c++ -fsyntax-only -
+          # Check Dawn platform headers before starting the dependency build.
+          printf '#include <X11/Xlib-xcb.h>\n#include <gbm.h>\n#include <xf86drm.h>\n' | \
+            g++ $(pkg-config --cflags gbm libdrm) -x c++ -fsyntax-only -
 
       - name: Setup C/C++ compilation cache
         timeout-minutes: 10
