@@ -1,0 +1,214 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/jolt/JoltQueryInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_ff62e0f27e22813015816d9775ff97d9.html">jolt</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">JoltQueryInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="JoltQueryInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Jolt requires its platform header before any other native header.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;Jolt/Jolt.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// Provider implementation dependencies.</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;Jolt/Physics/Collision/CollisionCollectorImpl.h&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;Jolt/Physics/Collision/ShapeCast.h&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &quot;<a class="code" href="JoltInternal_8h.html">physics/jolt/JoltInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics_1_1jolt.html">eve::physics::jolt</a> {</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a8e235df3ef9ecdbc01dcf371ca9d3fa7">   11</a></span>    JPH::RefConst&lt;JPH::Shape&gt; <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a8e235df3ef9ecdbc01dcf371ca9d3fa7">shape</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a60faee0ae313b37f9b44ac4d319f3c96">   12</a></span>    JPH::RMat44               <a class="code hl_variable" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a60faee0ae313b37f9b44ac4d319f3c96">transform</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>};</div>
+</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>JPH::RVec3 <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#aee8269941d411d365298672d47a33690">closestConvexPoint</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a>&amp;, JPH::RVec3Arg);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;QueryVolume&gt;</a> <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#ae04cfca400cb95e05c797cd0998f505e">capsuleVolume</a>(<span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keywordtype">float</span>, <span class="keywordtype">float</span>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a6431e6d40ffe6783bc17a420a317a6c9">isAcceptedHit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>&amp;, JPH::BodyID, <span class="keyword">const</span> JPH::SubShapeID&amp;, <a class="code hl_struct" href="structeve_1_1physics_1_1QueryFilter3D.html">QueryFilter3D</a>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><a class="code hl_struct" href="structeve_1_1physics_1_1RayHit3D.html">RayHit3D</a> <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a855e75ffa9cd0b1750ce978e34931bfa">queryHit</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>&amp;, JPH::BodyID, <span class="keyword">const</span> JPH::SubShapeID&amp;, JPH::RVec3Arg, JPH::Vec3Arg, <span class="keywordtype">float</span>);</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>JPH::AllHitCollisionCollector&lt;JPH::CollideShapeCollector&gt; <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#a371c0a0cf8e5f1f437deb7e9dd51e1ac">overlapVolume</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a>&amp;,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                                                                        <span class="keywordtype">float</span> <a class="code hl_variable" href="TreeMesh_8cpp.html#a3d47f7e2bf80c3044a1c4fb985d08565">separation</a> = 0.f);</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>JPH::AllHitCollisionCollector&lt;JPH::CastShapeCollector&gt; <a class="code hl_function" href="namespaceeve_1_1physics_1_1jolt.html#afc6ce1119a0307931b0b78a6fa80fd73">sweepVolume</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a>&amp;, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a>&amp;, JPH::Vec3Arg);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>}  <span class="comment">// namespace eve::physics::jolt</span></div>
+<div class="ttc" id="aJoltInternal_8h_html"><div class="ttname"><a href="JoltInternal_8h.html">JoltInternal.h</a></div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a3d47f7e2bf80c3044a1c4fb985d08565"><div class="ttname"><a href="TreeMesh_8cpp.html#a3d47f7e2bf80c3044a1c4fb985d08565">separation</a></div><div class="ttdeci">float separation</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00159">TreeMesh.cpp:159</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html">eve::physics::jolt</a></div><div class="ttdef"><b>Definition</b> <a href="JoltBody_8cpp_source.html#l00007">JoltBody.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a371c0a0cf8e5f1f437deb7e9dd51e1ac"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a371c0a0cf8e5f1f437deb7e9dd51e1ac">eve::physics::jolt::overlapVolume</a></div><div class="ttdeci">JPH::AllHitCollisionCollector&lt; JPH::CollideShapeCollector &gt; overlapVolume(const State &amp;state, const QueryVolume &amp;volume, float separation)</div><div class="ttdoc">Collects owning native records for this synchronous query; no pointers escape.</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8cpp_source.html#l00056">JoltQueryInternal.cpp:56</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a6431e6d40ffe6783bc17a420a317a6c9"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a6431e6d40ffe6783bc17a420a317a6c9">eve::physics::jolt::isAcceptedHit</a></div><div class="ttdeci">bool isAcceptedHit(const State &amp;state, JPH::BodyID id, const JPH::SubShapeID &amp;sub, QueryFilter3D filter)</div><div class="ttdoc">Filters a synchronous native hit, borrowing state only for the call.</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8cpp_source.html#l00023">JoltQueryInternal.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_a855e75ffa9cd0b1750ce978e34931bfa"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#a855e75ffa9cd0b1750ce978e34931bfa">eve::physics::jolt::queryHit</a></div><div class="ttdeci">RayHit3D queryHit(const State &amp;state, JPH::BodyID id, const JPH::SubShapeID &amp;sub, JPH::RVec3Arg point, JPH::Vec3Arg normal, float fraction)</div><div class="ttdoc">Projects a validated native hit into an owning result on the idle simulation thread.</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8cpp_source.html#l00033">JoltQueryInternal.cpp:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_ae04cfca400cb95e05c797cd0998f505e"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#ae04cfca400cb95e05c797cd0998f505e">eve::physics::jolt::capsuleVolume</a></div><div class="ttdeci">eve::Result&lt; QueryVolume &gt; capsuleVolume(float ax, float ay, float az, float bx, float by, float bz, float radius)</div><div class="ttdoc">Cooks an ephemeral query capsule; inputs are endpoints in world space.</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8cpp_source.html#l00009">JoltQueryInternal.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_aee8269941d411d365298672d47a33690"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#aee8269941d411d365298672d47a33690">eve::physics::jolt::closestConvexPoint</a></div><div class="ttdeci">JPH::RVec3 closestConvexPoint(const ShapeState &amp;shape, JPH::RVec3Arg target)</div><div class="ttdoc">Returns a convex leaf's world closest point; shape/body are borrowed only during this idle-thread cal...</div><div class="ttdef"><b>Definition</b> <a href="JoltGeometryQueries_8cpp_source.html#l00011">JoltGeometryQueries.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1jolt_html_afc6ce1119a0307931b0b78a6fa80fd73"><div class="ttname"><a href="namespaceeve_1_1physics_1_1jolt.html#afc6ce1119a0307931b0b78a6fa80fd73">eve::physics::jolt::sweepVolume</a></div><div class="ttdeci">JPH::AllHitCollisionCollector&lt; JPH::CastShapeCollector &gt; sweepVolume(const State &amp;state, const QueryVolume &amp;volume, JPH::Vec3Arg delta)</div><div class="ttdoc">Sweeps one ephemeral convex volume; results are local to its starting position.</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8cpp_source.html#l00066">JoltQueryInternal.cpp:66</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1QueryFilter3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1QueryFilter3D.html">eve::physics::QueryFilter3D</a></div><div class="ttdoc">Query filter applied atomically for one owning query operation.</div><div class="ttdef"><b>Definition</b> <a href="OwnedQuery3D_8h_source.html#l00047">OwnedQuery3D.h:47</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1RayHit3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1RayHit3D.html">eve::physics::RayHit3D</a></div><div class="ttdoc">Owning snapshot of the closest ray intersection.</div><div class="ttdef"><b>Definition</b> <a href="OwnedQuery3D_8h_source.html#l00079">OwnedQuery3D.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1QueryVolume_html"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">eve::physics::jolt::QueryVolume</a></div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8h_source.html#l00010">JoltQueryInternal.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1QueryVolume_html_a60faee0ae313b37f9b44ac4d319f3c96"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a60faee0ae313b37f9b44ac4d319f3c96">eve::physics::jolt::QueryVolume::transform</a></div><div class="ttdeci">JPH::RMat44 transform</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8h_source.html#l00012">JoltQueryInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1QueryVolume_html_a8e235df3ef9ecdbc01dcf371ca9d3fa7"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html#a8e235df3ef9ecdbc01dcf371ca9d3fa7">eve::physics::jolt::QueryVolume::shape</a></div><div class="ttdeci">JPH::RefConst&lt; JPH::Shape &gt; shape</div><div class="ttdef"><b>Definition</b> <a href="JoltQueryInternal_8h_source.html#l00011">JoltQueryInternal.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1ShapeState_html"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">eve::physics::jolt::ShapeState</a></div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00093">JoltInternal.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1jolt_1_1State_html"><div class="ttname"><a href="structeve_1_1physics_1_1jolt_1_1State.html">eve::physics::jolt::State</a></div><div class="ttdef"><b>Definition</b> <a href="JoltInternal_8h_source.html#l00058">JoltInternal.h:58</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

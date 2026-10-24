@@ -1,0 +1,494 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sensing::EnvironmentTest结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sensing.html">sensing</a></li><li class="navelem"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html">EnvironmentTest</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1sensing_1_1EnvironmentTest-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::sensing::EnvironmentTest结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One metric with independent filtering and scoring parameters.  
+ <a href="structeve_1_1sensing_1_1EnvironmentTest.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a89e30ee99d81428c1e871767b198749c" id="r_a89e30ee99d81428c1e871767b198749c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a89e30ee99d81428c1e871767b198749c">id</a></td></tr>
+<tr class="separator:a89e30ee99d81428c1e871767b198749c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f5cfedb9c74f31109d3cf9c553bfa95" id="r_a1f5cfedb9c74f31109d3cf9c553bfa95"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a1f5cfedb9c74f31109d3cf9c553bfa95">context</a></td></tr>
+<tr class="separator:a1f5cfedb9c74f31109d3cf9c553bfa95"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa3f2bfd92be52be0af889f7577f1e85f" id="r_aa3f2bfd92be52be0af889f7577f1e85f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">EnvironmentMetricKind</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#aa3f2bfd92be52be0af889f7577f1e85f">metric</a> = <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98">EnvironmentMetricKind::Distance</a></td></tr>
+<tr class="separator:aa3f2bfd92be52be0af889f7577f1e85f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7ab0dc2c6359adb36ea545d973055c6" id="r_ab7ab0dc2c6359adb36ea545d973055c6"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; const <a class="el" href="classeve_1_1sensing_1_1IEnvironmentMetric.html">IEnvironmentMetric</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#ab7ab0dc2c6359adb36ea545d973055c6">custom</a></td></tr>
+<tr class="separator:ab7ab0dc2c6359adb36ea545d973055c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa77566db53a35532959e3510fed96969" id="r_aa77566db53a35532959e3510fed96969"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">EnvironmentPurpose</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#aa77566db53a35532959e3510fed96969">purpose</a> = <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e">EnvironmentPurpose::FilterAndScore</a></td></tr>
+<tr class="separator:aa77566db53a35532959e3510fed96969"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643fb5e83de1a7d92879827bae802dcd" id="r_a643fb5e83de1a7d92879827bae802dcd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">EnvironmentFilterOp</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a643fb5e83de1a7d92879827bae802dcd">filterOp</a> = <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680">EnvironmentFilterOp::All</a></td></tr>
+<tr class="separator:a643fb5e83de1a7d92879827bae802dcd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a84d77fa9e5b716481b01fe018218bb71" id="r_a84d77fa9e5b716481b01fe018218bb71"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">EnvironmentAggregate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a84d77fa9e5b716481b01fe018218bb71">aggregate</a> = <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021">EnvironmentAggregate::Average</a></td></tr>
+<tr class="separator:a84d77fa9e5b716481b01fe018218bb71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03a9e81e88f6a4448b2c96bd073d026e" id="r_a03a9e81e88f6a4448b2c96bd073d026e"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a03a9e81e88f6a4448b2c96bd073d026e">minimum</a> = 0</td></tr>
+<tr class="separator:a03a9e81e88f6a4448b2c96bd073d026e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acd421e237a1eda80f75d7ec889c35a24" id="r_acd421e237a1eda80f75d7ec889c35a24"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#acd421e237a1eda80f75d7ec889c35a24">maximum</a> = std::numeric_limits&lt;double&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td></tr>
+<tr class="separator:acd421e237a1eda80f75d7ec889c35a24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a419d25b782ec135a23aa4b7e62e1533c" id="r_a419d25b782ec135a23aa4b7e62e1533c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">EnvironmentNormalization</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a419d25b782ec135a23aa4b7e62e1533c">normalization</a> = <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b">EnvironmentNormalization::FixedRange</a></td></tr>
+<tr class="separator:a419d25b782ec135a23aa4b7e62e1533c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae4b372af367faf29fc978b7e2a3dd5ed" id="r_ae4b372af367faf29fc978b7e2a3dd5ed"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#ae4b372af367faf29fc978b7e2a3dd5ed">scoreMinimum</a> = 0</td></tr>
+<tr class="separator:ae4b372af367faf29fc978b7e2a3dd5ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7046c73f7dc503573e52727cf4e42f15" id="r_a7046c73f7dc503573e52727cf4e42f15"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a7046c73f7dc503573e52727cf4e42f15">scoreMaximum</a> = 100</td></tr>
+<tr class="separator:a7046c73f7dc503573e52727cf4e42f15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a315b078086088eb5beb92e05536b8472" id="r_a315b078086088eb5beb92e05536b8472"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">EnvironmentPreference</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a315b078086088eb5beb92e05536b8472">preference</a> = <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93">EnvironmentPreference::Lower</a></td></tr>
+<tr class="separator:a315b078086088eb5beb92e05536b8472"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad80e73a803cb190374a1f7f6ddc294f1" id="r_ad80e73a803cb190374a1f7f6ddc294f1"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#ad80e73a803cb190374a1f7f6ddc294f1">referenceValue</a> = 0</td></tr>
+<tr class="separator:ad80e73a803cb190374a1f7f6ddc294f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a422813cc0e35b4f1219c366f12f0f75e" id="r_a422813cc0e35b4f1219c366f12f0f75e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">EnvironmentCurve</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a422813cc0e35b4f1219c366f12f0f75e">curve</a> = <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b">EnvironmentCurve::Linear</a></td></tr>
+<tr class="separator:a422813cc0e35b4f1219c366f12f0f75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b05292561a5ca530aed76f9f8a92594" id="r_a6b05292561a5ca530aed76f9f8a92594"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html#a6b05292561a5ca530aed76f9f8a92594">weight</a> = 1</td></tr>
+<tr class="separator:a6b05292561a5ca530aed76f9f8a92594"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One metric with independent filtering and scoring parameters. </p>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00099">99</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a84d77fa9e5b716481b01fe018218bb71" name="a84d77fa9e5b716481b01fe018218bb71"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a84d77fa9e5b716481b01fe018218bb71">&#9670;&#160;</a></span>aggregate</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">EnvironmentAggregate</a> eve::sensing::EnvironmentTest::aggregate = <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021">EnvironmentAggregate::Average</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00106">106</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1f5cfedb9c74f31109d3cf9c553bfa95" name="a1f5cfedb9c74f31109d3cf9c553bfa95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f5cfedb9c74f31109d3cf9c553bfa95">&#9670;&#160;</a></span>context</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::sensing::EnvironmentTest::context</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="a422813cc0e35b4f1219c366f12f0f75e" name="a422813cc0e35b4f1219c366f12f0f75e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a422813cc0e35b4f1219c366f12f0f75e">&#9670;&#160;</a></span>curve</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">EnvironmentCurve</a> eve::sensing::EnvironmentTest::curve = <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b">EnvironmentCurve::Linear</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00114">114</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab7ab0dc2c6359adb36ea545d973055c6" name="ab7ab0dc2c6359adb36ea545d973055c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7ab0dc2c6359adb36ea545d973055c6">&#9670;&#160;</a></span>custom</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::shared_ptr&lt;const <a class="el" href="classeve_1_1sensing_1_1IEnvironmentMetric.html">IEnvironmentMetric</a>&gt; eve::sensing::EnvironmentTest::custom</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00103">103</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a643fb5e83de1a7d92879827bae802dcd" name="a643fb5e83de1a7d92879827bae802dcd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a643fb5e83de1a7d92879827bae802dcd">&#9670;&#160;</a></span>filterOp</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">EnvironmentFilterOp</a> eve::sensing::EnvironmentTest::filterOp = <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680">EnvironmentFilterOp::All</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00105">105</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a89e30ee99d81428c1e871767b198749c" name="a89e30ee99d81428c1e871767b198749c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a89e30ee99d81428c1e871767b198749c">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::sensing::EnvironmentTest::id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00100">100</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="acd421e237a1eda80f75d7ec889c35a24" name="acd421e237a1eda80f75d7ec889c35a24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd421e237a1eda80f75d7ec889c35a24">&#9670;&#160;</a></span>maximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::maximum = std::numeric_limits&lt;double&gt;<a class="el" href="GeometryCollectionCooker_8cpp.html#a06dabf68c338d68a93feca98a29b5a6c">::max</a>()</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00108">108</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="aa3f2bfd92be52be0af889f7577f1e85f" name="aa3f2bfd92be52be0af889f7577f1e85f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa3f2bfd92be52be0af889f7577f1e85f">&#9670;&#160;</a></span>metric</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">EnvironmentMetricKind</a> eve::sensing::EnvironmentTest::metric = <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98">EnvironmentMetricKind::Distance</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00102">102</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="a03a9e81e88f6a4448b2c96bd073d026e" name="a03a9e81e88f6a4448b2c96bd073d026e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03a9e81e88f6a4448b2c96bd073d026e">&#9670;&#160;</a></span>minimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::minimum = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00107">107</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="a419d25b782ec135a23aa4b7e62e1533c" name="a419d25b782ec135a23aa4b7e62e1533c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a419d25b782ec135a23aa4b7e62e1533c">&#9670;&#160;</a></span>normalization</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">EnvironmentNormalization</a> eve::sensing::EnvironmentTest::normalization = <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b">EnvironmentNormalization::FixedRange</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a315b078086088eb5beb92e05536b8472" name="a315b078086088eb5beb92e05536b8472"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a315b078086088eb5beb92e05536b8472">&#9670;&#160;</a></span>preference</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">EnvironmentPreference</a> eve::sensing::EnvironmentTest::preference = <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93">EnvironmentPreference::Lower</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00112">112</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa77566db53a35532959e3510fed96969" name="aa77566db53a35532959e3510fed96969"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa77566db53a35532959e3510fed96969">&#9670;&#160;</a></span>purpose</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">EnvironmentPurpose</a> eve::sensing::EnvironmentTest::purpose = <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e">EnvironmentPurpose::FilterAndScore</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="SensingEnvironment_8cpp_source.html#l00047">eve::sensing::SensingWorld::queryPositions()</a>.</p>
+
+</div>
+</div>
+<a id="ad80e73a803cb190374a1f7f6ddc294f1" name="ad80e73a803cb190374a1f7f6ddc294f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad80e73a803cb190374a1f7f6ddc294f1">&#9670;&#160;</a></span>referenceValue</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::referenceValue = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00113">113</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7046c73f7dc503573e52727cf4e42f15" name="a7046c73f7dc503573e52727cf4e42f15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7046c73f7dc503573e52727cf4e42f15">&#9670;&#160;</a></span>scoreMaximum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::scoreMaximum = 100</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00111">111</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae4b372af367faf29fc978b7e2a3dd5ed" name="ae4b372af367faf29fc978b7e2a3dd5ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4b372af367faf29fc978b7e2a3dd5ed">&#9670;&#160;</a></span>scoreMinimum</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::scoreMinimum = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00110">110</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6b05292561a5ca530aed76f9f8a92594" name="a6b05292561a5ca530aed76f9f8a92594"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b05292561a5ca530aed76f9f8a92594">&#9670;&#160;</a></span>weight</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::sensing::EnvironmentTest::weight = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00115">115</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/sensing/<a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

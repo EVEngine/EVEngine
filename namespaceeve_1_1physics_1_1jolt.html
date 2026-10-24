@@ -1,0 +1,1364 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::jolt 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html">jolt</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::jolt 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1BodyBackend.html">BodyBackend</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">BodyState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">ContactPair</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1DistanceConstraint.html">DistanceConstraint</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1JointBackend.html">JointBackend</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sole facade provider; parent invalidation removes the native constraint before either body dies.  <a href="classeve_1_1physics_1_1jolt_1_1JointBackend.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1JointState.html">JointState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Layers.html">Layers</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html">Listener</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1ShapeBackend.html">ShapeBackend</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedHit.html">SolvedHit</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedPoint.html">SolvedPoint</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1jolt_1_1WorldBackend.html">WorldBackend</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:aeae1d1d1fb527c822bda43706f073bd8" id="r_aeae1d1d1fb527c822bda43706f073bd8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#aeae1d1d1fb527c822bda43706f073bd8">A</a> = JPH::SixDOFConstraint::EAxis</td></tr>
+<tr class="separator:aeae1d1d1fb527c822bda43706f073bd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:adc8031e4f041aed5a6fe36c51c9d6087" id="r_adc8031e4f041aed5a6fe36c51c9d6087"><td class="memItemLeft" align="right" valign="top">JPH::Ref&lt; JPH::TwoBodyConstraint &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#adc8031e4f041aed5a6fe36c51c9d6087">createDistanceConstraint</a> (JPH::Body &amp;, JPH::Body &amp;, const JPH::DistanceConstraintSettings &amp;)</td></tr>
+<tr class="memdesc:adc8031e4f041aed5a6fe36c51c9d6087"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native Jolt solver composition for independently configurable distance spring, limits and motor. @ownership Owned by the joint provider and Jolt PhysicsSystem; both body references follow TwoBodyConstraint. @thread Mutations run between updates. Solver callbacks use Jolt's locked bodies and never call engine code.  <br /></td></tr>
+<tr class="separator:adc8031e4f041aed5a6fe36c51c9d6087"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03b4aefa57c3af73a5597dd12454822a" id="r_a03b4aefa57c3af73a5597dd12454822a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a03b4aefa57c3af73a5597dd12454822a">setDistanceLength</a> (JPH::TwoBodyConstraint &amp;, float)</td></tr>
+<tr class="memdesc:a03b4aefa57c3af73a5597dd12454822a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Updates an already validated private distance constraint, between simulation steps.  <br /></td></tr>
+<tr class="separator:a03b4aefa57c3af73a5597dd12454822a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0097636f0456970650f923fa01ccd395" id="r_a0097636f0456970650f923fa01ccd395"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a0097636f0456970650f923fa01ccd395">setDistanceSpring</a> (JPH::TwoBodyConstraint &amp;, bool, float, float)</td></tr>
+<tr class="memdesc:a0097636f0456970650f923fa01ccd395"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures its independent spring after validation; no allocation or callbacks.  <br /></td></tr>
+<tr class="separator:a0097636f0456970650f923fa01ccd395"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a834087cb48452b215a004143e09139c8" id="r_a834087cb48452b215a004143e09139c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a834087cb48452b215a004143e09139c8">setDistanceLimits</a> (JPH::TwoBodyConstraint &amp;, bool, float, float)</td></tr>
+<tr class="memdesc:a834087cb48452b215a004143e09139c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures its independent hard limits after validation; no allocation or callbacks.  <br /></td></tr>
+<tr class="separator:a834087cb48452b215a004143e09139c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af62d677fac3dc1cb6995db561590b2f5" id="r_af62d677fac3dc1cb6995db561590b2f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#af62d677fac3dc1cb6995db561590b2f5">setDistanceMotor</a> (JPH::TwoBodyConstraint &amp;, bool, float, float)</td></tr>
+<tr class="memdesc:af62d677fac3dc1cb6995db561590b2f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configures its independent motor after validation; no allocation or callbacks.  <br /></td></tr>
+<tr class="separator:af62d677fac3dc1cb6995db561590b2f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb47f9f7d3c4c6c254819141dbea0d28" id="r_adb47f9f7d3c4c6c254819141dbea0d28"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#adb47f9f7d3c4c6c254819141dbea0d28">distanceImpulse</a> (const JPH::TwoBodyConstraint &amp;)</td></tr>
+<tr class="memdesc:adb47f9f7d3c4c6c254819141dbea0d28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the owning scalar sum of distance solver impulses after an update.  <br /></td></tr>
+<tr class="separator:adb47f9f7d3c4c6c254819141dbea0d28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee8269941d411d365298672d47a33690" id="r_aee8269941d411d365298672d47a33690"><td class="memItemLeft" align="right" valign="top">JPH::RVec3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#aee8269941d411d365298672d47a33690">closestConvexPoint</a> (const <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &amp;, JPH::RVec3Arg)</td></tr>
+<tr class="memdesc:aee8269941d411d365298672d47a33690"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns a convex leaf's world closest point; shape/body are borrowed only during this idle-thread call.  <br /></td></tr>
+<tr class="separator:aee8269941d411d365298672d47a33690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a060c30e6482690ebf09f28d79eb34018" id="r_a060c30e6482690ebf09f28d79eb34018"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a060c30e6482690ebf09f28d79eb34018"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a060c30e6482690ebf09f28d79eb34018">rejected</a> (const char *<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> <a class="el" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>=<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a>)</td></tr>
+<tr class="separator:a060c30e6482690ebf09f28d79eb34018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a160c16b0ef12fa4a40f5ba56c8f77934" id="r_a160c16b0ef12fa4a40f5ba56c8f77934"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a160c16b0ef12fa4a40f5ba56c8f77934">success</a> ()</td></tr>
+<tr class="separator:a160c16b0ef12fa4a40f5ba56c8f77934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0df21520f44c5fb4fdfdee15beea725" id="r_ac0df21520f44c5fb4fdfdee15beea725"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#ac0df21520f44c5fb4fdfdee15beea725">isFinite</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ac0df21520f44c5fb4fdfdee15beea725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2455996f82e0b824460774c14232eda7" id="r_a2455996f82e0b824460774c14232eda7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a2455996f82e0b824460774c14232eda7">initializeRuntime</a> ()</td></tr>
+<tr class="memdesc:a2455996f82e0b824460774c14232eda7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the process-owned allocator and type factory before constructing any native members.  <br /></td></tr>
+<tr class="separator:a2455996f82e0b824460774c14232eda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb61c055066a5b5dd7b35ac5b9341d2" id="r_a8eb61c055066a5b5dd7b35ac5b9341d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a8eb61c055066a5b5dd7b35ac5b9341d2">cook</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;, float <a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, JPH::uint64 userData)</td></tr>
+<tr class="separator:a8eb61c055066a5b5dd7b35ac5b9341d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a405ce199fa5e1b12e7872bb8c7ea5131" id="r_a405ce199fa5e1b12e7872bb8c7ea5131"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a405ce199fa5e1b12e7872bb8c7ea5131">cookMesh</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;, JPH::uint64 userData)</td></tr>
+<tr class="separator:a405ce199fa5e1b12e7872bb8c7ea5131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb3c093a63c7b72947e1df16fd56f998" id="r_adb3c093a63c7b72947e1df16fd56f998"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#adb3c093a63c7b72947e1df16fd56f998">validateMaterial</a> (<a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>)</td></tr>
+<tr class="separator:adb3c093a63c7b72947e1df16fd56f998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0195f039d4918a3082e52bbb01ed7b24" id="r_a0195f039d4918a3082e52bbb01ed7b24"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a0195f039d4918a3082e52bbb01ed7b24">triangleIndex</a> (const JPH::Body &amp;, const JPH::SubShapeID &amp;)</td></tr>
+<tr class="separator:a0195f039d4918a3082e52bbb01ed7b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9ff46bba93a2218f5cba6accc0894b" id="r_a7e9ff46bba93a2218f5cba6accc0894b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a7e9ff46bba93a2218f5cba6accc0894b">contactMaterial</a> (const JPH::Body &amp;, const JPH::SubShapeID &amp;, const <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &amp;)</td></tr>
+<tr class="separator:a7e9ff46bba93a2218f5cba6accc0894b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3963cc51bf59971a83e4221ab661658f" id="r_a3963cc51bf59971a83e4221ab661658f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a3963cc51bf59971a83e4221ab661658f">replaceShapes</a> (<a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">BodyState</a> &amp;, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt; &gt; &amp;)</td></tr>
+<tr class="separator:a3963cc51bf59971a83e4221ab661658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835b0fb30d3f5282c71137e4b7c55586" id="r_a835b0fb30d3f5282c71137e4b7c55586"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">child</a> (const JPH::Body &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, const JPH::SubShapeID &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a835b0fb30d3f5282c71137e4b7c55586"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a native child record for a synchronous callback or query. @ownership Borrowed from the world's body record; never transferred or retained by the caller. @lifetime Valid only while the native body is locked or on the idle simulation thread, until the next shape or body mutation. Returns nullptr when no child record exists.  <br /></td></tr>
+<tr class="separator:a835b0fb30d3f5282c71137e4b7c55586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa89cb35661dc2d6f9b656fad5a0f4f60" id="r_aa89cb35661dc2d6f9b656fad5a0f4f60"><td class="memItemLeft" align="right" valign="top">JPH::uint64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#aa89cb35661dc2d6f9b656fad5a0f4f60">pairKey</a> (JPH::BodyID, JPH::BodyID)</td></tr>
+<tr class="memdesc:aa89cb35661dc2d6f9b656fad5a0f4f60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Counts suppression references for one native pair; sequence numbers prevent reuse aliases.  <br /></td></tr>
+<tr class="separator:aa89cb35661dc2d6f9b656fad5a0f4f60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ca986a82beef1b0a161aa9bb10885e1" id="r_a0ca986a82beef1b0a161aa9bb10885e1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a0ca986a82beef1b0a161aa9bb10885e1">notifyJointShapeChanged</a> (<a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;, JPH::BodyID, JPH::Vec3Arg)</td></tr>
+<tr class="memdesc:a0ca986a82beef1b0a161aa9bb10885e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recomputes constraint COM offsets after a successful native shape replacement.  <br /></td></tr>
+<tr class="separator:a0ca986a82beef1b0a161aa9bb10885e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae04cfca400cb95e05c797cd0998f505e" id="r_ae04cfca400cb95e05c797cd0998f505e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#ae04cfca400cb95e05c797cd0998f505e">capsuleVolume</a> (float, float, float, float, float, float, float)</td></tr>
+<tr class="memdesc:ae04cfca400cb95e05c797cd0998f505e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cooks an ephemeral query capsule; inputs are endpoints in world space.  <br /></td></tr>
+<tr class="separator:ae04cfca400cb95e05c797cd0998f505e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6431e6d40ffe6783bc17a420a317a6c9" id="r_a6431e6d40ffe6783bc17a420a317a6c9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a6431e6d40ffe6783bc17a420a317a6c9">isAcceptedHit</a> (const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;, JPH::BodyID, const JPH::SubShapeID &amp;, <a class="el" href="structeve_1_1physics_1_1QueryFilter3D.html">QueryFilter3D</a>)</td></tr>
+<tr class="memdesc:a6431e6d40ffe6783bc17a420a317a6c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Filters a synchronous native hit, borrowing state only for the call.  <br /></td></tr>
+<tr class="separator:a6431e6d40ffe6783bc17a420a317a6c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a855e75ffa9cd0b1750ce978e34931bfa" id="r_a855e75ffa9cd0b1750ce978e34931bfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1RayHit3D.html">RayHit3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a855e75ffa9cd0b1750ce978e34931bfa">queryHit</a> (const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;, JPH::BodyID, const JPH::SubShapeID &amp;, JPH::RVec3Arg, JPH::Vec3Arg, float)</td></tr>
+<tr class="memdesc:a855e75ffa9cd0b1750ce978e34931bfa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects a validated native hit into an owning result on the idle simulation thread.  <br /></td></tr>
+<tr class="separator:a855e75ffa9cd0b1750ce978e34931bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a371c0a0cf8e5f1f437deb7e9dd51e1ac" id="r_a371c0a0cf8e5f1f437deb7e9dd51e1ac"><td class="memItemLeft" align="right" valign="top">JPH::AllHitCollisionCollector&lt; JPH::CollideShapeCollector &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a371c0a0cf8e5f1f437deb7e9dd51e1ac">overlapVolume</a> (const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;, const <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &amp;, float <a class="el" href="TreeMesh_8cpp.html#a3d47f7e2bf80c3044a1c4fb985d08565">separation</a>=0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a>)</td></tr>
+<tr class="memdesc:a371c0a0cf8e5f1f437deb7e9dd51e1ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Collects owning native records for this synchronous query; no pointers escape.  <br /></td></tr>
+<tr class="separator:a371c0a0cf8e5f1f437deb7e9dd51e1ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc6ce1119a0307931b0b78a6fa80fd73" id="r_afc6ce1119a0307931b0b78a6fa80fd73"><td class="memItemLeft" align="right" valign="top">JPH::AllHitCollisionCollector&lt; JPH::CastShapeCollector &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#afc6ce1119a0307931b0b78a6fa80fd73">sweepVolume</a> (const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;, const <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &amp;, JPH::Vec3Arg)</td></tr>
+<tr class="memdesc:afc6ce1119a0307931b0b78a6fa80fd73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sweeps one ephemeral convex volume; results are local to its starting position.  <br /></td></tr>
+<tr class="separator:afc6ce1119a0307931b0b78a6fa80fd73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42292bb02f8e40379172b326628b7f36" id="r_a42292bb02f8e40379172b326628b7f36"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">IWorldBackend3D</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a42292bb02f8e40379172b326628b7f36">makeWorld</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;, float, float, float, bool)</td></tr>
+<tr class="memdesc:a42292bb02f8e40379172b326628b7f36"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates the native Jolt provider; world owns it and calls it only on the simulation thread. @cost Allocates broad phase, body pool and solver workspace once per world.  <br /></td></tr>
+<tr class="separator:a42292bb02f8e40379172b326628b7f36"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="aeae1d1d1fb527c822bda43706f073bd8" name="aeae1d1d1fb527c822bda43706f073bd8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeae1d1d1fb527c822bda43706f073bd8">&#9670;&#160;</a></span>A</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1physics_1_1jolt.html#aeae1d1d1fb527c822bda43706f073bd8">eve::physics::jolt::A</a> = typedef JPH::SixDOFConstraint::EAxis</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltJointOperations_8cpp_source.html">JoltJointOperations.cpp</a> 第 <a class="el" href="JoltJointOperations_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ae04cfca400cb95e05c797cd0998f505e" name="ae04cfca400cb95e05c797cd0998f505e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae04cfca400cb95e05c797cd0998f505e">&#9670;&#160;</a></span>capsuleVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &gt; eve::physics::jolt::capsuleVolume </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ax</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>ay</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>az</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>by</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>bz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Cooks an ephemeral query capsule; inputs are endpoints in world space. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltQueryInternal_8cpp_source.html">JoltQueryInternal.cpp</a> 第 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2DBindings_8cpp_source.html#l00016">axis</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltInternal_8h_source.html#l00025">isFinite()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00017">rotation</a>, <a class="el" href="JoltQueryInternal_8h_source.html#l00011">eve::physics::jolt::QueryVolume::shape</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00106">eve::physics::jolt::WorldBackend::castCapsuleAll()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00017">eve::physics::jolt::WorldBackend::moveCapsuleOwned()</a>, <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00045">eve::physics::jolt::WorldBackend::queryCapsuleOwned()</a> , 以及 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00122">eve::physics::jolt::WorldBackend::sphereCast()</a>.</p>
+
+</div>
+</div>
+<a id="a835b0fb30d3f5282c71137e4b7c55586" name="a835b0fb30d3f5282c71137e4b7c55586"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a835b0fb30d3f5282c71137e4b7c55586">&#9670;&#160;</a></span>child()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> * eve::physics::jolt::child </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Resolves a native child record for a synchronous callback or query. @ownership Borrowed from the world's body record; never transferred or retained by the caller. @lifetime Valid only while the native body is locked or on the idle simulation thread, until the next shape or body mutation. Returns nullptr when no child record exists. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00138">138</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00023">isAcceptedHit()</a>, <a class="el" href="JoltState_8cpp_source.html#l00125">eve::physics::jolt::Listener::OnContactAdded()</a>, <a class="el" href="JoltState_8cpp_source.html#l00139">eve::physics::jolt::Listener::OnContactPersisted()</a>, <a class="el" href="JoltSolvedContacts_8cpp_source.html#l00012">eve::physics::jolt::Listener::OnContactSolved()</a>, <a class="el" href="JoltState_8cpp_source.html#l00110">eve::physics::jolt::Listener::OnContactValidate()</a>, <a class="el" href="JoltQueryInternal_8cpp_source.html#l00033">queryHit()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00057">eve::physics::jolt::WorldBackend::rayCastFiltered()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00013">eve::physics::jolt::WorldBackend::rayCastOwned()</a> , 以及 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00122">eve::physics::jolt::WorldBackend::sphereCast()</a>.</p>
+
+</div>
+</div>
+<a id="aee8269941d411d365298672d47a33690" name="aee8269941d411d365298672d47a33690"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee8269941d411d365298672d47a33690">&#9670;&#160;</a></span>closestConvexPoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::RVec3 eve::physics::jolt::closestConvexPoint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &amp;&#160;</td>
+          <td class="paramname"><em>shape</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::RVec3Arg&#160;</td>
+          <td class="paramname"><em>target</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns a convex leaf's world closest point; shape/body are borrowed only during this idle-thread call. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltGeometryQueries_8cpp_source.html">JoltGeometryQueries.cpp</a> 第 <a class="el" href="JoltGeometryQueries_8cpp_source.html#l00011">11</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="OnnxGpgpu_8cpp_source.html#l00026">buffer</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00033">center</a>, <a class="el" href="RoadTraffic_8cpp_source.html#l00020">direction</a>, <a class="el" href="MeshContactBlend_8cpp_source.html#l00043">distance</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00025">local</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00379">pose</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltGeometryQueries_8cpp_source.html#l00033">eve::physics::jolt::WorldBackend::closestPoint()</a>, <a class="el" href="JoltExplosion_8cpp_source.html#l00038">eve::physics::jolt::WorldBackend::explode()</a> , 以及 <a class="el" href="JoltGeometryQueries_8cpp_source.html#l00075">eve::physics::jolt::WorldBackend::pointProbeFiltered()</a>.</p>
+
+</div>
+</div>
+<a id="a7e9ff46bba93a2218f5cba6accc0894b" name="a7e9ff46bba93a2218f5cba6accc0894b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e9ff46bba93a2218f5cba6accc0894b">&#9670;&#160;</a></span>contactMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a> eve::physics::jolt::contactMaterial </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &amp;&#160;</td>
+          <td class="paramname"><em>shape</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltMesh_8cpp_source.html">JoltMesh.cpp</a> 第 <a class="el" href="JoltMesh_8cpp_source.html#l00095">95</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="HeightmapMesh_8cpp_source.html#l00019">indices</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a> , 以及 <a class="el" href="JoltMesh_8cpp_source.html#l00088">triangleIndex()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00033">queryHit()</a> , 以及 <a class="el" href="JoltWorldQueries_8cpp_source.html#l00013">eve::physics::jolt::WorldBackend::rayCastOwned()</a>.</p>
+
+</div>
+</div>
+<a id="a8eb61c055066a5b5dd7b35ac5b9341d2" name="a8eb61c055066a5b5dd7b35ac5b9341d2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eb61c055066a5b5dd7b35ac5b9341d2">&#9670;&#160;</a></span>cook()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt; eve::physics::jolt::cook </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::uint64&#160;</td>
+          <td class="paramname"><em>userData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00016">16</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3cfce651e667ab85486dd42a8185f98a">eve::physics::Box</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a4880c0f12c06dd6d142e7a40b041bf1a">eve::physics::Capsule</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00033">center</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a3e1ee9920ed982b5da9becaf4b5463e5">eve::physics::ConvexHull</a>, <a class="el" href="JoltMesh_8cpp_source.html#l00009">cookMesh()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="RoadBakeFacilityLinks_8cpp_source.html#l00013">edge</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a9a7e8772035f8412fc62cd830d0ba944">eve::physics::HeightField</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltInternal_8h_source.html#l00025">isFinite()</a>, <a class="el" href="JoltInternal_8h_source.html#l00021">rejected()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3ab7095f057db3fefa7325ad93a04e14fd">eve::physics::Sphere</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a70be243de75004a602f012fece7c0fad">eve::physics::TriangleMesh</a>, <a class="el" href="McpProjectIndexTools_8cpp_source.html#l00018">used</a> , 以及 <a class="el" href="AudioCapabilities_8cpp_source.html#l00380">volume</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00136">eve::physics::jolt::ShapeBackend::rebuild()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">eve::physics::jolt::ShapeBackend::setDensity()</a>.</p>
+
+</div>
+</div>
+<a id="a405ce199fa5e1b12e7872bb8c7ea5131" name="a405ce199fa5e1b12e7872bb8c7ea5131"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a405ce199fa5e1b12e7872bb8c7ea5131">&#9670;&#160;</a></span>cookMesh()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt; eve::physics::jolt::cookMesh </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>g</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::uint64&#160;</td>
+          <td class="paramname"><em>userData</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltMesh_8cpp_source.html">JoltMesh.cpp</a> 第 <a class="el" href="JoltMesh_8cpp_source.html#l00009">9</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltInternal_8h_source.html#l00025">isFinite()</a>, <a class="el" href="ImageData_8cpp_source.html#l00691">px</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00150">pz</a>, <a class="el" href="JoltInternal_8h_source.html#l00021">rejected()</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="FluidSdf_8cpp_source.html#l00554">triangle</a>, <a class="el" href="namespaceeve_1_1physics.html#a8507b742b74a8908176852f9f92c24c3a70be243de75004a602f012fece7c0fad">eve::physics::TriangleMesh</a>, <a class="el" href="MeshContactBlend_8cpp_source.html#l00125">triangles</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00016">cook()</a>.</p>
+
+</div>
+</div>
+<a id="adc8031e4f041aed5a6fe36c51c9d6087" name="adc8031e4f041aed5a6fe36c51c9d6087"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc8031e4f041aed5a6fe36c51c9d6087">&#9670;&#160;</a></span>createDistanceConstraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::Ref&lt; JPH::TwoBodyConstraint &gt; eve::physics::jolt::createDistanceConstraint </td>
+          <td>(</td>
+          <td class="paramtype">JPH::Body &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::Body &amp;&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::DistanceConstraintSettings &amp;&#160;</td>
+          <td class="paramname">&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Native Jolt solver composition for independently configurable distance spring, limits and motor. @ownership Owned by the joint provider and Jolt PhysicsSystem; both body references follow TwoBodyConstraint. @thread Mutations run between updates. Solver callbacks use Jolt's locked bodies and never call engine code. </p>
+<p>Creates the private Jolt solver composition; native bodies are borrowed until constraint removal. @cost Allocates two distance solver parts and a motor once per joint creation. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00137">137</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a> , 以及 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>.</p>
+
+</div>
+</div>
+<a id="adb47f9f7d3c4c6c254819141dbea0d28" name="adb47f9f7d3c4c6c254819141dbea0d28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb47f9f7d3c4c6c254819141dbea0d28">&#9670;&#160;</a></span>distanceImpulse()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::jolt::distanceImpulse </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::TwoBodyConstraint &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Returns the owning scalar sum of distance solver impulses after an update. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00153">153</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a2455996f82e0b824460774c14232eda7" name="a2455996f82e0b824460774c14232eda7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2455996f82e0b824460774c14232eda7">&#9670;&#160;</a></span>initializeRuntime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::initializeRuntime </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initializes the process-owned allocator and type factory before constructing any native members. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltState_8cpp_source.html">JoltState.cpp</a> 第 <a class="el" href="JoltState_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6431e6d40ffe6783bc17a420a317a6c9" name="a6431e6d40ffe6783bc17a420a317a6c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6431e6d40ffe6783bc17a420a317a6c9">&#9670;&#160;</a></span>isAcceptedHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::isAcceptedHit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::BodyID&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>sub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1QueryFilter3D.html">QueryFilter3D</a>&#160;</td>
+          <td class="paramname"><em>filter</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Filters a synchronous native hit, borrowing state only for the call. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltQueryInternal_8cpp_source.html">JoltQueryInternal.cpp</a> 第 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="JoltInternal_8h_source.html#l00138">child()</a>, <a class="el" href="SceneLoader_8cpp_source.html#l00189">filter</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00070">eve::physics::jolt::WorldBackend::castQuery()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00017">eve::physics::jolt::WorldBackend::moveCapsuleOwned()</a>, <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00026">eve::physics::jolt::WorldBackend::overlapQuery()</a> , 以及 <a class="el" href="JoltWorldQueries_8cpp_source.html#l00096">eve::physics::jolt::WorldBackend::rayCastAll()</a>.</p>
+
+</div>
+</div>
+<a id="ac0df21520f44c5fb4fdfdee15beea725" name="ac0df21520f44c5fb4fdfdee15beea725"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0df21520f44c5fb4fdfdee15beea725">&#9670;&#160;</a></span>isFinite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::jolt::isFinite </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00234">eve::physics::jolt::BodyBackend::applyAngularImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00192">eve::physics::jolt::BodyBackend::applyForce()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00200">eve::physics::jolt::BodyBackend::applyForceAt()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00217">eve::physics::jolt::BodyBackend::applyLinearImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00225">eve::physics::jolt::BodyBackend::applyLinearImpulseAt()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00276">eve::physics::jolt::BodyBackend::applyLocalAngularImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00242">eve::physics::jolt::BodyBackend::applyLocalForce()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00250">eve::physics::jolt::BodyBackend::applyLocalForceToCenter()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00262">eve::physics::jolt::BodyBackend::applyLocalLinearImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00270">eve::physics::jolt::BodyBackend::applyLocalLinearImpulseToCenter()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00256">eve::physics::jolt::BodyBackend::applyLocalTorque()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00209">eve::physics::jolt::BodyBackend::applyTorque()</a>, <a class="el" href="JoltQueryInternal_8cpp_source.html#l00009">capsuleVolume()</a>, <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00070">eve::physics::jolt::WorldBackend::castQuery()</a>, <a class="el" href="JoltGeometryQueries_8cpp_source.html#l00033">eve::physics::jolt::WorldBackend::closestPoint()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00016">cook()</a>, <a class="el" href="JoltMesh_8cpp_source.html#l00009">cookMesh()</a>, <a class="el" href="JoltWorld_8cpp_source.html#l00112">eve::physics::jolt::WorldBackend::createBody()</a>, <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="JoltExplosion_8cpp_source.html#l00038">eve::physics::jolt::WorldBackend::explode()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00168">eve::physics::jolt::BodyBackend::getLocalPointVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00176">eve::physics::jolt::BodyBackend::getLocalPointVelocityOwned()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00184">eve::physics::jolt::BodyBackend::getWorldPointVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00112">eve::physics::jolt::BodyBackend::localToWorldPoint()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00120">eve::physics::jolt::BodyBackend::localToWorldPointOwned()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00144">eve::physics::jolt::BodyBackend::localToWorldVector()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00152">eve::physics::jolt::BodyBackend::localToWorldVectorOwned()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00017">eve::physics::jolt::WorldBackend::moveCapsuleOwned()</a>, <a class="el" href="JoltGeometryQueries_8cpp_source.html#l00075">eve::physics::jolt::WorldBackend::pointProbeFiltered()</a>, <a class="el" href="JoltWorldAabb_8cpp_source.html#l00010">eve::physics::jolt::WorldBackend::queryAabbBroadPhaseOwned()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00096">eve::physics::jolt::WorldBackend::rayCastAll()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00057">eve::physics::jolt::WorldBackend::rayCastFiltered()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00013">eve::physics::jolt::WorldBackend::rayCastOwned()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00090">eve::physics::jolt::BodyBackend::setAngularVelocity()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00111">eve::physics::jolt::JointBackend::setDistanceLimits()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00121">eve::physics::jolt::JointBackend::setDistanceMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00101">eve::physics::jolt::JointBackend::setDistanceSpring()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00199">eve::physics::jolt::WorldBackend::setGravity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00062">eve::physics::jolt::BodyBackend::setLinearVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00406">eve::physics::jolt::BodyBackend::setMassProperties()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00576">eve::physics::jolt::JointBackend::setMotorAngularSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00531">eve::physics::jolt::JointBackend::setMotorAngularVelocity()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00559">eve::physics::jolt::JointBackend::setMotorLinearSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00519">eve::physics::jolt::JointBackend::setMotorLinearVelocity()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00543">eve::physics::jolt::JointBackend::setMotorVelocityLimits()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00009">eve::physics::jolt::WorldBackend::setMoverUp()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00635">eve::physics::jolt::JointBackend::setParallelSpring()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00011">eve::physics::jolt::BodyBackend::setPosition()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00209">eve::physics::jolt::JointBackend::setPrismaticLimits()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00229">eve::physics::jolt::JointBackend::setPrismaticMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00195">eve::physics::jolt::JointBackend::setPrismaticSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00144">eve::physics::jolt::JointBackend::setRevoluteLimits()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00164">eve::physics::jolt::JointBackend::setRevoluteMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00131">eve::physics::jolt::JointBackend::setRevoluteSpring()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00033">eve::physics::jolt::BodyBackend::setRotation()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00309">eve::physics::jolt::JointBackend::setSphericalMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00289">eve::physics::jolt::JointBackend::setSphericalTwistLimits()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00282">eve::physics::jolt::BodyBackend::setTargetTransform()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00474">eve::physics::jolt::JointBackend::setWeldAngularSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00457">eve::physics::jolt::JointBackend::setWeldLinearSpring()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00373">eve::physics::jolt::JointBackend::setWheelSpinMotor()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00388">eve::physics::jolt::JointBackend::setWheelSteering()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00404">eve::physics::jolt::JointBackend::setWheelSteeringLimits()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00341">eve::physics::jolt::JointBackend::setWheelSuspension()</a>, <a class="el" href="JoltJointOperations_8cpp_source.html#l00353">eve::physics::jolt::JointBackend::setWheelSuspensionLimits()</a>, <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00122">eve::physics::jolt::WorldBackend::sphereCast()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00155">eve::physics::jolt::ShapeBackend::testPoint()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">validateMaterial()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00128">eve::physics::jolt::BodyBackend::worldToLocalPoint()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00136">eve::physics::jolt::BodyBackend::worldToLocalPointOwned()</a> , 以及 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00160">eve::physics::jolt::BodyBackend::worldToLocalVector()</a>.</p>
+
+</div>
+</div>
+<a id="a42292bb02f8e40379172b326628b7f36" name="a42292bb02f8e40379172b326628b7f36"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42292bb02f8e40379172b326628b7f36">&#9670;&#160;</a></span>makeWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#afb52228b1e5307ee220679412a790429">EVENGINE_API_WORLD</a> <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">IWorldBackend3D</a> &gt; &gt; eve::physics::jolt::makeWorld </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>owner</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>sleep</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates the native Jolt provider; world owns it and calls it only on the simulation thread. @cost Allocates broad phase, body pool and solver workspace once per world. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltWorld_8cpp_source.html">JoltWorld.cpp</a> 第 <a class="el" href="JoltWorld_8cpp_source.html#l00097">97</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00022">owner</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">success()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a0ca986a82beef1b0a161aa9bb10885e1" name="a0ca986a82beef1b0a161aa9bb10885e1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ca986a82beef1b0a161aa9bb10885e1">&#9670;&#160;</a></span>notifyJointShapeChanged()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::notifyJointShapeChanged </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::BodyID&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::Vec3Arg&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Recomputes constraint COM offsets after a successful native shape replacement. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltJoint_8cpp_source.html">JoltJoint.cpp</a> 第 <a class="el" href="JoltJoint_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00017">id</a> , 以及 <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00077">replaceShapes()</a> , 以及 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00406">eve::physics::jolt::BodyBackend::setMassProperties()</a>.</p>
+
+</div>
+</div>
+<a id="a371c0a0cf8e5f1f437deb7e9dd51e1ac" name="a371c0a0cf8e5f1f437deb7e9dd51e1ac"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a371c0a0cf8e5f1f437deb7e9dd51e1ac">&#9670;&#160;</a></span>overlapVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::AllHitCollisionCollector&lt; JPH::CollideShapeCollector &gt; eve::physics::jolt::overlapVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>separation</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Collects owning native records for this synchronous query; no pointers escape. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltQueryInternal_8cpp_source.html">JoltQueryInternal.cpp</a> 第 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00056">56</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00159">separation</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="AudioCapabilities_8cpp_source.html#l00380">volume</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltWorldMover_8cpp_source.html#l00017">eve::physics::jolt::WorldBackend::moveCapsuleOwned()</a> , 以及 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00026">eve::physics::jolt::WorldBackend::overlapQuery()</a>.</p>
+
+</div>
+</div>
+<a id="aa89cb35661dc2d6f9b656fad5a0f4f60" name="aa89cb35661dc2d6f9b656fad5a0f4f60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa89cb35661dc2d6f9b656fad5a0f4f60">&#9670;&#160;</a></span>pairKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::uint64 eve::physics::jolt::pairKey </td>
+          <td>(</td>
+          <td class="paramtype">JPH::BodyID&#160;</td>
+          <td class="paramname"><em>a</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::BodyID&#160;</td>
+          <td class="paramname"><em>b</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Counts suppression references for one native pair; sequence numbers prevent reuse aliases. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltJoint_8cpp_source.html">JoltJoint.cpp</a> 第 <a class="el" href="JoltJoint_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltJoint_8cpp_source.html#l00021">eve::physics::jolt::JointBackend::destroy()</a>, <a class="el" href="JoltState_8cpp_source.html#l00110">eve::physics::jolt::Listener::OnContactValidate()</a> , 以及 <a class="el" href="JoltJoint_8cpp_source.html#l00064">eve::physics::jolt::JointBackend::setCollideConnected()</a>.</p>
+
+</div>
+</div>
+<a id="a855e75ffa9cd0b1750ce978e34931bfa" name="a855e75ffa9cd0b1750ce978e34931bfa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a855e75ffa9cd0b1750ce978e34931bfa">&#9670;&#160;</a></span>queryHit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1RayHit3D.html">RayHit3D</a> eve::physics::jolt::queryHit </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::BodyID&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>sub</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::RVec3Arg&#160;</td>
+          <td class="paramname"><em>point</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::Vec3Arg&#160;</td>
+          <td class="paramname"><em>normal</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>fraction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Projects a validated native hit into an owning result on the idle simulation thread. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltQueryInternal_8cpp_source.html">JoltQueryInternal.cpp</a> 第 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="JoltInternal_8h_source.html#l00138">child()</a>, <a class="el" href="JoltMesh_8cpp_source.html#l00095">contactMaterial()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00046">fraction</a>, <a class="el" href="OwnedQuery3D_8h_source.html#l00080">eve::physics::RayHit3D::hit</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00154">normal</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="JoltMesh_8cpp_source.html#l00088">triangleIndex()</a> , 以及 <a class="el" href="ShapeBackend3D_8h_source.html#l00037">eve::physics::SurfaceMaterial3D::userMaterialId</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00070">eve::physics::jolt::WorldBackend::castQuery()</a>, <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00026">eve::physics::jolt::WorldBackend::overlapQuery()</a>, <a class="el" href="JoltWorldQueries_8cpp_source.html#l00096">eve::physics::jolt::WorldBackend::rayCastAll()</a> , 以及 <a class="el" href="JoltWorldQueries_8cpp_source.html#l00057">eve::physics::jolt::WorldBackend::rayCastFiltered()</a>.</p>
+
+</div>
+</div>
+<a id="a060c30e6482690ebf09f28d79eb34018" name="a060c30e6482690ebf09f28d79eb34018"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a060c30e6482690ebf09f28d79eb34018">&#9670;&#160;</a></span>rejected()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt; eve::physics::jolt::rejected </td>
+          <td>(</td>
+          <td class="paramtype">const char *&#160;</td>
+          <td class="paramname"><em>operation</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a>&#160;</td>
+          <td class="paramname"><em>code</em> = <code><a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GltfAnimation_8cpp_source.html#l00016">code</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00152">operation</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00016">cook()</a>, <a class="el" href="JoltMesh_8cpp_source.html#l00009">cookMesh()</a>, <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00168">eve::physics::jolt::BodyBackend::getLocalPointVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00184">eve::physics::jolt::BodyBackend::getWorldPointVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00112">eve::physics::jolt::BodyBackend::localToWorldPoint()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00144">eve::physics::jolt::BodyBackend::localToWorldVector()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00128">eve::physics::jolt::BodyBackend::worldToLocalPoint()</a> , 以及 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00160">eve::physics::jolt::BodyBackend::worldToLocalVector()</a>.</p>
+
+</div>
+</div>
+<a id="a3963cc51bf59971a83e4221ab661658f" name="a3963cc51bf59971a83e4221ab661658f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3963cc51bf59971a83e4221ab661658f">&#9670;&#160;</a></span>replaceShapes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::replaceShapes </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">BodyState</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt; &gt; &amp;&#160;</td>
+          <td class="paramname"><em>shapes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShape_8cpp_source.html">JoltShape.cpp</a> 第 <a class="el" href="JoltShape_8cpp_source.html#l00077">77</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltJoint_8cpp_source.html#l00112">notifyJointShapeChanged()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00014">q</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>, <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="GraphicsShaderResources_8cpp_source.html#l00017">shape</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::StaleHandle</a> , 以及 <a class="el" href="JoltInternal_8h_source.html#l00024">success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00123">eve::physics::jolt::ShapeBackend::destroy()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00136">eve::physics::jolt::ShapeBackend::rebuild()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00434">eve::physics::jolt::BodyBackend::resetMassProperties()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">eve::physics::jolt::ShapeBackend::setDensity()</a> , 以及 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00501">eve::physics::jolt::BodyBackend::setType()</a>.</p>
+
+</div>
+</div>
+<a id="a03b4aefa57c3af73a5597dd12454822a" name="a03b4aefa57c3af73a5597dd12454822a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03b4aefa57c3af73a5597dd12454822a">&#9670;&#160;</a></span>setDistanceLength()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::setDistanceLength </td>
+          <td>(</td>
+          <td class="paramtype">JPH::TwoBodyConstraint &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Updates an already validated private distance constraint, between simulation steps. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00141">141</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltJointOperations_8cpp_source.html#l00076">eve::physics::jolt::JointBackend::setDistanceLength()</a>.</p>
+
+</div>
+</div>
+<a id="a834087cb48452b215a004143e09139c8" name="a834087cb48452b215a004143e09139c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a834087cb48452b215a004143e09139c8">&#9670;&#160;</a></span>setDistanceLimits()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::setDistanceLimits </td>
+          <td>(</td>
+          <td class="paramtype">JPH::TwoBodyConstraint &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>lo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hi</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures its independent hard limits after validation; no allocation or callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00147">147</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltJointOperations_8cpp_source.html#l00111">eve::physics::jolt::JointBackend::setDistanceLimits()</a>.</p>
+
+</div>
+</div>
+<a id="af62d677fac3dc1cb6995db561590b2f5" name="af62d677fac3dc1cb6995db561590b2f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af62d677fac3dc1cb6995db561590b2f5">&#9670;&#160;</a></span>setDistanceMotor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::setDistanceMotor </td>
+          <td>(</td>
+          <td class="paramtype">JPH::TwoBodyConstraint &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>speed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>force</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures its independent motor after validation; no allocation or callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00150">150</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a>, <a class="el" href="ForceBatch_8cpp_source.html#l00018">force</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltJointOperations_8cpp_source.html#l00121">eve::physics::jolt::JointBackend::setDistanceMotor()</a>.</p>
+
+</div>
+</div>
+<a id="a0097636f0456970650f923fa01ccd395" name="a0097636f0456970650f923fa01ccd395"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0097636f0456970650f923fa01ccd395">&#9670;&#160;</a></span>setDistanceSpring()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::physics::jolt::setDistanceSpring </td>
+          <td>(</td>
+          <td class="paramtype">JPH::TwoBodyConstraint &amp;&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>enabled</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>hertz</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>damping</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Configures its independent spring after validation; no allocation or callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltDistanceConstraint_8cpp_source.html">JoltDistanceConstraint.cpp</a> 第 <a class="el" href="JoltDistanceConstraint_8cpp_source.html#l00144">144</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="rpg_2Settlement_8cpp_source.html#l00031">enabled</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltJointOperations_8cpp_source.html#l00101">eve::physics::jolt::JointBackend::setDistanceSpring()</a>.</p>
+
+</div>
+</div>
+<a id="a160c16b0ef12fa4a40f5ba56c8f77934" name="a160c16b0ef12fa4a40f5ba56c8f77934"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a160c16b0ef12fa4a40f5ba56c8f77934">&#9670;&#160;</a></span>success()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::success </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltInternal_8h_source.html">JoltInternal.h</a> 第 <a class="el" href="JoltInternal_8h_source.html#l00024">24</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltBodyOperations_8cpp_source.html#l00234">eve::physics::jolt::BodyBackend::applyAngularImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00192">eve::physics::jolt::BodyBackend::applyForce()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00200">eve::physics::jolt::BodyBackend::applyForceAt()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00217">eve::physics::jolt::BodyBackend::applyLinearImpulse()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00225">eve::physics::jolt::BodyBackend::applyLinearImpulseAt()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00209">eve::physics::jolt::BodyBackend::applyTorque()</a>, <a class="el" href="JoltWorld_8cpp_source.html#l00141">eve::physics::jolt::WorldBackend::collectEvents()</a>, <a class="el" href="JoltWorld_8cpp_source.html#l00112">eve::physics::jolt::WorldBackend::createBody()</a>, <a class="el" href="JoltBody_8cpp_source.html#l00029">eve::physics::jolt::BodyBackend::createShape()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00120">eve::physics::jolt::ShapeBackend::enableHitEvents()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00126">eve::physics::jolt::ShapeBackend::enablePreSolveEvents()</a>, <a class="el" href="JoltWorld_8cpp_source.html#l00097">makeWorld()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00136">eve::physics::jolt::ShapeBackend::rebuild()</a>, <a class="el" href="JoltShape_8cpp_source.html#l00077">replaceShapes()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00543">eve::physics::jolt::BodyBackend::setActive()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00309">eve::physics::jolt::BodyBackend::setAngularDamping()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00090">eve::physics::jolt::BodyBackend::setAngularVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00574">eve::physics::jolt::BodyBackend::setAwake()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00560">eve::physics::jolt::BodyBackend::setBullet()</a>, <a class="el" href="JoltJoint_8cpp_source.html#l00064">eve::physics::jolt::JointBackend::setCollideConnected()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00041">eve::physics::jolt::WorldBackend::setContactRecycleDistance()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00010">eve::physics::jolt::WorldBackend::setContinuousCollisionEnabled()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00027">eve::physics::jolt::ShapeBackend::setDensity()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00105">eve::physics::jolt::ShapeBackend::setFilter()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00527">eve::physics::jolt::BodyBackend::setFixedRotation()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00057">eve::physics::jolt::ShapeBackend::setFriction()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00199">eve::physics::jolt::WorldBackend::setGravity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00324">eve::physics::jolt::BodyBackend::setGravityScale()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00221">eve::physics::jolt::WorldBackend::setHitEventThreshold()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00294">eve::physics::jolt::BodyBackend::setLinearDamping()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00062">eve::physics::jolt::BodyBackend::setLinearVelocity()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00406">eve::physics::jolt::BodyBackend::setMassProperties()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00092">eve::physics::jolt::ShapeBackend::setMaterial()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00057">eve::physics::jolt::WorldBackend::setMaximumLinearSpeed()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00145">eve::physics::jolt::ShapeBackend::setMeshMaterial()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00370">eve::physics::jolt::BodyBackend::setMotionLocks()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00009">eve::physics::jolt::WorldBackend::setMoverUp()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00011">eve::physics::jolt::BodyBackend::setPosition()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00070">eve::physics::jolt::ShapeBackend::setRestitution()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00022">eve::physics::jolt::WorldBackend::setRestitutionThreshold()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00033">eve::physics::jolt::BodyBackend::setRotation()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00336">eve::physics::jolt::BodyBackend::setSleepEnabled()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00351">eve::physics::jolt::BodyBackend::setSleepThreshold()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00282">eve::physics::jolt::BodyBackend::setTargetTransform()</a>, <a class="el" href="JoltBodyOperations_8cpp_source.html#l00501">eve::physics::jolt::BodyBackend::setType()</a>, <a class="el" href="JoltWorldOperations_8cpp_source.html#l00072">eve::physics::jolt::WorldBackend::setWarmStartingEnabled()</a>, <a class="el" href="JoltWorld_8cpp_source.html#l00105">eve::physics::jolt::WorldBackend::swapTopology()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">validateMaterial()</a>.</p>
+
+</div>
+</div>
+<a id="afc6ce1119a0307931b0b78a6fa80fd73" name="afc6ce1119a0307931b0b78a6fa80fd73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc6ce1119a0307931b0b78a6fa80fd73">&#9670;&#160;</a></span>sweepVolume()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">JPH::AllHitCollisionCollector&lt; JPH::CastShapeCollector &gt; eve::physics::jolt::sweepVolume </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">State</a> &amp;&#160;</td>
+          <td class="paramname"><em>state</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1jolt_1_1QueryVolume.html">QueryVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>volume</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">JPH::Vec3Arg&#160;</td>
+          <td class="paramname"><em>delta</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sweeps one ephemeral convex volume; results are local to its starting position. </p>
+
+<p class="definition">在文件 <a class="el" href="JoltQueryInternal_8cpp_source.html">JoltQueryInternal.cpp</a> 第 <a class="el" href="JoltQueryInternal_8cpp_source.html#l00066">66</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanInteractionBindings_8cpp_source.html#l00010">settings</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a> , 以及 <a class="el" href="AudioCapabilities_8cpp_source.html#l00380">volume</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00070">eve::physics::jolt::WorldBackend::castQuery()</a>, <a class="el" href="JoltWorldMover_8cpp_source.html#l00017">eve::physics::jolt::WorldBackend::moveCapsuleOwned()</a> , 以及 <a class="el" href="JoltWorldVolumes_8cpp_source.html#l00122">eve::physics::jolt::WorldBackend::sphereCast()</a>.</p>
+
+</div>
+</div>
+<a id="a0195f039d4918a3082e52bbb01ed7b24" name="a0195f039d4918a3082e52bbb01ed7b24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0195f039d4918a3082e52bbb01ed7b24">&#9670;&#160;</a></span>triangleIndex()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::jolt::triangleIndex </td>
+          <td>(</td>
+          <td class="paramtype">const JPH::Body &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const JPH::SubShapeID &amp;&#160;</td>
+          <td class="paramname"><em>id</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltMesh_8cpp_source.html">JoltMesh.cpp</a> 第 <a class="el" href="JoltMesh_8cpp_source.html#l00088">88</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltMesh_8cpp_source.html#l00095">contactMaterial()</a>, <a class="el" href="JoltQueryInternal_8cpp_source.html#l00033">queryHit()</a> , 以及 <a class="el" href="JoltWorldQueries_8cpp_source.html#l00013">eve::physics::jolt::WorldBackend::rayCastOwned()</a>.</p>
+
+</div>
+</div>
+<a id="adb3c093a63c7b72947e1df16fd56f998" name="adb3c093a63c7b72947e1df16fd56f998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adb3c093a63c7b72947e1df16fd56f998">&#9670;&#160;</a></span>validateMaterial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt; eve::physics::jolt::validateMaterial </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="JoltShapeOperations_8cpp_source.html">JoltShapeOperations.cpp</a> 第 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00083">83</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="JoltInternal_8h_source.html#l00025">isFinite()</a>, <a class="el" href="JoltInternal_8h_source.html#l00024">success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="JoltShape_8cpp_source.html#l00136">eve::physics::jolt::ShapeBackend::rebuild()</a>, <a class="el" href="JoltShapeOperations_8cpp_source.html#l00092">eve::physics::jolt::ShapeBackend::setMaterial()</a> , 以及 <a class="el" href="JoltShapeOperations_8cpp_source.html#l00145">eve::physics::jolt::ShapeBackend::setMeshMaterial()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

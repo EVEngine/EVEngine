@@ -1,0 +1,520 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/McpTaskProfile.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">McpTaskProfile.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="McpTaskProfile_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="McpTaskProfile_8hpp.html">devtools/McpTaskProfile.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="McpToolFilter_8hpp.html">devtools/McpToolFilter.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstdlib&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;mutex&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1dev.html">eve::dev</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>std::mutex     g_mu;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>std::string    g_processProfile;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>std::string    g_sessionProfile;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>McpFilterStats g_stats;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keywordtype">bool</span>           g_processLoaded = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keywordtype">void</span> ensureProcessLoadedUnlocked() {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordflow">if</span> (g_processLoaded) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a357262a1c3be2dc5a1f83fb283022f3d">raw</a> = std::getenv(<span class="stringliteral">&quot;EVE_MCP_PROFILE&quot;</span>)) {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        g_processProfile = <a class="code hl_variable" href="EnvironmentQuery_8cpp.html#a357262a1c3be2dc5a1f83fb283022f3d">raw</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    }</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    g_processLoaded = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">bool</span> isKnownTaskKind(std::string_view <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;content&quot;</span> || <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;script&quot;</span> || <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;verify&quot;</span> || <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;fix&quot;</span> || <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;workshop&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="keywordtype">bool</span> isKnownProfile(std::string_view profile) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">return</span> profile == <span class="stringliteral">&quot;content.scene&quot;</span> || profile == <span class="stringliteral">&quot;content.map&quot;</span> || profile == <span class="stringliteral">&quot;script.bind&quot;</span> ||</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>           profile == <span class="stringliteral">&quot;verify.play&quot;</span> || profile == <span class="stringliteral">&quot;fix.compile&quot;</span> || profile == <span class="stringliteral">&quot;workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>}</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>std::string defaultProfileForKind(std::string_view <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;content&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;content.scene&quot;</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;script&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;script.bind&quot;</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;fix&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;fix.compile&quot;</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> == <span class="stringliteral">&quot;workshop&quot;</span>) <span class="keywordflow">return</span> <span class="stringliteral">&quot;workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;verify.play&quot;</span>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>std::string taskKindForProfile(std::string_view profile) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (profile.starts_with(<span class="stringliteral">&quot;content.&quot;</span>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;content&quot;</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keywordflow">if</span> (profile.starts_with(<span class="stringliteral">&quot;script.&quot;</span>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;script&quot;</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (profile.starts_with(<span class="stringliteral">&quot;fix.&quot;</span>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;fix&quot;</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (profile.starts_with(<span class="stringliteral">&quot;workshop.&quot;</span>)) <span class="keywordflow">return</span> <span class="stringliteral">&quot;workshop&quot;</span>;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    <span class="keywordflow">return</span> <span class="stringliteral">&quot;verify&quot;</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keywordtype">bool</span> startsWith(std::string_view <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, std::string_view prefix) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.size() &gt;= prefix.size() &amp;&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.compare(0, prefix.size(), prefix) == 0;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keywordtype">bool</span> equalsAny(std::string_view <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>, std::initializer_list&lt;const char*&gt; names) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a> : names) {</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> == <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    }</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">bool</span> isDangerEvalTool(std::string_view tool) { <span class="keywordflow">return</span> tool == <span class="stringliteral">&quot;eve_eval&quot;</span> || tool == <span class="stringliteral">&quot;eve_run_script&quot;</span>; }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span><span class="keywordtype">bool</span> isAgentSessionTool(std::string_view tool) { <span class="keywordflow">return</span> startsWith(tool, <span class="stringliteral">&quot;eve_agent_&quot;</span>); }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keywordtype">bool</span> isCoreDiscoverTool(std::string_view tool) {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> equalsAny(tool, {<span class="stringliteral">&quot;eve_status&quot;</span>, <span class="stringliteral">&quot;eve_game_world&quot;</span>, <span class="stringliteral">&quot;eve_ai_log&quot;</span>, <span class="stringliteral">&quot;eve_ai_note&quot;</span>, <span class="stringliteral">&quot;eve_crash_report&quot;</span>,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                            <span class="stringliteral">&quot;eve_console_read&quot;</span>, <span class="stringliteral">&quot;eve_console_write&quot;</span>, <span class="stringliteral">&quot;eve_console_clear&quot;</span>});</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>}</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span><span class="keywordtype">bool</span> tagsAllow(std::string_view tool, <span class="keyword">const</span> std::unordered_set&lt;std::string&gt;&amp; tags) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a> : <a class="code hl_function" href="namespaceeve_1_1dev.html#a12d015aee1be75aad772c28d5982d517">mcpToolTags</a>(tool)) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>.count(<a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>) != 0) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span> </div>
+<div class="foldopen" id="foldopen00080" data-start="{" data-end="}">
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a07ed5797d6c5c44896e42a6f75e4ceca">   80</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a07ed5797d6c5c44896e42a6f75e4ceca">mcpResolveTaskProfile</a>(std::string_view taskKind, std::string_view profile, std::string* outProfile,</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                           std::string* outTaskKind, std::string* errorCode, std::string* errorMessage) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = std::string(taskKind);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    std::string prof = std::string(profile);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>.empty() &amp;&amp; prof.empty()) {</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = <span class="stringliteral">&quot;verify&quot;</span>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        prof = <span class="stringliteral">&quot;verify.play&quot;</span>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>.empty()) {</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">if</span> (!isKnownProfile(prof)) {</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keywordflow">if</span> (errorCode) *errorCode = <span class="stringliteral">&quot;invalid-profile&quot;</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            <span class="keywordflow">if</span> (errorMessage) *errorMessage = <span class="stringliteral">&quot;profile must be a known task profile id&quot;</span>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        }</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a> = taskKindForProfile(prof);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (prof.empty()) {</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>        <span class="keywordflow">if</span> (!isKnownTaskKind(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>)) {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            <span class="keywordflow">if</span> (errorCode) *errorCode = <span class="stringliteral">&quot;invalid-task-kind&quot;</span>;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            <span class="keywordflow">if</span> (errorMessage) *errorMessage = <span class="stringliteral">&quot;taskKind must be content, script, verify, fix, or workshop&quot;</span>;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        prof = defaultProfileForKind(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>);</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keywordflow">if</span> (!isKnownTaskKind(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>)) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">if</span> (errorCode) *errorCode = <span class="stringliteral">&quot;invalid-task-kind&quot;</span>;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            <span class="keywordflow">if</span> (errorMessage) *errorMessage = <span class="stringliteral">&quot;taskKind must be content, script, verify, fix, or workshop&quot;</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordflow">if</span> (!isKnownProfile(prof)) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            <span class="keywordflow">if</span> (errorCode) *errorCode = <span class="stringliteral">&quot;invalid-profile&quot;</span>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>            <span class="keywordflow">if</span> (errorMessage) *errorMessage = <span class="stringliteral">&quot;profile must be a known task profile id&quot;</span>;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordflow">if</span> (taskKindForProfile(prof) != <a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keywordflow">if</span> (errorCode) *errorCode = <span class="stringliteral">&quot;profile-task-mismatch&quot;</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            <span class="keywordflow">if</span> (errorMessage) *errorMessage = <span class="stringliteral">&quot;profile does not belong to the given taskKind&quot;</span>;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    }</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">if</span> (outProfile) *outProfile = std::move(prof);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    <span class="keywordflow">if</span> (outTaskKind) *outTaskKind = std::move(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a>);</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
+</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="}">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">  123</a></span>std::vector&lt;std::string&gt; <a class="code hl_function" href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">mcpProfileToolsetTags</a>(std::string_view profile) {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;content.scene&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;scene&quot;</span>};</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;content.map&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;editor&quot;</span>};</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;script.bind&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;debug&quot;</span>};</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;verify.play&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;play&quot;</span>, <span class="stringliteral">&quot;input&quot;</span>};</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;fix.compile&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;debug&quot;</span>};</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;workshop.rpg&quot;</span>) <span class="keywordflow">return</span> {<span class="stringliteral">&quot;agent&quot;</span>, <span class="stringliteral">&quot;core&quot;</span>, <span class="stringliteral">&quot;play&quot;</span>, <span class="stringliteral">&quot;input&quot;</span>, <span class="stringliteral">&quot;editor&quot;</span>, <span class="stringliteral">&quot;scene&quot;</span>};</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>}</div>
+</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="foldopen" id="foldopen00133" data-start="{" data-end="}">
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a43f7a7e0a343a93f9612d6a615f27034">  133</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#a43f7a7e0a343a93f9612d6a615f27034">mcpProfileToolsetEnv</a>(std::string_view profile) {</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    <span class="keyword">const</span> <span class="keyword">auto</span>  <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a> = <a class="code hl_function" href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">mcpProfileToolsetTags</a>(profile);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a> : <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>.empty()) <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a> += <span class="charliteral">&#39;,&#39;</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a> += <a class="code hl_variable" href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="keywordflow">return</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>}</div>
+</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span> </div>
+<div class="foldopen" id="foldopen00143" data-start="{" data-end="}">
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">  143</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">mcpProfileAllowsTool</a>(std::string_view profile, std::string_view tool) {</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    <span class="keywordflow">if</span> (profile.empty()) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordflow">if</span> (!isKnownProfile(profile)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <span class="comment">// Session / agent tools stay reachable so the Agent can escalate, status, and complete.</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordflow">if</span> (isAgentSessionTool(tool) || tool == <span class="stringliteral">&quot;eve_status&quot;</span> || tool == <span class="stringliteral">&quot;eve_game_world&quot;</span>) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span> </div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keywordflow">if</span> (isDangerEvalTool(tool)) {</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        <span class="comment">// Only the fix profile may touch eval/run_script; still not valid required evidence.</span></div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>        <span class="keywordflow">return</span> profile == <span class="stringliteral">&quot;fix.compile&quot;</span>;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    }</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    <span class="comment">// Stable facade: never leak into content/verify via shared scene/play tags.</span></div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;eve_workshop&quot;</span>) <span class="keywordflow">return</span> profile == <span class="stringliteral">&quot;workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keyword">const</span> <span class="keyword">auto</span>                      tagList = <a class="code hl_function" href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">mcpProfileToolsetTags</a>(profile);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    std::unordered_set&lt;std::string&gt; <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>(tagList.begin(), tagList.end());</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;script.bind&quot;</span>) {</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>        <span class="keywordflow">if</span> (equalsAny(tool, {<span class="stringliteral">&quot;eve_api_search&quot;</span>, <span class="stringliteral">&quot;eve_api_get&quot;</span>, <span class="stringliteral">&quot;eve_console_read&quot;</span>, <span class="stringliteral">&quot;eve_console_write&quot;</span>,</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                             <span class="stringliteral">&quot;eve_console_clear&quot;</span>, <span class="stringliteral">&quot;eve_error_slice&quot;</span>, <span class="stringliteral">&quot;eve_crash_report&quot;</span>}))</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>        <span class="comment">// Keep debug observations, but not breakpoints / snapshots / eval (eval already rejected).</span></div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        <span class="keywordflow">if</span> (equalsAny(tool, {<span class="stringliteral">&quot;eve_stack&quot;</span>, <span class="stringliteral">&quot;eve_locals&quot;</span>, <span class="stringliteral">&quot;eve_list_breakpoints&quot;</span>})) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;verify.play&quot;</span>) {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        <span class="keywordflow">if</span> (equalsAny(tool, {<span class="stringliteral">&quot;eve_screenshot&quot;</span>, <span class="stringliteral">&quot;eve_screenshot_image&quot;</span>, <span class="stringliteral">&quot;eve_render_status&quot;</span>, <span class="stringliteral">&quot;eve_console_read&quot;</span>}))</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;fix.compile&quot;</span>) {</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">if</span> (isCoreDiscoverTool(tool) || tool == <span class="stringliteral">&quot;eve_restart&quot;</span> || tool == <span class="stringliteral">&quot;eve_error_slice&quot;</span> ||</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            tool == <span class="stringliteral">&quot;eve_api_search&quot;</span> || tool == <span class="stringliteral">&quot;eve_api_get&quot;</span>)</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;content.scene&quot;</span>) {</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">if</span> (startsWith(tool, <span class="stringliteral">&quot;eve_procgen_&quot;</span>) || startsWith(tool, <span class="stringliteral">&quot;eve_recipe_&quot;</span>) || tool == <span class="stringliteral">&quot;eve_scene_info&quot;</span> ||</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            tool == <span class="stringliteral">&quot;eve_scene_director_status&quot;</span>)</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>        <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;content.map&quot;</span>) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;eve_console_read&quot;</span>) <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>        <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    }</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    <span class="keywordflow">if</span> (profile == <span class="stringliteral">&quot;workshop.rpg&quot;</span>) {</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;eve_workshop&quot;</span> || tool == <span class="stringliteral">&quot;eve_screenshot&quot;</span> || tool == <span class="stringliteral">&quot;eve_screenshot_image&quot;</span> ||</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            tool == <span class="stringliteral">&quot;eve_console_read&quot;</span> || tool == <span class="stringliteral">&quot;eve_api_search&quot;</span> || tool == <span class="stringliteral">&quot;eve_api_get&quot;</span>)</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>            <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>    }</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span> </div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>    <span class="keywordflow">return</span> tagsAllow(tool, <a class="code hl_variable" href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a>);</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>}</div>
+</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span> </div>
+<div class="foldopen" id="foldopen00203" data-start="{" data-end="}">
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#aea2eabe60f82416680b63f0600dc1e20">  203</a></span>std::optional&lt;McpProfileEscalate&gt; <a class="code hl_function" href="namespaceeve_1_1dev.html#aea2eabe60f82416680b63f0600dc1e20">mcpProfileEscalateHint</a>(std::string_view profile, std::string_view tool) {</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="keywordflow">if</span> (profile.empty() || <a class="code hl_function" href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">mcpProfileAllowsTool</a>(profile, tool)) <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    <a class="code hl_struct" href="structeve_1_1dev_1_1McpProfileEscalate.html">McpProfileEscalate</a> hint;</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#ae47070a7e9d178f96e8db47cbdbc4844">errorCode</a> = <span class="stringliteral">&quot;profile-denied&quot;</span>;</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span> </div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>    <span class="keywordflow">if</span> (isDangerEvalTool(tool) &amp;&amp; profile != <span class="stringliteral">&quot;fix.compile&quot;</span>) {</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;fix.compile&quot;</span>;</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;eval and run_script are limited to fix.compile and cannot satisfy required criteria&quot;</span>;</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>    }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>    <span class="keywordflow">if</span> ((startsWith(tool, <span class="stringliteral">&quot;eve_scene_&quot;</span>) || startsWith(tool, <span class="stringliteral">&quot;eve_camera_&quot;</span>) || startsWith(tool, <span class="stringliteral">&quot;eve_procgen_&quot;</span>) ||</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>         startsWith(tool, <span class="stringliteral">&quot;eve_recipe_&quot;</span>) || tool == <span class="stringliteral">&quot;eve_whitebox_playtest&quot;</span>) &amp;&amp;</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>        (profile == <span class="stringliteral">&quot;verify.play&quot;</span> || profile == <span class="stringliteral">&quot;script.bind&quot;</span> || profile == <span class="stringliteral">&quot;fix.compile&quot;</span>)) {</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;content.scene&quot;</span>;</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;scene, recipe, or procgen mutation requires content.scene&quot;</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    }</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>    <span class="keywordflow">if</span> (tool == <span class="stringliteral">&quot;eve_workshop&quot;</span> &amp;&amp; profile != <span class="stringliteral">&quot;workshop.rpg&quot;</span>) {</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;workshop facade is limited to workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    }</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    <span class="keywordflow">if</span> ((startsWith(tool, <span class="stringliteral">&quot;eve_editor_&quot;</span>) || startsWith(tool, <span class="stringliteral">&quot;eve_host_&quot;</span>)) &amp;&amp;</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>        (profile == <span class="stringliteral">&quot;verify.play&quot;</span> || profile == <span class="stringliteral">&quot;script.bind&quot;</span> || profile == <span class="stringliteral">&quot;content.scene&quot;</span>)) {</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = profile == <span class="stringliteral">&quot;content.scene&quot;</span> ? <span class="stringliteral">&quot;content.map&quot;</span> : <span class="stringliteral">&quot;workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;editor/host tools require content.map or workshop.rpg&quot;</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>    }</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>    <span class="keywordflow">if</span> ((tool == <span class="stringliteral">&quot;eve_play&quot;</span> || tool == <span class="stringliteral">&quot;eve_gameplay&quot;</span> || startsWith(tool, <span class="stringliteral">&quot;eve_input_&quot;</span>) ||</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>         startsWith(tool, <span class="stringliteral">&quot;eve_ui_&quot;</span>)) &amp;&amp;</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>        (profile == <span class="stringliteral">&quot;content.scene&quot;</span> || profile == <span class="stringliteral">&quot;content.map&quot;</span> || profile == <span class="stringliteral">&quot;script.bind&quot;</span> ||</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>         profile == <span class="stringliteral">&quot;fix.compile&quot;</span>)) {</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;verify.play&quot;</span>;</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;play/observe verification requires verify.play&quot;</span>;</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    }</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    <span class="keywordflow">if</span> ((tool == <span class="stringliteral">&quot;eve_api_search&quot;</span> || tool == <span class="stringliteral">&quot;eve_api_get&quot;</span>) &amp;&amp;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>        (profile == <span class="stringliteral">&quot;content.scene&quot;</span> || profile == <span class="stringliteral">&quot;content.map&quot;</span> || profile == <span class="stringliteral">&quot;verify.play&quot;</span>)) {</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;script.bind&quot;</span>;</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;binding-contract lookup is opened by script.bind&quot;</span>;</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    }</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    <span class="keywordflow">if</span> ((tool == <span class="stringliteral">&quot;eve_restart&quot;</span> || tool == <span class="stringliteral">&quot;eve_error_slice&quot;</span>) &amp;&amp; profile != <span class="stringliteral">&quot;fix.compile&quot;</span>) {</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">to</a>     = <span class="stringliteral">&quot;fix.compile&quot;</span>;</div>
+<div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        hint.<a class="code hl_variable" href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">reason</a> = <span class="stringliteral">&quot;compile/runtime repair tools require fix.compile&quot;</span>;</div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        <span class="keywordflow">return</span> hint;</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>    }</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span>    <span class="keywordflow">return</span> std::nullopt;</div>
+<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>}</div>
+</div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
+<div class="foldopen" id="foldopen00254" data-start="{" data-end="}">
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a5be86f37df15d0c3e6d0af31dd8d1bbe">  254</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#a5be86f37df15d0c3e6d0af31dd8d1bbe">mcpSetProcessProfile</a>(std::string_view profile) {</div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    g_processProfile = std::string(profile);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    g_processLoaded  = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>}</div>
+</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="foldopen" id="foldopen00260" data-start="{" data-end="}">
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a0a3094e8912dfe99eb43655c9783df9e">  260</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#a0a3094e8912dfe99eb43655c9783df9e">mcpProcessProfile</a>() {</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    ensureProcessLoadedUnlocked();</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    <span class="keywordflow">return</span> g_processProfile;</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>}</div>
+</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span> </div>
+<div class="foldopen" id="foldopen00266" data-start="{" data-end="}">
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#af0e937dffd8de2ae820c51355d6263ab">  266</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#af0e937dffd8de2ae820c51355d6263ab">mcpSetSessionProfile</a>(std::string_view profile) {</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    g_sessionProfile = std::string(profile);</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>}</div>
+</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="foldopen" id="foldopen00271" data-start="{" data-end="}">
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#add6e50301fc69897a258b32f87a72291">  271</a></span>std::string <a class="code hl_function" href="namespaceeve_1_1dev.html#add6e50301fc69897a258b32f87a72291">mcpSessionProfile</a>() {</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>    <span class="keywordflow">return</span> g_sessionProfile;</div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>}</div>
+</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span> </div>
+<div class="foldopen" id="foldopen00276" data-start="{" data-end="}">
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#ad478b89abbc7b7a3abfdf03c62174978">  276</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#ad478b89abbc7b7a3abfdf03c62174978">mcpFilterNoteCall</a>(<span class="keywordtype">bool</span> allowed, std::size_t resultBytes, <span class="keywordtype">bool</span> offeredEscalate) {</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    ++g_stats.toolCalls;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordflow">if</span> (!allowed) ++g_stats.toolsFiltered;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordflow">if</span> (offeredEscalate) ++g_stats.escalateCount;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    g_stats.approxResultBytes += <span class="keyword">static_cast&lt;</span>std::uint64_t<span class="keyword">&gt;</span>(resultBytes);</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>}</div>
+</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span> </div>
+<div class="foldopen" id="foldopen00284" data-start="{" data-end="}">
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#a9adac47d34c2e059ee5000ce7a79628c">  284</a></span><a class="code hl_struct" href="structeve_1_1dev_1_1McpFilterStats.html">McpFilterStats</a> <a class="code hl_function" href="namespaceeve_1_1dev.html#a9adac47d34c2e059ee5000ce7a79628c">mcpFilterStats</a>() {</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordflow">return</span> g_stats;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>}</div>
+</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="foldopen" id="foldopen00289" data-start="{" data-end="}">
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="namespaceeve_1_1dev.html#aa429888f02223274e3cbec5aecdcc36d">  289</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1dev.html#aa429888f02223274e3cbec5aecdcc36d">mcpFilterStatsResetForTest</a>() {</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    std::lock_guard lock(g_mu);</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    g_stats = {};</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>}</div>
+</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>}  <span class="comment">// namespace eve::dev</span></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aEnvironmentQuery_8cpp_html_a357262a1c3be2dc5a1f83fb283022f3d"><div class="ttname"><a href="EnvironmentQuery_8cpp.html#a357262a1c3be2dc5a1f83fb283022f3d">raw</a></div><div class="ttdeci">double raw</div><div class="ttdef"><b>Definition</b> <a href="EnvironmentQuery_8cpp_source.html#l00168">EnvironmentQuery.cpp:168</a></div></div>
+<div class="ttc" id="aMcpTaskProfile_8hpp_html"><div class="ttname"><a href="McpTaskProfile_8hpp.html">McpTaskProfile.hpp</a></div><div class="ttdoc">Named Agent task profiles that narrow the MCP tool surface.</div></div>
+<div class="ttc" id="aMcpToolFilter_8cpp_html_abaf8e417bbc492a0a0f19a6fa07565b6"><div class="ttname"><a href="McpToolFilter_8cpp.html#abaf8e417bbc492a0a0f19a6fa07565b6">tags</a></div><div class="ttdeci">std::unordered_set&lt; std::string &gt; tags</div><div class="ttdef"><b>Definition</b> <a href="McpToolFilter_8cpp_source.html#l00048">McpToolFilter.cpp:48</a></div></div>
+<div class="ttc" id="aMcpToolFilter_8hpp_html"><div class="ttname"><a href="McpToolFilter_8hpp.html">McpToolFilter.hpp</a></div><div class="ttdoc">Toolset / read-only / exclude filtering for the embedded MCP server.</div></div>
+<div class="ttc" id="aModuleAssembly_8cpp_html_afdc4d55537832536f73f894f88509864"><div class="ttname"><a href="ModuleAssembly_8cpp.html#afdc4d55537832536f73f894f88509864">tag</a></div><div class="ttdeci">const std::string * tag</div><div class="ttdef"><b>Definition</b> <a href="ModuleAssembly_8cpp_source.html#l00085">ModuleAssembly.cpp:85</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a4eeac3157ac481ce95fa8dd8e5e12a5f"><div class="ttname"><a href="ScriptStructure_8cpp.html#a4eeac3157ac481ce95fa8dd8e5e12a5f">out</a></div><div class="ttdeci">ScriptStructure out</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00023">ScriptStructure.cpp:23</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aca87c2bbc26e697653e2d8461c76a361"><div class="ttname"><a href="ScriptStructure_8cpp.html#aca87c2bbc26e697653e2d8461c76a361">kind</a></div><div class="ttdeci">std::string kind</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html"><div class="ttname"><a href="namespaceeve_1_1dev.html">eve::dev</a></div><div class="ttdef"><b>Definition</b> <a href="AgentDevelopmentMcp_8cpp_source.html#l00013">AgentDevelopmentMcp.cpp:13</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a07ed5797d6c5c44896e42a6f75e4ceca"><div class="ttname"><a href="namespaceeve_1_1dev.html#a07ed5797d6c5c44896e42a6f75e4ceca">eve::dev::mcpResolveTaskProfile</a></div><div class="ttdeci">bool mcpResolveTaskProfile(std::string_view taskKind, std::string_view profile, std::string *outProfile, std::string *outTaskKind, std::string *errorCode, std::string *errorMessage)</div><div class="ttdoc">Resolve taskKind + optional profile into a concrete profile id.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00080">McpTaskProfile.cpp:80</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a0a3094e8912dfe99eb43655c9783df9e"><div class="ttname"><a href="namespaceeve_1_1dev.html#a0a3094e8912dfe99eb43655c9783df9e">eve::dev::mcpProcessProfile</a></div><div class="ttdeci">std::string mcpProcessProfile()</div><div class="ttdoc">Current process-level profile; empty when unset.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00260">McpTaskProfile.cpp:260</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a128b88ae0b6eb137507bb5324be38ec2"><div class="ttname"><a href="namespaceeve_1_1dev.html#a128b88ae0b6eb137507bb5324be38ec2">eve::dev::mcpProfileToolsetTags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mcpProfileToolsetTags(std::string_view profile)</div><div class="ttdoc">Tag list advertised for EVE_MCP_TOOLSET when only a named profile is chosen.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00123">McpTaskProfile.cpp:123</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a12d015aee1be75aad772c28d5982d517"><div class="ttname"><a href="namespaceeve_1_1dev.html#a12d015aee1be75aad772c28d5982d517">eve::dev::mcpToolTags</a></div><div class="ttdeci">std::vector&lt; std::string &gt; mcpToolTags(std::string_view name)</div><div class="ttdoc">Classify a built-in or script tool into toolset tags.</div><div class="ttdef"><b>Definition</b> <a href="McpToolFilter_8cpp_source.html#l00112">McpToolFilter.cpp:112</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a43f7a7e0a343a93f9612d6a615f27034"><div class="ttname"><a href="namespaceeve_1_1dev.html#a43f7a7e0a343a93f9612d6a615f27034">eve::dev::mcpProfileToolsetEnv</a></div><div class="ttdeci">std::string mcpProfileToolsetEnv(std::string_view profile)</div><div class="ttdoc">Comma-joined toolset tags for env forwarding (eve-mcp --profile=).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00133">McpTaskProfile.cpp:133</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a5be86f37df15d0c3e6d0af31dd8d1bbe"><div class="ttname"><a href="namespaceeve_1_1dev.html#a5be86f37df15d0c3e6d0af31dd8d1bbe">eve::dev::mcpSetProcessProfile</a></div><div class="ttdeci">void mcpSetProcessProfile(std::string_view profile)</div><div class="ttdoc">Install or clear the process-level profile (EVE_MCP_PROFILE mirror for tests).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00254">McpTaskProfile.cpp:254</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_a9adac47d34c2e059ee5000ce7a79628c"><div class="ttname"><a href="namespaceeve_1_1dev.html#a9adac47d34c2e059ee5000ce7a79628c">eve::dev::mcpFilterStats</a></div><div class="ttdeci">McpFilterStats mcpFilterStats()</div><div class="ttdoc">Snapshot of proxy metrics since process start / last test reset.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00284">McpTaskProfile.cpp:284</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_aa429888f02223274e3cbec5aecdcc36d"><div class="ttname"><a href="namespaceeve_1_1dev.html#aa429888f02223274e3cbec5aecdcc36d">eve::dev::mcpFilterStatsResetForTest</a></div><div class="ttdeci">void mcpFilterStatsResetForTest()</div><div class="ttdoc">Test helper: zero proxy metrics.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00289">McpTaskProfile.cpp:289</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ac4cd94dc3a19bfdbe012ce8e0cb15410"><div class="ttname"><a href="namespaceeve_1_1dev.html#ac4cd94dc3a19bfdbe012ce8e0cb15410">eve::dev::mcpProfileAllowsTool</a></div><div class="ttdeci">bool mcpProfileAllowsTool(std::string_view profile, std::string_view tool)</div><div class="ttdoc">Whether tool is allowed under a concrete named profile (empty = no profile gate).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00143">McpTaskProfile.cpp:143</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_ad478b89abbc7b7a3abfdf03c62174978"><div class="ttname"><a href="namespaceeve_1_1dev.html#ad478b89abbc7b7a3abfdf03c62174978">eve::dev::mcpFilterNoteCall</a></div><div class="ttdeci">void mcpFilterNoteCall(bool allowed, std::size_t resultBytes, bool offeredEscalate)</div><div class="ttdoc">Record a tools/call attempt for proxy metrics.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00276">McpTaskProfile.cpp:276</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_add6e50301fc69897a258b32f87a72291"><div class="ttname"><a href="namespaceeve_1_1dev.html#add6e50301fc69897a258b32f87a72291">eve::dev::mcpSessionProfile</a></div><div class="ttdeci">std::string mcpSessionProfile()</div><div class="ttdoc">Current session-level profile; empty when no session overlay.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00271">McpTaskProfile.cpp:271</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_aea2eabe60f82416680b63f0600dc1e20"><div class="ttname"><a href="namespaceeve_1_1dev.html#aea2eabe60f82416680b63f0600dc1e20">eve::dev::mcpProfileEscalateHint</a></div><div class="ttdeci">std::optional&lt; McpProfileEscalate &gt; mcpProfileEscalateHint(std::string_view profile, std::string_view tool)</div><div class="ttdoc">Suggest an escalate edge when tool is denied by profile.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00203">McpTaskProfile.cpp:203</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1dev_html_af0e937dffd8de2ae820c51355d6263ab"><div class="ttname"><a href="namespaceeve_1_1dev.html#af0e937dffd8de2ae820c51355d6263ab">eve::dev::mcpSetSessionProfile</a></div><div class="ttdeci">void mcpSetSessionProfile(std::string_view profile)</div><div class="ttdoc">Install or clear the session-level profile overlay.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8cpp_source.html#l00266">McpTaskProfile.cpp:266</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpFilterStats_html"><div class="ttname"><a href="structeve_1_1dev_1_1McpFilterStats.html">eve::dev::McpFilterStats</a></div><div class="ttdoc">Proxy counters for profile A/B comparisons (not billing truth).</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00035">McpTaskProfile.hpp:35</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html">eve::dev::McpProfileEscalate</a></div><div class="ttdoc">Suggested profile change when a call is rejected by the active profile.</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00028">McpTaskProfile.hpp:28</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_a1e935428e107f58105c03acf9283ec29"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#a1e935428e107f58105c03acf9283ec29">eve::dev::McpProfileEscalate::to</a></div><div class="ttdeci">std::string to</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00029">McpTaskProfile.hpp:29</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_a6132081ef88ac9c72ff6a37da24b70bb"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#a6132081ef88ac9c72ff6a37da24b70bb">eve::dev::McpProfileEscalate::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00030">McpTaskProfile.hpp:30</a></div></div>
+<div class="ttc" id="astructeve_1_1dev_1_1McpProfileEscalate_html_ae47070a7e9d178f96e8db47cbdbc4844"><div class="ttname"><a href="structeve_1_1dev_1_1McpProfileEscalate.html#ae47070a7e9d178f96e8db47cbdbc4844">eve::dev::McpProfileEscalate::errorCode</a></div><div class="ttdeci">std::string errorCode</div><div class="ttdef"><b>Definition</b> <a href="McpTaskProfile_8hpp_source.html#l00031">McpTaskProfile.hpp:31</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

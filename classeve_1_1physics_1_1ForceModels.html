@@ -1,0 +1,710 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::ForceModels类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1ForceModels.html">ForceModels</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1ForceModels-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::ForceModels类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Pure force evaluators for 2D XY slices and full 3D, returning owning SI values. @ownership Inputs are borrowed only for this call; no state or callbacks are retained. @thread Any thread with immutable inputs; reentrant and allocation-free on success.  
+ <a href="classeve_1_1physics_1_1ForceModels.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ForceModels_8h_source.html">ForceModels.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a484d6eb502129710e9713efa8ee145bc" id="r_a484d6eb502129710e9713efa8ee145bc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a484d6eb502129710e9713efa8ee145bc">directional</a> (const <a class="el" href="structeve_1_1physics_1_1DirectionalField.html">DirectionalField</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, double mass)</td></tr>
+<tr class="memdesc:a484d6eb502129710e9713efa8ee145bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample mass-scaled directional force at a world position in meters.  <br /></td></tr>
+<tr class="separator:a484d6eb502129710e9713efa8ee145bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad1f76ee106166bddda0af4b1e3d0fd19" id="r_ad1f76ee106166bddda0af4b1e3d0fd19"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#ad1f76ee106166bddda0af4b1e3d0fd19">directionalForce</a> (const <a class="el" href="structeve_1_1physics_1_1DirectionalForceField.html">DirectionalForceField</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>)</td></tr>
+<tr class="memdesc:ad1f76ee106166bddda0af4b1e3d0fd19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample directional N force with region fade, without body-mass scaling.  <br /></td></tr>
+<tr class="separator:ad1f76ee106166bddda0af4b1e3d0fd19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b7a42e9f5dd082c8a54ab7cfe33b7b9" id="r_a7b7a42e9f5dd082c8a54ab7cfe33b7b9"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a7b7a42e9f5dd082c8a54ab7cfe33b7b9">radial</a> (const <a class="el" href="structeve_1_1physics_1_1RadialField.html">RadialField</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> <a class="el" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>, double mass)</td></tr>
+<tr class="memdesc:a7b7a42e9f5dd082c8a54ab7cfe33b7b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sample attraction/repulsion; the softened center produces zero force.  <br /></td></tr>
+<tr class="separator:a7b7a42e9f5dd082c8a54ab7cfe33b7b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a562282b1f0f0d33d2f0e565667e032cc" id="r_a562282b1f0f0d33d2f0e565667e032cc"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a562282b1f0f0d33d2f0e565667e032cc">buoyancy</a> (const <a class="el" href="structeve_1_1physics_1_1BuoyancyModel.html">BuoyancyModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>)</td></tr>
+<tr class="memdesc:a562282b1f0f0d33d2f0e565667e032cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return -density * displacedVolume * gravity; apply at submerged centroid.  <br /></td></tr>
+<tr class="separator:a562282b1f0f0d33d2f0e565667e032cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9803e09bca8273809b30ce8cc3493438" id="r_a9803e09bca8273809b30ce8cc3493438"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a9803e09bca8273809b30ce8cc3493438">damping</a> (const <a class="el" href="structeve_1_1physics_1_1DampingModel.html">DampingModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> relativeVelocity, double mass, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a9803e09bca8273809b30ce8cc3493438"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicit drag over positive dt; relativeVelocity is body minus medium.  <br /></td></tr>
+<tr class="separator:a9803e09bca8273809b30ce8cc3493438"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aceefd4a5409afaeabc824ab19ca517af" id="r_aceefd4a5409afaeabc824ab19ca517af"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#aceefd4a5409afaeabc824ab19ca517af">angularDamping2D</a> (const <a class="el" href="structeve_1_1physics_1_1AngularDampingModel.html">AngularDampingModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, double relativeAngularVelocity, double <a class="el" href="ForceBindings_8cpp.html#a17ca74f051befb55deca87ccc0e5cbdd">inertia</a>, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:aceefd4a5409afaeabc824ab19ca517af"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicit planar angular drag; returns Nm for relative rad/s and positive kg*m^2 inertia.  <br /></td></tr>
+<tr class="separator:aceefd4a5409afaeabc824ab19ca517af"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af15e38e4669434845a2debbc25709237" id="r_af15e38e4669434845a2debbc25709237"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#af15e38e4669434845a2debbc25709237">angularDamping3D</a> (const <a class="el" href="structeve_1_1physics_1_1AngularDampingModel.html">AngularDampingModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> relativeAngularVelocity, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> principalInertia, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:af15e38e4669434845a2debbc25709237"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implicit angular drag in the body's principal-inertia frame; returns torque in that same frame.  <br /></td></tr>
+<tr class="separator:af15e38e4669434845a2debbc25709237"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aafa34f4c73058694af70dfc8ebf06998" id="r_aafa34f4c73058694af70dfc8ebf06998"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1WingSample.html">WingSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#aafa34f4c73058694af70dfc8ebf06998">wing</a> (const <a class="el" href="structeve_1_1physics_1_1WingModel.html">WingModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> relativeVelocity)</td></tr>
+<tr class="memdesc:aafa34f4c73058694af70dfc8ebf06998"><td class="mdescLeft">&#160;</td><td class="mdescRight">Wing force using body-minus-air velocity at the aerodynamic center.  <br /></td></tr>
+<tr class="separator:aafa34f4c73058694af70dfc8ebf06998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f19ac1ffeadc07fd54b69b0844c127c" id="r_a2f19ac1ffeadc07fd54b69b0844c127c"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a2f19ac1ffeadc07fd54b69b0844c127c">friction</a> (const <a class="el" href="structeve_1_1physics_1_1FrictionModel.html">FrictionModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> tangentVelocity, <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> demandedForce, double <a class="el" href="ForceBindings_8cpp.html#a2b1e6b02154b4763571e0012d0160d38">normalLoad</a>)</td></tr>
+<tr class="memdesc:a2f19ac1ffeadc07fd54b69b0844c127c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cancel demanded tangent force at rest up to static limit; otherwise oppose slip.  <br /></td></tr>
+<tr class="separator:a2f19ac1ffeadc07fd54b69b0844c127c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35e449b96d2c3cae984f686a1abb045a" id="r_a35e449b96d2c3cae984f686a1abb045a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1TireSample.html">TireSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1ForceModels.html#a35e449b96d2c3cae984f686a1abb045a">tire</a> (const <a class="el" href="structeve_1_1physics_1_1TireModel.html">TireModel</a> &amp;<a class="el" href="RenderSystem3D_8cpp.html#ade56622421c713a8290c025626759118">model</a>, const <a class="el" href="structeve_1_1physics_1_1TireInput.html">TireInput</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, double <a class="el" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>)</td></tr>
+<tr class="memdesc:a35e449b96d2c3cae984f686a1abb045a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Combined-slip friction-circle tire with implicit wheel/chassis response and bounded brake locking.  <br /></td></tr>
+<tr class="separator:a35e449b96d2c3cae984f686a1abb045a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Pure force evaluators for 2D XY slices and full 3D, returning owning SI values. @ownership Inputs are borrowed only for this call; no state or callbacks are retained. @thread Any thread with immutable inputs; reentrant and allocation-free on success. </p>
+<dl class="section return"><dt>返回</dt><dd>InvalidArgument for non-finite/invalid input or non-finite output; no partial mutation.</dd></dl>
+<p>Time is injected in seconds. No RNG. Floating-point parity is tolerance-bounded (relative 1e-5, absolute 1e-6), not bit-exact across platforms. Apply each sample once before its fixed solver step. Damping is implicit over dt to avoid velocity reversal. Tire contact uses implicit slip impulses with frozen per-step stiffness and a bounded brake solve. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceModels_8h_source.html">ForceModels.h</a> 第 <a class="el" href="ForceModels_8h_source.html#l00136">136</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="aceefd4a5409afaeabc824ab19ca517af" name="aceefd4a5409afaeabc824ab19ca517af"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aceefd4a5409afaeabc824ab19ca517af">&#9670;&#160;</a></span>angularDamping2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; double &gt; eve::physics::ForceModels::angularDamping2D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1AngularDampingModel.html">AngularDampingModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>relativeAngularVelocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>inertia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implicit planar angular drag; returns Nm for relative rad/s and positive kg*m^2 inertia. </p>
+<p>Applied alone over dt, does not reverse relative rotation. Other torques remain independent. </p>
+
+<p class="definition">在文件 <a class="el" href="Aerodynamics_8cpp_source.html">Aerodynamics.cpp</a> 第 <a class="el" href="Aerodynamics_8cpp_source.html#l00017">17</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00100">inertia</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a> , 以及 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a>.</p>
+
+</div>
+</div>
+<a id="af15e38e4669434845a2debbc25709237" name="af15e38e4669434845a2debbc25709237"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af15e38e4669434845a2debbc25709237">&#9670;&#160;</a></span>angularDamping3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::angularDamping3D </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1AngularDampingModel.html">AngularDampingModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>relativeAngularVelocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>principalInertia</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implicit angular drag in the body's principal-inertia frame; returns torque in that same frame. </p>
+<p>All principal inertias must be positive kg*m^2. Rotate relative angular velocity into that frame, then rotate returned Nm torque to world before applying. Does not include gyroscopic or external torques. </p>
+
+<p class="definition">在文件 <a class="el" href="Aerodynamics_8cpp_source.html">Aerodynamics.cpp</a> 第 <a class="el" href="Aerodynamics_8cpp_source.html#l00025">25</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00100">inertia</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+</div>
+</div>
+<a id="a562282b1f0f0d33d2f0e565667e032cc" name="a562282b1f0f0d33d2f0e565667e032cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a562282b1f0f0d33d2f0e565667e032cc">&#9670;&#160;</a></span>buoyancy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::buoyancy </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1BuoyancyModel.html">BuoyancyModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return -density * displacedVolume * gravity; apply at submerged centroid. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00067">67</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a> , 以及 <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>.</p>
+
+</div>
+</div>
+<a id="a9803e09bca8273809b30ce8cc3493438" name="a9803e09bca8273809b30ce8cc3493438"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9803e09bca8273809b30ce8cc3493438">&#9670;&#160;</a></span>damping()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::damping </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1DampingModel.html">DampingModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>relativeVelocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>mass</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Implicit drag over positive dt; relativeVelocity is body minus medium. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00072">72</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00033">rate</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a>.</p>
+
+</div>
+</div>
+<a id="a484d6eb502129710e9713efa8ee145bc" name="a484d6eb502129710e9713efa8ee145bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a484d6eb502129710e9713efa8ee145bc">&#9670;&#160;</a></span>directional()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::directional </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1DirectionalField.html">DirectionalField</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>mass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sample mass-scaled directional force at a world position in meters. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00038">38</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a>.</p>
+
+</div>
+</div>
+<a id="ad1f76ee106166bddda0af4b1e3d0fd19" name="ad1f76ee106166bddda0af4b1e3d0fd19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1f76ee106166bddda0af4b1e3d0fd19">&#9670;&#160;</a></span>directionalForce()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::directionalForce </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1DirectionalForceField.html">DirectionalForceField</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>position</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sample directional N force with region fade, without body-mass scaling. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a>.</p>
+
+</div>
+</div>
+<a id="a2f19ac1ffeadc07fd54b69b0844c127c" name="a2f19ac1ffeadc07fd54b69b0844c127c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f19ac1ffeadc07fd54b69b0844c127c">&#9670;&#160;</a></span>friction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::friction </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1FrictionModel.html">FrictionModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>tangentVelocity</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>demandedForce</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>normalLoad</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cancel demanded tangent force at rest up to static limit; otherwise oppose slip. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00081">81</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="MapObjectContract_8cpp_source.html#l00064">required</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a>.</p>
+
+</div>
+</div>
+<a id="a7b7a42e9f5dd082c8a54ab7cfe33b7b9" name="a7b7a42e9f5dd082c8a54ab7cfe33b7b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b7a42e9f5dd082c8a54ab7cfe33b7b9">&#9670;&#160;</a></span>radial()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a> &gt; eve::physics::ForceModels::radial </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1RadialField.html">RadialField</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>position</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>mass</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Sample attraction/repulsion; the softened center produces zero force. </p>
+
+<p class="definition">在文件 <a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a> 第 <a class="el" href="ForceFields_8cpp_source.html#l00047">47</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00013">eve::physics::force_detail::add()</a>, <a class="el" href="ForceMath_8h_source.html#l00021">eve::physics::force_detail::checked()</a>, <a class="el" href="MeshContactBlend_8cpp_source.html#l00043">distance</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a> , 以及 <a class="el" href="UnityVegetationScene_8cpp_source.html#l00934">weight</a>.</p>
+
+</div>
+</div>
+<a id="a35e449b96d2c3cae984f686a1abb045a" name="a35e449b96d2c3cae984f686a1abb045a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35e449b96d2c3cae984f686a1abb045a">&#9670;&#160;</a></span>tire()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1TireSample.html">TireSample</a> &gt; eve::physics::ForceModels::tire </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1TireModel.html">TireModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1TireInput.html">TireInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>dt</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Combined-slip friction-circle tire with implicit wheel/chassis response and bounded brake locking. </p>
+<p>Input inverse masses describe diagonal contact response; zero keeps the corresponding chassis velocity prescribed. Returned forces and wheel speed share the same impulses. Slip diagnostics describe predicted end-of-step relative motion. Uses a fixed bounded brake solve; InvalidArgument also reports unrepresentable/nonconvergent numeric input. </p>
+
+<p class="definition">在文件 <a class="el" href="TireDynamics_8cpp_source.html">TireDynamics.cpp</a> 第 <a class="el" href="TireDynamics_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceModels_8h_source.html#l00111">eve::physics::TireInput::angularVelocity</a>, <a class="el" href="ForceModels_8h_source.html#l00112">eve::physics::TireInput::brakeTorque</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00037">capacity</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00052">contact</a>, <a class="el" href="ForceModels_8h_source.html#l00112">eve::physics::TireInput::driveTorque</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00025">dx</a>, <a class="el" href="Shadow_8cpp_source.html#l00151">dy</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="ForceModels_8h_source.html#l00114">eve::physics::TireInput::lateralInverseMass</a>, <a class="el" href="ForceModels_8h_source.html#l00110">eve::physics::TireInput::lateralVelocity</a>, <a class="el" href="ForceModels_8h_source.html#l00119">eve::physics::TireSample::longitudinalForce</a>, <a class="el" href="ForceModels_8h_source.html#l00113">eve::physics::TireInput::longitudinalInverseMass</a>, <a class="el" href="ForceModels_8h_source.html#l00110">eve::physics::TireInput::longitudinalVelocity</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="ForceModels_8h_source.html#l00112">eve::physics::TireInput::normalLoad</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vx</a>, <a class="el" href="PortableWorldSnapshot_8cpp_source.html#l00167">vy</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+</div>
+</div>
+<a id="aafa34f4c73058694af70dfc8ebf06998" name="aafa34f4c73058694af70dfc8ebf06998"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aafa34f4c73058694af70dfc8ebf06998">&#9670;&#160;</a></span>wing()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1physics_1_1WingSample.html">WingSample</a> &gt; eve::physics::ForceModels::wing </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1WingModel.html">WingModel</a> &amp;&#160;</td>
+          <td class="paramname"><em>model</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1ForceVector.html">ForceVector</a>&#160;</td>
+          <td class="paramname"><em>relativeVelocity</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Wing force using body-minus-air velocity at the aerodynamic center. </p>
+
+<p class="definition">在文件 <a class="el" href="Aerodynamics_8cpp_source.html">Aerodynamics.cpp</a> 第 <a class="el" href="Aerodynamics_8cpp_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ForceMath_8h_source.html#l00013">eve::physics::force_detail::add()</a>, <a class="el" href="HexTerrain_8cpp_source.html#l00036">blend</a>, <a class="el" href="ForceMath_8h_source.html#l00014">eve::physics::force_detail::dot()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00102">forward</a>, <a class="el" href="ForceMath_8h_source.html#l00008">eve::physics::force_detail::isFinite()</a>, <a class="el" href="ForceMath_8h_source.html#l00010">eve::physics::force_detail::isNonnegative()</a>, <a class="el" href="ForceMath_8h_source.html#l00011">eve::physics::force_detail::isPositive()</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="VirtualGeometry_8cpp_source.html#l00081">m</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00218">up</a> , 以及 <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="WingAssembly_8cpp_source.html#l00078">eve::physics::WingAssembly::build()</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/forces/<a class="el" href="ForceModels_8h_source.html">ForceModels.h</a></li>
+<li>src/modules/physics/forces/<a class="el" href="Aerodynamics_8cpp_source.html">Aerodynamics.cpp</a></li>
+<li>src/modules/physics/forces/<a class="el" href="ForceFields_8cpp_source.html">ForceFields.cpp</a></li>
+<li>src/modules/physics/forces/<a class="el" href="TireDynamics_8cpp_source.html">TireDynamics.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

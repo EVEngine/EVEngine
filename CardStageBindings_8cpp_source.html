@@ -1,0 +1,275 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/card/CardStageBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b6d14880155a7b1832962a5fc46a0e3c.html">card</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">CardStageBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="CardStageBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Card_8h.html">card/Card.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="CardOwnerInternal_8h.html">card/CardOwnerInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="AtomicBatch_8h.html">transaction/AtomicBatch.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1card.html">eve::card</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">class </span>PlayRules final : <span class="keyword">public</span> transaction::ITransactionParticipant {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    PlayRules(CardData&amp; card, CardDefinition definition, transaction::AtomicBatch&amp; batch)</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        : card_(ecs::handle_of(&amp;<a class="code hl_function" href="namespaceeve_1_1ui.html#ab6d1d4cd4032d3dc63042c20afda3683">card</a>)), definition_(<a class="code hl_namespace" href="namespacestd.html">std</a>::move(definition)), batch_(batch) {}</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    Result&lt;void&gt; prepare(<span class="keyword">const</span> transaction::TransactionContext&amp;)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keyword">auto</span>* <a class="code hl_function" href="namespaceeve_1_1ui.html#ab6d1d4cd4032d3dc63042c20afda3683">card</a> = card_.table == ecs::current() ? <span class="keyword">dynamic_cast&lt;</span>CardData*<span class="keyword">&gt;</span>(ecs::try_get(card_)) : nullptr;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">if</span> (!card || <a class="code hl_function" href="namespaceeve_1_1ui.html#ab6d1d4cd4032d3dc63042c20afda3683">card</a>-&gt;visual()-&gt;disabled) <span class="keywordflow">return</span> failure(<span class="stringliteral">&quot;card is stale or disabled&quot;</span>);</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> = <a class="code hl_function" href="namespaceeve_1_1ui.html#ab6d1d4cd4032d3dc63042c20afda3683">card</a>-&gt;state()-&gt;phase;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604">CardState::Hand</a> &amp;&amp; <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba3ef193e1ac8f2bc3d7226a29d6b09875">CardState::Hovered</a> &amp;&amp; <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba7c0a2f343108fd64dbd0b5e97a75f145">CardState::Dragging</a> &amp;&amp;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba6300e0c307ee17a1e9ae7bf72d279468">CardState::Returning</a>)</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>            <span class="keywordflow">return</span> failure(<span class="stringliteral">&quot;card is not in a playable hand phase&quot;</span>);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        CardPlayConditionQueries queries;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        queries.resource = [<span class="keyword">this</span>](std::string_view <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>) { <span class="keywordflow">return</span> batch_.resource(<a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>); };</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1card_1_1CardPlayConditionAdapter.html#addacbed66c118308c0a265aa18079f08">CardPlayConditionAdapter::evaluate</a>(card, definition_, definition_.playCondition, std::move(queries))</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                 .<a class="code hl_function" href="classeve_1_1condition_1_1ConditionResult.html#acf1ab89b162d53a75ab58bab5b5dbe3f">passed</a>())</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>            <span class="keywordflow">return</span> failure(<span class="stringliteral">&quot;card play condition was rejected&quot;</span>);</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    }</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    Result&lt;void&gt; <a class="code hl_function" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a5bf1fe8e69b32d0a2a039becf53e5766">commit</a>(<span class="keyword">const</span> transaction::TransactionContext&amp;)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(); }</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    Result&lt;void&gt; rollback(<span class="keyword">const</span> transaction::TransactionContext&amp;)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(); }</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    Result&lt;void&gt; compensate(<span class="keyword">const</span> transaction::TransactionContext&amp;)<span class="keyword"> override </span>{ <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(); }</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">static</span> Result&lt;void&gt; failure(std::string <a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>) {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, std::move(<a class="code hl_variable" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>), <span class="stringliteral">&quot;card&quot;</span>));</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    ecs::EntityHandle         card_;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    CardDefinition            definition_;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    transaction::AtomicBatch&amp; batch_;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00040" data-start="{" data-end="}">
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="classeve_1_1card_1_1Card.html#ab89f3186f178a396894798fa2acb7756">   40</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1card_1_1Card.html#ab89f3186f178a396894798fa2acb7756">Card::stagePlay</a>(<a class="code hl_class" href="classeve_1_1transaction_1_1AtomicBatch.html">transaction::AtomicBatch</a>&amp; batch, <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>&amp; card)<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> = <a class="code hl_function" href="classeve_1_1card_1_1Card.html#a57d6f785b2126fc1ed51e48170581749">playCost</a>(card);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>) <span class="keywordflow">return</span> batch.<a class="code hl_function" href="classeve_1_1transaction_1_1AtomicBatch.html#a15137a6645cab6cc4ddd0f3f6230ac9d">reject</a>(<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>.status());</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">auto</span> hand = <a class="code hl_function" href="classeve_1_1card_1_1Card.html#acf9e7645eb682481c643f58e396c2c0d">prepareHandConsumption</a>(card);</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keywordflow">if</span> (!hand) <span class="keywordflow">return</span> batch.<a class="code hl_function" href="classeve_1_1transaction_1_1AtomicBatch.html#a15137a6645cab6cc4ddd0f3f6230ac9d">reject</a>(hand.status());</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::vector&lt;std::unique_ptr&lt;transaction::ITransactionParticipant&gt;&gt; effects;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    effects.push_back(std::make_unique&lt;PlayRules&gt;(card, *findDef(card.identity()-&gt;definitionId), batch));</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    effects.push_back(std::make_unique&lt;CardPlayParticipant&gt;(card));</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    effects.push_back(std::move(hand).takeValue());</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">return</span> batch.<a class="code hl_function" href="classeve_1_1transaction_1_1AtomicBatch.html#a4f0ae9b6512e3211d84b1271433c6cb0">add</a>(std::move(effects), std::move(<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a>).takeValue());</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span><span class="keyword">namespace </span>card_internal {</div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="namespaceeve_1_1card_1_1card__internal.html#a3b19f3cff888b798a3391e00d0117dbb">   52</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1card_1_1card__internal.html#a3b19f3cff888b798a3391e00d0117dbb">exposeStageBindings</a>(ssq::Class&amp; <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a> = <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.getHandle();</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;stagePlay&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1card_1_1Card.html">Card</a>* self, <a class="code hl_class" href="classeve_1_1transaction_1_1AtomicBatch.html">transaction::AtomicBatch</a>* batch, <a class="code hl_class" href="classeve_1_1card_1_1CardData.html">CardData</a>* card) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        <span class="keyword">auto</span> retained = batch-&gt;<a class="code hl_function" href="classeve_1_1transaction_1_1AtomicBatch.html#a4c3db116386e1d9a68e7816e27c647f9">retainScriptOwner</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>        <span class="keywordflow">if</span> (!retained) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, std::move(retained));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1card_1_1Card.html#ab89f3186f178a396894798fa2acb7756">stagePlay</a>(*batch, *card));</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    });</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>}</div>
+</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>}  <span class="comment">// namespace card_internal</span></div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>}  <span class="comment">// namespace eve::card</span></div>
+<div class="ttc" id="aAtomicBatch_8h_html"><div class="ttname"><a href="AtomicBatch_8h.html">AtomicBatch.h</a></div></div>
+<div class="ttc" id="aCardOwnerInternal_8h_html"><div class="ttname"><a href="CardOwnerInternal_8h.html">CardOwnerInternal.h</a></div></div>
+<div class="ttc" id="aCard_8h_html"><div class="ttname"><a href="Card_8h.html">Card.h</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00028">DialoguePayment.cpp:28</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00039">ECS.cpp:39</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_a23c058547fbc73b5659191844a9f258c"><div class="ttname"><a href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a></div><div class="ttdeci">std::string text</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00011">ScriptStructure.cpp:11</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aStylizeAttackVfx_8cpp_html_a275dd6dafe5d4455e599ffd15feb06f8"><div class="ttname"><a href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a></div><div class="ttdeci">float phase</div><div class="ttdef"><b>Definition</b> <a href="StylizeAttackVfx_8cpp_source.html#l00247">StylizeAttackVfx.cpp:247</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardData_html"><div class="ttname"><a href="classeve_1_1card_1_1CardData.html">eve::card::CardData</a></div><div class="ttdoc">单张卡牌：ECS 实体，数据拆成 Identity / Stats / Visual / Layout / State。</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8h_source.html#l00094">CardTypes.h:94</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1CardPlayConditionAdapter_html_addacbed66c118308c0a265aa18079f08"><div class="ttname"><a href="classeve_1_1card_1_1CardPlayConditionAdapter.html#addacbed66c118308c0a265aa18079f08">eve::card::CardPlayConditionAdapter::evaluate</a></div><div class="ttdeci">static condition::ConditionResult evaluate(const CardData *card, const CardDefinition &amp;definition, const condition::Condition &amp;condition, CardPlayConditionQueries queries={})</div><div class="ttdoc">Evaluate a card definition's play condition against one instance.</div><div class="ttdef"><b>Definition</b> <a href="CardPlay_8cpp_source.html#l00071">CardPlay.cpp:71</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1Card_html"><div class="ttname"><a href="classeve_1_1card_1_1Card.html">eve::card::Card</a></div><div class="ttdoc">卡牌模块入口（eve.Card）：定义注册、对象工厂与每帧 update/render。</div><div class="ttdef"><b>Definition</b> <a href="Card_8h_source.html#l00095">Card.h:95</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1Card_html_a57d6f785b2126fc1ed51e48170581749"><div class="ttname"><a href="classeve_1_1card_1_1Card.html#a57d6f785b2126fc1ed51e48170581749">eve::card::Card::playCost</a></div><div class="ttdeci">Result&lt; std::optional&lt; resource::CostSpec &gt; &gt; playCost(CardData &amp;card) const</div><div class="ttdoc">Resolve one owned card's canonical definition payment for composition.</div><div class="ttdef"><b>Definition</b> <a href="CardPlayFacade_8cpp_source.html#l00025">CardPlayFacade.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1Card_html_ab89f3186f178a396894798fa2acb7756"><div class="ttname"><a href="classeve_1_1card_1_1Card.html#ab89f3186f178a396894798fa2acb7756">eve::card::Card::stagePlay</a></div><div class="ttdeci">Result&lt; void &gt; stagePlay(transaction::AtomicBatch &amp;batch, CardData &amp;card) const</div><div class="ttdoc">Stage removal from the unique owning hand for an outer gameplay transaction. @cost Linear in hand mem...</div><div class="ttdef"><b>Definition</b> <a href="CardStageBindings_8cpp_source.html#l00040">CardStageBindings.cpp:40</a></div></div>
+<div class="ttc" id="aclasseve_1_1card_1_1Card_html_acf9e7645eb682481c643f58e396c2c0d"><div class="ttname"><a href="classeve_1_1card_1_1Card.html#acf9e7645eb682481c643f58e396c2c0d">eve::card::Card::prepareHandConsumption</a></div><div class="ttdeci">Result&lt; std::unique_ptr&lt; transaction::ITransactionParticipant &gt; &gt; prepareHandConsumption(CardData &amp;card) const</div><div class="ttdef"><b>Definition</b> <a href="CardPlayFacade_8cpp_source.html#l00103">CardPlayFacade.cpp:103</a></div></div>
+<div class="ttc" id="aclasseve_1_1condition_1_1ConditionResult_html_acf1ab89b162d53a75ab58bab5b5dbe3f"><div class="ttname"><a href="classeve_1_1condition_1_1ConditionResult.html#acf1ab89b162d53a75ab58bab5b5dbe3f">eve::condition::ConditionResult::passed</a></div><div class="ttdeci">bool passed() const noexcept</div><div class="ttdoc">Whether the condition passed.</div><div class="ttdef"><b>Definition</b> <a href="Condition_8h_source.html#l00145">Condition.h:145</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1AtomicBatch_html"><div class="ttname"><a href="classeve_1_1transaction_1_1AtomicBatch.html">eve::transaction::AtomicBatch</a></div><div class="ttdoc">Single-use composition of domain participants and one payer's costs. Owns staged participants,...</div><div class="ttdef"><b>Definition</b> <a href="AtomicBatch_8h_source.html#l00019">AtomicBatch.h:19</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1AtomicBatch_html_a15137a6645cab6cc4ddd0f3f6230ac9d"><div class="ttname"><a href="classeve_1_1transaction_1_1AtomicBatch.html#a15137a6645cab6cc4ddd0f3f6230ac9d">eve::transaction::AtomicBatch::reject</a></div><div class="ttdeci">Result&lt; void &gt; reject(Status status)</div><div class="ttdoc">Preserve the first admission error and reject further execution.</div><div class="ttdef"><b>Definition</b> <a href="AtomicBatch_8cpp_source.html#l00025">AtomicBatch.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1AtomicBatch_html_a4c3db116386e1d9a68e7816e27c647f9"><div class="ttname"><a href="classeve_1_1transaction_1_1AtomicBatch.html#a4c3db116386e1d9a68e7816e27c647f9">eve::transaction::AtomicBatch::retainScriptOwner</a></div><div class="ttdeci">Result&lt; void &gt; retainScriptOwner(void *vm)</div><div class="ttdoc">Retain the current native script method's self for staged lifetimes.</div><div class="ttdef"><b>Definition</b> <a href="AtomicBatch_8cpp_source.html#l00115">AtomicBatch.cpp:115</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1AtomicBatch_html_a4f0ae9b6512e3211d84b1271433c6cb0"><div class="ttname"><a href="classeve_1_1transaction_1_1AtomicBatch.html#a4f0ae9b6512e3211d84b1271433c6cb0">eve::transaction::AtomicBatch::add</a></div><div class="ttdeci">Result&lt; void &gt; add(std::vector&lt; std::unique_ptr&lt; ITransactionParticipant &gt; &gt; effects, std::optional&lt; resource::CostSpec &gt; cost={})</div><div class="ttdoc">Append owning effects and optional cost without executing them. @cost Linear in effect/cost count; st...</div><div class="ttdef"><b>Definition</b> <a href="AtomicBatch_8cpp_source.html#l00088">AtomicBatch.cpp:88</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_1_1card__internal_html_a3b19f3cff888b798a3391e00d0117dbb"><div class="ttname"><a href="namespaceeve_1_1card_1_1card__internal.html#a3b19f3cff888b798a3391e00d0117dbb">eve::card::card_internal::exposeStageBindings</a></div><div class="ttdeci">void exposeStageBindings(ssq::Class &amp;cls)</div><div class="ttdef"><b>Definition</b> <a href="CardStageBindings_8cpp_source.html#l00052">CardStageBindings.cpp:52</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html"><div class="ttname"><a href="namespaceeve_1_1card.html">eve::card</a></div><div class="ttdef"><b>Definition</b> <a href="Card_8cpp_source.html#l00020">Card.cpp:20</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7aba3ef193e1ac8f2bc3d7226a29d6b09875"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba3ef193e1ac8f2bc3d7226a29d6b09875">eve::card::CardState::Hovered</a></div><div class="ttdeci">@ Hovered</div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7aba6300e0c307ee17a1e9ae7bf72d279468"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba6300e0c307ee17a1e9ae7bf72d279468">eve::card::CardState::Returning</a></div><div class="ttdeci">@ Returning</div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7aba7c0a2f343108fd64dbd0b5e97a75f145"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7aba7c0a2f343108fd64dbd0b5e97a75f145">eve::card::CardState::Dragging</a></div><div class="ttdeci">@ Dragging</div></div>
+<div class="ttc" id="anamespaceeve_1_1card_html_a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604"><div class="ttname"><a href="namespaceeve_1_1card.html#a642062e9cce7e18736dc90063850a7abaa78b1ac16c0cd02168097fc9a9bd7604">eve::card::CardState::Hand</a></div><div class="ttdeci">@ Hand</div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00542">SquirrelBinding.cpp:542</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_ab6d1d4cd4032d3dc63042c20afda3683"><div class="ttname"><a href="namespaceeve_1_1ui.html#ab6d1d4cd4032d3dc63042c20afda3683">eve::ui::card</a></div><div class="ttdeci">WidgetDesc card(std::vector&lt; WidgetDesc &gt; children, std::string id)</div><div class="ttdoc">Bordered surface container with editor-friendly padding.</div><div class="ttdef"><b>Definition</b> <a href="Widget_8cpp_source.html#l00524">Widget.cpp:524</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1vehicle_1_1tire__detail_html_a5bf1fe8e69b32d0a2a039becf53e5766"><div class="ttname"><a href="namespaceeve_1_1vehicle_1_1tire__detail.html#a5bf1fe8e69b32d0a2a039becf53e5766">eve::vehicle::tire_detail::commit</a></div><div class="ttdeci">Result&lt; VehiclePhysicsStatus &gt; commit(physics::World &amp;world, physics::ForceBatch &amp;batch, std::shared_ptr&lt; VehicleWheelRuntime &gt; &amp;runtime, std::vector&lt; VehicleEntity::SuspensionState::WheelState &gt; candidate, const SimulationStep &amp;step)</div><div class="ttdef"><b>Definition</b> <a href="VehicleTireRuntime_8cpp_source.html#l00086">VehicleTireRuntime.cpp:86</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

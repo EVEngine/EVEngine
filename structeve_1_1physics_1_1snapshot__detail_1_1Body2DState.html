@@ -1,0 +1,496 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::snapshot_detail::Body2DState结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1snapshot__detail.html">snapshot_detail</a></li><li class="navelem"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html">Body2DState</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::snapshot_detail::Body2DState结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p><code>#include &lt;<a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a9116dcd402aa6d8232d576ce6cad7bb4" id="r_a9116dcd402aa6d8232d576ce6cad7bb4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a9116dcd402aa6d8232d576ce6cad7bb4">id</a> = 0</td></tr>
+<tr class="separator:a9116dcd402aa6d8232d576ce6cad7bb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af58ad24484bc883f73a93d5f9680d484" id="r_af58ad24484bc883f73a93d5f9680d484"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#af58ad24484bc883f73a93d5f9680d484">type</a></td></tr>
+<tr class="separator:af58ad24484bc883f73a93d5f9680d484"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a410dfa15bb486b637319b04b2b1f5c84" id="r_a410dfa15bb486b637319b04b2b1f5c84"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a410dfa15bb486b637319b04b2b1f5c84">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a410dfa15bb486b637319b04b2b1f5c84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:affbac78aa514e9809e0eb03962d09da1" id="r_affbac78aa514e9809e0eb03962d09da1"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#affbac78aa514e9809e0eb03962d09da1">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:affbac78aa514e9809e0eb03962d09da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a330ccb887aa228389f19d15d021f221c" id="r_a330ccb887aa228389f19d15d021f221c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a330ccb887aa228389f19d15d021f221c">angle</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a330ccb887aa228389f19d15d021f221c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20afcba87edbcaca4dcf8af3f2051693" id="r_a20afcba87edbcaca4dcf8af3f2051693"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a20afcba87edbcaca4dcf8af3f2051693">vx</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a20afcba87edbcaca4dcf8af3f2051693"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a99da762f4803ac982fade615b910af65" id="r_a99da762f4803ac982fade615b910af65"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a99da762f4803ac982fade615b910af65">vy</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a99da762f4803ac982fade615b910af65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d5c1df6596dd50b1b65dfbeeb2d8f80" id="r_a8d5c1df6596dd50b1b65dfbeeb2d8f80"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a8d5c1df6596dd50b1b65dfbeeb2d8f80">angularVelocity</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8d5c1df6596dd50b1b65dfbeeb2d8f80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9a942522ec29e8a33327cbdec8a70252" id="r_a9a942522ec29e8a33327cbdec8a70252"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a9a942522ec29e8a33327cbdec8a70252">active</a> = false</td></tr>
+<tr class="separator:a9a942522ec29e8a33327cbdec8a70252"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9f850b85a85071a2ca12fe9380f85555" id="r_a9f850b85a85071a2ca12fe9380f85555"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a9f850b85a85071a2ca12fe9380f85555">bullet</a> = false</td></tr>
+<tr class="separator:a9f850b85a85071a2ca12fe9380f85555"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76fc9aca80f0d1367fd04c8704e4b85c" id="r_a76fc9aca80f0d1367fd04c8704e4b85c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a76fc9aca80f0d1367fd04c8704e4b85c">awake</a> = false</td></tr>
+<tr class="separator:a76fc9aca80f0d1367fd04c8704e4b85c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30ca0f1f049e162f9bcb7e41b0280f97" id="r_a30ca0f1f049e162f9bcb7e41b0280f97"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a30ca0f1f049e162f9bcb7e41b0280f97">fixedRotation</a> = false</td></tr>
+<tr class="separator:a30ca0f1f049e162f9bcb7e41b0280f97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac19ddabd543340e52ac7e70ca42aef7e" id="r_ac19ddabd543340e52ac7e70ca42aef7e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Value.html">eve::Value</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#ac19ddabd543340e52ac7e70ca42aef7e">fixtures</a></td></tr>
+<tr class="separator:ac19ddabd543340e52ac7e70ca42aef7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad182e50abf935955da538fbcc8e22803" id="r_ad182e50abf935955da538fbcc8e22803"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#ad182e50abf935955da538fbcc8e22803">linearDamping</a> = 0</td></tr>
+<tr class="separator:ad182e50abf935955da538fbcc8e22803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c0e14940de6177c7ccf860f67985a25" id="r_a3c0e14940de6177c7ccf860f67985a25"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a3c0e14940de6177c7ccf860f67985a25">angularDamping</a> = 0</td></tr>
+<tr class="separator:a3c0e14940de6177c7ccf860f67985a25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74c2a9e70ac9c74a5fd6bcf29cb9913e" id="r_a74c2a9e70ac9c74a5fd6bcf29cb9913e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#a74c2a9e70ac9c74a5fd6bcf29cb9913e">gravityScale</a> = 1</td></tr>
+<tr class="separator:a74c2a9e70ac9c74a5fd6bcf29cb9913e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5b5b303389d81042e809568a72c2786" id="r_aa5b5b303389d81042e809568a72c2786"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1snapshot__detail_1_1Body2DState.html#aa5b5b303389d81042e809568a72c2786">allowSleep</a> = true</td></tr>
+<tr class="separator:aa5b5b303389d81042e809568a72c2786"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock">
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00033">33</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a9a942522ec29e8a33327cbdec8a70252" name="a9a942522ec29e8a33327cbdec8a70252"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9a942522ec29e8a33327cbdec8a70252">&#9670;&#160;</a></span>active</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::Body2DState::active = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa5b5b303389d81042e809568a72c2786" name="aa5b5b303389d81042e809568a72c2786"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa5b5b303389d81042e809568a72c2786">&#9670;&#160;</a></span>allowSleep</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::Body2DState::allowSleep = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a330ccb887aa228389f19d15d021f221c" name="a330ccb887aa228389f19d15d021f221c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a330ccb887aa228389f19d15d021f221c">&#9670;&#160;</a></span>angle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::angle = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c0e14940de6177c7ccf860f67985a25" name="a3c0e14940de6177c7ccf860f67985a25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c0e14940de6177c7ccf860f67985a25">&#9670;&#160;</a></span>angularDamping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::angularDamping = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8d5c1df6596dd50b1b65dfbeeb2d8f80" name="a8d5c1df6596dd50b1b65dfbeeb2d8f80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d5c1df6596dd50b1b65dfbeeb2d8f80">&#9670;&#160;</a></span>angularVelocity</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::angularVelocity = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76fc9aca80f0d1367fd04c8704e4b85c" name="a76fc9aca80f0d1367fd04c8704e4b85c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76fc9aca80f0d1367fd04c8704e4b85c">&#9670;&#160;</a></span>awake</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::Body2DState::awake = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9f850b85a85071a2ca12fe9380f85555" name="a9f850b85a85071a2ca12fe9380f85555"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9f850b85a85071a2ca12fe9380f85555">&#9670;&#160;</a></span>bullet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::Body2DState::bullet = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a30ca0f1f049e162f9bcb7e41b0280f97" name="a30ca0f1f049e162f9bcb7e41b0280f97"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a30ca0f1f049e162f9bcb7e41b0280f97">&#9670;&#160;</a></span>fixedRotation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::physics::snapshot_detail::Body2DState::fixedRotation = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00038">38</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac19ddabd543340e52ac7e70ca42aef7e" name="ac19ddabd543340e52ac7e70ca42aef7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac19ddabd543340e52ac7e70ca42aef7e">&#9670;&#160;</a></span>fixtures</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Value.html">eve::Value</a> eve::physics::snapshot_detail::Body2DState::fixtures</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a74c2a9e70ac9c74a5fd6bcf29cb9913e" name="a74c2a9e70ac9c74a5fd6bcf29cb9913e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74c2a9e70ac9c74a5fd6bcf29cb9913e">&#9670;&#160;</a></span>gravityScale</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::gravityScale = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9116dcd402aa6d8232d576ce6cad7bb4" name="a9116dcd402aa6d8232d576ce6cad7bb4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9116dcd402aa6d8232d576ce6cad7bb4">&#9670;&#160;</a></span>id</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::snapshot_detail::Body2DState::id = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00034">34</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad182e50abf935955da538fbcc8e22803" name="ad182e50abf935955da538fbcc8e22803"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad182e50abf935955da538fbcc8e22803">&#9670;&#160;</a></span>linearDamping</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::linearDamping = 0</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00040">40</a> 行定义.</p>
+
+</div>
+</div>
+<a id="af58ad24484bc883f73a93d5f9680d484" name="af58ad24484bc883f73a93d5f9680d484"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af58ad24484bc883f73a93d5f9680d484">&#9670;&#160;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::physics::snapshot_detail::Body2DState::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00035">35</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a20afcba87edbcaca4dcf8af3f2051693" name="a20afcba87edbcaca4dcf8af3f2051693"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20afcba87edbcaca4dcf8af3f2051693">&#9670;&#160;</a></span>vx</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::vx = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a99da762f4803ac982fade615b910af65" name="a99da762f4803ac982fade615b910af65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a99da762f4803ac982fade615b910af65">&#9670;&#160;</a></span>vy</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::vy = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a410dfa15bb486b637319b04b2b1f5c84" name="a410dfa15bb486b637319b04b2b1f5c84"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a410dfa15bb486b637319b04b2b1f5c84">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<a id="affbac78aa514e9809e0eb03962d09da1" name="affbac78aa514e9809e0eb03962d09da1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#affbac78aa514e9809e0eb03962d09da1">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::physics::snapshot_detail::Body2DState::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a> 第 <a class="el" href="WorldSnapshotCodec_8h_source.html#l00036">36</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/physics/snapshot/<a class="el" href="WorldSnapshotCodec_8h_source.html">WorldSnapshotCodec.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

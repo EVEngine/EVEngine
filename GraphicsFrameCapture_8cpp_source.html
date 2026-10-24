@@ -1,0 +1,473 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/graphics/vulkan/GraphicsFrameCapture.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_0f2af43e49f4758c00cbead1adc79623.html">graphics</a></li><li class="navelem"><a class="el" href="dir_093844fdbeabcf6df70ce24c00b21dbf.html">vulkan</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">GraphicsFrameCapture.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="GraphicsFrameCapture_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="FrameReadback_8h.html">graphics/vulkan/FrameReadback.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="vulkan_2Graphics_8h.html">graphics/vulkan/Graphics.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;cstring&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/gtc/matrix_inverse.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/gtc/type_ptr.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keywordtype">void</span> Graphics::recordFrameCapture(vk::CommandBuffer cb) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>    ++captureFrameId_;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    <span class="keywordflow">if</span> (!captureToken_.empty()) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a0503f68242cfbd60f4362ec9129ba70a">queued</a>();</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a>) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> <span class="keyword">auto</span>&amp; [<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>] = *<a class="code hl_variable" href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a>;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    std::vector&lt;CaptureCopy&gt; copies;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    <span class="keywordtype">size_t</span>                   total = 0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">auto</span>*                    gb    = currentGBufferSlot();</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span> attachment : <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.attachments) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        CaptureCopy copy;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        copy.metadata.attachment      = attachment;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        copy.metadata.producerFrameId = captureFrameId_;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        copy.metadata.format          = <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">FramePixelFormat::Rgba8</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        copy.metadata.colorSpace      = <span class="stringliteral">&quot;data-unorm-storage&quot;</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        copy.metadata.encoding        = <span class="stringliteral">&quot;unorm8&quot;</span>;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        copy.layout                   = vk::ImageLayout::eShaderReadOnlyOptimal;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        copy.aspect                   = vk::ImageAspectFlagBits::eColor;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        vkb::GenericImage* <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">FrameAttachment::Final</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            <span class="keyword">const</span> <span class="keyword">auto</span> format = swapchain.image_format;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> bgra   = format == vk::Format::eB8G8R8A8Unorm || format == vk::Format::eB8G8R8A8Srgb;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span> rgba   = format == vk::Format::eR8G8B8A8Unorm || format == vk::Format::eR8G8B8A8Srgb;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <span class="keywordflow">if</span> (!bgra &amp;&amp; !rgba) copy.metadata.unavailableReason = <span class="stringliteral">&quot;UnsupportedFormat&quot;</span>;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">if</span> (presentModel.has_acquired_image &amp;&amp; (bgra || rgba)) {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                copy.source              = swapchain.get_images()[presentModel.acquired_image_index];</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                copy.metadata.width      = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeve_1_1graphics_1_1Graphics.html#ad9cd5da187424066afcf1590faea1924">pixelWidth</a>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                copy.metadata.height     = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="classeve_1_1graphics_1_1Graphics.html#a3385dc1dcccb410af2180c15ce725ee4">pixelHeight</a>);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                copy.metadata.format     = bgra ? <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee">FramePixelFormat::Bgra8</a> : <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">FramePixelFormat::Rgba8</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>                copy.metadata.colorSpace = (format == vk::Format::eB8G8R8A8Srgb || format == vk::Format::eR8G8B8A8Srgb)</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>                                               ? <span class="stringliteral">&quot;srgb&quot;</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>                                               : <span class="stringliteral">&quot;swapchain-unorm&quot;</span>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                copy.metadata.encoding   = <span class="stringliteral">&quot;presented-including-overlay&quot;</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                copy.layout              = vk::ImageLayout::ePresentSrcKHR;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            }</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attachment &gt;= <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399">FrameAttachment::Shadow0</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <span class="comment">// Do not present a previous slot&#39;s cached shadow as this frame&#39;s producer.</span></div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">if</span> (deferredGraphRecorded_ &amp;&amp; deferredGraphRecordedSlot_ == currentFrameSlot() &amp;&amp; !shadowMaps.empty()) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>      = &amp;currentShadowMap().image;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                copy.layer  = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(attachment) - <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(<a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399">FrameAttachment::Shadow0</a>);</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                copy.aspect = vk::ImageAspectFlagBits::eDepth;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                copy.metadata.format   = <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">FramePixelFormat::Depth32Float</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                copy.metadata.encoding = <span class="stringliteral">&quot;device-depth-0-to-1&quot;</span>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                std::copy_n(glm::value_ptr(mesh3dShadows.<a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">ubo</a>.<a class="code hl_variable" href="structeve_1_1graphics_1_1ShadowUBO.html#afffbf316ac010ebbe83b79261ce6d14b">lightVP</a>[copy.layer]), 16,</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                            copy.metadata.producerMatrix.begin());</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (gb &amp;&amp; deferredGraphRecorded_ &amp;&amp; deferredGraphRecordedSlot_ == currentFrameSlot()) {</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">switch</span> (attachment) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1">FrameAttachment::Depth</a>:</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12">FrameAttachment::Velocity</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;depthColor; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77">FrameAttachment::HwDepth</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;depth; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0">FrameAttachment::Normal</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;normal; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710">FrameAttachment::Albedo</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;albedo; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53">FrameAttachment::PbrParams</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;pbrParams; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                <span class="keywordflow">case</span> <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566">FrameAttachment::Emissive</a>: <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = &amp;gb-&gt;emissive; <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">default</span>: <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77">FrameAttachment::HwDepth</a>) {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                copy.aspect            = vk::ImageAspectFlagBits::eDepth;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                copy.metadata.format   = <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">FramePixelFormat::Depth32Float</a>;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                copy.metadata.encoding = <span class="stringliteral">&quot;device-depth-0-to-1&quot;</span>;</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1">FrameAttachment::Depth</a> || attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12">FrameAttachment::Velocity</a>) {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                copy.metadata.encoding = <span class="stringliteral">&quot;r-linear01-gb-motion-ndc-times-half-plus-half&quot;</span>;</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0">FrameAttachment::Normal</a>) {</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                copy.metadata.encoding = <span class="stringliteral">&quot;rgb-world-normal-times-half-plus-half-a-legacy-pbr&quot;</span>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710">FrameAttachment::Albedo</a>) {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                copy.metadata.encoding = <span class="stringliteral">&quot;rgb-albedo-times-tint-a-linear01-depth&quot;</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (attachment == <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53">FrameAttachment::PbrParams</a>) {</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                copy.metadata.encoding = <span class="stringliteral">&quot;metallic-roughness-occlusion-specular&quot;</span>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>  = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>-&gt;info();</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span>  <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a> = copy.metadata.format == <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">FramePixelFormat::Depth32Float</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keyword">const</span> <span class="keywordtype">bool</span>  supportedFormat =</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a> ? <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.format == vk::Format::eD32Sfloat : <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.format == vk::Format::eR8G8B8A8Unorm;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keywordflow">if</span> ((<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.usage &amp; vk::ImageUsageFlagBits::eTransferSrc) &amp;&amp; supportedFormat &amp;&amp;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>                <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.samples == vk::SampleCountFlagBits::e1 &amp;&amp; copy.layer &lt; <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.arrayLayers) {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>                copy.source          = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>-&gt;image();</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                copy.metadata.width  = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.extent.width;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                copy.metadata.height = <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.extent.height;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            } <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                copy.metadata.unavailableReason =</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    !supportedFormat                                       ? <span class="stringliteral">&quot;UnsupportedFormat&quot;</span></div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                    : <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.samples != vk::SampleCountFlagBits::e1          ? <span class="stringliteral">&quot;UnsupportedSampleCount&quot;</span></div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                    : !(<a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a>.usage &amp; vk::ImageUsageFlagBits::eTransferSrc) ? <span class="stringliteral">&quot;TransferSourceUsageMissing&quot;</span></div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                                                                           : <span class="stringliteral">&quot;InvalidArrayLayer&quot;</span>;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>        }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>        <span class="keywordflow">if</span> (!copy.source) {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>            <span class="keywordflow">if</span> (copy.metadata.unavailableReason.empty()) copy.metadata.unavailableReason = <span class="stringliteral">&quot;NotProducedInTargetFrame&quot;</span>;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>.reportUnavailable) {</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>                    <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, copy.metadata.unavailableReason + <span class="stringliteral">&quot;:&quot;</span> + std::string(<a class="code hl_function" href="namespaceeve.html#a7a915f0ad8a8d4b36e16786a02350762">frameAttachmentName</a>(attachment)));</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        }</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        copy.storageIndex = copies.size();</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; copies.size(); ++i) {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>            <span class="keywordflow">if</span> (copy.source &amp;&amp; copies[i].source == copy.source &amp;&amp; copies[i].layer == copy.layer) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>                copy.storageIndex = i;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>            }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        }</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <span class="keywordflow">if</span> (copy.source &amp;&amp; copy.storageIndex == copies.size())</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            total += size_t(copy.metadata.width) * copy.metadata.height * 4;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        copies.push_back(std::move(copy));</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>    }</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aac83a4c2da46afd4932602be91f84961">begin</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a07a44acbaa7adfed0c2c7bc0ff20d92a">begin</a>(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, captureFrameId_, total);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptStructure_8cpp.html#aac83a4c2da46afd4932602be91f84961">begin</a>) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, <span class="stringliteral">&quot;BudgetExceeded&quot;</span>);</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    }</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="comment">// Allocate the entire batch before modifying any command buffer.</span></div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; copies.size(); ++i) {</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>            <span class="keyword">auto</span>&amp; copy = copies[i];</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>            <span class="keywordflow">if</span> (copy.source &amp;&amp; copy.storageIndex == i)</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                copy.staging = vkb::GenericBuffer(</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                    device, vk::BufferUsageFlagBits::eTransferDst,</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                    vk::DeviceSize(copy.metadata.width) * copy.metadata.height * 4,</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                    vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent);</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        }</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, std::string(<span class="stringliteral">&quot;ReadbackAllocationFailed: &quot;</span>) + e.what());</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a378429399a73f30477926ec299597035">retire</a>(<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>);</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    captureToken_                     = <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    captureCopies_                    = std::move(copies);</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    captureSnapshot_                  = {};</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ae7a3412720361b7620941aa78e47753f">targetGeneration</a> = captureTargetGeneration_;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a47b319cc59402788d7cdda319633f121">depthConvention</a>  = <span class="stringliteral">&quot;Vulkan-NDC-0-to-1-positive-viewport-y&quot;</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keyword">const</span> glm::mat4 inverseProjection = mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">view</a> * glm::inverse(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a2e44a128ecdcae370a8e85af390c476e">mvp</a>);</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    std::copy_n(glm::value_ptr(inverseProjection), 16, captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#aaaea5482e3454ac1ba68932c05c1b237">inverseProjection</a>.begin());</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    <span class="keyword">const</span> glm::mat4 projection = glm::inverse(inverseProjection);</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>    std::copy_n(glm::value_ptr(projection), 16, captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a8f6f8d71e464405bf314c5cb075a7db9">projectionMatrix</a>.begin());</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    std::copy_n(glm::value_ptr(mesh3dFrameUbo.<a class="code hl_variable" href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">view</a>), 16, captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ad7c7a795906df1c6ff4af7820638b542">viewMatrix</a>.begin());</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; captureCopies_.size(); ++i) {</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keyword">auto</span>&amp; copy = captureCopies_[i];</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>        <span class="keywordflow">if</span> (!copy.source || copy.storageIndex != i) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>        <a class="code hl_function" href="namespaceeve_1_1graphics_1_1vulkan_1_1detail.html#ae04bb687c00580ccc6e4fa60ce5d5905">detail::recordFrameReadback</a>(cb, copy.source, copy.staging.buffer,</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                                    vk::Extent2D{copy.metadata.width, copy.metadata.height}, copy.aspect, copy.layer,</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                                    copy.layout);</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>    }</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    captureFence_ = presentModel.in_flight_fences[presentRecording.slot().index];</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>    <span class="keywordflow">for</span> (<span class="keyword">auto</span>&amp; copy : captureCopies_) copy.<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a> = nullptr;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>}</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span><span class="keywordtype">void</span> Graphics::markFrameCaptureSubmitted() {</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>    <span class="keywordflow">if</span> (captureToken_.empty() || captureSubmitted_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">auto</span> submitted = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a80533418bad9c1833daa869b398e3985">submitted</a>(captureToken_);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>    submitted.<a class="code hl_function" href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">ignore</a>();</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    captureSubmitted_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>}</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span><span class="keywordtype">void</span> Graphics::pollFrameCapture() {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#aeba1ccd6a62230dd2f42dfd4cc720849">collect</a>();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="keywordflow">if</span> (!captureToken_.empty() &amp;&amp; !captureSubmitted_ &amp;&amp; device.instance) {</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>        <span class="comment">// A new main-thread poll before submission means present threw. Drain</span></div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>        <span class="comment">// this exceptional path rather than publish unsubmitted staging bytes.</span></div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            device-&gt;waitIdle();</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        } <span class="keywordflow">catch</span> (<span class="keyword">const</span> vk::SystemError&amp;) {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        }</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(captureToken_, <span class="stringliteral">&quot;CaptureSubmitFailed&quot;</span>);</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>        <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        destroyFrameCapture();</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>        <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>    }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>    <span class="keywordflow">if</span> (!captureSubmitted_ || !captureFence_ || !device.instance) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>    vk::Result <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a>;</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>        <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a> = device-&gt;getFenceStatus(captureFence_);</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>    } <span class="keywordflow">catch</span> (<span class="keyword">const</span> vk::SystemError&amp;) {</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>        <a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a> = vk::Result::eErrorDeviceLost;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>    }</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a> == vk::Result::eNotReady) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a> != vk::Result::eSuccess) {</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(captureToken_, <span class="stringliteral">&quot;DeviceLost&quot;</span>);</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>        <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#aaad2d9739da7f398ae0d69261a688098">snapshot</a>(captureToken_);</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>        <span class="keywordflow">if</span> (state &amp;&amp; <a class="code hl_variable" href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a>.value().phase == <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76">FrameCapturePhase::ReadbackPending</a>) {</div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                std::vector&lt;std::shared_ptr&lt;const std::vector&lt;uint8_t&gt;&gt;&gt; storage(captureCopies_.size());</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; captureCopies_.size(); ++i) {</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                    <span class="keyword">auto</span>&amp; copy = captureCopies_[i];</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                    <span class="keywordflow">if</span> (copy.staging.buffer &amp;&amp; copy.storageIndex == i) {</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                        <span class="keyword">auto</span>        <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>  = std::make_shared&lt;std::vector&lt;uint8_t&gt;&gt;(size_t(copy.metadata.width) *</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>                                                                                    copy.metadata.height * 4);</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>                        <span class="keyword">const</span> <span class="keywordtype">void</span>* mapped = copy.staging.map();</div>
+<div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>                        <span class="keywordflow">if</span> (!mapped) <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;ReadbackMapFailed&quot;</span>);</div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>                        std::memcpy(<a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>-&gt;data(), mapped, <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>-&gt;size());</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                        copy.staging.unmap();</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                        storage[i] = std::move(<a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>);</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                    }</div>
+<div class="line"><a id="l00211" name="l00211"></a><span class="lineno">  211</span>                    copy.metadata.bytes = storage[copy.storageIndex];</div>
+<div class="line"><a id="l00212" name="l00212"></a><span class="lineno">  212</span>                    captureSnapshot_.<a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ad0829bbd3e8cbf40fa5e4f6a13227b98">buffers</a>.push_back(copy.metadata);</div>
+<div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>                }</div>
+<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>                <span class="keyword">auto</span> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1d39aac66e12dae50a24cd7a9100ef33">done</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a1d252dd5e03b4a673269733c9722c013">complete</a>(captureToken_, std::move(captureSnapshot_));</div>
+<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>                <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpInputTools_8cpp.html#a1d39aac66e12dae50a24cd7a9100ef33">done</a>) {</div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>                    <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(captureToken_, <span class="stringliteral">&quot;CapturePublicationFailed&quot;</span>);</div>
+<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                    <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                }</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            } <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; e) {</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>                <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(captureToken_, std::string(<span class="stringliteral">&quot;ReadbackFailed: &quot;</span>) + e.what());</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>            }</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>        }</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>    }</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>    <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a378429399a73f30477926ec299597035">retire</a>(captureToken_);</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    captureCopies_.clear();</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>    captureSnapshot_ = {};</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>    captureToken_.clear();</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>    captureFence_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>    captureSubmitted_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>}</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span><span class="keywordtype">void</span> Graphics::destroyFrameCapture() {</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>    ++captureTargetGeneration_;</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="comment">// Existing caller has retired the swapchain/device before destroying readback resources.</span></div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span>    <span class="keywordflow">if</span> (!captureToken_.empty()) {</div>
+<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span>        <span class="keyword">auto</span> <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a> = <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">fail</a>(captureToken_, <span class="stringliteral">&quot;TargetRecreated&quot;</span>);</div>
+<div class="line"><a id="l00238" name="l00238"></a><span class="lineno">  238</span>        <a class="code hl_function" href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">failed</a>.ignore();</div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>        <a class="code hl_function" href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">frameCaptures</a>().<a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a378429399a73f30477926ec299597035">retire</a>(captureToken_);</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>    }</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>    captureCopies_.clear();</div>
+<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span>    captureSnapshot_ = {};</div>
+<div class="line"><a id="l00243" name="l00243"></a><span class="lineno">  243</span>    captureToken_.clear();</div>
+<div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    captureFence_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    captureSubmitted_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>}</div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span>}  <span class="comment">// namespace eve::graphics::vulkan</span></div>
+<div class="ttc" id="aActionTimelineWidget_8cpp_html_ab30ba07e2a0bd07a15e45a92c32db9c5"><div class="ttname"><a href="ActionTimelineWidget_8cpp.html#ab30ba07e2a0bd07a15e45a92c32db9c5">state</a></div><div class="ttdeci">bool state</div><div class="ttdef"><b>Definition</b> <a href="ActionTimelineWidget_8cpp_source.html#l00033">ActionTimelineWidget.cpp:33</a></div></div>
+<div class="ttc" id="aFrameReadback_8h_html"><div class="ttname"><a href="FrameReadback_8h.html">FrameReadback.h</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aGraphicsTextureMips_8cpp_html_ae2ee633a7768658281259907a29fc401"><div class="ttname"><a href="GraphicsTextureMips_8cpp.html#ae2ee633a7768658281259907a29fc401">status</a></div><div class="ttdeci">wgpu::PopErrorScopeStatus status</div><div class="ttdef"><b>Definition</b> <a href="GraphicsTextureMips_8cpp_source.html#l00013">GraphicsTextureMips.cpp:13</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1d39aac66e12dae50a24cd7a9100ef33"><div class="ttname"><a href="McpInputTools_8cpp.html#a1d39aac66e12dae50a24cd7a9100ef33">done</a></div><div class="ttdeci">bool done</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00051">McpInputTools.cpp:51</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00156">McpRuntimeTools.cpp:156</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a00731dc7fd8bbfebb1f9c2488b044f56"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a></div><div class="ttdeci">OceanGpuFrameToken token</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00039">OceanRenderBindings.cpp:39</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_ab57ef30f94fcf6670be4b9b6fafdc4a2"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a></div><div class="ttdeci">size_t queued</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00060">OnnxGpgpu.cpp:60</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aac83a4c2da46afd4932602be91f84961"><div class="ttname"><a href="ScriptStructure_8cpp.html#aac83a4c2da46afd4932602be91f84961">begin</a></div><div class="ttdeci">size_t begin</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00013">ScriptStructure.cpp:13</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a3f756ed587723434bfe4adef4d8f3bfd"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a></div><div class="ttdeci">std::uint32_t depth</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00034">UnityVegetationPreset.cpp:34</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a0503f68242cfbd60f4362ec9129ba70a"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a0503f68242cfbd60f4362ec9129ba70a">eve::FrameCaptureStore::queued</a></div><div class="ttdeci">std::optional&lt; std::pair&lt; std::string, FrameCaptureRequest &gt; &gt; queued()</div><div class="ttdoc">Find pending work, or an empty value when idle.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00167">FrameCapture.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a07a44acbaa7adfed0c2c7bc0ff20d92a"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a07a44acbaa7adfed0c2c7bc0ff20d92a">eve::FrameCaptureStore::begin</a></div><div class="ttdeci">Result&lt; void &gt; begin(std::string_view token, uint64_t frameId, size_t bytes)</div><div class="ttdoc">Reserve CPU plus GPU storage before recording any commands.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00173">FrameCapture.cpp:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a1d252dd5e03b4a673269733c9722c013"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a1d252dd5e03b4a673269733c9722c013">eve::FrameCaptureStore::complete</a></div><div class="ttdeci">Result&lt; void &gt; complete(std::string_view token, FrameCaptureSnapshot snapshot)</div><div class="ttdoc">Atomically publish all copied attachments; no partial ready result.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00193">FrameCapture.cpp:193</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a378429399a73f30477926ec299597035"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a378429399a73f30477926ec299597035">eve::FrameCaptureStore::retire</a></div><div class="ttdeci">void retire(std::string_view token)</div><div class="ttdoc">Release staging reservations after GPU completion, including cancelled work.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00241">FrameCapture.cpp:241</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a7e7982839cb0de0de31b8660406b067e"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a7e7982839cb0de0de31b8660406b067e">eve::FrameCaptureStore::fail</a></div><div class="ttdeci">Result&lt; void &gt; fail(std::string_view token, std::string reason)</div><div class="ttdoc">Publish a terminal diagnostic; retain reservation until retire().</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00230">FrameCapture.cpp:230</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a80533418bad9c1833daa869b398e3985"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a80533418bad9c1833daa869b398e3985">eve::FrameCaptureStore::submitted</a></div><div class="ttdeci">Result&lt; void &gt; submitted(std::string_view token)</div><div class="ttdoc">Mark a recorded batch submitted to the GPU.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00186">FrameCapture.cpp:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_aaad2d9739da7f398ae0d69261a688098"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#aaad2d9739da7f398ae0d69261a688098">eve::FrameCaptureStore::snapshot</a></div><div class="ttdeci">Result&lt; FrameCaptureSnapshot &gt; snapshot(std::string_view token) override</div><div class="ttdoc">Return immutable owning metadata without GPU access.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00137">FrameCapture.cpp:137</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_aeba1ccd6a62230dd2f42dfd4cc720849"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#aeba1ccd6a62230dd2f42dfd4cc720849">eve::FrameCaptureStore::collect</a></div><div class="ttdeci">void collect()</div><div class="ttdoc">Expire queued and ready entries; also called by tool operations.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00077">FrameCapture.cpp:77</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_3_01void_01_4_html_aa25a474a0e9b02d286999f1e9a50e10a"><div class="ttname"><a href="classeve_1_1Result_3_01void_01_4.html#aa25a474a0e9b02d286999f1e9a50e10a">eve::Result&lt; void &gt;::ignore</a></div><div class="ttdeci">void ignore(std::string_view reason={}) const noexcept</div><div class="ttdoc">Explicitly discard this result after documenting the reason.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00555">Result.h:555</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_a3385dc1dcccb410af2180c15ce725ee4"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#a3385dc1dcccb410af2180c15ce725ee4">eve::graphics::Graphics::pixelHeight</a></div><div class="ttdeci">int pixelHeight</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l02337">Graphics.h:2337</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ad9cd5da187424066afcf1590faea1924"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ad9cd5da187424066afcf1590faea1924">eve::graphics::Graphics::pixelWidth</a></div><div class="ttdeci">int pixelWidth</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8h_source.html#l02336">Graphics.h:2336</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Graphics_html_ae7455c35e37f454945f04affaf7e3320"><div class="ttname"><a href="classeve_1_1graphics_1_1Graphics.html#ae7455c35e37f454945f04affaf7e3320">eve::graphics::Graphics::frameCaptures</a></div><div class="ttdeci">FrameCaptureStore &amp; frameCaptures()</div><div class="ttdoc">Graphics-owned frame capture authority. @thread Engine main thread only. @lifetime Borrowed until Gra...</div><div class="ttdef"><b>Definition</b> <a href="Graphics_8cpp_source.html#l00192">Graphics.cpp:192</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1editing_html_a9cf81bd551501902ad0e8d2f785db1f5"><div class="ttname"><a href="namespaceeve_1_1editing.html#a9cf81bd551501902ad0e8d2f785db1f5">eve::editing::failed</a></div><div class="ttdeci">Result&lt; T &gt; failed(Status status, eve::DiagnosticCode code, RuleId rule, std::string message)</div><div class="ttdoc">Construct a failed editing result with explicit status and diagnostic categories.</div><div class="ttdef"><b>Definition</b> <a href="EditingResult_8h_source.html#l00094">EditingResult.h:94</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_1_1detail_html_ae04bb687c00580ccc6e4fa60ce5d5905"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan_1_1detail.html#ae04bb687c00580ccc6e4fa60ce5d5905">eve::graphics::vulkan::detail::recordFrameReadback</a></div><div class="ttdeci">void recordFrameReadback(vk::CommandBuffer cb, vk::Image source, vk::Buffer destination, vk::Extent2D extent, vk::ImageAspectFlags aspect, uint32_t layer, vk::ImageLayout originalLayout)</div><div class="ttdef"><b>Definition</b> <a href="FrameReadback_8h_source.html#l00012">FrameReadback.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1graphics_1_1vulkan_html"><div class="ttname"><a href="namespaceeve_1_1graphics_1_1vulkan.html">eve::graphics::vulkan</a></div><div class="ttdef"><b>Definition</b> <a href="VulkanSequence_8h_source.html#l00009">VulkanSequence.h:9</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76">eve::FrameCapturePhase::ReadbackPending</a></div><div class="ttdeci">@ ReadbackPending</div></div>
+<div class="ttc" id="anamespaceeve_html_a7a915f0ad8a8d4b36e16786a02350762"><div class="ttname"><a href="namespaceeve.html#a7a915f0ad8a8d4b36e16786a02350762">eve::frameAttachmentName</a></div><div class="ttdeci">std::string_view frameAttachmentName(FrameAttachment a)</div><div class="ttdoc">Stable protocol spelling of an attachment.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00025">FrameCapture.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">eve::FramePixelFormat::Rgba8</a></div><div class="ttdeci">@ Rgba8</div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">eve::FramePixelFormat::Depth32Float</a></div><div class="ttdeci">@ Depth32Float</div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee">eve::FramePixelFormat::Bgra8</a></div><div class="ttdeci">@ Bgra8</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77">eve::FrameAttachment::HwDepth</a></div><div class="ttdeci">@ HwDepth</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566">eve::FrameAttachment::Emissive</a></div><div class="ttdeci">@ Emissive</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1">eve::FrameAttachment::Depth</a></div><div class="ttdeci">@ Depth</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12">eve::FrameAttachment::Velocity</a></div><div class="ttdeci">@ Velocity</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0">eve::FrameAttachment::Normal</a></div><div class="ttdeci">@ Normal</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53">eve::FrameAttachment::PbrParams</a></div><div class="ttdeci">@ PbrParams</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399">eve::FrameAttachment::Shadow0</a></div><div class="ttdeci">@ Shadow0</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">eve::FrameAttachment::Final</a></div><div class="ttdeci">@ Final</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710">eve::FrameAttachment::Albedo</a></div><div class="ttdeci">@ Albedo</div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a47b319cc59402788d7cdda319633f121"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a47b319cc59402788d7cdda319633f121">eve::FrameCaptureSnapshot::depthConvention</a></div><div class="ttdeci">std::string depthConvention</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00085">FrameCapture.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a8f6f8d71e464405bf314c5cb075a7db9"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a8f6f8d71e464405bf314c5cb075a7db9">eve::FrameCaptureSnapshot::projectionMatrix</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; projectionMatrix</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00084">FrameCapture.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_aaaea5482e3454ac1ba68932c05c1b237"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#aaaea5482e3454ac1ba68932c05c1b237">eve::FrameCaptureSnapshot::inverseProjection</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; inverseProjection</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00082">FrameCapture.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ad0829bbd3e8cbf40fa5e4f6a13227b98"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ad0829bbd3e8cbf40fa5e4f6a13227b98">eve::FrameCaptureSnapshot::buffers</a></div><div class="ttdeci">std::vector&lt; FrameCaptureBuffer &gt; buffers</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00081">FrameCapture.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ad7c7a795906df1c6ff4af7820638b542"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ad7c7a795906df1c6ff4af7820638b542">eve::FrameCaptureSnapshot::viewMatrix</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; viewMatrix</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00083">FrameCapture.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ae7a3412720361b7620941aa78e47753f"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ae7a3412720361b7620941aa78e47753f">eve::FrameCaptureSnapshot::targetGeneration</a></div><div class="ttdeci">uint64_t targetGeneration</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00078">FrameCapture.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUBO_html_afffbf316ac010ebbe83b79261ce6d14b"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUBO.html#afffbf316ac010ebbe83b79261ce6d14b">eve::graphics::ShadowUBO::lightVP</a></div><div class="ttdeci">glm::mat4 lightVP[ShadowConfig::kCascades]</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00037">Shadow.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1ShadowUpload_html_acd0cce027f3888cb8fa575288e8f03d0"><div class="ttname"><a href="structeve_1_1graphics_1_1ShadowUpload.html#acd0cce027f3888cb8fa575288e8f03d0">eve::graphics::ShadowUpload::ubo</a></div><div class="ttdeci">ShadowUBO ubo</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8h_source.html#l00063">Shadow.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_a2e44a128ecdcae370a8e85af390c476e"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#a2e44a128ecdcae370a8e85af390c476e">eve::graphics::vulkan::Mesh3DUBO::mvp</a></div><div class="ttdeci">glm::mat4 mvp</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00179">Graphics.h:179</a></div></div>
+<div class="ttc" id="astructeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO_html_aade9477ff253b2a7b1b6a9825db72b39"><div class="ttname"><a href="structeve_1_1graphics_1_1vulkan_1_1Mesh3DUBO.html#aade9477ff253b2a7b1b6a9825db72b39">eve::graphics::vulkan::Mesh3DUBO::view</a></div><div class="ttdeci">glm::mat4 view</div><div class="ttdef"><b>Definition</b> <a href="vulkan_2Graphics_8h_source.html#l00190">Graphics.h:190</a></div></div>
+<div class="ttc" id="avulkan_2Graphics_8h_html"><div class="ttname"><a href="vulkan_2Graphics_8h.html">Graphics.h</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_ab98e1009b45d02ebdfba0d2ea4e605b5"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#ab98e1009b45d02ebdfba0d2ea4e605b5">info</a></div><div class="ttdeci">glm::uvec4 info</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00082">GraphicsGpuDriven.cpp:82</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

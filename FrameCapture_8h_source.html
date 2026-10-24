@@ -1,0 +1,402 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/common/FrameCapture.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3ccf6d3192f3ffcbe7eee38747026054.html">common</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">FrameCapture.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="FrameCapture_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;chrono&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;cstddef&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;functional&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;string_view&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve.html">eve</a> {</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00019" data-start="{" data-end="};">
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676">FrameAttachment</a> : uint8_t {</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">Final</a>,</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1">Depth</a>,</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77">HwDepth</a>,</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0">Normal</a>,</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710">Albedo</a>,</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53">PbrParams</a>,</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566">Emissive</a>,</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12">Velocity</a>,</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399">Shadow0</a>,</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676aa31b2968c0498ae422c0e3065981e1a8">Shadow1</a>,</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ae3dfd9dd64b68f94e00eead6c81d1342">Shadow2</a></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">   33</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">FrameCapturePhase</a> : uint8_t {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a7b2f31b90fe1c2cc33a52233c1925df3">Queued</a>,</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208ac5564d2e8b8e0ae08bf4363f2b947166">Recording</a>,</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76">ReadbackPending</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">Failed</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">Cancelled</a>,</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a24fe48030f7d3097d5882535b04c3fa8">Expired</a>,</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208aea1e34304a5d8ffa7c9b0ed8ede4ef1a">Released</a></div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
+</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8b">   44</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8b">FramePixelFormat</a> : uint8_t { <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">Rgba8</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee">Bgra8</a>, <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">Depth32Float</a> };</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string_view <a class="code hl_function" href="namespaceeve.html#a7a915f0ad8a8d4b36e16786a02350762">frameAttachmentName</a>(<a class="code hl_enumeration" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676">FrameAttachment</a> attachment);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> Result&lt;FrameAttachment&gt; <a class="code hl_function" href="namespaceeve.html#a8ab7779692da7e575629d7f81a8b7bd2">parseFrameAttachment</a>(std::string_view <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>);</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> std::string_view <a class="code hl_function" href="namespaceeve.html#ae73724436dd24ec5f317ecd8bb96f2f0">frameCapturePhaseName</a>(<a class="code hl_enumeration" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">FrameCapturePhase</a> <a class="code hl_variable" href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureRequest.html">   53</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1FrameCaptureRequest.html">FrameCaptureRequest</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureRequest.html#a8d5f017654dae377f5aed691efb439ba">   54</a></span>    std::vector&lt;FrameAttachment&gt; <a class="code hl_variable" href="structeve_1_1FrameCaptureRequest.html#a8d5f017654dae377f5aed691efb439ba">attachments</a>;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureRequest.html#a4ee026ff233480aba8e7446b6bd9ce99">   55</a></span>    std::chrono::milliseconds    <a class="code hl_variable" href="structeve_1_1FrameCaptureRequest.html#a4ee026ff233480aba8e7446b6bd9ce99">timeout</a>{5000};</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureRequest.html#ac87750baf1ac521ac9106c3e89e78e45">   56</a></span>    <span class="keywordtype">bool</span>                         <a class="code hl_variable" href="structeve_1_1FrameCaptureRequest.html#ac87750baf1ac521ac9106c3e89e78e45">reportUnavailable</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureRequest.html#a141e996e258108dca50768681f1b9149">   57</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1FrameCaptureRequest.html#a141e996e258108dca50768681f1b9149">requestKey</a>;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>};</div>
+</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
+<div class="foldopen" id="foldopen00061" data-start="{" data-end="};">
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html">   61</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1FrameCaptureBuffer.html">FrameCaptureBuffer</a> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#abba6e55f3d190012d360a918f2030786">   62</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676">FrameAttachment</a>                             <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#abba6e55f3d190012d360a918f2030786">attachment</a> = <a class="code hl_enumvalue" href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">FrameAttachment::Final</a>;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#a9260d45ef787325bec3a2443aa3464d1">   63</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8b">FramePixelFormat</a>                            <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#a9260d45ef787325bec3a2443aa3464d1">format</a>     = <a class="code hl_enumvalue" href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">FramePixelFormat::Rgba8</a>;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#ab806efd4ab9a35dd811cc66229dcb64c">   64</a></span>    uint32_t                                    <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#af8febb7aabab0e2690e68fab2da89af0">width</a> = 0, <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#ab806efd4ab9a35dd811cc66229dcb64c">height</a> = 0;</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#aafd3a136823d44c25ee4ea23fe5e8fd1">   65</a></span>    uint64_t                                    <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#aafd3a136823d44c25ee4ea23fe5e8fd1">producerFrameId</a> = 0;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#a559f270971278c37691c4b819eed1aab">   66</a></span>    std::string                                 <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#a559f270971278c37691c4b819eed1aab">unavailableReason</a>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#a07dcf5d000adf12a6280cdcdcec90e2d">   67</a></span>    std::string                                 <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#a07dcf5d000adf12a6280cdcdcec90e2d">encoding</a>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#ab21d0e6768fcf8e600f04b42fd3bf9d1">   68</a></span>    std::string                                 <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#ab21d0e6768fcf8e600f04b42fd3bf9d1">colorSpace</a>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#a8901b027c13906cd3a0bddea73811e9d">   69</a></span>    std::array&lt;float, 16&gt;                       <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#a8901b027c13906cd3a0bddea73811e9d">producerMatrix</a>{};</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureBuffer.html#a4acc1c90284c6a43e072a17dcf60b182">   70</a></span>    std::shared_ptr&lt;const std::vector&lt;uint8_t&gt;&gt; <a class="code hl_variable" href="structeve_1_1FrameCaptureBuffer.html#a4acc1c90284c6a43e072a17dcf60b182">bytes</a>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>};</div>
+</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="foldopen" id="foldopen00074" data-start="{" data-end="};">
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html">   74</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1FrameCaptureSnapshot.html">FrameCaptureSnapshot</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a2eed837da26ccc5d627e47d6ed42b713">   75</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a2eed837da26ccc5d627e47d6ed42b713">token</a>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#af0c797482917104ba1dcdfd119a084b3">   76</a></span>    <a class="code hl_enumeration" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">FrameCapturePhase</a>               <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#af0c797482917104ba1dcdfd119a084b3">phase</a>   = <a class="code hl_enumvalue" href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a7b2f31b90fe1c2cc33a52233c1925df3">FrameCapturePhase::Queued</a>;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a5cfb00fe6e1a32b5287a3a767f3cc2f5">   77</a></span>    uint64_t                        <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a5cfb00fe6e1a32b5287a3a767f3cc2f5">frameId</a> = 0, <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a650b2c61dc42617adcc2a8236d74e203">generation</a> = 0;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#ae7a3412720361b7620941aa78e47753f">   78</a></span>    uint64_t                        <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ae7a3412720361b7620941aa78e47753f">targetGeneration</a> = 0;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a8a94e89da93496450545f4b99afdaf41">   79</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a8a94e89da93496450545f4b99afdaf41">backend</a>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a091c8a7e7ac75aef6f64bf649998a46d">   80</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a091c8a7e7ac75aef6f64bf649998a46d">reason</a>;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#ad0829bbd3e8cbf40fa5e4f6a13227b98">   81</a></span>    std::vector&lt;FrameCaptureBuffer&gt; <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ad0829bbd3e8cbf40fa5e4f6a13227b98">buffers</a>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#aaaea5482e3454ac1ba68932c05c1b237">   82</a></span>    std::array&lt;float, 16&gt;           <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#aaaea5482e3454ac1ba68932c05c1b237">inverseProjection</a>{};</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#ad7c7a795906df1c6ff4af7820638b542">   83</a></span>    std::array&lt;float, 16&gt;           <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#ad7c7a795906df1c6ff4af7820638b542">viewMatrix</a>{};</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a8f6f8d71e464405bf314c5cb075a7db9">   84</a></span>    std::array&lt;float, 16&gt;           <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a8f6f8d71e464405bf314c5cb075a7db9">projectionMatrix</a>{};</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureSnapshot.html#a47b319cc59402788d7cdda319633f121">   85</a></span>    std::string                     <a class="code hl_variable" href="structeve_1_1FrameCaptureSnapshot.html#a47b319cc59402788d7cdda319633f121">depthConvention</a>;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>};</div>
+</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span> </div>
+<div class="foldopen" id="foldopen00089" data-start="{" data-end="};">
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureCapabilities.html">   89</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1FrameCaptureCapabilities.html">FrameCaptureCapabilities</a> {</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureCapabilities.html#a29cc4af9437ceae5a63b217ce02a63ac">   90</a></span>    std::string                  <a class="code hl_variable" href="structeve_1_1FrameCaptureCapabilities.html#a29cc4af9437ceae5a63b217ce02a63ac">backend</a>;</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureCapabilities.html#a32b86ef46c4210a9885afe1a0165c4ab">   91</a></span>    std::vector&lt;FrameAttachment&gt; <a class="code hl_variable" href="structeve_1_1FrameCaptureCapabilities.html#a32b86ef46c4210a9885afe1a0165c4ab">attachments</a>;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureCapabilities.html#a9a3a839ec1f7d55427d3afbbf88a901b">   92</a></span>    uint64_t                     <a class="code hl_variable" href="structeve_1_1FrameCaptureCapabilities.html#a9a3a839ec1f7d55427d3afbbf88a901b">generation</a> = 0;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="structeve_1_1FrameCaptureCapabilities.html#a5826a47f1802bda8c89e9fd827c90286">   93</a></span>    <span class="keywordtype">size_t</span>                       <a class="code hl_variable" href="structeve_1_1FrameCaptureCapabilities.html#a5826a47f1802bda8c89e9fd827c90286">maxBytes</a>   = 256u * 1024u * 1024u;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>};</div>
+</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="foldopen" id="foldopen00101" data-start="{" data-end="};">
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html">  101</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a23317abed4c738049e2163d13028dc3a">EVENGINE_API_FOUNDATION_INLINE</a> <a class="code hl_class" href="classeve_1_1IRenderFrameCapture.html">IRenderFrameCapture</a> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a36c283ab4ee7571c5fa4b3218866561f">  103</a></span>    <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">const</span> <span class="keywordtype">char</span>* capabilityName = <span class="stringliteral">&quot;IRenderFrameCapture&quot;</span>;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a9592c81d339acd26e9d76d9534321eb3">  105</a></span>    <span class="keyword">virtual</span> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a9592c81d339acd26e9d76d9534321eb3">~IRenderFrameCapture</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a4ea505fdca08a864df2547027591e48c">  107</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_struct" href="structeve_1_1FrameCaptureCapabilities.html">FrameCaptureCapabilities</a> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a4ea505fdca08a864df2547027591e48c">capabilities</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a25f862765008cadbd5007af15d25c607">  109</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a25f862765008cadbd5007af15d25c607">request</a>(<a class="code hl_struct" href="structeve_1_1FrameCaptureRequest.html">FrameCaptureRequest</a> <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a1f7c5ba3493a264ff20c0110d14e2d2d">  111</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FrameCaptureSnapshot&gt;</a> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a1f7c5ba3493a264ff20c0110d14e2d2d">snapshot</a>(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) = 0;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a6d2165a1de777c02fb0f562aeff31c90">  113</a></span>    [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FrameCapturePhase&gt;</a> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a6d2165a1de777c02fb0f562aeff31c90">release</a>(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) = 0;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="classeve_1_1IRenderFrameCapture.html#a8f9695eb8e75fb75a61a5e8c3e2e8421">  115</a></span>    <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1IRenderFrameCapture.html#a8f9695eb8e75fb75a61a5e8c3e2e8421">invalidate</a>() = 0;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>};</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="foldopen" id="foldopen00123" data-start="{" data-end="};">
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno"><a class="line" href="classeve_1_1FrameCaptureStore.html">  123</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a> <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a> final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1IRenderFrameCapture.html">IRenderFrameCapture</a> {</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="classeve_1_1FrameCaptureStore.html#a209ac26ac6c87755bb2b62eb297fc4f1">  125</a></span>    <span class="keyword">using </span><a class="code hl_typedef" href="classeve_1_1FrameCaptureStore.html#a209ac26ac6c87755bb2b62eb297fc4f1">Clock</a> = std::function&lt;std::chrono::steady_clock::time_point()&gt;;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>();</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>(<a class="code hl_typedef" href="classeve_1_1FrameCaptureStore.html#a209ac26ac6c87755bb2b62eb297fc4f1">Clock</a> clock);</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="classeve_1_1FrameCaptureStore.html#a5b4c6b2bd643332cb13030dc45d55606">  131</a></span>    <a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a5b4c6b2bd643332cb13030dc45d55606">~FrameCaptureStore</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno"><a class="line" href="classeve_1_1FrameCaptureStore.html#a08d563443c6d7a2e7b22bdb52114061a">  132</a></span>    <a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a08d563443c6d7a2e7b22bdb52114061a">FrameCaptureStore</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno"><a class="line" href="classeve_1_1FrameCaptureStore.html#a8fc01fd091ef7cf1d39e177d73c87fd1">  133</a></span>    <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>&amp; <a class="code hl_function" href="classeve_1_1FrameCaptureStore.html#a8fc01fd091ef7cf1d39e177d73c87fd1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1FrameCaptureStore.html">FrameCaptureStore</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordtype">void</span> configure(<a class="code hl_struct" href="structeve_1_1FrameCaptureCapabilities.html">FrameCaptureCapabilities</a> capabilities);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1FrameCaptureCapabilities.html">FrameCaptureCapabilities</a> capabilities() <span class="keyword">const override</span>;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::string&gt;</a> <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>(<a class="code hl_struct" href="structeve_1_1FrameCaptureRequest.html">FrameCaptureRequest</a> <a class="code hl_variable" href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FrameCaptureSnapshot&gt;</a> <a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;FrameCapturePhase&gt;</a> release(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    <span class="keywordtype">void</span> invalidate() <span class="keyword">override</span>;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <span class="keywordtype">void</span> collect();</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    [[nodiscard]] std::optional&lt;std::pair&lt;std::string, FrameCaptureRequest&gt;&gt; <a class="code hl_variable" href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a>();</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="ScriptStructure_8cpp.html#aac83a4c2da46afd4932602be91f84961">begin</a>(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, uint64_t frameId, <span class="keywordtype">size_t</span> <a class="code hl_variable" href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a>);</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> submitted(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>);</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> complete(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, <a class="code hl_struct" href="structeve_1_1FrameCaptureSnapshot.html">FrameCaptureSnapshot</a> <a class="code hl_variable" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> fail(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>, std::string reason);</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    <span class="keywordtype">void</span> retire(std::string_view <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>);</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1FrameCaptureStore_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>};</div>
+</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>}  <span class="comment">// namespace eve</span></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a23317abed4c738049e2163d13028dc3a"><div class="ttname"><a href="Export_8h.html#a23317abed4c738049e2163d13028dc3a">EVENGINE_API_FOUNDATION_INLINE</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION_INLINE</div><div class="ttdoc">仅供&quot;只有内联成员&quot;的类型使用的组宏：拥有者 dllexport，消费方不导入。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00170">Export.h:170</a></div></div>
+<div class="ttc" id="aExport_8h_html_a704bb99555d8684cacf66248b5c3d70c"><div class="ttname"><a href="Export_8h.html#a704bb99555d8684cacf66248b5c3d70c">EVENGINE_API_FOUNDATION</a></div><div class="ttdeci">#define EVENGINE_API_FOUNDATION</div><div class="ttdoc">每个链接组（link group）各自的导出宏。</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00106">Export.h:106</a></div></div>
+<div class="ttc" id="aGltfMaterials_8cpp_html_aea0a36efa06819e651a8cc3c0f4cd3ca"><div class="ttname"><a href="GltfMaterials_8cpp.html#aea0a36efa06819e651a8cc3c0f4cd3ca">request</a></div><div class="ttdeci">const GltfImportRequest &amp; request</div><div class="ttdef"><b>Definition</b> <a href="GltfMaterials_8cpp_source.html#l00031">GltfMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aMcpProjectIndexTools_8cpp_html_ad48627cd289655d382112b727e253919"><div class="ttname"><a href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a></div><div class="ttdeci">Snapshot snapshot</div><div class="ttdef"><b>Definition</b> <a href="McpProjectIndexTools_8cpp_source.html#l00017">McpProjectIndexTools.cpp:17</a></div></div>
+<div class="ttc" id="aMcpRuntimeTools_8cpp_html_a3a00ca04c0ed87681f126e891122e276"><div class="ttname"><a href="McpRuntimeTools_8cpp.html#a3a00ca04c0ed87681f126e891122e276">bytes</a></div><div class="ttdeci">std::uint64_t bytes</div><div class="ttdef"><b>Definition</b> <a href="McpRuntimeTools_8cpp_source.html#l00156">McpRuntimeTools.cpp:156</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a00731dc7fd8bbfebb1f9c2488b044f56"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a></div><div class="ttdeci">OceanGpuFrameToken token</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00039">OceanRenderBindings.cpp:39</a></div></div>
+<div class="ttc" id="aOnnxGpgpu_8cpp_html_ab57ef30f94fcf6670be4b9b6fafdc4a2"><div class="ttname"><a href="OnnxGpgpu_8cpp.html#ab57ef30f94fcf6670be4b9b6fafdc4a2">queued</a></div><div class="ttdeci">size_t queued</div><div class="ttdef"><b>Definition</b> <a href="OnnxGpgpu_8cpp_source.html#l00060">OnnxGpgpu.cpp:60</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aac83a4c2da46afd4932602be91f84961"><div class="ttname"><a href="ScriptStructure_8cpp.html#aac83a4c2da46afd4932602be91f84961">begin</a></div><div class="ttdeci">size_t begin</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00013">ScriptStructure.cpp:13</a></div></div>
+<div class="ttc" id="aStylizeAttackVfx_8cpp_html_a275dd6dafe5d4455e599ffd15feb06f8"><div class="ttname"><a href="StylizeAttackVfx_8cpp.html#a275dd6dafe5d4455e599ffd15feb06f8">phase</a></div><div class="ttdeci">float phase</div><div class="ttdef"><b>Definition</b> <a href="StylizeAttackVfx_8cpp_source.html#l00247">StylizeAttackVfx.cpp:247</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html">eve::FrameCaptureStore</a></div><div class="ttdoc">Graphics-owned state machine and immutable CPU snapshot authority. @thread Main-thread only; supplied...</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00123">FrameCapture.h:123</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a08d563443c6d7a2e7b22bdb52114061a"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a08d563443c6d7a2e7b22bdb52114061a">eve::FrameCaptureStore::FrameCaptureStore</a></div><div class="ttdeci">FrameCaptureStore(const FrameCaptureStore &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a209ac26ac6c87755bb2b62eb297fc4f1"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a209ac26ac6c87755bb2b62eb297fc4f1">eve::FrameCaptureStore::Clock</a></div><div class="ttdeci">std::function&lt; std::chrono::steady_clock::time_point()&gt; Clock</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00125">FrameCapture.h:125</a></div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a5b4c6b2bd643332cb13030dc45d55606"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a5b4c6b2bd643332cb13030dc45d55606">eve::FrameCaptureStore::~FrameCaptureStore</a></div><div class="ttdeci">~FrameCaptureStore() override</div><div class="ttdoc">Destroy CPU snapshots; backend must retire its GPU staging first.</div></div>
+<div class="ttc" id="aclasseve_1_1FrameCaptureStore_html_a8fc01fd091ef7cf1d39e177d73c87fd1"><div class="ttname"><a href="classeve_1_1FrameCaptureStore.html#a8fc01fd091ef7cf1d39e177d73c87fd1">eve::FrameCaptureStore::operator=</a></div><div class="ttdeci">FrameCaptureStore &amp; operator=(const FrameCaptureStore &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html">eve::IRenderFrameCapture</a></div><div class="ttdoc">Single-provider frame observation boundary, independent of graphics headers. @thread Engine main thre...</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00101">FrameCapture.h:101</a></div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a1f7c5ba3493a264ff20c0110d14e2d2d"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a1f7c5ba3493a264ff20c0110d14e2d2d">eve::IRenderFrameCapture::snapshot</a></div><div class="ttdeci">virtual Result&lt; FrameCaptureSnapshot &gt; snapshot(std::string_view token)=0</div><div class="ttdoc">Inspect an immutable CPU snapshot; never waits on a GPU fence.</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a25f862765008cadbd5007af15d25c607"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a25f862765008cadbd5007af15d25c607">eve::IRenderFrameCapture::request</a></div><div class="ttdeci">virtual Result&lt; std::string &gt; request(FrameCaptureRequest request)=0</div><div class="ttdoc">Queue next normal frame. @cost Readback scales with selected pixel count, once per request.</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a4ea505fdca08a864df2547027591e48c"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a4ea505fdca08a864df2547027591e48c">eve::IRenderFrameCapture::capabilities</a></div><div class="ttdeci">virtual FrameCaptureCapabilities capabilities() const =0</div><div class="ttdoc">Inspect backend support, without GPU work.</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a6d2165a1de777c02fb0f562aeff31c90"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a6d2165a1de777c02fb0f562aeff31c90">eve::IRenderFrameCapture::release</a></div><div class="ttdeci">virtual Result&lt; FrameCapturePhase &gt; release(std::string_view token)=0</div><div class="ttdoc">Cancel or release a token; in-flight resources remain backend-owned until safe.</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a8f9695eb8e75fb75a61a5e8c3e2e8421"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a8f9695eb8e75fb75a61a5e8c3e2e8421">eve::IRenderFrameCapture::invalidate</a></div><div class="ttdeci">virtual void invalidate()=0</div><div class="ttdoc">Invalidate all tokens on provider or game generation changes.</div></div>
+<div class="ttc" id="aclasseve_1_1IRenderFrameCapture_html_a9592c81d339acd26e9d76d9534321eb3"><div class="ttname"><a href="classeve_1_1IRenderFrameCapture.html#a9592c81d339acd26e9d76d9534321eb3">eve::IRenderFrameCapture::~IRenderFrameCapture</a></div><div class="ttdeci">virtual ~IRenderFrameCapture()=default</div><div class="ttdoc">Destroy the service after withdrawing its registration.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="anamespaceeve_html"><div class="ttname"><a href="namespaceeve.html">eve</a></div><div class="ttdoc">Build metadata (engine git commit, build time, third-party version).</div><div class="ttdef"><b>Definition</b> <a href="Build_8cpp_source.html#l00016">Build.cpp:16</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aa149e85a44aeec9140e92733d9ed694e">eve::DiagnosticCode::Cancelled</a></div><div class="ttdeci">@ Cancelled</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208">eve::FrameCapturePhase</a></div><div class="ttdeci">FrameCapturePhase</div><div class="ttdoc">Capture progress; Ready is published only after all selected copies complete.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00033">FrameCapture.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a0995b7b11da1280bec02effb34c76f76">eve::FrameCapturePhase::ReadbackPending</a></div><div class="ttdeci">@ ReadbackPending</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208a24fe48030f7d3097d5882535b04c3fa8"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a24fe48030f7d3097d5882535b04c3fa8">eve::FrameCapturePhase::Expired</a></div><div class="ttdeci">@ Expired</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208a7b2f31b90fe1c2cc33a52233c1925df3"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208a7b2f31b90fe1c2cc33a52233c1925df3">eve::FrameCapturePhase::Queued</a></div><div class="ttdeci">@ Queued</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208ac5564d2e8b8e0ae08bf4363f2b947166"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208ac5564d2e8b8e0ae08bf4363f2b947166">eve::FrameCapturePhase::Recording</a></div><div class="ttdeci">@ Recording</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208ae7d31fc0602fb2ede144d18cdffd816b"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208ae7d31fc0602fb2ede144d18cdffd816b">eve::FrameCapturePhase::Ready</a></div><div class="ttdeci">@ Ready</div></div>
+<div class="ttc" id="anamespaceeve_html_a1f4b1bdca6668a5fc725d242f35fd208aea1e34304a5d8ffa7c9b0ed8ede4ef1a"><div class="ttname"><a href="namespaceeve.html#a1f4b1bdca6668a5fc725d242f35fd208aea1e34304a5d8ffa7c9b0ed8ede4ef1a">eve::FrameCapturePhase::Released</a></div><div class="ttdeci">@ Released</div></div>
+<div class="ttc" id="anamespaceeve_html_a7a915f0ad8a8d4b36e16786a02350762"><div class="ttname"><a href="namespaceeve.html#a7a915f0ad8a8d4b36e16786a02350762">eve::frameAttachmentName</a></div><div class="ttdeci">std::string_view frameAttachmentName(FrameAttachment a)</div><div class="ttdoc">Stable protocol spelling of an attachment.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00025">FrameCapture.cpp:25</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a8ab7779692da7e575629d7f81a8b7bd2"><div class="ttname"><a href="namespaceeve.html#a8ab7779692da7e575629d7f81a8b7bd2">eve::parseFrameAttachment</a></div><div class="ttdeci">Result&lt; FrameAttachment &gt; parseFrameAttachment(std::string_view name)</div><div class="ttdoc">Validate a protocol attachment name without inventing a resource.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00029">FrameCapture.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8b"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8b">eve::FramePixelFormat</a></div><div class="ttdeci">FramePixelFormat</div><div class="ttdoc">CPU storage encoding; no GPU object escapes the provider.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00044">FrameCapture.h:44</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba22beb074e892828ec2f8d50736fc49c0">eve::FramePixelFormat::Rgba8</a></div><div class="ttdeci">@ Rgba8</div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8ba2c0bfbad9ffd402bf7918e7cf83d08dd">eve::FramePixelFormat::Depth32Float</a></div><div class="ttdeci">@ Depth32Float</div></div>
+<div class="ttc" id="anamespaceeve_html_ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee"><div class="ttname"><a href="namespaceeve.html#ad10a8a0df9b2a9f10c05f9dda3953a8bae6a5af99529e934f4f0f01a5ea0bb2ee">eve::FramePixelFormat::Bgra8</a></div><div class="ttdeci">@ Bgra8</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676">eve::FrameAttachment</a></div><div class="ttdeci">FrameAttachment</div><div class="ttdoc">Stable logical render attachments; Depth and Velocity share storage.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00019">FrameCapture.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a081c5d9039896e3e0ae440bf3f051c77">eve::FrameAttachment::HwDepth</a></div><div class="ttdeci">@ HwDepth</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a3cb4ee67c41d819920d72fcc11b9b566">eve::FrameAttachment::Emissive</a></div><div class="ttdeci">@ Emissive</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a675056ad1441b6375b2c5abd48c27ef1">eve::FrameAttachment::Depth</a></div><div class="ttdeci">@ Depth</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a88156d46910a2d733443c339a9231d12">eve::FrameAttachment::Velocity</a></div><div class="ttdeci">@ Velocity</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676a960b44c579bc2f6818d2daaf9e4c16f0">eve::FrameAttachment::Normal</a></div><div class="ttdeci">@ Normal</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676aa31b2968c0498ae422c0e3065981e1a8"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676aa31b2968c0498ae422c0e3065981e1a8">eve::FrameAttachment::Shadow1</a></div><div class="ttdeci">@ Shadow1</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab197a6a48824d26100af8e8e90629b53">eve::FrameAttachment::PbrParams</a></div><div class="ttdeci">@ PbrParams</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ab2005f6df6378da4bdc04b188d9dc399">eve::FrameAttachment::Shadow0</a></div><div class="ttdeci">@ Shadow0</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676abeae421a14a34f831c113f61323d1ab3">eve::FrameAttachment::Final</a></div><div class="ttdeci">@ Final</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676ae3dfd9dd64b68f94e00eead6c81d1342"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676ae3dfd9dd64b68f94e00eead6c81d1342">eve::FrameAttachment::Shadow2</a></div><div class="ttdeci">@ Shadow2</div></div>
+<div class="ttc" id="anamespaceeve_html_ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710"><div class="ttname"><a href="namespaceeve.html#ae42b55def310d0f99854cd5882e3d676af879d0a27915d351a8e47c2223777710">eve::FrameAttachment::Albedo</a></div><div class="ttdeci">@ Albedo</div></div>
+<div class="ttc" id="anamespaceeve_html_ae73724436dd24ec5f317ecd8bb96f2f0"><div class="ttname"><a href="namespaceeve.html#ae73724436dd24ec5f317ecd8bb96f2f0">eve::frameCapturePhaseName</a></div><div class="ttdeci">std::string_view frameCapturePhaseName(FrameCapturePhase p)</div><div class="ttdoc">Stable protocol spelling of a progress state.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00034">FrameCapture.cpp:34</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html">eve::FrameCaptureBuffer</a></div><div class="ttdoc">Immutable CPU attachment with producer-provided decoding metadata.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00061">FrameCapture.h:61</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_a07dcf5d000adf12a6280cdcdcec90e2d"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#a07dcf5d000adf12a6280cdcdcec90e2d">eve::FrameCaptureBuffer::encoding</a></div><div class="ttdeci">std::string encoding</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00067">FrameCapture.h:67</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_a4acc1c90284c6a43e072a17dcf60b182"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#a4acc1c90284c6a43e072a17dcf60b182">eve::FrameCaptureBuffer::bytes</a></div><div class="ttdeci">std::shared_ptr&lt; const std::vector&lt; uint8_t &gt; &gt; bytes</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00070">FrameCapture.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_a559f270971278c37691c4b819eed1aab"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#a559f270971278c37691c4b819eed1aab">eve::FrameCaptureBuffer::unavailableReason</a></div><div class="ttdeci">std::string unavailableReason</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00066">FrameCapture.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_a8901b027c13906cd3a0bddea73811e9d"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#a8901b027c13906cd3a0bddea73811e9d">eve::FrameCaptureBuffer::producerMatrix</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; producerMatrix</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00069">FrameCapture.h:69</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_a9260d45ef787325bec3a2443aa3464d1"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#a9260d45ef787325bec3a2443aa3464d1">eve::FrameCaptureBuffer::format</a></div><div class="ttdeci">FramePixelFormat format</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00063">FrameCapture.h:63</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_aafd3a136823d44c25ee4ea23fe5e8fd1"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#aafd3a136823d44c25ee4ea23fe5e8fd1">eve::FrameCaptureBuffer::producerFrameId</a></div><div class="ttdeci">uint64_t producerFrameId</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00065">FrameCapture.h:65</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_ab21d0e6768fcf8e600f04b42fd3bf9d1"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#ab21d0e6768fcf8e600f04b42fd3bf9d1">eve::FrameCaptureBuffer::colorSpace</a></div><div class="ttdeci">std::string colorSpace</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00068">FrameCapture.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_ab806efd4ab9a35dd811cc66229dcb64c"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#ab806efd4ab9a35dd811cc66229dcb64c">eve::FrameCaptureBuffer::height</a></div><div class="ttdeci">uint32_t height</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00064">FrameCapture.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_abba6e55f3d190012d360a918f2030786"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#abba6e55f3d190012d360a918f2030786">eve::FrameCaptureBuffer::attachment</a></div><div class="ttdeci">FrameAttachment attachment</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00062">FrameCapture.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureBuffer_html_af8febb7aabab0e2690e68fab2da89af0"><div class="ttname"><a href="structeve_1_1FrameCaptureBuffer.html#af8febb7aabab0e2690e68fab2da89af0">eve::FrameCaptureBuffer::width</a></div><div class="ttdeci">uint32_t width</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00064">FrameCapture.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureCapabilities_html"><div class="ttname"><a href="structeve_1_1FrameCaptureCapabilities.html">eve::FrameCaptureCapabilities</a></div><div class="ttdoc">Backend support is explicit; candidates need not be produced in every frame.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00089">FrameCapture.h:89</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureCapabilities_html_a29cc4af9437ceae5a63b217ce02a63ac"><div class="ttname"><a href="structeve_1_1FrameCaptureCapabilities.html#a29cc4af9437ceae5a63b217ce02a63ac">eve::FrameCaptureCapabilities::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00090">FrameCapture.h:90</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureCapabilities_html_a32b86ef46c4210a9885afe1a0165c4ab"><div class="ttname"><a href="structeve_1_1FrameCaptureCapabilities.html#a32b86ef46c4210a9885afe1a0165c4ab">eve::FrameCaptureCapabilities::attachments</a></div><div class="ttdeci">std::vector&lt; FrameAttachment &gt; attachments</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00091">FrameCapture.h:91</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureCapabilities_html_a5826a47f1802bda8c89e9fd827c90286"><div class="ttname"><a href="structeve_1_1FrameCaptureCapabilities.html#a5826a47f1802bda8c89e9fd827c90286">eve::FrameCaptureCapabilities::maxBytes</a></div><div class="ttdeci">size_t maxBytes</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00093">FrameCapture.h:93</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureCapabilities_html_a9a3a839ec1f7d55427d3afbbf88a901b"><div class="ttname"><a href="structeve_1_1FrameCaptureCapabilities.html#a9a3a839ec1f7d55427d3afbbf88a901b">eve::FrameCaptureCapabilities::generation</a></div><div class="ttdeci">uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00092">FrameCapture.h:92</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureRequest_html"><div class="ttname"><a href="structeve_1_1FrameCaptureRequest.html">eve::FrameCaptureRequest</a></div><div class="ttdoc">Owning request; timeout uses monotonic wall time, never gameplay time.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00053">FrameCapture.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureRequest_html_a141e996e258108dca50768681f1b9149"><div class="ttname"><a href="structeve_1_1FrameCaptureRequest.html#a141e996e258108dca50768681f1b9149">eve::FrameCaptureRequest::requestKey</a></div><div class="ttdeci">std::string requestKey</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00057">FrameCapture.h:57</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureRequest_html_a4ee026ff233480aba8e7446b6bd9ce99"><div class="ttname"><a href="structeve_1_1FrameCaptureRequest.html#a4ee026ff233480aba8e7446b6bd9ce99">eve::FrameCaptureRequest::timeout</a></div><div class="ttdeci">std::chrono::milliseconds timeout</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00055">FrameCapture.h:55</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureRequest_html_a8d5f017654dae377f5aed691efb439ba"><div class="ttname"><a href="structeve_1_1FrameCaptureRequest.html#a8d5f017654dae377f5aed691efb439ba">eve::FrameCaptureRequest::attachments</a></div><div class="ttdeci">std::vector&lt; FrameAttachment &gt; attachments</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00054">FrameCapture.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureRequest_html_ac87750baf1ac521ac9106c3e89e78e45"><div class="ttname"><a href="structeve_1_1FrameCaptureRequest.html#ac87750baf1ac521ac9106c3e89e78e45">eve::FrameCaptureRequest::reportUnavailable</a></div><div class="ttdeci">bool reportUnavailable</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00056">FrameCapture.h:56</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html">eve::FrameCaptureSnapshot</a></div><div class="ttdoc">Owning snapshot metadata; byte storage is immutable and lease-owned.</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00074">FrameCapture.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a091c8a7e7ac75aef6f64bf649998a46d"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a091c8a7e7ac75aef6f64bf649998a46d">eve::FrameCaptureSnapshot::reason</a></div><div class="ttdeci">std::string reason</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00080">FrameCapture.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a2eed837da26ccc5d627e47d6ed42b713"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a2eed837da26ccc5d627e47d6ed42b713">eve::FrameCaptureSnapshot::token</a></div><div class="ttdeci">std::string token</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00075">FrameCapture.h:75</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a47b319cc59402788d7cdda319633f121"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a47b319cc59402788d7cdda319633f121">eve::FrameCaptureSnapshot::depthConvention</a></div><div class="ttdeci">std::string depthConvention</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00085">FrameCapture.h:85</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a5cfb00fe6e1a32b5287a3a767f3cc2f5"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a5cfb00fe6e1a32b5287a3a767f3cc2f5">eve::FrameCaptureSnapshot::frameId</a></div><div class="ttdeci">uint64_t frameId</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00077">FrameCapture.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a650b2c61dc42617adcc2a8236d74e203"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a650b2c61dc42617adcc2a8236d74e203">eve::FrameCaptureSnapshot::generation</a></div><div class="ttdeci">uint64_t generation</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00077">FrameCapture.h:77</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a8a94e89da93496450545f4b99afdaf41"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a8a94e89da93496450545f4b99afdaf41">eve::FrameCaptureSnapshot::backend</a></div><div class="ttdeci">std::string backend</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00079">FrameCapture.h:79</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_a8f6f8d71e464405bf314c5cb075a7db9"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#a8f6f8d71e464405bf314c5cb075a7db9">eve::FrameCaptureSnapshot::projectionMatrix</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; projectionMatrix</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00084">FrameCapture.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_aaaea5482e3454ac1ba68932c05c1b237"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#aaaea5482e3454ac1ba68932c05c1b237">eve::FrameCaptureSnapshot::inverseProjection</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; inverseProjection</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00082">FrameCapture.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ad0829bbd3e8cbf40fa5e4f6a13227b98"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ad0829bbd3e8cbf40fa5e4f6a13227b98">eve::FrameCaptureSnapshot::buffers</a></div><div class="ttdeci">std::vector&lt; FrameCaptureBuffer &gt; buffers</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00081">FrameCapture.h:81</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ad7c7a795906df1c6ff4af7820638b542"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ad7c7a795906df1c6ff4af7820638b542">eve::FrameCaptureSnapshot::viewMatrix</a></div><div class="ttdeci">std::array&lt; float, 16 &gt; viewMatrix</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00083">FrameCapture.h:83</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_ae7a3412720361b7620941aa78e47753f"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#ae7a3412720361b7620941aa78e47753f">eve::FrameCaptureSnapshot::targetGeneration</a></div><div class="ttdeci">uint64_t targetGeneration</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00078">FrameCapture.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureSnapshot_html_af0c797482917104ba1dcdfd119a084b3"><div class="ttname"><a href="structeve_1_1FrameCaptureSnapshot.html#af0c797482917104ba1dcdfd119a084b3">eve::FrameCaptureSnapshot::phase</a></div><div class="ttdeci">FrameCapturePhase phase</div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8h_source.html#l00076">FrameCapture.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1FrameCaptureStore_1_1Impl_html"><div class="ttname"><a href="structeve_1_1FrameCaptureStore_1_1Impl.html">eve::FrameCaptureStore::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="FrameCapture_8cpp_source.html#l00041">FrameCapture.cpp:41</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

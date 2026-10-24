@@ -1,0 +1,257 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: 成员列表</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics_1_1box3d.html">box3d</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">WorldBackend</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">eve::physics::box3d::WorldBackend 成员列表</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>成员的完整列表，这些成员属于 <a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a>,包括所有继承而来的类成员</p>
+<table class="directory">
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a1160855c07f652cbd7e302d4a724fbdc">Access</a></td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">friend</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a9d08470d82ad770890d532e548e76ac0">castBoxAll</a>(float x, float y, float z, float width, float height, float depth, float qx, float qy, float qz, float qw, float dx, float dy, float dz, int maxHits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#adb656f42297410f43afd59d950a9448f">castCapsuleAll</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz, int maxHits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ac7c1780db742ebe1f1e639011891b53f">castSphereAll</a>(float x, float y, float z, float radius, float dx, float dy, float dz, int maxHits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a68f43cf66021439456039784ff783507">closestPoint</a>(float x, float y, float z, float maxDistance) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a9d750983c10627a40a87b9744727ae34">collectEvents</a>() override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a76898736404502580dd2b541a841ecca">createBody</a>(std::string_view type, float x, float y, float z) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a83c68776dd7d79e5e41797a8ff205e58">destroy</a>() noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aaa15dbfe4bfcc4528a621ed65e11f6ab">explode</a>(float x, float y, float z, float radius, float falloff, float impulsePerArea, int maskBits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aca4061bd2ce77035d5b15f1499940c3f">getAwakeBodyCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a3ef0f4b6a49636b11b56c70c3929f3e2">getAwakeContactCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a0337a6a76ca7a382fd2c1a8d761e0c4e">getBodyCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a4b660ac80b267a15e80584b74b2d1a08">getBoundsMaxX</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aff252e155c4c8d1cb0028399cbfa000d">getBoundsMaxY</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a04f0940c53ea30d66e312286b8a0430f">getBoundsMaxZ</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aa1fc493ed68a3db754d69deb513e543b">getBoundsMinX</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a43cdbab7532188fdeb3c9a655076ac52">getBoundsMinY</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a6f7e78ddebf3a7b8248d59d36a88d675">getBoundsMinZ</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a5725b69b743f178ed2ba1e4c3ae2abb5">getContactCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ac4d80dbe534d6973eebca681ee3a8e3e">getContactRecycleDistance</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a9889181d20316bcf382189186fcbaad5">getDynamicTreeHeight</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a321e3585231eaa7e5a5146747d01294e">getGravityX</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a267a37b441833f2819adc18b49f1e819">getGravityY</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a50df09c9ac63dc70546177b83b9ffd34">getGravityZ</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a469138ffeed338b9bd18e68f36105706">getHitEventThreshold</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ab9c584a125b8983b99fcbb1e5552971e">getIslandCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aa5319d084bf79dde556e13d14cb69ee9">getJointCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a5284b8ef60d917b67a8a44ad0ceadfae">getMaximumLinearSpeed</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#afedb9decfec2112c485623107189bd17">getMemoryByteCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a5533ed3923570f1cbd436d0f49036835">getProfileBulletsMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ab9e96706d22ad9a73d820268d5157d11">getProfileCollideMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a28a968d91f81dbe0ef29f7917e5a2794">getProfilePairsMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#acc232f676bb851a8d037a272b72436cc">getProfileSensorsMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a47aceb71d63eb99348c1d33a00490f44">getProfileSolveMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a61564a05331fb064f551230653cf43f5">getProfileStepMs</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a6a4399a22bd6e2732c45097248f0039e">getRecycledContactCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aa4b4220e99ed698bd4ee9f53834863e7">getRestitutionThreshold</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#aa441024ba5bc42ef4ec1e5df38d7340b">getShapeCount</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a25d0acefea4339061edf498e70482d61">getStaticTreeHeight</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a95f9f099a9c2d94355bf6e8210e1823a">isContinuousCollisionEnabled</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a3c5a94c1481fce7a9735c3ebd1c4fa48">isValid</a>() const noexcept override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae266f6b0692f3a4790ac5af6cd89d01d">isWarmStartingEnabled</a>() const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ab2493cc38383030a56460038e92f71c4">moveCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a228e4fe7dc0d4b7e9ed88171d842c002">moveCapsuleOwned</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, float dx, float dy, float dz, QueryFilter3D filter, CapsuleMovePolicy3D policy) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a44560d2a595860cdfeff4b69922f46cb">newDistanceJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorAX, float anchorAY, float anchorAZ, float anchorBX, float anchorBY, float anchorBZ, float length, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a4f7c207f1a3eaad3979370f820a97830">newFilterJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae8827a1c1b15583637ed0ec79f058280">newMotorJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a6fa4ba6a889197caecad8e44a9d2e43b">newParallelJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float axisX, float axisY, float axisZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a1f72781cdeecfe1e07b32518ab5178a7">newPrismaticJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae23751acf1f28b0bb4e7762bd6d7d574">newRevoluteJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a18983acc5ffcfa21fd7bb8adabc83690">newSphericalJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float axisX, float axisY, float axisZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a0f78c8d2c0ff0463a1593662d70709da">newWeldJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae75039ad143a158ddbe6e0237e804ef9">newWheelJoint</a>(Body3D &amp;bodyA, Body3D &amp;bodyB, float anchorX, float anchorY, float anchorZ, float suspensionAxisX, float suspensionAxisY, float suspensionAxisZ, float wheelAxisX, float wheelAxisY, float wheelAxisZ, bool collideConnected) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ab7d3faf23489669f633bed851da5128a">pointProbeFiltered</a>(float x, float y, float z, float radius, uint64_t categoryBits, uint64_t maskBits) const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a0e6c0f97b07a459df2fe15a8def627f8">queryAABB</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a04c06514eea265d709bc6bdb44fc388f">queryAabbBroadPhaseOwned</a>(float minX, float minY, float minZ, float maxX, float maxY, float maxZ, QueryFilter3D filter) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a479be92468450337ff9ca924efc318a9">queryBodyContactsOwned</a>(PhysicsBodyHandle body, int maxPoints) const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a1ceecfaf8a406dcbea8d2c7f9186aece">queryBox</a>(float x, float y, float z, float width, float height, float depth, float qx, float qy, float qz, float qw) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a98674543719652264ed76981d0018acd">queryCapsule</a>(float ax, float ay, float az, float bx, float by, float bz, float radius) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a0f84b59075aae8bd22c24e7a9db6faec">queryCapsuleOwned</a>(float ax, float ay, float az, float bx, float by, float bz, float radius, QueryFilter3D filter) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a1b8e69de271df7c86aa301772e96923c">querySphere</a>(float x, float y, float z, float radius) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a63efceff50f8dc72949637430d5a0bf1">rayCastAll</a>(float x1, float y1, float z1, float x2, float y2, float z2, int maxHits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a6639842ccc40611e32c54c9922957b9d">rayCastFiltered</a>(float x1, float y1, float z1, float x2, float y2, float z2, uint64_t maskBits) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a1322683f32bb16bddf1765b4d5c68697">rayCastOwned</a>(float x1, float y1, float z1, float x2, float y2, float z2, QueryFilter3D filter) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#af664982ff797976ceaf20bcd2e39d3ab">selectSimulation</a>() override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a6f0d32899dee652a184a9de75273578d">setContactRecycleDistance</a>(float distance) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a7cebfa73e2a6ba2131ea746f1339cf75">setContactTuning</a>(float hertz, float dampingRatio, float pushOutSpeed) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a257bd5ba58f3a037894e4bc1e14d71aa">setContinuousCollisionEnabled</a>(bool enabled) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a03eef7a2eaeb89afde8acfe98af5ad74">setGravity</a>(float gx, float gy, float gz) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a94e3844d19890408e78f655ac2cc3456">setHitEventThreshold</a>(float speed) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a0a7c39aa82c69c356f666cee80821f2a">setMaximumLinearSpeed</a>(float speed) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a62172f85d1cb8423d8dff42124f8eabe">setMoverUp</a>(float x, float y, float z) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae442051a202f523c92d7fad5d3b65025">setRestitutionThreshold</a>(float speed) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a38d6c756a5dc01bfc477dbe00a3020b9">setWarmStartingEnabled</a>(bool enabled) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#af79fb5e7ff42ee3db363644e4fe9196c">shapeKey</a>(const Shape3D &amp;shape) const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a15e10a420033c72d3ea72dd8a2cdaa6c">sphereCast</a>(float x1, float y1, float z1, float x2, float y2, float z2, float radius, uint64_t maskBits, int ignoredBodyId) const override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#ae9d386a8f1d1bc75e0680d7e0462e006">swapTopology</a>(IWorldBackend3D &amp;prepared) override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a365fe5ae65cb33b675fcc576c0e4b3fb">WorldBackend</a>(World3D &amp;owner, float gx, float gy, float gz, bool sleep)</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html#a97b4c8d24b4b44424e243654db62f831">~IWorldBackend3D</a>()=default</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1IWorldBackend3D.html">eve::physics::IWorldBackend3D</a></td><td class="entry"><span class="mlabel">virtual</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html#a83b873a4f525c016973f7b2dac10b7e1">~WorldBackend</a>() override</td><td class="entry"><a class="el" href="classeve_1_1physics_1_1box3d_1_1WorldBackend.html">eve::physics::box3d::WorldBackend</a></td><td class="entry"></td></tr>
+</table></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

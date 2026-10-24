@@ -1,0 +1,311 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/ui/Component.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_25338c1645a7f1506f8143527df34a10.html">ui</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Component.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Component_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Component_8h.html">ui/Component.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="UISystem_8h.html">ui/UISystem.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="foldopen" id="foldopen00006" data-start="{" data-end="}">
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui.html">    6</a></span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1ui.html">eve::ui</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui_1_1detail.html">    7</a></span><span class="keyword">namespace </span><a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="};">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html">    8</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html">ComponentSchedule</a> {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#abcc020cfb9d56049bf85d9e4462229f6">    9</a></span>    <a class="code hl_class" href="classeve_1_1ui_1_1Component.html">Component</a> *<a class="code hl_variable" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#abcc020cfb9d56049bf85d9e4462229f6">component</a> = <span class="keyword">nullptr</span>;  <span class="comment">// Owner invalidates before destruction; never exposed as a handle.</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#a02c79f2e9141a57e4957d32f028fa394">   10</a></span>    <span class="keywordtype">bool</span>       <a class="code hl_variable" href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#a02c79f2e9141a57e4957d32f028fa394">queued</a>    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>};</div>
+</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>std::vector&lt;std::weak_ptr&lt;ComponentSchedule&gt;&gt; <a class="code hl_variable" href="BattleControl_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>;</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>std::vector&lt;std::weak_ptr&lt;ComponentSchedule&gt;&gt; <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>;</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keywordtype">bool</span>                                          flushing = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="}">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="namespaceeve_1_1ui_1_1detail.html#ae9899a41c48c41d51634a8b035c4a5bf">   17</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1ui_1_1detail.html#ae9899a41c48c41d51634a8b035c4a5bf">flushPendingComponents</a>() {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>    <span class="keywordflow">if</span> (flushing) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>    flushing = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keyword">struct </span>FlushGuard {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        ~FlushGuard() {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>.clear();</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>            flushing = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    } guard;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>.swap(<a class="code hl_variable" href="BattleControl_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>);</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>.size(); ++i) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keyword">auto</span> &amp;entry        = <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>[i];</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keyword">auto</span>  registration = entry.lock();</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        <span class="keywordflow">if</span> (!registration || !registration-&gt;component) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        registration-&gt;queued = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>            registration-&gt;component-&gt;<a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ac3fa888fb2b6578c91381a8f486871d0">updateIfDirty</a>();</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>            <a class="code hl_variable" href="BattleControl_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>.insert(<a class="code hl_variable" href="BattleControl_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a>.end(), <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>.begin() + i + 1, <a class="code hl_variable" href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a>.end());</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        }</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
+</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>}  <span class="comment">// namespace detail</span></div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span> </div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#ac956c7d74cad5be20444be6246aaba6e">   42</a></span><a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ac956c7d74cad5be20444be6246aaba6e">Component::Component</a>() : schedule_(<a class="code hl_namespace" href="namespacestd.html">std</a>::make_shared&lt;<a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>::ComponentSchedule&gt;()) { schedule_-&gt;component = <span class="keyword">this</span>; }</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#a77f113edc2452e94f0770acb676e3edb">   43</a></span><a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a77f113edc2452e94f0770acb676e3edb">Component::~Component</a>() { schedule_-&gt;component = <span class="keyword">nullptr</span>; }</div>
+<div class="foldopen" id="foldopen00044" data-start="{" data-end="}">
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">   44</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">Component::markDirty</a>() {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    dirty_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordflow">if</span> (schedule_-&gt;queued) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    detail::pending.push_back(schedule_);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    schedule_-&gt;queued = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>}</div>
+</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00052" data-start="{" data-end="}">
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#acdabc4a00842fd6116382b487ecbb82d">   52</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#acdabc4a00842fd6116382b487ecbb82d">Component::attach</a>(<a class="code hl_typedef" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="code hl_variable" href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a>) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    host_ = <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">markDirty</a>();</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>}</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00057" data-start="{" data-end="}">
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#a7ee395e84a1a5274def845ad5e733cb5">   57</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a7ee395e84a1a5274def845ad5e733cb5">Component::mountAs</a>(<span class="keyword">const</span> std::string &amp;hostName) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <a class="code hl_typedef" href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">UIHostHandle</a> <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_function" href="classeve_1_1ui_1_1UISystem.html#a73f95ddb771380476327f9776c18e8e1">UISystem::findHost</a>(hostName);</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1ui_1_1UIHost.html#adc95e606214c703f5715ae14f10e4d29">UIHost::resolve</a>(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>)) <a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a> = <a class="code hl_function" href="classeve_1_1ui_1_1UIHost.html#aac02af00d98ac45e2c9a5dae6495517c">UIHost::createHost</a>(hostName);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#acdabc4a00842fd6116382b487ecbb82d">attach</a>(<a class="code hl_variable" href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a>);</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">rebuild</a>(<span class="keyword">true</span>);</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>}</div>
+</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="foldopen" id="foldopen00064" data-start="{" data-end="}">
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">   64</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">Component::rebuild</a>(<span class="keywordtype">bool</span> forceFull) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">auto</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a> = <a class="code hl_function" href="classeve_1_1ui_1_1UIHost.html#adc95e606214c703f5715ae14f10e4d29">UIHost::resolve</a>(host_);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (!<a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a> || building_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    building_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    dirty_    = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        <span class="keyword">auto</span> tree = <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a25e50a42bbd488548d1a8d7474c64639">build</a>();</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>      = <a class="code hl_function" href="classeve_1_1ui_1_1UIHost.html#adc95e606214c703f5715ae14f10e4d29">UIHost::resolve</a>(host_);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keywordflow">if</span> (<a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">if</span> (forceFull)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>-&gt;get().setTree(std::move(tree));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">host</a>-&gt;get().setTreeReconcile(std::move(tree));</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    } <span class="keywordflow">catch</span> (...) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        building_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">markDirty</a>();</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keywordflow">throw</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    }</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    building_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="foldopen" id="foldopen00086" data-start="{" data-end="}">
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="classeve_1_1ui_1_1Component.html#ac3fa888fb2b6578c91381a8f486871d0">   86</a></span><span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#ac3fa888fb2b6578c91381a8f486871d0">Component::updateIfDirty</a>() {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keywordflow">if</span> (building_ || !dirty_ || !<a class="code hl_function" href="classeve_1_1ui_1_1UIHost.html#adc95e606214c703f5715ae14f10e4d29">UIHost::resolve</a>(host_)) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    <a class="code hl_function" href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">rebuild</a>(<span class="keyword">false</span>);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}  <span class="comment">// namespace eve::ui</span></div>
+</div>
+<div class="ttc" id="aBattleControl_8cpp_html_a318c52c4cdd810a5dbbd886bf5d38244"><div class="ttname"><a href="BattleControl_8cpp.html#a318c52c4cdd810a5dbbd886bf5d38244">pending</a></div><div class="ttdeci">std::vector&lt; QuestEvent &gt; pending</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00708">BattleControl.cpp:708</a></div></div>
+<div class="ttc" id="aComponent_8h_html"><div class="ttname"><a href="Component_8h.html">Component.h</a></div></div>
+<div class="ttc" id="aDecalAttackVfx_8cpp_html_a4a90a40acab9207ed680bd7c74d8bc72"><div class="ttname"><a href="DecalAttackVfx_8cpp.html#a4a90a40acab9207ed680bd7c74d8bc72">draining</a></div><div class="ttdeci">bool draining</div><div class="ttdef"><b>Definition</b> <a href="DecalAttackVfx_8cpp_source.html#l00160">DecalAttackVfx.cpp:160</a></div></div>
+<div class="ttc" id="aImageData_8cpp_html_a16611451551e3d15916bae723c3f59f7"><div class="ttname"><a href="ImageData_8cpp.html#a16611451551e3d15916bae723c3f59f7">h</a></div><div class="ttdeci">int h</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8cpp_source.html#l00690">ImageData.cpp:690</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aUIAutomationCapabilities_8cpp_html_a746317fdab8614a8048746f94bdacdab"><div class="ttname"><a href="UIAutomationCapabilities_8cpp.html#a746317fdab8614a8048746f94bdacdab">host</a></div><div class="ttdeci">UIHostHandle host</div><div class="ttdef"><b>Definition</b> <a href="UIAutomationCapabilities_8cpp_source.html#l00238">UIAutomationCapabilities.cpp:238</a></div></div>
+<div class="ttc" id="aUISystem_8h_html"><div class="ttname"><a href="UISystem_8h.html">UISystem.h</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html">eve::ui::Component</a></div><div class="ttdoc">React-style UI component: implement build(); setState / markDirty schedules one update before UI rend...</div><div class="ttdef"><b>Definition</b> <a href="Component_8h_source.html#l00025">Component.h:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_a25e50a42bbd488548d1a8d7474c64639"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#a25e50a42bbd488548d1a8d7474c64639">eve::ui::Component::build</a></div><div class="ttdeci">virtual WidgetDesc build()=0</div><div class="ttdoc">Builds .</div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_a3ec3b265e0aa1112a9891b0993f7151b"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#a3ec3b265e0aa1112a9891b0993f7151b">eve::ui::Component::rebuild</a></div><div class="ttdeci">void rebuild(bool forceFull=false)</div><div class="ttdoc">Compatibility-only synchronous refresh; normal edits use markDirty / setState. @cost Builds the compl...</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00064">Component.cpp:64</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_a70950aea542088db96e0cb32d6d297b4"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#a70950aea542088db96e0cb32d6d297b4">eve::ui::Component::markDirty</a></div><div class="ttdeci">void markDirty()</div><div class="ttdoc">Schedule one rebuild; repeated calls before the next preparation phase coalesce. @thread Owner thread...</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00044">Component.cpp:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_a77f113edc2452e94f0770acb676e3edb"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#a77f113edc2452e94f0770acb676e3edb">eve::ui::Component::~Component</a></div><div class="ttdeci">virtual ~Component()</div><div class="ttdoc">Component.</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00043">Component.cpp:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_a7ee395e84a1a5274def845ad5e733cb5"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#a7ee395e84a1a5274def845ad5e733cb5">eve::ui::Component::mountAs</a></div><div class="ttdeci">void mountAs(const std::string &amp;hostName)</div><div class="ttdoc">Mounts as.</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00057">Component.cpp:57</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_ac3fa888fb2b6578c91381a8f486871d0"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#ac3fa888fb2b6578c91381a8f486871d0">eve::ui::Component::updateIfDirty</a></div><div class="ttdeci">bool updateIfDirty()</div><div class="ttdoc">Compatibility-only synchronous update; normal edits are flushed automatically.</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00086">Component.cpp:86</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_ac956c7d74cad5be20444be6246aaba6e"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#ac956c7d74cad5be20444be6246aaba6e">eve::ui::Component::Component</a></div><div class="ttdeci">Component()</div><div class="ttdoc">Create an unmounted component; attaching schedules its first update.</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00042">Component.cpp:42</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_acdabc4a00842fd6116382b487ecbb82d"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#acdabc4a00842fd6116382b487ecbb82d">eve::ui::Component::attach</a></div><div class="ttdeci">void attach(UIHostHandle host)</div><div class="ttdoc">Attaches .</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00052">Component.cpp:52</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1Component_html_ad5c5d1a8041c836b68b83ac59543cdd7"><div class="ttname"><a href="classeve_1_1ui_1_1Component.html#ad5c5d1a8041c836b68b83ac59543cdd7">eve::ui::Component::host</a></div><div class="ttdeci">UIHostHandle host() const noexcept</div><div class="ttdoc">Returns the attached host handle, or an empty handle before attach.</div><div class="ttdef"><b>Definition</b> <a href="Component_8h_source.html#l00044">Component.h:44</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UIHost_html_aac02af00d98ac45e2c9a5dae6495517c"><div class="ttname"><a href="classeve_1_1ui_1_1UIHost.html#aac02af00d98ac45e2c9a5dae6495517c">eve::ui::UIHost::createHost</a></div><div class="ttdeci">static UIHostHandle createHost(const std::string &amp;name=&quot;&quot;)</div><div class="ttdoc">Creates an ECS-owned UI host.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8cpp_source.html#l00049">UIHost.cpp:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UIHost_html_adc95e606214c703f5715ae14f10e4d29"><div class="ttname"><a href="classeve_1_1ui_1_1UIHost.html#adc95e606214c703f5715ae14f10e4d29">eve::ui::UIHost::resolve</a></div><div class="ttdeci">static eve::OptionalRef&lt; UIHost &gt; resolve(UIHostHandle handle) noexcept</div><div class="ttdoc">Resolves a UI host handle with ECS generation checking.</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8cpp_source.html#l00062">UIHost.cpp:62</a></div></div>
+<div class="ttc" id="aclasseve_1_1ui_1_1UISystem_html_a73f95ddb771380476327f9776c18e8e1"><div class="ttname"><a href="classeve_1_1ui_1_1UISystem.html#a73f95ddb771380476327f9776c18e8e1">eve::ui::UISystem::findHost</a></div><div class="ttdeci">static UIHostHandle findHost(const std::string &amp;name)</div><div class="ttdoc">Lookup by Meta.name across the UIHost View.</div><div class="ttdef"><b>Definition</b> <a href="UISystem_8cpp_source.html#l01865">UISystem.cpp:1865</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_1_1detail_html_ae9899a41c48c41d51634a8b035c4a5bf"><div class="ttname"><a href="namespaceeve_1_1ui_1_1detail.html#ae9899a41c48c41d51634a8b035c4a5bf">eve::ui::detail::flushPendingComponents</a></div><div class="ttdeci">void flushPendingComponents()</div><div class="ttdoc">Flush one batch of live dirty components before host traversal. @thread Owner thread; newly queued ed...</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00017">Component.cpp:17</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html"><div class="ttname"><a href="namespaceeve_1_1ui.html">eve::ui</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00006">Component.cpp:6</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1ui_html_aba4a8024550f0736974b6ffbf2b3ecc7"><div class="ttname"><a href="namespaceeve_1_1ui.html#aba4a8024550f0736974b6ffbf2b3ecc7">eve::ui::UIHostHandle</a></div><div class="ttdeci">ecs::EntityHandle UIHostHandle</div><div class="ttdef"><b>Definition</b> <a href="UIHost_8h_source.html#l00016">UIHost.h:16</a></div></div>
+<div class="ttc" id="anamespacestd_html"><div class="ttname"><a href="namespacestd.html">std</a></div><div class="ttdef"><b>Definition</b> <a href="Container_8h_source.html#l00602">Container.h:602</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1detail_1_1ComponentSchedule_html"><div class="ttname"><a href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html">eve::ui::detail::ComponentSchedule</a></div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00008">Component.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1detail_1_1ComponentSchedule_html_a02c79f2e9141a57e4957d32f028fa394"><div class="ttname"><a href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#a02c79f2e9141a57e4957d32f028fa394">eve::ui::detail::ComponentSchedule::queued</a></div><div class="ttdeci">bool queued</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00010">Component.cpp:10</a></div></div>
+<div class="ttc" id="astructeve_1_1ui_1_1detail_1_1ComponentSchedule_html_abcc020cfb9d56049bf85d9e4462229f6"><div class="ttname"><a href="structeve_1_1ui_1_1detail_1_1ComponentSchedule.html#abcc020cfb9d56049bf85d9e4462229f6">eve::ui::detail::ComponentSchedule::component</a></div><div class="ttdeci">Component * component</div><div class="ttdef"><b>Definition</b> <a href="Component_8cpp_source.html#l00009">Component.cpp:9</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

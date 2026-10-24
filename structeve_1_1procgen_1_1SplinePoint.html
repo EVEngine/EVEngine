@@ -1,0 +1,688 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::SplinePoint结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html">SplinePoint</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1SplinePoint-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::SplinePoint结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>One spline anchor with incoming and outgoing handle offsets.  
+ <a href="structeve_1_1procgen_1_1SplinePoint.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="SplinePath_8h_source.html">SplinePath.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:a3ba729252bee1a39e3f3d31505b7767b" id="r_a3ba729252bee1a39e3f3d31505b7767b"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a3ba729252bee1a39e3f3d31505b7767b">x</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3ba729252bee1a39e3f3d31505b7767b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae157bb85941823b0b17e8c4b7c26cf1e" id="r_ae157bb85941823b0b17e8c4b7c26cf1e"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ae157bb85941823b0b17e8c4b7c26cf1e">y</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ae157bb85941823b0b17e8c4b7c26cf1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9444d949cadb12b3dee9296bd9823326" id="r_a9444d949cadb12b3dee9296bd9823326"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a9444d949cadb12b3dee9296bd9823326">z</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a9444d949cadb12b3dee9296bd9823326"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a852d09b150fb662ff376556fba68f10d" id="r_a852d09b150fb662ff376556fba68f10d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a852d09b150fb662ff376556fba68f10d">inX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a852d09b150fb662ff376556fba68f10d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a764fd24da76318d752e4b458b2f5d5d5" id="r_a764fd24da76318d752e4b458b2f5d5d5"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a764fd24da76318d752e4b458b2f5d5d5">inY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a764fd24da76318d752e4b458b2f5d5d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab22d9cab7c6060243a461bc2ce56dc7" id="r_aab22d9cab7c6060243a461bc2ce56dc7"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#aab22d9cab7c6060243a461bc2ce56dc7">inZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aab22d9cab7c6060243a461bc2ce56dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43addc8b1235bac1ba7a8cdef72eb9f2" id="r_a43addc8b1235bac1ba7a8cdef72eb9f2"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a43addc8b1235bac1ba7a8cdef72eb9f2">outX</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a43addc8b1235bac1ba7a8cdef72eb9f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bbc435f77772ceb6f9409aa85f53808" id="r_a3bbc435f77772ceb6f9409aa85f53808"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a3bbc435f77772ceb6f9409aa85f53808">outY</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a3bbc435f77772ceb6f9409aa85f53808"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac587e729dfbca3d583c91ba19fa9447d" id="r_ac587e729dfbca3d583c91ba19fa9447d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ac587e729dfbca3d583c91ba19fa9447d">outZ</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ac587e729dfbca3d583c91ba19fa9447d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b7e9e9163318158d7b764246fcf59ca" id="r_a8b7e9e9163318158d7b764246fcf59ca"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a8b7e9e9163318158d7b764246fcf59ca">rollDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a8b7e9e9163318158d7b764246fcf59ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8b94663cd36c8f9073fee37835e2572" id="r_ab8b94663cd36c8f9073fee37835e2572"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ab8b94663cd36c8f9073fee37835e2572">scaleX</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:ab8b94663cd36c8f9073fee37835e2572"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a34778a8674982a8f86391479a06eaefd" id="r_a34778a8674982a8f86391479a06eaefd"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a34778a8674982a8f86391479a06eaefd">scaleY</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a34778a8674982a8f86391479a06eaefd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a849a3af450efb510ef30c9b3063c411b" id="r_a849a3af450efb510ef30c9b3063c411b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a849a3af450efb510ef30c9b3063c411b">breakBefore</a> = false</td></tr>
+<tr class="separator:a849a3af450efb510ef30c9b3063c411b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc8cc8edfbb23a7e9324aed7312b6c7d" id="r_abc8cc8edfbb23a7e9324aed7312b6c7d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#abc8cc8edfbb23a7e9324aed7312b6c7d">pitchDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:abc8cc8edfbb23a7e9324aed7312b6c7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a41a5fb3d05095b7470125092da8a9a3c" id="r_a41a5fb3d05095b7470125092da8a9a3c"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a41a5fb3d05095b7470125092da8a9a3c">yawDegrees</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a41a5fb3d05095b7470125092da8a9a3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2792691335500e5381ff02834ba42378" id="r_a2792691335500e5381ff02834ba42378"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a02927b5ad36aaf96356769dd06248f68">SplineScaleInterpolation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a2792691335500e5381ff02834ba42378">scaleXInterpolation</a></td></tr>
+<tr class="memdesc:a2792691335500e5381ff02834ba42378"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native-only; cubic scale is floored at 1e-4 to retain a positive frame.  <br /></td></tr>
+<tr class="separator:a2792691335500e5381ff02834ba42378"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14baebf21fe6f559022ceca38698e082" id="r_a14baebf21fe6f559022ceca38698e082"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a14baebf21fe6f559022ceca38698e082">worldUpFrame</a></td></tr>
+<tr class="memdesc:a14baebf21fe6f559022ceca38698e082"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native-only outgoing frame policy; vertical tangents use a deterministic X reference.  <br /></td></tr>
+<tr class="separator:a14baebf21fe6f559022ceca38698e082"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae54e90c9f1ae92a2acdd9aad37c7a962" id="r_ae54e90c9f1ae92a2acdd9aad37c7a962"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#afdadc1099bb0dbffbf1ef751268c0eeb">SplineRollInterpolation</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#ae54e90c9f1ae92a2acdd9aad37c7a962">rollInterpolation</a></td></tr>
+<tr class="memdesc:ae54e90c9f1ae92a2acdd9aad37c7a962"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native-only owning outgoing policy.  <br /></td></tr>
+<tr class="separator:ae54e90c9f1ae92a2acdd9aad37c7a962"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c85252a32c2c8e29399f6d4ceeaf1a" id="r_a32c85252a32c2c8e29399f6d4ceeaf1a"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a32c85252a32c2c8e29399f6d4ceeaf1a">spanStrength</a> = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a32c85252a32c2c8e29399f6d4ceeaf1a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native-only outgoing Catmull tangent coefficient in [0.01,1].  <br /></td></tr>
+<tr class="separator:a32c85252a32c2c8e29399f6d4ceeaf1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0acdb77ec0e6520f075a34521a8129a0" id="r_a0acdb77ec0e6520f075a34521a8129a0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1procgen.html#a5c911304a91a09f8b79136db4bea0324">SplineSpanControl</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a0acdb77ec0e6520f075a34521a8129a0">spanControl</a> = <a class="el" href="namespaceeve_1_1procgen.html#a5c911304a91a09f8b79136db4bea0324ac49484faf79e2388b580e49444d6ac11">SplineSpanControl::Inherit</a></td></tr>
+<tr class="memdesc:a0acdb77ec0e6520f075a34521a8129a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Native-only outgoing geometry controller.  <br /></td></tr>
+<tr class="separator:a0acdb77ec0e6520f075a34521a8129a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a594efc44ed9ccf541122bd73008a9d4b" id="r_a594efc44ed9ccf541122bd73008a9d4b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a594efc44ed9ccf541122bd73008a9d4b">alignStraightStart</a> = false</td></tr>
+<tr class="separator:a594efc44ed9ccf541122bd73008a9d4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4d0178e1e76d62130f2e596de469a79" id="r_aa4d0178e1e76d62130f2e596de469a79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#aa4d0178e1e76d62130f2e596de469a79">alignStraightEnd</a></td></tr>
+<tr class="memdesc:aa4d0178e1e76d62130f2e596de469a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Straight-adjacent XZ alignment with zero vertical derivative; reversal swaps ends.  <br /></td></tr>
+<tr class="separator:aa4d0178e1e76d62130f2e596de469a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf6c92d88317dc661f490b17b02b6b85" id="r_aaf6c92d88317dc661f490b17b02b6b85"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#aaf6c92d88317dc661f490b17b02b6b85">circularFromEnd</a> = false</td></tr>
+<tr class="memdesc:aaf6c92d88317dc661f490b17b02b6b85"><td class="mdescLeft">&#160;</td><td class="mdescRight">Derive circular geometry from the following endpoint tangent after reversal.  <br /></td></tr>
+<tr class="separator:aaf6c92d88317dc661f490b17b02b6b85"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43053f09e5ec24f974d63ff1e2182040" id="r_a43053f09e5ec24f974d63ff1e2182040"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1SplinePoint.html#a43053f09e5ec24f974d63ff1e2182040">rollPivotSide</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="memdesc:a43053f09e5ec24f974d63ff1e2182040"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local transverse roll-axis offset before scaleX; native owning value, metres.  <br /></td></tr>
+<tr class="separator:a43053f09e5ec24f974d63ff1e2182040"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>One spline anchor with incoming and outgoing handle offsets. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="aa4d0178e1e76d62130f2e596de469a79" name="aa4d0178e1e76d62130f2e596de469a79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4d0178e1e76d62130f2e596de469a79">&#9670;&#160;</a></span>alignStraightEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::alignStraightEnd</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">             <span class="keyword">false</span></div>
+</div><!-- fragment -->
+<p>Straight-adjacent XZ alignment with zero vertical derivative; reversal swaps ends. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="a594efc44ed9ccf541122bd73008a9d4b" name="a594efc44ed9ccf541122bd73008a9d4b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a594efc44ed9ccf541122bd73008a9d4b">&#9670;&#160;</a></span>alignStraightStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::alignStraightStart = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>, <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a> , 以及 <a class="el" href="RoadAuthoring_8cpp_source.html#l00211">eve::procgen::road::detail::splitRoadAuthoring()</a>.</p>
+
+</div>
+</div>
+<a id="a849a3af450efb510ef30c9b3063c411b" name="a849a3af450efb510ef30c9b3063c411b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a849a3af450efb510ef30c9b3063c411b">&#9670;&#160;</a></span>breakBefore</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::breakBefore = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00031">31</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aaf6c92d88317dc661f490b17b02b6b85" name="aaf6c92d88317dc661f490b17b02b6b85"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf6c92d88317dc661f490b17b02b6b85">&#9670;&#160;</a></span>circularFromEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::circularFromEnd = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Derive circular geometry from the following endpoint tangent after reversal. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="a852d09b150fb662ff376556fba68f10d" name="a852d09b150fb662ff376556fba68f10d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a852d09b150fb662ff376556fba68f10d">&#9670;&#160;</a></span>inX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a764fd24da76318d752e4b458b2f5d5d5" name="a764fd24da76318d752e4b458b2f5d5d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a764fd24da76318d752e4b458b2f5d5d5">&#9670;&#160;</a></span>inY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aab22d9cab7c6060243a461bc2ce56dc7" name="aab22d9cab7c6060243a461bc2ce56dc7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab22d9cab7c6060243a461bc2ce56dc7">&#9670;&#160;</a></span>inZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::inZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00027">27</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a43addc8b1235bac1ba7a8cdef72eb9f2" name="a43addc8b1235bac1ba7a8cdef72eb9f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43addc8b1235bac1ba7a8cdef72eb9f2">&#9670;&#160;</a></span>outX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outX = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3bbc435f77772ceb6f9409aa85f53808" name="a3bbc435f77772ceb6f9409aa85f53808"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bbc435f77772ceb6f9409aa85f53808">&#9670;&#160;</a></span>outY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outY = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac587e729dfbca3d583c91ba19fa9447d" name="ac587e729dfbca3d583c91ba19fa9447d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac587e729dfbca3d583c91ba19fa9447d">&#9670;&#160;</a></span>outZ</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::outZ = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<a id="abc8cc8edfbb23a7e9324aed7312b6c7d" name="abc8cc8edfbb23a7e9324aed7312b6c7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc8cc8edfbb23a7e9324aed7312b6c7d">&#9670;&#160;</a></span>pitchDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::pitchDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8b7e9e9163318158d7b764246fcf59ca" name="a8b7e9e9163318158d7b764246fcf59ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b7e9e9163318158d7b764246fcf59ca">&#9670;&#160;</a></span>rollDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::rollDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="ae54e90c9f1ae92a2acdd9aad37c7a962" name="ae54e90c9f1ae92a2acdd9aad37c7a962"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae54e90c9f1ae92a2acdd9aad37c7a962">&#9670;&#160;</a></span>rollInterpolation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#afdadc1099bb0dbffbf1ef751268c0eeb">SplineRollInterpolation</a> eve::procgen::SplinePoint::rollInterpolation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#afdadc1099bb0dbffbf1ef751268c0eeba32a843da6ea40ab3b17a3421ccdf671b">SplineRollInterpolation::Linear</a></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_afdadc1099bb0dbffbf1ef751268c0eeba32a843da6ea40ab3b17a3421ccdf671b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#afdadc1099bb0dbffbf1ef751268c0eeba32a843da6ea40ab3b17a3421ccdf671b">eve::procgen::SplineRollInterpolation::Linear</a></div><div class="ttdeci">@ Linear</div></div>
+</div><!-- fragment -->
+<p>Native-only owning outgoing policy. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00037">37</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="a43053f09e5ec24f974d63ff1e2182040" name="a43053f09e5ec24f974d63ff1e2182040"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43053f09e5ec24f974d63ff1e2182040">&#9670;&#160;</a></span>rollPivotSide</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::rollPivotSide = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Local transverse roll-axis offset before scaleX; native owning value, metres. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="ab8b94663cd36c8f9073fee37835e2572" name="ab8b94663cd36c8f9073fee37835e2572"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8b94663cd36c8f9073fee37835e2572">&#9670;&#160;</a></span>scaleX</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::scaleX = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="a2792691335500e5381ff02834ba42378" name="a2792691335500e5381ff02834ba42378"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2792691335500e5381ff02834ba42378">&#9670;&#160;</a></span>scaleXInterpolation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a02927b5ad36aaf96356769dd06248f68">SplineScaleInterpolation</a> eve::procgen::SplinePoint::scaleXInterpolation</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#a02927b5ad36aaf96356769dd06248f68a32a843da6ea40ab3b17a3421ccdf671b">SplineScaleInterpolation::Linear</a></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_a02927b5ad36aaf96356769dd06248f68a32a843da6ea40ab3b17a3421ccdf671b"><div class="ttname"><a href="namespaceeve_1_1procgen.html#a02927b5ad36aaf96356769dd06248f68a32a843da6ea40ab3b17a3421ccdf671b">eve::procgen::SplineScaleInterpolation::Linear</a></div><div class="ttdeci">@ Linear</div></div>
+</div><!-- fragment -->
+<p>Native-only; cubic scale is floored at 1e-4 to retain a positive frame. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="a34778a8674982a8f86391479a06eaefd" name="a34778a8674982a8f86391479a06eaefd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34778a8674982a8f86391479a06eaefd">&#9670;&#160;</a></span>scaleY</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::scaleY = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00030">30</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0acdb77ec0e6520f075a34521a8129a0" name="a0acdb77ec0e6520f075a34521a8129a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0acdb77ec0e6520f075a34521a8129a0">&#9670;&#160;</a></span>spanControl</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1procgen.html#a5c911304a91a09f8b79136db4bea0324">SplineSpanControl</a> eve::procgen::SplinePoint::spanControl = <a class="el" href="namespaceeve_1_1procgen.html#a5c911304a91a09f8b79136db4bea0324ac49484faf79e2388b580e49444d6ac11">SplineSpanControl::Inherit</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Native-only outgoing geometry controller. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00040">40</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="a32c85252a32c2c8e29399f6d4ceeaf1a" name="a32c85252a32c2c8e29399f6d4ceeaf1a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32c85252a32c2c8e29399f6d4ceeaf1a">&#9670;&#160;</a></span>spanStrength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::spanStrength = .5<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Native-only outgoing Catmull tangent coefficient in [0.01,1]. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00039">39</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="a14baebf21fe6f559022ceca38698e082" name="a14baebf21fe6f559022ceca38698e082"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14baebf21fe6f559022ceca38698e082">&#9670;&#160;</a></span>worldUpFrame</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::SplinePoint::worldUpFrame</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <span class="keyword">false</span></div>
+</div><!-- fragment -->
+<p>Native-only outgoing frame policy; vertical tangents use a deterministic X reference. </p>
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00035">35</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a>.</p>
+
+</div>
+</div>
+<a id="a3ba729252bee1a39e3f3d31505b7767b" name="a3ba729252bee1a39e3f3d31505b7767b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ba729252bee1a39e3f3d31505b7767b">&#9670;&#160;</a></span>x</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::x = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="ae157bb85941823b0b17e8c4b7c26cf1e" name="ae157bb85941823b0b17e8c4b7c26cf1e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae157bb85941823b0b17e8c4b7c26cf1e">&#9670;&#160;</a></span>y</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::y = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<a id="a41a5fb3d05095b7470125092da8a9a3c" name="a41a5fb3d05095b7470125092da8a9a3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a41a5fb3d05095b7470125092da8a9a3c">&#9670;&#160;</a></span>yawDegrees</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::yawDegrees = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00032">32</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9444d949cadb12b3dee9296bd9823326" name="a9444d949cadb12b3dee9296bd9823326"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9444d949cadb12b3dee9296bd9823326">&#9670;&#160;</a></span>z</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::SplinePoint::z = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="SplinePath_8h_source.html">SplinePath.h</a> 第 <a class="el" href="SplinePath_8h_source.html#l00026">26</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadBake_8cpp_source.html#l00062">eve::procgen::road::detail::edgeToSpline()</a> , 以及 <a class="el" href="RoadNetworkEditTarget_8cpp_source.html#l00020">eve::procgen_editing::detail::findUniqueInteriorIntersection()</a>.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/spline/<a class="el" href="SplinePath_8h_source.html">SplinePath.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,433 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/ShallowWaterField.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">ShallowWaterField.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="ShallowWaterField_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;glm/vec2.hpp&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;glm/vec3.hpp&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;glm/vec4.hpp&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;cstdint&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="preprocessor">#include &lt;span&gt;</span></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="keyword">class </span>ComputeShader;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">class </span>Gpgpu;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="keyword">class </span>GpuBuffer;</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">class </span>Sequence;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>}  <span class="comment">// namespace eve::gpgpu</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1image.html">eve::image</a> {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="keyword">class </span><a class="code hl_enumvalue" href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">ImageData</a>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}  <span class="comment">// namespace eve::image</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977">   29</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977">ShallowWaterColliderShape</a> : <a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">uint8_t</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977ab7095f057db3fefa7325ad93a04e14fd">Sphere</a> = 0, <a class="code hl_enumvalue" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a4880c0f12c06dd6d142e7a40b041bf1a">Capsule</a> = 1, <a class="code hl_enumvalue" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a3cfce651e667ab85486dd42a8185f98a">Box</a> = 2 };</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00038" data-start="{" data-end="};">
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">   38</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterCollider.html">ShallowWaterCollider</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a7b23610da9d9aed066e775857c3a3f81">   40</a></span>    <span class="keywordtype">unsigned</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a7b23610da9d9aed066e775857c3a3f81">label</a> = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a61f947a6f2a979b0f401fff5334c26fa">   42</a></span>    <a class="code hl_enumeration" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977">ShallowWaterColliderShape</a> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a61f947a6f2a979b0f401fff5334c26fa">shape</a> = <a class="code hl_enumvalue" href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977ab7095f057db3fefa7325ad93a04e14fd">ShallowWaterColliderShape::Sphere</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#aff90d46b213e518d2b91d4647897111e">   44</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#aff90d46b213e518d2b91d4647897111e">center</a>{0.f, 1.f, 0.f};</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a309f960d180731757df22227b65c1c71">   46</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a309f960d180731757df22227b65c1c71">halfExtent</a>{0.25f};</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a93b5723e8ab102f5916c9815db1c4fe1">   48</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a93b5723e8ab102f5916c9815db1c4fe1">radius</a> = 0.25f;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a8df0de777b7543ab99764455702ac99c">   50</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a8df0de777b7543ab99764455702ac99c">velocity</a>{0.f};</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#affb9dffd21742612ebf42891ba80ddc6">   52</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#affb9dffd21742612ebf42891ba80ddc6">displacementScale</a> = 1.f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#ae7d94a5fd1f197e25643d772818d082b">   54</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterCollider.html#ae7d94a5fd1f197e25643d772818d082b">dragScale</a> = 1.f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>};</div>
+</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="foldopen" id="foldopen00058" data-start="{" data-end="};">
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">   58</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a5cc0762232a07034569b280afcd7f5c5">   60</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a5cc0762232a07034569b280afcd7f5c5">resolutionX</a> = 64;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1c2a81f6432ff77327a325c2124c41e5">   62</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1c2a81f6432ff77327a325c2124c41e5">resolutionZ</a> = 64;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c1f459aed94b801bc7296649de40e7c">   64</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c1f459aed94b801bc7296649de40e7c">cellSize</a> = 0.25f;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a2c3cba18903311f0239591ef1ad6390e">   66</a></span>    glm::vec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a2c3cba18903311f0239591ef1ad6390e">origin</a>{0.f};</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a9f7327cb745299b0082969f2fa7d43c6">   68</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a9f7327cb745299b0082969f2fa7d43c6">gravity</a> = 9.81f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a62dee0cf79e443be950e41364f9e7218">   70</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a62dee0cf79e443be950e41364f9e7218">viscosity</a> = 0.08f;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad7ccdd20147d614db454ce9828e89c8a">   72</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad7ccdd20147d614db454ce9828e89c8a">friction</a> = 0.12f;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a8e405bb216ee6fc86c3c6203fa977c7f">   74</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a8e405bb216ee6fc86c3c6203fa977c7f">minDepth</a> = 1e-4f;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad669e4295ad8628c40a0e9635d360933">   76</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad669e4295ad8628c40a0e9635d360933">maxDepth</a> = 2.5f;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c97e48a1a84dc4aacbcadb12d9d00c3">   78</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c97e48a1a84dc4aacbcadb12d9d00c3">cfl</a> = 0.45f;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad61fc1682616c682bd250a0bc102a8e3">   80</a></span>    <span class="keywordtype">int</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad61fc1682616c682bd250a0bc102a8e3">maxSubsteps</a> = 8;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1b751dc6f52620907b7533075d9a7677">   82</a></span>    <span class="keywordtype">bool</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1b751dc6f52620907b7533075d9a7677">preferGpu</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a11bafdf4abb162f478026f1a62e767c6">   84</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a11bafdf4abb162f478026f1a62e767c6">initialDepth</a> = 0.55f;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#afa475779f2cc03d3967a5c41bfda234f">   86</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="structeve_1_1fluids_1_1ShallowWaterSettings.html#afa475779f2cc03d3967a5c41bfda234f">bedHeight</a> = 0.f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>};</div>
+</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="foldopen" id="foldopen00100" data-start="{" data-end="};">
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html">  100</a></span><span class="keyword">class </span><a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a> {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water create&quot;</span>)]] <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;ShallowWaterField&gt;</a>&gt; create(</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a>&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span> </div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">~ShallowWaterField</a>();</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span> </div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefe242256e61f6cbafa325cfb53f41c8">  112</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#aefe242256e61f6cbafa325cfb53f41c8">ShallowWaterField</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a4b75a83b69f11327dd18e86dae88f4f1">  113</a></span>    <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a4b75a83b69f11327dd18e86dae88f4f1">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water step&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_variable" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water colliders&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setColliders(</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        std::span&lt;const ShallowWaterCollider&gt; colliders);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water bed&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> setBed(std::span&lt;const float&gt; beds);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span> </div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water fill&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> fillDepth(<span class="keywordtype">float</span> <a class="code hl_variable" href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a>);</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water surface fill&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> fillSurface(<span class="keywordtype">float</span> surfaceY);</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span> </div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water disturb&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> disturbAt(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                                                                        <span class="keywordtype">float</span> heightDelta, <span class="keywordtype">float</span> radialSpeed = 0.f);</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span> </div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water impulse&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> addImpulse(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ, <span class="keywordtype">float</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>,</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                                                                         <span class="keywordtype">float</span> <a class="code hl_variable" href="ForceBindings_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a>);</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#af20f9936b58ce339207e35f62e50d23f">  163</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#af20f9936b58ce339207e35f62e50d23f">resolutionX</a>() const noexcept { <span class="keywordflow">return</span> resX_; }</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac6c0fad80789b6e59548dad3ca59fc1c">  165</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac6c0fad80789b6e59548dad3ca59fc1c">resolutionZ</a>() const noexcept { <span class="keywordflow">return</span> resZ_; }</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a370171756db5ea065145512e3025c78b">  167</a></span>    [[nodiscard]] <span class="keywordtype">float</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a370171756db5ea065145512e3025c78b">cellSize</a>() const noexcept { <span class="keywordflow">return</span> cellSize_; }</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">  169</a></span>    [[nodiscard]] <span class="keywordtype">int</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">cellCount</a>() const noexcept { <span class="keywordflow">return</span> resX_ * resZ_; }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a5cce6a06181ef399c6ba6b17dc4532f1">  171</a></span>    [[nodiscard]] glm::vec3 <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a5cce6a06181ef399c6ba6b17dc4532f1">origin</a>() const noexcept { <span class="keywordflow">return</span> origin_; }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9f8a9b1c1afd99f8bd347ac3506f1dcb">  173</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a9f8a9b1c1afd99f8bd347ac3506f1dcb">usingGpu</a>() const noexcept { <span class="keywordflow">return</span> gpuOk_; }</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a52bc21b44be44ec59be04baecedee23c">  175</a></span>    [[nodiscard]] <span class="keywordtype">bool</span> <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a52bc21b44be44ec59be04baecedee23c">usedBackendFallback</a>() const noexcept { <span class="keywordflow">return</span> backendFallback_; }</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0404750c96d79587539eb0f48fec5c71">  178</a></span>    [[nodiscard]] std::span&lt;const float&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a0404750c96d79587539eb0f48fec5c71">depths</a>() const noexcept { <span class="keywordflow">return</span> heights_; }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">  180</a></span>    [[nodiscard]] std::span&lt;const float&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">beds</a>() const noexcept { <span class="keywordflow">return</span> beds_; }</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a1515fb24b2cf41815c12f96c4b68d28e">  182</a></span>    [[nodiscard]] std::span&lt;const float&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a1515fb24b2cf41815c12f96c4b68d28e">momentumX</a>() const noexcept { <span class="keywordflow">return</span> momentumX_; }</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3029b2c9b16091a6b2cddd24b04e269c">  184</a></span>    [[nodiscard]] std::span&lt;const float&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#a3029b2c9b16091a6b2cddd24b04e269c">momentumZ</a>() const noexcept { <span class="keywordflow">return</span> momentumZ_; }</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">  186</a></span>    [[nodiscard]] std::span&lt;const ShallowWaterCollider&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">colliders</a>() const noexcept { <span class="keywordflow">return</span> colliders_; }</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>    [[nodiscard]] <span class="keywordtype">float</span> surfaceHeightAt(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>    [[nodiscard]] <span class="keywordtype">float</span> depthAt(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>    [[nodiscard]] glm::vec2 velocityAt(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water mesh&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> buildSurfaceMesh(</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        std::vector&lt;float&gt;&amp; positionsXYZ, std::vector&lt;float&gt;&amp; normalsXYZ, std::vector&lt;float&gt;&amp; uvsST,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        std::vector&lt;uint32_t&gt;&amp; <a class="code hl_variable" href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a>, <span class="keywordtype">float</span> visualHeightGain = 1.f, std::vector&lt;float&gt;* colorsRGBA = <span class="keyword">nullptr</span>) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span> </div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water field image&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> copyFieldToImage(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>,</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                                                                                   <span class="keywordtype">float</span> velocityScale = 2.f,</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                                                                                   <span class="keywordtype">float</span> depthContrast = 0.f) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00239" name="l00239"></a><span class="lineno">  239</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water albedo image&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> copyShadedAlbedoToImage(</div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno">  240</span>        <a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>, <span class="keywordtype">float</span> restDepth, <span class="keywordtype">float</span> velocityScale = 2.f) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>    [[nodiscard(<span class="stringliteral">&quot;check shallow-water normal image&quot;</span>)]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> copyNormalToImage(<a class="code hl_class" href="classeve_1_1image_1_1ImageData.html">image::ImageData</a>&amp; <a class="code hl_variable" href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a>,</div>
+<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>                                                                                     <span class="keywordtype">float</span> <a class="code hl_variable" href="CableTextures_8cpp.html#ac5ee4c850452c326a0e0c95bf057c052">normalStrength</a> = 6.f) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00251" name="l00251"></a><span class="lineno">  251</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>    [[nodiscard]] <a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a> <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>() const noexcept;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>private:</div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>    explicit <a class="code hl_class" href="classeve_1_1fluids_1_1ShallowWaterField.html">ShallowWaterField</a>(const <a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a>&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; validateSettings(const <a class="code hl_struct" href="structeve_1_1fluids_1_1ShallowWaterSettings.html">ShallowWaterSettings</a>&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>) const;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span>    <span class="keywordtype">void</span>                       stepCpu(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00260" name="l00260"></a><span class="lineno">  260</span>    <span class="keywordtype">void</span>                       rasterizeCollidersCpu(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00261" name="l00261"></a><span class="lineno">  261</span>    <span class="keywordtype">void</span>                       integrateCpu(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00262" name="l00262"></a><span class="lineno">  262</span>    [[nodiscard]] <span class="keywordtype">bool</span>         ensureGpu();</div>
+<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result</a>&lt;<span class="keywordtype">void</span>&gt; stepGpu(<span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="line"><a id="l00264" name="l00264"></a><span class="lineno">  264</span>    <span class="keywordtype">void</span>                       uploadState();</div>
+<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>    <span class="keywordtype">void</span>                       downloadState();</div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span>    <span class="keywordtype">void</span>                       uploadColliders();</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span>    <span class="keywordtype">void</span>                       setPushConstants(<a class="code hl_variable" href="tensor_2GpuBackend_8cpp.html#adffb4c55de36f01346ef1e4115b0858c">gpgpu</a>::ComputeShader* <a class="code hl_variable" href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>) const;</div>
+<div class="line"><a id="l00268" name="l00268"></a><span class="lineno">  268</span>    [[nodiscard]] <span class="keywordtype">int</span>          <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) const noexcept { <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> * resX_ + <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>; }</div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>    [[nodiscard]] <span class="keywordtype">bool</span>         <a class="code hl_variable" href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a>(<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, <span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>) <span class="keyword">const</span> <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span>        <span class="keywordflow">return</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &gt;= 0 &amp;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; resX_ &amp;&amp; <a class="code hl_variable" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a> &lt; resZ_;</div>
+<div class="line"><a id="l00271" name="l00271"></a><span class="lineno">  271</span>    }</div>
+<div class="line"><a id="l00272" name="l00272"></a><span class="lineno">  272</span>    <span class="keywordtype">void</span> worldToCell(<span class="keywordtype">float</span> worldX, <span class="keywordtype">float</span> worldZ, <span class="keywordtype">float</span>&amp; fx, <span class="keywordtype">float</span>&amp; fz) <span class="keyword">const</span> <span class="keyword">noexcept</span>;</div>
+<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span> </div>
+<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span>    <span class="keywordtype">int</span>         resX_      = 0;</div>
+<div class="line"><a id="l00275" name="l00275"></a><span class="lineno">  275</span>    <span class="keywordtype">int</span>         resZ_      = 0;</div>
+<div class="line"><a id="l00276" name="l00276"></a><span class="lineno">  276</span>    <span class="keywordtype">float</span>       cellSize_  = 0.25f;</div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>    glm::vec3   origin_{0.f};</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>    <span class="keywordtype">float</span>       gravity_   = 9.81f;</div>
+<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    <span class="keywordtype">float</span>       viscosity_ = 0.08f;</div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>    <span class="keywordtype">float</span>       friction_  = 0.12f;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span>    <span class="keywordtype">float</span>       minDepth_  = 1e-4f;</div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>    <span class="keywordtype">float</span>       maxDepth_  = 8.f;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    <span class="keywordtype">float</span>       cfl_       = 0.45f;</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>    <span class="keywordtype">int</span>         maxSubsteps_ = 8;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span>    <span class="keywordtype">bool</span>        preferGpu_ = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00286" name="l00286"></a><span class="lineno">  286</span>    <span class="keywordtype">bool</span>        gpuOk_     = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00287" name="l00287"></a><span class="lineno">  287</span>    <span class="keywordtype">bool</span>        backendFallback_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span> </div>
+<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span>    std::vector&lt;float&gt;                 heights_;</div>
+<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>    std::vector&lt;float&gt;                 restDepths_;</div>
+<div class="line"><a id="l00291" name="l00291"></a><span class="lineno">  291</span>    std::vector&lt;float&gt;                 momentumX_;</div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>    std::vector&lt;float&gt;                 momentumZ_;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    std::vector&lt;float&gt;                 beds_;</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>    std::vector&lt;float&gt;                 srcH_;</div>
+<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>    std::vector&lt;float&gt;                 srcHu_;</div>
+<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    std::vector&lt;float&gt;                 srcHv_;</div>
+<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    std::vector&lt;float&gt;                 scratchH_;</div>
+<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    std::vector&lt;float&gt;                 scratchHu_;</div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    std::vector&lt;float&gt;                 scratchHv_;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    std::vector&lt;ShallowWaterCollider&gt;  colliders_;</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1Gpgpu.html">eve::gpgpu::Gpgpu</a>*         gpgpu_      = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shClear_    = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shRaster_   = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a>* shIntegrate_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufStateA_  = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufStateB_  = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufBed_     = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufSources_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     bufColliders_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a>*     stageState_ = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <a class="code hl_class" href="classeve_1_1gpgpu_1_1Sequence.html">eve::gpgpu::Sequence</a>*      seq_        = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    <span class="keywordtype">bool</span>                       stateOnGpu_ = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="keywordtype">bool</span>                       pingA_      = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>};</div>
+</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_af73583b1e980b0aa03f9884812e9fd4d"><div class="ttname"><a href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a></div><div class="ttdeci">float z</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aCableTextures_8cpp_html_ac5ee4c850452c326a0e0c95bf057c052"><div class="ttname"><a href="CableTextures_8cpp.html#ac5ee4c850452c326a0e0c95bf057c052">normalStrength</a></div><div class="ttdeci">float normalStrength</div><div class="ttdef"><b>Definition</b> <a href="CableTextures_8cpp_source.html#l00057">CableTextures.cpp:57</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_a2c1c8f9331368f38bfc3eaee260b59a6"><div class="ttname"><a href="ForceBindings_8cpp.html#a2c1c8f9331368f38bfc3eaee260b59a6">strength</a></div><div class="ttdeci">float strength</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00056">ForceBindings.cpp:56</a></div></div>
+<div class="ttc" id="aGraphicsShaderResources_8cpp_html_ac97fcc7b295c4be16e43a17090bc02db"><div class="ttname"><a href="GraphicsShaderResources_8cpp.html#ac97fcc7b295c4be16e43a17090bc02db">image</a></div><div class="ttdeci">vk::UniqueImage image</div><div class="ttdef"><b>Definition</b> <a href="GraphicsShaderResources_8cpp_source.html#l00014">GraphicsShaderResources.cpp:14</a></div></div>
+<div class="ttc" id="aHeightmapMesh_8cpp_html_a1c05ae841a0f4a10fbccd8a5438951a8"><div class="ttname"><a href="HeightmapMesh_8cpp.html#a1c05ae841a0f4a10fbccd8a5438951a8">indices</a></div><div class="ttdeci">std::vector&lt; std::uint32_t &gt; indices</div><div class="ttdef"><b>Definition</b> <a href="HeightmapMesh_8cpp_source.html#l00019">HeightmapMesh.cpp:19</a></div></div>
+<div class="ttc" id="aOceanInteractionBindings_8cpp_html_a1460494a7000b8c7705e16798f6b499e"><div class="ttname"><a href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a></div><div class="ttdeci">OceanWakeSettings settings</div><div class="ttdef"><b>Definition</b> <a href="OceanInteractionBindings_8cpp_source.html#l00010">OceanInteractionBindings.cpp:10</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aRenderSystem3D_8cpp_html_ac7373354f9cc35f76804c73d4c98781c"><div class="ttname"><a href="RenderSystem3D_8cpp.html#ac7373354f9cc35f76804c73d4c98781c">shader</a></div><div class="ttdeci">Shader * shader</div><div class="ttdef"><b>Definition</b> <a href="RenderSystem3D_8cpp_source.html#l00674">RenderSystem3D.cpp:674</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aTreeMesh_8cpp_html_a863c86bdfd96bf9c461846689c2614aa"><div class="ttname"><a href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a></div><div class="ttdeci">float step</div><div class="ttdef"><b>Definition</b> <a href="TreeMesh_8cpp_source.html#l00314">TreeMesh.cpp:314</a></div></div>
+<div class="ttc" id="aUnityVegetationPreset_8cpp_html_a3f756ed587723434bfe4adef4d8f3bfd"><div class="ttname"><a href="UnityVegetationPreset_8cpp.html#a3f756ed587723434bfe4adef4d8f3bfd">depth</a></div><div class="ttdeci">std::uint32_t depth</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationPreset_8cpp_source.html#l00034">UnityVegetationPreset.cpp:34</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aUrbanCrossField_8cpp_html_aac826de644f6d8b5f194b2b4fd0faa09"><div class="ttname"><a href="UrbanCrossField_8cpp.html#aac826de644f6d8b5f194b2b4fd0faa09">inside</a></div><div class="ttdeci">std::vector&lt; char &gt; inside</div><div class="ttdef"><b>Definition</b> <a href="UrbanCrossField_8cpp_source.html#l00025">UrbanCrossField.cpp:25</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html">eve::fluids::ShallowWaterField</a></div><div class="ttdoc">GPU-first shallow-water (2D Saint-Venant) free-surface solver.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00100">ShallowWaterField.h:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a0404750c96d79587539eb0f48fec5c71"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a0404750c96d79587539eb0f48fec5c71">eve::fluids::ShallowWaterField::depths</a></div><div class="ttdeci">std::span&lt; const float &gt; depths() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00178">ShallowWaterField.h:178</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a1515fb24b2cf41815c12f96c4b68d28e"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a1515fb24b2cf41815c12f96c4b68d28e">eve::fluids::ShallowWaterField::momentumX</a></div><div class="ttdeci">std::span&lt; const float &gt; momentumX() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00182">ShallowWaterField.h:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a3029b2c9b16091a6b2cddd24b04e269c"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a3029b2c9b16091a6b2cddd24b04e269c">eve::fluids::ShallowWaterField::momentumZ</a></div><div class="ttdeci">std::span&lt; const float &gt; momentumZ() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00184">ShallowWaterField.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a370171756db5ea065145512e3025c78b"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a370171756db5ea065145512e3025c78b">eve::fluids::ShallowWaterField::cellSize</a></div><div class="ttdeci">float cellSize() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00167">ShallowWaterField.h:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a3ae2acd930f5d624eb1c72e894868244"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a3ae2acd930f5d624eb1c72e894868244">eve::fluids::ShallowWaterField::beds</a></div><div class="ttdeci">std::span&lt; const float &gt; beds() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00180">ShallowWaterField.h:180</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a4b75a83b69f11327dd18e86dae88f4f1"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a4b75a83b69f11327dd18e86dae88f4f1">eve::fluids::ShallowWaterField::operator=</a></div><div class="ttdeci">ShallowWaterField &amp; operator=(const ShallowWaterField &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a52bc21b44be44ec59be04baecedee23c"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a52bc21b44be44ec59be04baecedee23c">eve::fluids::ShallowWaterField::usedBackendFallback</a></div><div class="ttdeci">bool usedBackendFallback() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00175">ShallowWaterField.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a5cce6a06181ef399c6ba6b17dc4532f1"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a5cce6a06181ef399c6ba6b17dc4532f1">eve::fluids::ShallowWaterField::origin</a></div><div class="ttdeci">glm::vec3 origin() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00171">ShallowWaterField.h:171</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_a9f8a9b1c1afd99f8bd347ac3506f1dcb"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#a9f8a9b1c1afd99f8bd347ac3506f1dcb">eve::fluids::ShallowWaterField::usingGpu</a></div><div class="ttdeci">bool usingGpu() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00173">ShallowWaterField.h:173</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_ac04f247e59032bda6baed5adb406a45e"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#ac04f247e59032bda6baed5adb406a45e">eve::fluids::ShallowWaterField::cellCount</a></div><div class="ttdeci">int cellCount() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00169">ShallowWaterField.h:169</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_ac6c0fad80789b6e59548dad3ca59fc1c"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#ac6c0fad80789b6e59548dad3ca59fc1c">eve::fluids::ShallowWaterField::resolutionZ</a></div><div class="ttdeci">int resolutionZ() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00165">ShallowWaterField.h:165</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_aefe242256e61f6cbafa325cfb53f41c8"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#aefe242256e61f6cbafa325cfb53f41c8">eve::fluids::ShallowWaterField::ShallowWaterField</a></div><div class="ttdeci">ShallowWaterField(const ShallowWaterField &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_af20f9936b58ce339207e35f62e50d23f"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#af20f9936b58ce339207e35f62e50d23f">eve::fluids::ShallowWaterField::resolutionX</a></div><div class="ttdeci">int resolutionX() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00163">ShallowWaterField.h:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1ShallowWaterField_html_af6266bc94c6de661efd0d85238c950ff"><div class="ttname"><a href="classeve_1_1fluids_1_1ShallowWaterField.html#af6266bc94c6de661efd0d85238c950ff">eve::fluids::ShallowWaterField::colliders</a></div><div class="ttdeci">std::span&lt; const ShallowWaterCollider &gt; colliders() const noexcept</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00186">ShallowWaterField.h:186</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1ComputeShader_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1ComputeShader.html">eve::gpgpu::ComputeShader</a></div><div class="ttdoc">Backend-agnostic compute program. Bind storage buffers then dispatch via Gpgpu::dispatch....</div><div class="ttdef"><b>Definition</b> <a href="ComputeShader_8h_source.html#l00015">ComputeShader.h:15</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1Gpgpu_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1Gpgpu.html">eve::gpgpu::Gpgpu</a></div><div class="ttdoc">GPGPU module — compute shaders + storage buffers via the active Graphics backend. Uses the graphics q...</div><div class="ttdef"><b>Definition</b> <a href="Gpgpu_8h_source.html#l00023">Gpgpu.h:23</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1GpuBuffer_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1GpuBuffer.html">eve::gpgpu::GpuBuffer</a></div><div class="ttdoc">Backend-agnostic GPU buffer for compute (storage) or CPU staging transfers. Squirrel-owned; derived c...</div><div class="ttdef"><b>Definition</b> <a href="GpuBuffer_8h_source.html#l00020">GpuBuffer.h:20</a></div></div>
+<div class="ttc" id="aclasseve_1_1gpgpu_1_1Sequence_html"><div class="ttname"><a href="classeve_1_1gpgpu_1_1Sequence.html">eve::gpgpu::Sequence</a></div><div class="ttdoc">EVENGINE_API_WORLD public API.</div><div class="ttdef"><b>Definition</b> <a href="Sequence_8h_source.html#l00043">Sequence.h:43</a></div></div>
+<div class="ttc" id="aclasseve_1_1image_1_1ImageData_html"><div class="ttname"><a href="classeve_1_1image_1_1ImageData.html">eve::image::ImageData</a></div><div class="ttdoc">Represents raw pixel data.</div><div class="ttdef"><b>Definition</b> <a href="ImageData_8h_source.html#l00038">ImageData.h:38</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1artifact_html_aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886"><div class="ttname"><a href="namespaceeve_1_1artifact.html#aa87bc8bf9117529fc0a4fa287b2f397aa0b8750f7fc77e85ea234f510496da886">eve::artifact::PartKind::ImageData</a></div><div class="ttdeci">@ ImageData</div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_1_1ocean__script_html_ad23d23762c333240818be8885f83357c"><div class="ttname"><a href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">eve::fluids::ocean_script::vector</a></div><div class="ttdeci">Value vector(glm::dvec3 v)</div><div class="ttdef"><b>Definition</b> <a href="OceanBindingInternal_8h_source.html#l00033">OceanBindingInternal.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a2215f1af7e6e40bf5aec71b35ce08977"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977">eve::fluids::ShallowWaterColliderShape</a></div><div class="ttdeci">ShallowWaterColliderShape</div><div class="ttdoc">Analytic obstacle geometry sampled into the shallow-water grid.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00029">ShallowWaterField.h:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a2215f1af7e6e40bf5aec71b35ce08977a3cfce651e667ab85486dd42a8185f98a"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a3cfce651e667ab85486dd42a8185f98a">eve::fluids::ShallowWaterColliderShape::Box</a></div><div class="ttdeci">@ Box</div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a2215f1af7e6e40bf5aec71b35ce08977a4880c0f12c06dd6d142e7a40b041bf1a"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977a4880c0f12c06dd6d142e7a40b041bf1a">eve::fluids::ShallowWaterColliderShape::Capsule</a></div><div class="ttdeci">@ Capsule</div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_a2215f1af7e6e40bf5aec71b35ce08977ab7095f057db3fefa7325ad93a04e14fd"><div class="ttname"><a href="namespaceeve_1_1fluids.html#a2215f1af7e6e40bf5aec71b35ce08977ab7095f057db3fefa7325ad93a04e14fd">eve::fluids::ShallowWaterColliderShape::Sphere</a></div><div class="ttdeci">@ Sphere</div></div>
+<div class="ttc" id="anamespaceeve_1_1gpgpu_html"><div class="ttname"><a href="namespaceeve_1_1gpgpu.html">eve::gpgpu</a></div><div class="ttdoc">Fluids module — interactive surface fluid simulation.</div><div class="ttdef"><b>Definition</b> <a href="Fluids_8h_source.html#l00035">Fluids.h:35</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1image_html"><div class="ttname"><a href="namespaceeve_1_1image.html">eve::image</a></div><div class="ttdef"><b>Definition</b> <a href="AvatarInstance_8h_source.html#l00026">AvatarInstance.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html">eve::fluids::ShallowWaterCollider</a></div><div class="ttdoc">World-space interactor used for character legs / props.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00038">ShallowWaterField.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_a309f960d180731757df22227b65c1c71"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a309f960d180731757df22227b65c1c71">eve::fluids::ShallowWaterCollider::halfExtent</a></div><div class="ttdeci">glm::vec3 halfExtent</div><div class="ttdoc">Box half extents; capsule uses halfExtent.y as half height.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00046">ShallowWaterField.h:46</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_a61f947a6f2a979b0f401fff5334c26fa"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a61f947a6f2a979b0f401fff5334c26fa">eve::fluids::ShallowWaterCollider::shape</a></div><div class="ttdeci">ShallowWaterColliderShape shape</div><div class="ttdoc">Analytic primitive.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00042">ShallowWaterField.h:42</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_a7b23610da9d9aed066e775857c3a3f81"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a7b23610da9d9aed066e775857c3a3f81">eve::fluids::ShallowWaterCollider::label</a></div><div class="ttdeci">unsigned label</div><div class="ttdoc">Application label; must be unique within one setColliders call.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00040">ShallowWaterField.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_a8df0de777b7543ab99764455702ac99c"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a8df0de777b7543ab99764455702ac99c">eve::fluids::ShallowWaterCollider::velocity</a></div><div class="ttdeci">glm::vec3 velocity</div><div class="ttdoc">World velocity sampled at the collider center.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00050">ShallowWaterField.h:50</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_a93b5723e8ab102f5916c9815db1c4fe1"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#a93b5723e8ab102f5916c9815db1c4fe1">eve::fluids::ShallowWaterCollider::radius</a></div><div class="ttdeci">float radius</div><div class="ttdoc">Sphere or capsule radius.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00048">ShallowWaterField.h:48</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_ae7d94a5fd1f197e25643d772818d082b"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#ae7d94a5fd1f197e25643d772818d082b">eve::fluids::ShallowWaterCollider::dragScale</a></div><div class="ttdeci">float dragScale</div><div class="ttdoc">Scales horizontal momentum transfer from collider velocity.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00054">ShallowWaterField.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_aff90d46b213e518d2b91d4647897111e"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#aff90d46b213e518d2b91d4647897111e">eve::fluids::ShallowWaterCollider::center</a></div><div class="ttdeci">glm::vec3 center</div><div class="ttdoc">World center; capsule Y axis is vertical.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00044">ShallowWaterField.h:44</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterCollider_html_affb9dffd21742612ebf42891ba80ddc6"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterCollider.html#affb9dffd21742612ebf42891ba80ddc6">eve::fluids::ShallowWaterCollider::displacementScale</a></div><div class="ttdeci">float displacementScale</div><div class="ttdoc">Scales displaced water volume.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00052">ShallowWaterField.h:52</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html">eve::fluids::ShallowWaterSettings</a></div><div class="ttdoc">Authoritative settings for a shallow-water heightfield.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00058">ShallowWaterField.h:58</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a11bafdf4abb162f478026f1a62e767c6"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a11bafdf4abb162f478026f1a62e767c6">eve::fluids::ShallowWaterSettings::initialDepth</a></div><div class="ttdeci">float initialDepth</div><div class="ttdoc">Initial water depth filled on create.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00084">ShallowWaterField.h:84</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a1b751dc6f52620907b7533075d9a7677"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1b751dc6f52620907b7533075d9a7677">eve::fluids::ShallowWaterSettings::preferGpu</a></div><div class="ttdeci">bool preferGpu</div><div class="ttdoc">Prefer the gpgpu path when a device is available.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00082">ShallowWaterField.h:82</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a1c2a81f6432ff77327a325c2124c41e5"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a1c2a81f6432ff77327a325c2124c41e5">eve::fluids::ShallowWaterSettings::resolutionZ</a></div><div class="ttdeci">int resolutionZ</div><div class="ttdoc">Grid resolution along world Z, in [8, 512].</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00062">ShallowWaterField.h:62</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a2c3cba18903311f0239591ef1ad6390e"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a2c3cba18903311f0239591ef1ad6390e">eve::fluids::ShallowWaterSettings::origin</a></div><div class="ttdeci">glm::vec3 origin</div><div class="ttdoc">World-space origin of cell (0,0) corner (Y is bed baseline).</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00066">ShallowWaterField.h:66</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a4c1f459aed94b801bc7296649de40e7c"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c1f459aed94b801bc7296649de40e7c">eve::fluids::ShallowWaterSettings::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdoc">Cell edge length in meters, in (0, 10].</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00064">ShallowWaterField.h:64</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a4c97e48a1a84dc4aacbcadb12d9d00c3"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a4c97e48a1a84dc4aacbcadb12d9d00c3">eve::fluids::ShallowWaterSettings::cfl</a></div><div class="ttdeci">float cfl</div><div class="ttdoc">Courant number used to pick substeps.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00078">ShallowWaterField.h:78</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a5cc0762232a07034569b280afcd7f5c5"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a5cc0762232a07034569b280afcd7f5c5">eve::fluids::ShallowWaterSettings::resolutionX</a></div><div class="ttdeci">int resolutionX</div><div class="ttdoc">Grid resolution along world X, in [8, 512].</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00060">ShallowWaterField.h:60</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a62dee0cf79e443be950e41364f9e7218"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a62dee0cf79e443be950e41364f9e7218">eve::fluids::ShallowWaterSettings::viscosity</a></div><div class="ttdeci">float viscosity</div><div class="ttdoc">Artificial viscosity for Lax-Friedrichs stability, in [0, 1].</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00070">ShallowWaterField.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a8e405bb216ee6fc86c3c6203fa977c7f"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a8e405bb216ee6fc86c3c6203fa977c7f">eve::fluids::ShallowWaterSettings::minDepth</a></div><div class="ttdeci">float minDepth</div><div class="ttdoc">Depth treated as dry.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00074">ShallowWaterField.h:74</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_a9f7327cb745299b0082969f2fa7d43c6"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#a9f7327cb745299b0082969f2fa7d43c6">eve::fluids::ShallowWaterSettings::gravity</a></div><div class="ttdeci">float gravity</div><div class="ttdoc">Gravity magnitude used by Saint-Venant fluxes.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00068">ShallowWaterField.h:68</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_ad61fc1682616c682bd250a0bc102a8e3"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad61fc1682616c682bd250a0bc102a8e3">eve::fluids::ShallowWaterSettings::maxSubsteps</a></div><div class="ttdeci">int maxSubsteps</div><div class="ttdoc">Upper bound on substeps per step call.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00080">ShallowWaterField.h:80</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_ad669e4295ad8628c40a0e9635d360933"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad669e4295ad8628c40a0e9635d360933">eve::fluids::ShallowWaterSettings::maxDepth</a></div><div class="ttdeci">float maxDepth</div><div class="ttdoc">Hard clamp on water column height.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00076">ShallowWaterField.h:76</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_ad7ccdd20147d614db454ce9828e89c8a"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#ad7ccdd20147d614db454ce9828e89c8a">eve::fluids::ShallowWaterSettings::friction</a></div><div class="ttdeci">float friction</div><div class="ttdoc">Linear momentum friction per second, in [0, 8].</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00072">ShallowWaterField.h:72</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1ShallowWaterSettings_html_afa475779f2cc03d3967a5c41bfda234f"><div class="ttname"><a href="structeve_1_1fluids_1_1ShallowWaterSettings.html#afa475779f2cc03d3967a5c41bfda234f">eve::fluids::ShallowWaterSettings::bedHeight</a></div><div class="ttdeci">float bedHeight</div><div class="ttdoc">Flat bed height filled on create.</div><div class="ttdef"><b>Definition</b> <a href="ShallowWaterField_8h_source.html#l00086">ShallowWaterField.h:86</a></div></div>
+<div class="ttc" id="atensor_2GpuBackend_8cpp_html_adffb4c55de36f01346ef1e4115b0858c"><div class="ttname"><a href="tensor_2GpuBackend_8cpp.html#adffb4c55de36f01346ef1e4115b0858c">gpgpu</a></div><div class="ttdeci">gpgpu::Gpgpu * gpgpu</div><div class="ttdef"><b>Definition</b> <a href="tensor_2GpuBackend_8cpp_source.html#l00087">GpuBackend.cpp:87</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

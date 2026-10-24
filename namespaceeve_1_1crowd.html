@@ -1,0 +1,1089 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::crowd 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1crowd.html">crowd</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a> &#124;
+<a href="#var-members">变量</a>  </div>
+  <div class="headertitle"><div class="title">eve::crowd 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AdvanceBudget.html">AdvanceBudget</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Deterministic operation budgets; exhaustion rejects the entire step before publication.  <a href="structeve_1_1crowd_1_1AdvanceBudget.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentBatchReceipt.html">AgentBatchReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning receipt for a committed update or removal batch.  <a href="structeve_1_1crowd_1_1AgentBatchReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentFrame.html">AgentFrame</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-owned frame storage; no pointers into <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> are retained.  <a href="structeve_1_1crowd_1_1AgentFrame.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentFrameEntry.html">AgentFrameEntry</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning row for a reusable renderer-neutral output frame.  <a href="structeve_1_1crowd_1_1AgentFrameEntry.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentInteraction.html">AgentInteraction</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent local interaction policy, copied into <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> storage.  <a href="structeve_1_1crowd_1_1AgentInteraction.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRef.html">AgentRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Agent identity qualified by the <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> instance that owns its registry. @ownership <a class="el" href="classeve_1_1Value.html" title="The canonical owning dynamic value used by data-facing protocols.">Value</a> only; it neither owns nor keeps the <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> alive. @lifetime Survives swap-pop of other agents; invalid after removal, clear, restore or owner destruction. @thread Resolve on the simulation owner thread. @reentrancy No callbacks.  <a href="structeve_1_1crowd_1_1AgentRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRelocation.html">AgentRelocation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit relocation of one live agent; velocity resets while identity and intent remain.  <a href="structeve_1_1crowd_1_1AgentRelocation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRelocationBatch.html">AgentRelocationBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Atomic exact placement batch; rejects terrain/contact violations without pushing neighbors.  <a href="structeve_1_1crowd_1_1AgentRelocationBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentRemovalBatch.html">AgentRemovalBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned identities to remove atomically; duplicate and stale references are rejected.  <a href="structeve_1_1crowd_1_1AgentRemovalBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentState.html">AgentState</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">单个单位的状态快照（脚本 getAgentState 返回值）。 action: 0=idle, 1=flow, 2=seek, 3=boids。  <a href="structeve_1_1crowd_1_1AgentState.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">AgentUpdate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owned changes for one live agent. Absent fields keep their existing values.  <a href="structeve_1_1crowd_1_1AgentUpdate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AgentUpdateBatch.html">AgentUpdateBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-built atomic update batch; duplicate agent references are rejected.  <a href="structeve_1_1crowd_1_1AgentUpdateBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1AvoidanceSettings.html">AvoidanceSettings</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional bounded velocity sampling for RTS local avoidance.  <a href="structeve_1_1crowd_1_1AvoidanceSettings.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。  <a href="classeve_1_1crowd_1_1Crowd.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1CrowdAgentTag.html">CrowdAgentTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owner-local registry identity for a <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> agent, independent of dense storage.  <a href="structeve_1_1crowd_1_1CrowdAgentTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">连续流场（flow field）。  <a href="classeve_1_1crowd_1_1CrowdField.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1CrowdSpatialIndex.html">CrowdSpatialIndex</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning sparse broadphase workspace; integer cell/row order and stable tie-key bucket order. @ownership Contains numeric slots only, no borrowed positions or entity pointers. @thread Owner thread. @reentrancy Queries cannot mutate the index or call unknown callbacks. @cost Storage scales with agents and occupied cells, not their bounding rectangle.  <a href="classeve_1_1crowd_1_1CrowdSpatialIndex.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1CrowdStep.html">CrowdStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit owner step; positive duration consumes the next contiguous tick. Zero reconciles current tick.  <a href="structeve_1_1crowd_1_1CrowdStep.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1CrowdTieKey.html">CrowdTieKey</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical in-process tie ordering; named identities sort before anonymous admission ordinals.  <a href="structeve_1_1crowd_1_1CrowdTieKey.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1CrowdWorkScheduler.html">CrowdWorkScheduler</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Synchronous scheduler for fixed logical partitions, independent of worker identity. @ownership Caller retains shared adapter lease; callbacks are borrowed only until execute returns. @thread Invoked by the <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> owner; bodies may run concurrently on workers. @reentrancy Bodies must not reenter or mutate <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> through public APIs. No callbacks under a lock.  <a href="classeve_1_1crowd_1_1CrowdWorkScheduler.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FieldObservation.html">FieldObservation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning navigation metadata; no arrays or pointers are borrowed.  <a href="structeve_1_1crowd_1_1FieldObservation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowCacheObservation.html">FlowCacheObservation</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retained navigation-storage accounting; excludes allocator bookkeeping and pending builds.  <a href="structeve_1_1crowd_1_1FlowCacheObservation.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowGoal.html">FlowGoal</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Logical grid destination; canonical request sets sort lexicographically and remove duplicates.  <a href="structeve_1_1crowd_1_1FlowGoal.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning immutable field lease; copies pin storage, never the <a class="el" href="classeve_1_1crowd_1_1Crowd.html" title="群体行为模块：连续流场寻路 + 海量单位移动/转向/行动 + Boids 鸟群。">Crowd</a> provider. @thread Copy/release/query on the simulation owner thread for deterministic eviction. Owner/input/generation identify in-process use. Destruction releases the pin; never persist this value.  <a href="classeve_1_1crowd_1_1FlowLease.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowSample.html">FlowSample</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning lease sample with explicit reachability.  <a href="structeve_1_1crowd_1_1FlowSample.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1FlowVec.html">FlowVec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">流场采样结果（脚本 flowAtWorld / flowAtCell 返回值）。  <a href="structeve_1_1crowd_1_1FlowVec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical independent predictive-steering and body-contact policy; both filters are symmetric.  <a href="structeve_1_1crowd_1_1InteractionPolicy.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">MovementBinding</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Agent-owned selection of a provider-defined movement policy. Zero identity and revision mean compatibility mode; otherwise both must be positive. A binding does not own a provider or a field. Stale/missing policies suspend Flow steering.  <a href="structeve_1_1crowd_1_1MovementBinding.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1MovementClassTag.html">MovementClassTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Movement policy identity; the provider owns its stable definition.  <a href="structeve_1_1crowd_1_1MovementClassTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html">NavigationSurfaceSnapshot</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning adapter input: raw physical terrain and separately inflated navigation costs. @ownership Copies are values; prepare never retains caller arrays. @thread Prepare/publish on the simulation owner thread; source ownership remains with the map provider.  <a href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">NavigationSurfaceStamp</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Provenance of one immutable navigation projection.  <a href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1NavigationSurfaceTag.html">NavigationSurfaceTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Domain tags for world-owned navigation identities.  <a href="structeve_1_1crowd_1_1NavigationSurfaceTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnBatch.html">SpawnBatch</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Caller-built transaction; positive budgets bound search and relaxation. @cost Linear in requested agents plus bounded candidate/contact checks; callers amortize by batching spawns.  <a href="structeve_1_1crowd_1_1SpawnBatch.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnPlacement.html">SpawnPlacement</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning placement result, independent of compact slots and subsequent removal.  <a href="structeve_1_1crowd_1_1SpawnPlacement.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnReceipt.html">SpawnReceipt</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observations from a committed spawn transaction. @cost Linear in created placement count; returned by value once per spawn batch.  <a href="structeve_1_1crowd_1_1SpawnReceipt.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SpawnRequest.html">SpawnRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One named agent to create; all fields are owned values.  <a href="structeve_1_1crowd_1_1SpawnRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1SteeringIntent.html">SteeringIntent</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning local steering request; does not retain navigation or gameplay objects.  <a href="structeve_1_1crowd_1_1SteeringIntent.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1StepReport.html">StepReport</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning observations of one completed advance; simulation-thread only.  <a href="structeve_1_1crowd_1_1StepReport.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1crowd_1_1WorkLimit.html">WorkLimit</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Non-allocating internal unwind signal, translated at the checked simulation boundary.  <a href="structeve_1_1crowd_1_1WorkLimit.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ab5e625d9d717c938ecad48fdd9e0098d" id="r_ab5e625d9d717c938ecad48fdd9e0098d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ab5e625d9d717c938ecad48fdd9e0098d">AgentCreateBatch</a> = <a class="el" href="structeve_1_1crowd_1_1SpawnBatch.html">SpawnBatch</a></td></tr>
+<tr class="memdesc:ab5e625d9d717c938ecad48fdd9e0098d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Canonical creation batch; reuses the existing atomic placement policies and budgets.  <br /></td></tr>
+<tr class="separator:ab5e625d9d717c938ecad48fdd9e0098d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a54d1077d1aea7b16780a8ed41bce0121" id="r_a54d1077d1aea7b16780a8ed41bce0121"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a54d1077d1aea7b16780a8ed41bce0121">NavigationSurfaceId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">detail::StrongUint64</a>&lt; <a class="el" href="structeve_1_1crowd_1_1NavigationSurfaceTag.html">NavigationSurfaceTag</a> &gt;</td></tr>
+<tr class="separator:a54d1077d1aea7b16780a8ed41bce0121"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a145b45d97cbecc3631f36f468d495c99" id="r_a145b45d97cbecc3631f36f468d495c99"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a145b45d97cbecc3631f36f468d495c99">MovementClassId</a> = <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">detail::StrongUint64</a>&lt; <a class="el" href="structeve_1_1crowd_1_1MovementClassTag.html">MovementClassTag</a> &gt;</td></tr>
+<tr class="separator:a145b45d97cbecc3631f36f468d495c99"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a64b60d51f42c39cd7547f5594e793daa" id="r_a64b60d51f42c39cd7547f5594e793daa"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a64b60d51f42c39cd7547f5594e793daa">AgentHandle</a> = <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt; <a class="el" href="structeve_1_1crowd_1_1CrowdAgentTag.html">CrowdAgentTag</a> &gt;</td></tr>
+<tr class="memdesc:a64b60d51f42c39cd7547f5594e793daa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation-qualified runtime agent identity; never persist its packed representation.  <br /></td></tr>
+<tr class="separator:a64b60d51f42c39cd7547f5594e793daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:ad48d153b55bdf5bf78a21f9bee3e9429" id="r_ad48d153b55bdf5bf78a21f9bee3e9429"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429">FlowSampleState</a> { <a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16">Reachable</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429a4bed942140642650ca78039de000796a">Unreachable</a>
+ }</td></tr>
+<tr class="memdesc:ad48d153b55bdf5bf78a21f9bee3e9429"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reachability is distinct from gameplay arrival.  <a href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429">更多...</a><br /></td></tr>
+<tr class="separator:ad48d153b55bdf5bf78a21f9bee3e9429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f66f887e9a0df0480550a93f2d2c760" id="r_a6f66f887e9a0df0480550a93f2d2c760"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">SolveQuality</a> : std::uint32_t { <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d">Complete</a> = 0
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a1ced70bd055572c74ac874b5fcb6478e">PredictionTruncated</a> = 1
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a331ae2da4050dec5e657cfe3e6d0207d">ContactResidual</a> = 2
+, <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760a4f51686969109f82d6b1acc1c25c1053">WallResidual</a> = 4
+ }</td></tr>
+<tr class="memdesc:a6f66f887e9a0df0480550a93f2d2c760"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent quality flags; complete is zero, truncation/residuals may coexist.  <a href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">更多...</a><br /></td></tr>
+<tr class="separator:a6f66f887e9a0df0480550a93f2d2c760"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af19c9d33498f8e95be1180d56f6a3bb1" id="r_af19c9d33498f8e95be1180d56f6a3bb1"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1">AgentAction</a> : std::int32_t { <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1ae599161956d626eda4cb0a5ffb85271c">Idle</a> = 0
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1af1a76f66cca677c6e628d9ca58a6c8fc">Flow</a> = 1
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1aed7ecb1dbb9be8c65f909819dac7aa54">Seek</a> = 2
+, <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1af1a6108c4ad79cf92bc7f0fc3c953f38">Boids</a> = 3
+ }</td></tr>
+<tr class="memdesc:af19c9d33498f8e95be1180d56f6a3bb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong locomotion intent; numeric values retain compatibility action codes.  <a href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1">更多...</a><br /></td></tr>
+<tr class="separator:af19c9d33498f8e95be1180d56f6a3bb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec6fcd02e9ca1f10c87dc2affa41de6" id="r_a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6">SpawnPolicy</a> { <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a1534d7ab1a66b9fa09cf7fb8b4ae7558">RejectOverlap</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a73c7dc50778e21c99e7287cd96781689">NearestFree</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6a16388ac552d3f057b02a524955441483">PushNeighbors</a>
+ }</td></tr>
+<tr class="memdesc:a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Placement policy for an atomic spawn batch.  <a href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6">更多...</a><br /></td></tr>
+<tr class="separator:a8ec6fcd02e9ca1f10c87dc2affa41de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed1448f94b6bb1c65d33d56dc8adaf87" id="r_aed1448f94b6bb1c65d33d56dc8adaf87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87">FieldState</a> { <a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87af5d49bc3243ac8419db1a2a0c448d1f3">Unconfigured</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87ad766ab14778e9692b44f5944d193e6f9">Unbuilt</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87ae7d31fc0602fb2ede144d18cdffd816b">Ready</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87af1ac273d3c6d8e6489bf332819a2f650">Stale</a>
+ }</td></tr>
+<tr class="memdesc:aed1448f94b6bb1c65d33d56dc8adaf87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Navigation readiness relative to the current terrain and goals.  <a href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87">更多...</a><br /></td></tr>
+<tr class="separator:aed1448f94b6bb1c65d33d56dc8adaf87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a38c709db6a26b73824ddac229ddf877e" id="r_a38c709db6a26b73824ddac229ddf877e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a38c709db6a26b73824ddac229ddf877e">CrowdExecution</a> { <a class="el" href="namespaceeve_1_1crowd.html#a38c709db6a26b73824ddac229ddf877ea5255d3daaa0a6276b844d61401e6f493">Serial</a>
+, <a class="el" href="namespaceeve_1_1crowd.html#a38c709db6a26b73824ddac229ddf877ea98402eecfbcefc336954458a01752131">Parallel</a>
+ }</td></tr>
+<tr class="memdesc:a38c709db6a26b73824ddac229ddf877e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit execution selection; serial does not require a provider.  <a href="namespaceeve_1_1crowd.html#a38c709db6a26b73824ddac229ddf877e">更多...</a><br /></td></tr>
+<tr class="separator:a38c709db6a26b73824ddac229ddf877e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a7682fc9553e68732f9437c079e8354ce" id="r_a7682fc9553e68732f9437c079e8354ce"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a7682fc9553e68732f9437c079e8354ce">Module_IMPL</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a>, new <a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a>())</td></tr>
+<tr class="separator:a7682fc9553e68732f9437c079e8354ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76802004e0d0d90099d2dcbae98107e3" id="r_a76802004e0d0d90099d2dcbae98107e3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a76802004e0d0d90099d2dcbae98107e3">validAgentUpdate</a> (const <a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">AgentUpdate</a> &amp;update)</td></tr>
+<tr class="separator:a76802004e0d0d90099d2dcbae98107e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52676c487dfd62c7db8f177f322e7655" id="r_a52676c487dfd62c7db8f177f322e7655"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">MovementBinding</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a52676c487dfd62c7db8f177f322e7655">parseMovementBinding</a> (const ssq::Table &amp;table)</td></tr>
+<tr class="memdesc:a52676c487dfd62c7db8f177f322e7655"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode exact integer movement identities; no floating-point identity coercion.  <br /></td></tr>
+<tr class="separator:a52676c487dfd62c7db8f177f322e7655"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa8e96469bd6a1e5a9a226a26040b4de6" id="r_aa8e96469bd6a1e5a9a226a26040b4de6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#aa8e96469bd6a1e5a9a226a26040b4de6">parseInteractionPolicy</a> (ssq::Table table)</td></tr>
+<tr class="memdesc:aa8e96469bd6a1e5a9a226a26040b4de6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Decode a canonical policy at the script boundary; throws on missing or wrongly typed fields.  <br /></td></tr>
+<tr class="separator:aa8e96469bd6a1e5a9a226a26040b4de6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6226fd7084b8a2431ba27355a58f9cd3" id="r_a6226fd7084b8a2431ba27355a58f9cd3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a6226fd7084b8a2431ba27355a58f9cd3">exposeAgentBatches</a> (ssq::Class &amp;<a class="el" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>)</td></tr>
+<tr class="memdesc:a6226fd7084b8a2431ba27355a58f9cd3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compose public numeric identity/batch bindings without accessing private storage.  <br /></td></tr>
+<tr class="separator:a6226fd7084b8a2431ba27355a58f9cd3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d6ac32f6628cf9019ccca0149c0808b" id="r_a7d6ac32f6628cf9019ccca0149c0808b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a7d6ac32f6628cf9019ccca0149c0808b">canonicalFlowCoordinates</a> (std::span&lt; const <a class="el" href="structeve_1_1crowd_1_1FlowGoal.html">FlowGoal</a> &gt; goals, const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;field)</td></tr>
+<tr class="memdesc:a7d6ac32f6628cf9019ccca0149c0808b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy validated goals into their unique canonical coordinates.  <br /></td></tr>
+<tr class="separator:a7d6ac32f6628cf9019ccca0149c0808b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac136251bc4991c283936f8b0c8de18eb" id="r_ac136251bc4991c283936f8b0c8de18eb"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ac136251bc4991c283936f8b0c8de18eb">isFlowPointReachable</a> (const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;field, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>) noexcept</td></tr>
+<tr class="memdesc:ac136251bc4991c283936f8b0c8de18eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Observe exact containing-cell reachability, independent of interpolation across blocked cells. @ownership Borrows immutable field only during call. @thread Owner thread. @reentrancy No callbacks.  <br /></td></tr>
+<tr class="separator:ac136251bc4991c283936f8b0c8de18eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcc4c2328977d31976fb405b5cf82547" id="r_abcc4c2328977d31976fb405b5cf82547"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#abcc4c2328977d31976fb405b5cf82547">canonicalInteraction</a> (<a class="el" href="structeve_1_1crowd_1_1AgentInteraction.html">AgentInteraction</a> policy)</td></tr>
+<tr class="memdesc:abcc4c2328977d31976fb405b5cf82547"><td class="mdescLeft">&#160;</td><td class="mdescRight">Normalize a compatibility filter into the canonical two-filter policy.  <br /></td></tr>
+<tr class="separator:abcc4c2328977d31976fb405b5cf82547"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa51510a907467c02118f16011e47b5cd" id="r_aa51510a907467c02118f16011e47b5cd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#aa51510a907467c02118f16011e47b5cd">validInteraction</a> (<a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a> policy)</td></tr>
+<tr class="memdesc:aa51510a907467c02118f16011e47b5cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check finite mobility and nonnegative filter masks without modifying state.  <br /></td></tr>
+<tr class="separator:aa51510a907467c02118f16011e47b5cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab56e2b55b92193448aade798f195aa0b" id="r_ab56e2b55b92193448aade798f195aa0b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ab56e2b55b92193448aade798f195aa0b">exposeNavigationRequests</a> (ssq::Class &amp;<a class="el" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>)</td></tr>
+<tr class="memdesc:ab56e2b55b92193448aade798f195aa0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register generation-qualified transient navigation request bindings.  <br /></td></tr>
+<tr class="separator:ab56e2b55b92193448aade798f195aa0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1504842f1498caaa0d3bb6ff8f8e44ab" id="r_a1504842f1498caaa0d3bb6ff8f8e44ab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a1504842f1498caaa0d3bb6ff8f8e44ab">resolveFlowRequestLease</a> (<a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a> &amp;crowd, const ssq::Table &amp;<a class="el" href="OceanRenderBindings_8cpp.html#a00731dc7fd8bbfebb1f9c2488b044f56">token</a>)</td></tr>
+<tr class="memdesc:a1504842f1498caaa0d3bb6ff8f8e44ab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolve a checked request-owned lease without retaining script table references.  <br /></td></tr>
+<tr class="separator:a1504842f1498caaa0d3bb6ff8f8e44ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af85ed75c4859163e3ffb50a4871a3142" id="r_af85ed75c4859163e3ffb50a4871a3142"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#af85ed75c4859163e3ffb50a4871a3142">isTerrainClear</a> (const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;field, bool clamp, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:af85ed75c4859163e3ffb50a4871a3142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shared exact-placement geometry predicate for creation and relocation transactions.  <br /></td></tr>
+<tr class="separator:af85ed75c4859163e3ffb50a4871a3142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad36d461f67550db829a2359cf8463872" id="r_ad36d461f67550db829a2359cf8463872"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#ad36d461f67550db829a2359cf8463872">namedTieValue</a> (std::string_view identity)</td></tr>
+<tr class="memdesc:ad36d461f67550db829a2359cf8463872"><td class="mdescLeft">&#160;</td><td class="mdescRight">Hash UTF-8 identity bytes once at admission; collisions are rejected by the registry.  <br /></td></tr>
+<tr class="separator:ad36d461f67550db829a2359cf8463872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="var-members" name="var-members"></a>
+变量</h2></td></tr>
+<tr class="memitem:a1ce41618c6816e14cf0daead2b8865a0" id="r_a1ce41618c6816e14cf0daead2b8865a0"><td class="memItemLeft" align="right" valign="top">constexpr std::uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1crowd.html#a1ce41618c6816e14cf0daead2b8865a0">flowBuildAlgorithmVersion</a> = 1</td></tr>
+<tr class="memdesc:a1ce41618c6816e14cf0daead2b8865a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Increment when the navigation construction algorithm changes its observable output.  <br /></td></tr>
+<tr class="separator:a1ce41618c6816e14cf0daead2b8865a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="ab5e625d9d717c938ecad48fdd9e0098d" name="ab5e625d9d717c938ecad48fdd9e0098d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5e625d9d717c938ecad48fdd9e0098d">&#9670;&#160;</a></span>AgentCreateBatch</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1crowd.html#ab5e625d9d717c938ecad48fdd9e0098d">eve::crowd::AgentCreateBatch</a> = typedef <a class="el" href="structeve_1_1crowd_1_1SpawnBatch.html">SpawnBatch</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Canonical creation batch; reuses the existing atomic placement policies and budgets. </p>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00233">233</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a64b60d51f42c39cd7547f5594e793daa" name="a64b60d51f42c39cd7547f5594e793daa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a64b60d51f42c39cd7547f5594e793daa">&#9670;&#160;</a></span>AgentHandle</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1crowd.html#a64b60d51f42c39cd7547f5594e793daa">eve::crowd::AgentHandle</a> = typedef <a class="el" href="classeve_1_1RuntimeHandle.html">RuntimeHandle</a>&lt;<a class="el" href="structeve_1_1crowd_1_1CrowdAgentTag.html">CrowdAgentTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation-qualified runtime agent identity; never persist its packed representation. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdTypes_8h_source.html">CrowdTypes.h</a> 第 <a class="el" href="CrowdTypes_8h_source.html#l00082">82</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a145b45d97cbecc3631f36f468d495c99" name="a145b45d97cbecc3631f36f468d495c99"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a145b45d97cbecc3631f36f468d495c99">&#9670;&#160;</a></span>MovementClassId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1crowd.html#a145b45d97cbecc3631f36f468d495c99">eve::crowd::MovementClassId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">detail::StrongUint64</a>&lt;<a class="el" href="structeve_1_1crowd_1_1MovementClassTag.html">MovementClassTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CrowdTypes_8h_source.html">CrowdTypes.h</a> 第 <a class="el" href="CrowdTypes_8h_source.html#l00022">22</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a54d1077d1aea7b16780a8ed41bce0121" name="a54d1077d1aea7b16780a8ed41bce0121"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a54d1077d1aea7b16780a8ed41bce0121">&#9670;&#160;</a></span>NavigationSurfaceId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1crowd.html#a54d1077d1aea7b16780a8ed41bce0121">eve::crowd::NavigationSurfaceId</a> = typedef <a class="el" href="classeve_1_1detail_1_1StrongUint64.html">detail::StrongUint64</a>&lt;<a class="el" href="structeve_1_1crowd_1_1NavigationSurfaceTag.html">NavigationSurfaceTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CrowdTypes_8h_source.html">CrowdTypes.h</a> 第 <a class="el" href="CrowdTypes_8h_source.html#l00021">21</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="af19c9d33498f8e95be1180d56f6a3bb1" name="af19c9d33498f8e95be1180d56f6a3bb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af19c9d33498f8e95be1180d56f6a3bb1">&#9670;&#160;</a></span>AgentAction</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#af19c9d33498f8e95be1180d56f6a3bb1">eve::crowd::AgentAction</a> : std::int32_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Strong locomotion intent; numeric values retain compatibility action codes. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="af19c9d33498f8e95be1180d56f6a3bb1ae599161956d626eda4cb0a5ffb85271c" name="af19c9d33498f8e95be1180d56f6a3bb1ae599161956d626eda4cb0a5ffb85271c"></a>Idle&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af19c9d33498f8e95be1180d56f6a3bb1af1a76f66cca677c6e628d9ca58a6c8fc" name="af19c9d33498f8e95be1180d56f6a3bb1af1a76f66cca677c6e628d9ca58a6c8fc"></a>Flow&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af19c9d33498f8e95be1180d56f6a3bb1aed7ecb1dbb9be8c65f909819dac7aa54" name="af19c9d33498f8e95be1180d56f6a3bb1aed7ecb1dbb9be8c65f909819dac7aa54"></a>Seek&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="af19c9d33498f8e95be1180d56f6a3bb1af1a6108c4ad79cf92bc7f0fc3c953f38" name="af19c9d33498f8e95be1180d56f6a3bb1af1a6108c4ad79cf92bc7f0fc3c953f38"></a>Boids&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00153">153</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a38c709db6a26b73824ddac229ddf877e" name="a38c709db6a26b73824ddac229ddf877e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a38c709db6a26b73824ddac229ddf877e">&#9670;&#160;</a></span>CrowdExecution</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#a38c709db6a26b73824ddac229ddf877e">eve::crowd::CrowdExecution</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit execution selection; serial does not require a provider. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a38c709db6a26b73824ddac229ddf877ea5255d3daaa0a6276b844d61401e6f493" name="a38c709db6a26b73824ddac229ddf877ea5255d3daaa0a6276b844d61401e6f493"></a>Serial&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a38c709db6a26b73824ddac229ddf877ea98402eecfbcefc336954458a01752131" name="a38c709db6a26b73824ddac229ddf877ea98402eecfbcefc336954458a01752131"></a>Parallel&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="CrowdWorkScheduler_8h_source.html">CrowdWorkScheduler.h</a> 第 <a class="el" href="CrowdWorkScheduler_8h_source.html#l00007">7</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aed1448f94b6bb1c65d33d56dc8adaf87" name="aed1448f94b6bb1c65d33d56dc8adaf87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed1448f94b6bb1c65d33d56dc8adaf87">&#9670;&#160;</a></span>FieldState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#aed1448f94b6bb1c65d33d56dc8adaf87">eve::crowd::FieldState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Navigation readiness relative to the current terrain and goals. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aed1448f94b6bb1c65d33d56dc8adaf87af5d49bc3243ac8419db1a2a0c448d1f3" name="aed1448f94b6bb1c65d33d56dc8adaf87af5d49bc3243ac8419db1a2a0c448d1f3"></a>Unconfigured&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aed1448f94b6bb1c65d33d56dc8adaf87ad766ab14778e9692b44f5944d193e6f9" name="aed1448f94b6bb1c65d33d56dc8adaf87ad766ab14778e9692b44f5944d193e6f9"></a>Unbuilt&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aed1448f94b6bb1c65d33d56dc8adaf87ae7d31fc0602fb2ede144d18cdffd816b" name="aed1448f94b6bb1c65d33d56dc8adaf87ae7d31fc0602fb2ede144d18cdffd816b"></a>Ready&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aed1448f94b6bb1c65d33d56dc8adaf87af1ac273d3c6d8e6489bf332819a2f650" name="aed1448f94b6bb1c65d33d56dc8adaf87af1ac273d3c6d8e6489bf332819a2f650"></a>Stale&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="CrowdField_8h_source.html">CrowdField.h</a> 第 <a class="el" href="CrowdField_8h_source.html#l00015">15</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad48d153b55bdf5bf78a21f9bee3e9429" name="ad48d153b55bdf5bf78a21f9bee3e9429"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad48d153b55bdf5bf78a21f9bee3e9429">&#9670;&#160;</a></span>FlowSampleState</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#ad48d153b55bdf5bf78a21f9bee3e9429">eve::crowd::FlowSampleState</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Reachability is distinct from gameplay arrival. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16" name="ad48d153b55bdf5bf78a21f9bee3e9429ae8f4d2326bcff302195325bc82960e16"></a>Reachable&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ad48d153b55bdf5bf78a21f9bee3e9429a4bed942140642650ca78039de000796a" name="ad48d153b55bdf5bf78a21f9bee3e9429a4bed942140642650ca78039de000796a"></a>Unreachable&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00048">48</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a6f66f887e9a0df0480550a93f2d2c760" name="a6f66f887e9a0df0480550a93f2d2c760"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6f66f887e9a0df0480550a93f2d2c760">&#9670;&#160;</a></span>SolveQuality</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#a6f66f887e9a0df0480550a93f2d2c760">eve::crowd::SolveQuality</a> : std::uint32_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Independent quality flags; complete is zero, truncation/residuals may coexist. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d" name="a6f66f887e9a0df0480550a93f2d2c760aae94f80b3ce82062a5dd7815daa04f9d"></a>Complete&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6f66f887e9a0df0480550a93f2d2c760a1ced70bd055572c74ac874b5fcb6478e" name="a6f66f887e9a0df0480550a93f2d2c760a1ced70bd055572c74ac874b5fcb6478e"></a>PredictionTruncated&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6f66f887e9a0df0480550a93f2d2c760a331ae2da4050dec5e657cfe3e6d0207d" name="a6f66f887e9a0df0480550a93f2d2c760a331ae2da4050dec5e657cfe3e6d0207d"></a>ContactResidual&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a6f66f887e9a0df0480550a93f2d2c760a4f51686969109f82d6b1acc1c25c1053" name="a6f66f887e9a0df0480550a93f2d2c760a4f51686969109f82d6b1acc1c25c1053"></a>WallResidual&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00064">64</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a8ec6fcd02e9ca1f10c87dc2affa41de6" name="a8ec6fcd02e9ca1f10c87dc2affa41de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ec6fcd02e9ca1f10c87dc2affa41de6">&#9670;&#160;</a></span>SpawnPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1crowd.html#a8ec6fcd02e9ca1f10c87dc2affa41de6">eve::crowd::SpawnPolicy</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Placement policy for an atomic spawn batch. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8ec6fcd02e9ca1f10c87dc2affa41de6a1534d7ab1a66b9fa09cf7fb8b4ae7558" name="a8ec6fcd02e9ca1f10c87dc2affa41de6a1534d7ab1a66b9fa09cf7fb8b4ae7558"></a>RejectOverlap&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ec6fcd02e9ca1f10c87dc2affa41de6a73c7dc50778e21c99e7287cd96781689" name="a8ec6fcd02e9ca1f10c87dc2affa41de6a73c7dc50778e21c99e7287cd96781689"></a>NearestFree&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8ec6fcd02e9ca1f10c87dc2affa41de6a16388ac552d3f057b02a524955441483" name="a8ec6fcd02e9ca1f10c87dc2affa41de6a16388ac552d3f057b02a524955441483"></a>PushNeighbors&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Crowd_8h_source.html">Crowd.h</a> 第 <a class="el" href="Crowd_8h_source.html#l00207">207</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="a7d6ac32f6628cf9019ccca0149c0808b" name="a7d6ac32f6628cf9019ccca0149c0808b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d6ac32f6628cf9019ccca0149c0808b">&#9670;&#160;</a></span>canonicalFlowCoordinates()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::vector&lt; int &gt; &gt; eve::crowd::canonicalFlowCoordinates </td>
+          <td>(</td>
+          <td class="paramtype">std::span&lt; const <a class="el" href="structeve_1_1crowd_1_1FlowGoal.html">FlowGoal</a> &gt;&#160;</td>
+          <td class="paramname"><em>goals</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy validated goals into their unique canonical coordinates. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning coordinates or invalid input. @ownership Retains no caller span. @thread Owner thread. @reentrancy No callbacks. @cost Bounded sorting/copying per goal set; amortize per navigation request. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CrowdFlowCache_8cpp_source.html">CrowdFlowCache.cpp</a> 第 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00013">13</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a> , 以及 <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00098">eve::crowd::Crowd::acquireFlowField()</a> , 以及 <a class="el" href="CrowdNavigation_8cpp_source.html#l00035">eve::crowd::Crowd::prepareFlowBuild()</a>.</p>
+
+</div>
+</div>
+<a id="abcc4c2328977d31976fb405b5cf82547" name="abcc4c2328977d31976fb405b5cf82547"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcc4c2328977d31976fb405b5cf82547">&#9670;&#160;</a></span>canonicalInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a> eve::crowd::canonicalInteraction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1AgentInteraction.html">AgentInteraction</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Normalize a compatibility filter into the canonical two-filter policy. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdInteraction_8cpp_source.html">CrowdInteraction.cpp</a> 第 <a class="el" href="CrowdInteraction_8cpp_source.html#l00008">8</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8h_source.html#l00139">eve::crowd::AgentInteraction::holdPosition</a>, <a class="el" href="Crowd_8h_source.html#l00140">eve::crowd::AgentInteraction::layer</a>, <a class="el" href="Crowd_8h_source.html#l00141">eve::crowd::AgentInteraction::mask</a> , 以及 <a class="el" href="Crowd_8h_source.html#l00138">eve::crowd::AgentInteraction::pushability</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdBatch_8cpp_source.html#l00047">eve::crowd::Crowd::Impl::applyAgentUpdate()</a>, <a class="el" href="CrowdSpawn_8cpp_source.html#l00037">eve::crowd::Crowd::createAgents()</a> , 以及 <a class="el" href="CrowdInteraction_8cpp_source.html#l00018">eve::crowd::Crowd::setAgentInteraction()</a>.</p>
+
+</div>
+</div>
+<a id="a6226fd7084b8a2431ba27355a58f9cd3" name="a6226fd7084b8a2431ba27355a58f9cd3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6226fd7084b8a2431ba27355a58f9cd3">&#9670;&#160;</a></span>exposeAgentBatches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::exposeAgentBatches </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Class &amp;&#160;</td>
+          <td class="paramname"><em>cls</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Compose public numeric identity/batch bindings without accessing private storage. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdBatchBindings_8cpp_source.html">CrowdBatchBindings.cpp</a> 第 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00134">134</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdAdvance_8cpp_source.html#l00060">eve::crowd::Crowd::advance()</a>, <a class="el" href="ECS_8cpp_source.html#l00039">cls</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00134">exposeAgentBatches()</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a> , 以及 <a class="el" href="ECS_8cpp_source.html#l00038">vm</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00134">exposeAgentBatches()</a>.</p>
+
+</div>
+</div>
+<a id="ab56e2b55b92193448aade798f195aa0b" name="ab56e2b55b92193448aade798f195aa0b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab56e2b55b92193448aade798f195aa0b">&#9670;&#160;</a></span>exposeNavigationRequests()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::crowd::exposeNavigationRequests </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Class &amp;&#160;</td>
+          <td class="paramname"><em>cls</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register generation-qualified transient navigation request bindings. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdNavigationBindings_8cpp_source.html">CrowdNavigationBindings.cpp</a> 第 <a class="el" href="CrowdNavigationBindings_8cpp_source.html#l00073">73</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ac136251bc4991c283936f8b0c8de18eb" name="ac136251bc4991c283936f8b0c8de18eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac136251bc4991c283936f8b0c8de18eb">&#9670;&#160;</a></span>isFlowPointReachable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::isFlowPointReachable </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Observe exact containing-cell reachability, independent of interpolation across blocked cells. @ownership Borrows immutable field only during call. @thread Owner thread. @reentrancy No callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdFlowCache_8cpp_source.html">CrowdFlowCache.cpp</a> 第 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CardTypes_8cpp_source.html#l00033">cx</a>, <a class="el" href="CardTypes_8cpp_source.html#l00034">cy</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdPreferred_8cpp_source.html#l00065">eve::crowd::Crowd::Impl::preparePreferredVelocities()</a> , 以及 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00164">eve::crowd::Crowd::sampleFlowField()</a>.</p>
+
+</div>
+</div>
+<a id="af85ed75c4859163e3ffb50a4871a3142" name="af85ed75c4859163e3ffb50a4871a3142"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af85ed75c4859163e3ffb50a4871a3142">&#9670;&#160;</a></span>isTerrainClear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::isTerrainClear </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1crowd_1_1CrowdField.html">CrowdField</a> &amp;&#160;</td>
+          <td class="paramname"><em>field</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>clamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Shared exact-placement geometry predicate for creation and relocation transactions. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdSpawn_8cpp_source.html">CrowdSpawn.cpp</a> 第 <a class="el" href="CrowdSpawn_8cpp_source.html#l00006">6</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSpawn_8cpp_source.html#l00037">eve::crowd::Crowd::createAgents()</a> , 以及 <a class="el" href="CrowdRelocation_8cpp_source.html#l00007">eve::crowd::Crowd::relocateAgents()</a>.</p>
+
+</div>
+</div>
+<a id="a7682fc9553e68732f9437c079e8354ce" name="a7682fc9553e68732f9437c079e8354ce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7682fc9553e68732f9437c079e8354ce">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::crowd::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Crowd</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ad36d461f67550db829a2359cf8463872" name="ad36d461f67550db829a2359cf8463872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad36d461f67550db829a2359cf8463872">&#9670;&#160;</a></span>namedTieValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::crowd::namedTieValue </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>identity</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Hash UTF-8 identity bytes once at admission; collisions are rejected by the registry. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdRegistry_8cpp_source.html">CrowdRegistry.cpp</a> 第 <a class="el" href="CrowdRegistry_8cpp_source.html#l00023">23</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Crowd_8cpp_source.html#l00150">eve::crowd::Crowd::addNamedAgent()</a> , 以及 <a class="el" href="CrowdSpawn_8cpp_source.html#l00037">eve::crowd::Crowd::createAgents()</a>.</p>
+
+</div>
+</div>
+<a id="aa8e96469bd6a1e5a9a226a26040b4de6" name="aa8e96469bd6a1e5a9a226a26040b4de6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa8e96469bd6a1e5a9a226a26040b4de6">&#9670;&#160;</a></span>parseInteractionPolicy()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a> eve::crowd::parseInteractionPolicy </td>
+          <td>(</td>
+          <td class="paramtype">ssq::Table&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode a canonical policy at the script boundary; throws on missing or wrongly typed fields. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdBatchBindings_8cpp_source.html">CrowdBatchBindings.cpp</a> 第 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00119">119</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ECS_8cpp_source.html#l00155">key</a>, <a class="el" href="BuildingFx_8cpp_source.html#l00064">mask</a>, <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00119">parseInteractionPolicy()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00119">parseInteractionPolicy()</a>.</p>
+
+</div>
+</div>
+<a id="a52676c487dfd62c7db8f177f322e7655" name="a52676c487dfd62c7db8f177f322e7655"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52676c487dfd62c7db8f177f322e7655">&#9670;&#160;</a></span>parseMovementBinding()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1crowd_1_1MovementBinding.html">MovementBinding</a> eve::crowd::parseMovementBinding </td>
+          <td>(</td>
+          <td class="paramtype">const ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>table</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Decode exact integer movement identities; no floating-point identity coercion. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdBatchBindings_8cpp_source.html">CrowdBatchBindings.cpp</a> 第 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00112">112</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00112">parseMovementBinding()</a> , 以及 <a class="el" href="PixelWorld_8cpp_source.html#l00062">revision</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdBatchBindings_8cpp_source.html#l00112">parseMovementBinding()</a>.</p>
+
+</div>
+</div>
+<a id="a1504842f1498caaa0d3bb6ff8f8e44ab" name="a1504842f1498caaa0d3bb6ff8f8e44ab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1504842f1498caaa0d3bb6ff8f8e44ab">&#9670;&#160;</a></span>resolveFlowRequestLease()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1crowd_1_1FlowLease.html">FlowLease</a> &gt; eve::crowd::resolveFlowRequestLease </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1crowd_1_1Crowd.html">Crowd</a> &amp;&#160;</td>
+          <td class="paramname"><em>crowd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const ssq::Table &amp;&#160;</td>
+          <td class="paramname"><em>token</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Resolve a checked request-owned lease without retaining script table references. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning pin copy or structured invalid/stale failure. @ownership Copies only the lease. @thread Owner thread. @reentrancy No callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CrowdNavigationBindings_8cpp_source.html">CrowdNavigationBindings.cpp</a> 第 <a class="el" href="CrowdNavigationBindings_8cpp_source.html#l00061">61</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a76802004e0d0d90099d2dcbae98107e3" name="a76802004e0d0d90099d2dcbae98107e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a76802004e0d0d90099d2dcbae98107e3">&#9670;&#160;</a></span>validAgentUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::validAgentUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1crowd_1_1AgentUpdate.html">AgentUpdate</a> &amp;&#160;</td>
+          <td class="paramname"><em>update</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="CrowdBatch_8cpp_source.html">CrowdBatch.cpp</a> 第 <a class="el" href="CrowdBatch_8cpp_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdUpdatePlan_8cpp_source.html#l00013">eve::crowd::Crowd::prepareAgentUpdates()</a>.</p>
+
+</div>
+</div>
+<a id="aa51510a907467c02118f16011e47b5cd" name="aa51510a907467c02118f16011e47b5cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa51510a907467c02118f16011e47b5cd">&#9670;&#160;</a></span>validInteraction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::crowd::validInteraction </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1crowd_1_1InteractionPolicy.html">InteractionPolicy</a>&#160;</td>
+          <td class="paramname"><em>policy</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Check finite mobility and nonnegative filter masks without modifying state. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdInteraction_8cpp_source.html">CrowdInteraction.cpp</a> 第 <a class="el" href="CrowdInteraction_8cpp_source.html#l00012">12</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Crowd_8h_source.html#l00148">eve::crowd::InteractionPolicy::avoidanceLayer</a>, <a class="el" href="Crowd_8h_source.html#l00148">eve::crowd::InteractionPolicy::avoidanceMask</a>, <a class="el" href="Crowd_8h_source.html#l00149">eve::crowd::InteractionPolicy::contactLayer</a>, <a class="el" href="Crowd_8h_source.html#l00149">eve::crowd::InteractionPolicy::contactMask</a> , 以及 <a class="el" href="Crowd_8h_source.html#l00146">eve::crowd::InteractionPolicy::pushability</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdSpawn_8cpp_source.html#l00037">eve::crowd::Crowd::createAgents()</a> , 以及 <a class="el" href="CrowdInteraction_8cpp_source.html#l00024">eve::crowd::Crowd::setInteractionPolicy()</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">变量说明</h2>
+<a id="a1ce41618c6816e14cf0daead2b8865a0" name="a1ce41618c6816e14cf0daead2b8865a0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ce41618c6816e14cf0daead2b8865a0">&#9670;&#160;</a></span>flowBuildAlgorithmVersion</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr std::uint32_t eve::crowd::flowBuildAlgorithmVersion = 1</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Increment when the navigation construction algorithm changes its observable output. </p>
+
+<p class="definition">在文件 <a class="el" href="CrowdTypes_8h_source.html">CrowdTypes.h</a> 第 <a class="el" href="CrowdTypes_8h_source.html#l00041">41</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CrowdFlowCache_8cpp_source.html#l00110">eve::crowd::Crowd::acquireFlowField()</a>, <a class="el" href="CrowdFlowCache_8cpp_source.html#l00098">eve::crowd::Crowd::acquireFlowField()</a> , 以及 <a class="el" href="CrowdInternal_8h_source.html#l00117">eve::crowd::Crowd::Impl::isFlowLeaseCurrent()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

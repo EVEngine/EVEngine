@@ -1,0 +1,284 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/fluids/OceanBoat.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_64d77e4380a58ef2a81d909febed7275.html">fluids</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">OceanBoat.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="OceanBoat_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="OceanWaterView_8h.html">fluids/OceanWaterView.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="keyword">class </span>Body3D;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>}</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1fluids.html">eve::fluids</a> {</div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullCell.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanHullCell.html">OceanHullCell</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullCell.html#a0c0ce6931c34db00e0696e59f0835314">   15</a></span>    glm::dvec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullCell.html#a0c0ce6931c34db00e0696e59f0835314">center</a>{0.0};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullCell.html#a9c862115aad3bcab843bdba0d41935cf">   16</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullCell.html#a9c862115aad3bcab843bdba0d41935cf">radius</a> = 0.5;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullCell.html#af886277e9b1af640a473e28259c301b7">   17</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullCell.html#af886277e9b1af640a473e28259c301b7">volume</a> = 0.5;</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00020" data-start="{" data-end="};">
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html">   20</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanHullSettings.html">OceanHullSettings</a> {</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#a827067a2d27101f083d00b74a1b1de10">   21</a></span>    std::vector&lt;OceanHullCell&gt; <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#a827067a2d27101f083d00b74a1b1de10">cells</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#a513eaf2858c96478be29f1d5201cdc8e">   22</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#a513eaf2858c96478be29f1d5201cdc8e">waterDensity</a> = 1025.0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#a9547a2e25308bc6ff39692cf806eda10">   23</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#a9547a2e25308bc6ff39692cf806eda10">gravity</a>      = 9.81;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#aa789e8395c87350258f01129ae74f93d">   24</a></span>    glm::dvec3                 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#aa789e8395c87350258f01129ae74f93d">drag</a>{1.2, 1.5, 0.15};</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#acb6fcb2962b6ef2e32e6b277cf8b5eb4">   25</a></span>    glm::dvec3                 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#acb6fcb2962b6ef2e32e6b277cf8b5eb4">propeller</a>{0.0, -0.3, -1.5};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#a5e6e660847ff46d45f9cc19d5c03209b">   26</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#a5e6e660847ff46d45f9cc19d5c03209b">thrust</a>            = 3000.0;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanHullSettings.html#a1c67cde638f9be27703aa2a82f89f257">   27</a></span>    <span class="keywordtype">double</span>                     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanHullSettings.html#a1c67cde638f9be27703aa2a82f89f257">rudderCoefficient</a> = 200.0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00030" data-start="{" data-end="};">
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatContact.html">   30</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanBoatContact.html">OceanBoatContact</a> {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatContact.html#a3f20c87ccd517bc48dffb7a8bbf79812">   31</a></span>    glm::dvec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatContact.html#a3f20c87ccd517bc48dffb7a8bbf79812">position</a>{0.0};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatContact.html#afc75a15aa4a8dd20f18ac6ba42938b17">   32</a></span>    glm::dvec3 <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatContact.html#afc75a15aa4a8dd20f18ac6ba42938b17">relativeVelocity</a>{0.0};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatContact.html#a8e5af2f322c71a2151db27da4dc7e14e">   33</a></span>    <span class="keywordtype">double</span>     <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatContact.html#a8e5af2f322c71a2151db27da4dc7e14e">submergedVolume</a> = 0.0;</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00036" data-start="{" data-end="};">
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatReceipt.html">   36</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanBoatReceipt.html">OceanBoatReceipt</a> {</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#aecf6ba29a632ad5a48063201c715b30d">   37</a></span>    <span class="keywordtype">double</span>                        <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#aecf6ba29a632ad5a48063201c715b30d">time</a> = 0.0;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a62f0125e36dd26d505d03f1cc3835ccb">   38</a></span>    glm::dvec3                    <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a62f0125e36dd26d505d03f1cc3835ccb">totalForce</a>{0.0};</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#ac41d9f9662555aa33104a4c9bff8161c">   39</a></span>    <span class="keywordtype">double</span>                        <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#ac41d9f9662555aa33104a4c9bff8161c">submergedVolume</a> = 0.0;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a3334ccc82166433caef501936de98ef5">   40</a></span>    std::vector&lt;OceanBoatContact&gt; <a class="code hl_variable" href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a3334ccc82166433caef501936de98ef5">contacts</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>};</div>
+</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>[[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1fluids.html#afb4fd0ea77af442f991bf1ab94978bf6">injectOceanBoatWake</a>(<a class="code hl_class" href="classeve_1_1fluids_1_1OceanWake.html">OceanWake</a>&amp; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ab11c10245f55314f39f32cfacf61c46a">wake</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1OceanBoatReceipt.html">OceanBoatReceipt</a>&amp; receipt,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                                                                    <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>);</div>
+<div class="foldopen" id="foldopen00059" data-start="{" data-end="};">
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanBoat.html">   59</a></span><span class="keyword">class </span><a class="code hl_class" href="classeve_1_1fluids_1_1OceanBoat.html">OceanBoat</a> {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <span class="keyword">static</span> <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;OceanBoat&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1fluids_1_1OceanBoat.html#abacfdcba71738c5323b40a6d99b38b8c">create</a>(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <a class="code hl_class" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a>&amp; <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1fluids_1_1OceanHullSettings.html">OceanHullSettings</a>&amp; <a class="code hl_variable" href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a>);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanBoat.html#abd7e5c47b3c004194021dfc9b397b293">   69</a></span>    <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanBoat.html#abd7e5c47b3c004194021dfc9b397b293">~OceanBoat</a>();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanBoat.html#a6699368ffe6a2e2e9c0ee02b3a59e0c7">   70</a></span>    <a class="code hl_function" href="classeve_1_1fluids_1_1OceanBoat.html#a6699368ffe6a2e2e9c0ee02b3a59e0c7">OceanBoat</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanBoat.html">OceanBoat</a>&amp;)            = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno"><a class="line" href="classeve_1_1fluids_1_1OceanBoat.html#a78eacc113135dfec084faf6b94b89228">   71</a></span>    <a class="code hl_class" href="classeve_1_1fluids_1_1OceanBoat.html">OceanBoat</a>&amp; <a class="code hl_function" href="classeve_1_1fluids_1_1OceanBoat.html#a78eacc113135dfec084faf6b94b89228">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanBoat.html">OceanBoat</a>&amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    [[<a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">nodiscard</a>]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;OceanBoatReceipt&gt;</a> <a class="code hl_function" href="classeve_1_1fluids_1_1OceanBoat.html#a3f9199406e476dd173fcdb6bc2214f2e">apply</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanWaterView.html">OceanWaterView</a>&amp; <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a>,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                                                                      <span class="keywordtype">double</span> throttle, <span class="keywordtype">double</span> <a class="code hl_function" href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">rudder</a>);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1fluids_1_1OceanBoat_1_1Impl.html">Impl</a>;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    <span class="keyword">explicit</span> <a class="code hl_class" href="classeve_1_1fluids_1_1OceanBoat.html">OceanBoat</a>(std::unique_ptr&lt;Impl&gt; <a class="code hl_variable" href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a>);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    std::unique_ptr&lt;Impl&gt; impl_;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>};</div>
+</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}  <span class="comment">// namespace eve::fluids</span></div>
+<div class="ttc" id="aCapability_8cpp_html_ad55031c6556322124ec04be72e3244de"><div class="ttname"><a href="Capability_8cpp.html#ad55031c6556322124ec04be72e3244de">impl</a></div><div class="ttdeci">void * impl</div><div class="ttdef"><b>Definition</b> <a href="Capability_8cpp_source.html#l00014">Capability.cpp:14</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aOceanInteractionBindings_8cpp_html_a1460494a7000b8c7705e16798f6b499e"><div class="ttname"><a href="OceanInteractionBindings_8cpp.html#a1460494a7000b8c7705e16798f6b499e">settings</a></div><div class="ttdeci">OceanWakeSettings settings</div><div class="ttdef"><b>Definition</b> <a href="OceanInteractionBindings_8cpp_source.html#l00010">OceanInteractionBindings.cpp:10</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_ab11c10245f55314f39f32cfacf61c46a"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#ab11c10245f55314f39f32cfacf61c46a">wake</a></div><div class="ttdeci">ssq::Object wake</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00041">OceanRenderBindings.cpp:41</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_ae29508736a722b546230738c4e54294d"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#ae29508736a722b546230738c4e54294d">frame</a></div><div class="ttdeci">ssq::Object frame</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00041">OceanRenderBindings.cpp:41</a></div></div>
+<div class="ttc" id="aOceanSprayBindings_8cpp_html_a03e28be41881b703c836edbfe9b51b17"><div class="ttname"><a href="OceanSprayBindings_8cpp.html#a03e28be41881b703c836edbfe9b51b17">dt</a></div><div class="ttdeci">double dt</div><div class="ttdef"><b>Definition</b> <a href="OceanSprayBindings_8cpp_source.html#l00020">OceanSprayBindings.cpp:20</a></div></div>
+<div class="ttc" id="aOceanWaterView_8h_html"><div class="ttname"><a href="OceanWaterView_8h.html">OceanWaterView.h</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00017">ProjectIndexGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html">eve::fluids::OceanBoat</a></div><div class="ttdoc">Water-force adapter over a World3D-owned rigid body, storing generation-qualified links only....</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00059">OceanBoat.h:59</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html_a3f9199406e476dd173fcdb6bc2214f2e"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html#a3f9199406e476dd173fcdb6bc2214f2e">eve::fluids::OceanBoat::apply</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; OceanBoatReceipt &gt; apply(const OceanWaterView &amp;frame, double dt, double throttle, double rudder)</div><div class="ttdoc">Submit buoyancy, body-local directional drag, submerged thrust and rudder forces before physics.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8cpp_source.html#l00054">OceanBoat.cpp:54</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html_a6699368ffe6a2e2e9c0ee02b3a59e0c7"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html#a6699368ffe6a2e2e9c0ee02b3a59e0c7">eve::fluids::OceanBoat::OceanBoat</a></div><div class="ttdeci">OceanBoat(const OceanBoat &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html_a78eacc113135dfec084faf6b94b89228"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html#a78eacc113135dfec084faf6b94b89228">eve::fluids::OceanBoat::operator=</a></div><div class="ttdeci">OceanBoat &amp; operator=(const OceanBoat &amp;)=delete</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html_abacfdcba71738c5323b40a6d99b38b8c"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html#abacfdcba71738c5323b40a6d99b38b8c">eve::fluids::OceanBoat::create</a></div><div class="ttdeci">static EVENGINE_API_DOMAINS Result&lt; std::unique_ptr&lt; OceanBoat &gt; &gt; create(physics::Body3D &amp;body, const OceanHullSettings &amp;settings)</div><div class="ttdoc">Validate/copy a bounded hull and attach to a live dynamic body.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8cpp_source.html#l00031">OceanBoat.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanBoat_html_abd7e5c47b3c004194021dfc9b397b293"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanBoat.html#abd7e5c47b3c004194021dfc9b397b293">eve::fluids::OceanBoat::~OceanBoat</a></div><div class="ttdeci">EVENGINE_API_DOMAINS ~OceanBoat()</div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanWake_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanWake.html">eve::fluids::OceanWake</a></div><div class="ttdoc">Caller-owned wave field with finite-depth gravity dispersion and absorbing boundaries....</div><div class="ttdef"><b>Definition</b> <a href="OceanWake_8h_source.html#l00053">OceanWake.h:53</a></div></div>
+<div class="ttc" id="aclasseve_1_1fluids_1_1OceanWaterView_html"><div class="ttname"><a href="classeve_1_1fluids_1_1OceanWaterView.html">eve::fluids::OceanWaterView</a></div><div class="ttdoc">Synchronous borrowed composition of the spectral sea and an optional local wake. Both owners must out...</div><div class="ttdef"><b>Definition</b> <a href="OceanWaterView_8h_source.html#l00017">OceanWaterView.h:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1Body3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1Body3D.html">eve::physics::Body3D</a></div><div class="ttdoc">Backend-neutral 3D rigid body in meter-space coordinates (+Y up by convention). Owned by a World3D; c...</div><div class="ttdef"><b>Definition</b> <a href="Body3D_8h_source.html#l00031">Body3D.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_1_1ocean__script_html_ad23d23762c333240818be8885f83357c"><div class="ttname"><a href="namespaceeve_1_1fluids_1_1ocean__script.html#ad23d23762c333240818be8885f83357c">eve::fluids::ocean_script::vector</a></div><div class="ttdeci">Value vector(glm::dvec3 v)</div><div class="ttdef"><b>Definition</b> <a href="OceanBindingInternal_8h_source.html#l00033">OceanBindingInternal.h:33</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html"><div class="ttname"><a href="namespaceeve_1_1fluids.html">eve::fluids</a></div><div class="ttdoc">GLSL compute kernels for the GPU surface-flow solver.</div><div class="ttdef"><b>Definition</b> <a href="FluidTarget_8h_source.html#l00012">FluidTarget.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1fluids_html_afb4fd0ea77af442f991bf1ab94978bf6"><div class="ttname"><a href="namespaceeve_1_1fluids.html#afb4fd0ea77af442f991bf1ab94978bf6">eve::fluids::injectOceanBoatWake</a></div><div class="ttdeci">EVENGINE_API_DOMAINS Result&lt; void &gt; injectOceanBoatWake(OceanWake &amp;wake, const OceanBoatReceipt &amp;receipt, double dt)</div><div class="ttdoc">Convert wet hull motion to bounded bow/stern dipoles and vertical impacts in a local wave field.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoatWake_8cpp_source.html#l00008">OceanBoatWake.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatContact_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatContact.html">eve::fluids::OceanBoatContact</a></div><div class="ttdoc">Owning wet hull sample for wake/foam consumers; no rigid-body pointer escapes.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00030">OceanBoat.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatContact_html_a3f20c87ccd517bc48dffb7a8bbf79812"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatContact.html#a3f20c87ccd517bc48dffb7a8bbf79812">eve::fluids::OceanBoatContact::position</a></div><div class="ttdeci">glm::dvec3 position</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00031">OceanBoat.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatContact_html_a8e5af2f322c71a2151db27da4dc7e14e"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatContact.html#a8e5af2f322c71a2151db27da4dc7e14e">eve::fluids::OceanBoatContact::submergedVolume</a></div><div class="ttdeci">double submergedVolume</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00033">OceanBoat.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatContact_html_afc75a15aa4a8dd20f18ac6ba42938b17"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatContact.html#afc75a15aa4a8dd20f18ac6ba42938b17">eve::fluids::OceanBoatContact::relativeVelocity</a></div><div class="ttdeci">glm::dvec3 relativeVelocity</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00032">OceanBoat.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatReceipt_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatReceipt.html">eve::fluids::OceanBoatReceipt</a></div><div class="ttdoc">Owning fixed-step force receipt; consumers may retain it for wake injection.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00036">OceanBoat.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatReceipt_html_a3334ccc82166433caef501936de98ef5"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a3334ccc82166433caef501936de98ef5">eve::fluids::OceanBoatReceipt::contacts</a></div><div class="ttdeci">std::vector&lt; OceanBoatContact &gt; contacts</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00040">OceanBoat.h:40</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatReceipt_html_a62f0125e36dd26d505d03f1cc3835ccb"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatReceipt.html#a62f0125e36dd26d505d03f1cc3835ccb">eve::fluids::OceanBoatReceipt::totalForce</a></div><div class="ttdeci">glm::dvec3 totalForce</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00038">OceanBoat.h:38</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatReceipt_html_ac41d9f9662555aa33104a4c9bff8161c"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatReceipt.html#ac41d9f9662555aa33104a4c9bff8161c">eve::fluids::OceanBoatReceipt::submergedVolume</a></div><div class="ttdeci">double submergedVolume</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00039">OceanBoat.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoatReceipt_html_aecf6ba29a632ad5a48063201c715b30d"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoatReceipt.html#aecf6ba29a632ad5a48063201c715b30d">eve::fluids::OceanBoatReceipt::time</a></div><div class="ttdeci">double time</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00037">OceanBoat.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanBoat_1_1Impl_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanBoat_1_1Impl.html">eve::fluids::OceanBoat::Impl</a></div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8cpp_source.html#l00014">OceanBoat.cpp:14</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullCell_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullCell.html">eve::fluids::OceanHullCell</a></div><div class="ttdoc">Body-local displacement cell; volumes sum to the hull's assigned displacement capacity.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00014">OceanBoat.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullCell_html_a0c0ce6931c34db00e0696e59f0835314"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullCell.html#a0c0ce6931c34db00e0696e59f0835314">eve::fluids::OceanHullCell::center</a></div><div class="ttdeci">glm::dvec3 center</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00015">OceanBoat.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullCell_html_a9c862115aad3bcab843bdba0d41935cf"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullCell.html#a9c862115aad3bcab843bdba0d41935cf">eve::fluids::OceanHullCell::radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00016">OceanBoat.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullCell_html_af886277e9b1af640a473e28259c301b7"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullCell.html#af886277e9b1af640a473e28259c301b7">eve::fluids::OceanHullCell::volume</a></div><div class="ttdeci">double volume</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00017">OceanBoat.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html">eve::fluids::OceanHullSettings</a></div><div class="ttdoc">Hull water response; local +Z forward, +X starboard, +Y up.</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00020">OceanBoat.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_a1c67cde638f9be27703aa2a82f89f257"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#a1c67cde638f9be27703aa2a82f89f257">eve::fluids::OceanHullSettings::rudderCoefficient</a></div><div class="ttdeci">double rudderCoefficient</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00027">OceanBoat.h:27</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_a513eaf2858c96478be29f1d5201cdc8e"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#a513eaf2858c96478be29f1d5201cdc8e">eve::fluids::OceanHullSettings::waterDensity</a></div><div class="ttdeci">double waterDensity</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00022">OceanBoat.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_a5e6e660847ff46d45f9cc19d5c03209b"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#a5e6e660847ff46d45f9cc19d5c03209b">eve::fluids::OceanHullSettings::thrust</a></div><div class="ttdeci">double thrust</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00026">OceanBoat.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_a827067a2d27101f083d00b74a1b1de10"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#a827067a2d27101f083d00b74a1b1de10">eve::fluids::OceanHullSettings::cells</a></div><div class="ttdeci">std::vector&lt; OceanHullCell &gt; cells</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00021">OceanBoat.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_a9547a2e25308bc6ff39692cf806eda10"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#a9547a2e25308bc6ff39692cf806eda10">eve::fluids::OceanHullSettings::gravity</a></div><div class="ttdeci">double gravity</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00023">OceanBoat.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_aa789e8395c87350258f01129ae74f93d"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#aa789e8395c87350258f01129ae74f93d">eve::fluids::OceanHullSettings::drag</a></div><div class="ttdeci">glm::dvec3 drag</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00024">OceanBoat.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1fluids_1_1OceanHullSettings_html_acb6fcb2962b6ef2e32e6b277cf8b5eb4"><div class="ttname"><a href="structeve_1_1fluids_1_1OceanHullSettings.html#acb6fcb2962b6ef2e32e6b277cf8b5eb4">eve::fluids::OceanHullSettings::propeller</a></div><div class="ttdeci">glm::dvec3 propeller</div><div class="ttdef"><b>Definition</b> <a href="OceanBoat_8h_source.html#l00025">OceanBoat.h:25</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

@@ -1,0 +1,898 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::physics::CollapseDust类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1physics.html">physics</a></li><li class="navelem"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1physics_1_1CollapseDust-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::physics::CollapseDust类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owning gas presentation cache, independent of the source solver. @ownership Owns frames and depth scratch; borrows arguments synchronously only. @thread Single caller, no callbacks or concurrent mutation.  
+ <a href="classeve_1_1physics_1_1CollapseDust.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="CollapseDust_8h_source.html">CollapseDust.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:afcc884fa7f7b507fe848ca0d858f344e" id="r_afcc884fa7f7b507fe848ca0d858f344e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#afcc884fa7f7b507fe848ca0d858f344e">CollapseDust</a> ()</td></tr>
+<tr class="memdesc:afcc884fa7f7b507fe848ca0d858f344e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an empty owning cache; no worker starts until requested.  <br /></td></tr>
+<tr class="separator:afcc884fa7f7b507fe848ca0d858f344e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6402c106670073a2a9e2d67231e5c379" id="r_a6402c106670073a2a9e2d67231e5c379"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a6402c106670073a2a9e2d67231e5c379">~CollapseDust</a> ()</td></tr>
+<tr class="memdesc:a6402c106670073a2a9e2d67231e5c379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Join and check an unpublished CPU job before releasing owned data.  <br /></td></tr>
+<tr class="separator:a6402c106670073a2a9e2d67231e5c379"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81a1b5fecb2ac19b73a4a069692f5f12" id="r_a81a1b5fecb2ac19b73a4a069692f5f12"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a81a1b5fecb2ac19b73a4a069692f5f12">CollapseDust</a> (const <a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;)=delete</td></tr>
+<tr class="separator:a81a1b5fecb2ac19b73a4a069692f5f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af4e1292d0a72dbf9ef86f4f5273c80ed" id="r_af4e1292d0a72dbf9ef86f4f5273c80ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#af4e1292d0a72dbf9ef86f4f5273c80ed">operator=</a> (const <a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;)=delete</td></tr>
+<tr class="separator:af4e1292d0a72dbf9ef86f4f5273c80ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6d1150bdf2ecd8e4b5560707b5066419" id="r_a6d1150bdf2ecd8e4b5560707b5066419"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a6d1150bdf2ecd8e4b5560707b5066419">CollapseDust</a> (<a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a6d1150bdf2ecd8e4b5560707b5066419"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a268562b9d75af8fbb9c7378a4911b0db" id="r_a268562b9d75af8fbb9c7378a4911b0db"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a268562b9d75af8fbb9c7378a4911b0db">operator=</a> (<a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&amp;)=delete</td></tr>
+<tr class="separator:a268562b9d75af8fbb9c7378a4911b0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b85921e374007a57c9b0ff78b3f2d33" id="r_a8b85921e374007a57c9b0ff78b3f2d33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a8b85921e374007a57c9b0ff78b3f2d33">capture</a> (const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a> &amp;<a class="el" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>, float seconds)</td></tr>
+<tr class="memdesc:a8b85921e374007a57c9b0ff78b3f2d33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture gas particles, fading their final two seconds. @cost Linear in live particles, offline only.  <br /></td></tr>
+<tr class="separator:a8b85921e374007a57c9b0ff78b3f2d33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade831a44348915fffceb15fe67decc34" id="r_ade831a44348915fffceb15fe67decc34"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#ade831a44348915fffceb15fe67decc34">present</a> (<a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, float seconds) const</td></tr>
+<tr class="memdesc:ade831a44348915fffceb15fe67decc34"><td class="mdescLeft">&#160;</td><td class="mdescRight">Restore nearest preceding frame into a dedicated presentation solver. @cost Linear in particles, at the baked display rate; no solver step.  <br /></td></tr>
+<tr class="separator:ade831a44348915fffceb15fe67decc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c6931da7ca3ff36821d87f23848a7d" id="r_a32c6931da7ca3ff36821d87f23848a7d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a32c6931da7ca3ff36821d87f23848a7d">save</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>) const</td></tr>
+<tr class="memdesc:a32c6931da7ca3ff36821d87f23848a7d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Save a new asset, refusing overwrite; incomplete writes are removed. @cost Linear in all samples, once after bake.  <br /></td></tr>
+<tr class="separator:a32c6931da7ca3ff36821d87f23848a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add22d36a89e884c8cea9dc5684972c9c" id="r_add22d36a89e884c8cea9dc5684972c9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#add22d36a89e884c8cea9dc5684972c9c">load</a> (std::string_view <a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:add22d36a89e884c8cea9dc5684972c9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and load an owning clip; failure preserves this clip. @cost Linear in file size, once at startup.  <br /></td></tr>
+<tr class="separator:add22d36a89e884c8cea9dc5684972c9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c81f07f991a9e27c2fe28e0995c3b38" id="r_a9c81f07f991a9e27c2fe28e0995c3b38"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a9c81f07f991a9e27c2fe28e0995c3b38">frameCount</a> () const</td></tr>
+<tr class="memdesc:a9c81f07f991a9e27c2fe28e0995c3b38"><td class="mdescLeft">&#160;</td><td class="mdescRight">Recorded frame count.  <br /></td></tr>
+<tr class="separator:a9c81f07f991a9e27c2fe28e0995c3b38"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af2f1d35b9e67494e5ecd4ac7fffe9872" id="r_af2f1d35b9e67494e5ecd4ac7fffe9872"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#af2f1d35b9e67494e5ecd4ac7fffe9872">prepareDepth</a> (int <a class="el" href="ImageImporter_8cpp.html#ae951d664b90216c2e6e17442f85ba01c">width</a>, int <a class="el" href="ImageImporter_8cpp.html#adfe1b51744835d88ff3bcd45411d2c53">height</a>)</td></tr>
+<tr class="memdesc:af2f1d35b9e67494e5ecd4ac7fffe9872"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocate bounded CPU scene-depth scratch before rendering. @cost Linear in output pixels, once per resolution.  <br /></td></tr>
+<tr class="separator:af2f1d35b9e67494e5ecd4ac7fffe9872"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5189c1a64b96aecbeebb40af28738cff" id="r_a5189c1a64b96aecbeebb40af28738cff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a5189c1a64b96aecbeebb40af28738cff">injectFog</a> (<a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html">graphics::AtmosphereVolume</a> &amp;grid, const glm::mat4 &amp;inverseViewProjection, float seconds, float <a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) const</td></tr>
+<tr class="memdesc:a5189c1a64b96aecbeebb40af28738cff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inject saved gas into the existing local-volume fog grid, without stepping a solver.  <br /></td></tr>
+<tr class="separator:a5189c1a64b96aecbeebb40af28738cff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a217e30ca6c6633f51f5bcc37ecf6773c" id="r_a217e30ca6c6633f51f5bcc37ecf6773c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a217e30ca6c6633f51f5bcc37ecf6773c">updateDepthTexture</a> (<a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, <a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp;texture, const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, float seconds, <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> &amp;camera)</td></tr>
+<tr class="memdesc:a217e30ca6c6633f51f5bcc37ecf6773c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upload exact animated-fragment depth for the existing fog compositor. @cost Linear in triangles and covered pixels; prepareDepth first, reuse while time/camera unchanged.  <br /></td></tr>
+<tr class="separator:a217e30ca6c6633f51f5bcc37ecf6773c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb120bf4365dc1595356168c290eab26" id="r_afb120bf4365dc1595356168c290eab26"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#afb120bf4365dc1595356168c290eab26">prepareFog</a> (const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, int depthWidth, int depthHeight, int gridWidth, int gridHeight, int gridDepth)</td></tr>
+<tr class="memdesc:afb120bf4365dc1595356168c290eab26"><td class="mdescLeft">&#160;</td><td class="mdescRight">Prepare independent clip ownership and bounded worker dimensions. @cost Copies all rigid samples once; call outside playback.  <br /></td></tr>
+<tr class="separator:afb120bf4365dc1595356168c290eab26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aced44e2c9e8adda9b120d8ce03b63a2b" id="r_aced44e2c9e8adda9b120d8ce03b63a2b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4a">DustFogRequest</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#aced44e2c9e8adda9b120d8ce03b63a2b">requestFog</a> (float seconds, const <a class="el" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a> &amp;<a class="el" href="OceanSprayBindings_8cpp.html#a20f7a01c65e0cec1613314b7c3e174f2">view</a>, float <a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:aced44e2c9e8adda9b120d8ce03b63a2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Submit at most one CPU-only worker; busy requests do not queue more work. @cost Copies one gas frame and starts bounded background reconstruction; no GPU calls or waits.  <br /></td></tr>
+<tr class="separator:aced44e2c9e8adda9b120d8ce03b63a2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a405eb7ea5896205a91061c99fcbed9ec" id="r_a405eb7ea5896205a91061c99fcbed9ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1physics_1_1DustFogFrame.html">DustFogFrame</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a405eb7ea5896205a91061c99fcbed9ec">takeFogFrame</a> ()</td></tr>
+<tr class="memdesc:a405eb7ea5896205a91061c99fcbed9ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Nonblocking collection; an empty optional means the sole worker is still running.  <br /></td></tr>
+<tr class="separator:a405eb7ea5896205a91061c99fcbed9ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4b5e7e6a9935da21dac6d7f4745f4866" id="r_a4b5e7e6a9935da21dac6d7f4745f4866"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896d">DustFogDisplay</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html#a4b5e7e6a9935da21dac6d7f4745f4866">updateFog</a> (<a class="el" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a> &amp;fog, <a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;graphics, float seconds, <a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> &amp;camera, float <a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, float <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="memdesc:a4b5e7e6a9935da21dac6d7f4745f4866"><td class="mdescLeft">&#160;</td><td class="mdescRight">Poll/upload completed pixels and request the latest time without blocking rendering. @cost Bounded texture uploads only on completed work; CPU reconstruction is on the owned worker.  <br /></td></tr>
+<tr class="separator:a4b5e7e6a9935da21dac6d7f4745f4866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owning gas presentation cache, independent of the source solver. @ownership Owns frames and depth scratch; borrows arguments synchronously only. @thread Single caller, no callbacks or concurrent mutation. </p>
+<p>EVEDUST1 version 1, little endian float32; unknown versions/fields and trailing bytes rejected. Load validates into a candidate before replacing this clip. Playback restores a dedicated render-only fluid, never a gameplay solver. Fixed-step fluid bake is repeatable on the same build; saved playback has no simulation or RNG. Particle births/deaths use recorded frame boundaries. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8h_source.html">CollapseDust.h</a> 第 <a class="el" href="CollapseDust_8h_source.html#l00047">47</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="afcc884fa7f7b507fe848ca0d858f344e" name="afcc884fa7f7b507fe848ca0d858f344e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcc884fa7f7b507fe848ca0d858f344e">&#9670;&#160;</a></span>CollapseDust() <span class="overload">[1/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::CollapseDust::CollapseDust </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Construct an empty owning cache; no worker starts until requested. </p>
+
+</div>
+</div>
+<a id="a6402c106670073a2a9e2d67231e5c379" name="a6402c106670073a2a9e2d67231e5c379"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6402c106670073a2a9e2d67231e5c379">&#9670;&#160;</a></span>~CollapseDust()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::CollapseDust::~CollapseDust </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Join and check an unpublished CPU job before releasing owned data. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00053">53</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Package_8cpp_source.html#l00060">error</a> , 以及 <a class="el" href="BattleControl_8cpp_source.html#l00708">pending</a>.</p>
+
+</div>
+</div>
+<a id="a81a1b5fecb2ac19b73a4a069692f5f12" name="a81a1b5fecb2ac19b73a4a069692f5f12"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a81a1b5fecb2ac19b73a4a069692f5f12">&#9670;&#160;</a></span>CollapseDust() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::CollapseDust::CollapseDust </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a6d1150bdf2ecd8e4b5560707b5066419" name="a6d1150bdf2ecd8e4b5560707b5066419"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6d1150bdf2ecd8e4b5560707b5066419">&#9670;&#160;</a></span>CollapseDust() <span class="overload">[3/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::physics::CollapseDust::CollapseDust </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a8b85921e374007a57c9b0ff78b3f2d33" name="a8b85921e374007a57c9b0ff78b3f2d33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b85921e374007a57c9b0ff78b3f2d33">&#9670;&#160;</a></span>capture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::capture </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture gas particles, fading their final two seconds. @cost Linear in live particles, offline only. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked status; failure leaves frames unchanged. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00062">62</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80da635459702f9817de29e608fa3395637c">eve::fluids::Gas</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00320">valid</a>.</p>
+
+</div>
+</div>
+<a id="a9c81f07f991a9e27c2fe28e0995c3b38" name="a9c81f07f991a9e27c2fe28e0995c3b38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9c81f07f991a9e27c2fe28e0995c3b38">&#9670;&#160;</a></span>frameCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::physics::CollapseDust::frameCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Recorded frame count. </p>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8h_source.html">CollapseDust.h</a> 第 <a class="el" href="CollapseDust_8h_source.html#l00074">74</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a5189c1a64b96aecbeebb40af28738cff" name="a5189c1a64b96aecbeebb40af28738cff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5189c1a64b96aecbeebb40af28738cff">&#9670;&#160;</a></span>injectFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::injectFog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1AtmosphereVolume.html">graphics::AtmosphereVolume</a> &amp;&#160;</td>
+          <td class="paramname"><em>grid</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const glm::mat4 &amp;&#160;</td>
+          <td class="paramname"><em>inverseViewProjection</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Inject saved gas into the existing local-volume fog grid, without stepping a solver. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">inverseViewProjection</td><td>Borrowed inverse camera matrix matching the grid. </td></tr>
+    <tr><td class="paramname">seconds</td><td>Recorded playback time; finite, clamped to clip endpoints. </td></tr>
+    <tr><td class="paramname">density</td><td>Nonnegative extinction multiplier, at most 10. </td></tr>
+    <tr><td class="paramname">radius</td><td>Local fog support radius in metres, in [0.1,5]. @cost Bounded projected particle footprints, once per displayed gas frame; grid must be prepared by caller. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Checked dimensions/parameters status. No references survive this call. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00254">254</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="TacticsPath_8cpp_source.html#l00015">cell</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="SkyAtmosphereLuts_8cpp_source.html#l00019">extinction</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00046">fraction</a>, <a class="el" href="FogVolume_8h_source.html#l00034">eve::graphics::FogVolume::getAlbedo()</a>, <a class="el" href="ImageData_8cpp_source.html#l00690">h</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00151">nx</a>, <a class="el" href="CaveSurfaceReactivity_8cpp_source.html#l00151">ny</a>, <a class="el" href="LanguageIndex_8cpp_source.html#l00019">offset</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="FogVolume_8cpp_source.html#l00082">eve::graphics::FogVolume::sampleExtinction()</a>, <a class="el" href="FogVolume_8cpp_source.html#l00060">eve::graphics::FogVolume::setAlbedo()</a>, <a class="el" href="FogVolume_8cpp_source.html#l00072">eve::graphics::FogVolume::setEdgeFalloff()</a>, <a class="el" href="FogVolume_8h_source.html#l00030">eve::graphics::FogVolume::setExtinction()</a>, <a class="el" href="FogVolume_8cpp_source.html#l00076">eve::graphics::FogVolume::setNoise()</a>, <a class="el" href="FogVolume_8h_source.html#l00023">eve::graphics::FogVolume::setPosition()</a>, <a class="el" href="FogVolume_8cpp_source.html#l00041">eve::graphics::FogVolume::setShape()</a>, <a class="el" href="FogVolume_8cpp_source.html#l00056">eve::graphics::FogVolume::setSize()</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseDust_8cpp_source.html#l00367">requestFog()</a>.</p>
+
+</div>
+</div>
+<a id="add22d36a89e884c8cea9dc5684972c9c" name="add22d36a89e884c8cea9dc5684972c9c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#add22d36a89e884c8cea9dc5684972c9c">&#9670;&#160;</a></span>load()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::load </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and load an owning clip; failure preserves this clip. @cost Linear in file size, once at startup. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked IO/schema status. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00123">123</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="Grass_8cpp_source.html#l00063">n</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PlayHost_8cpp_source.html#l00111">path</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a> , 以及 <a class="el" href="McpServer_8cpp_source.html#l00320">valid</a>.</p>
+
+</div>
+</div>
+<a id="a268562b9d75af8fbb9c7378a4911b0db" name="a268562b9d75af8fbb9c7378a4911b0db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a268562b9d75af8fbb9c7378a4911b0db">&#9670;&#160;</a></span>operator=() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp; eve::physics::CollapseDust::operator= </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af4e1292d0a72dbf9ef86f4f5273c80ed" name="af4e1292d0a72dbf9ef86f4f5273c80ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af4e1292d0a72dbf9ef86f4f5273c80ed">&#9670;&#160;</a></span>operator=() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp; eve::physics::CollapseDust::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1CollapseDust.html">CollapseDust</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af2f1d35b9e67494e5ecd4ac7fffe9872" name="af2f1d35b9e67494e5ecd4ac7fffe9872"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af2f1d35b9e67494e5ecd4ac7fffe9872">&#9670;&#160;</a></span>prepareDepth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::prepareDepth </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Allocate bounded CPU scene-depth scratch before rendering. @cost Linear in output pixels, once per resolution. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked dimensions status. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00160">160</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ImageImporter_8cpp_source.html#l00014">height</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ImageImporter_8cpp_source.html#l00013">width</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseDust_8cpp_source.html#l00351">prepareFog()</a> , 以及 <a class="el" href="CollapseDust_8cpp_source.html#l00367">requestFog()</a>.</p>
+
+</div>
+</div>
+<a id="afb120bf4365dc1595356168c290eab26" name="afb120bf4365dc1595356168c290eab26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb120bf4365dc1595356168c290eab26">&#9670;&#160;</a></span>prepareFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::prepareFog </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depthWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>depthHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gridWidth</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gridHeight</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>gridDepth</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Prepare independent clip ownership and bounded worker dimensions. @cost Copies all rigid samples once; call outside playback. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked preparation status. @ownership Owns a clip copy; source may be destroyed. An outstanding job must be collected first. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00351">351</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00160">prepareDepth()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+</div>
+</div>
+<a id="ade831a44348915fffceb15fe67decc34" name="ade831a44348915fffceb15fe67decc34"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade831a44348915fffceb15fe67decc34">&#9670;&#160;</a></span>present()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::present </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1fluids_1_1VolumeFluid.html">fluids::VolumeFluid</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Restore nearest preceding frame into a dedicated presentation solver. @cost Linear in particles, at the baked display rate; no solver step. </p>
+<dl class="section return"><dt>返回</dt><dd>Transactional restore status. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="namespaceeve_1_1fluids.html#a0e5f15066ab2862824c11d6aecc9f80da635459702f9817de29e608fa3395637c">eve::fluids::Gas</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="VolumeFluid_8h_source.html#l00097">eve::fluids::VolumeFluidParticle::position</a>, <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+</div>
+</div>
+<a id="aced44e2c9e8adda9b120d8ce03b63a2b" name="aced44e2c9e8adda9b120d8ce03b63a2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aced44e2c9e8adda9b120d8ce03b63a2b">&#9670;&#160;</a></span>requestFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4a">DustFogRequest</a> &gt; eve::physics::CollapseDust::requestFog </td>
+          <td>(</td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1physics_1_1DustFogView.html">DustFogView</a> &amp;&#160;</td>
+          <td class="paramname"><em>view</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Submit at most one CPU-only worker; busy requests do not queue more work. @cost Copies one gas frame and starts bounded background reconstruction; no GPU calls or waits. </p>
+<dl class="section return"><dt>返回</dt><dd>Started, Busy or Unchanged; checked invalid input never submits work. @thread Main caller only; worker captures owning values and invokes no callbacks. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00367">367</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00032">at</a>, <a class="el" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aad8a942ef2b04672adfafef0ad817a407">eve::physics::Busy</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00209">cols</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00109">d</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="UnityVegetationPreset_8cpp_source.html#l00034">depth</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="McpArchitectureTools_8cpp_source.html#l00020">from</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00254">injectFog()</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00160">prepareDepth()</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="FloorTextures_8cpp_source.html#l00208">rows</a>, <a class="el" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa8428552d86c0d262a542a528af490afa">eve::physics::Started</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00039">sx</a>, <a class="el" href="PrefabActionCapabilities_8cpp_source.html#l00040">sy</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="namespaceeve_1_1physics.html#af72edd973b0dec466f12eb63c2f88d4aa5ff3c6978f87d96febfdc8ed3899a97e">eve::physics::Unchanged</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00030">view</a>, <a class="el" href="CollapseDust_8h_source.html#l00032">eve::physics::DustFogFrame::view</a>, <a class="el" href="TerrainImageAdapter_8cpp_source.html#l00082">weights</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseDust_8cpp_source.html#l00498">updateFog()</a>.</p>
+
+</div>
+</div>
+<a id="a32c6931da7ca3ff36821d87f23848a7d" name="a32c6931da7ca3ff36821d87f23848a7d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32c6931da7ca3ff36821d87f23848a7d">&#9670;&#160;</a></span>save()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::save </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>path</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Save a new asset, refusing overwrite; incomplete writes are removed. @cost Linear in all samples, once after bake. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked IO status. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00101">101</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Pathfinder_8cpp_source.html#l00336">f</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00023">out</a>, <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a>, <a class="el" href="DecalManager_8cpp_source.html#l00020">p</a>, <a class="el" href="PlayHost_8cpp_source.html#l00111">path</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>.</p>
+
+</div>
+</div>
+<a id="a405eb7ea5896205a91061c99fcbed9ec" name="a405eb7ea5896205a91061c99fcbed9ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a405eb7ea5896205a91061c99fcbed9ec">&#9670;&#160;</a></span>takeFogFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; std::optional&lt; <a class="el" href="structeve_1_1physics_1_1DustFogFrame.html">DustFogFrame</a> &gt; &gt; eve::physics::CollapseDust::takeFogFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Nonblocking collection; an empty optional means the sole worker is still running. </p>
+<dl class="section return"><dt>返回</dt><dd>Owning pixels, pending, or checked worker failure; no partial GPU publication. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00483">483</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="AssetCommand_8cpp_source.html#l00169">output</a> , 以及 <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="CollapseDust_8cpp_source.html#l00498">updateFog()</a>.</p>
+
+</div>
+</div>
+<a id="a217e30ca6c6633f51f5bcc37ecf6773c" name="a217e30ca6c6633f51f5bcc37ecf6773c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a217e30ca6c6633f51f5bcc37ecf6773c">&#9670;&#160;</a></span>updateDepthTexture()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::physics::CollapseDust::updateDepthTexture </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Texture.html">graphics::Texture</a> &amp;&#160;</td>
+          <td class="paramname"><em>texture</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1physics_1_1CollapseAnimation.html">CollapseAnimation</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>camera</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Upload exact animated-fragment depth for the existing fog compositor. @cost Linear in triangles and covered pixels; prepareDepth first, reuse while time/camera unchanged. </p>
+<dl class="section return"><dt>返回</dt><dd>Checked raster/upload status. Graphics owns the caller-supplied texture; borrowed only here. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00235">235</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00045">clip</a>, <a class="el" href="Texture_8cpp_source.html#l00033">eve::graphics::Texture::getHeight()</a>, <a class="el" href="Texture_8cpp_source.html#l00028">eve::graphics::Texture::getWidth()</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>.</p>
+
+</div>
+</div>
+<a id="a4b5e7e6a9935da21dac6d7f4745f4866" name="a4b5e7e6a9935da21dac6d7f4745f4866"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4b5e7e6a9935da21dac6d7f4745f4866">&#9670;&#160;</a></span>updateFog()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896d">DustFogDisplay</a> &gt; eve::physics::CollapseDust::updateFog </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Volumetric.html">graphics::Volumetric</a> &amp;&#160;</td>
+          <td class="paramname"><em>fog</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Graphics.html">graphics::Graphics</a> &amp;&#160;</td>
+          <td class="paramname"><em>graphics</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1graphics_1_1Camera3D.html">graphics::Camera3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>camera</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>density</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Poll/upload completed pixels and request the latest time without blocking rendering. @cost Bounded texture uploads only on completed work; CPU reconstruction is on the owned worker. </p>
+<dl class="section return"><dt>返回</dt><dd>Ready only when uploaded fog matches this camera. Borrowed GPU arguments are never retained. @lifetime <a class="el" href="classeve_1_1physics_1_1Destruction.html" title="Optional physics satellite for Chaos-style geometry-collection destruction.">Destruction</a> joins the one owned CPU job, which retains no engine/service pointers. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a> 第 <a class="el" href="CollapseDust_8cpp_source.html#l00498">498</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="GraphicsParticles_8cpp_source.html#l00062">camera</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00080">density</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00041">frame</a>, <a class="el" href="Volumetric_8h_source.html#l00333">eve::graphics::Volumetric::getFroxelAtlas()</a>, <a class="el" href="Volumetric_8h_source.html#l00215">eve::graphics::Volumetric::getInvViewProj()</a>, <a class="el" href="SceneVisibilityProvider_8cpp_source.html#l00019">graphics</a>, <a class="el" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896da2d13df6f8b5e4c5af9f87e0dc39df69d">eve::physics::Pending</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="namespaceeve_1_1physics.html#a678ee9fcb3a3bc8eb2dcad617daa896dae7d31fc0602fb2ede144d18cdffd816b">eve::physics::Ready</a>, <a class="el" href="GltfMaterials_8cpp_source.html#l00031">request</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00367">requestFog()</a>, <a class="el" href="GraphicsTextureMips_8cpp_source.html#l00013">status</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>, <a class="el" href="CollapseDust_8cpp_source.html#l00483">takeFogFrame()</a> , 以及 <a class="el" href="OceanSprayBindings_8cpp_source.html#l00030">view</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/physics/destruction/fx/<a class="el" href="CollapseDust_8h_source.html">CollapseDust.h</a></li>
+<li>src/modules/physics/destruction/fx/<a class="el" href="CollapseDust_8cpp_source.html">CollapseDust.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

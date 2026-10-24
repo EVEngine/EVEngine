@@ -1,0 +1,242 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/spline/SplineCircularArc.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_7d876b8dc44e6cf8fdefa3918fb5f7cd.html">spline</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">SplineCircularArc.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="SplineCircularArc_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Export_8h.html">common/Export.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Result_8h.html">common/Result.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen_1_1detail.html">eve::procgen::detail</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">struct </span>CircularArcSampleXZ;</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> Result&lt;std::array&lt;float, 3&gt;&gt; <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#ab010f0b3d7eda9ba32f734fd39c66ef3">scaleCircularTangentToChord</a>(</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keyword">const</span> CircularArcSampleXZ&amp; tangent, <span class="keywordtype">double</span> heightDerivative, <span class="keyword">const</span> std::array&lt;double, 3&gt;&amp; <a class="code hl_variable" href="ForceBindings_8cpp.html#a846767210ba733f0099ee87ee9fe0837">chord</a>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893">   19</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893">CircularArcReference</a> { <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893aa6122a65eaa676f700ae68d393054a37">Start</a>, <a class="code hl_enumvalue" href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893a87557f11575c0ad78e4e28abedc13b6e">End</a> };</div>
+<div class="foldopen" id="foldopen00021" data-start="{" data-end="};">
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html">   21</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html">CircularArcXZ</a> {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a9e170f7c3ad82ee1bf41e6baf5c9c4b7">   22</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a691bb8b37b3023fcebf45bc56fa3ced5">ax</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#ae2fcb61f3b78f7b4d682ad7a7a5fece0">az</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a75240910fa98b469ee8313ab91ae713d">bx</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a49f040560473fb65af884cbe10c4a5d6">bz</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a0d0dfe21140ea26abcb7be6313e55b92">cx</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a191b8d70925bbc52f66dca8157d52f58">cz</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a4f9ae18e13bdc7133852f6cb8830c5cc">radius</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a9e170f7c3ad82ee1bf41e6baf5c9c4b7">angle</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a9878ee77c641c94189f7ad0fb051caee">sweep</a> = 0;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a7218b44f7be423155cbd09b56798f4f3">   23</a></span>    <span class="keywordtype">bool</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a7218b44f7be423155cbd09b56798f4f3">line</a>  = <span class="keyword">true</span>;  </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a31af4c493ba84eeeb882a548a79a8e86">   24</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#af6d3c0efe912e0614030f43cb7fb30bb">leadX</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a7ed8f1d7ccd2040fa5d1f8b86cf44003">leadZ</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a31af4c493ba84eeeb882a548a79a8e86">leadLength</a> = 0;</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a06a5caf261af46ddeaa52b0d35ec4c53">   25</a></span>    <span class="keywordtype">bool</span>   <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a06a5caf261af46ddeaa52b0d35ec4c53">reversed</a> = <span class="keyword">false</span>;  </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html">   28</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html">CircularArcSampleXZ</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#a3dc8229b6932296ac2b2bc5da6d9a14b">   29</a></span>    <span class="keywordtype">double</span> <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#aa7cc153eea29cf24407fafe26f26a7e8">x</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#aa8ca3ef4f8743fbf5ff7e51112578032">z</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#a3dc8229b6932296ac2b2bc5da6d9a14b">dx</a> = 0, <a class="code hl_variable" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#a64766161d18f9b7e26a9c971e585c83d">dz</a> = 0;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>};</div>
+</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CircularArcXZ&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#a51384a6bdb57f4e7eb5dbfe5c4525574">makeCircularArcXZ</a>(<span class="keywordtype">double</span> ax, <span class="keywordtype">double</span> az, <span class="keywordtype">double</span> bx, <span class="keywordtype">double</span> bz,</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>                                                                           <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>,</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                                                                           <a class="code hl_enumeration" href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893">CircularArcReference</a> <a class="code hl_variable" href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a>);</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;CircularArcXZ&gt;</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#afae36fbcbe3bfebb743cd0be5878948e">makeCircularLeadArcXZ</a>(<span class="keywordtype">double</span> ax, <span class="keywordtype">double</span> az, <span class="keywordtype">double</span> bx,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                                                                               <span class="keywordtype">double</span> bz, <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a>, <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a>,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                                                                               <span class="keywordtype">double</span> endDx, <span class="keywordtype">double</span> endDz);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>[[nodiscard]] <a class="code hl_define" href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a> <a class="code hl_struct" href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html">CircularArcSampleXZ</a> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#a2bdd3437aec3eb16b7948b53972180d1">sampleCircularArcXZ</a>(<span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html">CircularArcXZ</a>&amp; arc, <span class="keywordtype">double</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>);</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}  <span class="comment">// namespace eve::procgen::detail</span></div>
+<div class="ttc" id="aAuthority_8cpp_html_a7e214a50596aaa2c6748b6e36dda4f63"><div class="ttname"><a href="Authority_8cpp.html#a7e214a50596aaa2c6748b6e36dda4f63">reference</a></div><div class="ttdeci">AuthorityStoreHandleRef reference</div><div class="ttdef"><b>Definition</b> <a href="Authority_8cpp_source.html#l00024">Authority.cpp:24</a></div></div>
+<div class="ttc" id="aExport_8h_html"><div class="ttname"><a href="Export_8h.html">Export.h</a></div></div>
+<div class="ttc" id="aExport_8h_html_a390577f2aaf91c645ae452866de8fdbe"><div class="ttname"><a href="Export_8h.html#a390577f2aaf91c645ae452866de8fdbe">EVENGINE_API_DOMAINS</a></div><div class="ttdeci">#define EVENGINE_API_DOMAINS</div><div class="ttdef"><b>Definition</b> <a href="Export_8h_source.html#l00110">Export.h:110</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_a846767210ba733f0099ee87ee9fe0837"><div class="ttname"><a href="ForceBindings_8cpp.html#a846767210ba733f0099ee87ee9fe0837">chord</a></div><div class="ttdeci">ScriptForceVector chord</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00078">ForceBindings.cpp:78</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_a2641fce3670ebce2e79db7c95db36fea"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a></div><div class="ttdeci">glm::dvec3 dx</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00025">OceanSpectrumFrame.cpp:25</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_ad034b3e72ac42aaf697313e8b8f355fe"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#ad034b3e72ac42aaf697313e8b8f355fe">dz</a></div><div class="ttdeci">glm::dvec3 dz</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00026">OceanSpectrumFrame.cpp:26</a></div></div>
+<div class="ttc" id="aResult_8h_html"><div class="ttname"><a href="Result_8h.html">Result.h</a></div><div class="ttdoc">Move-only, checked operation results for the common layer.</div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html">eve::procgen::detail</a></div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8cpp_source.html#l00008">SplineCircularArc.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a2bdd3437aec3eb16b7948b53972180d1"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a2bdd3437aec3eb16b7948b53972180d1">eve::procgen::detail::sampleCircularArcXZ</a></div><div class="ttdeci">CircularArcSampleXZ sampleCircularArcXZ(const CircularArcXZ &amp;arc, double u)</div><div class="ttdoc">Sample validated coefficients with u in [0,1]; endpoints remain exact. @ownership Returns a copied sa...</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8cpp_source.html#l00088">SplineCircularArc.cpp:88</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a3109ab789358dffdbc2ca4f3bf6f0893"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893">eve::procgen::detail::CircularArcReference</a></div><div class="ttdeci">CircularArcReference</div><div class="ttdoc">Which endpoint tangent determines a circular span's orientation.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00019">SplineCircularArc.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a3109ab789358dffdbc2ca4f3bf6f0893a87557f11575c0ad78e4e28abedc13b6e"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893a87557f11575c0ad78e4e28abedc13b6e">eve::procgen::detail::CircularArcReference::End</a></div><div class="ttdeci">@ End</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a3109ab789358dffdbc2ca4f3bf6f0893aa6122a65eaa676f700ae68d393054a37"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a3109ab789358dffdbc2ca4f3bf6f0893aa6122a65eaa676f700ae68d393054a37">eve::procgen::detail::CircularArcReference::Start</a></div><div class="ttdeci">@ Start</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a51384a6bdb57f4e7eb5dbfe5c4525574"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a51384a6bdb57f4e7eb5dbfe5c4525574">eve::procgen::detail::makeCircularArcXZ</a></div><div class="ttdeci">Result&lt; CircularArcXZ &gt; makeCircularArcXZ(double ax, double az, double bx, double bz, double dx, double dz, CircularArcReference reference)</div><div class="ttdoc">Construct a finite circle from two endpoints and one endpoint direction. @ownership Returns owning co...</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8cpp_source.html#l00023">SplineCircularArc.cpp:23</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_ab010f0b3d7eda9ba32f734fd39c66ef3"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#ab010f0b3d7eda9ba32f734fd39c66ef3">eve::procgen::detail::scaleCircularTangentToChord</a></div><div class="ttdeci">Result&lt; std::array&lt; float, 3 &gt; &gt; scaleCircularTangentToChord(const CircularArcSampleXZ &amp;tangent, double heightDerivative, const std::array&lt; double, 3 &gt; &amp;chord)</div><div class="ttdoc">Scale a circular neighbor tangent to its owning 3D marker chord.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8cpp_source.html#l00009">SplineCircularArc.cpp:9</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_afae36fbcbe3bfebb743cd0be5878948e"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#afae36fbcbe3bfebb743cd0be5878948e">eve::procgen::detail::makeCircularLeadArcXZ</a></div><div class="ttdeci">Result&lt; CircularArcXZ &gt; makeCircularLeadArcXZ(double ax, double az, double bx, double bz, double dx, double dz, double endDx, double endDz)</div><div class="ttdoc">Fit a forward straight lead followed by a circle tangent to both neighboring directions....</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8cpp_source.html#l00059">SplineCircularArc.cpp:59</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ_html"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html">eve::procgen::detail::CircularArcSampleXZ</a></div><div class="ttdoc">Position and parameter derivative of one arc sample.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00028">SplineCircularArc.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ_html_a3dc8229b6932296ac2b2bc5da6d9a14b"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#a3dc8229b6932296ac2b2bc5da6d9a14b">eve::procgen::detail::CircularArcSampleXZ::dx</a></div><div class="ttdeci">double dx</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00029">SplineCircularArc.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ_html_a64766161d18f9b7e26a9c971e585c83d"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#a64766161d18f9b7e26a9c971e585c83d">eve::procgen::detail::CircularArcSampleXZ::dz</a></div><div class="ttdeci">double dz</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00029">SplineCircularArc.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ_html_aa7cc153eea29cf24407fafe26f26a7e8"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#aa7cc153eea29cf24407fafe26f26a7e8">eve::procgen::detail::CircularArcSampleXZ::x</a></div><div class="ttdeci">double x</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00029">SplineCircularArc.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ_html_aa8ca3ef4f8743fbf5ff7e51112578032"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcSampleXZ.html#aa8ca3ef4f8743fbf5ff7e51112578032">eve::procgen::detail::CircularArcSampleXZ::z</a></div><div class="ttdeci">double z</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00029">SplineCircularArc.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html">eve::procgen::detail::CircularArcXZ</a></div><div class="ttdoc">Owning derived XZ arc coefficients; not persistent author state.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00021">SplineCircularArc.h:21</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a06a5caf261af46ddeaa52b0d35ec4c53"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a06a5caf261af46ddeaa52b0d35ec4c53">eve::procgen::detail::CircularArcXZ::reversed</a></div><div class="ttdeci">bool reversed</div><div class="ttdoc">Derived sampling orientation; never persistent state.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00025">SplineCircularArc.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a0d0dfe21140ea26abcb7be6313e55b92"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a0d0dfe21140ea26abcb7be6313e55b92">eve::procgen::detail::CircularArcXZ::cx</a></div><div class="ttdeci">double cx</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a191b8d70925bbc52f66dca8157d52f58"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a191b8d70925bbc52f66dca8157d52f58">eve::procgen::detail::CircularArcXZ::cz</a></div><div class="ttdeci">double cz</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a31af4c493ba84eeeb882a548a79a8e86"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a31af4c493ba84eeeb882a548a79a8e86">eve::procgen::detail::CircularArcXZ::leadLength</a></div><div class="ttdeci">double leadLength</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00024">SplineCircularArc.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a49f040560473fb65af884cbe10c4a5d6"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a49f040560473fb65af884cbe10c4a5d6">eve::procgen::detail::CircularArcXZ::bz</a></div><div class="ttdeci">double bz</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a4f9ae18e13bdc7133852f6cb8830c5cc"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a4f9ae18e13bdc7133852f6cb8830c5cc">eve::procgen::detail::CircularArcXZ::radius</a></div><div class="ttdeci">double radius</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a691bb8b37b3023fcebf45bc56fa3ced5"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a691bb8b37b3023fcebf45bc56fa3ced5">eve::procgen::detail::CircularArcXZ::ax</a></div><div class="ttdeci">double ax</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a7218b44f7be423155cbd09b56798f4f3"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a7218b44f7be423155cbd09b56798f4f3">eve::procgen::detail::CircularArcXZ::line</a></div><div class="ttdeci">bool line</div><div class="ttdoc">Observable collinear limit.</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00023">SplineCircularArc.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a75240910fa98b469ee8313ab91ae713d"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a75240910fa98b469ee8313ab91ae713d">eve::procgen::detail::CircularArcXZ::bx</a></div><div class="ttdeci">double bx</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a7ed8f1d7ccd2040fa5d1f8b86cf44003"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a7ed8f1d7ccd2040fa5d1f8b86cf44003">eve::procgen::detail::CircularArcXZ::leadZ</a></div><div class="ttdeci">double leadZ</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00024">SplineCircularArc.h:24</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a9878ee77c641c94189f7ad0fb051caee"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a9878ee77c641c94189f7ad0fb051caee">eve::procgen::detail::CircularArcXZ::sweep</a></div><div class="ttdeci">double sweep</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_a9e170f7c3ad82ee1bf41e6baf5c9c4b7"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#a9e170f7c3ad82ee1bf41e6baf5c9c4b7">eve::procgen::detail::CircularArcXZ::angle</a></div><div class="ttdeci">double angle</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_ae2fcb61f3b78f7b4d682ad7a7a5fece0"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#ae2fcb61f3b78f7b4d682ad7a7a5fece0">eve::procgen::detail::CircularArcXZ::az</a></div><div class="ttdeci">double az</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00022">SplineCircularArc.h:22</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1CircularArcXZ_html_af6d3c0efe912e0614030f43cb7fb30bb"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1CircularArcXZ.html#af6d3c0efe912e0614030f43cb7fb30bb">eve::procgen::detail::CircularArcXZ::leadX</a></div><div class="ttdeci">double leadX</div><div class="ttdef"><b>Definition</b> <a href="SplineCircularArc_8h_source.html#l00024">SplineCircularArc.h:24</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

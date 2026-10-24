@@ -1,0 +1,351 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/procgen/texture/EverydayMaterials.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b9cecc0e175b6763f5f5f897464db2c3.html">procgen</a></li><li class="navelem"><a class="el" href="dir_58df875c20f4dbb0276e827a5bf00a98.html">texture</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">EverydayMaterials.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="EverydayMaterials_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="EverydayMaterials_8h.html">procgen/texture/EverydayMaterials.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="EverydayPatterns_8h.html">procgen/texture/EverydayPatterns.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1procgen.html">eve::procgen</a> {</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">struct </span>Profile {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="EverydayMaterials_8cpp.html#aa855207ccb1d5537e800ce6868e81877">   10</a></span>    Rgba8 <a class="code hl_variable" href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a>;</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="EverydayMaterials_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">   11</a></span>    <span class="keywordtype">float</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>, <a class="code hl_variable" href="ModelRenderer_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">metallic</a>, <a class="code hl_variable" href="EverydayMaterials_8cpp.html#a4f93a5431f2bee5a810adf6a9b5774be">relief</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>};</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="keyword">constexpr</span> std::array&lt;Profile, 13&gt; profiles{{{{178, 132, 80}, .44f, 0.f, .16f},</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>                                            {{180, 183, 188}, .28f, 1.f, .03f},</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>                                            {{44, 45, 47}, .96f, 0.f, .55f},</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>                                            {{83, 119, 171}, .94f, 0.f, .55f},</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>                                            {{189, 25, 30}, .19f, 0.f, .22f},</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>                                            {{225, 229, 234}, .055f, 1.f, .006f},</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                            {{238, 249, 244}, .035f, 0.f, .01f},</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>                                            {{235, 227, 211}, .90f, 0.f, .35f},</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>                                            {{225, 226, 228}, .31f, 1.f, .04f},</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>                                            {{88, 86, 82}, .89f, 1.f, .85f},</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>                                            {{164, 159, 149}, .93f, 0.f, .75f},</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>                                            {{22, 76, 160}, .26f, 0.f, .40f},</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>                                            {{235, 230, 217}, .14f, 0.f, .10f}}};</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keywordtype">float</span> control(<span class="keyword">const</span> Params &amp;<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>, <span class="keyword">const</span> <span class="keywordtype">char</span> *<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, <span class="keywordtype">float</span> fallback, <span class="keywordtype">float</span> lo = 0.f, <span class="keywordtype">float</span> hi = 1.f) {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <span class="keywordflow">return</span> std::clamp(<a class="code hl_variable" href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a>.getFloat(<a class="code hl_variable" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>, fallback), lo, hi);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>}</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>}  <span class="comment">// namespace</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
+<div class="foldopen" id="foldopen00031" data-start="{" data-end="}">
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525">   31</a></span><a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;PbrTextureSet&gt;</a>&gt; <a class="code hl_function" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525">EverydayMaterials::generate</a>(<a class="code hl_enumeration" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33">EverydayMaterial</a> family, <span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keyword">using </span>Output     = <a class="code hl_class" href="classeve_1_1Result.html">eve::Result&lt;std::unique_ptr&lt;PbrTextureSet&gt;</a>&gt;;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(family);</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <span class="keywordflow">if</span> (<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &gt;= profiles.size() || <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getWidth() &gt; 2048 || <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getHeight() &gt; 2048)</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">return</span> Output::failure(</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                                   <span class="stringliteral">&quot;Everyday material requires a known family and dimensions at most 2048&quot;</span>));</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    <span class="keyword">const</span> <span class="keyword">auto</span>  profile   = profiles[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>    = control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;detail&quot;</span>, .5f);</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> variation = control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;variation&quot;</span>, .4f);</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> finish    = control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;finish&quot;</span>, .5f);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="comment">// Material scale is independent of output resolution. Supersample unresolved maps</span></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="comment">// instead of changing the size or count of physical features.</span></div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">const</span> <span class="keywordtype">int</span>   repeats = int(std::round(control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;scale&quot;</span>, 4.f, 1.f, 32.f)));</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> du = 1.f / float(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getWidth()), dv = 1.f / float(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getHeight());</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keyword">const</span> <span class="keywordtype">bool</span>  prefilter = std::min(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getWidth(), <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getHeight()) &lt; repeats * 180;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span>        <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>    = [family, <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a> = <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getSeed(), repeats, du, dv, prefilter](<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (!prefilter) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#a54a4a5a9a9d34cf2b40a69933abef54f">detail::sampleEveryday</a>(family, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, repeats, 0);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <a class="code hl_struct" href="structeve_1_1procgen_1_1detail_1_1EverydaySample.html">detail::EverydaySample</a> sum{0.f, 0.f, 0.f};</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">for</span> (<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> : {-.25f, .25f})</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keywordflow">for</span> (<span class="keywordtype">float</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> : {-.25f, .25f}) {</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a> = <a class="code hl_function" href="namespaceeve_1_1procgen_1_1detail.html#a54a4a5a9a9d34cf2b40a69933abef54f">detail::sampleEveryday</a>(family, <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a> + <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> * du, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a> + <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> * dv, <a class="code hl_variable" href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a>, repeats, 0);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                sum.pigment += <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.pigment * .25f;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                sum.relief += <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.relief * .25f;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                sum.roughness += <a class="code hl_variable" href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a>.roughness * .25f;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            }</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keywordflow">return</span> sum;</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    };</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <a class="code hl_struct" href="structeve_1_1procgen_1_1TextureRecipeDef.html">TextureRecipeDef</a> def;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">id</a>     = <span class="stringliteral">&quot;everyday&quot;</span>;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">height</a> = [<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>, profile, <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>](<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a> &amp;) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        <span class="keywordflow">return</span> .5f + (<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>).relief - .5f) * profile.relief * (.25f + 1.5f * <a class="code hl_variable" href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a>);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>    };</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a63c7abdfa17db564eaebe63e3f0aaf89">colorField</a> = [<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>, variation](<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a> &amp;) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        <span class="keywordflow">return</span> .5f + (<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>).pigment - .5f) * (variation * 2.f);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    };</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e05283c2c570d8988510b00dce6ef68">roughnessField</a> = [<a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>](<span class="keywordtype">float</span> <a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1NoiseField.html">NoiseField</a> &amp;) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">sample</a>(<a class="code hl_variable" href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a>, <a class="code hl_variable" href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a>).roughness; };</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1procgen_1_1Rgba8.html">Rgba8</a> <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>{<span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;tintR&quot;</span>, profile.color.r / 255.f) * 255.f),</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                     <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;tintG&quot;</span>, profile.color.g / 255.f) * 255.f),</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                     <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(control(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>, <span class="stringliteral">&quot;tintB&quot;</span>, profile.color.b / 255.f) * 255.f), 255};</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">if</span> (family == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a7fb26875c639817a59912a87be6f7386">EverydayMaterial::Marble</a> || family == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a6e4dd7ce4ea3c1d4a90edb289e22da98">EverydayMaterial::Wood</a>) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>        <span class="keyword">auto</span> mineral = [&amp;](<span class="keywordtype">float</span> <a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(<a class="code hl_variable" href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a>, uint8_t(std::clamp(<a class="code hl_variable" href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a> * <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.r, 0.f, 255.f)), uint8_t(std::clamp(<a class="code hl_variable" href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a> * <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.g, 0.f, 255.f)),</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                           uint8_t(std::clamp(<a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a> * <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.b, 0.f, 255.f)));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>        };</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        <span class="keywordflow">if</span> (family == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a6e4dd7ce4ea3c1d4a90edb289e22da98">EverydayMaterial::Wood</a>) {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            mineral(0.f, .25f, .19f, .13f);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            mineral(.30f, .55f, .50f, .40f);</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            mineral(.50f, 1.f, 1.f, 1.f);</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            mineral(.70f, 1.25f, 1.32f, 1.45f);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            mineral(1.f, 1.35f, 1.55f, 1.90f);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            mineral(0.f, .25f, .26f, .27f);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            mineral(.28f, .63f, .59f, .51f);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            mineral(.40f, .91f, .86f, .76f);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            mineral(.50f, 1.f, 1.f, 1.f);</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            mineral(.75f, 1.03f, 1.04f, 1.07f);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            mineral(1.f, 1.08f, 1.10f, 1.14f);</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(0.f, uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.r * .35f), uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.g * .35f), uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.b * .35f));</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(.5f, <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.r, <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.g, <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.b);</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">albedo</a>.<a class="code hl_function" href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">add</a>(1.f, uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.r + (255 - <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.r) * .2f), uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.g + (255 - <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.g) * .2f),</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                       uint8_t(<a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.b + (255 - <a class="code hl_variable" href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a>.b) * .2f));</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    }</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>    <span class="keyword">const</span> <span class="keywordtype">float</span> <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a>  = std::clamp(profile.roughness + (.5f - finish) * .26f, .025f, 1.f);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">roughnessLow</a>   = std::max(.025f, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a> - .09f);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">roughnessHigh</a>  = std::min(1.f, <a class="code hl_variable" href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a> + .09f);</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">metallic</a>       = profile.metallic;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">normalStrength</a> = float(std::min(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getWidth(), <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getHeight())) / 80.f;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    def.<a class="code hl_variable" href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">pbr</a>.<a class="code hl_variable" href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">aoStrength</a>     = family == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33aaae44179fda7ddcbf8916aff53846128">EverydayMaterial::Glass</a> ? 0.f : 1.f;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    <a class="code hl_class" href="classeve_1_1procgen_1_1Params.html">Params</a> effective;</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    effective.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a1d161ea4d699ee471f5bdc1467bc7e48">setSize</a>(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getWidth(), <a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getHeight());</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>    effective.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#ac3e1e35db1edb15e4785b850790396cb">setSeed</a>(<a class="code hl_variable" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>.getSeed());</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    effective.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#acce6b32828adb0ee22eedd3bd28e7743">setFloat</a>(<span class="stringliteral">&quot;scale&quot;</span>, 1.f);</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    effective.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#a2f4088085aad76b56eefc62d31c4ab5e">setInt</a>(<span class="stringliteral">&quot;colors&quot;</span>, 256);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    effective.<a class="code hl_function" href="classeve_1_1procgen_1_1Params.html#aa7e924de3605c7cf67f398ca5afa1297">setBool</a>(<span class="stringliteral">&quot;seamless&quot;</span>, <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>    std::string <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>;</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keyword">auto</span>        maps = <a class="code hl_function" href="namespaceeve_1_1procgen.html#aaeaf153a8c2c1669efbac890e48970f5">generatePbrSet</a>(def, effective, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>);</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">if</span> (!maps) <span class="keywordflow">return</span> Output::failure(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordflow">if</span> (family == <a class="code hl_enumvalue" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33aaae44179fda7ddcbf8916aff53846128">EverydayMaterial::Glass</a>) {</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        maps-&gt;transmission = .96f;</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        maps-&gt;ior          = 1.5f;</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>    <span class="keywordflow">return</span> Output::success(std::move(maps));</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>}</div>
+</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}  <span class="comment">// namespace eve::procgen</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aBattleControl_8cpp_html_ac913d18953c212b83881e974836de358"><div class="ttname"><a href="BattleControl_8cpp.html#ac913d18953c212b83881e974836de358">s</a></div><div class="ttdeci">const std::string &amp; s</div><div class="ttdef"><b>Definition</b> <a href="BattleControl_8cpp_source.html#l00325">BattleControl.cpp:325</a></div></div>
+<div class="ttc" id="aDecalManager_8cpp_html_a49041daec8c0b82aa2fd84c58d33f222"><div class="ttname"><a href="DecalManager_8cpp.html#a49041daec8c0b82aa2fd84c58d33f222">p</a></div><div class="ttdeci">glm::vec4 p[6]</div><div class="ttdef"><b>Definition</b> <a href="DecalManager_8cpp_source.html#l00020">DecalManager.cpp:20</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a1f53a56adfc8a8f39c5e553c97a7b2ff"><div class="ttname"><a href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a></div><div class="ttdeci">SQObjectPtr key</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00155">ECS.cpp:155</a></div></div>
+<div class="ttc" id="aEverydayMaterials_8cpp_html_a4f93a5431f2bee5a810adf6a9b5774be"><div class="ttname"><a href="EverydayMaterials_8cpp.html#a4f93a5431f2bee5a810adf6a9b5774be">relief</a></div><div class="ttdeci">float relief</div><div class="ttdef"><b>Definition</b> <a href="EverydayMaterials_8cpp_source.html#l00011">EverydayMaterials.cpp:11</a></div></div>
+<div class="ttc" id="aEverydayMaterials_8h_html"><div class="ttname"><a href="EverydayMaterials_8h.html">EverydayMaterials.h</a></div></div>
+<div class="ttc" id="aEverydayPatterns_8h_html"><div class="ttname"><a href="EverydayPatterns_8h.html">EverydayPatterns.h</a></div></div>
+<div class="ttc" id="aGpuGraph_8cpp_html_aaae841ffb46b13fecc7328d10de4a9f6"><div class="ttname"><a href="GpuGraph_8cpp.html#aaae841ffb46b13fecc7328d10de4a9f6">g</a></div><div class="ttdeci">tensor::Graph g</div><div class="ttdef"><b>Definition</b> <a href="GpuGraph_8cpp_source.html#l00007">GpuGraph.cpp:7</a></div></div>
+<div class="ttc" id="aGraphicsVirtualGeometry_8cpp_html_a7675542847a16d47375ee96d007f8999"><div class="ttname"><a href="GraphicsVirtualGeometry_8cpp.html#a7675542847a16d47375ee96d007f8999">tint</a></div><div class="ttdeci">glm::vec4 tint</div><div class="ttdef"><b>Definition</b> <a href="GraphicsVirtualGeometry_8cpp_source.html#l00046">GraphicsVirtualGeometry.cpp:46</a></div></div>
+<div class="ttc" id="aGrass_8cpp_html_a55831f7eab5ed2917a0191e858852f42"><div class="ttname"><a href="Grass_8cpp.html#a55831f7eab5ed2917a0191e858852f42">u</a></div><div class="ttdeci">float u</div><div class="ttdef"><b>Definition</b> <a href="Grass_8cpp_source.html#l00233">Grass.cpp:233</a></div></div>
+<div class="ttc" id="aGtsMeshSimplifier_8cpp_html_a880a49112fedae68e714341a9a082fb6"><div class="ttname"><a href="GtsMeshSimplifier_8cpp.html#a880a49112fedae68e714341a9a082fb6">r</a></div><div class="ttdeci">double r</div><div class="ttdef"><b>Definition</b> <a href="GtsMeshSimplifier_8cpp_source.html#l00012">GtsMeshSimplifier.cpp:12</a></div></div>
+<div class="ttc" id="aHexRiverMesh_8cpp_html_a48d9522e58fa05906c6dba23e5745a72"><div class="ttname"><a href="HexRiverMesh_8cpp.html#a48d9522e58fa05906c6dba23e5745a72">v</a></div><div class="ttdeci">float v</div><div class="ttdef"><b>Definition</b> <a href="HexRiverMesh_8cpp_source.html#l00019">HexRiverMesh.cpp:19</a></div></div>
+<div class="ttc" id="aMcpRecipeTools_8cpp_html_adebd01bfaa3c95a7128a5a0abb545c0d"><div class="ttname"><a href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a></div><div class="ttdeci">std::vector&lt; RecipeParam &gt; params</div><div class="ttdef"><b>Definition</b> <a href="McpRecipeTools_8cpp_source.html#l00033">McpRecipeTools.cpp:33</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_a2c76422d3e436164284a7dba0b8a9cc4"><div class="ttname"><a href="ModelRenderer_8cpp.html#a2c76422d3e436164284a7dba0b8a9cc4">roughness</a></div><div class="ttdeci">float roughness</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00158">ModelRenderer.cpp:158</a></div></div>
+<div class="ttc" id="aModelRenderer_8cpp_html_abf199fccc6834e86bd7ca4693eba27bb"><div class="ttname"><a href="ModelRenderer_8cpp.html#abf199fccc6834e86bd7ca4693eba27bb">metallic</a></div><div class="ttdeci">float metallic</div><div class="ttdef"><b>Definition</b> <a href="ModelRenderer_8cpp_source.html#l00157">ModelRenderer.cpp:157</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPointSet_8cpp_html_a6d401fa547bfb21866c6da56399ee303"><div class="ttname"><a href="PointSet_8cpp.html#a6d401fa547bfb21866c6da56399ee303">seed</a></div><div class="ttdeci">std::uint32_t seed</div><div class="ttdef"><b>Definition</b> <a href="PointSet_8cpp_source.html#l00808">PointSet.cpp:808</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_ac58d00c955de8df4981a75b37f466578"><div class="ttname"><a href="PrototypeKit_8cpp.html#ac58d00c955de8df4981a75b37f466578">detail</a></div><div class="ttdeci">int detail</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00111">PrototypeKit.cpp:111</a></div></div>
+<div class="ttc" id="aPrototypeKit_8cpp_html_afea36502e9d227ff62c5fb2719a246f2"><div class="ttname"><a href="PrototypeKit_8cpp.html#afea36502e9d227ff62c5fb2719a246f2">t</a></div><div class="ttdeci">float t</div><div class="ttdef"><b>Definition</b> <a href="PrototypeKit_8cpp_source.html#l00110">PrototypeKit.cpp:110</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1EverydayMaterials_html_a3b687113490b094c430affa78753f525"><div class="ttname"><a href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525">eve::procgen::EverydayMaterials::generate</a></div><div class="ttdeci">static eve::Result&lt; std::unique_ptr&lt; PbrTextureSet &gt; &gt; generate(EverydayMaterial family, const Params &amp;params)</div><div class="ttdoc">Generate six aligned maps and optical surface metadata.</div><div class="ttdef"><b>Definition</b> <a href="EverydayMaterials_8cpp_source.html#l00031">EverydayMaterials.cpp:31</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html">eve::procgen::Params</a></div><div class="ttdoc">Owning, typed generation parameters.</div><div class="ttdef"><b>Definition</b> <a href="Params_8h_source.html#l00027">Params.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a1d161ea4d699ee471f5bdc1467bc7e48"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a1d161ea4d699ee471f5bdc1467bc7e48">eve::procgen::Params::setSize</a></div><div class="ttdeci">void setSize(int width, int height)</div><div class="ttdoc">Set the generation dimensions, clamping each non-positive value to one.</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00142">Params.cpp:142</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_a2f4088085aad76b56eefc62d31c4ab5e"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#a2f4088085aad76b56eefc62d31c4ab5e">eve::procgen::Params::setInt</a></div><div class="ttdeci">void setInt(const std::string &amp;key, int value)</div><div class="ttdoc">Store an Int64 parameter, preserving its numeric Value kind.</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00149">Params.cpp:149</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_aa7e924de3605c7cf67f398ca5afa1297"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#aa7e924de3605c7cf67f398ca5afa1297">eve::procgen::Params::setBool</a></div><div class="ttdeci">void setBool(const std::string &amp;key, bool value)</div><div class="ttdoc">Stores a boolean generation parameter.</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00167">Params.cpp:167</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_ac3e1e35db1edb15e4785b850790396cb"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#ac3e1e35db1edb15e4785b850790396cb">eve::procgen::Params::setSeed</a></div><div class="ttdeci">void setSeed(uint32_t seed)</div><div class="ttdoc">Set the deterministic seed used by generation.</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00139">Params.cpp:139</a></div></div>
+<div class="ttc" id="aclasseve_1_1procgen_1_1Params_html_acce6b32828adb0ee22eedd3bd28e7743"><div class="ttname"><a href="classeve_1_1procgen_1_1Params.html#acce6b32828adb0ee22eedd3bd28e7743">eve::procgen::Params::setFloat</a></div><div class="ttdeci">void setFloat(const std::string &amp;key, float value)</div><div class="ttdoc">Store a finite or non-finite floating parameter as Value::Double without text conversion.</div><div class="ttdef"><b>Definition</b> <a href="Params_8cpp_source.html#l00165">Params.cpp:165</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1detail_html_a54a4a5a9a9d34cf2b40a69933abef54f"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1detail.html#a54a4a5a9a9d34cf2b40a69933abef54f">eve::procgen::detail::sampleEveryday</a></div><div class="ttdeci">EverydaySample sampleEveryday(EverydayMaterial family, float u, float v, uint32_t seed, int repeats, int bandwidth)</div><div class="ttdoc">Pure seeded surface sampling; no state, IO, callbacks or retained borrows.</div><div class="ttdef"><b>Definition</b> <a href="EverydayPatterns_8cpp_source.html#l00046">EverydayPatterns.cpp:46</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_1_1raster__detail_html_a41f6005867e523f5cdc2549335420b4b"><div class="ttname"><a href="namespaceeve_1_1procgen_1_1raster__detail.html#a41f6005867e523f5cdc2549335420b4b">eve::procgen::raster_detail::sample</a></div><div class="ttdeci">double sample(const Heightmap &amp;map, double u, double v)</div><div class="ttdoc">Sample.</div><div class="ttdef"><b>Definition</b> <a href="TerrainRasterInternal_8h_source.html#l00051">TerrainRasterInternal.h:51</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html"><div class="ttname"><a href="namespaceeve_1_1procgen.html">eve::procgen</a></div><div class="ttdef"><b>Definition</b> <a href="EvpackPointGraphLoader_8h_source.html#l00012">EvpackPointGraphLoader.h:12</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_aaeaf153a8c2c1669efbac890e48970f5"><div class="ttname"><a href="namespaceeve_1_1procgen.html#aaeaf153a8c2c1669efbac890e48970f5">eve::procgen::generatePbrSet</a></div><div class="ttdeci">std::unique_ptr&lt; PbrTextureSet &gt; generatePbrSet(const TextureRecipeDef &amp;def, const Params &amp;params, std::string &amp;error)</div><div class="ttdoc">Builds a full PBR set from a texture definition and returns unique ownership.</div><div class="ttdef"><b>Definition</b> <a href="PbrMaterial_8cpp_source.html#l00137">PbrMaterial.cpp:137</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ace073379eac0f7382c74d076e9e60d33"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33">eve::procgen::EverydayMaterial</a></div><div class="ttdeci">EverydayMaterial</div><div class="ttdoc">Everyday surface families; no scene, GPU or registry state is retained.</div><div class="ttdef"><b>Definition</b> <a href="EverydayMaterials_8h_source.html#l00007">EverydayMaterials.h:7</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ace073379eac0f7382c74d076e9e60d33a6e4dd7ce4ea3c1d4a90edb289e22da98"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a6e4dd7ce4ea3c1d4a90edb289e22da98">eve::procgen::EverydayMaterial::Wood</a></div><div class="ttdeci">@ Wood</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ace073379eac0f7382c74d076e9e60d33a7fb26875c639817a59912a87be6f7386"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a7fb26875c639817a59912a87be6f7386">eve::procgen::EverydayMaterial::Marble</a></div><div class="ttdeci">@ Marble</div></div>
+<div class="ttc" id="anamespaceeve_1_1procgen_html_ace073379eac0f7382c74d076e9e60d33aaae44179fda7ddcbf8916aff53846128"><div class="ttname"><a href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33aaae44179fda7ddcbf8916aff53846128">eve::procgen::EverydayMaterial::Glass</a></div><div class="ttdeci">@ Glass</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1ColorRamp_html_ac787a6fa5176585317d6b1a85e039f18"><div class="ttname"><a href="structeve_1_1procgen_1_1ColorRamp.html#ac787a6fa5176585317d6b1a85e039f18">eve::procgen::ColorRamp::add</a></div><div class="ttdeci">void add(float t, uint8_t r, uint8_t g, uint8_t b, uint8_t a=255)</div><div class="ttdoc">Adds .</div><div class="ttdef"><b>Definition</b> <a href="ColorRamp_8cpp_source.html#l00008">ColorRamp.cpp:8</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1NoiseField_html"><div class="ttname"><a href="structeve_1_1procgen_1_1NoiseField.html">eve::procgen::NoiseField</a></div><div class="ttdoc">Deterministic value-noise helpers for pixel textures. When periodX/periodY &gt; 0, lattice wraps for sea...</div><div class="ttdef"><b>Definition</b> <a href="NoiseField_8h_source.html#l00013">NoiseField.h:13</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a0df9f69a858d27461975d1bb18580364"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a0df9f69a858d27461975d1bb18580364">eve::procgen::PbrParams::aoStrength</a></div><div class="ttdeci">float aoStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00110">TextureRecipe.h:110</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a536546a71db1f3e6b48b095c99cb5819"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a536546a71db1f3e6b48b095c99cb5819">eve::procgen::PbrParams::metallic</a></div><div class="ttdeci">float metallic</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00108">TextureRecipe.h:108</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_a668db6ffebb9a0ee1b13f049cb63e3ad"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#a668db6ffebb9a0ee1b13f049cb63e3ad">eve::procgen::PbrParams::normalStrength</a></div><div class="ttdeci">float normalStrength</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00109">TextureRecipe.h:109</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_aa57684dadcb5b44283636fc02cc6707f"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#aa57684dadcb5b44283636fc02cc6707f">eve::procgen::PbrParams::roughnessHigh</a></div><div class="ttdeci">float roughnessHigh</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00107">TextureRecipe.h:107</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1PbrParams_html_abba32247e91c9ceb9ab6f5622ed37023"><div class="ttname"><a href="structeve_1_1procgen_1_1PbrParams.html#abba32247e91c9ceb9ab6f5622ed37023">eve::procgen::PbrParams::roughnessLow</a></div><div class="ttdeci">float roughnessLow</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00106">TextureRecipe.h:106</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1Rgba8_html"><div class="ttname"><a href="structeve_1_1procgen_1_1Rgba8.html">eve::procgen::Rgba8</a></div><div class="ttdoc">Rgba8 public API.</div><div class="ttdef"><b>Definition</b> <a href="ColorRamp_8h_source.html#l00011">ColorRamp.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html">eve::procgen::TextureRecipeDef</a></div><div class="ttdoc">A procedural texture is described by an albedo ramp, displacement, optional independent PBR pigment f...</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00122">TextureRecipe.h:122</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a3e1d7266f1ed5644afcc8499aa0b0dfb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a3e1d7266f1ed5644afcc8499aa0b0dfb">eve::procgen::TextureRecipeDef::height</a></div><div class="ttdeci">std::function&lt; float(float, float, const NoiseField &amp;)&gt; height</div><div class="ttdoc">Float.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00126">TextureRecipe.h:126</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a4f059397109a138aea4eb0259edbc2bb"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a4f059397109a138aea4eb0259edbc2bb">eve::procgen::TextureRecipeDef::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00123">TextureRecipe.h:123</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a63c7abdfa17db564eaebe63e3f0aaf89"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a63c7abdfa17db564eaebe63e3f0aaf89">eve::procgen::TextureRecipeDef::colorField</a></div><div class="ttdeci">std::function&lt; float(float, float, const NoiseField &amp;)&gt; colorField</div><div class="ttdoc">Optional pigment field, independent of physical relief; empty uses height.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00129">TextureRecipe.h:129</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a6e04e728e3378cea3f1fb071005f001f"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e04e728e3378cea3f1fb071005f001f">eve::procgen::TextureRecipeDef::albedo</a></div><div class="ttdeci">ColorRamp albedo</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00124">TextureRecipe.h:124</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_a6e05283c2c570d8988510b00dce6ef68"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#a6e05283c2c570d8988510b00dce6ef68">eve::procgen::TextureRecipeDef::roughnessField</a></div><div class="ttdeci">std::function&lt; float(float, float, const NoiseField &amp;)&gt; roughnessField</div><div class="ttdoc">Optional independent microfacet field, mapped through roughnessLow/High.</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00131">TextureRecipe.h:131</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1TextureRecipeDef_html_ae1239ec4e580915f5017adf58f7c2718"><div class="ttname"><a href="structeve_1_1procgen_1_1TextureRecipeDef.html#ae1239ec4e580915f5017adf58f7c2718">eve::procgen::TextureRecipeDef::pbr</a></div><div class="ttdeci">PbrParams pbr</div><div class="ttdef"><b>Definition</b> <a href="TextureRecipe_8h_source.html#l00127">TextureRecipe.h:127</a></div></div>
+<div class="ttc" id="astructeve_1_1procgen_1_1detail_1_1EverydaySample_html"><div class="ttname"><a href="structeve_1_1procgen_1_1detail_1_1EverydaySample.html">eve::procgen::detail::EverydaySample</a></div><div class="ttdoc">Internal pigment, physical relief and microfacet variation in a common periodic UV domain.</div><div class="ttdef"><b>Definition</b> <a href="EverydayPatterns_8h_source.html#l00005">EverydayPatterns.h:5</a></div></div>
+<div class="ttc" id="awebgpu_2GraphicsGpuDriven_8cpp_html_af3f2d7fd6f40d5dd418aef858956a49b"><div class="ttname"><a href="webgpu_2GraphicsGpuDriven_8cpp.html#af3f2d7fd6f40d5dd418aef858956a49b">color</a></div><div class="ttdeci">glm::vec4 color</div><div class="ttdef"><b>Definition</b> <a href="webgpu_2GraphicsGpuDriven_8cpp_source.html#l00050">GraphicsGpuDriven.cpp:50</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

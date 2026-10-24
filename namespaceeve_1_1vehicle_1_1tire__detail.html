@@ -1,0 +1,555 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::vehicle::tire_detail 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle.html">vehicle</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html">tire_detail</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::vehicle::tire_detail 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a07603335b5a1e82c707d88f67026fc51" id="r_a07603335b5a1e82c707d88f67026fc51"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a07603335b5a1e82c707d88f67026fc51">synchronize</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;vehicle, std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime)</td></tr>
+<tr class="separator:a07603335b5a1e82c707d88f67026fc51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46a1b012d9d7508375ad92eafb63717f" id="r_a46a1b012d9d7508375ad92eafb63717f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a46a1b012d9d7508375ad92eafb63717f">submissionState</a> (const std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:a46a1b012d9d7508375ad92eafb63717f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5432237c0671f0aa84da9fecae055060" id="r_a5432237c0671f0aa84da9fecae055060"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1TireModel.html">physics::TireModel</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a5432237c0671f0aa84da9fecae055060">model</a> (const <a class="el" href="structeve_1_1vehicle_1_1SuspensionConfig.html">SuspensionConfig</a> &amp;config, double <a class="el" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>)</td></tr>
+<tr class="separator:a5432237c0671f0aa84da9fecae055060"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0563acf1aeb73ee77e98ae4c68fdc81" id="r_ac0563acf1aeb73ee77e98ae4c68fdc81"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#ac0563acf1aeb73ee77e98ae4c68fdc81">driveInputs</a> (<a class="el" href="structeve_1_1physics_1_1TireInput.html">physics::TireInput</a> &amp;<a class="el" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, const <a class="el" href="structeve_1_1vehicle_1_1SuspensionConfig.html">SuspensionConfig</a> &amp;config, const <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Input.html">VehicleEntity::Input</a> &amp;<a class="el" href="Evpack_8cpp.html#ad36f085e46e88a0658882f9013d9ed04">input</a>, const <a class="el" href="structeve_1_1vehicle_1_1SuspensionWheel.html">SuspensionWheel</a> &amp;wheel, std::size_t driven, double maximumSpeed, double traction)</td></tr>
+<tr class="separator:ac0563acf1aeb73ee77e98ae4c68fdc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bf1fe8e69b32d0a2a039becf53e5766" id="r_a5bf1fe8e69b32d0a2a039becf53e5766"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a5bf1fe8e69b32d0a2a039becf53e5766">commit</a> (<a class="el" href="classeve_1_1physics_1_1World.html">physics::World</a> &amp;world, <a class="el" href="classeve_1_1physics_1_1ForceBatch.html">physics::ForceBatch</a> &amp;batch, std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime, std::vector&lt; <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1SuspensionState_1_1WheelState.html">VehicleEntity::SuspensionState::WheelState</a> &gt; candidate, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:a5bf1fe8e69b32d0a2a039becf53e5766"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a01b3ba4f16b94ac19a474c7786903e4c" id="r_a01b3ba4f16b94ac19a474c7786903e4c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a01b3ba4f16b94ac19a474c7786903e4c">commit</a> (<a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;world, <a class="el" href="classeve_1_1physics_1_1ForceBatch.html">physics::ForceBatch</a> &amp;batch, std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime, std::vector&lt; <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1SuspensionState_1_1WheelState.html">VehicleEntity::SuspensionState::WheelState</a> &gt; candidate, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:a01b3ba4f16b94ac19a474c7786903e4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b62292aec3a23077ae99d07eb1d7c32" id="r_a9b62292aec3a23077ae99d07eb1d7c32"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#a9b62292aec3a23077ae99d07eb1d7c32">submit3D</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;vehicle, <a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:a9b62292aec3a23077ae99d07eb1d7c32"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af0651d4346fff57ceb1dacbd6bc77b1d" id="r_af0651d4346fff57ceb1dacbd6bc77b1d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1vehicle_1_1tire__detail.html#af0651d4346fff57ceb1dacbd6bc77b1d">submit2D</a> (<a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;vehicle, <a class="el" href="classeve_1_1physics_1_1Body.html">physics::Body</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;runtime, const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;<a class="el" href="TreeMesh_8cpp.html#a863c86bdfd96bf9c461846689c2614aa">step</a>)</td></tr>
+<tr class="separator:af0651d4346fff57ceb1dacbd6bc77b1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">函数说明</h2>
+<a id="a5bf1fe8e69b32d0a2a039becf53e5766" name="a5bf1fe8e69b32d0a2a039becf53e5766"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5bf1fe8e69b32d0a2a039becf53e5766">&#9670;&#160;</a></span>commit() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::commit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World.html">physics::World</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1ForceBatch.html">physics::ForceBatch</a> &amp;&#160;</td>
+          <td class="paramname"><em>batch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1SuspensionState_1_1WheelState.html">VehicleEntity::SuspensionState::WheelState</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00086">86</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleTires2D_8cpp_source.html#l00021">submit2D()</a> , 以及 <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">submit3D()</a>.</p>
+
+</div>
+</div>
+<a id="a01b3ba4f16b94ac19a474c7786903e4c" name="a01b3ba4f16b94ac19a474c7786903e4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a01b3ba4f16b94ac19a474c7786903e4c">&#9670;&#160;</a></span>commit() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::commit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1World3D.html">physics::World3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>world</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1ForceBatch.html">physics::ForceBatch</a> &amp;&#160;</td>
+          <td class="paramname"><em>batch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1SuspensionState_1_1WheelState.html">VehicleEntity::SuspensionState::WheelState</a> &gt;&#160;</td>
+          <td class="paramname"><em>candidate</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00092">92</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>.</p>
+
+</div>
+</div>
+<a id="ac0563acf1aeb73ee77e98ae4c68fdc81" name="ac0563acf1aeb73ee77e98ae4c68fdc81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac0563acf1aeb73ee77e98ae4c68fdc81">&#9670;&#160;</a></span>driveInputs()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::vehicle::tire_detail::driveInputs </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structeve_1_1physics_1_1TireInput.html">physics::TireInput</a> &amp;&#160;</td>
+          <td class="paramname"><em>target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1SuspensionConfig.html">SuspensionConfig</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1VehicleEntity_1_1Input.html">VehicleEntity::Input</a> &amp;&#160;</td>
+          <td class="paramname"><em>input</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1SuspensionWheel.html">SuspensionWheel</a> &amp;&#160;</td>
+          <td class="paramname"><em>wheel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::size_t&#160;</td>
+          <td class="paramname"><em>driven</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>maximumSpeed</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>traction</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00060">60</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTypes_8h_source.html#l00128">eve::vehicle::SuspensionConfig::brakeTorque</a>, <a class="el" href="VehicleTypes_8h_source.html#l00111">eve::vehicle::SuspensionWheel::drive</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="VehicleTypes_8h_source.html#l00107">eve::vehicle::SuspensionWheel::radius</a> , 以及 <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleTires2D_8cpp_source.html#l00021">submit2D()</a> , 以及 <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">submit3D()</a>.</p>
+
+</div>
+</div>
+<a id="a5432237c0671f0aa84da9fecae055060" name="a5432237c0671f0aa84da9fecae055060"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5432237c0671f0aa84da9fecae055060">&#9670;&#160;</a></span>model()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1physics_1_1TireModel.html">physics::TireModel</a> eve::vehicle::tire_detail::model </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1vehicle_1_1SuspensionConfig.html">SuspensionConfig</a> &amp;&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>radius</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00050">50</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="VehicleTypes_8h_source.html#l00126">eve::vehicle::SuspensionConfig::corneringStiffness</a>, <a class="el" href="VehicleTypes_8h_source.html#l00126">eve::vehicle::SuspensionConfig::longitudinalStiffness</a>, <a class="el" href="PlacementSystem_8cpp_source.html#l00042">radius</a>, <a class="el" href="ForceModels_8h_source.html#l00102">eve::physics::TireModel::radius</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="VehicleTypes_8h_source.html#l00128">eve::vehicle::SuspensionConfig::rollingResistance</a>, <a class="el" href="VehicleTypes_8h_source.html#l00126">eve::vehicle::SuspensionConfig::tireFriction</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00124">eve::vehicle::SuspensionConfig::wheelInertia</a>.</p>
+
+</div>
+</div>
+<a id="a46a1b012d9d7508375ad92eafb63717f" name="a46a1b012d9d7508375ad92eafb63717f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a46a1b012d9d7508375ad92eafb63717f">&#9670;&#160;</a></span>submissionState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::submissionState </td>
+          <td>(</td>
+          <td class="paramtype">const std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00030">30</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a733d43480c8589b1368e5def6b480415">eve::vehicle::Applied</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="GltfAnimation_8cpp_source.html#l00017">message</a>, <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::vehicle::Pending</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::PreconditionViolation</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a453e6aa38d87b28ccae545967c53004f">eve::vehicle::Unavailable</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehicleTires2D_8cpp_source.html#l00021">submit2D()</a> , 以及 <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">submit3D()</a>.</p>
+
+</div>
+</div>
+<a id="af0651d4346fff57ceb1dacbd6bc77b1d" name="af0651d4346fff57ceb1dacbd6bc77b1d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af0651d4346fff57ceb1dacbd6bc77b1d">&#9670;&#160;</a></span>submit2D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::submit2D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>vehicle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body.html">physics::Body</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTires2D_8cpp_source.html">VehicleTires2D.cpp</a> 第 <a class="el" href="VehicleTires2D_8cpp_source.html#l00021">21</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00033">center</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00086">commit()</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00060">driveInputs()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="ForceBatch_8cpp_source.html#l00018">force</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00102">forward</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00100">inertia</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00025">inverseInertia</a>, <a class="el" href="ArrowGenerator_8cpp_source.html#l00044">lateral</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00066">link</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00675">model</a>, <a class="el" href="BattleControl_8cpp_source.html#l00708">pending</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00018">previous</a>, <a class="el" href="VehicleTypes_8h_source.html#l00107">eve::vehicle::SuspensionWheel::radius</a>, <a class="el" href="EnvironmentQuery_8cpp_source.html#l00168">raw</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="VehicleTypes_8h_source.html#l00112">eve::vehicle::SuspensionWheel::steer</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00030">submissionState()</a>, <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a453e6aa38d87b28ccae545967c53004f">eve::vehicle::Unavailable</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="OceanSpectrumFrame_8cpp_source.html#l00024">velocity</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00104">eve::vehicle::SuspensionWheel::x</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehiclePhysics_8cpp_source.html#l00269">eve::vehicle::VehiclePhysics::submitWheelStep()</a>.</p>
+
+</div>
+</div>
+<a id="a9b62292aec3a23077ae99d07eb1d7c32" name="a9b62292aec3a23077ae99d07eb1d7c32"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9b62292aec3a23077ae99d07eb1d7c32">&#9670;&#160;</a></span>submit3D()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::submit3D </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>vehicle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="classeve_1_1physics_1_1Body3D.html">physics::Body3D</a> &amp;&#160;</td>
+          <td class="paramname"><em>body</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1SimulationStep.html">SimulationStep</a> &amp;&#160;</td>
+          <td class="paramname"><em>step</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTires3D_8cpp_source.html">VehicleTires3D.cpp</a> 第 <a class="el" href="VehicleTires3D_8cpp_source.html#l00110">110</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="MeleeHit_8cpp_source.html#l00040">a</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00024">angular</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00017">body</a>, <a class="el" href="Box3DBody_8cpp_source.html#l00649">eve::physics::box3d::Access::bodyId()</a>, <a class="el" href="namespaceeve_1_1physics.html#a36d3775ef6b05dc0323b8acf4b6f6ed8a171f0a41200dfd456bfe2c1f4818c74d">eve::physics::Box3D</a>, <a class="el" href="HexSphereTopology_8cpp_source.html#l00075">c</a>, <a class="el" href="OceanRenderBindings_8cpp_source.html#l00033">center</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00086">commit()</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00052">contact</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00102">conveyor</a>, <a class="el" href="SquirrelBinding_8cpp_source.html#l00031">count</a>, <a class="el" href="Pathfinder_8cpp_source.html#l00151">diagonal</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00060">driveInputs()</a>, <a class="el" href="OceanSprayBindings_8cpp_source.html#l00020">dt</a>, <a class="el" href="Coupling3DStep_8cpp_source.html#l00027">dynamic</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="Result_8h_source.html#l00195">eve::Result&lt; T &gt;::failure()</a>, <a class="el" href="OnnxQuant_8cpp_source.html#l00637">finite</a>, <a class="el" href="ForceBatch_8cpp_source.html#l00018">force</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00102">forward</a>, <a class="el" href="VehicleTires3D_8cpp_source.html#l00104">impulse</a>, <a class="el" href="Evpack_8cpp_source.html#l00170">input</a>, <a class="el" href="ArrowGenerator_8cpp_source.html#l00044">lateral</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00017">length</a>, <a class="el" href="ForceBindings_8cpp_source.html#l00069">linear</a>, <a class="el" href="Joint2DBindings_8cpp_source.html#l00066">link</a>, <a class="el" href="SceneAuthoring_8cpp_source.html#l00064">matrix</a>, <a class="el" href="RenderSystem3D_8cpp_source.html#l00675">model</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00154">normal</a>, <a class="el" href="BattleControl_8cpp_source.html#l00708">pending</a>, <a class="el" href="StylizeAttackVfx_8cpp_source.html#l00247">phase</a>, <a class="el" href="VolumeFluidFoamSurface_8cpp_source.html#l00304">point</a>, <a class="el" href="EnvironmentQuery_8cpp_source.html#l00168">raw</a>, <a class="el" href="AnimSmr_8cpp_source.html#l00164">relative</a>, <a class="el" href="McpFrameCapture_8cpp_source.html#l00079">response</a>, <a class="el" href="LegacyAnimationImporter_8cpp_source.html#l00018">scale</a>, <a class="el" href="ScriptStructure_8cpp_source.html#l00020">source</a>, <a class="el" href="ActionTimelineWidget_8cpp_source.html#l00033">state</a>, <a class="el" href="VehicleTypes_8h_source.html#l00112">eve::vehicle::SuspensionWheel::steer</a>, <a class="el" href="TreeMesh_8cpp_source.html#l00314">step</a>, <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00030">submissionState()</a>, <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a453e6aa38d87b28ccae545967c53004f">eve::vehicle::Unavailable</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::Unsupported</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00218">up</a>, <a class="el" href="ProjectIndexGraph_8cpp_source.html#l00016">value</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">w</a>, <a class="el" href="Box3DWorld_8cpp_source.html#l00012">eve::physics::box3d::Access::worldId()</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00104">eve::vehicle::SuspensionWheel::x</a>, <a class="el" href="VehicleTypes_8h_source.html#l00105">eve::vehicle::SuspensionWheel::y</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">z</a> , 以及 <a class="el" href="VehicleTypes_8h_source.html#l00106">eve::vehicle::SuspensionWheel::z</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehiclePhysics_8cpp_source.html#l00269">eve::vehicle::VehiclePhysics::submitWheelStep()</a>.</p>
+
+</div>
+</div>
+<a id="a07603335b5a1e82c707d88f67026fc51" name="a07603335b5a1e82c707d88f67026fc51"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07603335b5a1e82c707d88f67026fc51">&#9670;&#160;</a></span>synchronize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261">VehiclePhysicsStatus</a> &gt; eve::vehicle::tire_detail::synchronize </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1vehicle_1_1VehicleEntity.html">VehicleEntity</a> &amp;&#160;</td>
+          <td class="paramname"><em>vehicle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::shared_ptr&lt; <a class="el" href="classeve_1_1vehicle_1_1VehicleWheelRuntime.html">VehicleWheelRuntime</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>runtime</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="VehicleTireRuntime_8cpp_source.html">VehicleTireRuntime.cpp</a> 第 <a class="el" href="VehicleTireRuntime_8cpp_source.html#l00015">15</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a733d43480c8589b1368e5def6b480415">eve::vehicle::Applied</a>, <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261aa149e85a44aeec9140e92733d9ed694e">eve::vehicle::Cancelled</a>, <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a2d13df6f8b5e4c5af9f87e0dc39df69d">eve::vehicle::Pending</a>, <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a> , 以及 <a class="el" href="namespaceeve_1_1vehicle.html#ac22930e428674fe49ed360f136bbe261a453e6aa38d87b28ccae545967c53004f">eve::vehicle::Unavailable</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="VehiclePhysics_8cpp_source.html#l00277">eve::vehicle::VehiclePhysics::synchronizeWheelState()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

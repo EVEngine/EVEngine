@@ -1,0 +1,404 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSAbilityAdmission.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSAbilityAdmission.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSAbilityAdmission_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="RTSScriptInternal_8h.html">rts/RTSScriptInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RTSSystemMovementInternal_8h.html">rts/RTSSystemMovementInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="RTSSystems_8h.html">rts/RTSSystems.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">using </span><a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#a3489963ade134bf4b56e1401dc71876a">systems_internal::distanceSquared</a>;</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">using </span><a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#a7d9a3220c4e6c66fe80c474d2bf432cc">systems_internal::entityPosition</a>;</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">using </span><a class="code hl_function" href="namespaceeve_1_1rts_1_1systems__internal.html#ab26eff7350f631dcc8deb424aad201ce">systems_internal::isFinitePosition</a>;</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="}">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">   10</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">AbilitySystem::validateCast</a>(<a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>&amp; caster, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1AbilitySpec.html">AbilitySpec</a>&amp; spec, ecs::EntityHandle <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                         <a class="code hl_struct" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <span class="keywordflow">if</span> (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#afae00c932303ed2f7c4b0416f134e968">id</a>.empty() || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a4d9c8a5cb49f6975d50416cded4971ae">range</a>) || spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a4d9c8a5cb49f6975d50416cded4971ae">range</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a6e5fb43fdbb215e9879de6f12475cfcf">radius</a>) ||</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a6e5fb43fdbb215e9879de6f12475cfcf">radius</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a638c8505475908562177731e9cd1266d">cooldown</a>) || spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a638c8505475908562177731e9cd1266d">cooldown</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a3a64b3e60631e0d6bbf067153e4ca303">damage</a>) ||</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a3a64b3e60631e0d6bbf067153e4ca303">damage</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a30b974949f08e48b399870aa83bc16bd">healing</a>) || spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a30b974949f08e48b399870aa83bc16bd">healing</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a0c6fa04182f238087bda59b82afa7e23">castTime</a>) ||</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a0c6fa04182f238087bda59b82afa7e23">castTime</a> &lt; 0.0f || !std::isfinite(spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#afb9e145058f69ae3d82e8eb0eadc4eea">channelTickInterval</a>) || spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#afb9e145058f69ae3d82e8eb0eadc4eea">channelTickInterval</a> &lt; 0.0f ||</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#ab4c99a6266aee0ded5851a6fae7a467a">resourceCost</a> &lt; 0 || (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#ab4c99a6266aee0ded5851a6fae7a467a">resourceCost</a> &gt; 0 &amp;&amp; spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#ac61db261475c7c1b174b32e491a29af5">resourceType</a>.empty()) ||</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#afb9e145058f69ae3d82e8eb0eadc4eea">channelTickInterval</a> &gt; 0.0f &amp;&amp; spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a0c6fa04182f238087bda59b82afa7e23">castTime</a> &lt;= 0.0f) || !isFinitePosition(<a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>))</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>,</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>                                                       <span class="stringliteral">&quot;RTS ability definition or target point is invalid&quot;</span>, <span class="stringliteral">&quot;ability&quot;</span>));</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    <span class="keywordflow">if</span> (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#ad92804aae00455a791522d857515f59d">casterDefinition</a>.<a class="code hl_function" href="classeve_1_1LogicalId.html#ab7ae520145a31b265000d6d930682ad2">isValid</a>() &amp;&amp; caster.definition()-&gt;id != spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#ad92804aae00455a791522d857515f59d">casterDefinition</a>)</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;unit definition cannot cast this ability&quot;</span>, <span class="stringliteral">&quot;caster&quot;</span>));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keywordflow">if</span> (!caster.durability()-&gt;alive)</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;ability caster is dead&quot;</span>, <span class="stringliteral">&quot;caster&quot;</span>));</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <span class="keywordflow">if</span> (caster.abilities()-&gt;channel)</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;unit is already casting&quot;</span>, <span class="stringliteral">&quot;ability.channel&quot;</span>));</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; cooldown : caster.abilities()-&gt;cooldowns)</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>        <span class="keywordflow">if</span> (cooldown.id == spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#afae00c932303ed2f7c4b0416f134e968">id</a> &amp;&amp; cooldown.remaining &gt; 0)</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;ability is on cooldown&quot;</span>, <span class="stringliteral">&quot;ability.cooldown&quot;</span>));</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <a class="code hl_struct" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> destination = <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <span class="keywordflow">if</span> (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">target</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192aad6e7652b1bdfb38783486c2c3d5e806">AbilityTarget::Self</a>)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>        destination = {caster.motion()-&gt;x, caster.motion()-&gt;y};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">else</span> <span class="keywordflow">if</span> (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">target</a> != <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a2a3cd5946cfd317eb99c3d32e35e2d4c">AbilityTarget::Point</a>) {</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a> = entityPosition(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>)</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;ability target is stale&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        destination          = *<a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keyword">auto</span>*        entity  = ecs::try_get(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        <a class="code hl_class" href="classeve_1_1rts_1_1EntityLink.html">FactionLink</a>* faction = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <a class="code hl_class" href="classeve_1_1SubjectRef.html">SubjectRef</a>   <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordtype">bool</span>         <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a177491c3907983217815f101b76618fd">alive</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        <span class="keywordflow">if</span> (<span class="keyword">auto</span>* <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a> = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>*<span class="keyword">&gt;</span>(entity)) {</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            faction = &amp;<a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;faction()-&gt;link;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a> = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;identity()-&gt;subject;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a177491c3907983217815f101b76618fd">alive</a>   = <a class="code hl_variable" href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a>-&gt;durability()-&gt;alive;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<span class="keyword">auto</span>* building = <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1rts_1_1Building.html">Building</a>*<span class="keyword">&gt;</span>(entity)) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            faction = &amp;building-&gt;faction()-&gt;link;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a> = building-&gt;identity()-&gt;subject;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <a class="code hl_variable" href="GraphicsParticles_8cpp.html#a177491c3907983217815f101b76618fd">alive</a>   = building-&gt;integrity()-&gt;alive;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="GraphicsParticles_8cpp.html#a177491c3907983217815f101b76618fd">alive</a> || !faction)</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">DiagnosticCode::StaleHandle</a>, <span class="stringliteral">&quot;ability target is not live&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>        <span class="keyword">const</span> <span class="keywordtype">bool</span> allied = <a class="code hl_function" href="classeve_1_1rts_1_1FactionRelationSystem.html#a66ec1ecae77f5dba6c193f24b0fda23c">FactionRelationSystem::isAllied</a>(*faction, caster.faction()-&gt;link);</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        <span class="keywordflow">if</span> ((spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">target</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a0dd87782600574e2f791bcfe639d4fcc">AbilityTarget::Ally</a> &amp;&amp; !allied) || (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">target</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a8c6d21187fb58b7a079d70030686b33e">AbilityTarget::Enemy</a> &amp;&amp; allied))</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;ability target relationship is invalid&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        <span class="keywordflow">if</span> (spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">target</a> == <a class="code hl_enumvalue" href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a8c6d21187fb58b7a079d70030686b33e">AbilityTarget::Enemy</a> &amp;&amp;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            !<a class="code hl_function" href="classeve_1_1rts_1_1FactionIntelSystem.html#a34db77a23e1633f08daa37038ec129e2">FactionIntelSystem::isTargetable</a>(<span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1rts_1_1Faction.html">Faction</a>*<span class="keyword">&gt;</span>(caster.faction()-&gt;link.resolve()), <a class="code hl_variable" href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a>))</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                <a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;enemy ability target is not currently visible and detected&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keywordflow">if</span> (distanceSquared(caster.motion()-&gt;x, caster.motion()-&gt;y, destination.<a class="code hl_variable" href="structeve_1_1rts_1_1WorldPosition.html#a43f62430d1252541bfef5fe50150b084">x</a>, destination.<a class="code hl_variable" href="structeve_1_1rts_1_1WorldPosition.html#aa49591007e379a09a9be6df7127773c2">y</a>) &gt; spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a4d9c8a5cb49f6975d50416cded4971ae">range</a> * spec.<a class="code hl_variable" href="structeve_1_1rts_1_1AbilitySpec.html#a4d9c8a5cb49f6975d50416cded4971ae">range</a>)</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, <span class="stringliteral">&quot;ability target is outside cast range&quot;</span>, <span class="stringliteral">&quot;target&quot;</span>));</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>}</div>
+</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span> </div>
+<div class="foldopen" id="foldopen00072" data-start="{" data-end="}">
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rts_1_1script__internal.html">   72</a></span><span class="keyword">namespace </span>script_internal {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span><span class="keyword">namespace </span>{</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span><span class="keyword">class </span>AbilityAdmission final : <span class="keyword">public</span> <a class="code hl_class" href="classeve_1_1transaction_1_1ITransactionParticipant.html">transaction::ITransactionParticipant</a> {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    AbilityAdmission(<a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>&amp; caster, <a class="code hl_struct" href="structeve_1_1rts_1_1AbilitySpec.html">AbilitySpec</a> spec, ecs::EntityHandle <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="code hl_struct" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a> <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>)</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>        : caster_(ecs::handle_of(&amp;caster)), target_(<a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>), spec_(std::move(spec)), point_(<a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) {}</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    std::string_view <a class="code hl_variable" href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a>() <span class="keyword">const</span> <span class="keyword">noexcept</span> <span class="keyword">override</span> { <span class="keywordflow">return</span> <span class="stringliteral">&quot;rts-ability-admission&quot;</span>; }</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a>     prepare(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">transaction::TransactionContext</a>&amp;)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        <span class="keywordflow">if</span> (phase_ != Phase::Idle) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability stage is already in flight&quot;</span>);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>        <span class="keyword">auto</span>* caster = resolve();</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>        <span class="keywordflow">if</span> (!caster) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability caster is stale&quot;</span>);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">AbilitySystem::validateCast</a>(*caster, spec_, target_, point_);</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        before_    = *caster-&gt;abilities();</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>        after_     = before_;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> = std::find_if(after_.cooldowns.begin(), after_.cooldowns.end(),</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>                                      [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a>) { return c.id == spec_.id; });</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a> == after_.cooldowns.end())</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            after_.cooldowns.push_back({spec_.id, spec_.cooldown});</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>        <span class="keywordflow">else</span></div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <a class="code hl_variable" href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a>-&gt;remaining = spec_.cooldown;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>        after_.channel = <a class="code hl_struct" href="structeve_1_1rts_1_1Unit_1_1Abilities_1_1Channel.html">Unit::Abilities::Channel</a>{</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            spec_,          target_,</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            point_,         caster-&gt;durability()-&gt;state.health,</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            spec_.castTime, spec_.channelTickInterval &gt; 0 ? spec_.channelTickInterval : spec_.castTime};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>        phase_ = Phase::Prepared;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    }</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> commit(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">transaction::TransactionContext</a>&amp;)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>        <span class="keywordflow">if</span> (phase_ != Phase::Prepared) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability stage is not prepared&quot;</span>);</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">auto</span>* caster = resolve();</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        <span class="keywordflow">if</span> (!caster) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability caster is stale&quot;</span>);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">AbilitySystem::validateCast</a>(*caster, spec_, target_, point_);</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>;</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">if</span> (!sameCooldowns(caster-&gt;abilities()-&gt;cooldowns, before_.cooldowns))</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>            <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability state changed during admission&quot;</span>);</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        std::swap(*caster-&gt;abilities(), after_);</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        phase_ = Phase::Committed;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>(<a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">StatusCode::Applied</a>));</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    }</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> rollback(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">transaction::TransactionContext</a>&amp;)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">if</span> (phase_ != Phase::Prepared) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability stage is not prepared&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        phase_ = Phase::Terminal;</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>    <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> compensate(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1transaction_1_1TransactionContext.html">transaction::TransactionContext</a>&amp;)<span class="keyword"> override </span>{</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        <span class="keywordflow">if</span> (phase_ != Phase::Committed) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability stage is not committed&quot;</span>);</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>        <span class="keyword">auto</span>* caster = resolve();</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">if</span> (!caster) <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability caster is stale during compensation&quot;</span>);</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>        <span class="keyword">const</span> <span class="keyword">auto</span>&amp; channel = caster-&gt;abilities()-&gt;channel;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        <span class="keywordflow">if</span> (!channel || channel-&gt;spec.id != spec_.id || channel-&gt;remaining != spec_.castTime)</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>            <span class="keywordflow">return</span> conflict(<span class="stringliteral">&quot;ability was advanced before compensation&quot;</span>);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>        std::swap(*caster-&gt;abilities(), after_);</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        phase_ = Phase::Terminal;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;void&gt;::success</a>();</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>    }</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keyword">enum class</span> Phase { Idle, Prepared, Committed, Terminal };</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    <span class="keyword">static</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> conflict(std::string <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;void&gt;::failure</a>(</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">DiagnosticCode::Conflict</a>, std::move(<a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>), <span class="stringliteral">&quot;ability.admission&quot;</span>));</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>    }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> sameCooldowns(<span class="keyword">const</span> std::vector&lt;Unit::Abilities::Cooldown&gt;&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>,</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                              <span class="keyword">const</span> std::vector&lt;Unit::Abilities::Cooldown&gt;&amp; <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>) {</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.size() != <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>.size()) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>        <span class="keywordflow">for</span> (std::size_t i = 0; i &lt; <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>.size(); ++i)</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>[i].<span class="keywordtype">id</span> != <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>[i].<span class="keywordtype">id</span> || <a class="code hl_variable" href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a>[i].remaining != <a class="code hl_variable" href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a>[i].remaining) <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span>    }</div>
+<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span>    <a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>* resolve()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00143" name="l00143"></a><span class="lineno">  143</span>        <span class="keywordflow">return</span> caster_.table == ecs::current() ? <span class="keyword">dynamic_cast&lt;</span><a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>*<span class="keyword">&gt;</span>(ecs::try_get(caster_)) : <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>    }</div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span>    ecs::EntityHandle caster_, target_;</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>    <a class="code hl_struct" href="structeve_1_1rts_1_1AbilitySpec.html">AbilitySpec</a>       spec_;</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>    <a class="code hl_struct" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>     point_;</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>    <a class="code hl_struct" href="structeve_1_1rts_1_1Unit_1_1Abilities.html">Unit::Abilities</a>   before_, after_;</div>
+<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span>    Phase             phase_ = Phase::Idle;</div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>};</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>}  <span class="comment">// namespace</span></div>
+<div class="foldopen" id="foldopen00152" data-start="{" data-end="}">
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rts_1_1script__internal.html#ad281696e65d9982b76299f941845eec6">  152</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;transaction::ITransactionParticipant&gt;</a>&gt; <a class="code hl_function" href="namespaceeve_1_1rts_1_1script__internal.html#ad281696e65d9982b76299f941845eec6">stageAbility</a>(<a class="code hl_class" href="classeve_1_1rts_1_1Unit.html">Unit</a>&amp; caster, <a class="code hl_struct" href="structeve_1_1rts_1_1AbilitySpec.html">AbilitySpec</a> spec,</div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                                                                           ecs::EntityHandle <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>,</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                                                                           <a class="code hl_struct" href="structeve_1_1rts_1_1WorldPosition.html">WorldPosition</a>     <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>) {</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>    <span class="keyword">auto</span> <a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a> = <a class="code hl_function" href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">AbilitySystem::validateCast</a>(caster, spec, <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>);</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>) <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;transaction::ITransactionParticipant&gt;</a>&gt;::failure(<a class="code hl_variable" href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a>.status());</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>    <span class="keywordflow">return</span> <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;std::unique_ptr&lt;transaction::ITransactionParticipant&gt;</a>&gt;::success(</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>        std::make_unique&lt;AbilityAdmission&gt;(caster, std::move(spec), <a class="code hl_variable" href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a>, <a class="code hl_variable" href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a>));</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>}</div>
+</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>}  <span class="comment">// namespace script_internal</span></div>
+</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aActionNotifyRegistry_8cpp_html_a16c9300acaea4db7696fb24b3802bfa5"><div class="ttname"><a href="ActionNotifyRegistry_8cpp.html#a16c9300acaea4db7696fb24b3802bfa5">target</a></div><div class="ttdeci">LogicalId target</div><div class="ttdef"><b>Definition</b> <a href="ActionNotifyRegistry_8cpp_source.html#l00151">ActionNotifyRegistry.cpp:151</a></div></div>
+<div class="ttc" id="aAnimSmr_8cpp_html_aaca3fbd883cca67884738545312b4752"><div class="ttname"><a href="AnimSmr_8cpp.html#aaca3fbd883cca67884738545312b4752">subject</a></div><div class="ttdeci">int subject</div><div class="ttdef"><b>Definition</b> <a href="AnimSmr_8cpp_source.html#l00163">AnimSmr.cpp:163</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a9b45b3e13bd9167aab02e17e08916231"><div class="ttname"><a href="ECS_8cpp.html#a9b45b3e13bd9167aab02e17e08916231">name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00154">ECS.cpp:154</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGraphicsParticles_8cpp_html_a177491c3907983217815f101b76618fd"><div class="ttname"><a href="GraphicsParticles_8cpp.html#a177491c3907983217815f101b76618fd">alive</a></div><div class="ttdeci">std::uint32_t alive</div><div class="ttdef"><b>Definition</b> <a href="GraphicsParticles_8cpp_source.html#l00024">GraphicsParticles.cpp:24</a></div></div>
+<div class="ttc" id="aHexSphereTopology_8cpp_html_a6508ac0a45fccabd203a6f520c69dca8"><div class="ttname"><a href="HexSphereTopology_8cpp.html#a6508ac0a45fccabd203a6f520c69dca8">c</a></div><div class="ttdeci">std::int32_t c</div><div class="ttdef"><b>Definition</b> <a href="HexSphereTopology_8cpp_source.html#l00075">HexSphereTopology.cpp:75</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a60ea6c13eb7a935dc579b69b80cee822"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a60ea6c13eb7a935dc579b69b80cee822">position</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; position</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00016">LegacyAnimationImporter.cpp:16</a></div></div>
+<div class="ttc" id="aMcpServer_8cpp_html_a28e3c179a86f337095088b3ca02a2b2a"><div class="ttname"><a href="McpServer_8cpp.html#a28e3c179a86f337095088b3ca02a2b2a">valid</a></div><div class="ttdeci">bool valid</div><div class="ttdef"><b>Definition</b> <a href="McpServer_8cpp_source.html#l00320">McpServer.cpp:320</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a234e391f8e3e00f064813b98fb8f3cdb"><div class="ttname"><a href="MeleeHit_8cpp.html#a234e391f8e3e00f064813b98fb8f3cdb">b</a></div><div class="ttdeci">MeleePoint3 b</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00041">MeleeHit.cpp:41</a></div></div>
+<div class="ttc" id="aMeleeHit_8cpp_html_a65cfd4d3d71b298048a6baf087fe6579"><div class="ttname"><a href="MeleeHit_8cpp.html#a65cfd4d3d71b298048a6baf087fe6579">a</a></div><div class="ttdeci">MeleePoint3 a</div><div class="ttdef"><b>Definition</b> <a href="MeleeHit_8cpp_source.html#l00040">MeleeHit.cpp:40</a></div></div>
+<div class="ttc" id="aRTSScriptInternal_8h_html"><div class="ttname"><a href="RTSScriptInternal_8h.html">RTSScriptInternal.h</a></div></div>
+<div class="ttc" id="aRTSSystemMovementInternal_8h_html"><div class="ttname"><a href="RTSSystemMovementInternal_8h.html">RTSSystemMovementInternal.h</a></div></div>
+<div class="ttc" id="aRTSSystems_8h_html"><div class="ttname"><a href="RTSSystems_8h.html">RTSSystems.h</a></div><div class="ttdoc">Deterministic phase-one RTS systems and their ECS contracts.</div></div>
+<div class="ttc" id="aRpgDialect_8cpp_html_a7141f237b2648c631ce5b73215683565"><div class="ttname"><a href="RpgDialect_8cpp.html#a7141f237b2648c631ce5b73215683565">found</a></div><div class="ttdeci">bool found</div><div class="ttdef"><b>Definition</b> <a href="RpgDialect_8cpp_source.html#l00331">RpgDialect.cpp:331</a></div></div>
+<div class="ttc" id="aTacticsPersistence_8cpp_html_a5b77101175f979d95b9601fe99c12994"><div class="ttname"><a href="TacticsPersistence_8cpp.html#a5b77101175f979d95b9601fe99c12994">unit</a></div><div class="ttdeci">TacticalUnit * unit</div><div class="ttdef"><b>Definition</b> <a href="TacticsPersistence_8cpp_source.html#l00143">TacticsPersistence.cpp:143</a></div></div>
+<div class="ttc" id="aVolumeFluidFoamSurface_8cpp_html_ac41ee5e90dfa1dead2adafcda2f01a08"><div class="ttname"><a href="VolumeFluidFoamSurface_8cpp.html#ac41ee5e90dfa1dead2adafcda2f01a08">point</a></div><div class="ttdeci">glm::vec3 point</div><div class="ttdef"><b>Definition</b> <a href="VolumeFluidFoamSurface_8cpp_source.html#l00304">VolumeFluidFoamSurface.cpp:304</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1LogicalId_html_ab7ae520145a31b265000d6d930682ad2"><div class="ttname"><a href="classeve_1_1LogicalId.html#ab7ae520145a31b265000d6d930682ad2">eve::LogicalId::isValid</a></div><div class="ttdeci">bool isValid() const noexcept</div><div class="ttdoc">Returns whether this value contains a valid namespace and name.</div><div class="ttdef"><b>Definition</b> <a href="Identity_8h_source.html#l00436">Identity.h:436</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_a1ac047776b44c594af4da63d122f7054"><div class="ttname"><a href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00013">Status.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1SubjectRef_html"><div class="ttname"><a href="classeve_1_1SubjectRef.html">eve::SubjectRef</a></div><div class="ttdoc">Strong, domain-neutral reference to a runtime subject.</div><div class="ttdef"><b>Definition</b> <a href="SubjectRef_8h_source.html#l00026">SubjectRef.h:26</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1AbilitySystem_html_a1c47899959f4a6dfbbafd7ed6cee7497"><div class="ttname"><a href="classeve_1_1rts_1_1AbilitySystem.html#a1c47899959f4a6dfbbafd7ed6cee7497">eve::rts::AbilitySystem::validateCast</a></div><div class="ttdeci">static Result&lt; void &gt; validateCast(Unit &amp;caster, const AbilitySpec &amp;spec, ecs::EntityHandle target, WorldPosition point)</div><div class="ttdoc">Pure admission check for caster life, target, range and cooldown.</div><div class="ttdef"><b>Definition</b> <a href="RTSAbilityAdmission_8cpp_source.html#l00010">RTSAbilityAdmission.cpp:10</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1Building_html"><div class="ttname"><a href="classeve_1_1rts_1_1Building.html">eve::rts::Building</a></div><div class="ttdoc">RTS building domain root with placement and production composition.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00852">RTSTypes.h:852</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1EntityLink_html"><div class="ttname"><a href="classeve_1_1rts_1_1EntityLink.html">eve::rts::EntityLink&lt; FactionLinkTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1FactionIntelSystem_html_a34db77a23e1633f08daa37038ec129e2"><div class="ttname"><a href="classeve_1_1rts_1_1FactionIntelSystem.html#a34db77a23e1633f08daa37038ec129e2">eve::rts::FactionIntelSystem::isTargetable</a></div><div class="ttdeci">static bool isTargetable(Faction *viewer, SubjectRef subject) noexcept</div><div class="ttdoc">Return whether a stable subject is currently visible and detected. Empty contact state preserves nati...</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems__Faction_8cpp_source.html#l00081">RTSSystems_Faction.cpp:81</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1FactionRelationSystem_html_a66ec1ecae77f5dba6c193f24b0fda23c"><div class="ttname"><a href="classeve_1_1rts_1_1FactionRelationSystem.html#a66ec1ecae77f5dba6c193f24b0fda23c">eve::rts::FactionRelationSystem::isAllied</a></div><div class="ttdeci">static bool isAllied(Faction *left, Faction *right) noexcept</div><div class="ttdoc">Return true when both live factions are identical or share a team in a common Match.</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems__Faction_8cpp_source.html#l00058">RTSSystems_Faction.cpp:58</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1Faction_html"><div class="ttname"><a href="classeve_1_1rts_1_1Faction.html">eve::rts::Faction</a></div><div class="ttdoc">Faction domain root; membership is a set of typed runtime handles.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l01190">RTSTypes.h:1190</a></div></div>
+<div class="ttc" id="aclasseve_1_1rts_1_1Unit_html"><div class="ttname"><a href="classeve_1_1rts_1_1Unit.html">eve::rts::Unit</a></div><div class="ttdoc">RTS unit domain root.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00501">RTSTypes.h:501</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1ITransactionParticipant_html"><div class="ttname"><a href="classeve_1_1transaction_1_1ITransactionParticipant.html">eve::transaction::ITransactionParticipant</a></div><div class="ttdoc">Synchronous participant contract for one coordinator transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00129">Transaction.h:129</a></div></div>
+<div class="ttc" id="aclasseve_1_1transaction_1_1TransactionContext_html"><div class="ttname"><a href="classeve_1_1transaction_1_1TransactionContext.html">eve::transaction::TransactionContext</a></div><div class="ttdoc">Immutable context shared by every participant of one transaction.</div><div class="ttdef"><b>Definition</b> <a href="Transaction_8h_source.html#l00031">Transaction.h:31</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1script__internal_html_ad281696e65d9982b76299f941845eec6"><div class="ttname"><a href="namespaceeve_1_1rts_1_1script__internal.html#ad281696e65d9982b76299f941845eec6">eve::rts::script_internal::stageAbility</a></div><div class="ttdeci">Result&lt; std::unique_ptr&lt; transaction::ITransactionParticipant &gt; &gt; stageAbility(Unit &amp;caster, AbilitySpec spec, ecs::EntityHandle target, WorldPosition point)</div><div class="ttdef"><b>Definition</b> <a href="RTSAbilityAdmission_8cpp_source.html#l00152">RTSAbilityAdmission.cpp:152</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1systems__internal_html_a3489963ade134bf4b56e1401dc71876a"><div class="ttname"><a href="namespaceeve_1_1rts_1_1systems__internal.html#a3489963ade134bf4b56e1401dc71876a">eve::rts::systems_internal::distanceSquared</a></div><div class="ttdeci">float distanceSquared(float ax, float ay, float bx, float by)</div><div class="ttdef"><b>Definition</b> <a href="RTSSystemMovementInternal_8h_source.html#l00027">RTSSystemMovementInternal.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1systems__internal_html_a7d9a3220c4e6c66fe80c474d2bf432cc"><div class="ttname"><a href="namespaceeve_1_1rts_1_1systems__internal.html#a7d9a3220c4e6c66fe80c474d2bf432cc">eve::rts::systems_internal::entityPosition</a></div><div class="ttdeci">std::optional&lt; WorldPosition &gt; entityPosition(const ecs::EntityHandle &amp;handle)</div><div class="ttdef"><b>Definition</b> <a href="RTSSystemMovementInternal_8h_source.html#l00089">RTSSystemMovementInternal.h:89</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_1_1systems__internal_html_ab26eff7350f631dcc8deb424aad201ce"><div class="ttname"><a href="namespaceeve_1_1rts_1_1systems__internal.html#ab26eff7350f631dcc8deb424aad201ce">eve::rts::systems_internal::isFinitePosition</a></div><div class="ttdeci">bool isFinitePosition(WorldPosition position)</div><div class="ttdef"><b>Definition</b> <a href="RTSSystemMovementInternal_8h_source.html#l00019">RTSSystemMovementInternal.h:19</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_ab936549c49783f929572a936661c3192a0dd87782600574e2f791bcfe639d4fcc"><div class="ttname"><a href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a0dd87782600574e2f791bcfe639d4fcc">eve::rts::AbilityTarget::Ally</a></div><div class="ttdeci">@ Ally</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_ab936549c49783f929572a936661c3192a2a3cd5946cfd317eb99c3d32e35e2d4c"><div class="ttname"><a href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a2a3cd5946cfd317eb99c3d32e35e2d4c">eve::rts::AbilityTarget::Point</a></div><div class="ttdeci">@ Point</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_ab936549c49783f929572a936661c3192a8c6d21187fb58b7a079d70030686b33e"><div class="ttname"><a href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192a8c6d21187fb58b7a079d70030686b33e">eve::rts::AbilityTarget::Enemy</a></div><div class="ttdeci">@ Enemy</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_ab936549c49783f929572a936661c3192aad6e7652b1bdfb38783486c2c3d5e806"><div class="ttname"><a href="namespaceeve_1_1rts.html#ab936549c49783f929572a936661c3192aad6e7652b1bdfb38783486c2c3d5e806">eve::rts::AbilityTarget::Self</a></div><div class="ttdeci">@ Self</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7aec4fb10f5e3708942fbeadb549f6a7be">eve::DiagnosticCode::StaleHandle</a></div><div class="ttdeci">@ StaleHandle</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::DiagnosticCode::Conflict</a></div><div class="ttdeci">@ Conflict</div></div>
+<div class="ttc" id="anamespaceeve_html_a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415"><div class="ttname"><a href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::StatusCode::Applied</a></div><div class="ttdeci">@ Applied</div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html">eve::rts::AbilitySpec</a></div><div class="ttdoc">Typed ability policy; lifecycle effects remain owned by the canonical effect container.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00138">RTSTypes.h:138</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a0c6fa04182f238087bda59b82afa7e23"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a0c6fa04182f238087bda59b82afa7e23">eve::rts::AbilitySpec::castTime</a></div><div class="ttdeci">float castTime</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00150">RTSTypes.h:150</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a30b974949f08e48b399870aa83bc16bd"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a30b974949f08e48b399870aa83bc16bd">eve::rts::AbilitySpec::healing</a></div><div class="ttdeci">float healing</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00149">RTSTypes.h:149</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a3a64b3e60631e0d6bbf067153e4ca303"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a3a64b3e60631e0d6bbf067153e4ca303">eve::rts::AbilitySpec::damage</a></div><div class="ttdeci">float damage</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00148">RTSTypes.h:148</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a4d9c8a5cb49f6975d50416cded4971ae"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a4d9c8a5cb49f6975d50416cded4971ae">eve::rts::AbilitySpec::range</a></div><div class="ttdeci">float range</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00144">RTSTypes.h:144</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a638c8505475908562177731e9cd1266d"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a638c8505475908562177731e9cd1266d">eve::rts::AbilitySpec::cooldown</a></div><div class="ttdeci">float cooldown</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00146">RTSTypes.h:146</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_a6e5fb43fdbb215e9879de6f12475cfcf"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#a6e5fb43fdbb215e9879de6f12475cfcf">eve::rts::AbilitySpec::radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00145">RTSTypes.h:145</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_aa7ec248f4470285139f5ee022ffbcdad"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#aa7ec248f4470285139f5ee022ffbcdad">eve::rts::AbilitySpec::target</a></div><div class="ttdeci">AbilityTarget target</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00141">RTSTypes.h:141</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_ab4c99a6266aee0ded5851a6fae7a467a"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#ab4c99a6266aee0ded5851a6fae7a467a">eve::rts::AbilitySpec::resourceCost</a></div><div class="ttdeci">std::int64_t resourceCost</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00147">RTSTypes.h:147</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_ac61db261475c7c1b174b32e491a29af5"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#ac61db261475c7c1b174b32e491a29af5">eve::rts::AbilitySpec::resourceType</a></div><div class="ttdeci">std::string resourceType</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00142">RTSTypes.h:142</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_ad92804aae00455a791522d857515f59d"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#ad92804aae00455a791522d857515f59d">eve::rts::AbilitySpec::casterDefinition</a></div><div class="ttdeci">LogicalId casterDefinition</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00140">RTSTypes.h:140</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_afae00c932303ed2f7c4b0416f134e968"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#afae00c932303ed2f7c4b0416f134e968">eve::rts::AbilitySpec::id</a></div><div class="ttdeci">std::string id</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00139">RTSTypes.h:139</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1AbilitySpec_html_afb9e145058f69ae3d82e8eb0eadc4eea"><div class="ttname"><a href="structeve_1_1rts_1_1AbilitySpec.html#afb9e145058f69ae3d82e8eb0eadc4eea">eve::rts::AbilitySpec::channelTickInterval</a></div><div class="ttdeci">float channelTickInterval</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00151">RTSTypes.h:151</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1Unit_1_1Abilities_1_1Channel_html"><div class="ttname"><a href="structeve_1_1rts_1_1Unit_1_1Abilities_1_1Channel.html">eve::rts::Unit::Abilities::Channel</a></div><div class="ttdoc">Channel public API.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00689">RTSTypes.h:689</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1Unit_1_1Abilities_html"><div class="ttname"><a href="structeve_1_1rts_1_1Unit_1_1Abilities.html">eve::rts::Unit::Abilities</a></div><div class="ttdoc">Ability cooldowns and an optional deterministic cast/channel in progress.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00685">RTSTypes.h:685</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1WorldPosition_html"><div class="ttname"><a href="structeve_1_1rts_1_1WorldPosition.html">eve::rts::WorldPosition</a></div><div class="ttdoc">Two-dimensional deterministic RTS world position.</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00053">RTSTypes.h:53</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1WorldPosition_html_a43f62430d1252541bfef5fe50150b084"><div class="ttname"><a href="structeve_1_1rts_1_1WorldPosition.html#a43f62430d1252541bfef5fe50150b084">eve::rts::WorldPosition::x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00054">RTSTypes.h:54</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1WorldPosition_html_aa49591007e379a09a9be6df7127773c2"><div class="ttname"><a href="structeve_1_1rts_1_1WorldPosition.html#aa49591007e379a09a9be6df7127773c2">eve::rts::WorldPosition::y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="RTSTypes_8h_source.html#l00055">RTSTypes.h:55</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

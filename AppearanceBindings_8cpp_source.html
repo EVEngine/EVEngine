@@ -1,0 +1,259 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/avatar/AppearanceBindings.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_92d32a9ddf71877e00af8592433a55dc.html">avatar</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">AppearanceBindings.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="AppearanceBindings_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &quot;<a class="code" href="Appearance_8h.html">avatar/Appearance.h</a>&quot;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &quot;<a class="code" href="SquirrelBinding_8h.html">common/SquirrelBinding.h</a>&quot;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Mesh_8h.html">graphics/Mesh.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span> </div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;simplesquirrel/simplesquirrel.hpp&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1avatar.html">eve::avatar</a> {</div>
+<div class="foldopen" id="foldopen00008" data-start="{" data-end="}">
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno"><a class="line" href="namespaceeve_1_1avatar.html#abc0d62880b31c6a0b6d726d752627243">    8</a></span><span class="keywordtype">void</span> <a class="code hl_function" href="namespaceeve_1_1avatar.html#abc0d62880b31c6a0b6d726d752627243">exposeAppearance</a>(ssq::Table&amp; table) {</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>    <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>  = table.getHandle();</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>    <span class="keyword">auto</span>       <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a> = table.addClass&lt;<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>&gt;(<span class="stringliteral">&quot;AvatarAppearance&quot;</span>,</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>                                                std::function&lt;Appearance*()&gt;([] { <span class="keywordflow">return</span> <span class="keyword">new</span> <a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>(); }), <span class="keyword">true</span>);</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;configure&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self, ssq::Object <span class="keywordtype">object</span>) {</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(<span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.status());</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a05aa05141a23687bec2acb0676811d9a">configure</a>(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.value()));</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>    });</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;apply&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self, ssq::Object <span class="keywordtype">object</span>) {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(<span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.status());</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#ab16a4ff1e52b5542095b3a4bf94d2648">apply</a>(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.value()));</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    });</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;restore&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self, ssq::Object <span class="keywordtype">object</span>) {</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_function" href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">script::valueFromSquirrel</a>(<span class="keywordtype">object</span>);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.status());</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#afc5a910060bb84c06a5fada95e1ff462">restore</a>(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.value()));</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    });</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;snapshot&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self) {</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(), self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#acd8eceb90d19e5254cd5372f089ce716">snapshot</a>());</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    });</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;evaluate&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self) {</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">Status::success</a>(), self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a4912f79d1a813a0950d2b1187f900a20">evaluate</a>());</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    });</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;undo&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a74fd40298e1aa7eea8cc476c469f9c6f">undo</a>()); });</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;redo&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self) { <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a5240a91c974bbe1d43f9bdcecf90866e">redo</a>()); });</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;canUndo&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a3e898f7787988afce22ff1dce27e4052">Appearance::canUndo</a>);</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;canRedo&quot;</span>, &amp;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a22b1fe2d9cec9f903d6786198237644d">Appearance::canRedo</a>);</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;applyMorphWeights&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self, <a class="code hl_class" href="classeve_1_1graphics_1_1Mesh.html">graphics::Mesh</a>* <a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>, <span class="keyword">const</span> std::string&amp; prefix) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>)</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>                <a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_function" href="classeve_1_1Status.html#af690431c5a78ab4182c39ccffc24095a">Status::failure</a>(<a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Expected a live mesh&quot;</span>)));</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#a102d641df6dac50e687a512db54c29b6">applyMorphWeights</a>(*<a class="code hl_variable" href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a>, prefix));</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    });</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;snapshotJson&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#acd8eceb90d19e5254cd5372f089ce716">snapshot</a>().<a class="code hl_function" href="classeve_1_1Value.html#a149d94e0856075c5fae2a61c2c0cd38d">toJson</a>(),</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                                     [](std::string <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>) { return Value(std::move(value)); });</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    });</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <a class="code hl_variable" href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a>.addFunc(<span class="stringliteral">&quot;restoreJson&quot;</span>, [<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>](<a class="code hl_class" href="classeve_1_1avatar_1_1Appearance.html">Appearance</a>* self, <span class="keyword">const</span> std::string&amp; json) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keyword">auto</span> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a> = <a class="code hl_function" href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">Value::fromJson</a>(json);</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.ok()) <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">script::projectStatusResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.status());</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">script::projectResult</a>(<a class="code hl_variable" href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a>, self-&gt;<a class="code hl_function" href="classeve_1_1avatar_1_1Appearance.html#afc5a910060bb84c06a5fada95e1ff462">restore</a>(<a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>.value()));</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    });</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>}</div>
+</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>}  <span class="comment">// namespace eve::avatar</span></div>
+<div class="ttc" id="aAppearance_8h_html"><div class="ttname"><a href="Appearance_8h.html">Appearance.h</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a02347a3d911f31a15d03c50c85070bfe"><div class="ttname"><a href="ECS_8cpp.html#a02347a3d911f31a15d03c50c85070bfe">vm</a></div><div class="ttdeci">HSQUIRRELVM vm</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00038">ECS.cpp:38</a></div></div>
+<div class="ttc" id="aECS_8cpp_html_a091d9c8332bbc20675859af3713a8283"><div class="ttname"><a href="ECS_8cpp.html#a091d9c8332bbc20675859af3713a8283">cls</a></div><div class="ttdeci">HSQOBJECT cls</div><div class="ttdef"><b>Definition</b> <a href="ECS_8cpp_source.html#l00039">ECS.cpp:39</a></div></div>
+<div class="ttc" id="aMesh_8h_html"><div class="ttname"><a href="Mesh_8h.html">Mesh.h</a></div></div>
+<div class="ttc" id="aOceanRenderBindings_8cpp_html_a55139a87ffac9b4f63e8c424b9d090b1"><div class="ttname"><a href="OceanRenderBindings_8cpp.html#a55139a87ffac9b4f63e8c424b9d090b1">mesh</a></div><div class="ttdeci">OceanMeshSettings mesh</div><div class="ttdef"><b>Definition</b> <a href="OceanRenderBindings_8cpp_source.html#l00026">OceanRenderBindings.cpp:26</a></div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a346a7d175620f8379f0ce521dc567d9c"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a></div><div class="ttdeci">Object::Ptr value</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00016">ProjectIndexGraph.cpp:16</a></div></div>
+<div class="ttc" id="aSquirrelBinding_8h_html"><div class="ttname"><a href="SquirrelBinding_8h.html">SquirrelBinding.h</a></div><div class="ttdoc">The single Squirrel projection for common Result, Status and Value.</div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_a1ac047776b44c594af4da63d122f7054"><div class="ttname"><a href="classeve_1_1Status.html#a1ac047776b44c594af4da63d122f7054">eve::Status::success</a></div><div class="ttdeci">static Status success(StatusCode code=StatusCode::Ok)</div><div class="ttdoc">Construct a successful status with an explicit non-error outcome.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00013">Status.cpp:13</a></div></div>
+<div class="ttc" id="aclasseve_1_1Status_html_af690431c5a78ab4182c39ccffc24095a"><div class="ttname"><a href="classeve_1_1Status.html#af690431c5a78ab4182c39ccffc24095a">eve::Status::failure</a></div><div class="ttdeci">static Status failure(StatusCode code, Diagnostic diagnostic)</div><div class="ttdoc">Construct a failed status with one diagnostic.</div><div class="ttdef"><b>Definition</b> <a href="Status_8cpp_source.html#l00022">Status.cpp:22</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a149d94e0856075c5fae2a61c2c0cd38d"><div class="ttname"><a href="classeve_1_1Value.html#a149d94e0856075c5fae2a61c2c0cd38d">eve::Value::toJson</a></div><div class="ttdeci">Result&lt; std::string &gt; toJson() const</div><div class="ttdoc">Serialize this value as deterministic compact JSON.</div><div class="ttdef"><b>Definition</b> <a href="Value_8cpp_source.html#l00100">Value.cpp:100</a></div></div>
+<div class="ttc" id="aclasseve_1_1Value_html_a28cbd61fec3de5a669f0cd8b96db34ed"><div class="ttname"><a href="classeve_1_1Value.html#a28cbd61fec3de5a669f0cd8b96db34ed">eve::Value::fromJson</a></div><div class="ttdeci">static Result&lt; Value &gt; fromJson(std::string_view json)</div><div class="ttdoc">Parse one strict JSON value into an owning Value.</div><div class="ttdef"><b>Definition</b> <a href="Value_8cpp_source.html#l00090">Value.cpp:90</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html">eve::avatar::Appearance</a></div><div class="ttdoc">Renderer-independent character appearance authoring and runtime state. Owns its validated definition,...</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8h_source.html#l00027">Appearance.h:27</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a05aa05141a23687bec2acb0676811d9a"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a05aa05141a23687bec2acb0676811d9a">eve::avatar::Appearance::configure</a></div><div class="ttdeci">Result&lt; void &gt; configure(const Value &amp;definition)</div><div class="ttdoc">Validate and replace a complete eve.appearance.definition v1 document. @cost Linear in document size ...</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00063">Appearance.cpp:63</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a102d641df6dac50e687a512db54c29b6"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a102d641df6dac50e687a512db54c29b6">eve::avatar::Appearance::applyMorphWeights</a></div><div class="ttdeci">Result&lt; void &gt; applyMorphWeights(graphics::Mesh &amp;mesh, std::string_view prefix) const</div><div class="ttdoc">Validate all driven morph names before writing weights to a borrowed mesh. Only outputs beginning wit...</div><div class="ttdef"><b>Definition</b> <a href="AppearanceMesh_8cpp_source.html#l00005">AppearanceMesh.cpp:5</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a22b1fe2d9cec9f903d6786198237644d"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a22b1fe2d9cec9f903d6786198237644d">eve::avatar::Appearance::canRedo</a></div><div class="ttdeci">bool canRedo() const</div><div class="ttdoc">Query whether a redo state exists, without evaluating anything.</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8h_source.html#l00051">Appearance.h:51</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a3e898f7787988afce22ff1dce27e4052"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a3e898f7787988afce22ff1dce27e4052">eve::avatar::Appearance::canUndo</a></div><div class="ttdeci">bool canUndo() const</div><div class="ttdoc">Query whether an undo state exists, without evaluating anything.</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8h_source.html#l00049">Appearance.h:49</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a4912f79d1a813a0950d2b1187f900a20"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a4912f79d1a813a0950d2b1187f900a20">eve::avatar::Appearance::evaluate</a></div><div class="ttdeci">Value evaluate() const</div><div class="ttdoc">Evaluate additive channels and multi-input corrective drivers, and derive wardrobe visibility....</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00225">Appearance.cpp:225</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a5240a91c974bbe1d43f9bdcecf90866e"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a5240a91c974bbe1d43f9bdcecf90866e">eve::avatar::Appearance::redo</a></div><div class="ttdeci">Result&lt; void &gt; redo()</div><div class="ttdoc">Redo the last undone edit; NotFound when history is empty.</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00207">Appearance.cpp:207</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_a74fd40298e1aa7eea8cc476c469f9c6f"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#a74fd40298e1aa7eea8cc476c469f9c6f">eve::avatar::Appearance::undo</a></div><div class="ttdeci">Result&lt; void &gt; undo()</div><div class="ttdoc">Undo the last applied edit; NotFound when history is empty.</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00199">Appearance.cpp:199</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_ab16a4ff1e52b5542095b3a4bf94d2648"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#ab16a4ff1e52b5542095b3a4bf94d2648">eve::avatar::Appearance::apply</a></div><div class="ttdeci">Result&lt; void &gt; apply(const Value &amp;patch)</div><div class="ttdoc">Atomically patch parameters and selections; reject unknown ids, conflicts and out-of-range values....</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00163">Appearance.cpp:163</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_acd8eceb90d19e5254cd5372f089ce716"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#acd8eceb90d19e5254cd5372f089ce716">eve::avatar::Appearance::snapshot</a></div><div class="ttdeci">Value snapshot() const</div><div class="ttdoc">Return an owning versioned snapshot of authoritative parameter and selection state....</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00215">Appearance.cpp:215</a></div></div>
+<div class="ttc" id="aclasseve_1_1avatar_1_1Appearance_html_afc5a910060bb84c06a5fada95e1ff462"><div class="ttname"><a href="classeve_1_1avatar_1_1Appearance.html#afc5a910060bb84c06a5fada95e1ff462">eve::avatar::Appearance::restore</a></div><div class="ttdeci">Result&lt; void &gt; restore(const Value &amp;snapshot)</div><div class="ttdoc">Restore an exact eve.appearance.state v1 snapshot for the currently loaded profile....</div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00182">Appearance.cpp:182</a></div></div>
+<div class="ttc" id="aclasseve_1_1graphics_1_1Mesh_html"><div class="ttname"><a href="classeve_1_1graphics_1_1Mesh.html">eve::graphics::Mesh</a></div><div class="ttdoc">GPU mesh handle (+ optional CPU morph targets).</div><div class="ttdef"><b>Definition</b> <a href="Mesh_8h_source.html#l00026">Mesh.h:26</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar_html"><div class="ttname"><a href="namespaceeve_1_1avatar.html">eve::avatar</a></div><div class="ttdef"><b>Definition</b> <a href="Appearance_8cpp_source.html#l00008">Appearance.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1avatar_html_abc0d62880b31c6a0b6d726d752627243"><div class="ttname"><a href="namespaceeve_1_1avatar.html#abc0d62880b31c6a0b6d726d752627243">eve::avatar::exposeAppearance</a></div><div class="ttdeci">void exposeAppearance(ssq::Table &amp;table)</div><div class="ttdoc">Register VM-owned Appearance objects. Table is borrowed only during registration. @thread VM owner th...</div><div class="ttdef"><b>Definition</b> <a href="AppearanceBindings_8cpp_source.html#l00008">AppearanceBindings.cpp:8</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_a94bfd12a7e62327a32df4333b09d7a2a"><div class="ttname"><a href="namespaceeve_1_1script.html#a94bfd12a7e62327a32df4333b09d7a2a">eve::script::projectStatusResult</a></div><div class="ttdeci">ssq::Table projectStatusResult(HSQUIRRELVM vm, const Status &amp;status)</div><div class="ttdoc">Project a checked native status that carries no payload.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00526">SquirrelBinding.cpp:526</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ac3b6f94120aaac0606b048042b94ec36"><div class="ttname"><a href="namespaceeve_1_1script.html#ac3b6f94120aaac0606b048042b94ec36">eve::script::projectResult</a></div><div class="ttdeci">ssq::Table projectResult(HSQUIRRELVM vm, Result&lt; void &gt; &amp;&amp;result)</div><div class="ttdoc">Consume and project a void native Result using the common schema.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00542">SquirrelBinding.cpp:542</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1script_html_ae6fb9fc56f0fc9e284edf3dbe1768c04"><div class="ttname"><a href="namespaceeve_1_1script.html#ae6fb9fc56f0fc9e284edf3dbe1768c04">eve::script::valueFromSquirrel</a></div><div class="ttdeci">Result&lt; Value &gt; valueFromSquirrel(HSQUIRRELVM vm, SQInteger index, const SquirrelValueOptions &amp;options)</div><div class="ttdoc">Convert one Squirrel value into the canonical owning Value tree.</div><div class="ttdef"><b>Definition</b> <a href="SquirrelBinding_8cpp_source.html#l00414">SquirrelBinding.cpp:414</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

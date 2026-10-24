@@ -1,0 +1,479 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::editor::EditorMcpProjector类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1editor.html">editor</a></li><li class="navelem"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html">EditorMcpProjector</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1editor_1_1EditorMcpProjector-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::editor::EditorMcpProjector类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Host-scoped MCP projection over <a class="el" href="classeve_1_1IEditorAutomation.html" title="Module-neutral bridge from DevTools/MCP to the editor command protocol.">IEditorAutomation</a> discovery.  
+ <a href="classeve_1_1editor_1_1EditorMcpProjector.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:a4f6beecffbb0cbf6c15183a6e263cbc1" id="r_a4f6beecffbb0cbf6c15183a6e263cbc1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a4f6beecffbb0cbf6c15183a6e263cbc1">EditorMcpProjector</a> ()=default</td></tr>
+<tr class="separator:a4f6beecffbb0cbf6c15183a6e263cbc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a51f8b6dbacf596761d5b784d3e180a73" id="r_a51f8b6dbacf596761d5b784d3e180a73"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a51f8b6dbacf596761d5b784d3e180a73">attach</a> (<a class="el" href="classeve_1_1editor_1_1EditorHost.html">EditorHost</a> *<a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a1e597f6b05da53f27e3ff3dbc24471bc">host</a>, <a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a> <a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#aa9b9e880616eba068dfdf8353d04b742">mode</a>=<a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8">EditorMcpExportMode::Commands</a>)</td></tr>
+<tr class="memdesc:a51f8b6dbacf596761d5b784d3e180a73"><td class="mdescLeft">&#160;</td><td class="mdescRight">Attach a borrowed host as the active MCP projection scope.  <br /></td></tr>
+<tr class="separator:a51f8b6dbacf596761d5b784d3e180a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8c0eb7f7c02456188b2afc2cf8b49d" id="r_a0c8c0eb7f7c02456188b2afc2cf8b49d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0c8c0eb7f7c02456188b2afc2cf8b49d">detach</a> ()</td></tr>
+<tr class="memdesc:a0c8c0eb7f7c02456188b2afc2cf8b49d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clear the active attachment.  <br /></td></tr>
+<tr class="separator:a0c8c0eb7f7c02456188b2afc2cf8b49d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e597f6b05da53f27e3ff3dbc24471bc" id="r_a1e597f6b05da53f27e3ff3dbc24471bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1editor_1_1EditorHost.html">EditorHost</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a1e597f6b05da53f27e3ff3dbc24471bc">host</a> () const</td></tr>
+<tr class="memdesc:a1e597f6b05da53f27e3ff3dbc24471bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed attached host, or null.  <br /></td></tr>
+<tr class="separator:a1e597f6b05da53f27e3ff3dbc24471bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9b9e880616eba068dfdf8353d04b742" id="r_aa9b9e880616eba068dfdf8353d04b742"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#aa9b9e880616eba068dfdf8353d04b742">mode</a> () const</td></tr>
+<tr class="memdesc:aa9b9e880616eba068dfdf8353d04b742"><td class="mdescLeft">&#160;</td><td class="mdescRight">Active export mode.  <br /></td></tr>
+<tr class="separator:aa9b9e880616eba068dfdf8353d04b742"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96170dab7739d8942b37b380bb45761b" id="r_a96170dab7739d8942b37b380bb45761b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a96170dab7739d8942b37b380bb45761b">isAttached</a> () const</td></tr>
+<tr class="memdesc:a96170dab7739d8942b37b380bb45761b"><td class="mdescLeft">&#160;</td><td class="mdescRight">True when a host is attached.  <br /></td></tr>
+<tr class="separator:a96170dab7739d8942b37b380bb45761b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a235a746797cfdad3cf2acb6522c51f1c" id="r_a235a746797cfdad3cf2acb6522c51f1c"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a235a746797cfdad3cf2acb6522c51f1c">mountedOwners</a> () const</td></tr>
+<tr class="memdesc:a235a746797cfdad3cf2acb6522c51f1c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounted owner allowlist, empty when detached (no filter). @cost Linear in mounted package count; returns an owning set copy.  <br /></td></tr>
+<tr class="separator:a235a746797cfdad3cf2acb6522c51f1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a911da808a28a3d1b4015cd0188518f7e" id="r_a911da808a28a3d1b4015cd0188518f7e"><td class="memItemLeft" align="right" valign="top">std::unordered_set&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a911da808a28a3d1b4015cd0188518f7e">mountedTargetTypes</a> () const</td></tr>
+<tr class="memdesc:a911da808a28a3d1b4015cd0188518f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mounted target type allowlist, empty when detached (no filter). @cost Linear in mounted target types; returns an owning set copy.  <br /></td></tr>
+<tr class="separator:a911da808a28a3d1b4015cd0188518f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0564d6aa2ba5194121b98f39ab7eca35" id="r_a0564d6aa2ba5194121b98f39ab7eca35"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1editor_1_1EditorMcpProjector.html#a0564d6aa2ba5194121b98f39ab7eca35">auditCompleteness</a> () const</td></tr>
+<tr class="memdesc:a0564d6aa2ba5194121b98f39ab7eca35"><td class="mdescLeft">&#160;</td><td class="mdescRight">Audit incomplete packages and orphan automation factories.  <br /></td></tr>
+<tr class="separator:a0564d6aa2ba5194121b98f39ab7eca35"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Host-scoped MCP projection over <a class="el" href="classeve_1_1IEditorAutomation.html" title="Module-neutral bridge from DevTools/MCP to the editor command protocol.">IEditorAutomation</a> discovery. </p>
+<p>When attached, commands/target-list are filtered to mounted packages. Mode A only — per-command dynamic tools remain out of scope. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a> 第 <a class="el" href="EditorMcpProjector_8h_source.html#l00027">27</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="a4f6beecffbb0cbf6c15183a6e263cbc1" name="a4f6beecffbb0cbf6c15183a6e263cbc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f6beecffbb0cbf6c15183a6e263cbc1">&#9670;&#160;</a></span>EditorMcpProjector()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::editor::EditorMcpProjector::EditorMcpProjector </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="a51f8b6dbacf596761d5b784d3e180a73" name="a51f8b6dbacf596761d5b784d3e180a73"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a51f8b6dbacf596761d5b784d3e180a73">&#9670;&#160;</a></span>attach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::editor::EditorMcpProjector::attach </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1editor_1_1EditorHost.html">EditorHost</a> *&#160;</td>
+          <td class="paramname"><em>host</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a>&#160;</td>
+          <td class="paramname"><em>mode</em> = <code><a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8">EditorMcpExportMode::Commands</a></code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Attach a borrowed host as the active MCP projection scope. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">host</td><td>Host that outlives the attachment; null detaches. </td></tr>
+    <tr><td class="paramname">mode</td><td>Export mode (default Commands / Mode A). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a> 第 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00018">18</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548ac441ee50c88f6e5e3a7c69fc69dad8b8">eve::editor::Commands</a>, <a class="el" href="EditorMcpProjector_8h_source.html#l00042">host()</a> , 以及 <a class="el" href="EditorMcpProjector_8h_source.html#l00045">mode()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00422">eve::editor::EditorAutomationProvider::attachHost()</a> , 以及 <a class="el" href="editor_2EditorHost_8cpp_source.html#l00124">eve::editor::EditorHost::exportMcp()</a>.</p>
+
+</div>
+</div>
+<a id="a0564d6aa2ba5194121b98f39ab7eca35" name="a0564d6aa2ba5194121b98f39ab7eca35"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0564d6aa2ba5194121b98f39ab7eca35">&#9670;&#160;</a></span>auditCompleteness()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1editor.html#a171c3d5c5551198b7c835a25378f6dbd">EditorValue</a> &gt; eve::editor::EditorMcpProjector::auditCompleteness </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Audit incomplete packages and orphan automation factories. </p>
+<dl class="section return"><dt>返回</dt><dd>Applied object with incompletePackages[] and orphanFactoryTypes[]. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a> 第 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00043">43</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="EditorWorkspace_8h_source.html#l00049">eve::editor::EditorWorkspace::getId()</a>, <a class="el" href="EditorMcpProjector_8h_source.html#l00048">isAttached()</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00219">left</a>, <a class="el" href="ScriptLinks_8cpp_source.html#l00075">provider</a>, <a class="el" href="HexSphereMesh_8cpp_source.html#l00220">right</a>, <a class="el" href="ActionNotifyRegistry_8cpp_source.html#l00151">target</a>, <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>, <a class="el" href="classeve_1_1editor_1_1IEditorAutomationTargetFactory.html#a6f26e9a2d345912114edd0964256098a">eve::editor::IEditorAutomationTargetFactory::types()</a> , 以及 <a class="el" href="modules_2editor_2EditorHost_8h_source.html#l00089">eve::editor::EditorHost::workspace()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="editor_2EditorHost_8cpp_source.html#l00126">eve::editor::EditorHost::auditPackages()</a> , 以及 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00140">eve::editor::EditorAutomationProvider::invoke()</a>.</p>
+
+</div>
+</div>
+<a id="a0c8c0eb7f7c02456188b2afc2cf8b49d" name="a0c8c0eb7f7c02456188b2afc2cf8b49d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0c8c0eb7f7c02456188b2afc2cf8b49d">&#9670;&#160;</a></span>detach()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void eve::editor::EditorMcpProjector::detach </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Clear the active attachment. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a> 第 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00027">27</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorAutomationProvider_8cpp_source.html#l00426">eve::editor::EditorAutomationProvider::detachHost()</a> , 以及 <a class="el" href="editor_2EditorHost_8cpp_source.html#l00036">eve::editor::EditorHost::~EditorHost()</a>.</p>
+
+</div>
+</div>
+<a id="a1e597f6b05da53f27e3ff3dbc24471bc" name="a1e597f6b05da53f27e3ff3dbc24471bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e597f6b05da53f27e3ff3dbc24471bc">&#9670;&#160;</a></span>host()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1editor_1_1EditorHost.html">EditorHost</a> * eve::editor::EditorMcpProjector::host </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Borrowed attached host, or null. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a> 第 <a class="el" href="EditorMcpProjector_8h_source.html#l00042">42</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00018">attach()</a>.</p>
+
+</div>
+</div>
+<a id="a96170dab7739d8942b37b380bb45761b" name="a96170dab7739d8942b37b380bb45761b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a96170dab7739d8942b37b380bb45761b">&#9670;&#160;</a></span>isAttached()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::editor::EditorMcpProjector::isAttached </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>True when a host is attached. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a> 第 <a class="el" href="EditorMcpProjector_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00043">auditCompleteness()</a>.</p>
+
+</div>
+</div>
+<a id="aa9b9e880616eba068dfdf8353d04b742" name="aa9b9e880616eba068dfdf8353d04b742"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa9b9e880616eba068dfdf8353d04b742">&#9670;&#160;</a></span>mode()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespaceeve_1_1editor.html#ac87cd1c17fa9417b7fd4dae527a1e548">EditorMcpExportMode</a> eve::editor::EditorMcpProjector::mode </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Active export mode. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a> 第 <a class="el" href="EditorMcpProjector_8h_source.html#l00045">45</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00018">attach()</a>.</p>
+
+</div>
+</div>
+<a id="a235a746797cfdad3cf2acb6522c51f1c" name="a235a746797cfdad3cf2acb6522c51f1c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a235a746797cfdad3cf2acb6522c51f1c">&#9670;&#160;</a></span>mountedOwners()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_set&lt; std::string &gt; eve::editor::EditorMcpProjector::mountedOwners </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mounted owner allowlist, empty when detached (no filter). @cost Linear in mounted package count; returns an owning set copy. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a> 第 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00029">29</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="editor_2EditorHost_8cpp_source.html#l00101">eve::editor::EditorHost::mountedOwnerNames()</a> , 以及 <a class="el" href="OceanRenderBindings_8cpp_source.html#l00022">owner</a>.</p>
+
+</div>
+</div>
+<a id="a911da808a28a3d1b4015cd0188518f7e" name="a911da808a28a3d1b4015cd0188518f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a911da808a28a3d1b4015cd0188518f7e">&#9670;&#160;</a></span>mountedTargetTypes()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unordered_set&lt; std::string &gt; eve::editor::EditorMcpProjector::mountedTargetTypes </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Mounted target type allowlist, empty when detached (no filter). @cost Linear in mounted target types; returns an owning set copy. </p>
+
+<p class="definition">在文件 <a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a> 第 <a class="el" href="EditorMcpProjector_8cpp_source.html#l00036">36</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="editor_2EditorHost_8cpp_source.html#l00109">eve::editor::EditorHost::mountedTargetTypeNames()</a> , 以及 <a class="el" href="ActionTimelinePayloadEditor_8cpp_source.html#l00016">type</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/editor/<a class="el" href="EditorMcpProjector_8h_source.html">EditorMcpProjector.h</a></li>
+<li>src/modules/editor/<a class="el" href="EditorMcpProjector_8cpp_source.html">EditorMcpProjector.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

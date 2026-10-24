@@ -1,0 +1,1384 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::sensing 命名空间参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1sensing.html">sensing</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#enum-members">枚举</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">eve::sensing 命名空间参考</div></div>
+</div><!--header-->
+<div class="contents">
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1Candidate.html">Candidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A deterministic candidate returned by a spatial query.  <a href="structeve_1_1sensing_1_1Candidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1CandidateCollection.html">CandidateCollection</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning broad-phase output; collection never publishes or applies result limits.  <a href="structeve_1_1sensing_1_1CandidateCollection.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1CandidateQueryResult.html">CandidateQueryResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning ranked result; does not assign a primary target.  <a href="classeve_1_1sensing_1_1CandidateQueryResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentContext.html">EnvironmentContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning context snapshot, resolved once at instance creation.  <a href="structeve_1_1sensing_1_1EnvironmentContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentContribution.html">EnvironmentContribution</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-item score contribution with its exact normalization population bounds.  <a href="structeve_1_1sensing_1_1EnvironmentContribution.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentGenerator.html">EnvironmentGenerator</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generator parameters; maxItems is a hard resource bound, never silent truncation.  <a href="structeve_1_1sensing_1_1EnvironmentGenerator.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentItem.html">EnvironmentItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A query-local identity and typed location; subjectKey names a mirrored fact, not a UUID.  <a href="structeve_1_1sensing_1_1EnvironmentItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentItemTrace.html">EnvironmentItemTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded explanation for one option-local candidate.  <a href="structeve_1_1sensing_1_1EnvironmentItemTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentMetricContract.html">EnvironmentMetricContract</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Intrinsic metric guarantees; false reorderable preserves an ordering barrier.  <a href="structeve_1_1sensing_1_1EnvironmentMetricContract.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentOption.html">EnvironmentOption</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordered alternative: advance only when this option has no valid items.  <a href="structeve_1_1sensing_1_1EnvironmentOption.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentPlanData.html">EnvironmentPlanData</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentQueryDefinition.html">EnvironmentQueryDefinition</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Authoring value; compile validates and owns a copy. Not a persistent wire format.  <a href="structeve_1_1sensing_1_1EnvironmentQueryDefinition.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1EnvironmentQueryInstance.html">EnvironmentQueryInstance</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One-shot synchronous execution state with query-local contexts and diagnostics. @thread Execute on the simulation thread required by services. No concurrent mutation. @reentrancy Re-entering run is rejected. No callbacks are invoked while holding locks.  <a href="classeve_1_1sensing_1_1EnvironmentQueryInstance.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1EnvironmentQueryPlan.html">EnvironmentQueryPlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable resolved plan, safe to reuse after definitions are edited or destroyed. @ownership Shares immutable compiled data with instances; no borrowed definition storage.  <a href="classeve_1_1sensing_1_1EnvironmentQueryPlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentQueryResult.html">EnvironmentQueryResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning result; empty ranked is successful exhaustion, not a backend failure.  <a href="structeve_1_1sensing_1_1EnvironmentQueryResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentRankedItem.html">EnvironmentRankedItem</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One owning ranked candidate.  <a href="structeve_1_1sensing_1_1EnvironmentRankedItem.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentRequest.html">EnvironmentRequest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-execution values. No world pointers or callbacks are retained.  <a href="structeve_1_1sensing_1_1EnvironmentRequest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentServices.html">EnvironmentServices</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Borrowed providers for this synchronous execution only.  <a href="structeve_1_1sensing_1_1EnvironmentServices.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentStageTrace.html">EnvironmentStageTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stage counts include deferred tests and actual backend measurement calls.  <a href="structeve_1_1sensing_1_1EnvironmentStageTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTest.html">EnvironmentTest</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One metric with independent filtering and scoring parameters.  <a href="structeve_1_1sensing_1_1EnvironmentTest.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1EnvironmentTrace.html">EnvironmentTrace</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning trace survives failed execution; untested is distinct from passed.  <a href="structeve_1_1sensing_1_1EnvironmentTrace.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1GridArea.html">GridArea</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">An integer grid area constraint, kept separate from <a class="el" href="classeve_1_1sensing_1_1WorldArea.html" title="A world-space area constraint.">WorldArea</a>.  <a href="classeve_1_1sensing_1_1GridArea.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Integer grid point tagged as Grid2D or Grid3D.  <a href="classeve_1_1sensing_1_1GridPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1IEnvironmentMetric.html">IEnvironmentMetric</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable measurement extension; filtering, aggregation and scoring belong to the executor. @ownership Definitions and compiled plans share ownership because either may outlive the other. @thread Called synchronously on the provider's simulation thread; never retain borrowed arguments. @reentrancy No locks are held. A metric must not mutate the queried world or this instance.  <a href="classeve_1_1sensing_1_1IEnvironmentMetric.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ILineOfSightQuery.html">ILineOfSightQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Consumer-owned line-of-sight capability.  <a href="classeve_1_1sensing_1_1ILineOfSightQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ISensingCandidateProvider.html">ISensingCandidateProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1sensing_1_1Candidate.html" title="A deterministic candidate returned by a spatial query.">Candidate</a> discovery capability consumed by <a class="el" href="classeve_1_1sensing_1_1TargetingResolver.html" title="Generic constraint evaluator that composes candidate and LOS capabilities.">TargetingResolver</a>.  <a href="classeve_1_1sensing_1_1ISensingCandidateProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ITargetingTask.html">ITargetingTask</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pluggable Select/Filter/Sort task.  <a href="classeve_1_1sensing_1_1ITargetingTask.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1LineOfSightResult.html">LineOfSightResult</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Result.html" title="Move-only operation result carrying either a value or Status.">Result</a> of one injected line-of-sight query.  <a href="structeve_1_1sensing_1_1LineOfSightResult.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1LineOfSightRouter.html">LineOfSightRouter</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Routes each line-of-sight query to the backend that claimed its coordinate space.  <a href="classeve_1_1sensing_1_1LineOfSightRouter.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1PerceptionFact.html">PerceptionFact</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Neutral perception fact projected from a ranked sensing candidate.  <a href="structeve_1_1sensing_1_1PerceptionFact.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1QueryBox.html">QueryBox</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Inclusive axis-aligned box shape for <a class="el" href="structeve_1_1sensing_1_1QuerySpec.html" title="Configurable candidate query against SensingWorld.">QuerySpec</a> (World2D).  <a href="structeve_1_1sensing_1_1QueryBox.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1QueryCircle.html">QueryCircle</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Circle shape for <a class="el" href="structeve_1_1sensing_1_1QuerySpec.html" title="Configurable candidate query against SensingWorld.">QuerySpec</a> (World2D).  <a href="structeve_1_1sensing_1_1QueryCircle.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1QueryCone.html">QueryCone</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">2D cone/sector shape for <a class="el" href="structeve_1_1sensing_1_1QuerySpec.html" title="Configurable candidate query against SensingWorld.">QuerySpec</a> (World2D).  <a href="structeve_1_1sensing_1_1QueryCone.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1QueryOrigin.html">QueryOrigin</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">World2D origin used for range tests and distance sorting.  <a href="structeve_1_1sensing_1_1QueryOrigin.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1QuerySpec.html">QuerySpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configurable candidate query against <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html" title="Mirrored 2D facts and query composition; consumers decide gameplay actions from results.">SensingWorld</a>.  <a href="structeve_1_1sensing_1_1QuerySpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1RankedCandidate.html">RankedCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">One ranked candidate produced by <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355" title="Runs a configurable candidate query.">SensingWorld::query</a>.  <a href="structeve_1_1sensing_1_1RankedCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1ScriptSensingWorld.html">ScriptSensingWorld</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Script factory for independent sensing worlds.  <a href="classeve_1_1sensing_1_1Sensing.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingCandidateProvider.html">SensingCandidateProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pure CPU sensing candidate provider with deterministic map-backed storage.  <a href="classeve_1_1sensing_1_1SensingCandidateProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorld.html">SensingWorld</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrored 2D facts and query composition; consumers decide gameplay actions from results.  <a href="classeve_1_1sensing_1_1SensingWorld.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1SensingWorldCandidateProvider.html">SensingWorldCandidateProvider</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1sensing_1_1ISensingCandidateProvider.html" title="Candidate discovery capability consumed by TargetingResolver.">ISensingCandidateProvider</a> adapter over a <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html" title="Mirrored 2D facts and query composition; consumers decide gameplay actions from results.">SensingWorld</a> fact mirror.  <a href="classeve_1_1sensing_1_1SensingWorldCandidateProvider.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle domain for module-owned sensing worlds.  <a href="structeve_1_1sensing_1_1SensingWorldHandleTag.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1Subject.html">Subject</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Mirrored gameplay facts used by candidate queries.  <a href="structeve_1_1sensing_1_1Subject.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetCandidate.html">TargetCandidate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structeve_1_1sensing_1_1Candidate.html" title="A deterministic candidate returned by a spatial query.">Candidate</a> facts returned by sensing.  <a href="structeve_1_1sensing_1_1TargetCandidate.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetingPipeline.html">TargetingPipeline</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">In-memory task + preset registry and synchronous executor.  <a href="classeve_1_1sensing_1_1TargetingPipeline.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetingPlan.html">TargetingPlan</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Immutable resolved legacy plan; owns tasks independently of its registry. @ownership Shared immutable task ownership permits plans to outlive registry replacement. @thread Execute on the source world's simulation thread; custom tasks must not mutate themselves.  <a href="classeve_1_1sensing_1_1TargetingPlan.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingPreset.html">TargetingPreset</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Named ordered list of targeting tasks.  <a href="structeve_1_1sensing_1_1TargetingPreset.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingQuery.html">TargetingQuery</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A query passed from a domain targeting algorithm to sensing.  <a href="structeve_1_1sensing_1_1TargetingQuery.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetingResolver.html">TargetingResolver</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic constraint evaluator that composes candidate and LOS capabilities.  <a href="classeve_1_1sensing_1_1TargetingResolver.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingSourceContext.html">TargetingSourceContext</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="classeve_1_1Runtime.html" title="EVENGINE_API_FOUNDATION public API.">Runtime</a> source for one pipeline execution.  <a href="structeve_1_1sensing_1_1TargetingSourceContext.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingSpec.html">TargetingSpec</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A checked target-count and spatial constraint description.  <a href="structeve_1_1sensing_1_1TargetingSpec.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1sensing_1_1TargetingTaskStep.html">TargetingTaskStep</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Per-step parameters for a preset entry.  <a href="structeve_1_1sensing_1_1TargetingTaskStep.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1TargetSet.html">TargetSet</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Owning target result containing primary-independent subjects and optional geometry.  <a href="classeve_1_1sensing_1_1TargetSet.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldArea.html">WorldArea</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">A world-space area constraint.  <a href="classeve_1_1sensing_1_1WorldArea.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Finite world-space point tagged as either World2D or World3D.  <a href="classeve_1_1sensing_1_1WorldPoint.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1sensing_1_1ZoneRef.html">ZoneRef</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong reference to a named spatial zone.  <a href="classeve_1_1sensing_1_1ZoneRef.html#details">更多...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:ae2cd6880e5d3fef82ef07f3dad76c605" id="r_ae2cd6880e5d3fef82ef07f3dad76c605"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ae2cd6880e5d3fef82ef07f3dad76c605">QueryShape</a> = std::variant&lt; std::monostate, <a class="el" href="structeve_1_1sensing_1_1QueryCircle.html">QueryCircle</a>, <a class="el" href="structeve_1_1sensing_1_1QueryBox.html">QueryBox</a>, <a class="el" href="structeve_1_1sensing_1_1QueryCone.html">QueryCone</a> &gt;</td></tr>
+<tr class="memdesc:ae2cd6880e5d3fef82ef07f3dad76c605"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional broad-phase shape; monostate means range-only around the origin.  <br /></td></tr>
+<tr class="separator:ae2cd6880e5d3fef82ef07f3dad76c605"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c44a225d596c34383dd5c422b94796d" id="r_a3c44a225d596c34383dd5c422b94796d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a3c44a225d596c34383dd5c422b94796d">SensingWorldHandleRef</a> = <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt; <a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a> &gt;</td></tr>
+<tr class="memdesc:a3c44a225d596c34383dd5c422b94796d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generation- and module-epoch-qualified sensing-world reference.  <br /></td></tr>
+<tr class="separator:a3c44a225d596c34383dd5c422b94796d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a070c050c984b3f451a7aba3b399dad3d" id="r_a070c050c984b3f451a7aba3b399dad3d"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">SubjectRef</a> = <a class="el" href="classeve_1_1SubjectRef.html">::eve::SubjectRef</a></td></tr>
+<tr class="memdesc:a070c050c984b3f451a7aba3b399dad3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strong reference to a runtime subject.  <br /></td></tr>
+<tr class="separator:a070c050c984b3f451a7aba3b399dad3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ab946bebc2c46570a1c777473564d98" id="r_a1ab946bebc2c46570a1c777473564d98"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">TargetLocation</a> = std::variant&lt; <a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>, <a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a> &gt;</td></tr>
+<tr class="memdesc:a1ab946bebc2c46570a1c777473564d98"><td class="mdescLeft">&#160;</td><td class="mdescRight">Either a world point or a grid point, with the tag retained.  <br /></td></tr>
+<tr class="separator:a1ab946bebc2c46570a1c777473564d98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5bec4272c1c8fd30b991e80f942af37" id="r_af5bec4272c1c8fd30b991e80f942af37"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#af5bec4272c1c8fd30b991e80f942af37">FactionRelationFn</a> = std::function&lt; <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">TargetDomain</a> &gt;(std::string_view originFaction, std::string_view candidateFaction)&gt;</td></tr>
+<tr class="memdesc:af5bec4272c1c8fd30b991e80f942af37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects faction string pairs into TargetDomain for <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html" title="Mirrored 2D facts and query composition; consumers decide gameplay actions from results.">SensingWorld</a> adapters.  <br /></td></tr>
+<tr class="separator:af5bec4272c1c8fd30b991e80f942af37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="enum-members" name="enum-members"></a>
+枚举</h2></td></tr>
+<tr class="memitem:aa1ada2ae13d57c0815bbcb0a77cf21ad" id="r_aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ad">EnvironmentCost</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada28d0edd045e05cf5af64e35ae0c4c6ef">Low</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada87f8a6ab85c9ced3702b4ea641ad4bb5">Medium</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ada655d20c1ca69519ca647684edbb2db35">High</a>
+ }</td></tr>
+<tr class="memdesc:aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Cost tiers used only for explicitly reorderable tests.  <a href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ad">更多...</a><br /></td></tr>
+<tr class="separator:aa1ada2ae13d57c0815bbcb0a77cf21ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9eca7b1d9a37eeaa01c612fb6b6b2dda" id="r_a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">EnvironmentPurpose</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaad7778d0c64b6ba21494c97f77a66885a">Filter</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaa5dd135d1bcfa7f63c3b7f25425c2a4a1">Score</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e">FilterAndScore</a>
+ }</td></tr>
+<tr class="memdesc:a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="mdescLeft">&#160;</td><td class="mdescRight">Independent hard constraint and utility purposes.  <a href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">更多...</a><br /></td></tr>
+<tr class="separator:a9eca7b1d9a37eeaa01c612fb6b6b2dda"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e9abd868ebfe8c7211cc3956e4ba7bd" id="r_a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">EnvironmentFilterOp</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680">All</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bdaed36a1ef76a59ee3f15180e0441188ad">Any</a>
+ }</td></tr>
+<tr class="memdesc:a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="mdescLeft">&#160;</td><td class="mdescRight">How repeated context measurements determine acceptance.  <a href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">更多...</a><br /></td></tr>
+<tr class="separator:a0e9abd868ebfe8c7211cc3956e4ba7bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a428524b4955fff96c90f9d824442d16e" id="r_a428524b4955fff96c90f9d824442d16e"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">EnvironmentAggregate</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021">Average</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16eaa1d0ec6d56f8833a078b5a7ac4caf2d4">Minimum</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16ea8321e79c278ec510f63675c040594892">Maximum</a>
+ }</td></tr>
+<tr class="memdesc:a428524b4955fff96c90f9d824442d16e"><td class="mdescLeft">&#160;</td><td class="mdescRight">How repeated context measurements form one raw metric.  <a href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">更多...</a><br /></td></tr>
+<tr class="separator:a428524b4955fff96c90f9d824442d16e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1919f6dc243a7c6709a2bfca0bbd61b" id="r_aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">EnvironmentNormalization</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b">FixedRange</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61baa62f61b18934d1ae213bb0335f998872">ActivePopulation</a>
+ }</td></tr>
+<tr class="memdesc:aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Explicit scoring reference population.  <a href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">更多...</a><br /></td></tr>
+<tr class="separator:aa1919f6dc243a7c6709a2bfca0bbd61b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462dcfdd0bb33713675df801472c4823" id="r_a462dcfdd0bb33713675df801472c4823"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">EnvironmentCurve</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b">Linear</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823aceb46ca115d05c51aa5a16a8867c3304">Square</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823ae6c1b4ee758a2636a6eaf99105103c56">SquareRoot</a>
+ }</td></tr>
+<tr class="memdesc:a462dcfdd0bb33713675df801472c4823"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utility curve applied after normalization and preference direction.  <a href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">更多...</a><br /></td></tr>
+<tr class="separator:a462dcfdd0bb33713675df801472c4823"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a72ab2f701734ff1387b5a0fd442525b6" id="r_a72ab2f701734ff1387b5a0fd442525b6"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">EnvironmentPreference</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ad030eeeb593b8cd94e564bc42e01d146">Higher</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93">Lower</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6a63d5049791d9d79d86e9a108b0a999ca">Reference</a>
+ }</td></tr>
+<tr class="memdesc:a72ab2f701734ff1387b5a0fd442525b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ranking preference; reference uses distance from a target raw value.  <a href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">更多...</a><br /></td></tr>
+<tr class="separator:a72ab2f701734ff1387b5a0fd442525b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42953e52acc2d4fd7b658e3e96f04233" id="r_a42953e52acc2d4fd7b658e3e96f04233"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233">EnvironmentRunMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233ab1c94ca2fbc3e78fc30069c8d0f01680">All</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233a68ef004de6166492c1d668eb8efe09bd">Best</a>
+ }</td></tr>
+<tr class="memdesc:a42953e52acc2d4fd7b658e3e96f04233"><td class="mdescLeft">&#160;</td><td class="mdescRight">All retains ranked candidates; Best returns one candidate without assigning primary.  <a href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233">更多...</a><br /></td></tr>
+<tr class="separator:a42953e52acc2d4fd7b658e3e96f04233"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5d3a832a5d37a933e28679812dbb00a" id="r_ab5d3a832a5d37a933e28679812dbb00a"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00a">EnvironmentTraceLevel</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa290612199861c31d1036b185b4e69b75">Summary</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00aa4042fcadbe61a3300451157e2c9fe651">Detailed</a>
+ }</td></tr>
+<tr class="memdesc:ab5d3a832a5d37a933e28679812dbb00a"><td class="mdescLeft">&#160;</td><td class="mdescRight">None, bounded stage counts, or bounded per-item explanations.  <a href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00a">更多...</a><br /></td></tr>
+<tr class="separator:ab5d3a832a5d37a933e28679812dbb00a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd474b27dff70c84b04987bce8c80e87" id="r_afd474b27dff70c84b04987bce8c80e87"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87">EnvironmentGeneratorKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87a324118a6721dd6b8a9b9f4e327df2bf5">Input</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87ad4db177c94738b72bf9ce61e988ab1f1">Ring</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87a5174d1309f275ba6f275db3af9eb3e18">Grid</a>
+ }</td></tr>
+<tr class="memdesc:afd474b27dff70c84b04987bce8c80e87"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input facts or generated points on a world-space XY plane.  <a href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87">更多...</a><br /></td></tr>
+<tr class="separator:afd474b27dff70c84b04987bce8c80e87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3f85c2b147f3ef7e5b6598ec7673978d" id="r_a3f85c2b147f3ef7e5b6598ec7673978d"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">EnvironmentMetricKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98">Distance</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da34acc05b5850b2afb01e099004ff7f33">LineOfSight</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978da90589c47f06eb971d548591f23c285af">Custom</a>
+ }</td></tr>
+<tr class="memdesc:a3f85c2b147f3ef7e5b6598ec7673978d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Built-in measurements and the typed extension point.  <a href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">更多...</a><br /></td></tr>
+<tr class="separator:a3f85c2b147f3ef7e5b6598ec7673978d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09b53bf83c94321adb063c2181741bb" id="r_ad09b53bf83c94321adb063c2181741bb"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bb">CountPolicy</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bbaf21ae62ed5b7925b5965c3f13cd5b4d0">FailIfOutOfRange</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bbaaa6edde1eb9ed76e3f6c94cdbb3945b9">TruncateToMax</a>
+ }</td></tr>
+<tr class="memdesc:ad09b53bf83c94321adb063c2181741bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">How candidate-count overflow relative to maxCount is handled.  <a href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bb">更多...</a><br /></td></tr>
+<tr class="separator:ad09b53bf83c94321adb063c2181741bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b0302ee5fbcd38e7636e4fb40149ffd" id="r_a0b0302ee5fbcd38e7636e4fb40149ffd"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffd">SortKey</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffda6adf97f83acf6453d4a6a4b1070f3754">None</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffda3fef7b8f813c7c312e180218167b72a1">DistanceAscending</a>
+ }</td></tr>
+<tr class="memdesc:a0b0302ee5fbcd38e7636e4fb40149ffd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Ordering applied to ranked query results.  <a href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffd">更多...</a><br /></td></tr>
+<tr class="separator:a0b0302ee5fbcd38e7636e4fb40149ffd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d25e6dbefdd45f90131cc4a7ae039ba" id="r_a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">World2D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">World3D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">Grid2D</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">Grid3D</a>
+ }</td></tr>
+<tr class="memdesc:a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="mdescLeft">&#160;</td><td class="mdescRight">Coordinate spaces are not interchangeable, even when dimensions match.  <a href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">更多...</a><br /></td></tr>
+<tr class="separator:a8d25e6dbefdd45f90131cc4a7ae039ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab8dd552077f872e762f6d827d05d8589" id="r_ab8dd552077f872e762f6d827d05d8589"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">TargetDomain</a> : std::uint8_t { <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad">Any</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806">Self</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc">Ally</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e">Enemy</a>
+, <br />
+&#160;&#160;<a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01">Neutral</a>
+<br />
+ }</td></tr>
+<tr class="memdesc:ab8dd552077f872e762f6d827d05d8589"><td class="mdescLeft">&#160;</td><td class="mdescRight">Stable relationship class used by generic domain constraints.  <a href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">更多...</a><br /></td></tr>
+<tr class="separator:ab8dd552077f872e762f6d827d05d8589"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5b76e95dbc733c8788c54c8b1a6f48f" id="r_ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">LineOfSightMode</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992">NotRequired</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2">Required</a>
+ }</td></tr>
+<tr class="memdesc:ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Whether a candidate must be visible from the query origin.  <a href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">更多...</a><br /></td></tr>
+<tr class="separator:ae5b76e95dbc733c8788c54c8b1a6f48f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47045ee3773cf5565b3787ad35feff82" id="r_a47045ee3773cf5565b3787ad35feff82"><td class="memItemLeft" align="right" valign="top">enum class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">TargetingTaskKind</a> : std::uint8_t { <a class="el" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff">Select</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a">Filter</a>
+, <a class="el" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3">Sort</a>
+ }</td></tr>
+<tr class="memdesc:a47045ee3773cf5565b3787ad35feff82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Task role inside a TargetingPreset.  <a href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">更多...</a><br /></td></tr>
+<tr class="separator:a47045ee3773cf5565b3787ad35feff82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a400aa7b0fa2cc62247a36cfe2da0a0ff" id="r_a400aa7b0fa2cc62247a36cfe2da0a0ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1LineOfSightRouter.html">LineOfSightRouter</a> * &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a400aa7b0fa2cc62247a36cfe2da0a0ff">ensureLineOfSightRouter</a> ()</td></tr>
+<tr class="memdesc:a400aa7b0fa2cc62247a36cfe2da0a0ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">The process-wide router, registered as the <code><a class="el" href="classeve_1_1sensing_1_1ILineOfSightQuery.html" title="Consumer-owned line-of-sight capability.">ILineOfSightQuery</a></code> capability.  <br /></td></tr>
+<tr class="separator:a400aa7b0fa2cc62247a36cfe2da0a0ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a626121392a3cd28bc920db243b4ab338" id="r_a626121392a3cd28bc920db243b4ab338"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a626121392a3cd28bc920db243b4ab338">Module_IMPL</a> (<a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>, new <a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>())</td></tr>
+<tr class="separator:a626121392a3cd28bc920db243b4ab338"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79a2368ec45e09999c63977b5cdbf974" id="r_a79a2368ec45e09999c63977b5cdbf974"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1sensing_1_1PerceptionFact.html">PerceptionFact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a79a2368ec45e09999c63977b5cdbf974">perceptionFactsFrom</a> (const <a class="el" href="classeve_1_1sensing_1_1CandidateQueryResult.html">CandidateQueryResult</a> &amp;<a class="el" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>)</td></tr>
+<tr class="memdesc:a79a2368ec45e09999c63977b5cdbf974"><td class="mdescLeft">&#160;</td><td class="mdescRight">Projects ranked query results into adapter-neutral perception facts.  <br /></td></tr>
+<tr class="separator:a79a2368ec45e09999c63977b5cdbf974"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1ff716e6fdfe1b876fc0b0dc49e4b717" id="r_a1ff716e6fdfe1b876fc0b0dc49e4b717"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a1ff716e6fdfe1b876fc0b0dc49e4b717">declareScriptSensingCandidateSeam</a> ()</td></tr>
+<tr class="memdesc:a1ff716e6fdfe1b876fc0b0dc49e4b717"><td class="mdescLeft">&#160;</td><td class="mdescRight">声明"`ISensingCandidateProvider` 可以由脚本提供"这条接缝。  <br /></td></tr>
+<tr class="separator:a1ff716e6fdfe1b876fc0b0dc49e4b717"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d7e64fec453fad1eec7d046fcdbdf80" id="r_a0d7e64fec453fad1eec7d046fcdbdf80"><td class="memItemLeft" align="right" valign="top"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#a0d7e64fec453fad1eec7d046fcdbdf80">withdrawScriptSensingCandidateSeam</a> ()</td></tr>
+<tr class="memdesc:a0d7e64fec453fad1eec7d046fcdbdf80"><td class="mdescLeft">&#160;</td><td class="mdescRight">撤回接缝与仍然在位的脚本适配器（由 <code><a class="el" href="classeve_1_1sensing_1_1Sensing.html" title="Script factory for independent sensing worlds.">Sensing</a></code> 模块析构时调用）。  <br /></td></tr>
+<tr class="separator:a0d7e64fec453fad1eec7d046fcdbdf80"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3b1e6987ad6dbf4ca2764ca2d871884" id="r_ab3b1e6987ad6dbf4ca2764ca2d871884"><td class="memItemLeft" align="right" valign="top">std::string_view&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab3b1e6987ad6dbf4ca2764ca2d871884">coordinateSpaceName</a> (<a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> space) noexcept</td></tr>
+<tr class="memdesc:ab3b1e6987ad6dbf4ca2764ca2d871884"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the stable protocol name for a coordinate space.  <br /></td></tr>
+<tr class="separator:ab3b1e6987ad6dbf4ca2764ca2d871884"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab875a33549887a61cb49d3138d911211" id="r_ab875a33549887a61cb49d3138d911211"><td class="memItemLeft" align="right" valign="top">std::ostream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1sensing.html#ab875a33549887a61cb49d3138d911211">operator&lt;&lt;</a> (std::ostream &amp;stream, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a> space)</td></tr>
+<tr class="memdesc:ab875a33549887a61cb49d3138d911211"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes the stable coordinate-space protocol name.  <br /></td></tr>
+<tr class="separator:ab875a33549887a61cb49d3138d911211"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h2 class="groupheader">类型定义说明</h2>
+<a id="af5bec4272c1c8fd30b991e80f942af37" name="af5bec4272c1c8fd30b991e80f942af37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5bec4272c1c8fd30b991e80f942af37">&#9670;&#160;</a></span>FactionRelationFn</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#af5bec4272c1c8fd30b991e80f942af37">eve::sensing::FactionRelationFn</a> = typedef std::function&lt;<a class="el" href="classeve_1_1Result.html">Result</a>&lt;<a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">TargetDomain</a>&gt;(std::string_view originFaction, std::string_view candidateFaction)&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Projects faction string pairs into TargetDomain for <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html" title="Mirrored 2D facts and query composition; consumers decide gameplay actions from results.">SensingWorld</a> adapters. </p>
+<p>Missing relations must not be invented by sensing: callers that request domain != Any without a relation receive Unsupported. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00511">511</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2cd6880e5d3fef82ef07f3dad76c605" name="ae2cd6880e5d3fef82ef07f3dad76c605"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2cd6880e5d3fef82ef07f3dad76c605">&#9670;&#160;</a></span>QueryShape</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#ae2cd6880e5d3fef82ef07f3dad76c605">eve::sensing::QueryShape</a> = typedef std::variant&lt;std::monostate, <a class="el" href="structeve_1_1sensing_1_1QueryCircle.html">QueryCircle</a>, <a class="el" href="structeve_1_1sensing_1_1QueryBox.html">QueryBox</a>, <a class="el" href="structeve_1_1sensing_1_1QueryCone.html">QueryCone</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Optional broad-phase shape; monostate means range-only around the origin. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00094">94</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3c44a225d596c34383dd5c422b94796d" name="a3c44a225d596c34383dd5c422b94796d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3c44a225d596c34383dd5c422b94796d">&#9670;&#160;</a></span>SensingWorldHandleRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a3c44a225d596c34383dd5c422b94796d">eve::sensing::SensingWorldHandleRef</a> = typedef <a class="el" href="structeve_1_1script_1_1RuntimeHandleRef.html">eve::script::RuntimeHandleRef</a>&lt;<a class="el" href="structeve_1_1sensing_1_1SensingWorldHandleTag.html">SensingWorldHandleTag</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generation- and module-epoch-qualified sensing-world reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00320">320</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a070c050c984b3f451a7aba3b399dad3d" name="a070c050c984b3f451a7aba3b399dad3d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a070c050c984b3f451a7aba3b399dad3d">&#9670;&#160;</a></span>SubjectRef</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a070c050c984b3f451a7aba3b399dad3d">eve::sensing::SubjectRef</a> = typedef <a class="el" href="classeve_1_1SubjectRef.html">::eve::SubjectRef</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Strong reference to a runtime subject. </p>
+<p>This is a persistent identity, not an ECS entity handle. The nil value is rejected by all targeting operations. There is no implicit conversion to or from PersistentId, which prevents an AssetId/SubjectRef mix at call sites.</p>
+<p>Compatibility spelling for the common subject reference. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00076">76</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a1ab946bebc2c46570a1c777473564d98" name="a1ab946bebc2c46570a1c777473564d98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ab946bebc2c46570a1c777473564d98">&#9670;&#160;</a></span>TargetLocation</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="namespaceeve_1_1sensing.html#a1ab946bebc2c46570a1c777473564d98">eve::sensing::TargetLocation</a> = typedef std::variant&lt;<a class="el" href="classeve_1_1sensing_1_1WorldPoint.html">WorldPoint</a>, <a class="el" href="classeve_1_1sensing_1_1GridPoint.html">GridPoint</a>&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Either a world point or a grid point, with the tag retained. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00198">198</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">枚举类型说明</h2>
+<a id="a8d25e6dbefdd45f90131cc4a7ae039ba" name="a8d25e6dbefdd45f90131cc4a7ae039ba"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d25e6dbefdd45f90131cc4a7ae039ba">&#9670;&#160;</a></span>CoordinateSpace</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">eve::sensing::CoordinateSpace</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Coordinate spaces are not interchangeable, even when dimensions match. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac" name="a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac"></a>World2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f" name="a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f"></a>World3D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172" name="a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172"></a>Grid2D&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878" name="a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878"></a>Grid3D&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ad09b53bf83c94321adb063c2181741bb" name="ad09b53bf83c94321adb063c2181741bb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad09b53bf83c94321adb063c2181741bb">&#9670;&#160;</a></span>CountPolicy</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ad09b53bf83c94321adb063c2181741bb">eve::sensing::CountPolicy</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How candidate-count overflow relative to maxCount is handled. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ad09b53bf83c94321adb063c2181741bbaf21ae62ed5b7925b5965c3f13cd5b4d0" name="ad09b53bf83c94321adb063c2181741bbaf21ae62ed5b7925b5965c3f13cd5b4d0"></a>FailIfOutOfRange&#160;</td><td class="fielddoc"><p>Fail the query when the filtered set is outside [minCount, maxCount]. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ad09b53bf83c94321adb063c2181741bbaaa6edde1eb9ed76e3f6c94cdbb3945b9" name="ad09b53bf83c94321adb063c2181741bbaaa6edde1eb9ed76e3f6c94cdbb3945b9"></a>TruncateToMax&#160;</td><td class="fielddoc"><p>Keep the best maxCount candidates after sorting (legacy circle/box limit). </p>
+</td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00050">50</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a428524b4955fff96c90f9d824442d16e" name="a428524b4955fff96c90f9d824442d16e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a428524b4955fff96c90f9d824442d16e">&#9670;&#160;</a></span>EnvironmentAggregate</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a428524b4955fff96c90f9d824442d16e">eve::sensing::EnvironmentAggregate</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How repeated context measurements form one raw metric. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021" name="a428524b4955fff96c90f9d824442d16eab1897515d548a960afe49ecf66a29021"></a>Average&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a428524b4955fff96c90f9d824442d16eaa1d0ec6d56f8833a078b5a7ac4caf2d4" name="a428524b4955fff96c90f9d824442d16eaa1d0ec6d56f8833a078b5a7ac4caf2d4"></a>Minimum&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a428524b4955fff96c90f9d824442d16ea8321e79c278ec510f63675c040594892" name="a428524b4955fff96c90f9d824442d16ea8321e79c278ec510f63675c040594892"></a>Maximum&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00043">43</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1ada2ae13d57c0815bbcb0a77cf21ad" name="aa1ada2ae13d57c0815bbcb0a77cf21ad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1ada2ae13d57c0815bbcb0a77cf21ad">&#9670;&#160;</a></span>EnvironmentCost</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#aa1ada2ae13d57c0815bbcb0a77cf21ad">eve::sensing::EnvironmentCost</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Cost tiers used only for explicitly reorderable tests. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa1ada2ae13d57c0815bbcb0a77cf21ada28d0edd045e05cf5af64e35ae0c4c6ef" name="aa1ada2ae13d57c0815bbcb0a77cf21ada28d0edd045e05cf5af64e35ae0c4c6ef"></a>Low&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1ada2ae13d57c0815bbcb0a77cf21ada87f8a6ab85c9ced3702b4ea641ad4bb5" name="aa1ada2ae13d57c0815bbcb0a77cf21ada87f8a6ab85c9ced3702b4ea641ad4bb5"></a>Medium&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1ada2ae13d57c0815bbcb0a77cf21ada655d20c1ca69519ca647684edbb2db35" name="aa1ada2ae13d57c0815bbcb0a77cf21ada655d20c1ca69519ca647684edbb2db35"></a>High&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00037">37</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a462dcfdd0bb33713675df801472c4823" name="a462dcfdd0bb33713675df801472c4823"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a462dcfdd0bb33713675df801472c4823">&#9670;&#160;</a></span>EnvironmentCurve</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a462dcfdd0bb33713675df801472c4823">eve::sensing::EnvironmentCurve</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Utility curve applied after normalization and preference direction. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b" name="a462dcfdd0bb33713675df801472c4823a32a843da6ea40ab3b17a3421ccdf671b"></a>Linear&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a462dcfdd0bb33713675df801472c4823aceb46ca115d05c51aa5a16a8867c3304" name="a462dcfdd0bb33713675df801472c4823aceb46ca115d05c51aa5a16a8867c3304"></a>Square&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a462dcfdd0bb33713675df801472c4823ae6c1b4ee758a2636a6eaf99105103c56" name="a462dcfdd0bb33713675df801472c4823ae6c1b4ee758a2636a6eaf99105103c56"></a>SquareRoot&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00047">47</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0e9abd868ebfe8c7211cc3956e4ba7bd" name="a0e9abd868ebfe8c7211cc3956e4ba7bd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0e9abd868ebfe8c7211cc3956e4ba7bd">&#9670;&#160;</a></span>EnvironmentFilterOp</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a0e9abd868ebfe8c7211cc3956e4ba7bd">eve::sensing::EnvironmentFilterOp</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>How repeated context measurements determine acceptance. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680" name="a0e9abd868ebfe8c7211cc3956e4ba7bdab1c94ca2fbc3e78fc30069c8d0f01680"></a>All&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0e9abd868ebfe8c7211cc3956e4ba7bdaed36a1ef76a59ee3f15180e0441188ad" name="a0e9abd868ebfe8c7211cc3956e4ba7bdaed36a1ef76a59ee3f15180e0441188ad"></a>Any&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00041">41</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afd474b27dff70c84b04987bce8c80e87" name="afd474b27dff70c84b04987bce8c80e87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd474b27dff70c84b04987bce8c80e87">&#9670;&#160;</a></span>EnvironmentGeneratorKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#afd474b27dff70c84b04987bce8c80e87">eve::sensing::EnvironmentGeneratorKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Input facts or generated points on a world-space XY plane. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="afd474b27dff70c84b04987bce8c80e87a324118a6721dd6b8a9b9f4e327df2bf5" name="afd474b27dff70c84b04987bce8c80e87a324118a6721dd6b8a9b9f4e327df2bf5"></a>Input&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afd474b27dff70c84b04987bce8c80e87ad4db177c94738b72bf9ce61e988ab1f1" name="afd474b27dff70c84b04987bce8c80e87ad4db177c94738b72bf9ce61e988ab1f1"></a>Ring&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="afd474b27dff70c84b04987bce8c80e87a5174d1309f275ba6f275db3af9eb3e18" name="afd474b27dff70c84b04987bce8c80e87a5174d1309f275ba6f275db3af9eb3e18"></a>Grid&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00055">55</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a3f85c2b147f3ef7e5b6598ec7673978d" name="a3f85c2b147f3ef7e5b6598ec7673978d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3f85c2b147f3ef7e5b6598ec7673978d">&#9670;&#160;</a></span>EnvironmentMetricKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a3f85c2b147f3ef7e5b6598ec7673978d">eve::sensing::EnvironmentMetricKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Built-in measurements and the typed extension point. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98" name="a3f85c2b147f3ef7e5b6598ec7673978da0aa6f4210bf373c95eda00232e93cd98"></a>Distance&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3f85c2b147f3ef7e5b6598ec7673978da34acc05b5850b2afb01e099004ff7f33" name="a3f85c2b147f3ef7e5b6598ec7673978da34acc05b5850b2afb01e099004ff7f33"></a>LineOfSight&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a3f85c2b147f3ef7e5b6598ec7673978da90589c47f06eb971d548591f23c285af" name="a3f85c2b147f3ef7e5b6598ec7673978da90589c47f06eb971d548591f23c285af"></a>Custom&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00057">57</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aa1919f6dc243a7c6709a2bfca0bbd61b" name="aa1919f6dc243a7c6709a2bfca0bbd61b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1919f6dc243a7c6709a2bfca0bbd61b">&#9670;&#160;</a></span>EnvironmentNormalization</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#aa1919f6dc243a7c6709a2bfca0bbd61b">eve::sensing::EnvironmentNormalization</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Explicit scoring reference population. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b" name="aa1919f6dc243a7c6709a2bfca0bbd61ba37d43dc9c013afb13184a891bfdf241b"></a>FixedRange&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="aa1919f6dc243a7c6709a2bfca0bbd61baa62f61b18934d1ae213bb0335f998872" name="aa1919f6dc243a7c6709a2bfca0bbd61baa62f61b18934d1ae213bb0335f998872"></a>ActivePopulation&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00045">45</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a72ab2f701734ff1387b5a0fd442525b6" name="a72ab2f701734ff1387b5a0fd442525b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a72ab2f701734ff1387b5a0fd442525b6">&#9670;&#160;</a></span>EnvironmentPreference</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a72ab2f701734ff1387b5a0fd442525b6">eve::sensing::EnvironmentPreference</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ranking preference; reference uses distance from a target raw value. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a72ab2f701734ff1387b5a0fd442525b6ad030eeeb593b8cd94e564bc42e01d146" name="a72ab2f701734ff1387b5a0fd442525b6ad030eeeb593b8cd94e564bc42e01d146"></a>Higher&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93" name="a72ab2f701734ff1387b5a0fd442525b6ab75fcdd2d72d9e000beab48622402d93"></a>Lower&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a72ab2f701734ff1387b5a0fd442525b6a63d5049791d9d79d86e9a108b0a999ca" name="a72ab2f701734ff1387b5a0fd442525b6a63d5049791d9d79d86e9a108b0a999ca"></a>Reference&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00049">49</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a9eca7b1d9a37eeaa01c612fb6b6b2dda" name="a9eca7b1d9a37eeaa01c612fb6b6b2dda"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9eca7b1d9a37eeaa01c612fb6b6b2dda">&#9670;&#160;</a></span>EnvironmentPurpose</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a9eca7b1d9a37eeaa01c612fb6b6b2dda">eve::sensing::EnvironmentPurpose</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Independent hard constraint and utility purposes. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a9eca7b1d9a37eeaa01c612fb6b6b2ddaad7778d0c64b6ba21494c97f77a66885a" name="a9eca7b1d9a37eeaa01c612fb6b6b2ddaad7778d0c64b6ba21494c97f77a66885a"></a>Filter&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9eca7b1d9a37eeaa01c612fb6b6b2ddaa5dd135d1bcfa7f63c3b7f25425c2a4a1" name="a9eca7b1d9a37eeaa01c612fb6b6b2ddaa5dd135d1bcfa7f63c3b7f25425c2a4a1"></a>Score&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e" name="a9eca7b1d9a37eeaa01c612fb6b6b2ddaab1fea61a7a7c3d54561d4b1727c7449e"></a>FilterAndScore&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00039">39</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a42953e52acc2d4fd7b658e3e96f04233" name="a42953e52acc2d4fd7b658e3e96f04233"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42953e52acc2d4fd7b658e3e96f04233">&#9670;&#160;</a></span>EnvironmentRunMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a42953e52acc2d4fd7b658e3e96f04233">eve::sensing::EnvironmentRunMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>All retains ranked candidates; Best returns one candidate without assigning primary. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a42953e52acc2d4fd7b658e3e96f04233ab1c94ca2fbc3e78fc30069c8d0f01680" name="a42953e52acc2d4fd7b658e3e96f04233ab1c94ca2fbc3e78fc30069c8d0f01680"></a>All&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a42953e52acc2d4fd7b658e3e96f04233a68ef004de6166492c1d668eb8efe09bd" name="a42953e52acc2d4fd7b658e3e96f04233a68ef004de6166492c1d668eb8efe09bd"></a>Best&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00051">51</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab5d3a832a5d37a933e28679812dbb00a" name="ab5d3a832a5d37a933e28679812dbb00a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5d3a832a5d37a933e28679812dbb00a">&#9670;&#160;</a></span>EnvironmentTraceLevel</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ab5d3a832a5d37a933e28679812dbb00a">eve::sensing::EnvironmentTraceLevel</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>None, bounded stage counts, or bounded per-item explanations. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab5d3a832a5d37a933e28679812dbb00aa6adf97f83acf6453d4a6a4b1070f3754" name="ab5d3a832a5d37a933e28679812dbb00aa6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab5d3a832a5d37a933e28679812dbb00aa290612199861c31d1036b185b4e69b75" name="ab5d3a832a5d37a933e28679812dbb00aa290612199861c31d1036b185b4e69b75"></a>Summary&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab5d3a832a5d37a933e28679812dbb00aa4042fcadbe61a3300451157e2c9fe651" name="ab5d3a832a5d37a933e28679812dbb00aa4042fcadbe61a3300451157e2c9fe651"></a>Detailed&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="EnvironmentQuery_8h_source.html">EnvironmentQuery.h</a> 第 <a class="el" href="EnvironmentQuery_8h_source.html#l00053">53</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae5b76e95dbc733c8788c54c8b1a6f48f" name="ae5b76e95dbc733c8788c54c8b1a6f48f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5b76e95dbc733c8788c54c8b1a6f48f">&#9670;&#160;</a></span>LineOfSightMode</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ae5b76e95dbc733c8788c54c8b1a6f48f">eve::sensing::LineOfSightMode</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Whether a candidate must be visible from the query origin. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992" name="ae5b76e95dbc733c8788c54c8b1a6f48fa3c841b03acb069eccf34fa1e6898c992"></a>NotRequired&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2" name="ae5b76e95dbc733c8788c54c8b1a6f48fab651efdb98a5d6bd2b3935d0c3f4a5e2"></a>Required&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00063">63</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a0b0302ee5fbcd38e7636e4fb40149ffd" name="a0b0302ee5fbcd38e7636e4fb40149ffd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b0302ee5fbcd38e7636e4fb40149ffd">&#9670;&#160;</a></span>SortKey</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a0b0302ee5fbcd38e7636e4fb40149ffd">eve::sensing::SortKey</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Ordering applied to ranked query results. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a0b0302ee5fbcd38e7636e4fb40149ffda6adf97f83acf6453d4a6a4b1070f3754" name="a0b0302ee5fbcd38e7636e4fb40149ffda6adf97f83acf6453d4a6a4b1070f3754"></a>None&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a0b0302ee5fbcd38e7636e4fb40149ffda3fef7b8f813c7c312e180218167b72a1" name="a0b0302ee5fbcd38e7636e4fb40149ffda3fef7b8f813c7c312e180218167b72a1"></a>DistanceAscending&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00058">58</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab8dd552077f872e762f6d827d05d8589" name="ab8dd552077f872e762f6d827d05d8589"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab8dd552077f872e762f6d827d05d8589">&#9670;&#160;</a></span>TargetDomain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#ab8dd552077f872e762f6d827d05d8589">eve::sensing::TargetDomain</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Stable relationship class used by generic domain constraints. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad" name="ab8dd552077f872e762f6d827d05d8589aed36a1ef76a59ee3f15180e0441188ad"></a>Any&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806" name="ab8dd552077f872e762f6d827d05d8589aad6e7652b1bdfb38783486c2c3d5e806"></a>Self&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc" name="ab8dd552077f872e762f6d827d05d8589a0dd87782600574e2f791bcfe639d4fcc"></a>Ally&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e" name="ab8dd552077f872e762f6d827d05d8589a8c6d21187fb58b7a079d70030686b33e"></a>Enemy&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01" name="ab8dd552077f872e762f6d827d05d8589ae9bb5320b3890b6747c91b5a71ae5a01"></a>Neutral&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00054">54</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a47045ee3773cf5565b3787ad35feff82" name="a47045ee3773cf5565b3787ad35feff82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47045ee3773cf5565b3787ad35feff82">&#9670;&#160;</a></span>TargetingTaskKind</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum class <a class="el" href="namespaceeve_1_1sensing.html#a47045ee3773cf5565b3787ad35feff82">eve::sensing::TargetingTaskKind</a> : std::uint8_t</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">strong</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Task role inside a <a class="el" href="structeve_1_1sensing_1_1TargetingPreset.html" title="Named ordered list of targeting tasks.">TargetingPreset</a>. </p>
+<table class="fieldtable">
+<tr><th colspan="2">枚举值</th></tr><tr><td class="fieldname"><a id="a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff" name="a47045ee3773cf5565b3787ad35feff82ae0626222614bdee31951d84c64e5e9ff"></a>Select&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a" name="a47045ee3773cf5565b3787ad35feff82ad7778d0c64b6ba21494c97f77a66885a"></a>Filter&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3" name="a47045ee3773cf5565b3787ad35feff82a6b46ae48421828d9973deec5fa9aa0c3"></a>Sort&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+<p class="definition">在文件 <a class="el" href="TargetingPipeline_8h_source.html">TargetingPipeline.h</a> 第 <a class="el" href="TargetingPipeline_8h_source.html#l00028">28</a> 行定义.</p>
+
+</div>
+</div>
+<h2 class="groupheader">函数说明</h2>
+<a id="ab3b1e6987ad6dbf4ca2764ca2d871884" name="ab3b1e6987ad6dbf4ca2764ca2d871884"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab3b1e6987ad6dbf4ca2764ca2d871884">&#9670;&#160;</a></span>coordinateSpaceName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> std::string_view eve::sensing::coordinateSpaceName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the stable protocol name for a coordinate space. </p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8cpp_source.html">Targeting.cpp</a> 第 <a class="el" href="Targeting_8cpp_source.html#l00556">556</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baaea730ecd1f61168b907030ec96d79172">Grid2D</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa805caf84a5a00a4ae6a736b132640878">Grid3D</a>, <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa4d76529bd9ee0e72a21141dd19475aac">World2D</a> , 以及 <a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039baa166716ea7db45e888f81b52ce91a716f">World3D</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Targeting_8h_source.html#l00048">operator&lt;&lt;()</a>, <a class="el" href="LineOfSightRouter_8cpp_source.html#l00090">eve::sensing::LineOfSightRouter::query()</a> , 以及 <a class="el" href="EnvironmentQuery_8cpp_source.html#l00476">eve::sensing::EnvironmentQueryResult::toValue()</a>.</p>
+
+</div>
+</div>
+<a id="a1ff716e6fdfe1b876fc0b0dc49e4b717" name="a1ff716e6fdfe1b876fc0b0dc49e4b717"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1ff716e6fdfe1b876fc0b0dc49e4b717">&#9670;&#160;</a></span>declareScriptSensingCandidateSeam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> void eve::sensing::declareScriptSensingCandidateSeam </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>声明"`ISensingCandidateProvider` 可以由脚本提供"这条接缝。 </p>
+<p>脚本提供方发布一个对象，实现 <code>queryCandidates(query)</code>：**收一张表、回一个数组**。</p>
+<p>下行（<code>query</code> 表，就是那次查询本身；字段都是已校验过的值）：</p>
+<div class="fragment"><div class="line">{</div>
+<div class="line">    origin         = &quot;&lt;subject uuid&gt;&quot;,   // 发起查询的主体（不会自动成为候选）</div>
+<div class="line">    space          = &quot;world2d&quot;,          // world2d | world3d | grid2d | grid3d</div>
+<div class="line">    originLocation = { space = &quot;world2d&quot;, x = .., y = .., z = .. },</div>
+<div class="line">    domain         = &quot;enemy&quot;,            // any | self | ally | enemy | neutral</div>
+<div class="line">    minRange       = 0.0,</div>
+<div class="line">    maxRange       = 12.5,               // **null 表示无界**</div>
+<div class="line">    requiredTags   = [&quot;unit&quot;],</div>
+<div class="line">    excludedTags   = [&quot;hidden&quot;],</div>
+<div class="line">    zone           = &quot;arena:central&quot;,    // null 表示不限制</div>
+<div class="line">    area           = null,               // 或下表的区域对象</div>
+<div class="line">}</div>
+</div><!-- fragment --><p>**位置一律自带 <code>space</code>**（两个方向都一样）：<code>originLocation.space</code> 与 <code>query.space</code> 相等 （查询已经校验过），候选也必须自己声明空间。</p>
+<p>区域对象（判据：<code>space</code> 决定它是世界还是格子）：</p>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone">shape   </th><th class="markdownTableHeadNone">字段    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>circle2d</code>   </td><td class="markdownTableBodyNone"><code>center = {x,y}</code>、<code>radius</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>box2d</code>   </td><td class="markdownTableBodyNone"><code>min = {x,y}</code>、<code>max = {x,y}</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>sphere3d</code>   </td><td class="markdownTableBodyNone"><code>center = {x,y,z}</code>、<code>radius</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>box3d</code>   </td><td class="markdownTableBodyNone"><code>min = {x,y,z}</code>、<code>max = {x,y,z}</code>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>cone2d</code>   </td><td class="markdownTableBodyNone"><code>apex = {x,y}</code>、<code>dirX</code>、<code>dirY</code>、<code>halfAngle</code>、<code>range</code>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone"><code>gridBox2d</code>   </td><td class="markdownTableBodyNone"><code>min = {x,y}</code>、<code>max = {x,y}</code>（整数）    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone"><code>gridBox3d</code>   </td><td class="markdownTableBodyNone"><code>min = {x,y,z}</code>、<code>max = {x,y,z}</code>（整数）   </td></tr>
+</table>
+<p>上行（返回值）：**候选数组**，每条一个表：</p>
+<div class="fragment"><div class="line">return [</div>
+<div class="line">    { subject = &quot;&lt;candidate uuid&gt;&quot;,</div>
+<div class="line">      location = { space = &quot;world2d&quot;, x = 3.0, y = 4.0 },</div>
+<div class="line">      domain = &quot;enemy&quot;, tags = [&quot;unit&quot;], zones = [&quot;arena:central&quot;] },</div>
+<div class="line">];</div>
+</div><!-- fragment --><dl class="section remark"><dt>备注</dt><dd>**候选的空间必须与 <code>query.space</code> 一致**。这不是啰嗦：格子与世界单位不可互换，静默换算 只会得到悄悄错的距离；不一致时适配器返回 <code>Unsupported</code>（"请自己显式换算"），而不是猜。 <code>domain</code> 缺省是 <code>neutral</code>，<code>tags</code>/<code>zones</code> 缺省为空。 </dd>
+<dd>
+**不下发的字段是 resolver 的策略，不是 provider 的活**：<code>lineOfSight</code>、<code>minCount</code>/ <code>maxCount</code>/<code>countPolicy</code>。接口契约本来就写着"返回粗筛候选"，可见性与数量策略由 <code><a class="el" href="classeve_1_1sensing_1_1TargetingResolver.html" title="Generic constraint evaluator that composes candidate and LOS capabilities.">TargetingResolver</a></code> 在候选回来之后执行；下发它们只会诱导脚本重复实现别人的契约。 </dd>
+<dd>
+幂等：重复调用替换上一对回调。由 <code><a class="el" href="classeve_1_1sensing_1_1Sensing.html" title="Script factory for independent sensing worlds.">Sensing</a></code> 模块构造时调用。 @cost 一次 map 插入；只在模块构造时调用。 </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html">SensingScriptCandidateSeam.cpp</a> 第 <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00403">403</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StandardAbilities_8cpp_source.html#l00018">adapter</a>, <a class="el" href="Targeting_8h_source.html#l00463">eve::sensing::ISensingCandidateProvider::capabilityName</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00404">eve::ScriptProviderRegistry::declareCapability()</a>, <a class="el" href="PrimitivePath_8cpp_source.html#l00489">handle</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">eve::ScriptProviderRegistry::instance()</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00387">owned</a>, <a class="el" href="EnvironmentQuery_8cpp_source.html#l00168">raw</a>, <a class="el" href="CrashLog_8cpp_source.html#l00070">eve::recordLogEvent()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sensing_8cpp_source.html#l00759">eve::sensing::Sensing::Sensing()</a>.</p>
+
+</div>
+</div>
+<a id="a400aa7b0fa2cc62247a36cfe2da0a0ff" name="a400aa7b0fa2cc62247a36cfe2da0a0ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a400aa7b0fa2cc62247a36cfe2da0a0ff">&#9670;&#160;</a></span>ensureLineOfSightRouter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> <a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1sensing_1_1LineOfSightRouter.html">LineOfSightRouter</a> * &gt; eve::sensing::ensureLineOfSightRouter </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The process-wide router, registered as the <code><a class="el" href="classeve_1_1sensing_1_1ILineOfSightQuery.html" title="Consumer-owned line-of-sight capability.">ILineOfSightQuery</a></code> capability. </p>
+<p>Backends claim their spaces through this function instead of registering the capability themselves, which is what keeps the routing table in one place:</p>
+<dl class="section return"><dt>返回</dt><dd>Applied when this call registered the router, NoOp when the router was already the registered provider, or Conflict when some other provider holds the slot. </dd></dl>
+<dl class="section remark"><dt>备注</dt><dd>A foreign provider holding the slot is <b>left alone</b>: a project that deliberately registered its own line-of-sight implementation keeps it, and the caller gets a Conflict it can report rather than a silent replacement. @ownership The router is process-wide and immutably owned by this translation unit; callers borrow the pointer and must not delete it. @lifetime Valid for the rest of the process. @thread Call during startup, before queries run. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="LineOfSightRouter_8cpp_source.html">LineOfSightRouter.cpp</a> 第 <a class="el" href="LineOfSightRouter_8cpp_source.html#l00033">33</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="namespaceeve.html#a3cea6f3c679301cc760563aaacef597fa733d43480c8589b1368e5def6b480415">eve::Applied</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7af1d4ac54357cc0932f385d56814ba7e4">eve::Conflict</a>, <a class="el" href="Status_8cpp_source.html#l00013">eve::Status::success()</a> , 以及 <a class="el" href="Result_8h_source.html#l00184">eve::Result&lt; T &gt;::success()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PhysicsCapabilities_8cpp_source.html#l00082">eve::physics::registerPhysicsCapabilities()</a> , 以及 <a class="el" href="TacticsLineOfSightAdapter_8cpp_source.html#l00113">eve::tactics::registerTacticsLineOfSightProvider()</a>.</p>
+
+</div>
+</div>
+<a id="a626121392a3cd28bc920db243b4ab338" name="a626121392a3cd28bc920db243b4ab338"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a626121392a3cd28bc920db243b4ab338">&#9670;&#160;</a></span>Module_IMPL()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::sensing::Module_IMPL </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1sensing_1_1Sensing.html">Sensing</a>&#160;</td>
+          <td class="paramname">, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">new &#160;</td>
+          <td class="paramname"><em>Sensing</em>()&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab875a33549887a61cb49d3138d911211" name="ab875a33549887a61cb49d3138d911211"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab875a33549887a61cb49d3138d911211">&#9670;&#160;</a></span>operator&lt;&lt;()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::ostream &amp; eve::sensing::operator&lt;&lt; </td>
+          <td>(</td>
+          <td class="paramtype">std::ostream &amp;&#160;</td>
+          <td class="paramname"><em>stream</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1sensing.html#a8d25e6dbefdd45f90131cc4a7ae039ba">CoordinateSpace</a>&#160;</td>
+          <td class="paramname"><em>space</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Writes the stable coordinate-space protocol name. </p>
+<p>Coordinate space name.</p>
+
+<p class="definition">在文件 <a class="el" href="Targeting_8h_source.html">Targeting.h</a> 第 <a class="el" href="Targeting_8h_source.html#l00048">48</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Targeting_8cpp_source.html#l00556">coordinateSpaceName()</a>.</p>
+
+</div>
+</div>
+<a id="a79a2368ec45e09999c63977b5cdbf974" name="a79a2368ec45e09999c63977b5cdbf974"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79a2368ec45e09999c63977b5cdbf974">&#9670;&#160;</a></span>perceptionFactsFrom()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structeve_1_1sensing_1_1PerceptionFact.html">PerceptionFact</a> &gt; eve::sensing::perceptionFactsFrom </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1sensing_1_1CandidateQueryResult.html">CandidateQueryResult</a> &amp;&#160;</td>
+          <td class="paramname"><em>result</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Projects ranked query results into adapter-neutral perception facts. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">result</td><td>Borrowed ranked candidates from <a class="el" href="classeve_1_1sensing_1_1SensingWorld.html#a0218da82a1a683e2b2ebd16c90031355" title="Runs a configurable candidate query.">SensingWorld::query</a> / executePreset. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owning facts in the same order as <code>result.ranked()</code>. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="Sensing_8h_source.html">Sensing.h</a> 第 <a class="el" href="Sensing_8h_source.html#l00377">377</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="Sensing_8h_source.html#l00367">eve::sensing::PerceptionFact::distance</a>, <a class="el" href="McpInputTools_8cpp_source.html#l00052">result</a>, <a class="el" href="Sensing_8h_source.html#l00368">eve::sensing::PerceptionFact::score</a>, <a class="el" href="Sensing_8h_source.html#l00369">eve::sensing::PerceptionFact::scoreReason</a>, <a class="el" href="Sensing_8h_source.html#l00364">eve::sensing::PerceptionFact::subjectId</a>, <a class="el" href="Sensing_8h_source.html#l00365">eve::sensing::PerceptionFact::x</a> , 以及 <a class="el" href="Sensing_8h_source.html#l00366">eve::sensing::PerceptionFact::y</a>.</p>
+
+</div>
+</div>
+<a id="a0d7e64fec453fad1eec7d046fcdbdf80" name="a0d7e64fec453fad1eec7d046fcdbdf80"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0d7e64fec453fad1eec7d046fcdbdf80">&#9670;&#160;</a></span>withdrawScriptSensingCandidateSeam()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="Export_8h.html#ae0f3ddf34dc12c944c03445c0bc3fee6">EVENGINE_API_PLATFORM</a> void eve::sensing::withdrawScriptSensingCandidateSeam </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>撤回接缝与仍然在位的脚本适配器（由 <code><a class="el" href="classeve_1_1sensing_1_1Sensing.html" title="Script factory for independent sensing worlds.">Sensing</a></code> 模块析构时调用）。 </p>
+
+<p class="definition">在文件 <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html">SensingScriptCandidateSeam.cpp</a> 第 <a class="el" href="SensingScriptCandidateSeam_8cpp_source.html#l00437">437</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="StandardAbilities_8cpp_source.html#l00018">adapter</a>, <a class="el" href="Targeting_8h_source.html#l00463">eve::sensing::ISensingCandidateProvider::capabilityName</a>, <a class="el" href="Result_8h_source.html#l00555">eve::Result&lt; void &gt;::ignore()</a>, <a class="el" href="ScriptProvider_8cpp_source.html#l00318">eve::ScriptProviderRegistry::instance()</a>, <a class="el" href="AudioCapabilities_8cpp_source.html#l00387">owned</a> , 以及 <a class="el" href="ScriptProvider_8cpp_source.html#l00416">eve::ScriptProviderRegistry::removeCapability()</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="Sensing_8cpp_source.html#l00764">eve::sensing::Sensing::~Sensing()</a>.</p>
+
+</div>
+</div>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

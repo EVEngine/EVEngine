@@ -1,0 +1,940 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::animation_editor::ControlRigEditor类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1animation__editor.html">animation_editor</a></li><li class="navelem"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#pub-methods">Public 成员函数</a> &#124;
+<a href="classeve_1_1animation__editor_1_1ControlRigEditor-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::animation_editor::ControlRigEditor类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>UI-independent rig authoring controller with existing editing transactions. @ownership Owns document, skeleton snapshot and previews. Call arguments borrowed synchronously. @thread Owner thread only. @reentrancy Does not invoke scripts or unknown callbacks.  
+ <a href="classeve_1_1animation__editor_1_1ControlRigEditor.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="ControlRigEditor_8h_source.html">ControlRigEditor.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1animation__editor_1_1ControlRigEditor_1_1Impl.html">Impl</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Public 成员函数</h2></td></tr>
+<tr class="memitem:ad3761383f93d2cc6e83d9b15a243c8ca" id="r_ad3761383f93d2cc6e83d9b15a243c8ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#ad3761383f93d2cc6e83d9b15a243c8ca">ControlRigEditor</a> (std::string <a class="el" href="PrefabAttackVfx_8cpp.html#a60525233dee63f097b8685c39c476e06">targetId</a>)</td></tr>
+<tr class="memdesc:ad3761383f93d2cc6e83d9b15a243c8ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create an empty editor with stable identity.  <br /></td></tr>
+<tr class="separator:ad3761383f93d2cc6e83d9b15a243c8ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33ce951cb248124d80d2d73a412c48ff" id="r_a33ce951cb248124d80d2d73a412c48ff"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a33ce951cb248124d80d2d73a412c48ff">~ControlRigEditor</a> ()</td></tr>
+<tr class="memdesc:a33ce951cb248124d80d2d73a412c48ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">Release all owned state.  <br /></td></tr>
+<tr class="separator:a33ce951cb248124d80d2d73a412c48ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba0c22a7fa0a6d98c3edec840eba29b9" id="r_aba0c22a7fa0a6d98c3edec840eba29b9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#aba0c22a7fa0a6d98c3edec840eba29b9">ControlRigEditor</a> (const <a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:aba0c22a7fa0a6d98c3edec840eba29b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c8344adca1fb13a8392b762873a287a" id="r_a5c8344adca1fb13a8392b762873a287a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a5c8344adca1fb13a8392b762873a287a">operator=</a> (const <a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp;)=delete</td></tr>
+<tr class="separator:a5c8344adca1fb13a8392b762873a287a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6c82f92709f9b17b9d91a1d19cf2537" id="r_ad6c82f92709f9b17b9d91a1d19cf2537"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#ad6c82f92709f9b17b9d91a1d19cf2537">initialize</a> (const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;skeleton)</td></tr>
+<tr class="memdesc:ad6c82f92709f9b17b9d91a1d19cf2537"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy skeleton, seed FK controls and clear history after validation. @cost Skeleton-sized preparation, amortized over an editing session.  <br /></td></tr>
+<tr class="separator:ad6c82f92709f9b17b9d91a1d19cf2537"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87c7b3d99b80adcdaabb79e657bbe545" id="r_a87c7b3d99b80adcdaabb79e657bbe545"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a87c7b3d99b80adcdaabb79e657bbe545">replace</a> (const <a class="el" href="structeve_1_1animation_1_1RigDefinition.html">animation::RigDefinition</a> &amp;definition)</td></tr>
+<tr class="memdesc:a87c7b3d99b80adcdaabb79e657bbe545"><td class="mdescLeft">&#160;</td><td class="mdescRight">Validate and transactionally replace rig definition, preserving history. @cost Compile and preview once per user edit; no per-frame compilation.  <br /></td></tr>
+<tr class="separator:a87c7b3d99b80adcdaabb79e657bbe545"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a88343025ad06cc6cc5930b85a8b113" id="r_a3a88343025ad06cc6cc5930b85a8b113"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a3a88343025ad06cc6cc5930b85a8b113">enableAutomation</a> ()</td></tr>
+<tr class="memdesc:a3a88343025ad06cc6cc5930b85a8b113"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register the initialized live document and existing history with the active editor host.  <br /></td></tr>
+<tr class="separator:a3a88343025ad06cc6cc5930b85a8b113"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b3ccd35b287fce198e5814d70883743" id="r_a0b3ccd35b287fce198e5814d70883743"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a0b3ccd35b287fce198e5814d70883743">disableAutomation</a> ()</td></tr>
+<tr class="memdesc:a0b3ccd35b287fce198e5814d70883743"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove Agent access without discarding the UI document or history.  <br /></td></tr>
+<tr class="separator:a0b3ccd35b287fce198e5814d70883743"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a23848be6fd1e412da45c2696abbe950b" id="r_a23848be6fd1e412da45c2696abbe950b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a23848be6fd1e412da45c2696abbe950b">snapshot</a> () const</td></tr>
+<tr class="memdesc:a23848be6fd1e412da45c2696abbe950b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy authoritative document for inspection/serialization.  <br /></td></tr>
+<tr class="separator:a23848be6fd1e412da45c2696abbe950b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf5a3e410f8e4e1e453757def6ed9fa6" id="r_adf5a3e410f8e4e1e453757def6ed9fa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#adf5a3e410f8e4e1e453757def6ed9fa6">restore</a> (const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a346a7d175620f8379f0ce521dc567d9c">value</a>)</td></tr>
+<tr class="memdesc:adf5a3e410f8e4e1e453757def6ed9fa6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load schema-validated document through same reversible replacement path.  <br /></td></tr>
+<tr class="separator:adf5a3e410f8e4e1e453757def6ed9fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6cbdd070542974f0010dbaa2a463fb8e" id="r_a6cbdd070542974f0010dbaa2a463fb8e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a6cbdd070542974f0010dbaa2a463fb8e">seek</a> (double seconds)</td></tr>
+<tr class="memdesc:a6cbdd070542974f0010dbaa2a463fb8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Seek an explicit time; updates preview atomically.  <br /></td></tr>
+<tr class="separator:a6cbdd070542974f0010dbaa2a463fb8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af65d90f9feca8b6fa70501ba4d1c74ea" id="r_af65d90f9feca8b6fa70501ba4d1c74ea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#af65d90f9feca8b6fa70501ba4d1c74ea">setControl</a> (std::string_view <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &amp;transform, bool <a class="el" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>)</td></tr>
+<tr class="memdesc:af65d90f9feca8b6fa70501ba4d1c74ea"><td class="mdescLeft">&#160;</td><td class="mdescRight">Edit a control's local TRS, optionally creating/replacing a key at playhead.  <br /></td></tr>
+<tr class="separator:af65d90f9feca8b6fa70501ba4d1c74ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a776b11b264613c84cb1b53d0d978e3f5" id="r_a776b11b264613c84cb1b53d0d978e3f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a776b11b264613c84cb1b53d0d978e3f5">moveControl</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>, bool <a class="el" href="ECS_8cpp.html#a1f53a56adfc8a8f39c5e553c97a7b2ff">key</a>)</td></tr>
+<tr class="memdesc:a776b11b264613c84cb1b53d0d978e3f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Move a control in model space, converting through its sampled parent transform.  <br /></td></tr>
+<tr class="separator:a776b11b264613c84cb1b53d0d978e3f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7566924d6a050cff0ba326fa49e91135" id="r_a7566924d6a050cff0ba326fa49e91135"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a7566924d6a050cff0ba326fa49e91135">previewMoveControl</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>, float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="memdesc:a7566924d6a050cff0ba326fa49e91135"><td class="mdescLeft">&#160;</td><td class="mdescRight">Preview a model-space drag without history; seek cancels, moveControl commits.  <br /></td></tr>
+<tr class="separator:a7566924d6a050cff0ba326fa49e91135"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad3c42bf593b811ecfbe6c1f40d9ec8c9" id="r_ad3c42bf593b811ecfbe6c1f40d9ec8c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#ad3c42bf593b811ecfbe6c1f40d9ec8c9">deleteKey</a> (std::string_view <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:ad3c42bf593b811ecfbe6c1f40d9ec8c9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Remove a control key exactly at playhead; returns a diagnostic when absent.  <br /></td></tr>
+<tr class="separator:ad3c42bf593b811ecfbe6c1f40d9ec8c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aed8bc0ed2fcf24438352949467db729c" id="r_aed8bc0ed2fcf24438352949467db729c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#aed8bc0ed2fcf24438352949467db729c">reparent</a> (std::string_view <a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>, std::string_view <a class="el" href="LDrawImporter_8cpp.html#aa77d8b2654f3ab520ecdff679da7f8c4">parent</a>)</td></tr>
+<tr class="memdesc:aed8bc0ed2fcf24438352949467db729c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reparent unanimated controls preserving model-space pose.  <br /></td></tr>
+<tr class="separator:aed8bc0ed2fcf24438352949467db729c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6071da6d997a4d62d928d1b92bbc813a" id="r_a6071da6d997a4d62d928d1b92bbc813a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a6071da6d997a4d62d928d1b92bbc813a">undo</a> ()</td></tr>
+<tr class="memdesc:a6071da6d997a4d62d928d1b92bbc813a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Undo latest committed edit and rebuild derived preview.  <br /></td></tr>
+<tr class="separator:a6071da6d997a4d62d928d1b92bbc813a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace39a2078ecccd51b55f37ed92df6567" id="r_ace39a2078ecccd51b55f37ed92df6567"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#ace39a2078ecccd51b55f37ed92df6567">redo</a> ()</td></tr>
+<tr class="memdesc:ace39a2078ecccd51b55f37ed92df6567"><td class="mdescLeft">&#160;</td><td class="mdescRight">Redo latest compensated edit and rebuild derived preview.  <br /></td></tr>
+<tr class="separator:ace39a2078ecccd51b55f37ed92df6567"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeefadf1eefcf44d4d86564001b8c4009" id="r_aeefadf1eefcf44d4d86564001b8c4009"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#aeefadf1eefcf44d4d86564001b8c4009">bakeInto</a> (<a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;<a class="el" href="GraphicsVirtualGeometry_8cpp.html#a30a948bc4ba3defbec563e070a66fbc6">clip</a>, double sampleRate) const</td></tr>
+<tr class="memdesc:aeefadf1eefcf44d4d86564001b8c4009"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bake into caller clip only after complete successful preparation.  <br /></td></tr>
+<tr class="separator:aeefadf1eefcf44d4d86564001b8c4009"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a827d46ddcecf8d7f0b735825055d7c82" id="r_a827d46ddcecf8d7f0b735825055d7c82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a827d46ddcecf8d7f0b735825055d7c82">copyPose</a> (<a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;<a class="el" href="AssetCommand_8cpp.html#a69da28b7f372dd6b6fffa28d0214e4de">output</a>) const</td></tr>
+<tr class="memdesc:a827d46ddcecf8d7f0b735825055d7c82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy current solved pose into caller output.  <br /></td></tr>
+<tr class="separator:a827d46ddcecf8d7f0b735825055d7c82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ee337f9e3b9030cd757a0c31f5f9782" id="r_a0ee337f9e3b9030cd757a0c31f5f9782"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a0ee337f9e3b9030cd757a0c31f5f9782">keyFromPose</a> (const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;<a class="el" href="AudioCapabilities_8cpp.html#ac8f9d11b63bfd0cfb294366658eb7e91">pose</a>)</td></tr>
+<tr class="memdesc:a0ee337f9e3b9030cd757a0c31f5f9782"><td class="mdescLeft">&#160;</td><td class="mdescRight">Match an existing pose to unique full-weight FK controls, recording one undoable key batch. @cost Recompiles the authored snapshot once per pose import, not per preview frame.  <br /></td></tr>
+<tr class="separator:a0ee337f9e3b9030cd757a0c31f5f9782"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a980d0053df683e9e363957e8a01354cd" id="r_a980d0053df683e9e363957e8a01354cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a980d0053df683e9e363957e8a01354cd">controlWorld</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a980d0053df683e9e363957e8a01354cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy current control model transform by index for viewport drawing/picking.  <br /></td></tr>
+<tr class="separator:a980d0053df683e9e363957e8a01354cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7bc17e33b5360dca5c6a7c355adedf4" id="r_ad7bc17e33b5360dca5c6a7c355adedf4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#ad7bc17e33b5360dca5c6a7c355adedf4">controlLocal</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:ad7bc17e33b5360dca5c6a7c355adedf4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy sampled parent-local control for inspector/drag edits.  <br /></td></tr>
+<tr class="separator:ad7bc17e33b5360dca5c6a7c355adedf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b4469ce06e5bb34aabccb6002d375ca" id="r_a3b4469ce06e5bb34aabccb6002d375ca"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a3b4469ce06e5bb34aabccb6002d375ca">controlCount</a> () const</td></tr>
+<tr class="memdesc:a3b4469ce06e5bb34aabccb6002d375ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of authored controls.  <br /></td></tr>
+<tr class="separator:a3b4469ce06e5bb34aabccb6002d375ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8add6b60eee52beb8f1d21ce0fc4cf3e" id="r_a8add6b60eee52beb8f1d21ce0fc4cf3e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a8add6b60eee52beb8f1d21ce0fc4cf3e">controlId</a> (int <a class="el" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) const</td></tr>
+<tr class="memdesc:a8add6b60eee52beb8f1d21ce0fc4cf3e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Control ID at index, empty if invalid.  <br /></td></tr>
+<tr class="separator:a8add6b60eee52beb8f1d21ce0fc4cf3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a802a75b09b3b37847477d8683bf75380" id="r_a802a75b09b3b37847477d8683bf75380"><td class="memItemLeft" align="right" valign="top">std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a802a75b09b3b37847477d8683bf75380">revision</a> () const</td></tr>
+<tr class="memdesc:a802a75b09b3b37847477d8683bf75380"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monotonic document revision for UI invalidation after external edits.  <br /></td></tr>
+<tr class="separator:a802a75b09b3b37847477d8683bf75380"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6844b1784af902ac9bd8ae15a7ed18ec" id="r_a6844b1784af902ac9bd8ae15a7ed18ec"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a6844b1784af902ac9bd8ae15a7ed18ec">time</a> () const</td></tr>
+<tr class="memdesc:a6844b1784af902ac9bd8ae15a7ed18ec"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current playhead in seconds.  <br /></td></tr>
+<tr class="separator:a6844b1784af902ac9bd8ae15a7ed18ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47156476efc283e78867b9bfbefbe0f9" id="r_a47156476efc283e78867b9bfbefbe0f9"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html#a47156476efc283e78867b9bfbefbe0f9">duration</a> () const</td></tr>
+<tr class="memdesc:a47156476efc283e78867b9bfbefbe0f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Document duration.  <br /></td></tr>
+<tr class="separator:a47156476efc283e78867b9bfbefbe0f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>UI-independent rig authoring controller with existing editing transactions. @ownership Owns document, skeleton snapshot and previews. Call arguments borrowed synchronously. @thread Owner thread only. @reentrancy Does not invoke scripts or unknown callbacks. </p>
+
+<p class="definition">在文件 <a class="el" href="ControlRigEditor_8h_source.html">ControlRigEditor.h</a> 第 <a class="el" href="ControlRigEditor_8h_source.html#l00025">25</a> 行定义.</p>
+</div><h2 class="groupheader">构造及析构函数说明</h2>
+<a id="ad3761383f93d2cc6e83d9b15a243c8ca" name="ad3761383f93d2cc6e83d9b15a243c8ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3761383f93d2cc6e83d9b15a243c8ca">&#9670;&#160;</a></span>ControlRigEditor() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editor::ControlRigEditor::ControlRigEditor </td>
+          <td>(</td>
+          <td class="paramtype">std::string&#160;</td>
+          <td class="paramname"><em>targetId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create an empty editor with stable identity. </p>
+
+</div>
+</div>
+<a id="a33ce951cb248124d80d2d73a412c48ff" name="a33ce951cb248124d80d2d73a412c48ff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a33ce951cb248124d80d2d73a412c48ff">&#9670;&#160;</a></span>~ControlRigEditor()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editor::ControlRigEditor::~ControlRigEditor </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Release all owned state. </p>
+
+</div>
+</div>
+<a id="aba0c22a7fa0a6d98c3edec840eba29b9" name="aba0c22a7fa0a6d98c3edec840eba29b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba0c22a7fa0a6d98c3edec840eba29b9">&#9670;&#160;</a></span>ControlRigEditor() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">eve::animation_editor::ControlRigEditor::ControlRigEditor </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">成员函数说明</h2>
+<a id="aeefadf1eefcf44d4d86564001b8c4009" name="aeefadf1eefcf44d4d86564001b8c4009"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeefadf1eefcf44d4d86564001b8c4009">&#9670;&#160;</a></span>bakeInto()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::bakeInto </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimClip.html">animation::AnimClip</a> &amp;&#160;</td>
+          <td class="paramname"><em>clip</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>sampleRate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bake into caller clip only after complete successful preparation. </p>
+
+</div>
+</div>
+<a id="a3b4469ce06e5bb34aabccb6002d375ca" name="a3b4469ce06e5bb34aabccb6002d375ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b4469ce06e5bb34aabccb6002d375ca">&#9670;&#160;</a></span>controlCount()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::animation_editor::ControlRigEditor::controlCount </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Number of authored controls. </p>
+
+</div>
+</div>
+<a id="a8add6b60eee52beb8f1d21ce0fc4cf3e" name="a8add6b60eee52beb8f1d21ce0fc4cf3e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8add6b60eee52beb8f1d21ce0fc4cf3e">&#9670;&#160;</a></span>controlId()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::animation_editor::ControlRigEditor::controlId </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Control ID at index, empty if invalid. </p>
+
+</div>
+</div>
+<a id="ad7bc17e33b5360dca5c6a7c355adedf4" name="ad7bc17e33b5360dca5c6a7c355adedf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad7bc17e33b5360dca5c6a7c355adedf4">&#9670;&#160;</a></span>controlLocal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &gt; eve::animation_editor::ControlRigEditor::controlLocal </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy sampled parent-local control for inspector/drag edits. </p>
+
+</div>
+</div>
+<a id="a980d0053df683e9e363957e8a01354cd" name="a980d0053df683e9e363957e8a01354cd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a980d0053df683e9e363957e8a01354cd">&#9670;&#160;</a></span>controlWorld()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &gt; eve::animation_editor::ControlRigEditor::controlWorld </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy current control model transform by index for viewport drawing/picking. </p>
+
+</div>
+</div>
+<a id="a827d46ddcecf8d7f0b735825055d7c82" name="a827d46ddcecf8d7f0b735825055d7c82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a827d46ddcecf8d7f0b735825055d7c82">&#9670;&#160;</a></span>copyPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::copyPose </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>output</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy current solved pose into caller output. </p>
+
+</div>
+</div>
+<a id="ad3c42bf593b811ecfbe6c1f40d9ec8c9" name="ad3c42bf593b811ecfbe6c1f40d9ec8c9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad3c42bf593b811ecfbe6c1f40d9ec8c9">&#9670;&#160;</a></span>deleteKey()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::deleteKey </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove a control key exactly at playhead; returns a diagnostic when absent. </p>
+
+</div>
+</div>
+<a id="a0b3ccd35b287fce198e5814d70883743" name="a0b3ccd35b287fce198e5814d70883743"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0b3ccd35b287fce198e5814d70883743">&#9670;&#160;</a></span>disableAutomation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::disableAutomation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Remove Agent access without discarding the UI document or history. </p>
+
+</div>
+</div>
+<a id="a47156476efc283e78867b9bfbefbe0f9" name="a47156476efc283e78867b9bfbefbe0f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a47156476efc283e78867b9bfbefbe0f9">&#9670;&#160;</a></span>duration()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::ControlRigEditor::duration </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Document duration. </p>
+
+</div>
+</div>
+<a id="a3a88343025ad06cc6cc5930b85a8b113" name="a3a88343025ad06cc6cc5930b85a8b113"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3a88343025ad06cc6cc5930b85a8b113">&#9670;&#160;</a></span>enableAutomation()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::enableAutomation </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Register the initialized live document and existing history with the active editor host. </p>
+<dl class="section return"><dt>返回</dt><dd>Structured unsupported status when the host is absent; duplicate target IDs are rejected. @ownership Borrows the host with a teardown sentinel; destruction unregisters this target. @thread Owner thread only. No scripts are invoked. </dd></dl>
+
+</div>
+</div>
+<a id="ad6c82f92709f9b17b9d91a1d19cf2537" name="ad6c82f92709f9b17b9d91a1d19cf2537"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad6c82f92709f9b17b9d91a1d19cf2537">&#9670;&#160;</a></span>initialize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::initialize </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimSkeleton.html">animation::AnimSkeleton</a> &amp;&#160;</td>
+          <td class="paramname"><em>skeleton</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy skeleton, seed FK controls and clear history after validation. @cost Skeleton-sized preparation, amortized over an editing session. </p>
+
+</div>
+</div>
+<a id="a0ee337f9e3b9030cd757a0c31f5f9782" name="a0ee337f9e3b9030cd757a0c31f5f9782"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ee337f9e3b9030cd757a0c31f5f9782">&#9670;&#160;</a></span>keyFromPose()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::keyFromPose </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation_1_1AnimPose.html">animation::AnimPose</a> &amp;&#160;</td>
+          <td class="paramname"><em>pose</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Match an existing pose to unique full-weight FK controls, recording one undoable key batch. @cost Recompiles the authored snapshot once per pose import, not per preview frame. </p>
+
+</div>
+</div>
+<a id="a776b11b264613c84cb1b53d0d978e3f5" name="a776b11b264613c84cb1b53d0d978e3f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a776b11b264613c84cb1b53d0d978e3f5">&#9670;&#160;</a></span>moveControl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::moveControl </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Move a control in model space, converting through its sampled parent transform. </p>
+
+</div>
+</div>
+<a id="a5c8344adca1fb13a8392b762873a287a" name="a5c8344adca1fb13a8392b762873a287a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5c8344adca1fb13a8392b762873a287a">&#9670;&#160;</a></span>operator=()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp; eve::animation_editor::ControlRigEditor::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1animation__editor_1_1ControlRigEditor.html">ControlRigEditor</a> &amp;&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">delete</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a7566924d6a050cff0ba326fa49e91135" name="a7566924d6a050cff0ba326fa49e91135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7566924d6a050cff0ba326fa49e91135">&#9670;&#160;</a></span>previewMoveControl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::previewMoveControl </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>index</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&#160;</td>
+          <td class="paramname"><em>z</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Preview a model-space drag without history; seek cancels, moveControl commits. </p>
+
+</div>
+</div>
+<a id="ace39a2078ecccd51b55f37ed92df6567" name="ace39a2078ecccd51b55f37ed92df6567"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace39a2078ecccd51b55f37ed92df6567">&#9670;&#160;</a></span>redo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::redo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Redo latest compensated edit and rebuild derived preview. </p>
+
+</div>
+</div>
+<a id="aed8bc0ed2fcf24438352949467db729c" name="aed8bc0ed2fcf24438352949467db729c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aed8bc0ed2fcf24438352949467db729c">&#9670;&#160;</a></span>reparent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::reparent </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>parent</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Reparent unanimated controls preserving model-space pose. </p>
+
+</div>
+</div>
+<a id="a87c7b3d99b80adcdaabb79e657bbe545" name="a87c7b3d99b80adcdaabb79e657bbe545"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87c7b3d99b80adcdaabb79e657bbe545">&#9670;&#160;</a></span>replace()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::replace </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1RigDefinition.html">animation::RigDefinition</a> &amp;&#160;</td>
+          <td class="paramname"><em>definition</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Validate and transactionally replace rig definition, preserving history. @cost Compile and preview once per user edit; no per-frame compilation. </p>
+
+</div>
+</div>
+<a id="adf5a3e410f8e4e1e453757def6ed9fa6" name="adf5a3e410f8e4e1e453757def6ed9fa6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf5a3e410f8e4e1e453757def6ed9fa6">&#9670;&#160;</a></span>restore()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::restore </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1Value.html">Value</a> &amp;&#160;</td>
+          <td class="paramname"><em>value</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Load schema-validated document through same reversible replacement path. </p>
+
+</div>
+</div>
+<a id="a802a75b09b3b37847477d8683bf75380" name="a802a75b09b3b37847477d8683bf75380"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a802a75b09b3b37847477d8683bf75380">&#9670;&#160;</a></span>revision()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::uint64_t eve::animation_editor::ControlRigEditor::revision </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Monotonic document revision for UI invalidation after external edits. </p>
+
+</div>
+</div>
+<a id="a6cbdd070542974f0010dbaa2a463fb8e" name="a6cbdd070542974f0010dbaa2a463fb8e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6cbdd070542974f0010dbaa2a463fb8e">&#9670;&#160;</a></span>seek()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::seek </td>
+          <td>(</td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>seconds</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Seek an explicit time; updates preview atomically. </p>
+
+</div>
+</div>
+<a id="af65d90f9feca8b6fa70501ba4d1c74ea" name="af65d90f9feca8b6fa70501ba4d1c74ea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af65d90f9feca8b6fa70501ba4d1c74ea">&#9670;&#160;</a></span>setControl()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::setControl </td>
+          <td>(</td>
+          <td class="paramtype">std::string_view&#160;</td>
+          <td class="paramname"><em>id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="structeve_1_1animation_1_1TransformTRS.html">animation::TransformTRS</a> &amp;&#160;</td>
+          <td class="paramname"><em>transform</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>key</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Edit a control's local TRS, optionally creating/replacing a key at playhead. </p>
+
+</div>
+</div>
+<a id="a23848be6fd1e412da45c2696abbe950b" name="a23848be6fd1e412da45c2696abbe950b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a23848be6fd1e412da45c2696abbe950b">&#9670;&#160;</a></span>snapshot()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; <a class="el" href="classeve_1_1Value.html">Value</a> &gt; eve::animation_editor::ControlRigEditor::snapshot </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Copy authoritative document for inspection/serialization. </p>
+
+</div>
+</div>
+<a id="a6844b1784af902ac9bd8ae15a7ed18ec" name="a6844b1784af902ac9bd8ae15a7ed18ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6844b1784af902ac9bd8ae15a7ed18ec">&#9670;&#160;</a></span>time()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double eve::animation_editor::ControlRigEditor::time </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Current playhead in seconds. </p>
+
+</div>
+</div>
+<a id="a6071da6d997a4d62d928d1b92bbc813a" name="a6071da6d997a4d62d928d1b92bbc813a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6071da6d997a4d62d928d1b92bbc813a">&#9670;&#160;</a></span>undo()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">Result</a>&lt; void &gt; eve::animation_editor::ControlRigEditor::undo </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Undo latest committed edit and rebuild derived preview. </p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/animation/editor/<a class="el" href="ControlRigEditor_8h_source.html">ControlRigEditor.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

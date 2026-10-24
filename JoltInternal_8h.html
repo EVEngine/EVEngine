@@ -1,0 +1,253 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/jolt/JoltInternal.h 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_ff62e0f27e22813015816d9775ff97d9.html">jolt</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">JoltInternal.h 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;Jolt/Jolt.h&gt;</code><br />
+<code>#include &lt;Jolt/Core/JobSystemSingleThreaded.h&gt;</code><br />
+<code>#include &lt;Jolt/Core/TempAllocator.h&gt;</code><br />
+<code>#include &lt;Jolt/Physics/Body/BodyCreationSettings.h&gt;</code><br />
+<code>#include &lt;Jolt/Physics/Collision/Shape/EmptyShape.h&gt;</code><br />
+<code>#include &lt;Jolt/Physics/Collision/Shape/StaticCompoundShape.h&gt;</code><br />
+<code>#include &lt;Jolt/Physics/PhysicsStepListener.h&gt;</code><br />
+<code>#include &lt;Jolt/Physics/PhysicsSystem.h&gt;</code><br />
+<code>#include &lt;cmath&gt;</code><br />
+<code>#include &lt;unordered_map&gt;</code><br />
+<code>#include &quot;<a class="el" href="Body3D_8h_source.html">physics/Body3D.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Shape3D_8h_source.html">physics/Shape3D.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JoltBody_8h_source.html">physics/jolt/JoltBody.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JoltShape_8h_source.html">physics/jolt/JoltShape.h</a>&quot;</code><br />
+</div>
+<p><a href="JoltInternal_8h_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Layers.html">eve::physics::jolt::Layers</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ContactPair.html">eve::physics::jolt::ContactPair</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedPoint.html">eve::physics::jolt::SolvedPoint</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1SolvedHit.html">eve::physics::jolt::SolvedHit</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1State.html">eve::physics::jolt::State</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">eve::physics::jolt::BodyState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">eve::physics::jolt::ShapeState</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1physics_1_1jolt_1_1Listener.html">eve::physics::jolt::Listener</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics" id="r_namespaceeve_1_1physics"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics.html">eve::physics</a></td></tr>
+<tr class="memdesc:namespaceeve_1_1physics"><td class="mdescLeft">&#160;</td><td class="mdescRight">Optional physics backend for vehicle mobility and body attach. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1physics_1_1jolt" id="r_namespaceeve_1_1physics_1_1jolt"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html">eve::physics::jolt</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a060c30e6482690ebf09f28d79eb34018" id="r_a060c30e6482690ebf09f28d79eb34018"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:a060c30e6482690ebf09f28d79eb34018"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; T &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a060c30e6482690ebf09f28d79eb34018">eve::physics::jolt::rejected</a> (const char *<a class="el" href="ActionNotifyRegistry_8cpp.html#a1d8330996490721964918f24590a398b">operation</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a> <a class="el" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>=<a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ab4080bdf74febf04d578ff105cce9d3f">eve::DiagnosticCode::Unsupported</a>)</td></tr>
+<tr class="separator:a060c30e6482690ebf09f28d79eb34018"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a160c16b0ef12fa4a40f5ba56c8f77934" id="r_a160c16b0ef12fa4a40f5ba56c8f77934"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a160c16b0ef12fa4a40f5ba56c8f77934">eve::physics::jolt::success</a> ()</td></tr>
+<tr class="separator:a160c16b0ef12fa4a40f5ba56c8f77934"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac0df21520f44c5fb4fdfdee15beea725" id="r_ac0df21520f44c5fb4fdfdee15beea725"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#ac0df21520f44c5fb4fdfdee15beea725">eve::physics::jolt::isFinite</a> (float <a class="el" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>, float <a class="el" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>, float <a class="el" href="AnimClip_8cpp.html#af73583b1e980b0aa03f9884812e9fd4d">z</a>)</td></tr>
+<tr class="separator:ac0df21520f44c5fb4fdfdee15beea725"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2455996f82e0b824460774c14232eda7" id="r_a2455996f82e0b824460774c14232eda7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a2455996f82e0b824460774c14232eda7">eve::physics::jolt::initializeRuntime</a> ()</td></tr>
+<tr class="memdesc:a2455996f82e0b824460774c14232eda7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes the process-owned allocator and type factory before constructing any native members.  <br /></td></tr>
+<tr class="separator:a2455996f82e0b824460774c14232eda7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8eb61c055066a5b5dd7b35ac5b9341d2" id="r_a8eb61c055066a5b5dd7b35ac5b9341d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a8eb61c055066a5b5dd7b35ac5b9341d2">eve::physics::jolt::cook</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;, float <a class="el" href="ForceBindings_8cpp.html#af5d1a3cc4fffecd94d9cb9eb0096b071">density</a>, JPH::uint64 userData)</td></tr>
+<tr class="separator:a8eb61c055066a5b5dd7b35ac5b9341d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a405ce199fa5e1b12e7872bb8c7ea5131" id="r_a405ce199fa5e1b12e7872bb8c7ea5131"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; JPH::RefConst&lt; JPH::Shape &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a405ce199fa5e1b12e7872bb8c7ea5131">eve::physics::jolt::cookMesh</a> (const <a class="el" href="structeve_1_1physics_1_1ShapeGeometry3D.html">ShapeGeometry3D</a> &amp;, JPH::uint64 userData)</td></tr>
+<tr class="separator:a405ce199fa5e1b12e7872bb8c7ea5131"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adb3c093a63c7b72947e1df16fd56f998" id="r_adb3c093a63c7b72947e1df16fd56f998"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#adb3c093a63c7b72947e1df16fd56f998">eve::physics::jolt::validateMaterial</a> (<a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>)</td></tr>
+<tr class="separator:adb3c093a63c7b72947e1df16fd56f998"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0195f039d4918a3082e52bbb01ed7b24" id="r_a0195f039d4918a3082e52bbb01ed7b24"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a0195f039d4918a3082e52bbb01ed7b24">eve::physics::jolt::triangleIndex</a> (const JPH::Body &amp;, const JPH::SubShapeID &amp;)</td></tr>
+<tr class="separator:a0195f039d4918a3082e52bbb01ed7b24"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e9ff46bba93a2218f5cba6accc0894b" id="r_a7e9ff46bba93a2218f5cba6accc0894b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1SurfaceMaterial3D.html">SurfaceMaterial3D</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a7e9ff46bba93a2218f5cba6accc0894b">eve::physics::jolt::contactMaterial</a> (const JPH::Body &amp;, const JPH::SubShapeID &amp;, const <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &amp;)</td></tr>
+<tr class="separator:a7e9ff46bba93a2218f5cba6accc0894b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3963cc51bf59971a83e4221ab661658f" id="r_a3963cc51bf59971a83e4221ab661658f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; void &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a3963cc51bf59971a83e4221ab661658f">eve::physics::jolt::replaceShapes</a> (<a class="el" href="structeve_1_1physics_1_1jolt_1_1BodyState.html">BodyState</a> &amp;, const std::vector&lt; std::shared_ptr&lt; <a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> &gt; &gt; &amp;)</td></tr>
+<tr class="separator:a3963cc51bf59971a83e4221ab661658f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a835b0fb30d3f5282c71137e4b7c55586" id="r_a835b0fb30d3f5282c71137e4b7c55586"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1physics_1_1jolt_1_1ShapeState.html">ShapeState</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1physics_1_1jolt.html#a835b0fb30d3f5282c71137e4b7c55586">eve::physics::jolt::child</a> (const JPH::Body &amp;<a class="el" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, const JPH::SubShapeID &amp;<a class="el" href="McpArchitectureTools_8cpp.html#afd0d68c6d31ff249f3ae8662162663c3">id</a>)</td></tr>
+<tr class="memdesc:a835b0fb30d3f5282c71137e4b7c55586"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resolves a native child record for a synchronous callback or query. @ownership Borrowed from the world's body record; never transferred or retained by the caller. @lifetime Valid only while the native body is locked or on the idle simulation thread, until the next shape or body mutation. Returns nullptr when no child record exists.  <br /></td></tr>
+<tr class="separator:a835b0fb30d3f5282c71137e4b7c55586"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

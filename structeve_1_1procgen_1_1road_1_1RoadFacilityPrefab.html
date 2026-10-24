@@ -1,0 +1,470 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::road::RoadFacilityPrefab结构体 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen_1_1road.html">road</a></li><li class="navelem"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html">RoadFacilityPrefab</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public 属性</a> &#124;
+<a href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::road::RoadFacilityPrefab结构体 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Owned prefab mesh; local Z in [0,length] deforms along the facility arc. Source range preserves cut geometry on splits. UVs retain the authored source values.  
+ <a href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public 属性</h2></td></tr>
+<tr class="memitem:ab40492bbd5a88ee50719bb4fe084cc8a" id="r_ab40492bbd5a88ee50719bb4fe084cc8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabSegment.html">RoadPrefabSegment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#ab40492bbd5a88ee50719bb4fe084cc8a">startMesh</a></td></tr>
+<tr class="separator:ab40492bbd5a88ee50719bb4fe084cc8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2c39f5ad56e6ccfec8d87b0589c45c2" id="r_ae2c39f5ad56e6ccfec8d87b0589c45c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabSegment.html">RoadPrefabSegment</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#ae2c39f5ad56e6ccfec8d87b0589c45c2">endMesh</a></td></tr>
+<tr class="separator:ae2c39f5ad56e6ccfec8d87b0589c45c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c7c6e2dfae82c000ceb34337f0d275c" id="r_a2c7c6e2dfae82c000ceb34337f0d275c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a2c7c6e2dfae82c000ceb34337f0d275c">middleCopies</a> = 1</td></tr>
+<tr class="memdesc:a2c7c6e2dfae82c000ceb34337f0d275c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded authored repetitions; segment lengths determine their relative arc lengths.  <br /></td></tr>
+<tr class="separator:a2c7c6e2dfae82c000ceb34337f0d275c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ded40f4b193b99753b3822d986c0ed8" id="r_a7ded40f4b193b99753b3822d986c0ed8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a7ded40f4b193b99753b3822d986c0ed8">weldCompatibleVertices</a> = false</td></tr>
+<tr class="memdesc:a7ded40f4b193b99753b3822d986c0ed8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Share indices only when position, normal and UV agree within 1e-5.  <br /></td></tr>
+<tr class="separator:a7ded40f4b193b99753b3822d986c0ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae497daa6667c6d43871be0b3ba11eb3c" id="r_ae497daa6667c6d43871be0b3ba11eb3c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#ae497daa6667c6d43871be0b3ba11eb3c">automaticSpacing</a></td></tr>
+<tr class="memdesc:ae497daa6667c6d43871be0b3ba11eb3c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Fit the nearest positive number of middle segments, averaging spacing over the arc.  <br /></td></tr>
+<tr class="separator:ae497daa6667c6d43871be0b3ba11eb3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53b73cdaed68594d1787367287074556" id="r_a53b73cdaed68594d1787367287074556"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a53b73cdaed68594d1787367287074556">averageSpacing</a> = true</td></tr>
+<tr class="separator:a53b73cdaed68594d1787367287074556"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77f5e99348e80c35b57e6af8fb92de74" id="r_a77f5e99348e80c35b57e6af8fb92de74"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a77f5e99348e80c35b57e6af8fb92de74">reverseRepeatSequence</a></td></tr>
+<tr class="memdesc:a77f5e99348e80c35b57e6af8fb92de74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retained placement orientation for exact-spacing partial segments after reversal.  <br /></td></tr>
+<tr class="separator:a77f5e99348e80c35b57e6af8fb92de74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb20fe193d602c27da8f2e3244403713" id="r_afb20fe193d602c27da8f2e3244403713"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#afb20fe193d602c27da8f2e3244403713">repeatSourceLength</a></td></tr>
+<tr class="memdesc:afb20fe193d602c27da8f2e3244403713"><td class="mdescLeft">&#160;</td><td class="mdescRight">Zero derives the full source arc; split fragments retain the original metre span.  <br /></td></tr>
+<tr class="separator:afb20fe193d602c27da8f2e3244403713"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1db561c2bed966c9dd5b64726a6ebf89" id="r_a1db561c2bed966c9dd5b64726a6ebf89"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a1db561c2bed966c9dd5b64726a6ebf89">assetId</a></td></tr>
+<tr class="separator:a1db561c2bed966c9dd5b64726a6ebf89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a622416dd00eb58650b456c27f91b357d" id="r_a622416dd00eb58650b456c27f91b357d"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a622416dd00eb58650b456c27f91b357d">length</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a622416dd00eb58650b456c27f91b357d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a522a5975d06adb877c21ed2683c6f191" id="r_a522a5975d06adb877c21ed2683c6f191"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a522a5975d06adb877c21ed2683c6f191">sourceStart</a> = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:a522a5975d06adb877c21ed2683c6f191"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee6035ba2ec33bd3646304965cb64571" id="r_aee6035ba2ec33bd3646304965cb64571"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#aee6035ba2ec33bd3646304965cb64571">sourceEnd</a> = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td></tr>
+<tr class="separator:aee6035ba2ec33bd3646304965cb64571"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a249b5ada29332c4f1ce86c5c9182840b" id="r_a249b5ada29332c4f1ce86c5c9182840b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabVertex.html">RoadPrefabVertex</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a249b5ada29332c4f1ce86c5c9182840b">vertices</a></td></tr>
+<tr class="separator:a249b5ada29332c4f1ce86c5c9182840b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28d3f9340e9155810e7808b1d5294fc8" id="r_a28d3f9340e9155810e7808b1d5294fc8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabTriangle.html">RoadPrefabTriangle</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadFacilityPrefab.html#a28d3f9340e9155810e7808b1d5294fc8">triangles</a></td></tr>
+<tr class="separator:a28d3f9340e9155810e7808b1d5294fc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>Owned prefab mesh; local Z in [0,length] deforms along the facility arc. Source range preserves cut geometry on splits. UVs retain the authored source values. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00094">94</a> 行定义.</p>
+</div><h2 class="groupheader">类成员变量说明</h2>
+<a id="a1db561c2bed966c9dd5b64726a6ebf89" name="a1db561c2bed966c9dd5b64726a6ebf89"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1db561c2bed966c9dd5b64726a6ebf89">&#9670;&#160;</a></span>assetId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string eve::procgen::road::RoadFacilityPrefab::assetId</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00106">106</a> 行定义.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="RoadFacilityPrefab_8cpp_source.html#l00041">eve::procgen::road::detail::validateFacilityPrefab()</a>.</p>
+
+</div>
+</div>
+<a id="ae497daa6667c6d43871be0b3ba11eb3c" name="ae497daa6667c6d43871be0b3ba11eb3c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae497daa6667c6d43871be0b3ba11eb3c">&#9670;&#160;</a></span>automaticSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::road::RoadFacilityPrefab::automaticSpacing</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <span class="keyword">false</span></div>
+</div><!-- fragment -->
+<p>Fit the nearest positive number of middle segments, averaging spacing over the arc. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00098">98</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a53b73cdaed68594d1787367287074556" name="a53b73cdaed68594d1787367287074556"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53b73cdaed68594d1787367287074556">&#9670;&#160;</a></span>averageSpacing</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::road::RoadFacilityPrefab::averageSpacing = true</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Automatic mode distributes middle segments to the end; false clips the final segment at exact source length. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00100">100</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ae2c39f5ad56e6ccfec8d87b0589c45c2" name="ae2c39f5ad56e6ccfec8d87b0589c45c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2c39f5ad56e6ccfec8d87b0589c45c2">&#9670;&#160;</a></span>endMesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabSegment.html">RoadPrefabSegment</a> eve::procgen::road::RoadFacilityPrefab::endMesh</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a622416dd00eb58650b456c27f91b357d" name="a622416dd00eb58650b456c27f91b357d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a622416dd00eb58650b456c27f91b357d">&#9670;&#160;</a></span>length</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::road::RoadFacilityPrefab::length = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a2c7c6e2dfae82c000ceb34337f0d275c" name="a2c7c6e2dfae82c000ceb34337f0d275c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c7c6e2dfae82c000ceb34337f0d275c">&#9670;&#160;</a></span>middleCopies</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int eve::procgen::road::RoadFacilityPrefab::middleCopies = 1</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Bounded authored repetitions; segment lengths determine their relative arc lengths. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00096">96</a> 行定义.</p>
+
+</div>
+</div>
+<a id="afb20fe193d602c27da8f2e3244403713" name="afb20fe193d602c27da8f2e3244403713"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb20fe193d602c27da8f2e3244403713">&#9670;&#160;</a></span>repeatSourceLength</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::road::RoadFacilityPrefab::repeatSourceLength</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        0.f</div>
+</div><!-- fragment -->
+<p>Zero derives the full source arc; split fragments retain the original metre span. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00104">104</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a77f5e99348e80c35b57e6af8fb92de74" name="a77f5e99348e80c35b57e6af8fb92de74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77f5e99348e80c35b57e6af8fb92de74">&#9670;&#160;</a></span>reverseRepeatSequence</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::road::RoadFacilityPrefab::reverseRepeatSequence</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>初始值:</b><div class="fragment"><div class="line">=</div>
+<div class="line">        <span class="keyword">false</span></div>
+</div><!-- fragment -->
+<p>Retained placement orientation for exact-spacing partial segments after reversal. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00102">102</a> 行定义.</p>
+
+</div>
+</div>
+<a id="aee6035ba2ec33bd3646304965cb64571" name="aee6035ba2ec33bd3646304965cb64571"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee6035ba2ec33bd3646304965cb64571">&#9670;&#160;</a></span>sourceEnd</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::road::RoadFacilityPrefab::sourceEnd = 1.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a522a5975d06adb877c21ed2683c6f191" name="a522a5975d06adb877c21ed2683c6f191"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a522a5975d06adb877c21ed2683c6f191">&#9670;&#160;</a></span>sourceStart</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">float eve::procgen::road::RoadFacilityPrefab::sourceStart = 0.<a class="el" href="Pathfinder_8cpp.html#af900396d7b72ff2a7002e8befe8cf8f1">f</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00107">107</a> 行定义.</p>
+
+</div>
+</div>
+<a id="ab40492bbd5a88ee50719bb4fe084cc8a" name="ab40492bbd5a88ee50719bb4fe084cc8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab40492bbd5a88ee50719bb4fe084cc8a">&#9670;&#160;</a></span>startMesh</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabSegment.html">RoadPrefabSegment</a> eve::procgen::road::RoadFacilityPrefab::startMesh</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00095">95</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a28d3f9340e9155810e7808b1d5294fc8" name="a28d3f9340e9155810e7808b1d5294fc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a28d3f9340e9155810e7808b1d5294fc8">&#9670;&#160;</a></span>triangles</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabTriangle.html">RoadPrefabTriangle</a>&gt; eve::procgen::road::RoadFacilityPrefab::triangles</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00109">109</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a249b5ada29332c4f1ce86c5c9182840b" name="a249b5ada29332c4f1ce86c5c9182840b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a249b5ada29332c4f1ce86c5c9182840b">&#9670;&#160;</a></span>vertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structeve_1_1procgen_1_1road_1_1RoadPrefabVertex.html">RoadPrefabVertex</a>&gt; eve::procgen::road::RoadFacilityPrefab::vertices</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00108">108</a> 行定义.</p>
+
+</div>
+</div>
+<a id="a7ded40f4b193b99753b3822d986c0ed8" name="a7ded40f4b193b99753b3822d986c0ed8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ded40f4b193b99753b3822d986c0ed8">&#9670;&#160;</a></span>weldCompatibleVertices</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool eve::procgen::road::RoadFacilityPrefab::weldCompatibleVertices = false</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Share indices only when position, normal and UV agree within 1e-5. </p>
+
+<p class="definition">在文件 <a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a> 第 <a class="el" href="RoadTypes_8h_source.html#l00097">97</a> 行定义.</p>
+
+</div>
+</div>
+<hr/>该结构体的文档由以下文件生成:<ul>
+<li>src/modules/procgen/road/<a class="el" href="RoadTypes_8h_source.html">RoadTypes.h</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

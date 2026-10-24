@@ -1,0 +1,267 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/physics/mechanics/Coupling3DInternal.h 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_600fe9170c658efbfe035622ae17bade.html">physics</a></li><li class="navelem"><a class="el" href="dir_9f38896ae859590c557c1c3bfd7adccd.html">mechanics</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">Coupling3DInternal.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="Coupling3DInternal_8h.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">// Internal step-local row representation; never exposed as a gameplay API.</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;box3d/box3d.h&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;array&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="PhysicsHandles_8h.html">physics/PhysicsHandles.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="Coupling3D_8h.html">physics/mechanics/Coupling3D.h</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1physics.html">eve::physics</a> {</div>
+<div class="foldopen" id="foldopen00009" data-start="{" data-end="}">
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno"><a class="line" href="namespaceeve_1_1physics_1_1coupling__detail.html">    9</a></span><span class="keyword">namespace </span>coupling_detail {</div>
+<div class="foldopen" id="foldopen00010" data-start="{" data-end="};">
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html">   10</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html">Term</a> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a1b87fae255336d2626fb35c9d5e31b7b">   11</a></span>    <a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a1b87fae255336d2626fb35c9d5e31b7b">body</a>;</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a02c8c0cc37527efcbac069c8ecb2f591">   12</a></span>    b3Vec3            <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a55edc5b5ca81af565564912792e4923e">linear</a>{}, <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a02c8c0cc37527efcbac069c8ecb2f591">angular</a>{};</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>};</div>
+</div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html">   14</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html">Row</a> {</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#afadbd7dd04f3d39c7c2616fddb5553f1">   15</a></span>    std::array&lt;Term, 4&gt;   <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#afadbd7dd04f3d39c7c2616fddb5553f1">terms</a>{};</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a0565cb1e385783b6035ac555ca3018bb">   16</a></span>    <span class="keywordtype">int</span>                   <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a0565cb1e385783b6035ac555ca3018bb">count</a> = 0;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a7719dbdd956a754b19234f2a81c357e1">   17</a></span>    std::array&lt;double, 2&gt; <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a7719dbdd956a754b19234f2a81c357e1">coordinate</a>{};</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a81760e54ebde2d0215d036a0f26e2a2b">   18</a></span>    std::array&lt;float, 2&gt;  <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a81760e54ebde2d0215d036a0f26e2a2b">wrapped</a>{};</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#acdc261a7e0da750142406485e802a970">   19</a></span>    <span class="keywordtype">double</span>                <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#acdc261a7e0da750142406485e802a970">error</a>  = 0;</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a1883f97d3837fcdc3ff2490b9d0b8dd4">   20</a></span>    <span class="keywordtype">bool</span>                  <a class="code hl_variable" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a1883f97d3837fcdc3ff2490b9d0b8dd4">active</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <span class="keywordtype">void</span>                  <a class="code hl_function" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a2be749beb9912cfccd2c648e0c6bf39b">add</a>(<a class="code hl_class" href="classeve_1_1RuntimeHandle.html">PhysicsBodyHandle</a> <a class="code hl_variable" href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a>, b3Vec3 <a class="code hl_variable" href="ForceBindings_8cpp.html#aa7d568a84fe0f3179836f663743d6be2">linear</a>, b3Vec3 <a class="code hl_variable" href="Coupling3DStep_8cpp.html#a83b518b6e26e316f8a35eb923db25820">angular</a>, <span class="keywordtype">float</span> <a class="code hl_variable" href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a>);</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>};</div>
+</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>[[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;void&gt;</a> <a class="code hl_function" href="namespaceeve_1_1physics_1_1coupling__detail.html#a23c5e3047ff4f4cf8988b74c12a03282">validateResponse</a>(<a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>&amp; world, <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1coupling__detail_1_1Row.html">Row</a>&amp; row);</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>}  <span class="comment">// namespace coupling_detail</span></div>
+</div>
+<div class="foldopen" id="foldopen00025" data-start="{" data-end="};">
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html">   25</a></span><span class="keyword">struct </span><a class="code hl_struct" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html">Coupling3D::Data</a> {</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a258f2b66f122eec52b8adce007612e8c">   26</a></span>    <a class="code hl_class" href="classeve_1_1physics_1_1World3D.html">World3D</a>*                                   <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a258f2b66f122eec52b8adce007612e8c">world</a> = <span class="keyword">nullptr</span>;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ac2d09c4f84e3d867f03d9ea812a643d3">   27</a></span>    <span class="keywordtype">int</span>                                        <span class="keywordtype">id</span>    = 0;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#aec56feaad42b6c8ae3f721af61d027be">   28</a></span>    <span class="keywordtype">bool</span>                                       <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a48d0e23f2ef4862100638ea67c19f25f">gear</a> = <span class="keyword">false</span>, <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#aec56feaad42b6c8ae3f721af61d027be">enabled</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a39199af6ff20c541b85c06a9fdb84632">   29</a></span>    <a class="code hl_struct" href="structeve_1_1physics_1_1GearCoupling3DSettings.html">GearCoupling3DSettings</a>                     <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a39199af6ff20c541b85c06a9fdb84632">gearSettings</a>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ad8536a02d219a4323258898f1f017f7c">   30</a></span>    <a class="code hl_struct" href="structeve_1_1physics_1_1PulleyCoupling3DSettings.html">PulleyCoupling3DSettings</a>                   <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ad8536a02d219a4323258898f1f017f7c">pulleySettings</a>;</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a3baa837918850c772681f66bd7f4c155">   31</a></span>    std::array&lt;PhysicsJointHandle, 2&gt;          <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a3baa837918850c772681f66bd7f4c155">sources</a>{};</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a371d1d1a6e1ee1b5fdc221d449761f9e">   32</a></span>    std::array&lt;PhysicsBodyHandle, 4&gt;           <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a371d1d1a6e1ee1b5fdc221d449761f9e">bodies</a>{};</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a5bbeec9cfcf4aeb77c21c996a367792e">   33</a></span>    std::array&lt;bool, 2&gt;                        <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a5bbeec9cfcf4aeb77c21c996a367792e">revolute</a>{};</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a65e33fa32d4ac6ffeb649f58e10a809d">   34</a></span>    std::array&lt;float, 2&gt;                       <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a65e33fa32d4ac6ffeb649f58e10a809d">previous</a>{};</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ada20b8eee52e058d390cce860c66e1ba">   35</a></span>    std::array&lt;double, 2&gt;                      <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ada20b8eee52e058d390cce860c66e1ba">coordinate</a>{};</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a0a288127b23a149e02f3ef20fee36af7">   36</a></span>    <span class="keywordtype">double</span>                                     <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#aff07101bb4feed93086107d80f1c3482">reference</a> = 0, <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a0a288127b23a149e02f3ef20fee36af7">lastImpulse</a> = 0;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a9cc1b1146b0c1fbf980741813378e5d2">   37</a></span>    <span class="keywordtype">bool</span>                                       <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a9cc1b1146b0c1fbf980741813378e5d2">saturated</a> = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    [[nodiscard]] <a class="code hl_class" href="classeve_1_1Result.html">Result&lt;coupling_detail::Row&gt;</a> <a class="code hl_function" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#adcd5321106bde8208634cb76c6b93ab9">row</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a046797d8c43db771b019a0d93f00c468">   39</a></span>    [[nodiscard]] <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1physics_1_1CouplingLimits3D.html">CouplingLimits3D</a>&amp; <a class="code hl_function" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a046797d8c43db771b019a0d93f00c468">limits</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a48d0e23f2ef4862100638ea67c19f25f">gear</a> ? <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a39199af6ff20c541b85c06a9fdb84632">gearSettings</a>.<a class="code hl_variable" href="structeve_1_1physics_1_1GearCoupling3DSettings.html#ab419c7a6cf108d2f4f803a5bd677b13a">limits</a> : <a class="code hl_variable" href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ad8536a02d219a4323258898f1f017f7c">pulleySettings</a>.<a class="code hl_variable" href="structeve_1_1physics_1_1PulleyCoupling3DSettings.html#a6630bcd5f41309c0dfd1903a1a2376ca">limits</a>; }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>};</div>
+</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}  <span class="comment">// namespace eve::physics</span></div>
+<div class="ttc" id="aCoupling3DStep_8cpp_html_a83b518b6e26e316f8a35eb923db25820"><div class="ttname"><a href="Coupling3DStep_8cpp.html#a83b518b6e26e316f8a35eb923db25820">angular</a></div><div class="ttdeci">b3Vec3 angular</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DStep_8cpp_source.html#l00024">Coupling3DStep.cpp:24</a></div></div>
+<div class="ttc" id="aCoupling3D_8h_html"><div class="ttname"><a href="Coupling3D_8h.html">Coupling3D.h</a></div></div>
+<div class="ttc" id="aForceBindings_8cpp_html_aa7d568a84fe0f3179836f663743d6be2"><div class="ttname"><a href="ForceBindings_8cpp.html#aa7d568a84fe0f3179836f663743d6be2">linear</a></div><div class="ttdeci">float linear</div><div class="ttdef"><b>Definition</b> <a href="ForceBindings_8cpp_source.html#l00069">ForceBindings.cpp:69</a></div></div>
+<div class="ttc" id="aLegacyAnimationImporter_8cpp_html_a97ae8bb7c8cb75233b0a0c268f0ae619"><div class="ttname"><a href="LegacyAnimationImporter_8cpp.html#a97ae8bb7c8cb75233b0a0c268f0ae619">scale</a></div><div class="ttdeci">std::array&lt; float, 3 &gt; scale</div><div class="ttdef"><b>Definition</b> <a href="LegacyAnimationImporter_8cpp_source.html#l00018">LegacyAnimationImporter.cpp:18</a></div></div>
+<div class="ttc" id="aPhysicsHandles_8h_html"><div class="ttname"><a href="PhysicsHandles_8h.html">PhysicsHandles.h</a></div><div class="ttdoc">Process-local, generation-qualified handles owned by the physics domain.</div></div>
+<div class="ttc" id="aProjectIndexGraph_8cpp_html_a22ffc871c8cdced782372446356096a5"><div class="ttname"><a href="ProjectIndexGraph_8cpp.html#a22ffc871c8cdced782372446356096a5">body</a></div><div class="ttdeci">std::string body</div><div class="ttdef"><b>Definition</b> <a href="ProjectIndexGraph_8cpp_source.html#l00017">ProjectIndexGraph.cpp:17</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1RuntimeHandle_html"><div class="ttname"><a href="classeve_1_1RuntimeHandle.html">eve::RuntimeHandle&lt; PhysicsBodyHandleTag &gt;</a></div></div>
+<div class="ttc" id="aclasseve_1_1physics_1_1World3D_html"><div class="ttname"><a href="classeve_1_1physics_1_1World3D.html">eve::physics::World3D</a></div><div class="ttdoc">Box3D rigid-body world. Script coordinates are meters (Box3D native), unlike 2D World which uses pixe...</div><div class="ttdef"><b>Definition</b> <a href="World3D_8h_source.html#l00047">World3D.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_1_1coupling__detail_html_a23c5e3047ff4f4cf8988b74c12a03282"><div class="ttname"><a href="namespaceeve_1_1physics_1_1coupling__detail.html#a23c5e3047ff4f4cf8988b74c12a03282">eve::physics::coupling_detail::validateResponse</a></div><div class="ttdeci">Result&lt; void &gt; validateResponse(World3D &amp;world, const Row &amp;row)</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8cpp_source.html#l00036">Coupling3D.cpp:36</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1physics_html"><div class="ttname"><a href="namespaceeve_1_1physics.html">eve::physics</a></div><div class="ttdoc">Optional physics backend for vehicle mobility and body attach.</div><div class="ttdef"><b>Definition</b> <a href="Climbing_8h_source.html#l00036">Climbing.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html">eve::physics::Coupling3D::Data</a></div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00025">Coupling3DInternal.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a046797d8c43db771b019a0d93f00c468"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a046797d8c43db771b019a0d93f00c468">eve::physics::Coupling3D::Data::limits</a></div><div class="ttdeci">const CouplingLimits3D &amp; limits() const</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00039">Coupling3DInternal.h:39</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a0a288127b23a149e02f3ef20fee36af7"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a0a288127b23a149e02f3ef20fee36af7">eve::physics::Coupling3D::Data::lastImpulse</a></div><div class="ttdeci">double lastImpulse</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00036">Coupling3DInternal.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a258f2b66f122eec52b8adce007612e8c"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a258f2b66f122eec52b8adce007612e8c">eve::physics::Coupling3D::Data::world</a></div><div class="ttdeci">World3D * world</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00026">Coupling3DInternal.h:26</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a371d1d1a6e1ee1b5fdc221d449761f9e"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a371d1d1a6e1ee1b5fdc221d449761f9e">eve::physics::Coupling3D::Data::bodies</a></div><div class="ttdeci">std::array&lt; PhysicsBodyHandle, 4 &gt; bodies</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00032">Coupling3DInternal.h:32</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a39199af6ff20c541b85c06a9fdb84632"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a39199af6ff20c541b85c06a9fdb84632">eve::physics::Coupling3D::Data::gearSettings</a></div><div class="ttdeci">GearCoupling3DSettings gearSettings</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00029">Coupling3DInternal.h:29</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a3baa837918850c772681f66bd7f4c155"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a3baa837918850c772681f66bd7f4c155">eve::physics::Coupling3D::Data::sources</a></div><div class="ttdeci">std::array&lt; PhysicsJointHandle, 2 &gt; sources</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00031">Coupling3DInternal.h:31</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a48d0e23f2ef4862100638ea67c19f25f"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a48d0e23f2ef4862100638ea67c19f25f">eve::physics::Coupling3D::Data::gear</a></div><div class="ttdeci">bool gear</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00028">Coupling3DInternal.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a5bbeec9cfcf4aeb77c21c996a367792e"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a5bbeec9cfcf4aeb77c21c996a367792e">eve::physics::Coupling3D::Data::revolute</a></div><div class="ttdeci">std::array&lt; bool, 2 &gt; revolute</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00033">Coupling3DInternal.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a65e33fa32d4ac6ffeb649f58e10a809d"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a65e33fa32d4ac6ffeb649f58e10a809d">eve::physics::Coupling3D::Data::previous</a></div><div class="ttdeci">std::array&lt; float, 2 &gt; previous</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00034">Coupling3DInternal.h:34</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_a9cc1b1146b0c1fbf980741813378e5d2"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#a9cc1b1146b0c1fbf980741813378e5d2">eve::physics::Coupling3D::Data::saturated</a></div><div class="ttdeci">bool saturated</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00037">Coupling3DInternal.h:37</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_ad8536a02d219a4323258898f1f017f7c"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ad8536a02d219a4323258898f1f017f7c">eve::physics::Coupling3D::Data::pulleySettings</a></div><div class="ttdeci">PulleyCoupling3DSettings pulleySettings</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00030">Coupling3DInternal.h:30</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_ada20b8eee52e058d390cce860c66e1ba"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#ada20b8eee52e058d390cce860c66e1ba">eve::physics::Coupling3D::Data::coordinate</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; coordinate</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00035">Coupling3DInternal.h:35</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_adcd5321106bde8208634cb76c6b93ab9"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#adcd5321106bde8208634cb76c6b93ab9">eve::physics::Coupling3D::Data::row</a></div><div class="ttdeci">Result&lt; coupling_detail::Row &gt; row() const</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8cpp_source.html#l00053">Coupling3D.cpp:53</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_aec56feaad42b6c8ae3f721af61d027be"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#aec56feaad42b6c8ae3f721af61d027be">eve::physics::Coupling3D::Data::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00028">Coupling3DInternal.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1Coupling3D_1_1Data_html_aff07101bb4feed93086107d80f1c3482"><div class="ttname"><a href="structeve_1_1physics_1_1Coupling3D_1_1Data.html#aff07101bb4feed93086107d80f1c3482">eve::physics::Coupling3D::Data::reference</a></div><div class="ttdeci">double reference</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00036">Coupling3DInternal.h:36</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1CouplingLimits3D_html"><div class="ttname"><a href="structeve_1_1physics_1_1CouplingLimits3D.html">eve::physics::CouplingLimits3D</a></div><div class="ttdoc">Stabilization and force limits for an ideal mechanical transmission.</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8h_source.html#l00016">Coupling3D.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1GearCoupling3DSettings_html"><div class="ttname"><a href="structeve_1_1physics_1_1GearCoupling3DSettings.html">eve::physics::GearCoupling3DSettings</a></div><div class="ttdoc">Gear relation q1 + ratio*q2 = constant captured at creation. Mixed joints give ratio length-dependent...</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8h_source.html#l00023">Coupling3D.h:23</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1GearCoupling3DSettings_html_ab419c7a6cf108d2f4f803a5bd677b13a"><div class="ttname"><a href="structeve_1_1physics_1_1GearCoupling3DSettings.html#ab419c7a6cf108d2f4f803a5bd677b13a">eve::physics::GearCoupling3DSettings::limits</a></div><div class="ttdeci">CouplingLimits3D limits</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8h_source.html#l00025">Coupling3D.h:25</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PulleyCoupling3DSettings_html"><div class="ttname"><a href="structeve_1_1physics_1_1PulleyCoupling3DSettings.html">eve::physics::PulleyCoupling3DSettings</a></div><div class="ttdoc">Weighted rope length lA + ratio*lB; ideal taut pulley by default, optional tension-only slack rope.</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8h_source.html#l00028">Coupling3D.h:28</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1PulleyCoupling3DSettings_html_a6630bcd5f41309c0dfd1903a1a2376ca"><div class="ttname"><a href="structeve_1_1physics_1_1PulleyCoupling3DSettings.html#a6630bcd5f41309c0dfd1903a1a2376ca">eve::physics::PulleyCoupling3DSettings::limits</a></div><div class="ttdeci">CouplingLimits3D limits</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8h_source.html#l00033">Coupling3D.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html">eve::physics::coupling_detail::Row</a></div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00014">Coupling3DInternal.h:14</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_a0565cb1e385783b6035ac555ca3018bb"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a0565cb1e385783b6035ac555ca3018bb">eve::physics::coupling_detail::Row::count</a></div><div class="ttdeci">int count</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00016">Coupling3DInternal.h:16</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_a1883f97d3837fcdc3ff2490b9d0b8dd4"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a1883f97d3837fcdc3ff2490b9d0b8dd4">eve::physics::coupling_detail::Row::active</a></div><div class="ttdeci">bool active</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00020">Coupling3DInternal.h:20</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_a2be749beb9912cfccd2c648e0c6bf39b"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a2be749beb9912cfccd2c648e0c6bf39b">eve::physics::coupling_detail::Row::add</a></div><div class="ttdeci">void add(PhysicsBodyHandle body, b3Vec3 linear, b3Vec3 angular, float scale)</div><div class="ttdef"><b>Definition</b> <a href="Coupling3D_8cpp_source.html#l00027">Coupling3D.cpp:27</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_a7719dbdd956a754b19234f2a81c357e1"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a7719dbdd956a754b19234f2a81c357e1">eve::physics::coupling_detail::Row::coordinate</a></div><div class="ttdeci">std::array&lt; double, 2 &gt; coordinate</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00017">Coupling3DInternal.h:17</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_a81760e54ebde2d0215d036a0f26e2a2b"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#a81760e54ebde2d0215d036a0f26e2a2b">eve::physics::coupling_detail::Row::wrapped</a></div><div class="ttdeci">std::array&lt; float, 2 &gt; wrapped</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00018">Coupling3DInternal.h:18</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_acdc261a7e0da750142406485e802a970"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#acdc261a7e0da750142406485e802a970">eve::physics::coupling_detail::Row::error</a></div><div class="ttdeci">double error</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00019">Coupling3DInternal.h:19</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Row_html_afadbd7dd04f3d39c7c2616fddb5553f1"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Row.html#afadbd7dd04f3d39c7c2616fddb5553f1">eve::physics::coupling_detail::Row::terms</a></div><div class="ttdeci">std::array&lt; Term, 4 &gt; terms</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00015">Coupling3DInternal.h:15</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Term_html"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Term.html">eve::physics::coupling_detail::Term</a></div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00010">Coupling3DInternal.h:10</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Term_html_a02c8c0cc37527efcbac069c8ecb2f591"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a02c8c0cc37527efcbac069c8ecb2f591">eve::physics::coupling_detail::Term::angular</a></div><div class="ttdeci">b3Vec3 angular</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00012">Coupling3DInternal.h:12</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Term_html_a1b87fae255336d2626fb35c9d5e31b7b"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a1b87fae255336d2626fb35c9d5e31b7b">eve::physics::coupling_detail::Term::body</a></div><div class="ttdeci">PhysicsBodyHandle body</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00011">Coupling3DInternal.h:11</a></div></div>
+<div class="ttc" id="astructeve_1_1physics_1_1coupling__detail_1_1Term_html_a55edc5b5ca81af565564912792e4923e"><div class="ttname"><a href="structeve_1_1physics_1_1coupling__detail_1_1Term.html#a55edc5b5ca81af565564912792e4923e">eve::physics::coupling_detail::Term::linear</a></div><div class="ttdeci">b3Vec3 linear</div><div class="ttdef"><b>Definition</b> <a href="Coupling3DInternal_8h_source.html#l00012">Coupling3DInternal.h:12</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

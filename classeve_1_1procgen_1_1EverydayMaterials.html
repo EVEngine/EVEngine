@@ -1,0 +1,797 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: eve::procgen::EverydayMaterials类 参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="namespaceeve.html">eve</a></li><li class="navelem"><a class="el" href="namespaceeve_1_1procgen.html">procgen</a></li><li class="navelem"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html">EverydayMaterials</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#pub-static-methods">静态 Public 成员函数</a> &#124;
+<a href="classeve_1_1procgen_1_1EverydayMaterials-members.html">所有成员列表</a>  </div>
+  <div class="headertitle"><div class="title">eve::procgen::EverydayMaterials类 参考</div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>CPU material factory with bounded, intuitive parameters. @ownership Returned sets uniquely own their maps. Inputs are borrowed only for the call. @thread Any thread with distinct inputs; no callbacks, registry access or retained pointers.  
+ <a href="classeve_1_1procgen_1_1EverydayMaterials.html#details">更多...</a></p>
+
+<p><code>#include &lt;<a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
+静态 Public 成员函数</h2></td></tr>
+<tr class="memitem:a3b687113490b094c430affa78753f525" id="r_a3b687113490b094c430affa78753f525"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525">generate</a> (<a class="el" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33">EverydayMaterial</a> family, const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a3b687113490b094c430affa78753f525"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate six aligned maps and optical surface metadata.  <br /></td></tr>
+<tr class="separator:a3b687113490b094c430affa78753f525"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36aa6d63e6ea7c318768ad7820f967a5" id="r_a36aa6d63e6ea7c318768ad7820f967a5"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a36aa6d63e6ea7c318768ad7820f967a5">wood</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a36aa6d63e6ea7c318768ad7820f967a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate wood using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a36aa6d63e6ea7c318768ad7820f967a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa36ef4693afd06645dc7e39cc2e2dc0a" id="r_aa36ef4693afd06645dc7e39cc2e2dc0a"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#aa36ef4693afd06645dc7e39cc2e2dc0a">metal</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:aa36ef4693afd06645dc7e39cc2e2dc0a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate metal using the shared pipeline.  <br /></td></tr>
+<tr class="separator:aa36ef4693afd06645dc7e39cc2e2dc0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7274311ca76ad69902f04842b72bc432" id="r_a7274311ca76ad69902f04842b72bc432"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a7274311ca76ad69902f04842b72bc432">rubber</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a7274311ca76ad69902f04842b72bc432"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate rubber using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a7274311ca76ad69902f04842b72bc432"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae52cdf1c7dbd02b5537b239cf2cd7e1b" id="r_ae52cdf1c7dbd02b5537b239cf2cd7e1b"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#ae52cdf1c7dbd02b5537b239cf2cd7e1b">cloth</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:ae52cdf1c7dbd02b5537b239cf2cd7e1b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate cloth using the shared pipeline.  <br /></td></tr>
+<tr class="separator:ae52cdf1c7dbd02b5537b239cf2cd7e1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1f0eb11ea4be1d990b5703de231d7b74" id="r_a1f0eb11ea4be1d990b5703de231d7b74"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a1f0eb11ea4be1d990b5703de231d7b74">plastic</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a1f0eb11ea4be1d990b5703de231d7b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate plastic using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a1f0eb11ea4be1d990b5703de231d7b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b5ca4a1e2a3b786bdc487384db62d16" id="r_a6b5ca4a1e2a3b786bdc487384db62d16"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a6b5ca4a1e2a3b786bdc487384db62d16">steel</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a6b5ca4a1e2a3b786bdc487384db62d16"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate steel using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a6b5ca4a1e2a3b786bdc487384db62d16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a804c6a3141769a14d2e28026c85d7225" id="r_a804c6a3141769a14d2e28026c85d7225"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a804c6a3141769a14d2e28026c85d7225">glass</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a804c6a3141769a14d2e28026c85d7225"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate glass using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a804c6a3141769a14d2e28026c85d7225"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6913dfdc78e01272c241d3d17c31a81" id="r_af6913dfdc78e01272c241d3d17c31a81"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#af6913dfdc78e01272c241d3d17c31a81">paper</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:af6913dfdc78e01272c241d3d17c31a81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate paper using the shared pipeline.  <br /></td></tr>
+<tr class="separator:af6913dfdc78e01272c241d3d17c31a81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a699f078e0b772a8fed9bf4c63d0c7c2f" id="r_a699f078e0b772a8fed9bf4c63d0c7c2f"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a699f078e0b772a8fed9bf4c63d0c7c2f">aluminum</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a699f078e0b772a8fed9bf4c63d0c7c2f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate aluminum using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a699f078e0b772a8fed9bf4c63d0c7c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17270e58f7cd75e7f739b383da83bd79" id="r_a17270e58f7cd75e7f739b383da83bd79"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a17270e58f7cd75e7f739b383da83bd79">castIron</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:a17270e58f7cd75e7f739b383da83bd79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate castiron using the shared pipeline.  <br /></td></tr>
+<tr class="separator:a17270e58f7cd75e7f739b383da83bd79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2d7183acb1bb838964af52e618e66a8" id="r_ae2d7183acb1bb838964af52e618e66a8"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#ae2d7183acb1bb838964af52e618e66a8">cement</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:ae2d7183acb1bb838964af52e618e66a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate cement using the shared pipeline.  <br /></td></tr>
+<tr class="separator:ae2d7183acb1bb838964af52e618e66a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af30410354c1ec470212e605c237b3283" id="r_af30410354c1ec470212e605c237b3283"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#af30410354c1ec470212e605c237b3283">paint</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:af30410354c1ec470212e605c237b3283"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate paint using the shared pipeline.  <br /></td></tr>
+<tr class="separator:af30410354c1ec470212e605c237b3283"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbe3f7c177a7e0f4209b331439be7ec3" id="r_afbe3f7c177a7e0f4209b331439be7ec3"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#afbe3f7c177a7e0f4209b331439be7ec3">marble</a> (const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;<a class="el" href="McpRecipeTools_8cpp.html#adebd01bfaa3c95a7128a5a0abb545c0d">params</a>)</td></tr>
+<tr class="memdesc:afbe3f7c177a7e0f4209b331439be7ec3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generate marble using the shared pipeline.  <br /></td></tr>
+<tr class="separator:afbe3f7c177a7e0f4209b331439be7ec3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">详细描述</h2>
+<div class="textblock"><p>CPU material factory with bounded, intuitive parameters. @ownership Returned sets uniquely own their maps. Inputs are borrowed only for the call. @thread Any thread with distinct inputs; no callbacks, registry access or retained pointers. </p>
+<dl class="section remark"><dt>备注</dt><dd>Same seed and effective parameters give identical bytes on one toolchain; floating-point noise may differ across platforms. No simulation time or global RNG. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00030">30</a> 行定义.</p>
+</div><h2 class="groupheader">成员函数说明</h2>
+<a id="a699f078e0b772a8fed9bf4c63d0c7c2f" name="a699f078e0b772a8fed9bf4c63d0c7c2f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a699f078e0b772a8fed9bf4c63d0c7c2f">&#9670;&#160;</a></span>aluminum()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::aluminum </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate aluminum using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00084">84</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a17270e58f7cd75e7f739b383da83bd79" name="a17270e58f7cd75e7f739b383da83bd79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17270e58f7cd75e7f739b383da83bd79">&#9670;&#160;</a></span>castIron()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::castIron </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate castiron using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00089">89</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="ae2d7183acb1bb838964af52e618e66a8" name="ae2d7183acb1bb838964af52e618e66a8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2d7183acb1bb838964af52e618e66a8">&#9670;&#160;</a></span>cement()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::cement </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate cement using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00094">94</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="ae52cdf1c7dbd02b5537b239cf2cd7e1b" name="ae52cdf1c7dbd02b5537b239cf2cd7e1b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae52cdf1c7dbd02b5537b239cf2cd7e1b">&#9670;&#160;</a></span>cloth()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::cloth </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate cloth using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00059">59</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a3b687113490b094c430affa78753f525" name="a3b687113490b094c430affa78753f525"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3b687113490b094c430affa78753f525">&#9670;&#160;</a></span>generate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::generate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33">EverydayMaterial</a>&#160;</td>
+          <td class="paramname"><em>family</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate six aligned maps and optical surface metadata. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">family</td><td>Surface family. </td></tr>
+    <tr><td class="paramname">params</td><td>Size/seed and optional scale, detail, finish, variation, tintR/G/B. Finite controls are clamped; invalid typed/nonfinite values use defaults. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned set or InvalidArgument for unsupported family/size above 2048. @cost Expensive: linear in pixel count plus shared cavity sampling; generate once and reuse. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8cpp_source.html">EverydayMaterials.cpp</a> 第 <a class="el" href="EverydayMaterials_8cpp_source.html#l00031">31</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="ColorRamp_8cpp_source.html#l00008">eve::procgen::ColorRamp::add()</a>, <a class="el" href="TextureRecipe_8h_source.html#l00124">eve::procgen::TextureRecipeDef::albedo</a>, <a class="el" href="TextureRecipe_8h_source.html#l00110">eve::procgen::PbrParams::aoStrength</a>, <a class="el" href="MeleeHit_8cpp_source.html#l00041">b</a>, <a class="el" href="TextureRecipe_8h_source.html#l00129">eve::procgen::TextureRecipeDef::colorField</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00111">detail</a>, <a class="el" href="Package_8cpp_source.html#l00060">error</a>, <a class="el" href="Diagnostic_8cpp_source.html#l00014">eve::Diagnostic::error()</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::Failed</a>, <a class="el" href="GpuGraph_8cpp_source.html#l00007">g</a>, <a class="el" href="PbrMaterial_8cpp_source.html#l00137">eve::procgen::generatePbrSet()</a>, <a class="el" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33aaae44179fda7ddcbf8916aff53846128">eve::procgen::Glass</a>, <a class="el" href="TextureRecipe_8h_source.html#l00126">eve::procgen::TextureRecipeDef::height</a>, <a class="el" href="TextureRecipe_8h_source.html#l00123">eve::procgen::TextureRecipeDef::id</a>, <a class="el" href="UnityVegetationScene_8cpp_source.html#l00933">index</a>, <a class="el" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::InvalidArgument</a>, <a class="el" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a7fb26875c639817a59912a87be6f7386">eve::procgen::Marble</a>, <a class="el" href="TextureRecipe_8h_source.html#l00108">eve::procgen::PbrParams::metallic</a>, <a class="el" href="TextureRecipe_8h_source.html#l00109">eve::procgen::PbrParams::normalStrength</a>, <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>, <a class="el" href="TextureRecipe_8h_source.html#l00127">eve::procgen::TextureRecipeDef::pbr</a>, <a class="el" href="GtsMeshSimplifier_8cpp_source.html#l00012">r</a>, <a class="el" href="ModelRenderer_8cpp_source.html#l00158">roughness</a>, <a class="el" href="TextureRecipe_8h_source.html#l00131">eve::procgen::TextureRecipeDef::roughnessField</a>, <a class="el" href="TextureRecipe_8h_source.html#l00107">eve::procgen::PbrParams::roughnessHigh</a>, <a class="el" href="TextureRecipe_8h_source.html#l00106">eve::procgen::PbrParams::roughnessLow</a>, <a class="el" href="BattleControl_8cpp_source.html#l00325">s</a>, <a class="el" href="TerrainRasterInternal_8h_source.html#l00051">eve::procgen::raster_detail::sample()</a>, <a class="el" href="EverydayPatterns_8cpp_source.html#l00046">eve::procgen::detail::sampleEveryday()</a>, <a class="el" href="PointSet_8cpp_source.html#l00808">seed</a>, <a class="el" href="Params_8cpp_source.html#l00167">eve::procgen::Params::setBool()</a>, <a class="el" href="Params_8cpp_source.html#l00165">eve::procgen::Params::setFloat()</a>, <a class="el" href="Params_8cpp_source.html#l00149">eve::procgen::Params::setInt()</a>, <a class="el" href="Params_8cpp_source.html#l00139">eve::procgen::Params::setSeed()</a>, <a class="el" href="Params_8cpp_source.html#l00142">eve::procgen::Params::setSize()</a>, <a class="el" href="PrototypeKit_8cpp_source.html#l00110">t</a>, <a class="el" href="GraphicsVirtualGeometry_8cpp_source.html#l00046">tint</a>, <a class="el" href="Grass_8cpp_source.html#l00233">u</a>, <a class="el" href="HexRiverMesh_8cpp_source.html#l00019">v</a>, <a class="el" href="namespaceeve_1_1procgen.html#ace073379eac0f7382c74d076e9e60d33a6e4dd7ce4ea3c1d4a90edb289e22da98">eve::procgen::Wood</a>, <a class="el" href="AnimClip_8cpp_source.html#l00738">x</a> , 以及 <a class="el" href="AnimClip_8cpp_source.html#l00738">y</a>.</p>
+
+<p class="reference">被这些函数引用 <a class="el" href="PbrMaterial_8cpp_source.html#l00079">eve::procgen::PbrRecipeRegistry::registerPbrBuiltins()</a>.</p>
+
+</div>
+</div>
+<a id="a804c6a3141769a14d2e28026c85d7225" name="a804c6a3141769a14d2e28026c85d7225"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a804c6a3141769a14d2e28026c85d7225">&#9670;&#160;</a></span>glass()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::glass </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate glass using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00074">74</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="afbe3f7c177a7e0f4209b331439be7ec3" name="afbe3f7c177a7e0f4209b331439be7ec3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afbe3f7c177a7e0f4209b331439be7ec3">&#9670;&#160;</a></span>marble()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::marble </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate marble using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00104">104</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="aa36ef4693afd06645dc7e39cc2e2dc0a" name="aa36ef4693afd06645dc7e39cc2e2dc0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa36ef4693afd06645dc7e39cc2e2dc0a">&#9670;&#160;</a></span>metal()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::metal </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate metal using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00049">49</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="af30410354c1ec470212e605c237b3283" name="af30410354c1ec470212e605c237b3283"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af30410354c1ec470212e605c237b3283">&#9670;&#160;</a></span>paint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::paint </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate paint using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00099">99</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="af6913dfdc78e01272c241d3d17c31a81" name="af6913dfdc78e01272c241d3d17c31a81"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af6913dfdc78e01272c241d3d17c31a81">&#9670;&#160;</a></span>paper()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::paper </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate paper using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00079">79</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a1f0eb11ea4be1d990b5703de231d7b74" name="a1f0eb11ea4be1d990b5703de231d7b74"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1f0eb11ea4be1d990b5703de231d7b74">&#9670;&#160;</a></span>plastic()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::plastic </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate plastic using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00064">64</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a7274311ca76ad69902f04842b72bc432" name="a7274311ca76ad69902f04842b72bc432"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7274311ca76ad69902f04842b72bc432">&#9670;&#160;</a></span>rubber()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::rubber </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate rubber using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00054">54</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a6b5ca4a1e2a3b786bdc487384db62d16" name="a6b5ca4a1e2a3b786bdc487384db62d16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b5ca4a1e2a3b786bdc487384db62d16">&#9670;&#160;</a></span>steel()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::steel </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate steel using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00069">69</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<a id="a36aa6d63e6ea7c318768ad7820f967a5" name="a36aa6d63e6ea7c318768ad7820f967a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36aa6d63e6ea7c318768ad7820f967a5">&#9670;&#160;</a></span>wood()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static <a class="el" href="classeve_1_1Result.html">eve::Result</a>&lt; std::unique_ptr&lt; <a class="el" href="structeve_1_1procgen_1_1PbrTextureSet.html">PbrTextureSet</a> &gt; &gt; eve::procgen::EverydayMaterials::wood </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classeve_1_1procgen_1_1Params.html">Params</a> &amp;&#160;</td>
+          <td class="paramname"><em>params</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Generate wood using the shared pipeline. </p>
+<dl class="params"><dt>参数</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">params</td><td>See <a class="el" href="classeve_1_1procgen_1_1EverydayMaterials.html#a3b687113490b094c430affa78753f525" title="Generate six aligned maps and optical surface metadata.">generate()</a>. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>返回</dt><dd>Owned maps or structured diagnostic. @cost Expensive per pixel; cache the result. </dd></dl>
+
+<p class="definition">在文件 <a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a> 第 <a class="el" href="EverydayMaterials_8h_source.html#l00044">44</a> 行定义.</p>
+
+<p class="reference">引用了 <a class="el" href="McpRecipeTools_8cpp_source.html#l00033">params</a>.</p>
+
+</div>
+</div>
+<hr/>该类的文档由以下文件生成:<ul>
+<li>src/modules/procgen/texture/<a class="el" href="EverydayMaterials_8h_source.html">EverydayMaterials.h</a></li>
+<li>src/modules/procgen/texture/<a class="el" href="EverydayMaterials_8cpp_source.html">EverydayMaterials.cpp</a></li>
+</ul>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

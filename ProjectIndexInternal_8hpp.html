@@ -1,0 +1,240 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/engine/devtools/ProjectIndexInternal.hpp 文件参考</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_2052808828190f934b76e979ee65af8a.html">engine</a></li><li class="navelem"><a class="el" href="dir_3a7b6b76fa35de02dad03b6cb9ae0de0.html">devtools</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">类</a> &#124;
+<a href="#namespaces">命名空间</a> &#124;
+<a href="#typedef-members">类型定义</a> &#124;
+<a href="#func-members">函数</a>  </div>
+  <div class="headertitle"><div class="title">ProjectIndexInternal.hpp 文件参考</div></div>
+</div><!--header-->
+<div class="contents">
+<div class="textblock"><code>#include &lt;Poco/Dynamic/Var.h&gt;</code><br />
+<code>#include &lt;Poco/JSON/Object.h&gt;</code><br />
+<code>#include &lt;filesystem&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;string&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
+<code>#include &quot;<a class="el" href="ScriptStructure_8hpp_source.html">common/ScriptStructure.hpp</a>&quot;</code><br />
+</div>
+<p><a href="ProjectIndexInternal_8hpp_source.html">浏览源代码.</a></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+类</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1project__index_1_1Function.html">eve::dev::project_index::Function</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1project__index_1_1File.html">eve::dev::project_index::File</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structeve_1_1dev_1_1project__index_1_1Snapshot.html">eve::dev::project_index::Snapshot</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+命名空间</h2></td></tr>
+<tr class="memitem:namespaceeve" id="r_namespaceeve"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve.html">eve</a></td></tr>
+<tr class="memdesc:namespaceeve"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build metadata (engine git commit, build time, third-party version). <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dev" id="r_namespaceeve_1_1dev"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev.html">eve::dev</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespaceeve_1_1dev_1_1project__index" id="r_namespaceeve_1_1dev_1_1project__index"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html">eve::dev::project_index</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
+类型定义</h2></td></tr>
+<tr class="memitem:abd8c3a6db23f974baae29fd3322c90bb" id="r_abd8c3a6db23f974baae29fd3322c90bb"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#abd8c3a6db23f974baae29fd3322c90bb">eve::dev::project_index::Object</a> = Poco::JSON::Object</td></tr>
+<tr class="separator:abd8c3a6db23f974baae29fd3322c90bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad171fe3472c054e364db4a641b0e2347" id="r_ad171fe3472c054e364db4a641b0e2347"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#ad171fe3472c054e364db4a641b0e2347">eve::dev::project_index::Files</a> = std::map&lt; std::string, std::shared_ptr&lt; const <a class="el" href="structeve_1_1dev_1_1project__index_1_1File.html">File</a> &gt; &gt;</td></tr>
+<tr class="separator:ad171fe3472c054e364db4a641b0e2347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+函数</h2></td></tr>
+<tr class="memitem:a85c393e3a73ae84d9517649b301ee959" id="r_a85c393e3a73ae84d9517649b301ee959"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#a85c393e3a73ae84d9517649b301ee959">eve::dev::project_index::digest</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:a85c393e3a73ae84d9517649b301ee959"><td class="mdescLeft">&#160;</td><td class="mdescRight">SHA-256 evidence digest; not a runtime frame or binary identity.  <br /></td></tr>
+<tr class="separator:a85c393e3a73ae84d9517649b301ee959"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ae6ab1f33b75ae9907d34ce23cd1837" id="r_a3ae6ab1f33b75ae9907d34ce23cd1837"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#a3ae6ab1f33b75ae9907d34ce23cd1837">eve::dev::project_index::pathText</a> (const std::filesystem::path &amp;<a class="el" href="PlayHost_8cpp.html#a4d455efceee21e97d8e21ee40e9b4a20">path</a>)</td></tr>
+<tr class="memdesc:a3ae6ab1f33b75ae9907d34ce23cd1837"><td class="mdescLeft">&#160;</td><td class="mdescRight">UTF-8 source path, including Windows project names.  <br /></td></tr>
+<tr class="separator:a3ae6ab1f33b75ae9907d34ce23cd1837"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0356ede8702273109f723fb81257104f" id="r_a0356ede8702273109f723fb81257104f"><td class="memItemLeft" align="right" valign="top">std::filesystem::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#a0356ede8702273109f723fb81257104f">eve::dev::project_index::sourcePath</a> (const std::string &amp;<a class="el" href="ScriptStructure_8cpp.html#a23c058547fbc73b5659191844a9f258c">text</a>)</td></tr>
+<tr class="memdesc:a0356ede8702273109f723fb81257104f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a native path from UTF-8 source/tool arguments.  <br /></td></tr>
+<tr class="separator:a0356ede8702273109f723fb81257104f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af3a807650f5814ed325bad850a877ffc" id="r_af3a807650f5814ed325bad850a877ffc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#ad171fe3472c054e364db4a641b0e2347">Files</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#af3a807650f5814ed325bad850a877ffc">eve::dev::project_index::scan</a> (const std::filesystem::path &amp;<a class="el" href="AnimSmr_8cpp.html#a3b62f50202abd219e165f5a333d5c156">root</a>, const <a class="el" href="namespaceeve_1_1dev_1_1project__index.html#ad171fe3472c054e364db4a641b0e2347">Files</a> &amp;<a class="el" href="OceanSprayBindings_8cpp.html#af2753995bbdcb48d470f2b1361196e6b">previous</a>, Object::Ptr <a class="el" href="OnnxGpgpu_8cpp.html#a880e0b3e657e02fc555ef2b0da783a2b">stats</a>)</td></tr>
+<tr class="memdesc:af3a807650f5814ed325bad850a877ffc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bounded filesystem scan. Parses only changed files; symlinks are excluded.  <br /></td></tr>
+<tr class="separator:af3a807650f5814ed325bad850a877ffc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad2f5d7516b3f0fedeec572f4f90e232a" id="r_ad2f5d7516b3f0fedeec572f4f90e232a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structeve_1_1dev_1_1project__index_1_1Snapshot.html">Snapshot</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#ad2f5d7516b3f0fedeec572f4f90e232a">eve::dev::project_index::project</a> (<a class="el" href="namespaceeve_1_1dev_1_1project__index.html#ad171fe3472c054e364db4a641b0e2347">Files</a> files, Object::Ptr <a class="el" href="OnnxGpgpu_8cpp.html#a880e0b3e657e02fc555ef2b0da783a2b">stats</a>, std::string defaultProjectId)</td></tr>
+<tr class="memdesc:ad2f5d7516b3f0fedeec572f4f90e232a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Build a candidate evidence graph without touching the published snapshot.  <br /></td></tr>
+<tr class="separator:ad2f5d7516b3f0fedeec572f4f90e232a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a86e6c093432e4a6582d81f5003215a" id="r_a6a86e6c093432e4a6582d81f5003215a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#a6a86e6c093432e4a6582d81f5003215a">eve::dev::project_index::automaticGraph</a> (<a class="el" href="structeve_1_1dev_1_1project__index_1_1Snapshot.html">Snapshot</a> &amp;<a class="el" href="McpProjectIndexTools_8cpp.html#ad48627cd289655d382112b727e253919">snapshot</a>, std::string &amp;<a class="el" href="TerrainGenerationSession_8cpp.html#aad880fc4455c253781e8968f2239d56f">version</a>)</td></tr>
+<tr class="memdesc:a6a86e6c093432e4a6582d81f5003215a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Project typed compiler syntax through generated engine contracts; no project declarations required.  <br /></td></tr>
+<tr class="separator:a6a86e6c093432e4a6582d81f5003215a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af8425fa3c2fadeb95dfd83c7c1755d03" id="r_af8425fa3c2fadeb95dfd83c7c1755d03"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceeve_1_1dev_1_1project__index.html#af8425fa3c2fadeb95dfd83c7c1755d03">eve::dev::project_index::requiredString</a> (Object::Ptr <a class="el" href="TileConfig_8cpp.html#aafc558973cd5f224af88e41f9a5f34d0">object</a>, const std::string &amp;field)</td></tr>
+<tr class="memdesc:af8425fa3c2fadeb95dfd83c7c1755d03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Strict source string fields; invalid manifest shapes throw a diagnostic exception.  <br /></td></tr>
+<tr class="separator:af8425fa3c2fadeb95dfd83c7c1755d03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+</div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>

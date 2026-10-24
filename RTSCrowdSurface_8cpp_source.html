@@ -1,0 +1,292 @@
+<!--
+  EVEngine static-docs header.
+  Unlike the doxygen-awesome sidebar (which builds the tree with JavaScript),
+  this layout ships a plain-HTML sidebar rendered by the docs/CMakeLists.txt
+  generator. It works with or without JavaScript and at any window width.
+  The EV_SIDEBAR placeholder comment inside the <nav> element below is
+  replaced with the generated navigation (do NOT repeat that placeholder text
+  in other comments).
+-->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.9.8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>EVEngine: src/modules/rts/RTSCrowdSurface.cpp 源文件</title>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+  $(document).ready(function() { init_search(); });
+/* @license-end */
+</script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+<link href="doxygen-awesome.css" rel="stylesheet" type="text/css"/>
+<link href="evengine-docs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="doxygen-awesome-darkmode-toggle.js"></script>
+<script type="text/javascript" src="doxygen-awesome-fragment-copy-button.js"></script>
+<script type="text/javascript" src="doxygen-awesome-paragraph-link.js"></script>
+<script type="text/javascript">
+    DoxygenAwesomeDarkModeToggle.init()
+    DoxygenAwesomeFragmentCopyButton.init()
+    DoxygenAwesomeParagraphLink.init()
+</script>
+</head>
+<body>
+<div id="ev-layout">
+  <aside id="ev-sidebar">
+    <div id="ev-brand"><a href="index.html">EVEngine</a><span id="ev-version">0.6.0</span></div>
+            <div id="MSearchBox" class="MSearchBoxInactive">
+        <span class="left">
+          <span id="MSearchSelect"                onmouseover="return searchBox.OnSearchSelectShow()"                onmouseout="return searchBox.OnSearchSelectHide()">&#160;</span>
+          <input type="text" id="MSearchField" value="" placeholder="搜索" accesskey="S"
+               onfocus="searchBox.OnSearchFieldFocus(true)" 
+               onblur="searchBox.OnSearchFieldFocus(false)" 
+               onkeyup="searchBox.OnSearchFieldChange(event)"/>
+          </span><span class="right">
+            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.svg" alt=""/></a>
+          </span>
+        </div>
+    <nav id="ev-nav">
+      <a href="index.html">首页</a>
+<a href="usr_guide.html">用户指南</a>
+<a href="usr_guide_en.html">English user guide</a>
+<a href="dev_guide_en.html">English developer guide</a>
+<details open><summary>模块使用手册</summary>
+<details><summary><a href="usr_env.html">运行环境与输入</a></summary>
+<a href="mod_window.html">窗口模块</a>
+<a href="mod_event.html">事件模块</a>
+<a href="mod_rx.html">响应式编程模块</a>
+<a href="mod_timer.html">计时器模块</a>
+<a href="mod_system.html">mod_system</a>
+<a href="mod_keyboard.html">键盘模块</a>
+<a href="mod_mouse.html">鼠标模块</a>
+<a href="mod_touch.html">触摸模块</a>
+<a href="mod_joystick.html">手柄模块</a>
+</details>
+<details><summary><a href="usr_assets.html">资源与 I/O</a></summary>
+<a href="mod_filesystem.html">文件系统与热重载模块</a>
+<a href="mod_data.html">数据模块</a>
+<a href="mod_image.html">图像模块</a>
+<a href="mod_font.html">字体模块</a>
+<a href="mod_i18n.html">本地化模块</a>
+<a href="mod_sound.html">声音数据模块</a>
+<a href="mod_audio.html">音频播放模块</a>
+<a href="mod_model3d.html">3D 模型模块</a>
+<a href="mod_network.html">网络模块</a>
+</details>
+<details><summary><a href="usr_gameplay.html">游戏玩法</a></summary>
+<a href="mod_entity.html">脚本 ECS模块</a>
+<a href="mod_physics.html">物理模块（Box2D + Box3D + 布料 + 流体）</a>
+<a href="mod_map.html">Tilemap模块</a>
+<a href="mod_particles.html">粒子模块</a>
+<a href="mod_animation.html">动画模块</a>
+<a href="mod_climbing.html">攀爬与跑酷模块</a>
+<a href="mod_rpg.html">RPG 系统模块</a>
+<a href="mod_inventory.html">背包 / 物品栏模块</a>
+<a href="mod_cardgame.html">卡牌游戏工具模块</a>
+<a href="mod_building.html">建筑放置模块</a>
+<a href="mod_procgen.html">程序化生成模块</a>
+</details>
+<details><summary><a href="usr_scene.html">表现与场景</a></summary>
+<a href="mod_graphics.html">图形渲染模块</a>
+<a href="mod_voxel.html">体素（Voxel）</a>
+<a href="mod_spritestack.html">Sprite-Stacking 伪 3D</a>
+<a href="mod_daynight.html">昼夜循环模块</a>
+<a href="mod_weather.html">天气模块</a>
+<a href="mod_ui.html">声明式 UI模块</a>
+<a href="mod_scene.html">声明式场景树模块</a>
+</details>
+<details><summary><a href="usr_advanced.html">高级能力</a></summary>
+<a href="mod_math.html">数学模块</a>
+<a href="mod_spatial.html">空间索引模块</a>
+<a href="mod_editor.html">编辑器构件模块</a>
+<a href="mod_ik.html">逆运动学模块</a>
+<a href="mod_gpgpu.html">GPU 计算模块</a>
+<a href="mod_tensor.html">张量模块</a>
+<a href="mod_thread.html">线程与异步模块</a>
+<a href="mod_plugins.html">原生插件模块</a>
+<a href="mod_demo.html">内置演示模块</a>
+</details>
+</details>
+<a href="usr_save.html">跨模块存档</a>
+<a href="usr_trimming.html">按需裁剪模块</a>
+<a href="usr_conventions.html">API 使用约定</a>
+<div class="ev-nav-section">C++ API 参考</div>
+<a href="namespaces.html">命名空间</a>
+<a href="concepts.html">概念</a>
+<a href="annotated.html">类</a>
+<a href="files.html">文件</a>
+<a href="pages.html">全部页面</a>
+    </nav>
+    <div id="ev-sidebar-note">由 Doxygen 生成 · 在线版：<a href="https://evengine.github.io/EVEngine/">evengine.github.io</a></div>
+  </aside>
+  <main id="ev-content">
+    <div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<!-- 制作者 Doxygen 1.9.8 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">载入中...</div>
+<div class="SRStatus" id="Searching">搜索中...</div>
+<div class="SRStatus" id="NoMatches">未找到</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_68267d1309a1af8e8297ef4c3efbcdba.html">src</a></li><li class="navelem"><a class="el" href="dir_ddb4d7e95cc2d6c8e1ade10a20d7247d.html">modules</a></li><li class="navelem"><a class="el" href="dir_b34b76c5127db2af25782628231a25c8.html">rts</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div class="header">
+  <div class="headertitle"><div class="title">RTSCrowdSurface.cpp</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="RTSCrowdSurface_8cpp.html">浏览该文件的文档.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#include &lt;cmath&gt;</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &quot;<a class="code" href="Pathfinder_8h.html">map/Pathfinder.h</a>&quot;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="RTSCrowdSurfaceInternal_8h.html">rts/RTSCrowdSurfaceInternal.h</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="RTSSystems_8h.html">rts/RTSSystems.h</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespaceeve_1_1rts.html">eve::rts</a> {</div>
+<div class="foldopen" id="foldopen00007" data-start="{" data-end="}">
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno"><a class="line" href="namespaceeve_1_1rts.html#a5c4d0d09bc93e3b5ed0a400b97329f44">    7</a></span><a class="code hl_class" href="classeve_1_1Result.html">Result&lt;crowd::NavigationSurfaceSnapshot&gt;</a> <a class="code hl_function" href="namespaceeve_1_1rts.html#a5c4d0d09bc93e3b5ed0a400b97329f44">projectCrowdSurface</a>(<span class="keyword">const</span> <a class="code hl_class" href="classeve_1_1map_1_1NavigationGridSnapshot.html">map::NavigationGridSnapshot</a>&amp; <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>,</div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span>                                                             <a class="code hl_struct" href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">crowd::NavigationSurfaceStamp</a>      <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>,</div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span>                                                             <span class="keyword">const</span> <a class="code hl_struct" href="structeve_1_1rts_1_1NavigationGrid.html">NavigationGrid</a>&amp;              geometry,</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span>                                                             std::int64_t                       maxChecks) <span class="keyword">try</span> {</div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span>    <span class="keyword">const</span> <span class="keyword">auto</span> fail = [](<a class="code hl_enumeration" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">DiagnosticCode</a> <a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <span class="keyword">const</span> <span class="keywordtype">char</span>* <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>) {</div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span>        <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;crowd::NavigationSurfaceSnapshot&gt;::failure</a>(</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span>            <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_variable" href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a>, <a class="code hl_variable" href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a>, <span class="stringliteral">&quot;crowdSurfaceAdapter&quot;</span>));</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>    };</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span>    <span class="keywordflow">if</span> (!<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.valid() || <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.topology() == <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#aaa7be652d0695e37cc2f47fd1c56b88fa92640bd72988395b326c888614f8937a">map::NavigationTopology::Hex</a>)</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;Crowd adapter requires a captured orthogonal map grid&quot;</span>);</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>    <span class="keywordflow">if</span> (!std::isfinite(geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a>) || geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a> &lt;= 0.f || !std::isfinite(geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a443b2576a02c2289e758b8bcc092ac0d">originX</a>) ||</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>        !std::isfinite(geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#ad0d4b2a1f4d694b46eb4b03d5b58199b">originY</a>) || !std::isfinite(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>.clearanceRadius) || <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>.clearanceRadius &lt; 0.f ||</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        maxChecks &lt; 0)</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">DiagnosticCode::InvalidArgument</a>, <span class="stringliteral">&quot;Invalid adapter geometry or work budget&quot;</span>);</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>    <a class="code hl_struct" href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html">crowd::NavigationSurfaceSnapshot</a> <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.<a class="code hl_variable" href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html#a065bd52770671ae06520b639e4935bb1">stamp</a>                = <a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width                = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.width();</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.height               = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.height();</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.cellSize             = geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a>;</div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.originX              = geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a443b2576a02c2289e758b8bcc092ac0d">originX</a> - geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a> * 0.5f;</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.originY              = geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#ad0d4b2a1f4d694b46eb4b03d5b58199b">originY</a> - geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a> * 0.5f;</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.diagonal             = <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.topology() == <a class="code hl_enumvalue" href="namespaceeve_1_1map.html#aaa7be652d0695e37cc2f47fd1c56b88fa633b40e84b2ffd7e3a37d23292602adf">map::NavigationTopology::Ortho8</a>;</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.destinationEntryCost = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.terrainCosts.assign(<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.costs().begin(), <a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.costs().end());</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>    <span class="keywordflow">for</span> (std::size_t <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = 0; <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> &lt; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.terrainCosts.size(); ++<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>) {</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keyword">auto</span>&amp; <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> = <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.terrainCosts[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>];</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">if</span> (<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> &lt;= 0.f)</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>            <a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> = 0.f;</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>        <span class="keywordflow">else</span> <span class="keywordflow">if</span> (<a class="code hl_variable" href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a> &lt; 1.f || (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.enterMasks()[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] &amp; 15) != 15 || (<a class="code hl_variable" href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a>.exitMasks()[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] &amp; 15) != 15)</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>            <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>,</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>                        <span class="stringliteral">&quot;Adapter does not support fractional costs or directional gates&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>    }</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.navigationCosts = <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.terrainCosts;</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>    = double(<a class="code hl_variable" href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a>.clearanceRadius) / geometry.<a class="code hl_variable" href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">cellSize</a>;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::int64_t checks    = 0;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> &lt; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.height; ++<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a>)</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> = 0; <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> &lt; <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width; ++<a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a> = <span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> * <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width + <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.navigationCosts[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] == 0.f || <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> == 0.0) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a> + 0.5, <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> = <a class="code hl_variable" href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a> + 0.5;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            <span class="keywordflow">if</span> (<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> || <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> || <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width - <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> || <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.height - <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.navigationCosts[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] = 0.f;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>                <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            }</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> x0      = int(std::clamp(std::floor(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>), 0.0, <span class="keywordtype">double</span>(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width - 1)));</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> x1      = int(std::clamp(std::floor(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>), 0.0, <span class="keywordtype">double</span>(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width - 1)));</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> y0      = int(std::clamp(std::floor(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>), 0.0, <span class="keywordtype">double</span>(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.height - 1)));</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">const</span> <span class="keywordtype">int</span> y1      = int(std::clamp(std::floor(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> + <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>), 0.0, <span class="keywordtype">double</span>(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.height - 1)));</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            <span class="keywordtype">bool</span>      blocked = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a> = y0; <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a> &lt;= y1 &amp;&amp; !blocked; ++<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>)</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                <span class="keywordflow">for</span> (<span class="keywordtype">int</span> <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a> = x0; <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a> &lt;= x1; ++<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                    <span class="keywordflow">if</span> (checks == maxChecks)</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                        <span class="keywordflow">return</span> fail(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">DiagnosticCode::PreconditionViolation</a>, <span class="stringliteral">&quot;Clearance work budget exhausted&quot;</span>);</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    ++checks;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.terrainCosts[<span class="keyword">static_cast&lt;</span>std::size_t<span class="keyword">&gt;</span>(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a> * <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.width + <a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>)] != 0.f) <span class="keywordflow">continue</span>;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> = <a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a> - std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a>, <span class="keywordtype">double</span>(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a>), <span class="keywordtype">double</span>(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a> + 1));</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                    <span class="keyword">const</span> <span class="keywordtype">double</span> <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> = <a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a> - std::clamp(<a class="code hl_variable" href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a>, <span class="keywordtype">double</span>(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a>), <span class="keywordtype">double</span>(<a class="code hl_variable" href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a> + 1));</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                    <span class="keywordflow">if</span> (<a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> * <a class="code hl_variable" href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a> + <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> * <a class="code hl_variable" href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a> &lt; <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a> * <a class="code hl_variable" href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a>) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                        blocked = <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                        <span class="keywordflow">break</span>;</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                    }</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                }</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordflow">if</span> (blocked) <a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>.navigationCosts[<a class="code hl_variable" href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a>] = 0.f;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">Result&lt;crowd::NavigationSurfaceSnapshot&gt;::success</a>(std::move(<a class="code hl_variable" href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a>));</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>} <span class="keywordflow">catch</span> (<span class="keyword">const</span> std::exception&amp; <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keywordflow">return</span> <a class="code hl_function" href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">Result&lt;crowd::NavigationSurfaceSnapshot&gt;::failure</a>(</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        <a class="code hl_function" href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">Diagnostic::error</a>(<a class="code hl_enumvalue" href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">DiagnosticCode::Failed</a>, <a class="code hl_variable" href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a>.what(), <span class="stringliteral">&quot;crowdSurfaceAdapter&quot;</span>));</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>}</div>
+</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>}  <span class="comment">// namespace eve::rts</span></div>
+<div class="ttc" id="aAnimClip_8cpp_html_aa4f0d3eebc3c443f9be81bf48561a217"><div class="ttname"><a href="AnimClip_8cpp.html#aa4f0d3eebc3c443f9be81bf48561a217">y</a></div><div class="ttdeci">float y</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aAnimClip_8cpp_html_ad0da36b2558901e21e7a30f6c227a45e"><div class="ttname"><a href="AnimClip_8cpp.html#ad0da36b2558901e21e7a30f6c227a45e">x</a></div><div class="ttdeci">float x</div><div class="ttdef"><b>Definition</b> <a href="AnimClip_8cpp_source.html#l00738">AnimClip.cpp:738</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6067f2d853b5521ca0162bd2770da5cf"><div class="ttname"><a href="CardTypes_8cpp.html#a6067f2d853b5521ca0162bd2770da5cf">cx</a></div><div class="ttdeci">float cx</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00033">CardTypes.cpp:33</a></div></div>
+<div class="ttc" id="aCardTypes_8cpp_html_a6ac0a8c09e91acc33bc9b451a3d4bcab"><div class="ttname"><a href="CardTypes_8cpp.html#a6ac0a8c09e91acc33bc9b451a3d4bcab">cy</a></div><div class="ttdeci">float cy</div><div class="ttdef"><b>Definition</b> <a href="CardTypes_8cpp_source.html#l00034">CardTypes.cpp:34</a></div></div>
+<div class="ttc" id="aDialoguePayment_8cpp_html_a83ad5ebb4500167c45453f141add02ad"><div class="ttname"><a href="DialoguePayment_8cpp.html#a83ad5ebb4500167c45453f141add02ad">cost</a></div><div class="ttdeci">eve::resource::CostSpec cost</div><div class="ttdef"><b>Definition</b> <a href="DialoguePayment_8cpp_source.html#l00028">DialoguePayment.cpp:28</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_a36bd74109f547f7f8198faf5a12d2879"><div class="ttname"><a href="GltfAnimation_8cpp.html#a36bd74109f547f7f8198faf5a12d2879">message</a></div><div class="ttdeci">std::string message</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00017">GltfAnimation.cpp:17</a></div></div>
+<div class="ttc" id="aGltfAnimation_8cpp_html_ae9304e5e48b5f29bd2351ffc45b2b11a"><div class="ttname"><a href="GltfAnimation_8cpp.html#ae9304e5e48b5f29bd2351ffc45b2b11a">code</a></div><div class="ttdeci">DiagnosticCode code</div><div class="ttdef"><b>Definition</b> <a href="GltfAnimation_8cpp_source.html#l00016">GltfAnimation.cpp:16</a></div></div>
+<div class="ttc" id="aMcpInputTools_8cpp_html_a1b012debbb0243926fff95a55e397b44"><div class="ttname"><a href="McpInputTools_8cpp.html#a1b012debbb0243926fff95a55e397b44">result</a></div><div class="ttdeci">Poco::JSON::Object::Ptr result</div><div class="ttdef"><b>Definition</b> <a href="McpInputTools_8cpp_source.html#l00052">McpInputTools.cpp:52</a></div></div>
+<div class="ttc" id="aOceanSpectrumFrame_8cpp_html_a2641fce3670ebce2e79db7c95db36fea"><div class="ttname"><a href="OceanSpectrumFrame_8cpp.html#a2641fce3670ebce2e79db7c95db36fea">dx</a></div><div class="ttdeci">glm::dvec3 dx</div><div class="ttdef"><b>Definition</b> <a href="OceanSpectrumFrame_8cpp_source.html#l00025">OceanSpectrumFrame.cpp:25</a></div></div>
+<div class="ttc" id="aPackage_8cpp_html_a8c94119e5bd6fbde0680ef83f01c9685"><div class="ttname"><a href="Package_8cpp.html#a8c94119e5bd6fbde0680ef83f01c9685">error</a></div><div class="ttdeci">std::string error</div><div class="ttdef"><b>Definition</b> <a href="Package_8cpp_source.html#l00060">Package.cpp:60</a></div></div>
+<div class="ttc" id="aPathfinder_8h_html"><div class="ttname"><a href="Pathfinder_8h.html">Pathfinder.h</a></div></div>
+<div class="ttc" id="aPlacementSystem_8cpp_html_a5050a760c11da521cd4aee6336f6529f"><div class="ttname"><a href="PlacementSystem_8cpp.html#a5050a760c11da521cd4aee6336f6529f">radius</a></div><div class="ttdeci">float radius</div><div class="ttdef"><b>Definition</b> <a href="PlacementSystem_8cpp_source.html#l00042">PlacementSystem.cpp:42</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_a40083d5d71ff675499a8d392ff75f401"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#a40083d5d71ff675499a8d392ff75f401">wx</a></div><div class="ttdeci">float wx</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00178">PortableWorldSnapshot.cpp:178</a></div></div>
+<div class="ttc" id="aPortableWorldSnapshot_8cpp_html_ae05e525eb10e278f769ff1bc049eec10"><div class="ttname"><a href="PortableWorldSnapshot_8cpp.html#ae05e525eb10e278f769ff1bc049eec10">wy</a></div><div class="ttdeci">float wy</div><div class="ttdef"><b>Definition</b> <a href="PortableWorldSnapshot_8cpp_source.html#l00178">PortableWorldSnapshot.cpp:178</a></div></div>
+<div class="ttc" id="aRTSCrowdSurfaceInternal_8h_html"><div class="ttname"><a href="RTSCrowdSurfaceInternal_8h.html">RTSCrowdSurfaceInternal.h</a></div></div>
+<div class="ttc" id="aRTSSystems_8h_html"><div class="ttname"><a href="RTSSystems_8h.html">RTSSystems.h</a></div><div class="ttdoc">Deterministic phase-one RTS systems and their ECS contracts.</div></div>
+<div class="ttc" id="aScriptStructure_8cpp_html_aa035d90db0e334b2f2f53e55a79e621f"><div class="ttname"><a href="ScriptStructure_8cpp.html#aa035d90db0e334b2f2f53e55a79e621f">source</a></div><div class="ttdeci">std::string_view source</div><div class="ttdef"><b>Definition</b> <a href="ScriptStructure_8cpp_source.html#l00020">ScriptStructure.cpp:20</a></div></div>
+<div class="ttc" id="aShadow_8cpp_html_a8f461b6142ce8725218813abb23b06a3"><div class="ttname"><a href="Shadow_8cpp.html#a8f461b6142ce8725218813abb23b06a3">dy</a></div><div class="ttdeci">float dy</div><div class="ttdef"><b>Definition</b> <a href="Shadow_8cpp_source.html#l00151">Shadow.cpp:151</a></div></div>
+<div class="ttc" id="aTerrainGenerationSession_8cpp_html_ab9d19fcc0b6e8fc6fac3aba346526ceb"><div class="ttname"><a href="TerrainGenerationSession_8cpp.html#ab9d19fcc0b6e8fc6fac3aba346526ceb">stamp</a></div><div class="ttdeci">Heightmap stamp</div><div class="ttdef"><b>Definition</b> <a href="TerrainGenerationSession_8cpp_source.html#l00117">TerrainGenerationSession.cpp:117</a></div></div>
+<div class="ttc" id="aUnityVegetationScene_8cpp_html_aafd95f8c7a99b9189ede7cdf0871ebe8"><div class="ttname"><a href="UnityVegetationScene_8cpp.html#aafd95f8c7a99b9189ede7cdf0871ebe8">index</a></div><div class="ttdeci">uint32_t index</div><div class="ttdef"><b>Definition</b> <a href="UnityVegetationScene_8cpp_source.html#l00933">UnityVegetationScene.cpp:933</a></div></div>
+<div class="ttc" id="aclasseve_1_1Diagnostic_html_a416c54d38b93dae0b4006c561c71bbb7"><div class="ttname"><a href="classeve_1_1Diagnostic.html#a416c54d38b93dae0b4006c561c71bbb7">eve::Diagnostic::error</a></div><div class="ttdeci">static Diagnostic error(DiagnosticCode code, std::string message, std::string path={})</div><div class="ttdoc">Construct an error diagnostic with the standard error severity.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8cpp_source.html#l00014">Diagnostic.cpp:14</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html"><div class="ttname"><a href="classeve_1_1Result.html">eve::Result</a></div><div class="ttdoc">Move-only operation result carrying either a value or Status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00175">Result.h:175</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_a10668d27f9f97c9808e0099e0248816b"><div class="ttname"><a href="classeve_1_1Result.html#a10668d27f9f97c9808e0099e0248816b">eve::Result::success</a></div><div class="ttdeci">static Result success(T value)</div><div class="ttdoc">Construct a successful result owning value.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00184">Result.h:184</a></div></div>
+<div class="ttc" id="aclasseve_1_1Result_html_af1a297022e9a6a615433003fe6466358"><div class="ttname"><a href="classeve_1_1Result.html#af1a297022e9a6a615433003fe6466358">eve::Result::failure</a></div><div class="ttdeci">static Result failure(Status status)</div><div class="ttdoc">Construct a failed result from a structured status.</div><div class="ttdef"><b>Definition</b> <a href="Result_8h_source.html#l00195">Result.h:195</a></div></div>
+<div class="ttc" id="aclasseve_1_1map_1_1NavigationGridSnapshot_html"><div class="ttname"><a href="classeve_1_1map_1_1NavigationGridSnapshot.html">eve::map::NavigationGridSnapshot</a></div><div class="ttdoc">Immutable owning capture; independent of Pathfinder and TileLayer lifetimes.</div><div class="ttdef"><b>Definition</b> <a href="Pathfinder_8h_source.html#l00027">Pathfinder.h:27</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_aaa7be652d0695e37cc2f47fd1c56b88fa633b40e84b2ffd7e3a37d23292602adf"><div class="ttname"><a href="namespaceeve_1_1map.html#aaa7be652d0695e37cc2f47fd1c56b88fa633b40e84b2ffd7e3a37d23292602adf">eve::map::NavigationTopology::Ortho8</a></div><div class="ttdeci">@ Ortho8</div></div>
+<div class="ttc" id="anamespaceeve_1_1map_html_aaa7be652d0695e37cc2f47fd1c56b88fa92640bd72988395b326c888614f8937a"><div class="ttname"><a href="namespaceeve_1_1map.html#aaa7be652d0695e37cc2f47fd1c56b88fa92640bd72988395b326c888614f8937a">eve::map::NavigationTopology::Hex</a></div><div class="ttdeci">@ Hex</div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html"><div class="ttname"><a href="namespaceeve_1_1rts.html">eve::rts</a></div><div class="ttdef"><b>Definition</b> <a href="RTS_8cpp_source.html#l00029">RTS.cpp:29</a></div></div>
+<div class="ttc" id="anamespaceeve_1_1rts_html_a5c4d0d09bc93e3b5ed0a400b97329f44"><div class="ttname"><a href="namespaceeve_1_1rts.html#a5c4d0d09bc93e3b5ed0a400b97329f44">eve::rts::projectCrowdSurface</a></div><div class="ttdeci">Result&lt; crowd::NavigationSurfaceSnapshot &gt; projectCrowdSurface(const map::NavigationGridSnapshot &amp;source, crowd::NavigationSurfaceStamp stamp, const NavigationGrid &amp;geometry, std::int64_t maxChecks)</div><div class="ttdoc">Upper-domain adapter; owns output and never retains map spans.</div><div class="ttdef"><b>Definition</b> <a href="RTSCrowdSurface_8cpp_source.html#l00007">RTSCrowdSurface.cpp:7</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7">eve::DiagnosticCode</a></div><div class="ttdeci">DiagnosticCode</div><div class="ttdoc">Stable machine-readable diagnostic codes.</div><div class="ttdef"><b>Definition</b> <a href="Diagnostic_8h_source.html#l00047">Diagnostic.h:47</a></div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a253ca7dd096ee0956cccee4d376cab8b">eve::DiagnosticCode::InvalidArgument</a></div><div class="ttdeci">@ InvalidArgument</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7a8290b27dc84699ee0c6277056bd61288">eve::DiagnosticCode::PreconditionViolation</a></div><div class="ttdeci">@ PreconditionViolation</div></div>
+<div class="ttc" id="anamespaceeve_html_a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca"><div class="ttname"><a href="namespaceeve.html#a06cf3d72c6fb4580ba8c33820e2a1ba7ad7c8c85bf79bbe1b7188497c32c3b0ca">eve::DiagnosticCode::Failed</a></div><div class="ttdeci">@ Failed</div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1NavigationSurfaceSnapshot_html"><div class="ttname"><a href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html">eve::crowd::NavigationSurfaceSnapshot</a></div><div class="ttdoc">Owning adapter input: raw physical terrain and separately inflated navigation costs....</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00070">CrowdTypes.h:70</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1NavigationSurfaceSnapshot_html_a065bd52770671ae06520b639e4935bb1"><div class="ttname"><a href="structeve_1_1crowd_1_1NavigationSurfaceSnapshot.html#a065bd52770671ae06520b639e4935bb1">eve::crowd::NavigationSurfaceSnapshot::stamp</a></div><div class="ttdeci">NavigationSurfaceStamp stamp</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00071">CrowdTypes.h:71</a></div></div>
+<div class="ttc" id="astructeve_1_1crowd_1_1NavigationSurfaceStamp_html"><div class="ttname"><a href="structeve_1_1crowd_1_1NavigationSurfaceStamp.html">eve::crowd::NavigationSurfaceStamp</a></div><div class="ttdoc">Provenance of one immutable navigation projection.</div><div class="ttdef"><b>Definition</b> <a href="CrowdTypes_8h_source.html#l00033">CrowdTypes.h:33</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1NavigationGrid_html"><div class="ttname"><a href="structeve_1_1rts_1_1NavigationGrid.html">eve::rts::NavigationGrid</a></div><div class="ttdoc">World/grid conversion used when an RTS composition consumes a canonical map Pathfinder.</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00265">RTSSystems.h:265</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1NavigationGrid_html_a015f4246abdd90faa7959cde9059b32e"><div class="ttname"><a href="structeve_1_1rts_1_1NavigationGrid.html#a015f4246abdd90faa7959cde9059b32e">eve::rts::NavigationGrid::cellSize</a></div><div class="ttdeci">float cellSize</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00266">RTSSystems.h:266</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1NavigationGrid_html_a443b2576a02c2289e758b8bcc092ac0d"><div class="ttname"><a href="structeve_1_1rts_1_1NavigationGrid.html#a443b2576a02c2289e758b8bcc092ac0d">eve::rts::NavigationGrid::originX</a></div><div class="ttdeci">float originX</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00267">RTSSystems.h:267</a></div></div>
+<div class="ttc" id="astructeve_1_1rts_1_1NavigationGrid_html_ad0d4b2a1f4d694b46eb4b03d5b58199b"><div class="ttname"><a href="structeve_1_1rts_1_1NavigationGrid.html#ad0d4b2a1f4d694b46eb4b03d5b58199b">eve::rts::NavigationGrid::originY</a></div><div class="ttdeci">float originY</div><div class="ttdef"><b>Definition</b> <a href="RTSSystems_8h_source.html#l00268">RTSSystems.h:268</a></div></div>
+</div><!-- fragment --></div><!-- contents -->
+  </main>
+</div><!-- /ev-layout -->
+<div id="ev-footer">
+  <span>EVEngine 文档 · 由 Doxygen 1.9.8 生成</span>
+</div>
+</body>
+</html>
