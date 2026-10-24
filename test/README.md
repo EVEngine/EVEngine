@@ -1,10 +1,12 @@
 # C++ test levels
 
-The complete catalogue is [test_levels.json](test_levels.json). It covers every
+The source policy is [test_levels.json](test_levels.json). It covers every
 C++ source under `test/`, including standalone projects, profile checks, fuzzing,
-helpers and manual probes. Each literal case has an explicit classification;
-the six existing script-test generator macros have bounded name-prefix policies.
-There is no default classification for an unknown source or new literal case.
+helpers and manual probes. Literal case names come from C++ declarations; file
+defaults classify them unless an explicit case override applies.
+The six existing script-test generator macros have bounded name-prefix policies.
+Unknown sources still require an explicit file policy. The full per-case catalogue
+and CTest labels are generated in the build directory, not maintained in Git.
 
 ## Running
 
@@ -126,8 +128,8 @@ include all source branches; normal per-case discovery uses compiled identities.
 All formerly mixed desktop sources are physically separated. Literal case names
 and assertions are preserved; bundles follow the new physical source files.
 Default per-case process isolation and opt-in performance policy remain intact.
-The catalogue's `module`, `task` and `origins` fields own attribution and migration
-provenance. CMake profile/standalone references to an old name resolve to the
+Canonical paths own unit modules and integration tasks. The catalogue retains
+integration module ownership and `origins` migration provenance. CMake profile/standalone references to an old name resolve to the
 canonical source(s); an already canonical file is never expanded again. There
 are no legacy forwarding `.cpp` files or a second manually maintained source list.
 
@@ -139,26 +141,47 @@ executables provide narrower link proofs; the main lane still links engine DLLs.
 Device app runners retain their explicit SDL bootstrap and do not get a desktop
 headless claim. The fuzz property retains its existing standalone entrypoint.
 
-[MODULE_TEST_COVERAGE.md](MODULE_TEST_COVERAGE.md) records all declared modules,
+The on-demand module coverage report records all declared modules,
 owned units, task associations and header/API-name evidence separately. A reference
 is not measured behavior coverage. Pure type-forwarding/link-anchor modules do not
 get empty placeholder assertions. Unowned local-rule coverage stays visible in
 the report even when composition tests reference the module.
 
+The report is generated build data and is not committed. Source-quality checks
+audit coverage directly without comparing a checked-in snapshot.
+
 ## Maintaining coverage
 
 ```sh
 python3 -X utf8 scripts/test_levels.py --summary
-python3 -X utf8 scripts/test_module_coverage.py --write
+python3 -X utf8 scripts/test_module_coverage.py --output build/reports/module-test-coverage.md
 make check
 ```
 
-Add or update the source's case name under the appropriate reason group in
-`test_levels.json`. Its `default` applies to declared generator prefixes and
-source-only probes, never arbitrary new literal cases. Keep source roles accurate.
-The schema is `evengine.test-levels`, version `1`; unknown fields and versions are
-rejected rather than migrated implicitly. Removed/renamed sources or cases,
-duplicate groups and stale generator policies fail the source-quality gate.
+Add a source policy with its role and `default` classification. Unit module
+ownership comes from `unit/<module>/`; integration task ownership comes from
+`integration/<task>/`. Declare integration module ownership explicitly.
+New or renamed literal cases inherit that default automatically. Only list cases
+under `cases` when their classification differs from the default, for example:
+
+```json
+{
+  "role": "tests",
+  "default": "module-composition",
+  "module": "example",
+  "cases": {"script-binding": ["example.scriptContract"]}
+}
+```
+
+Omit `cases` when there are no exceptions. Unit safety checks still inspect every
+inherited case, including newly added cases and reachable helpers. Review each
+new case's resource needs, especially in integration files with a CPU default.
+Keep roles and explicit bounded generator prefixes accurate.
+
+The schema is `evengine.test-levels`, version `2`. Version `1` remains readable
+for migration and existing tool fixtures; new policies use version `2`. Unknown
+fields and versions, removed sources, stale overrides, duplicate groups and stale
+generator policies fail the source-quality gate.
 
 The scanner understands comments, raw strings, numeric digit separators,
 fixtures, fuzz declarations and conditional implementations. Unit checks follow

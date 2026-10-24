@@ -31,6 +31,18 @@ class ModuleCoverageTests(unittest.TestCase):
         self.assertEqual(report["module_count"], 3)
         self.assertEqual(report["modules"]["missing"]["status"], "no-direct-test-evidence")
 
+    def test_path_ownership_matches_explicit_fields_and_keeps_integration_owner(self):
+        data, inventory, modules = self.fixture()
+        expected, errors = coverage.audit(data, inventory, modules)
+        self.assertEqual(errors, [])
+        del data["sources"]["unit/rules/rules.cpp"]["module"]
+        del data["sources"]["integration/save-restore/journey.cpp"]["task"]
+        actual, errors = coverage.audit(data, inventory, modules)
+        self.assertEqual(errors, [])
+        self.assertEqual(actual, expected)
+        del data["sources"]["integration/save-restore/journey.cpp"]["module"]
+        self.assertTrue(any("undeclared owner" in error for error in coverage.audit(data, inventory, modules)[1]))
+
     def test_nested_header_reference_is_not_owned_unit_coverage(self):
         report, _ = coverage.audit(*self.fixture())
         editor = report["modules"]["rules_editor"]
