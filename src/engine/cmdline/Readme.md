@@ -73,3 +73,30 @@ assembleRelease/assembleDebug 产出 APK。SDK 根目录按 `--sdk <dir>`、
 Android Studio / NDK / 任何系统工具。环境变量持久化文件为
 `<sdk>/eve-android.env`（含 ANDROID_HOME / JAVA_HOME / GRADLE_HOME /
 EVENGINE_SDK），`eve build` 会自动读取它来定位 android SDK。
+
+### Verified desktop packages
+
+`eve package <game> --sdk <sdk> -o <output>` snapshots the project, compiles every
+`.nut` file (including scripts not imported by `main.nut`), and validates imports.
+It builds into a private sibling directory, then launches that candidate's runtime
+and `game.eve` for 30 update/render/present frames, with a 60-second timeout.
+Initialization and frame exceptions fail acceptance. A display/Vulkan/audio setup
+is required just as for `eve run`; on headless Linux use the documented Xvfb setup.
+The target runtime must run on the packaging host. Foreign SDKs and older runtimes
+without the acceptance protocol fail instead of producing a verified package.
+Editor-host games are currently unsupported by this bounded acceptance loop.
+
+Only a successful candidate replaces the output directory. Failures preserve the
+previous package; concurrent writers to the same output are rejected. Publication
+uses directory renames with rollback; if rollback fails, the previous directory is
+retained at the reported recovery path. Interrupted jobs can leave a sibling
+`.package-lock` directory, which must be inspected before retrying. Output and
+source directories must not contain one another.
+
+The package includes `acceptance.log` and `build-identity.manifest`. The latter is
+UTF-8 key/value data with schema `eve.package-build`, version `1`, SHA-256 identities
+for the exact tested archive and runtime, a combined content build ID, build time, script count and acceptance
+frame count. Readers ignore unknown keys and reject unsupported versions; version
+1 has no earlier format to migrate. These hashes identify contents, not signatures.
+Thirty frames are startup smoke acceptance; project-specific gameplay acceptance
+remains additional verification.

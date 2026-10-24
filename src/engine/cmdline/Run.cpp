@@ -506,6 +506,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
             eve.set("devServerArg", devServer);
             const char* bench = std::getenv("EVE_BOOT_BENCH");
+            eve.set("packageCheck", std::getenv("EVE_PACKAGE_CHECK") != nullptr);
             eve.set("bootBench", bench && bench[0] != '\0' && bench[0] != '0');
 #if defined(__EMSCRIPTEN__)
             // The browser has no blocking loop; load.nut defines eve_frame and
@@ -530,6 +531,11 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
+        if (std::getenv("EVE_PACKAGE_CHECK")) {
+            if (runtime.root().find("_frame_count").toInt() < 30)
+                throw std::runtime_error("Package acceptance did not complete 30 frames");
+            std::cout << "[package-check] passed: 30 frames\n";
+        }
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         bool editorHostDrive = false;
         try {
