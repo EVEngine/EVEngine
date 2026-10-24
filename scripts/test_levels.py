@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Validate the complete C++ test-level catalogue and emit CTest metadata.
 
-The catalogue is authoritative. Source inspection verifies coverage and rejects
-obvious rendering/script setup in unit cases; it never silently classifies a
-new source. Runtime discovery remains authoritative for active/preprocessed cases.
+The catalogue owns file defaults and case overrides. Source inspection supplies
+literal identities and rejects obvious rendering/script setup in unit cases;
+new sources still require an explicit policy. Runtime discovery remains
+authoritative for active/preprocessed cases.
 """
 
 from __future__ import annotations
@@ -139,9 +140,46 @@ def source_inventory(test_dir: Path) -> dict[str, dict[str, object]]:
     return inventory
 
 
-def classified_cases(policy: dict) -> dict[str, str]:
-    """Expand the compact reason-grouped case catalogue."""
-    return {name: category for category, names in policy["cases"].items() for name in names}
+def classified_cases(policy: dict, case_names=None) -> dict[str, str]:
+    """Resolve source identities using the file default plus explicit overrides."""
+    result = {name: policy["default"] for name in case_names} if case_names is not None else {}
+    result.update({name: category for category, names in policy.get("cases", {}).items() for name in names})
+    return result
+
+
+def source_policy(source: str, policy: dict) -> dict:
+    """Derive structural ownership from canonical unit/integration paths.
+
+    Explicit legacy fields remain visible so the audit can reject mismatches.
+    Integration module ownership is semantic and must still be declared.
+    """
+    result = dict(policy)
+    parts = Path(source).parts
+    if len(parts) >= 3:
+        if parts[0] == "unit":
+            result.setdefault("module", parts[1])
+        elif parts[0] == "integration":
+            result.setdefault("task", parts[1])
+    return result
+
+
+def expanded_catalogue(data: dict, inventory: dict) -> dict:
+    """Build the full v1 consumer projection in memory; never persist identities.
+
+    Version 1 remains readable for existing tools/fixtures and migration checks.
+    Version 2 stores only overrides. Unknown versions are rejected by validation.
+    """
+    sources = {}
+    for source, policy in data["sources"].items():
+        policy = source_policy(source, policy)
+        if data.get("version") != 2:
+            sources[source] = policy
+            continue
+        groups = {}
+        for name, category in classified_cases(policy, inventory[source]["cases"]).items():
+            groups.setdefault(category, []).append(name)
+        sources[source] = {**policy, "cases": groups}
+    return {**data, "sources": sources, **({"version": 1} if data.get("version") == 2 else {})}
 
 
 UNIT_SETUP = re.compile(
@@ -234,7 +272,7 @@ def generator_line_collisions(text: str) -> list[int]:
 
 def catalogue_errors(data: dict, inventory: dict) -> list[str]:
     errors = []
-    if data.get("schema") != "evengine.test-levels" or data.get("version") != 1:
+    if data.get("schema") != "evengine.test-levels" or data.get("version") not in {1, 2}:
         errors.append("unsupported test-level catalogue schema/version")
     if set(data) != {"schema", "version", "sources"}:
         errors.append("unknown catalogue fields")
@@ -244,8 +282,10 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
     for source in sorted(set(sources) - set(inventory)):
         errors.append(f"{source}: stale source classification")
     for source in sorted(set(sources) & set(inventory)):
-        policy = sources[source]
-        if not {"role", "default", "cases"} <= set(policy) or set(policy) - {"role", "default", "cases", "generated", "module", "task", "origins", "modules"}:
+        policy = source_policy(source, sources[source])
+        required = {"role", "default", "cases"} if data.get("version") == 1 else {"role", "default"}
+        allowed = {"role", "default", "cases", "generated", "module", "task", "origins", "modules"}
+        if not required <= set(policy) or set(policy) - allowed:
             errors.append(f"{source}: unknown/missing source fields")
         if policy.get("role") not in {"tests", "runner", "helper", "probe", "compile-contract", "fuzz"}:
             errors.append(f"{source}: invalid source role")
@@ -277,8 +317,9 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
                 errors.append(f"{source}: invalid classification group {category}")
         if errors and any(error.startswith(source + ": invalid classification group") for error in errors):
             continue
-        declared = classified_cases(policy)
-        if sum(len(names) for names in groups.values()) != len(declared):
+        explicit = classified_cases(policy)
+        declared = classified_cases(policy, cases if data.get("version") == 2 else None)
+        if sum(len(names) for names in groups.values()) != len(explicit):
             errors.append(f"{source}: case appears in more than one classification group")
         for name in sorted(set(cases) - set(declared)):
             errors.append(f"{source}:{name}: missing explicit case classification")
@@ -360,6 +401,8 @@ def origin_case_policies(text: str, policy: dict) -> dict[str, dict[str, str]]:
 
 def emit_cmake(data: dict, output: Path) -> None:
     """Emit one policy for source defaults and each literal compiled identity."""
+    if data.get("version") == 2:
+        data = expanded_catalogue(data, source_inventory(CATALOGUE.parent))
     lines = ["# Generated from test/test_levels.json; do not edit."]
     seen = set()
     aliases: dict[str, list[str]] = {}
@@ -443,6 +486,7 @@ def main() -> int:
         return 1
     if args.emit_cmake:
         emit_cmake(data, args.emit_cmake)
+    data = expanded_catalogue(data, inventory)
     counts = Counter(CLASSIFICATIONS[category][0] for policy in data["sources"].values()
                      for category in classified_cases(policy).values())
     print(f"test levels OK: {len(inventory)} sources; literal identities {dict(counts)}")

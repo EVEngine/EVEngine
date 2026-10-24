@@ -8,8 +8,12 @@ deps/$(1)-arm64$(2): configure/$(1)-arm64$(2)
 build/$(1)-arm64$(2): deps/$(1)-arm64$(2)
 	$(3) cmake --build $$@ -j $(JOBS)
 ensure-built/$(1)-arm64$(2): build/$(1)-arm64$(2)
+
+.PHONY: sdk/$(1)-arm64$(2)
+sdk/$(1)-arm64$(2): build/$(1)-arm64$(2)
+	$(3) cmake --install build/$(1)-arm64$(2) --prefix dist/eve-sdk/$(1)-arm64$(2)
 test/$(1)-arm64$(2): ensure-built/$(1)-arm64$(2)
-	$$(CTEST_ENV) ctest --test-dir build/$(1)-arm64$(2) --output-on-failure -j $$(CTEST_JOBS) $$(CTEST_RUN_SEL) $$(CTEST_DOMAIN_SEL) $$(CTEST_LABEL_FILTER) $$(CTEST_FILTER) $$(CTEST_REPEAT)
+	$$(CTEST_ENV) ctest --test-dir build/$(1)-arm64$(2) --output-on-failure --no-tests=error -j $$(CTEST_JOBS) $$(CTEST_RUN_SEL) $$(CTEST_DOMAIN_SEL) $$(CTEST_LABEL_FILTER) $$(CTEST_FILTER) $$(CTEST_REPEAT)
 endef
 
 WITH_MSVC_ARM64 = : && cmake/with-msvc.cmd --arm64

@@ -58,8 +58,23 @@ scopes: normal runs build Debug; `build_type=release` builds Release and
 engine and test binaries, requiring the matching ARM64 third-party release
 packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
 packaging belong to the third-party repository. Missing packages fail explicitly
-instead of rebuilding dependencies in these CI lanes. These are build checks;
-ARM64 graphics tests and SDK release packaging are not part of these lanes.
+instead of rebuilding dependencies in these CI lanes. Both configurations run the
+process-isolated unit suite (including graphics) with null audio and native
+software Vulkan: Linux uses aarch64 Lavapipe + Xvfb; Windows builds pinned
+SwiftShader for ARM64 and caches its verified ICD. Missing runtime support fails
+the lane. Release lanes also install the SDK, compile a native consumer plugin
+and run a packaged game with its script startup marker.
+
+`make sdk/win32-arm64` and `make sdk/linux-arm64` install Release SDKs under
+`dist/eve-sdk/<platform>-arm64`; append `-debug` for a development SDK. Release
+SDKs use OBJECT linkage. Runtime `TARGET_PLATFORM` stays `win32` or `linux`.
+The release workflow publishes `eve-sdk-win32-arm64-<tag>.zip` and
+`eve-sdk-linux-arm64-<tag>.zip` alongside the existing five SDKs and SHA256SUMS.
+Before upload and again from the downloaded release archive, native consumers
+verify PE/ELF architecture, exact version, zip/package operations, C++ plugin
+compilation/linkage and packaged-game liveness plus `SDK_TEST_GAME_OK`.
+Failures block formal promotion. ARM consumers validate native desktop usage;
+the existing Android and cross-host consumer jobs remain separate.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
@@ -117,7 +132,9 @@ Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases)
 | Target platform | Download | Notes |
 |-----------------|----------|-------|
 | Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
+| Windows ARM64 | `eve-sdk-win32-arm64-<version>.zip` | Native Windows 11 ARM64 |
 | Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
+| Linux ARM64 | `eve-sdk-linux-arm64-<version>.zip` | Native aarch64 Linux (requires a Vulkan driver) |
 | macOS | `eve-sdk-macosx-<version>.zip` | macOS 12+ (Apple Silicon / Intel) |
 | Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
 | iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |

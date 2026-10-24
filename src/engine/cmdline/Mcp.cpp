@@ -1,3 +1,4 @@
+#include "McpSupervisor.h"
 #include "cmdline.h"
 
 #include "common/Capability.h"
@@ -57,11 +58,16 @@ bool isEditorHostResource(const std::string& path) {
 struct McpArgs : Handler {
     std::string root_path;
     int         port = 0;
+    int         timeoutMs = 2000;
+    bool        worker    = false;
 
     void setup(CLI::App& app, std::shared_ptr<CLI::Formatter> formatter) override {
         auto mcp = app.add_subcommand(
             "mcp", "Run a headless MCP host for AI agents (stdio by default; --port for TCP)");
         mcp->allow_extras()->formatter(formatter);
+        mcp->add_option("--timeout-ms", timeoutMs, "Worker response budget in milliseconds (stdio)")
+            ->check(CLI::Range(1, 3600000));
+        mcp->add_flag("--worker", worker, "Internal unsupervised worker")->group("");
         mcp->add_option("--port", port,
                         "Listen on this TCP port instead of stdio (Codex uses stdio)");
         mcp->add_option("-r,--root", root_path, "Project root directory (default: current dir)");
@@ -72,6 +78,9 @@ struct McpArgs : Handler {
         if (mcp->parsed()) {
             std::string current_path = cmd.get_remaining(mcp);
             if (!root_path.empty()) current_path = root_path;
+#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+            if (port == 0 && !worker) return detail::runMcpSupervisor(current_path, timeoutMs);
+#endif
             return cmd.McpHost(current_path, port);
         }
         return -1;

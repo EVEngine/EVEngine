@@ -1,5 +1,7 @@
 # EVEngine 示例总览
 
+- [pcm-2a03](pcm-2a03/README.md)：通用 PCM 流式播放，脚本合成 2A03 风格跳跃、金币和受伤音效，实时波形与缓冲计数。
+
 - [stylized-meadow](stylized-meadow/README.md)：三阶卡通草坪，可调蓝噪声覆盖、GPU 实例化、两组四帧摇曳、同帧阴影取色与稀疏蓝噪声变色。
 
 - [modern-battlefield](modern-battlefield/README.md)：现代陆空动态战场，24 类独立细化资源与逐件检视截图、可转炮塔/炮管、射击弹道、直升机旋翼与飞行编队。
@@ -53,6 +55,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
+| [meteor-impact](meteor-impact/README.md) | 陨石雨范围攻击、随机落点、错峰爆炸与弹道碎块 |
 | [explosion-lab](explosion-lab/README.md) | 3D 爆炸物理、火球、上升烟雾、火星与冲击环 |
 | [ember-guard](ember-guard/README.md) | 焰卫：六枚环绕火球自主索敌、命中爆燃、返回护卫的俯视角特效场景 |
 | [game-tutorial](game-tutorial/README.md) | EveScript import、输入与碰撞、程序纹理、HUD、热重载及严格版本化存档 |
@@ -119,6 +122,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 |---|---|
 | [camera-controllers](camera-controllers/README.md) | 第三人称相机：follow / orbit / topdown / firstperson / cinematic |
 | [character-motion-lab](character-motion-lab/README.md) | 三个人物、八种免费动作、跨骨架重定向、同步播放与逐帧观察 |
+| [control-rig-editor](control-rig-editor/README.md) | 原生 Control Rig 制作：控制器拖动、FK/Aim/IK 求解图、关键帧、事务撤销与 AnimClip 烘焙 |
 | [layered-animation](layered-animation/README.md) | 真实 CC0 KayKit 动作叠加：三段动作单独播放 + `AnimLayerMixer`（走路基底 + 脊柱遮罩攻击覆盖 + 受击叠加） |
 | [climbing-motion-matching](climbing-motion-matching/README.md) | 攀爬与动作匹配演示（从示例目录内直接运行） |
 | [building-3d](building-3d/README.md) | 3D 地面放置：射线求交、网格吸附、鬼影与放置会话 |

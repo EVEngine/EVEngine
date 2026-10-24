@@ -74,21 +74,28 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         if (frame == 6) {
             settings.width  = 160;
             settings.height = 96;
-            SDL_SetWindowSize(static_cast<SDL_Window *>(win->getHandle()), 160, 96);
-            // Cocoa applies the CAMetalLayer resize through its event loop.
-            // Wait for the drawable, without consuming or retrying rendered frames.
-            auto      *window     = static_cast<SDL_Window *>(win->getHandle());
-            int        pixelWidth = 0, pixelHeight = 0;
+            auto *native    = static_cast<SDL_Window *>(win->getHandle());
+            SDL_SetWindowSize(native, settings.width, settings.height);
+            // Cocoa applies the content-view / Metal-layer resize while pumping
+            // native events. A logical SDL size alone does not prove the Vulkan
+            // drawable is ready. Keep the first-frame assertion below, but only
+            // render after the real drawable has reached the requested 1x size.
+            int        logicalWidth = 0, logicalHeight = 0, pixelWidth = 0, pixelHeight = 0;
             const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
             do {
                 SDL_PumpEvents();
-                SDL_Vulkan_GetDrawableSize(window, &pixelWidth, &pixelHeight);
-                if (pixelWidth == 160 && pixelHeight == 96) break;
+                SDL_GetWindowSize(native, &logicalWidth, &logicalHeight);
+                SDL_Vulkan_GetDrawableSize(native, &pixelWidth, &pixelHeight);
+                if (logicalWidth == settings.width && logicalHeight == settings.height &&
+                    pixelWidth == settings.width && pixelHeight == settings.height)
+                    break;
                 SDL_Delay(10);
             } while (std::chrono::steady_clock::now() < deadline);
-            REQUIRE_EQ(pixelWidth, 160);
-            REQUIRE_EQ(pixelHeight, 96);
-            gfx->setViewportSize(160, 96, pixelWidth, pixelHeight);
+            REQUIRE_EQ(logicalWidth, settings.width);
+            REQUIRE_EQ(logicalHeight, settings.height);
+            REQUIRE_EQ(pixelWidth, settings.width);
+            REQUIRE_EQ(pixelHeight, settings.height);
+            gfx->setViewportSize(logicalWidth, logicalHeight, pixelWidth, pixelHeight);
         }
         entity->setTexture(frame % 2 ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);
