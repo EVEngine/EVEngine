@@ -1355,4 +1355,10 @@ rpg-classic/skill:
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
 
+# CPU-only popup contracts: no graphics backend, font, combat or settlement linkage.
+.PHONY: check/damage-numbers
+check/damage-numbers:
+	cmake -S test/damage_numbers -B build/damage-number-core -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build/damage-number-core -j $(JOBS)
+	ctest --test-dir build/damage-number-core --output-on-failure
 include cmake/native_arm64.mk

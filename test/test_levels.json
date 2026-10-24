@@ -2,6 +2,35 @@
   "schema": "evengine.test-levels",
   "version": 2,
   "sources": {
+    "integration/combat-presentation/combat_damage_numbers.cpp": {
+      "task": "combat-presentation",
+      "module": "combat",
+      "role": "tests",
+      "default": "module-composition"
+    },
+    "integration/combat-presentation/combat_presentation_script.cpp": {
+      "task": "combat-presentation",
+      "module": "combat",
+      "role": "tests",
+      "default": "script-binding"
+    },
+    "integration/combat-presentation/combat_settlement.cpp": {
+      "task": "combat-presentation",
+      "module": "combat",
+      "role": "tests",
+      "default": "module-composition"
+    },
+    "unit/graphics/graphics_damage_numbers.cpp": {
+      "module": "graphics",
+      "role": "tests",
+      "default": "local-logic"
+    },
+    "integration/combat-presentation/graphics_damage_numbers_script.cpp": {
+      "task": "combat-presentation",
+      "module": "graphics",
+      "role": "tests",
+      "default": "script-binding"
+    },
     "integration/transaction-authority/editor_authority_atomic.cpp": {
       "role": "tests",
       "default": "module-composition",

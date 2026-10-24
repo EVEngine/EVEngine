@@ -881,6 +881,50 @@ RGBA 模式任一通道命中即启用。`setMask(imageData)` 会复制像素，
 1 Enabled 或 2 Disabled，并在状态变化时同步 `WaterPlanarReflectionSettings.enabled`。
 `getEnabled()`、`getHeightFeaturesEnabled()`、`getSampleX()` 和 `getSampleY()` 返回最近状态与采样坐标。
 
+## DamageNumbers：伤害/治疗飘字
+
+`gfx.newDamageNumbers()` 返回 owning Result，`value` 是 `eve.DamageNumbers` 实例。
+它不依赖 combat 或 settlement；游戏在成功结算后把实际数值传入。字体在初始化时创建并
+由游戏持有，render 不加载资源。屏幕坐标为 drawable pixels，x 为文字中心，y 为文字顶部。
+世界坐标游戏先用自身相机投影，组件不保留角色或相机引用。
+
+```squirrel
+local numbers = checked(gfx.newDamageNumbers());
+checked(numbers.spawn(result.value.settlement.applied, screenX, screenY,
+    result.value.settlement.critical ? "critical" : "damage", targetUuid, 25.0));
+// eve_update(dt)
+checked(numbers.update(dt));
+// eve_render(): font 与 fontData 保持存活，且 font 来自 gfx。
+checked(numbers.render(gfx, font));
+```
+
+`checked` 表示检查 Result.ok，失败时处理 diagnostics，成功取 value。
+
+| 方法 | 契约 |
+|---|---|
+| `spawn(amount,x,y,kind,group,velocityX)` | kind 是 damage/critical/heal/miss；返回 spawned/merged/replacedOldest。空 group 禁止合并。 |
+| `setStyle(kind,style)` | 验证并复制 `eve.DamageNumberStyle`，只影响之后生成的数字。 |
+| `update(dt)` | dt 为有限非负秒数；失败不改变状态。 |
+| `render(gfx,font)` | 检查必要对象并绘制描边、阴影和文字；返回 Result。 |
+| `snapshot()` | 返回 Result，value 为独立 frame 数组，含 text/x/y/scale/alpha。只读观察需要时使用。 |
+| `count()` / `clear()` | 活跃数量 / 清空并重置确定性散射序列；场景重开和热重载时调用。 |
+
+`DamageNumberStyle` 的可写字段如下（设置后需要 setStyle 提交）：
+
+| 字段 | 含义 |
+|---|---|
+| `lifetime` | 生命周期，0..60 秒，必须大于零 |
+| `velocityY` / `gravity` | 像素/秒与像素/秒²，负速度向上 |
+| `scale` / `pop` / `shake` | 基础字号倍率、入场放大幅度、早期横向摇晃幅度 |
+| `r` / `g` / `b` / `outline` | RGB [0,1] 与描边像素宽度 [0,8] |
+| `fadeIn` / `fadeOut` | 首尾透明度过渡秒数；零为即时 |
+| `mergeWindow` / `mergeRadius` | 同 kind/group 的合并时间窗口与最大屏幕距离；零窗口禁用 |
+| `decimals` / `compact` | 0..3 位小数，是否使用 K/M 缩写 |
+
+最多 256 个活跃数字，满时明确返回 replacedOldest；合并不会刷新生命周期。
+所有行为都在调用线程执行，不读取墙钟或全局 RNG。C++ 接口见 `graphics/DamageNumbers.h`。
+样式和 popup 均为瞬态，不支持存档或网络恢复；不提供 Unity 预制体/材质兼容。
+可运行示例：`examples/impact-arena`。
 独立天空的 `eve.sky-wisps/3` 资源增加 `sunDisk.color`（线性 HDR RGB）和
 `sunDisk.shape`（弧度半径、正柔化指数、非负反射倍率）。旧版本禁用圆盘。
 参数随资源准备复制，太阳方向复用独立帧快照；绘制不推进模拟时间。

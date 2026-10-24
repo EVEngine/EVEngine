@@ -3911,11 +3911,11 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         moved <- arena.setMoveIntent(player, 1.0, 0.0, 1.0);
         advanced <- arena.advance(1, 0.25);
         playerState <- arena.state(player);
-        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0);
+        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0, false, 1);
         timelineDamage <- arena.applyTimelineDamage(player, enemy,
             "{\"damageType\":\"Damage.Physical.Slash\",\"amount\":7,\"poiseAmount\":2}");
         enemyState <- arena.state(enemy);
-        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0);
+        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0, false, 1);
         grantedAbility <- arena.grantAbility("fighter:player", "combat-ability:light-attack");
         grantId <- grantedAbility.value.grantId;
         activatedAbility <- arena.activateAbility(grantId, 2);
