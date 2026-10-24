@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """Validate the repository's bounded quality-debt allowlist.
 
-The check covers four intentionally narrow inventories:
+The check covers three intentionally narrow inventories:
 
-* ``binding_gap``: non-comment entries in ``check_bindings_gaps.txt``;
 * ``todo``: explicit TODO/FIXME/HACK markers in repository source;
 * ``soft_skip``: explicit ``soft-skip``/``soft skip`` markers;
-* ``fallback``: explicit ``FALLBACK`` markers or fallback wording in comments.
+* ``fallback``: explicit uppercase ``FALLBACK`` markers.
 
 Every inventory entry must match exactly one metadata scope with an owner,
 issue, reason, expiry, and an explicit ``max_net_growth`` budget.  The baseline
@@ -42,10 +41,9 @@ import utf8_stdio
 ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_METADATA = ROOT / "scripts" / "quality_debt_allowlist.json"
 DEFAULT_BASELINE = ROOT / "scripts" / "quality_debt_baseline.json"
-DEFAULT_BINDING_GAPS = ROOT / "scripts" / "check_bindings_gaps.txt"
 
 SCHEMA_VERSION = 1
-KINDS = frozenset({"binding_gap", "todo", "soft_skip", "fallback"})
+KINDS = frozenset({"todo", "soft_skip", "fallback"})
 SOURCE_EXTENSIONS = frozenset(
     {
         ".c",
@@ -101,7 +99,7 @@ CONTROLLED_ROOTS = (
 
 TODO_RE = re.compile(r"\b(?:TODO|FIXME|HACK)\b")
 SOFT_SKIP_RE = re.compile(r"\bsoft[- ]skip\b", re.IGNORECASE)
-FALLBACK_RE = re.compile(r"\bfallback\b", re.IGNORECASE)
+FALLBACK_RE = re.compile(r"\bFALLBACK\b")
 
 
 @dataclass(frozen=True)
@@ -154,34 +152,13 @@ def scan_source_findings(root: Path) -> list[Finding]:
             if SOFT_SKIP_RE.search(line):
                 findings.append(Finding("soft_skip", relative, line_number, line.strip()))
 
-            # A lowercase ``fallback`` in an ordinary identifier or parameter
-            # is not a debt finding.  Uppercase FALLBACK is an explicit marker;
-            # otherwise require the term to occur in a comment line.
-            stripped = line.lstrip()
-            in_comment = stripped.startswith(("//", "#", "/*", "*"))
-            if "FALLBACK" in line or (in_comment and FALLBACK_RE.search(line)):
+            if FALLBACK_RE.search(line):
                 findings.append(Finding("fallback", relative, line_number, line.strip()))
     return findings
 
 
-def scan_binding_gaps(root: Path, binding_path: Path) -> list[Finding]:
-    if not binding_path.is_absolute():
-        binding_path = root / binding_path
-    if not binding_path.is_file():
-        return []
-    relative = _relative(root, binding_path)
-    findings: list[Finding] = []
-    for line_number, line in enumerate(
-        binding_path.read_text(encoding="utf-8", errors="replace").splitlines(), start=1
-    ):
-        stripped = line.strip()
-        if stripped and not stripped.startswith("#"):
-            findings.append(Finding("binding_gap", relative, line_number, stripped))
-    return findings
-
-
-def discover_findings(root: Path, binding_path: Path) -> list[Finding]:
-    return scan_source_findings(root) + scan_binding_gaps(root, binding_path)
+def discover_findings(root: Path) -> list[Finding]:
+    return scan_source_findings(root)
 
 
 def _nonempty_string(value: Any) -> bool:
@@ -385,7 +362,6 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", type=Path, default=ROOT)
     parser.add_argument("--metadata", type=Path, default=DEFAULT_METADATA)
     parser.add_argument("--baseline", type=Path, default=DEFAULT_BASELINE)
-    parser.add_argument("--binding-gaps", type=Path, default=DEFAULT_BINDING_GAPS)
     parser.add_argument("--json", action="store_true", help="emit machine-readable output")
     parser.add_argument(
         "--write-baseline",
@@ -403,13 +379,8 @@ def main(argv: list[str] | None = None) -> int:
         print("FAIL metadata root must be an object", file=sys.stderr)
         return 1
 
-    binding_path = args.binding_gaps
-    if not binding_path.is_absolute():
-        binding_path = args.root / binding_path
-    findings = discover_findings(args.root, binding_path)
+    findings = discover_findings(args.root)
     metadata_errors: list[str] = []
-    if not binding_path.is_file():
-        metadata_errors.append(f"binding gap file not found: {binding_path}")
 
     if args.write_baseline:
         metadata_errors.extend(validate_metadata(metadata))

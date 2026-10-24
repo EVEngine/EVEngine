@@ -467,12 +467,12 @@ TEST_CASE("actionMontage.sectionEnvelopesFadeAcrossGapsWithoutDippingAtContiguou
 TEST_CASE("actionMontage.blendCurvesAreStableAndClamped") {
     using eve::action::ActionBlendCurve;
     using eve::action::evaluateActionBlendCurve;
-    CHECK_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, -1.0), 0.0);
-    CHECK_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, 2.0), 1.0);
-    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseIn, 0.5) - 0.25) < 1e-9);
-    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseOut, 0.5) - 0.75) < 1e-9);
-    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseInOut, 0.5) - 0.5) < 1e-9);
-    CHECK(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::SmoothStep, 0.5) - 0.5) < 1e-9);
+    REQUIRE_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, -1.0), 0.0);
+    REQUIRE_EQ(evaluateActionBlendCurve(ActionBlendCurve::Linear, 2.0), 1.0);
+    REQUIRE(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseIn, 0.5) - 0.25) < 1e-9);
+    REQUIRE(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseOut, 0.5) - 0.75) < 1e-9);
+    REQUIRE(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::EaseInOut, 0.5) - 0.5) < 1e-9);
+    REQUIRE(std::fabs(evaluateActionBlendCurve(ActionBlendCurve::SmoothStep, 0.5) - 0.5) < 1e-9);
 }
 
 TEST_CASE("actionMontage.lowFrameRateSweepCrossesEveryBoundaryAndSection") {

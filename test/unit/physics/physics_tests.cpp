@@ -2583,26 +2583,26 @@ TEST_CASE("physics.forces.tireAirborneFreeRollingAndBrakeLock") {
 TEST_CASE("physics.forces.invalidAndOverflowInputsReject") {
     const double nan       = std::numeric_limits<double>::quiet_NaN();
     auto         direction = ForceModels::directional({}, {}, 0);
-    CHECK(!direction.ok());
+    REQUIRE(!direction.ok());
     RadialField radial;
     radial.softening = 0;
-    CHECK(!ForceModels::radial(radial, {}, 1).ok());
+    REQUIRE(!ForceModels::radial(radial, {}, 1).ok());
     BuoyancyModel buoyancy;
     buoyancy.displacedVolume = -1;
-    CHECK(!ForceModels::buoyancy(buoyancy).ok());
-    CHECK(!ForceModels::damping({}, {nan, 0, 0}, 1, 0.1).ok());
-    CHECK(!ForceModels::damping({}, {}, 1, 0).ok());
+    REQUIRE(!ForceModels::buoyancy(buoyancy).ok());
+    REQUIRE(!ForceModels::damping({}, {nan, 0, 0}, 1, 0.1).ok());
+    REQUIRE(!ForceModels::damping({}, {}, 1, 0).ok());
     WingModel wing;
     wing.normal = wing.chord;
-    CHECK(!ForceModels::wing(wing, {}).ok());
-    CHECK(!ForceModels::friction({0.1, 0.9}, {}, {}, 1).ok());
+    REQUIRE(!ForceModels::wing(wing, {}).ok());
+    REQUIRE(!ForceModels::friction({0.1, 0.9}, {}, {}, 1).ok());
     TireInput input;
     input.brakeTorque = -1;
-    CHECK(!ForceModels::tire({}, input, 0.1).ok());
+    REQUIRE(!ForceModels::tire({}, input, 0.1).ok());
     input            = {};
     input.normalLoad = nan;
-    CHECK(!ForceModels::tire({}, input, 0.1).ok());
-    CHECK(!ForceModels::directional({{}, {1e308, 0, 0}}, {}, 1e308).ok());
+    REQUIRE(!ForceModels::tire({}, input, 0.1).ok());
+    REQUIRE(!ForceModels::directional({{}, {1e308, 0, 0}}, {}, 1e308).ok());
 }
 
 TEST_CASE("physics.forces.constantDirectionAndRadialCaps") {

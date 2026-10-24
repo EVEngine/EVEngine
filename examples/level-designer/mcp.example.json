@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "whitebox-designer": {
+      "command": "node",
+      "args": ["C:/path/to/EVEngine/tools/eve-mcp/server.js"],
+      "env": {
+        "EVE_MCP_HOST": "127.0.0.1",
+        "EVE_MCP_PORT": "7529"
+      }
+    }
+  }
+}

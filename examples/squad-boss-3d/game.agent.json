@@ -1,0 +1,21 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/squad-boss-3d",
+  "entry": "main.nut",
+  "smoke": {"scene": "default", "seed": 0, "maxHostFrames": 180, "mustReach": ["squad"]},
+  "clock": {"defaultStep": "frame"},
+  "observations": [{"id": "squad", "kind": "script-root", "path": "squadObservation",
+    "fields": ["tick", "command", "auto", "bossHp", "playerHp", "eqs_queries", "gas_hits", "heals", "dodges", "tests"]}],
+  "actions": {"source": "script-map", "map": [
+    {"id": "reset", "script": "game.reset()"},
+    {"id": "balanced", "script": "game.balanced()"},
+    {"id": "focus", "script": "game.focus()"},
+    {"id": "protect", "script": "game.protect()"},
+    {"id": "retreat", "script": "game.retreat()"},
+    {"id": "toggle-auto", "script": "game.toggleAuto()"},
+    {"id": "verify", "script": "game.verify()"}
+  ]},
+  "capture": {"requiredFor": ["visual"], "backend": "engine-readback"},
+  "tolerances": {"screenshot": "human-or-vlm", "numericAbs": 0.0001}
+}

@@ -1,5 +1,16 @@
 # EVEngine
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
 
 Evolutionary Vision Engine
@@ -16,6 +27,10 @@ Evolutionary Vision Engine
 | --- | --- | --- |
 | Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
 | Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Linux ARM64 的 OBJECT 单体测试程序还需要 `lld`（`sudo apt-get install lld`），
+以便为大型测试链接生成远距离分支跳板；C/C++ 仍由 GCC/G++ 编译，
+引擎程序和 SHARED/按域测试的链接方式不变。
 
 Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
 Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
@@ -36,6 +51,13 @@ Debug 保留严格警告，Release 使用 OBJECT 链接策略。
 定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
 `make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
 匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
+
+CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner，
+复用现有 Windows／Linux 变更范围判断。日常构建 Debug；`build_type=release`
+构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
+第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
+依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
+目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
 
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。

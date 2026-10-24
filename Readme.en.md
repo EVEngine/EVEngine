@@ -1,5 +1,16 @@
 # EVEngine
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
 
 Evolutionary Vision Engine
@@ -23,7 +34,10 @@ Windows SDK, Ninja, Git Bash, and Vulkan headers, shader tools and ARM64 loader
 libraries. The Makefile invokes `cmake/with-msvc.cmd --arm64` for every configure
 and build, selecting the native ARM64 MSVC environment. Linux requires native
 GCC/G++, Ninja and the same development packages as the standard Linux build,
-installed for aarch64. No cross toolchain file is used.
+installed for aarch64. Also install `lld` (`sudo apt-get install lld`) for the
+monolithic OBJECT test executable: it supplies range-extension thunks for the
+large ARM64 link. Compilation still uses GCC/G++; the engine executable and
+shared/domain test links keep their existing linker. No cross toolchain file is used.
 
 The existing CMake entry point also accepts `-DEVENGINE_NATIVE_ARM64=ON` together
 with `-DEVENGINE_BUILD_PLATFORM=win32` or `linux`. On Windows invoke CMake through
@@ -47,6 +61,16 @@ selects OBJECT linkage. Run a targeted host test with, for example,
 Linux graphics tests still require a display/Vulkan ICD and audio backend;
 use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
 These explicit targets do not change the existing `make debug` default.
+
+CI builds these targets on native GitHub-hosted `windows-11-arm` and
+`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
+scopes: normal runs build Debug; `build_type=release` builds Release and
+`build_type=both` builds both configurations. Each lane compiles and links the
+engine and test binaries, requiring the matching ARM64 third-party release
+packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
+packaging belong to the third-party repository. Missing packages fail explicitly
+instead of rebuilding dependencies in these CI lanes. These are build checks;
+ARM64 graphics tests and SDK release packaging are not part of these lanes.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 

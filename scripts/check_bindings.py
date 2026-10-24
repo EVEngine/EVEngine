@@ -12,19 +12,15 @@ Exit code is non-zero when a bound name is missing from its doc chapter
 (CI gate). Doc-only names (removed bindings that the doc still lists) are
 reported as warnings so the doc can be cleaned up without blocking.
 
-Existing chapters document a subset of their bindings (a large pre-existing
-debt). That debt is recorded in scripts/check_bindings_gaps.txt as
-"module:name" lines (regenerate with --write-gaps). Under --strict, a bound
-name missing from its doc chapter fails **unless** it is listed there, so the
-debt stays visible as warnings while new drift blocks CI. --modules limits the
-check to the given CMake module names.
+Strict mode rejects every binding missing from both references; there are no
+legacy gap exemptions. --modules limits the check to named CMake modules.
 
 The forward direction also accepts the generated SDK catalog: human guides
 explain workflows and binding semantics, while complete signatures come from
 generate_binding_contracts.py. A catalog entry counts only for its own source
 file, so a similarly named API in another module cannot hide a missing binding,
 and unresolved catalog declarations fail --strict. Bindings absent from both
-references retain the reviewed gap inventory.
+references fail strict mode.
 
 Reverse direction, and what it cost to make it readable. "Documented but not
 bound" started at 221 names whose actionable yield was one, because it compared
@@ -54,8 +50,6 @@ Usage:
     python3 scripts/check_bindings.py                 # report all gaps (exit 0)
     python3 scripts/check_bindings.py --strict        # fail on any gap
     python3 scripts/check_bindings.py --strict --modules avatar,database
-    python3 scripts/check_bindings.py --strict --write-gaps
-                                                      # rewrite the known-gaps file
     python3 scripts/check_bindings.py --quiet         # only print problems
 """
 
@@ -73,7 +67,6 @@ import utf8_stdio
 ROOT = Path(__file__).resolve().parent.parent
 MODULES = ROOT / "src" / "modules"
 DOCS = ROOT / "docs" / "usr" / "modules"
-GAPS_FILE = Path(__file__).resolve().parent / "check_bindings_gaps.txt"
 # Scripts the engine ships to every game; their members are user-facing too.
 SHIPPED_SCRIPTS = ROOT / "src" / "scripts"
 # The engine core injects script chunks that belong to no module (the ECS bootstrap in
@@ -147,27 +140,6 @@ SQUIRREL_BUILTINS = frozenset(
         "apply", "filter", "reduce", "find", "slice", "print", "assert",
     }
 )
-
-
-def load_gaps() -> set[str]:
-    if not GAPS_FILE.is_file():
-        return set()
-    gaps: set[str] = set()
-    for line in GAPS_FILE.read_text(encoding="utf-8").splitlines():
-        line = line.strip()
-        if line and not line.startswith("#"):
-            gaps.add(line)
-    return gaps
-
-
-def write_gaps(entries: list[str]) -> None:
-    GAPS_FILE.write_text(
-        "# Known 'bound but not documented' gaps (module:binding), one per line.\n"
-        "# Regenerate with: python3 scripts/check_bindings.py --strict --write-gaps\n"
-        "# Remove a line when the doc chapter catches up; new gaps not listed here\n"
-        "# fail the CI binding check.\n" + "\n".join(sorted(set(entries))) + "\n",
-        encoding="utf-8",
-    )
 
 
 def module_roots() -> list[tuple[str, Path]]:
@@ -343,12 +315,9 @@ def main() -> int:
                         help="fail on unresolved signatures or bindings missing from both references")
     parser.add_argument("--modules", default="",
                         help="comma-separated CMake module names to check (default: all)")
-    parser.add_argument("--write-gaps", action="store_true",
-                        help="rewrite check_bindings_gaps.txt from the current gaps")
     args = parser.parse_args()
 
     selected = {m.strip() for m in args.modules.split(",") if m.strip()}
-    gaps = load_gaps()
 
     # Signatures belong in the SDK catalog, not duplicated method-name lists.
     # Reuse its real extractor: unresolved declarations still fail strict CI.
@@ -363,7 +332,6 @@ def main() -> int:
     if args.strict:
         failures.extend(f"unresolved generated API: {item}" for item in unresolved)
     warnings: list[str] = []
-    gap_entries: list[str] = []
     checked = 0
 
     modules = iter_modules()
@@ -383,10 +351,7 @@ def main() -> int:
         checked += len(names)
         if missing:
             for name in missing:
-                gap_entries.append(f"{module}:{name}")
-                if f"{module}:{name}" in gaps:
-                    warnings.append(f"{module} ({doc.name}): known gap (document it): {name}")
-                elif args.strict:
+                if args.strict:
                     failures.append(f"{module} ({doc.name}): NEW gap, add a guide explanation or generated signature: {name}")
                 else:
                     warnings.append(f"{module} ({doc.name}): bound but not documented: {name}")
@@ -405,9 +370,6 @@ def main() -> int:
         print(f"FAIL {f}")
 
     print(f"checked {checked} bindings across {len(modules)} module dirs")
-    if args.write_gaps:
-        write_gaps(gap_entries)
-        print(f"wrote {len(set(gap_entries))} known gaps to {GAPS_FILE}")
     return 1 if failures else 0
 
 

@@ -32,6 +32,91 @@ class TestLevelCatalogueTests(unittest.TestCase):
         data["sources"]["fixture.cpp"]["cases"] = {}
         self.assertTrue(any("missing explicit case classification" in e for e in levels.catalogue_errors(data, inventory)))
 
+    def test_compact_defaults_classify_new_cases_and_keep_unit_safety(self):
+        data, inventory = self.fixture()
+        data["version"] = 2
+        policy = data["sources"]["fixture.cpp"]
+        del policy["cases"]
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        text = inventory["fixture.cpp"]["text"] + '\nTEST_CASE("new.case") { openHeadlessGfx(gfx); }'
+        inventory["fixture.cpp"].update(text=text, cases=levels.cases_in(text))
+        self.assertTrue(any("new.case: unit case contains external setup" in e
+                            for e in levels.catalogue_errors(data, inventory)))
+        policy["cases"] = {"render-offscreen": ["new.case"]}
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        expanded = levels.expanded_catalogue(data, inventory)
+        self.assertEqual(levels.classified_cases(expanded["sources"]["fixture.cpp"]),
+                         {"local.case": "local-logic", "new.case": "render-offscreen"})
+        policy["cases"]["render-offscreen"].append("removed.case")
+        self.assertTrue(any("stale case" in e for e in levels.catalogue_errors(data, inventory)))
+        policy["cases"]["module-composition"] = ["new.case"]
+        self.assertTrue(any("more than one" in e for e in levels.catalogue_errors(data, inventory)))
+
+    def test_compact_and_full_catalogues_emit_identical_labels_and_origins(self):
+        from unittest.mock import patch
+
+        text = 'TEST_CASE("local.case") { CHECK(true); }\nTEST_CASE("gpu.case") { openHeadlessGfx(gfx); }'
+        data, inventory = self.fixture(text)
+        policy = data["sources"]["fixture.cpp"]
+        policy["origins"] = ["old.cpp"]
+        policy["cases"] = {"local-logic": ["local.case"], "render-offscreen": ["gpu.case"]}
+        compact = deepcopy(data)
+        compact["version"] = 2
+        del compact["sources"]["fixture.cpp"]["cases"]["local-logic"]
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "fixture.cpp").write_text(text, encoding="utf-8")
+            before, after = root / "before.cmake", root / "after.cmake"
+            with patch.object(levels, "CATALOGUE", root / "test_levels.json"):
+                levels.emit_cmake(data, before)
+                levels.emit_cmake(compact, after)
+            self.assertEqual(before.read_text(encoding="utf-8"), after.read_text(encoding="utf-8"))
+        self.assertNotIn("local-logic", compact["sources"]["fixture.cpp"]["cases"])
+
+    def test_editing_cpp_refreshes_cmake_without_editing_policy(self):
+        import shutil
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for folder in ("cmake", "scripts", "test"):
+                (root / folder).mkdir()
+            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/utf8_stdio.py"):
+                shutil.copyfile(levels.ROOT / relative, root / relative)
+            data, _ = self.fixture()
+            data["version"] = 2
+            del data["sources"]["fixture.cpp"]["cases"]
+            (root / "test/test_levels.json").write_text(json.dumps(data), encoding="utf-8")
+            source = root / "test/fixture.cpp"
+            source.write_text('TEST_CASE("local.case") { CHECK(true); }', encoding="utf-8")
+            (root / "CMakeLists.txt").write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(LevelRefresh NONE)\n'
+                'include(cmake/TestLevels.cmake)\neve_configure_test_levels(metadata)\n', encoding="utf-8")
+            build = root / "build"
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(root), "-B", str(build)],
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            source.write_text(source.read_text(encoding="utf-8") +
+                              '\nTEST_CASE("added.case") { CHECK(true); }', encoding="utf-8")
+            result = subprocess.run(["cmake", "--build", str(build)], capture_output=True,
+                                    text=True, encoding="utf-8", check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            self.assertIn('EVE_TEST_LEVEL_fixture.cpp|added.case',
+                          (build / "test_levels.cmake").read_text(encoding="utf-8"))
+
+    def test_compact_projection_derives_path_ownership_without_mutating_policy(self):
+        data, inventory = self.fixture()
+        data["version"] = 2
+        policy = data["sources"].pop("fixture.cpp")
+        policy.pop("cases")
+        data["sources"]["unit/rules/fixture.cpp"] = policy
+        inventory["unit/rules/fixture.cpp"] = inventory.pop("fixture.cpp")
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        expanded = levels.expanded_catalogue(data, inventory)
+        self.assertEqual(expanded["sources"]["unit/rules/fixture.cpp"]["module"], "rules")
+        self.assertNotIn("module", policy)
+        self.assertEqual(levels.source_policy("integration/save-restore/fixture.cpp", {"module": "rules"}),
+                         {"module": "rules", "task": "save-restore"})
+
     def test_stale_duplicate_and_unknown_policy_are_errors(self):
         data, inventory = self.fixture()
         data["sources"]["fixture.cpp"]["cases"]["module-composition"] = ["local.case"]
