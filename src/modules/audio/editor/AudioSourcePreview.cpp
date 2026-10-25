@@ -8,7 +8,7 @@ namespace eve::audio_editor {
 namespace {
 class NativeWaveformProvider final : public IAudioSourcePreviewProvider {
 public:
-    audio_editing::EditorResult<audio_editing::AudioWaveformResult> generate(
+    audio_editing::Result<audio_editing::AudioWaveformResult> generate(
         const audio_editing::AudioWaveformRequest& request, const audio_editing::EditorAudioPcm& pcm,
         const editing::TaskContext& context) const override {
         if (context.isCancellationRequested())
@@ -38,20 +38,20 @@ struct AudioSourceEditor::PreviewSession {
 void                 AudioSourceEditor::PreviewSessionDeleter::operator()(PreviewSession* value) const { delete value; }
 void                 AudioSourceEditor::initializePreview() { previewSession_.reset(new PreviewSession); }
 editor::PreviewState AudioSourceEditor::previewState() const noexcept { return previewSession_->async.state(); }
-audio_editing::EditorResult<void> AudioSourceEditor::setPreviewProvider(
+audio_editing::Result<void> AudioSourceEditor::setPreviewProvider(
     std::shared_ptr<const IAudioSourcePreviewProvider> provider) {
     auto changed = previewSession_->async.replaceProvider(provider != nullptr);
     if (!changed.ok()) return changed;
     previewSession_->provider = std::move(provider);
     return editing::applied<void>();
 }
-audio_editing::EditorResult<void> AudioSourceEditor::cancelPreview() { return previewSession_->async.cancel(); }
-void                              AudioSourceEditor::closePreview() {
+audio_editing::Result<void> AudioSourceEditor::cancelPreview() { return previewSession_->async.cancel(); }
+void                        AudioSourceEditor::closePreview() {
     previewSession_->async.close();
     previewSession_->provider.reset();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::requestPreview() {
+audio_editing::Result<void> AudioSourceEditor::requestPreview() {
     auto provider = previewSession_->provider;
     if (!provider)
         return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("editor.audio.preview-provider"),
@@ -84,7 +84,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::requestPreview() {
         return editing::applied(Publication{std::move(result).takeValue(), revision, width});
     });
 }
-audio_editing::EditorResult<void> AudioSourceEditor::pollPreview() {
+audio_editing::Result<void> AudioSourceEditor::pollPreview() {
     auto result = previewSession_->async.poll();
     if (!result) return previewState().phase == editor::PreviewPhase::Pending ? editing::pending() : editing::noOp();
     if (!result->ok()) return editing::Result<void>::failure(result->status());

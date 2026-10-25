@@ -1,5 +1,6 @@
 #include "climbing/Climbing.h"
 #include "climbing/ClimbingBindingInternal.h"
+#include "climbing/ClimbingEventValue.h"
 
 #include "animation/AnimClip.h"
 #include "common/SquirrelBinding.h"
@@ -63,42 +64,7 @@ const char* phaseName(ClimbingPhase phase) {
     return "failed";
 }
 
-const char* eventKindName(ClimbingEventKind kind) {
-    switch (kind) {
-        case ClimbingEventKind::Started: return "started";
-        case ClimbingEventKind::AnchorTransitionStarted: return "anchor_transition_started";
-        case ClimbingEventKind::AnchorReached: return "anchor_reached";
-        case ClimbingEventKind::ContactLeftHand: return "contact_left_hand";
-        case ClimbingEventKind::ContactRightHand: return "contact_right_hand";
-        case ClimbingEventKind::Landed: return "landed";
-        case ClimbingEventKind::Hanging: return "hanging";
-        case ClimbingEventKind::Dropped: return "dropped";
-        case ClimbingEventKind::Completed: return "completed";
-        case ClimbingEventKind::Cancelled: return "cancelled";
-        case ClimbingEventKind::Failed: return "failed";
-    }
-    return "failed";
-}
-
-eve::Value eventValue(ClimbingEvent event) {
-    eve::Value::Array metadata;
-    metadata.reserve(event.metadata.size());
-    for (std::string& value : event.metadata) metadata.emplace_back(std::move(value));
-    return eve::Value::object({
-        {"kind", eventKindName(event.kind)},
-        {"actionId", std::move(event.actionId)},
-        {"tick", std::to_string(event.tick.value())},
-        {"executionId", std::to_string(event.executionId.value())},
-        {"metadata", eve::Value(std::move(metadata))},
-    });
-}
-
-eve::Value eventBatchValue(std::vector<ClimbingEvent> events) {
-    eve::Value::Array result;
-    result.reserve(events.size());
-    for (auto& event : events) result.push_back(eventValue(std::move(event)));
-    return eve::Value(std::move(result));
-}
+eve::Value eventBatchValue(std::vector<ClimbingEvent> events) { return climbingEventArrayValue(events); }
 
 eve::Value advanceValue(ClimbingAdvance advance) {
     return eve::Value::object({
@@ -117,6 +83,10 @@ eve::Value advanceValue(ClimbingAdvance advance) {
         {"contactWeight", advance.contactWeight},
         {"leftHandWeight", advance.leftHandWeight},
         {"rightHandWeight", advance.rightHandWeight},
+        {"leftFootAnchor", vecValue(advance.leftFootAnchor)},
+        {"rightFootAnchor", vecValue(advance.rightFootAnchor)},
+        {"hasLeftFootAnchor", advance.hasLeftFootAnchor},
+        {"hasRightFootAnchor", advance.hasRightFootAnchor},
         {"leftFootWeight", advance.leftFootWeight},
         {"rightFootWeight", advance.rightFootWeight},
         {"pelvisWeight", advance.pelvisWeight},

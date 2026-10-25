@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/ECS.h"
 #include "npc_ai/NpcAi.h"
@@ -18,7 +20,7 @@ namespace eve::npc_ai {
  * is destroyed first, release observes stale state and clears the link as NoOp.
  * Runtime handles are transient and must be rebuilt from logical behavior ids after restore.
  */
-struct NpcAgentState {
+struct EVENGINE_API_PLATFORM NpcAgentState {
     AgentHandle agent;
 
     /** @brief Creates the canonical module-owned agent referenced by this component. */
@@ -41,11 +43,13 @@ struct NpcAiProjection {
     }
 };
 
+/** @brief NpcAiEcsStepReport public API. */
 struct NpcAiEcsStepReport {
     std::size_t linkedEntities = 0;
     TickReport  runtime;
 };
 
+/** @brief NpcAiSystemContract public API. */
 struct NpcAiSystemContract {
     std::string_view name;
     std::string_view entityScope;
@@ -77,6 +81,7 @@ public:
      * and publishes no callbacks while iterating a View.
      */
     template <class EntityRoot>
+    /** @brief Step. */
     [[nodiscard]] static Result<NpcAiEcsStepReport> step(NpcAiWorld& world, const TickContext& context) {
         std::size_t linked = 0;
         {
@@ -102,6 +107,7 @@ public:
                 projection->replace(current.value());
             }
         }
+        /** @brief Success. */
         return Result<NpcAiEcsStepReport>::success({linked, advanced.value()});
     }
 };

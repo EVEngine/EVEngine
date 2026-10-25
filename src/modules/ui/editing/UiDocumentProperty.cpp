@@ -1,5 +1,6 @@
 #include "ui/editing/UiDocument.h"
 
+#include <cmath>
 #include <optional>
 #include <utility>
 
@@ -31,6 +32,12 @@ EditorValue component(const UiWidgetSnapshot& widget, const PropertyPath& path) 
     if (path == PropertyPath("content.textureAsset")) return widget.content.textureAsset;
     if (path == PropertyPath("content.imageFit")) return widget.content.imageFit;
     if (path == PropertyPath("content.clip")) return widget.content.clip;
+    if (path == PropertyPath("content.value")) return widget.content.value;
+    if (path == PropertyPath("content.fillDirection")) return widget.content.fillDirection;
+    if (path == PropertyPath("content.fillStretch")) return widget.content.fillStretch;
+    if (path == PropertyPath("content.fillStartDegrees")) return widget.content.fillStartDegrees;
+    if (path == PropertyPath("content.fillClockwise")) return widget.content.fillClockwise;
+    if (path == PropertyPath("content.fillInnerRadius")) return widget.content.fillInnerRadius;
     if (path == PropertyPath("widget.visible")) return widget.visible;
     if (path == PropertyPath("widget.enabled")) return widget.enabled;
     if (path == PropertyPath("layout.position")) return EditorValue::Array{widget.layout.x, widget.layout.y};
@@ -59,6 +66,38 @@ EditorValue component(const UiWidgetSnapshot& widget, const PropertyPath& path) 
 }
 
 bool assign(UiWidgetSnapshot& widget, const PropertyPath& path, const EditorValue& value) {
+    if (path == PropertyPath("content.value") || path == PropertyPath("content.fillInnerRadius") ||
+        path == PropertyPath("content.fillStartDegrees")) {
+        const auto* number = value.getIf<double>();
+        if (!number || !std::isfinite(*number)) return false;
+        if (path == PropertyPath("content.fillStartDegrees")) {
+            if (std::abs(*number) > 360000.0) return false;
+            widget.content.fillStartDegrees = *number;
+        } else {
+            if (*number < 0.0 || *number > 1.0) return false;
+            if (path == PropertyPath("content.value"))
+                widget.content.value = *number;
+            else
+                widget.content.fillInnerRadius = *number;
+        }
+        return true;
+    }
+    if (path == PropertyPath("content.fillStretch") || path == PropertyPath("content.fillClockwise")) {
+        const auto* flag = value.getIf<bool>();
+        if (!flag) return false;
+        if (path == PropertyPath("content.fillStretch"))
+            widget.content.fillStretch = *flag;
+        else
+            widget.content.fillClockwise = *flag;
+        return true;
+    }
+    if (path == PropertyPath("content.fillDirection")) {
+        const auto* direction = value.getIf<std::string>();
+        if (!direction || (*direction != "right" && *direction != "left" && *direction != "down" && *direction != "up"))
+            return false;
+        widget.content.fillDirection = *direction;
+        return true;
+    }
     if (path == PropertyPath("content.fontAsset") || path == PropertyPath("content.textureAsset")) {
         const auto* asset = value.getIf<std::string>(); if (!asset) return false;
         if (path == PropertyPath("content.fontAsset")) widget.content.fontAsset = *asset;
@@ -201,23 +240,25 @@ PropertySchema UiDocumentTarget::schema(const SelectionSnapshot&) const {
         uiProperty("content.verticalAlign", "editor.ui.verticalAlign", PropertyType::Enum, "start", "content"),
         uiProperty("content.textureAsset", "editor.ui.textureAsset", PropertyType::AssetRef, "", "content"),
         uiProperty("content.imageFit", "editor.ui.imageFit", PropertyType::Enum, "stretch", "content"),
+        uiProperty("content.value", "editor.ui.fillValue", PropertyType::Float, 0.0, "content"),
+        uiProperty("content.fillDirection", "editor.ui.fillDirection", PropertyType::Enum, "right", "content"),
+        uiProperty("content.fillStretch", "editor.ui.fillStretch", PropertyType::Bool, false, "content"),
+        uiProperty("content.fillStartDegrees", "editor.ui.fillStartDegrees", PropertyType::Float, -90.0, "content"),
+        uiProperty("content.fillClockwise", "editor.ui.fillClockwise", PropertyType::Bool, true, "content"),
+        uiProperty("content.fillInnerRadius", "editor.ui.fillInnerRadius", PropertyType::Float, 0.0, "content"),
         uiProperty("content.clip", "editor.ui.clip", PropertyType::Bool, true, "content"),
         uiProperty("widget.visible", "editor.ui.visible", PropertyType::Bool, true, "widget"),
         uiProperty("widget.enabled", "editor.ui.enabled", PropertyType::Bool, true, "widget"),
-        uiProperty("layout.position", "editor.ui.position", PropertyType::Vec2,
-                   EditorValue::Array{0.0, 0.0}, "layout"),
-        uiProperty("layout.size", "editor.ui.size", PropertyType::Vec2,
-                   EditorValue::Array{0.0, 0.0}, "layout"),
-        uiProperty("layout.anchor", "editor.ui.anchor", PropertyType::Vec2,
-                   EditorValue::Array{0.0, 0.0}, "layout"),
-        uiProperty("layout.pivot", "editor.ui.pivot", PropertyType::Vec2,
-                   EditorValue::Array{0.0, 0.0}, "layout"),
-        uiProperty("style.margin", "editor.ui.margin", PropertyType::Vec4,
-                   EditorValue::Array{0.0, 0.0, 0.0, 0.0}, "style"),
-        uiProperty("style.padding", "editor.ui.padding", PropertyType::Vec4,
-                   EditorValue::Array{0.0, 0.0, 0.0, 0.0}, "style"),
-        uiProperty("style.tint", "editor.ui.tint", PropertyType::Color,
-                   EditorValue::Array{1.0, 1.0, 1.0, 1.0}, "style"),
+        uiProperty("layout.position", "editor.ui.position", PropertyType::Vec2, EditorValue::Array{0.0, 0.0}, "layout"),
+        uiProperty("layout.size", "editor.ui.size", PropertyType::Vec2, EditorValue::Array{0.0, 0.0}, "layout"),
+        uiProperty("layout.anchor", "editor.ui.anchor", PropertyType::Vec2, EditorValue::Array{0.0, 0.0}, "layout"),
+        uiProperty("layout.pivot", "editor.ui.pivot", PropertyType::Vec2, EditorValue::Array{0.0, 0.0}, "layout"),
+        uiProperty("style.margin", "editor.ui.margin", PropertyType::Vec4, EditorValue::Array{0.0, 0.0, 0.0, 0.0},
+                   "style"),
+        uiProperty("style.padding", "editor.ui.padding", PropertyType::Vec4, EditorValue::Array{0.0, 0.0, 0.0, 0.0},
+                   "style"),
+        uiProperty("style.tint", "editor.ui.tint", PropertyType::Color, EditorValue::Array{1.0, 1.0, 1.0, 1.0},
+                   "style"),
         uiProperty("style.cornerRadius", "editor.ui.cornerRadius", PropertyType::Float, 0.0, "style"),
         uiProperty("style.gap", "editor.ui.gap", PropertyType::Float, 0.0, "flex"),
         uiProperty("style.flexGrow", "editor.ui.flexGrow", PropertyType::Float, 0.0, "flex"),
@@ -242,7 +283,7 @@ PropertyReadResult UiDocumentTarget::read(const SelectionSnapshot& selection,
     return common ? PropertyReadResult{PropertyReadState::Value, *common, {}} : PropertyReadResult{};
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot& selection,
                                                          const PropertyPath& path,
                                                          const EditorValue& value,
                                                          PropertySetMode mode) const {
@@ -282,7 +323,7 @@ EditorResult<DomainOperation> UiDocumentTarget::makeSet(const SelectionSnapshot&
     return eve::editing::applied<DomainOperation>(std::move(operation));
 }
 
-EditorResult<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> UiDocumentTarget::makeReset(const SelectionSnapshot& selection,
                                                            const PropertyPath& path) const {
     auto property = schema(selection).find(path);
     if (!property)

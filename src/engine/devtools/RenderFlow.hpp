@@ -23,7 +23,7 @@ enum class RenderEventKind : uint8_t {
     Error,
 };
 
-struct EVENGINE_API RenderEvent {
+struct EVENGINE_API_FOUNDATION_INLINE RenderEvent {
     uint32_t       id   = 0;
     RenderEventKind kind = RenderEventKind::Draw;
     std::string    name;     // pass / api / resource kind / "error"
@@ -32,12 +32,12 @@ struct EVENGINE_API RenderEvent {
     uint32_t       passId   = 0;  // enclosing PassBegin event
 };
 
-struct EVENGINE_API RenderSliceCriterion {
+struct EVENGINE_API_FOUNDATION_INLINE RenderSliceCriterion {
     uint32_t    eventId = 0;  // 0 ⇒ last Error, else last event
     std::string resource;     // optional: focus on a bound resource name
 };
 
-struct EVENGINE_API RenderSliceResult {
+struct EVENGINE_API_FOUNDATION_INLINE RenderSliceResult {
     std::vector<uint32_t>    eventIds;
     std::vector<RenderEvent> path;      // chronological events in the slice
     std::vector<std::string> passes;    // nested pass names at criterion
@@ -53,7 +53,7 @@ struct EVENGINE_API RenderSliceResult {
  * Event storage is a fixed ring buffer: when full, new events overwrite the
  * oldest slot in place (O(1)).
  */
-class EVENGINE_API RenderFlow : public eve::debug::IRenderTracer {
+class EVENGINE_API_FOUNDATION RenderFlow : public eve::debug::IRenderTracer {
 public:
     RenderFlow();
     ~RenderFlow() override;
@@ -64,9 +64,9 @@ public:
     size_t eventCount() const { return count_; }
 
     /** @brief Chronological view over the live ring window (oldest → newest). */
-    class EVENGINE_API EventsView {
+    class EVENGINE_API_FOUNDATION_INLINE EventsView {
     public:
-        class EVENGINE_API const_iterator {
+        class EVENGINE_API_FOUNDATION_INLINE const_iterator {
         public:
             using iterator_category = std::forward_iterator_tag;
             using value_type        = RenderEvent;

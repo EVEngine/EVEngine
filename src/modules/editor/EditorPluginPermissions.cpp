@@ -15,7 +15,7 @@ EditorValue grantValue(const PluginPermissionGrant& grant) {
     return EditorValue::Object{{"id", grant.id.value()}, {"plugin", grant.plugin}, {"capability", grant.capability},
                                {"scope", grant.scope}, {"decision", grant.decision}};
 }
-EditorResult<PluginPermissionGrant> parseGrant(const EditorValue& value) {
+Result<PluginPermissionGrant> parseGrant(const EditorValue& value) {
     auto string = [&](const char* key) -> const std::string* {
         const auto* entry = field(value, key);
         return entry ? entry->getIf<std::string>() : nullptr;
@@ -53,13 +53,13 @@ TargetDescriptor PluginPermissionTarget::describe() const {
 void* PluginPermissionTarget::queryCapability(const CapabilityId& capability) {
     return capability == CapabilityId("eve.editor.target.plugin-permissions") ? this : nullptr;
 }
-EditorResult<void> PluginPermissionTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> PluginPermissionTarget::applyDomainOperation(const DomainOperation& operation) {
     if (operation.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.plugins.permission-target"),
                                           "Permission operation targets another document");
     if (operation.type == "plugin.permission.set.v1") {
         auto parsed = parseGrant(operation.payload);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         for (const auto& [id, current] : grants_)
             if (id != parsed.value().id && current.plugin == parsed.value().plugin &&
                 current.capability == parsed.value().capability && current.scope == parsed.value().scope)
@@ -82,7 +82,7 @@ EditorResult<void> PluginPermissionTarget::applyDomainOperation(const DomainOper
 std::unique_ptr<IDomainOperationTarget> PluginPermissionTarget::cloneDomainState() const {
     return std::make_unique<PluginPermissionTarget>(*this);
 }
-EditorResult<void> PluginPermissionTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> PluginPermissionTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<PluginPermissionTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.plugins.permission-staging"),
@@ -95,9 +95,9 @@ std::vector<PluginPermissionGrant> PluginPermissionTarget::grants() const {
     for (const auto& [id, grant] : grants_) { (void)id; result.push_back(grant); }
     return result;
 }
-EditorResult<DomainOperation> PluginPermissionTarget::makeSet(const PluginPermissionGrant& grant) const {
+Result<DomainOperation> PluginPermissionTarget::makeSet(const PluginPermissionGrant& grant) const {
     auto parsed = parseGrant(grantValue(grant));
-    if (!parsed.ok()) return EditorResult<DomainOperation>::failure(parsed.status());
+    if (!parsed.ok()) return Result<DomainOperation>::failure(parsed.status());
     for (const auto& [id, current] : grants_)
         if (id != grant.id && current.plugin == grant.plugin && current.capability == grant.capability &&
             current.scope == grant.scope)
@@ -110,7 +110,7 @@ EditorResult<DomainOperation> PluginPermissionTarget::makeSet(const PluginPermis
         id_, grantValue(grant), found == grants_.end() ? EditorValue(grant.id.value()) : grantValue(found->second),
         grant.id));
 }
-EditorResult<DomainOperation> PluginPermissionTarget::makeRemove(const StableId& id) const {
+Result<DomainOperation> PluginPermissionTarget::makeRemove(const StableId& id) const {
     const auto found = grants_.find(id);
     if (found == grants_.end())
         return eve::editing::failed<DomainOperation>(
@@ -131,7 +131,7 @@ EditorValue PluginPermissionTarget::snapshotValue() const {
     for (const auto& [id, grant] : grants_) { (void)id; grants.push_back(grantValue(grant)); }
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"grants", std::move(grants)}};
 }
-EditorResult<void> PluginPermissionTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> PluginPermissionTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto *versionEntry = field(snapshot, "schemaVersion"), *grantsEntry = field(snapshot, "grants");
     const auto* version = versionEntry ? versionEntry->getIf<int64_t>() : nullptr;
     const auto* grants = grantsEntry ? grantsEntry->getIf<EditorValue::Array>() : nullptr;
@@ -141,9 +141,9 @@ EditorResult<void> PluginPermissionTarget::loadSnapshot(const EditorValue& snaps
     PluginPermissionTarget candidate(id_);
     for (const auto& entry : *grants) {
         auto parsed = parseGrant(entry);
-        if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+        if (!parsed.ok()) return Result<void>::failure(parsed.status());
         auto planned = candidate.makeSet(parsed.value());
-        if (!planned.ok()) return EditorResult<void>::failure(planned.status());
+        if (!planned.ok()) return Result<void>::failure(planned.status());
         auto applied = candidate.applyDomainOperation(planned.value());
         if (!applied.ok()) return applied;
     }

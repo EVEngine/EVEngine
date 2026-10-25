@@ -1,4 +1,5 @@
 #include "graphics/AntiAliasing.h"
+#include "common/Profile.h"
 
 #include "common/Exception.h"
 #include "graphics/Canvas.h"
@@ -328,7 +329,10 @@ void AntiAliasing::drawFullscreen(Graphics *gfx, Texture *source, Shader *shader
     const float dw = gfx->getCanvas() ? float(gfx->getCanvas()->getWidth()) : float(gfx->getWidth());
     const float dh =
         gfx->getCanvas() ? float(gfx->getCanvas()->getHeight()) : float(gfx->getHeight());
-    gfx->drawTexturedRectShader(source, shader, 0.f, 0.f, dw, dh, glm::vec4(1.f, 1.f, 1.f, 1.f));
+    // Spatial AA writes alpha=1 and replaces the whole destination. Blending
+    // would read undefined contents from a fresh or resized HDR target.
+    gfx->drawTexturedRectShaderUV(source, shader, 0.f, 0.f, dw, dh, 0.f, 0.f, 1.f, 1.f, glm::vec4(1.f, 1.f, 1.f, 1.f),
+                                  false, BlendMode::Opaque);
 }
 
 void AntiAliasing::prepareSource(Texture *source) { uploadScreenUniforms(source); }
@@ -522,6 +526,7 @@ void AntiAliasing::apply(Graphics *gfx, Texture *source) {
 void AntiAliasing::applyTo(Graphics *gfx, Texture *source, Canvas *dest) {
     if (!gfx) throw eve::Exception("AntiAliasing.applyTo: null graphics");
     if (!dest) throw eve::Exception("AntiAliasing.applyTo: null dest");
+    EV_PROFILE_MODULE("graphics", "PostProcess.Antialiasing");
     Canvas *prev = gfx->getCanvas();
     gfx->setCanvas(dest);
     apply(gfx, source);

@@ -1,4 +1,5 @@
 #include "graphics/Exposure.h"
+#include "common/Profile.h"
 
 #include <algorithm>
 #include <string>
@@ -80,8 +81,10 @@ void Exposure::ensureTargets(int width, int height) {
         historyRead_ = historyA_;
         historyWrite_ = historyB_;
     }
+    const bool pipelineOwned = gfx_->pipelineExposure_.get() == this;
+    if (pipelineOwned) output_ = &gfx_->prepareFramePostTarget(Graphics::FramePostTarget::Exposure, width, height);
     if (!output_ || width_ != width || height_ != height) {
-        output_ = gfx_->newHDRCanvas(width, height);
+        if (!pipelineOwned) output_ = gfx_->newHDRCanvas(width, height);
         width_ = width;
         height_ = height;
         historyValid_ = false;
@@ -96,6 +99,7 @@ Texture *Exposure::apply(Texture *source, float manualExposure, bool automatic, 
                          float vignetteSmoothness, float lensDistortion, float lensScale,
                          Texture *meterSource,
                          float deltaSeconds) {
+    EV_PROFILE_MODULE("graphics", "PostProcess.Exposure");
     if (!source) throw eve::Exception("Exposure.apply: null source");
     ensureTargets(source->getWidth(), source->getHeight());
     Canvas *previousCanvas = gfx_->getCanvas();

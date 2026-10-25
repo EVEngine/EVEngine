@@ -1,6 +1,8 @@
 #include "climbing/Climbing.h"
+#include "common/ValueRead.h"
 
 #include "climbing/ClimbingCodec.h"
+#include "climbing/ClimbingEventValue.h"
 #include "physics/World3D.h"
 
 #include <charconv>
@@ -18,38 +20,38 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const eve::Value* value = field(object, name);
-    const auto*       text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
 bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
-    const eve::Value* value  = field(object, name);
-    const auto*       number = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!number) return false;
-    output = *number;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& output, bool defaultValue, bool required) {
-    const eve::Value* value = field(object, name);
+    const auto* value = field(object, name);
     if (!value) {
         output = defaultValue;
         return !required;
     }
-    const auto* boolean = value->getIf<bool>();
-    if (!boolean) return false;
-    output = *boolean;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readUint64String(const eve::Value::Object& object, std::string_view name, std::uint64_t& output) {
-    std::string text;
-    if (!readString(object, name, text) || text.empty()) return false;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), output);
-    return error == std::errc{} && end == text.data() + text.size();
+    auto parsed = eve::scanUnsignedStringMember(object, name);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 eve::Value vecValue(Vec3 value) {
@@ -57,17 +59,9 @@ eve::Value vecValue(Vec3 value) {
 }
 
 bool numericFloat(const eve::Value& value, float& output) {
-    double number = 0.0;
-    if (const auto* integer = value.getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else if (const auto* real = value.getIf<double>())
-        number = *real;
-    else
-        return false;
-    if (!std::isfinite(number) || number < -static_cast<double>(std::numeric_limits<float>::max()) ||
-        number > static_cast<double>(std::numeric_limits<float>::max()))
-        return false;
-    output = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
@@ -139,70 +133,7 @@ bool readPhase(std::string_view value, ClimbingPhase& output) {
     return true;
 }
 
-std::string_view eventKindName(ClimbingEventKind kind) {
-    switch (kind) {
-        case ClimbingEventKind::Started: return "started";
-        case ClimbingEventKind::AnchorTransitionStarted: return "anchor_transition_started";
-        case ClimbingEventKind::AnchorReached: return "anchor_reached";
-        case ClimbingEventKind::ContactLeftHand: return "contact_left_hand";
-        case ClimbingEventKind::ContactRightHand: return "contact_right_hand";
-        case ClimbingEventKind::Landed: return "landed";
-        case ClimbingEventKind::Hanging: return "hanging";
-        case ClimbingEventKind::Dropped: return "dropped";
-        case ClimbingEventKind::Completed: return "completed";
-        case ClimbingEventKind::Cancelled: return "cancelled";
-        case ClimbingEventKind::Failed: return "failed";
-    }
-    return "failed";
-}
-
-bool readEventKind(std::string_view value, ClimbingEventKind& output) {
-    if (value == "started")
-        output = ClimbingEventKind::Started;
-    else if (value == "anchor_transition_started")
-        output = ClimbingEventKind::AnchorTransitionStarted;
-    else if (value == "anchor_reached")
-        output = ClimbingEventKind::AnchorReached;
-    else if (value == "contact_left_hand")
-        output = ClimbingEventKind::ContactLeftHand;
-    else if (value == "contact_right_hand")
-        output = ClimbingEventKind::ContactRightHand;
-    else if (value == "landed")
-        output = ClimbingEventKind::Landed;
-    else if (value == "hanging")
-        output = ClimbingEventKind::Hanging;
-    else if (value == "dropped")
-        output = ClimbingEventKind::Dropped;
-    else if (value == "completed")
-        output = ClimbingEventKind::Completed;
-    else if (value == "cancelled")
-        output = ClimbingEventKind::Cancelled;
-    else if (value == "failed")
-        output = ClimbingEventKind::Failed;
-    else
-        return false;
-    return true;
-}
-
-eve::Value eventValue(const ClimbingEvent& event) {
-    eve::Value::Array metadata;
-    metadata.reserve(event.metadata.size());
-    for (const std::string& value : event.metadata) metadata.emplace_back(value);
-    return eve::Value::object({
-        {"kind", std::string(eventKindName(event.kind))},
-        {"actionId", event.actionId},
-        {"tick", std::to_string(event.tick.value())},
-        {"executionId", std::to_string(event.executionId.value())},
-        {"metadata", eve::Value(std::move(metadata))},
-    });
-}
-
-eve::Value eventArrayValue(const std::vector<ClimbingEvent>& events) {
-    eve::Value::Array values;
-    values.reserve(events.size());
-    for (const auto& event : events) values.push_back(eventValue(event));
-    return eve::Value(std::move(values));
-}
+eve::Value eventArrayValue(const std::vector<ClimbingEvent>& events) { return climbingEventArrayValue(events); }
 
 eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std::uint64_t nextExecutionId) {
     const auto* array = value.getIf<eve::Value::Array>();
@@ -220,7 +151,8 @@ eve::Result<std::vector<ClimbingEvent>> readEvents(const eve::Value& value, std:
         std::string   kind;
         std::uint64_t tick = 0;
         std::uint64_t executionId = 0;
-        if (!object || !readString(*object, "kind", kind) || !readEventKind(kind, event.kind) ||
+        if (!object || !readString(*object, "kind", kind) ||
+            parseClimbingEventKind(kind, event.kind) != EventKindParse::Parsed ||
             !readString(*object, "actionId", event.actionId) || event.actionId.empty() ||
             !readUint64String(*object, "tick", tick) || !readUint64String(*object, "executionId", executionId) ||
             executionId == 0 || executionId >= nextExecutionId)
@@ -432,6 +364,13 @@ eve::Result<eve::Value> ClimbingRuntime::snapshot() const {
         {"anchor", anchorValue(execution_->anchorGraph, execution_->anchorNode,
                                 execution_->anchorReservation)},
     };
+    state.emplace(
+        "sourceAnchor",
+        execution_->sourceAnchorNode
+            ? eve::Value::object({{"graphId", execution_->sourceAnchorNode->graphId},
+                                  {"nodeId", execution_->sourceAnchorNode->nodeId},
+                                  {"generation", std::to_string(execution_->sourceAnchorNode->graphGeneration)}})
+            : eve::Value());
     root.emplace("execution", eve::Value(std::move(state)));
     return eve::Result<eve::Value>::success(eve::Value(std::move(root)));
 }
@@ -587,6 +526,24 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
                                                                          "runtime anchor identities are inconsistent",
                                                                          "execution.anchor", {}, "climbing.snapshot"));
         }
+        const eve::Value* sourceField = field(*state, "sourceAnchor");
+        if (version >= 5 && !sourceField)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "transition source field is required",
+                                       "execution.sourceAnchor", {}, "climbing.snapshot"));
+        if (sourceField && !sourceField->isNull()) {
+            ClimbingAnchorNodeRef source;
+            const auto*           object = sourceField->getIf<eve::Value::Object>();
+            if (version < 5 || !object || !parsed.anchorGraph.isValid() ||
+                !readString(*object, "graphId", source.graphId) || !readString(*object, "nodeId", source.nodeId) ||
+                source.nodeId.empty() || !readUint64String(*object, "generation", source.graphGeneration) ||
+                source.graphId != parsed.anchorNode.graphId ||
+                source.graphGeneration != parsed.anchorNode.graphGeneration)
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "transition source must belong to the target graph generation",
+                    "execution.sourceAnchor", {}, "climbing.snapshot"));
+            parsed.sourceAnchorNode = std::move(source);
+        }
         parsed.elapsed  = eve::Duration::fromNanoseconds(elapsedNs);
         parsed.duration = eve::Duration::fromNanoseconds(durationNs);
         parsed.lastTick = eve::SimulationTick(lastTick);
@@ -609,6 +566,10 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
             auto resolved = graph->resolveNode(world, parsed.anchorNode);
             if (!resolved)
                 return eve::Result<void>::failure(resolved.status());
+            if (parsed.sourceAnchorNode) {
+                auto source = graph->resolveNode(world, *parsed.sourceAnchorNode);
+                if (!source) return eve::Result<void>::failure(source.status());
+            }
             auto reservation = graph->validateReservation(parsed.anchorReservation);
             if (!reservation && (!reservation.error() || reservation.error()->code() != eve::DiagnosticCode::NotFound))
                 return eve::Result<void>::failure(reservation.status());

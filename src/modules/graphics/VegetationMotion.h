@@ -6,6 +6,7 @@
 #include <optional>
 #include <span>
 #include <vector>
+#include "common/Export.h"
 #include "common/Result.h"
 #include "graphics/VegetationField.h"
 
@@ -54,6 +55,7 @@ struct VegetationMotion {
     VegetationMask      noise{2,
                          2,
                               {glm::vec4(0.2f, 0.7f, 0.85f, 1.f), glm::vec4(0.8f, 0.4f, 0.55f, 1.f),
+                               /** @brief Vec 4. */
                                glm::vec4(0.4f, 0.2f, 0.65f, 1.f), glm::vec4(0.7f, 0.8f, 1.f, 1.f)}};
 };
 
@@ -81,7 +83,6 @@ struct VegetationGeometry {
  * no bit-exact transcendental or GPU half-precision equivalence is claimed.
  * @return Owning world-space geometry or InvalidArgument/Failed, never partial output.
  */
-[[nodiscard]] Result<VegetationGeometry> deformVegetation(const VegetationField&            field,
-                                                          std::span<const VegetationVertex> vertices,
-                                                          const VegetationMotion&           motion);
+[[nodiscard]] EVENGINE_API_BACKENDS Result<VegetationGeometry> deformVegetation(
+    const VegetationField& field, std::span<const VegetationVertex> vertices, const VegetationMotion& motion);
 }  // namespace eve::graphics

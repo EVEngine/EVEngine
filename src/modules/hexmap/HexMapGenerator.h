@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file HexMapGenerator.h @brief Deterministic procedural map generation for the hex grid. */
 
@@ -91,13 +93,15 @@ struct HexMapGeneratorSettings {
  * @param map Grid to fill. Its size and seed must already be set by
  *            `HexMap::reset`; the settings' own seed only drives the generator's
  *            internal choices, so two calls with the same settings and the same
- *            grid produce the same map.
+ *            grid produce the same map. Scripts do not call this: they bake
+ *            through `procgen.generateHexTerrain` and apply with
+ *            `hexmap.applyTerrain`.
  * @param settings Generator tunables.
  * @return Success, or InvalidArgument when the grid is empty.
  * @cost Proportional to the cell count; allocates one scratch value per cell.
  * @note Every cell is left *explorable but unexplored* and the whole map is
  *       marked dirty, so the caller rebuilds every chunk afterwards.
  */
-[[nodiscard]] Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings);
+[[nodiscard]] EVENGINE_API_WORLD Result<void> generateHexMap(HexMap& map, const HexMapGeneratorSettings& settings);
 
 }  // namespace eve::hexmap

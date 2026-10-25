@@ -1,0 +1,60 @@
+struct Light3D{posRadius:vec4f,color:vec4f};
+struct Frame{mvp:mat4x4f,model:mat4x4f,lightDir:vec4f,lightColor:vec4f,tint:vec4f,cameraPos:vec4f,ambient:vec4f,lights:array<Light3D,8>,texBomb:vec4f,parallax:vec4f,surface:vec4f,view:mat4x4f,clipInfo:vec4f,cloud:vec4f,cloudWind:vec4f,envProbeCenter:vec4f,envProbeExtent:vec4f,skinInfo:vec4f,reflectionProbeCenter:array<vec4f,2>,reflectionProbeExtent:array<vec4f,2>};
+@group(0) @binding(0) var<uniform> frame:Frame;
+struct Varying {
+ @builtin(position) pos:vec4f,
+ @location(0) normal:vec3f,
+ @location(1) surface:vec2f,
+ @location(2) world:vec3f,
+};
+@group(0) @binding(3) var environment:texture_cube<f32>;
+@group(0) @binding(7) var samp:sampler;
+@group(0) @binding(2) var hullMask:texture_2d<f32>;
+fn hullValue(column:i32,row:i32)->f32 {
+ let bytes=vec4u(round(textureLoad(hullMask,vec2i(column,row),0)*255.0));
+ return bitcast<f32>(bytes.x | (bytes.y<<8u) | (bytes.z<<16u) | (bytes.w<<24u));
+}
+fn dryInterior(point:vec3f)->bool {
+ if (any(textureDimensions(hullMask)!=vec2u(4u,545u))) {return false;}
+ let count=clamp(i32(hullValue(0,0)),0,32);
+ for(var volume=0;volume<count;volume++) {
+  let row=1+volume*17;let planes=clamp(i32(hullValue(0,row)),0,16);
+  var inside=planes>0;
+  for(var plane=0;plane<planes;plane++) {
+   let r=row+1+plane;
+   let n=vec3f(hullValue(0,r),hullValue(1,r),hullValue(2,r));
+   if(dot(n,point)>hullValue(3,r)) {inside=false;break;}
+  }
+  if(inside) {return true;}
+ }
+ return false;
+}
+fn foamNoise(p:vec2f)->f32 {
+ let cell=floor(p);let fraction=fract(p);let f=fraction*fraction*(3.0-2.0*fraction);
+ let h=fract(sin(vec4f(dot(cell,vec2f(127.1,311.7)),
+  dot(cell+vec2f(1,0),vec2f(127.1,311.7)),
+  dot(cell+vec2f(0,1),vec2f(127.1,311.7)),
+  dot(cell+vec2f(1,1),vec2f(127.1,311.7))))*43758.5453);
+ return mix(mix(h.x,h.y,f.x),mix(h.z,h.w,f.x),f.y);
+}
+@fragment fn fs_main(input:Varying,@builtin(front_facing) front:bool)->@location(0) vec4f {
+ let N=normalize(select(-input.normal,input.normal,front));
+ let variance=dot(dpdx(N),dpdx(N))+dot(dpdy(N),dpdy(N));
+ if(dryInterior(input.world)) {discard;}
+ let V=normalize(frame.cameraPos.xyz-input.world);
+ let L=normalize(frame.lightDir.xyz);let R=reflect(-V,N);
+ let fresnel=0.02037+0.97963*pow(1.0-max(dot(N,V),0.0),5.0);
+ let coverage=clamp(max(input.surface.x,(0.72-input.surface.y)*2.5),0.0,1.0);
+ let threshold=0.18+0.55*foamNoise(input.world.xz*0.4);
+ let foam=smoothstep(threshold-0.15,threshold+0.15,coverage)*(0.55+0.45*foamNoise(input.world.xz*1.2));
+ let roughness=mix(0.12,0.65,foam);
+ let reflected=textureSampleLevel(environment,samp,R,roughness*f32(textureNumLevels(environment)-1u)).rgb*frame.lightColor.w;
+ // Keep the water-body scattering and filtered sun lobe identical to Vulkan.
+ let water=vec3f(0.008,0.075,0.095)*(0.35+0.65*max(dot(N,L),0.0));
+ let exponent=mix(160.0,24.0,foam);
+ let filteredExponent=exponent/(1.0+exponent*variance);
+ let sun=(filteredExponent/exponent)*pow(max(dot(N,normalize(V+L)),0.0),filteredExponent);
+ let lit=mix(water,reflected,vec3f(fresnel))+frame.lightColor.rgb*sun*0.15*max(dot(N,L),0.0);
+ let foamLight=vec3f(0.83,0.91,0.91)*(0.4+0.6*max(dot(N,L),0.0));
+ return vec4f(mix(lit,foamLight,vec3f(foam))*frame.tint.rgb,1.0);
+}

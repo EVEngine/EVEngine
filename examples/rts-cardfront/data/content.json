@@ -1,0 +1,155 @@
+{
+  "weapons": [
+    {
+      "id": "rifle",
+      "damageType": "normal",
+      "damage": 12,
+      "range": 4.5,
+      "cooldown": 0.65,
+      "projectileSpeed": 8,
+      "magazineSize": 0,
+      "blockedByObstacles": true
+    }
+  ],
+  "units": [
+    {
+      "id": "worker",
+      "role": "worker",
+      "health": 90,
+      "speed": 3.2,
+      "radius": 0.3,
+      "sightRange": 8,
+      "cargoCapacity": 12,
+      "gatherRate": 8,
+      "gatherResource": "minerals",
+      "buildRate": 2,
+      "producer": "hq",
+      "costResource": "minerals",
+      "cost": 35,
+      "buildTime": 2,
+      "supplyUsed": 1
+    },
+    {
+      "id": "marine",
+      "role": "soldier",
+      "health": 100,
+      "speed": 3.2,
+      "radius": 0.35,
+      "sightRange": 10,
+      "weaponType": "rifle",
+      "attackRange": 4.5,
+      "attackDamage": 12,
+      "attackCooldown": 0.65,
+      "producer": "barracks",
+      "costResource": "minerals",
+      "cost": 40,
+      "buildTime": 2,
+      "supplyUsed": 1
+    },
+    {
+      "id": "raider",
+      "role": "soldier",
+      "health": 60,
+      "speed": 2.3,
+      "radius": 0.35,
+      "sightRange": 7,
+      "weaponType": "rifle",
+      "attackRange": 3,
+      "attackDamage": 6,
+      "attackCooldown": 1.2,
+      "supplyUsed": 1
+    }
+  ],
+  "buildings": [
+    {
+      "id": "hq",
+      "health": 900,
+      "radius": 1.3,
+      "sightRange": 12,
+      "costResource": "minerals",
+      "cost": 300,
+      "buildTime": 4,
+      "dropoff": true,
+      "dropoffResources": [
+        "minerals"
+      ],
+      "supplyProvided": 30,
+      "powerProvided": 20,
+      "incomeResource": "mana",
+      "incomeRate": 2
+    },
+    {
+      "id": "barracks",
+      "health": 500,
+      "radius": 1,
+      "sightRange": 10,
+      "prerequisite": "hq",
+      "costResource": "minerals",
+      "cost": 100,
+      "buildTime": 5,
+      "powerUsed": 3
+    },
+    {
+      "id": "outpost",
+      "health": 500,
+      "radius": 1.3,
+      "sightRange": 8,
+      "costResource": "minerals",
+      "cost": 300,
+      "buildTime": 5,
+      "supplyProvided": 30,
+      "powerProvided": 10
+    }
+  ],
+  "abilities": [
+    {
+      "id": "grenade",
+      "casterUnit": "marine",
+      "targetType": "point",
+      "range": 9,
+      "radius": 2.4,
+      "cooldown": 5,
+      "damage": 120,
+      "damageType": "normal",
+      "castTime": 0.5,
+      "resourceType": "minerals",
+      "resourceCost": 15
+    },
+    {
+      "id": "repair",
+      "casterUnit": "marine",
+      "targetType": "self",
+      "range": 0,
+      "cooldown": 4,
+      "healing": 60
+    },
+    {
+      "id": "stim",
+      "casterUnit": "marine",
+      "targetType": "self",
+      "range": 0,
+      "cooldown": 5,
+      "statusEffect": "stim"
+    }
+  ],
+  "statusEffects": [
+    {
+      "id": "stim",
+      "duration": 8,
+      "damageMultiplier": 1.6,
+      "speedMultiplier": 1.3
+    }
+  ],
+  "damageMultipliers": [
+    {
+      "damageType": "normal",
+      "armorType": "light",
+      "multiplier": 1
+    },
+    {
+      "damageType": "normal",
+      "armorType": "structure",
+      "multiplier": 1
+    }
+  ]
+}

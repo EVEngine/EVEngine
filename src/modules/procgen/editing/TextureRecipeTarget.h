@@ -11,50 +11,73 @@ using namespace eve::editing;
 using EditorValue = eve::editing::Value;
 using EditorStatus = eve::editing::Status;
 using EditorDiagnostic = eve::editing::Diagnostic;
-template<class T> using EditorResult = eve::editing::Result<T>;
+using editing::Result;
 /** @brief Revisioned, schema-driven procedural texture recipe asset. */
-class TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
-                                  public virtual IEditableTarget,
-                                  public IDomainOperationTarget,
-                                  public IDomainOperationTargetStaging,
-                                  public IPropertyProvider {
+class EVENGINE_API_ORCHESTRATION TextureRecipeTarget final : public ::eve::editing::EditableTargetState,
+                                                             public virtual IEditableTarget,
+                                                             public IDomainOperationTarget,
+                                                             public IDomainOperationTargetStaging,
+                                                             public IPropertyProvider {
 public:
     /** @brief Construct a registered procedural texture recipe target. @throws std::invalid_argument When recipe is not registered. */
     TextureRecipeTarget(std::string id, std::string recipe);
+    /** @brief Target id. */
     TargetId         targetId() const override { return TargetId(id_); }
+    /** @brief Describe. */
     TargetDescriptor describe() const override;
     /** @brief Query an optional target capability. @return Borrowed pointer owned by this target, or null. @lifetime Valid until this target is destroyed or mutated. */
     void* queryCapability(const CapabilityId&) override;
-    EditorResult<void> applyDomainOperation(const DomainOperation&) override;
+    /** @brief Applies domain operation. */
+    Result<void> applyDomainOperation(const DomainOperation&) override;
+    /** @brief Clones domain state. */
     std::unique_ptr<IDomainOperationTarget> cloneDomainState() const override;
-    EditorResult<void> commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Commits domain state. */
+    Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget>) override;
+    /** @brief Current revision. */
     eve::Result<eve::Revision> currentRevision(const SelectionSnapshot&) const override;
+    /** @brief Schema. */
     PropertySchema schema(const SelectionSnapshot&) const override;
+    /** @brief Reads . */
     PropertyReadResult read(const SelectionSnapshot&, const PropertyPath&) const override;
-    EditorResult<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath&,
+    /** @brief Make set. */
+    Result<DomainOperation> makeSet(const SelectionSnapshot&, const PropertyPath&,
                                           const EditorValue&, PropertySetMode) const override;
-    EditorResult<DomainOperation> makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Make reset. */
+    Result<DomainOperation> makeReset(const SelectionSnapshot&, const PropertyPath&) const override;
+    /** @brief Recipe. */
     const std::string& recipe() const { return recipe_; }
+    /** @brief Values. */
     const EditorValue::Object& values() const { return values_; }
+    /** @brief Validate. */
     std::vector<EditorDiagnostic> validate() const;
+    /** @brief Snapshot value. */
     EditorValue snapshotValue() const;
-    EditorResult<void> loadSnapshot(const EditorValue&);
+    /** @brief Loads snapshot. */
+    Result<void> loadSnapshot(const EditorValue&);
 private:
+    /** @brief Matches. */
     bool matches(const SelectionSnapshot&) const;
-    EditorResult<void> initializeDefaults();
+    /** @brief Initialize defaults. */
+    Result<void> initializeDefaults();
+    /** @brief Content value. */
     EditorValue contentValue() const;
     std::string         id_, recipe_;
     EditorValue::Object values_;
 };
+/** @brief TextureRecipePreviewArtifact public API. */
 struct TextureRecipePreviewArtifact { editing::Revision sourceRevision=0; int width=0,height=0; std::uint64_t checksum=0; };
 /** @brief Generates a candidate image and publishes it only after complete success. */
-class TextureRecipePreviewRuntime {
+class EVENGINE_API_ORCHESTRATION TextureRecipePreviewRuntime {
 public:
+    /** @brief Texture recipe preview runtime. */
     TextureRecipePreviewRuntime();
+    /** @brief Texture recipe preview runtime. */
     ~TextureRecipePreviewRuntime();
-    EditorResult<TextureRecipePreviewArtifact> generate(const TextureRecipeTarget&);
+    /** @brief Generate. */
+    Result<TextureRecipePreviewArtifact> generate(const TextureRecipeTarget&);
     /** @brief Access the generated image. @return Borrowed pointer owned by this runtime, or null. @lifetime Valid until the next generation or runtime destruction. */
     const image::ImageData* image() const { return image_.get(); }
+    /** @brief Revision. */
     editing::Revision revision() const { return revision_; }
 private:
     std::unique_ptr<image::ImageData> image_;

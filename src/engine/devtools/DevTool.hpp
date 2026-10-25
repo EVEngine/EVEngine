@@ -29,6 +29,7 @@ namespace eve::dev {
 class McpServer;
 class AiPanel;
 class ConsolePanel;
+class FrameStatsPanel;
 
 /**
  * @brief Platform-level script + render debugger / dynamic slicer front-end.
@@ -46,7 +47,7 @@ class ConsolePanel;
  *
  * Not shipped on Android/iOS trimmed runtimes (EVDevTools is desktop-only).
  */
-class EVENGINE_API DevTool {
+class EVENGINE_API_FOUNDATION DevTool {
 public:
     static DevTool& instance();
 
@@ -83,6 +84,8 @@ public:
     void drawAiPanel();
     /** @brief Draw DevTools console ImGui panel when visible (call from UI/frame loop). */
     void drawConsolePanel();
+    /** @brief Draw FPS / frame-time overlay when visible (call from UI/frame loop). */
+    void drawFrameStatsPanel();
 
     bool isAttached() const { return vm_ != nullptr; }
     /** @brief True when errors also flow through Runtime::setErrorHandler. */
@@ -102,12 +105,19 @@ public:
     McpServer&        mcp();
     AiPanel&          ai();
     ConsolePanel&     console();
+    FrameStatsPanel&  frameStats();
 
     SliceResult analyzeError(const std::string& errorMessage,
                              const std::vector<std::string>& hintVars = {}) const;
 
     std::string formatError(const std::string& errorMessage,
                             const std::vector<std::string>& hintVars = {}) const;
+
+    /** @brief Replace the latest diagnostic with an owning MCP snippet report.
+     * Main/VM thread only; synchronous, no callbacks. Clears the previous slice
+     * because transient compiler input has no runtime data-flow history.
+     */
+    void recordMcpSnippetError(std::string report);
 
     const std::string& lastReport() const { return lastReport_; }
     const std::string& lastError() const { return lastError_; }

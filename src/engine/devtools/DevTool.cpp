@@ -1,20 +1,30 @@
 #include "devtools/DevTool.hpp"
+#include "common/StringMapInstances.h"
 
 #include "devtools/AiPanel.hpp"
 #include "devtools/ConsolePanel.hpp"
+#include "devtools/FrameStatsPanel.hpp"
+#include "devtools/GameWorldContext.hpp"
 #include "devtools/McpDevBridge.hpp"
+#include "devtools/McpScriptTools.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/ReloadSession.h"
 #include "devtools/RenderVision.hpp"
 #include "devtools/ScenarioRecorder.h"
+#include "devtools/SoftRestart.hpp"
 
+#include "common/Diagnostic.h"
 #include "common/Module.h"
 #include "common/GameplayControlJson.h"
 #include "common/RenderTrace.h"
 #include "common/Runtime.h"
 #include "common/ScriptError.h"
+#include "common/Status.h"
+#include "common/SquirrelBinding.h"
+#include "common/Value.h"
 #include "platform_event/PlatformEvent.h"
 
+#include <Poco/JSON/Parser.h>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <squirrel.h>
 
@@ -172,6 +182,11 @@ void DevTool::enableRenderTrace(bool on) {
 
 void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
     if (!vm) return;
+    // Drop script tools registered against another VM *before* touching it: if
+    // that VM went away without detach(), its memory is freed and sq_release
+    // into it would corrupt the heap. Passing the incoming VM as the owner means
+    // nothing is released here, only discarded.
+    clearScriptTools(vm);
     detach();
     vm_           = vm;
     sampleLocals_ = sampleLocals;
@@ -204,6 +219,9 @@ void DevTool::attach(HSQUIRRELVM vm, bool sampleLocals) {
 
 void DevTool::detach() {
     ScenarioRecorder::instance().cancel();
+    // Handlers registered by project scripts live in this VM; drop them while it
+    // is still valid so the references are released, not leaked.
+    clearScriptTools(vm_);
     if (runtime_) {
         runtime_->setErrorHandler({});
         runtime_ = nullptr;
@@ -240,6 +258,8 @@ AiPanel& DevTool::ai() { return AiPanel::instance(); }
 
 ConsolePanel& DevTool::console() { return ConsolePanel::instance(); }
 
+FrameStatsPanel& DevTool::frameStats() { return FrameStatsPanel::instance(); }
+
 void DevTool::poll() {
     DebugAdapter::instance().poll();
     McpServer::instance().poll();
@@ -249,10 +269,14 @@ void DevTool::drawAiPanel() { AiPanel::instance().drawImGui(); }
 
 void DevTool::drawConsolePanel() { ConsolePanel::instance().drawImGui(); }
 
+void DevTool::drawFrameStatsPanel() { FrameStatsPanel::instance().drawImGui(); }
+
 void DevTool::exposeScriptApi(ssq::VM& vm) {
     try {
         ssq::Table eveTbl = vm.find("eve").toTable();
         ssq::Table dev    = eveTbl.addTable("dev");
+        // Project-script MCP export surface (eve.mcp.tool/remove/tools/clear).
+        exposeMcpScriptApi(vm);
 
         dev.addFunc("pause", [this]() {
             debugger().pause(PauseReason::PauseKey);
@@ -352,6 +376,27 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         dev.addFunc("clearStateRoots", []() { Snapshot::instance().clearRoots(); });
         dev.addFunc("stateRoots", [this]() { return snapshot().rootsFor(vm_); });
         dev.addFunc("transientStateRoots", []() { return Snapshot::instance().transientRoots(); });
+        // After scripts initialize configured game systems, publish a runtime
+        // world brief so MCP Discover can report what is live (not on-disk prose).
+        const HSQUIRRELVM handle = vm.getHandle();
+        dev.addFunc("publishWorldContext", [handle](ssq::Object world) {
+            auto value = script::valueFromSquirrel(world);
+            if (!value) return script::projectStatusResult(handle, value.status());
+            return script::projectResult(handle, publishWorldContext(std::move(value).takeValue()));
+        });
+        dev.addFunc("clearWorldContext", []() { clearWorldContext(); });
+        dev.addFunc("hasWorldContext", []() { return hasWorldContext(); });
+        dev.addFunc("worldContext", [handle]() {
+            const Value* world = runtimeWorldContext();
+            if (!world)
+                return script::projectStatusResult(
+                    handle, Status::failure(Diagnostic::error(DiagnosticCode::NotFound, "no runtime world context",
+                                                              "worldContext")));
+            return script::projectStatusResult(handle, Status::success(), *world);
+        });
+        dev.addFunc("gameWorldSnapshot", [handle]() {
+            return script::projectResult(handle, liveGameWorldSnapshot(), [](Value value) { return value; });
+        });
         auto markSnapshotPause = [this]() {
             if (!debugger().isPaused()) return;
             debugger().pauseAt(PauseReason::Snapshot, debugger().pauseLocation());
@@ -397,6 +442,43 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
             std::string err;
             if (!ReloadSession::instance().abort(vm_, &err)) return std::string("error:") + err;
             return std::string("");
+        });
+        // Soft restart: reset native providers / re-run init without dropping
+        // ResourceManager. MCP eve_restart is the agent-facing entry; scripts
+        // can also call these helpers from eve_before_restart hooks.
+        dev.addFunc("resetNativeState", []() {
+            return static_cast<int>(resetNativeStateProviders());
+        });
+        dev.addFunc("resourceCacheCount", []() {
+            return static_cast<int>(resourceCacheCount());
+        });
+        // Parameter must not be named args*/argN — binding-contract codegen
+        // treats those as unresolved placeholders and fails the build.
+        dev.addFunc("softRestart", [this](std::string requestJson, bool reloadScripts) {
+            SoftRestartRequest request;
+            request.reloadScripts = reloadScripts;
+            if (!requestJson.empty()) {
+                try {
+                    Poco::JSON::Parser parser;
+                    auto               parsed = parser.parse(requestJson);
+                    request.args              = parsed.extract<Poco::JSON::Object::Ptr>();
+                } catch (const std::exception& e) {
+                    return std::string("error: invalid request JSON: ") + e.what();
+                } catch (...) {
+                    return std::string("error: invalid request JSON");
+                }
+            }
+            auto result = executeSoftRestart(vm_, std::move(request));
+            if (!result) {
+                const auto& status = result.status();
+                const auto* diag   = status.primaryDiagnostic();
+                return std::string("error:") +
+                       (diag && !diag->message().empty() ? diag->message()
+                                                         : std::string(statusCodeName(status.code())));
+            }
+            const SoftRestartReport& report = result.value();
+            return std::string("ok:resources=") + std::to_string(report.resourceCountAfter) +
+                   ":scripts=" + (report.scriptsReloaded ? "1" : "0");
         });
 
         // ---- state-driven bug reproduction (baseline snapshot + step replay) ----
@@ -491,6 +573,30 @@ void DevTool::exposeScriptApi(ssq::VM& vm) {
         consoleTbl.addFunc("setVisible", [](bool on) { ConsolePanel::instance().setVisible(on); });
         consoleTbl.addFunc("toggleVisible", []() { ConsolePanel::instance().toggleVisible(); });
         consoleTbl.addFunc("draw", [this]() { drawConsolePanel(); });
+
+        // FPS / frame-time overlay (sampled from load.nut each frame).
+        ssq::Table statsTbl = dev.addTable("stats");
+        statsTbl.addFunc("sample", [](float dt) {
+            FrameStatsPanel::instance().sample(dt);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("setEntityCount", [](int n) {
+            FrameStatsPanel::instance().setEntityCount(n);
+            return std::string("ok");
+        });
+        statsTbl.addFunc("clearEntityCount", []() {
+            FrameStatsPanel::instance().clearEntityCount();
+            return std::string("ok");
+        });
+        statsTbl.addFunc("fps", []() { return FrameStatsPanel::instance().fps(); });
+        statsTbl.addFunc("frameMs", []() { return FrameStatsPanel::instance().frameMs(); });
+        statsTbl.addFunc("entityCount", []() { return FrameStatsPanel::instance().entityCount(); });
+        statsTbl.addFunc("hasEntityCount", []() { return FrameStatsPanel::instance().hasEntityCount(); });
+        statsTbl.addFunc("format", []() { return FrameStatsPanel::instance().format(); });
+        statsTbl.addFunc("isVisible", []() { return FrameStatsPanel::instance().isVisible(); });
+        statsTbl.addFunc("setVisible", [](bool on) { FrameStatsPanel::instance().setVisible(on); });
+        statsTbl.addFunc("toggleVisible", []() { FrameStatsPanel::instance().toggleVisible(); });
+        statsTbl.addFunc("draw", [this]() { drawFrameStatsPanel(); });
 
         // Native binding is arity-3; keep `setBreakpoint(file, line)` working.
         ssq::Script bpWrap = vm.compileSource(
@@ -789,6 +895,14 @@ std::size_t mcpCallgraphEvents() { return DevTool::instance().graph().events().s
 std::size_t mcpCallgraphStackDepth() {
     return DevTool::instance().graph().currentStack().size();
 }
+
+void DevTool::recordMcpSnippetError(std::string report) {
+    lastError_  = report;
+    lastReport_ = std::move(report);
+    lastSlice_  = {};
+}
+
+void mcpRecordSnippetError(std::string report) { DevTool::instance().recordMcpSnippetError(std::move(report)); }
 
 const std::string& mcpLastReport() { return DevTool::instance().lastReport(); }
 

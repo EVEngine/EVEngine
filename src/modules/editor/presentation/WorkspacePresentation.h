@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "editor/EditorProperty.h"
 
@@ -33,9 +34,9 @@ public:
     /** @brief Read a field for the current selection without mutation. */
     virtual PropertyReadResult read(const PropertyPath& path) const = 0;
     /** @brief Commit one validated field through the domain's existing transaction path. */
-    [[nodiscard]] virtual EditorResult<void> write(const PropertyPath& path, const EditorValue& value) = 0;
+    [[nodiscard]] virtual Result<void> write(const PropertyPath& path, const EditorValue& value) = 0;
     /** @brief Execute a domain action, including undo/redo on its sole history backend. */
-    [[nodiscard]] virtual EditorResult<void> action(std::string_view id) = 0;
+    [[nodiscard]] virtual Result<void> action(std::string_view id) = 0;
 };
 
 /**
@@ -45,18 +46,18 @@ public:
  * @thread Owner thread only. No callbacks or retained source pointers.
  * @reentrancy Non-reentrant; host dispatches sequentially and closes at a safe point.
  */
-class WorkspacePresentation {
+class EVENGINE_API_EDITORS WorkspacePresentation {
 public:
     /** @brief Stage an owning draft; repeated updates create no document/history mutation. */
-    [[nodiscard]] EditorResult<void> stage(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value);
+    [[nodiscard]] Result<void> stage(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value);
     /** @brief Commit the draft once; rejects revision or selection changes and consumes the draft. */
-    [[nodiscard]] EditorResult<void> commit(IWorkspacePresentationSource& source);
+    [[nodiscard]] Result<void> commit(IWorkspacePresentationSource& source);
     /** @brief Cancel the draft without changing the domain or history. */
     void cancel() noexcept;
     /** @brief Validate and commit one discrete keyboard/checkbox edit. */
-    [[nodiscard]] EditorResult<void> edit(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value);
+    [[nodiscard]] Result<void> edit(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value);
     /** @brief Route an action through the domain backend; pending drafts are cancelled first. */
-    [[nodiscard]] EditorResult<void> action(IWorkspacePresentationSource& source, std::string_view id);
+    [[nodiscard]] Result<void> action(IWorkspacePresentationSource& source, std::string_view id);
     /** @brief Whether an uncommitted draft exists. */
     bool hasDraft() const noexcept { return draft_.has_value(); }
     /** @brief Immutable current schema/value projection, including any local draft. */

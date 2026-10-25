@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/DistanceField3D.h"
 
 #include "common/Exception.h"
@@ -443,6 +444,35 @@ bool DistanceField3D::moveCapsule(float ax, float ay, float az, float bx, float 
         moverGroundDot_ = std::max(moverGroundDot_, upDot);
         if (upDot < moverSlopeCos_) moverHitWall_ = true;
     };
+    // Several points on a capsule axis can be equally close to a floor/wall
+    // corner. The first point's blended gradient is not a contact manifold:
+    // it can turn a horizontal wall hit into artificial upward motion. Among
+    // equally close samples use the normal most opposed to the requested move.
+    auto contactNormal = [&](Vec3 offset, Vec3 travel) {
+        const Vec3  previous{normalX_, normalY_, normalZ_};
+        Vec3        selected   = previous;
+        float       opposed    = dot(selected, travel);
+        const float closest    = collisionDistance_;
+        const float axisLength = std::hypot(bx - ax, by - ay, bz - az);
+        const int   intervals  = queryIntervals(axisLength, cellSize_ * 0.5, "DistanceField3D.moveCapsule");
+        for (int i = 0; i <= intervals; ++i) {
+            const float t = static_cast<float>(i) / static_cast<float>(intervals);
+            const Vec3  point{ax + offset.x + (bx - ax) * t, ay + offset.y + (by - ay) * t,
+                             az + offset.z + (bz - az) * t};
+            if (sample(point.x, point.y, point.z) - radius > closest + 1e-5f) continue;
+            sampleNormal(point.x, point.y, point.z);
+            const Vec3  candidate{normalX_, normalY_, normalZ_};
+            const float candidateDot = dot(candidate, travel);
+            if (candidateDot < opposed) {
+                opposed  = candidateDot;
+                selected = candidate;
+            }
+        }
+        normalX_ = previous.x;
+        normalY_ = previous.y;
+        normalZ_ = previous.z;
+        return selected;
+    };
 
     for (int iteration = 0; iteration < maxIterations; ++iteration) {
         moverIterations_ = iteration + 1;
@@ -454,7 +484,7 @@ bool DistanceField3D::moveCapsule(float ax, float ay, float az, float bx, float 
         if (checkCapsule(currentAx, currentAy, currentAz, currentBx, currentBy, currentBz,
                          radius)) {
             const float recovery = -collisionDistance_ + skin;
-            Vec3 normal{normalX_, normalY_, normalZ_};
+            const Vec3  normal   = contactNormal(position, remaining);
             position.x += normal.x * recovery;
             position.y += normal.y * recovery;
             position.z += normal.z * recovery;
@@ -476,7 +506,9 @@ bool DistanceField3D::moveCapsule(float ax, float ay, float az, float bx, float 
         }
 
         constrained = true;
-        const Vec3 normal{normalX_, normalY_, normalZ_};
+        const Vec3 impactOffset{position.x + remaining.x * castFraction_, position.y + remaining.y * castFraction_,
+                                position.z + remaining.z * castFraction_};
+        const Vec3 normal = contactNormal(impactOffset, remaining);
         recordNormal(normal);
         if (planeCount < maxPlanes) planes[planeCount++] = normal;
 

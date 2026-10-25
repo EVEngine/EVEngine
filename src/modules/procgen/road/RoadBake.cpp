@@ -1,32 +1,62 @@
 #include "procgen/road/RoadBake.h"
+#include "procgen/road/RoadBakeInternal.h"
+#include "procgen/road/RoadGeometrySourcesInternal.h"
 
 #include "common/Diagnostic.h"
+#include "procgen/road/RoadAuthoringInternal.h"
+#include "procgen/road/RoadConnectionInternal.h"
 #include "procgen/spline/SplinePath.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <functional>
+#include <limits>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 namespace eve::procgen::road {
-namespace {
+using namespace detail;
+namespace detail {
 
-struct V3 {
-    float x = 0.f, y = 0.f, z = 0.f;
-};
 
-V3 operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
-V3 operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
+V3    operator+(V3 a, V3 b) { return {a.x + b.x, a.y + b.y, a.z + b.z}; }
+V3    operator-(V3 a, V3 b) { return {a.x - b.x, a.y - b.y, a.z - b.z}; }
 V3 operator*(V3 a, float s) { return {a.x * s, a.y * s, a.z * s}; }
 float dot(V3 a, V3 b) { return a.x * b.x + a.y * b.y + a.z * b.z; }
-V3 cross(V3 a, V3 b) {
-    return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x};
-}
+V3    cross(V3 a, V3 b) { return {a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x}; }
 float length(V3 a) { return std::sqrt(dot(a, a)); }
 V3 normalize(V3 a) {
     const float l = length(a);
     return l > 1e-8f ? a * (1.f / l) : V3{0.f, 1.f, 0.f};
+}
+
+
+bool isMeshBudgetExceeded(const MeshBuild& mesh, const RoadBakeOptions& options) {
+    return static_cast<std::size_t>(mesh.getVertexCount()) + static_cast<std::size_t>(mesh.getIndexCount()) >
+           options.maximumMeshElements;
+}
+
+float junctionTrimDistance(float pathLength, float requestedRadius) {
+    const float maximum = std::max(0.f, pathLength * 0.5f - 0.5f);
+    return std::min(std::max(0.f, requestedRadius), maximum);
+}
+
+int circularArcSegments(float radius, float angle, float maximumError) {
+    if (radius <= maximumError) return 4;
+    const float halfStep = std::acos(std::clamp(1.f - maximumError / radius, -1.f, 1.f));
+    if (!std::isfinite(halfStep) || halfStep <= 1e-5f) return 64;
+    return std::clamp(static_cast<int>(std::ceil(angle / (2.f * halfStep))), 4, 64);
+}
+
+int quadraticSegments(V3 start, V3 control, V3 end, float angle, float maximumError) {
+    const float secondDifference = length(start - control * 2.f + end);
+    const int errorSegments =
+        std::max(1, static_cast<int>(std::ceil(std::sqrt(secondDifference / (8.f * maximumError)))));
+    const int angleSegments = 3 + static_cast<int>(angle * 3.f);
+    return std::clamp(std::max(errorSegments, angleSegments), 4, 64);
 }
 
 Result<SplinePath> edgeToSpline(const RoadEdge& edge) {
@@ -36,18 +66,337 @@ Result<SplinePath> edgeToSpline(const RoadEdge& edge) {
     path.setClosed(false);
     for (const auto& p : edge.controlPoints) {
         SplinePoint sp;
-        sp.x = p.x;
-        sp.y = p.y;
-        sp.z = p.z;
-        auto added = path.addPointResult(sp);
+        sp.alignStraightStart  = p.alignStraightStart;
+        sp.alignStraightEnd    = p.alignStraightEnd;
+        sp.circularFromEnd     = p.circularFromEnd;
+        sp.spanControl         = static_cast<eve::procgen::SplineSpanControl>(p.pathControl);
+        sp.spanStrength        = p.splineStrength;
+        sp.x                   = p.x;
+        sp.y                   = p.y;
+        sp.z                   = p.z;
+        sp.scaleX              = p.widthScale;
+        sp.scaleXInterpolation = edge.style.widthInterpolation == RoadWidthInterpolation::CatmullRom
+                                     ? SplineScaleInterpolation::CatmullRom
+                                     : SplineScaleInterpolation::Linear;
+        sp.rollDegrees         = p.rollDegrees;
+        sp.rollPivotSide       = (-p.rollCenterOffset) * 2.f * asphaltHalfWidth(edge);
+        sp.worldUpFrame        = edge.style.frameOrientation == RoadFrameOrientation::WorldUp;
+        sp.rollInterpolation   = edge.style.rollInterpolation == RoadRollInterpolation::SmoothStep
+                                     ? SplineRollInterpolation::SmoothStep
+                                     : SplineRollInterpolation::Linear;
+        auto added             = path.addPointResult(sp);
         if (!added.ok()) return Result<SplinePath>::failure(added.status());
     }
     return Result<SplinePath>::success(std::move(path));
 }
 
-float laneCenterOffset(const RoadStyle& style, int lanesForward, int laneIndex) {
-    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanesForward);
-    return -asphaltHalf + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
+V3 authoredOutwardDirection(const RoadNode& node, const RoadEdge& edge) {
+    if (edge.controlPoints.size() < 2) return {1.f, 0.f, 0.f};
+    const auto& adjacent =
+        edge.from == node.id ? edge.controlPoints[1] : edge.controlPoints[edge.controlPoints.size() - 2];
+    return normalize(V3{adjacent.x - node.x, 0.f, adjacent.z - node.z});
+}
+
+float asphaltHalfWidth(const RoadEdge& edge) {
+    float half = 0.5f * edge.style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward);
+    if (!edge.style.crossSection.empty()) {
+        half                     = 0.f;
+        const auto&       points = edge.style.crossSection;
+        const std::size_t count  = edge.style.crossSectionClosed ? points.size() : points.size() - 1;
+        for (std::size_t i = 0; i < count; ++i)
+            if (points[i].material == RoadMaterial::Asphalt)
+                half = std::max({half, std::fabs(points[i].side), std::fabs(points[(i + 1) % points.size()].side)});
+    }
+    return half;
+}
+
+/** Compute a finite socket distance whose two mouth corners cannot cross an adjacent arm. */
+float scaledProfileSide(float side, float asphaltHalf, float scale) {
+    if (scale == 1.f) return side;
+    const float magnitude = std::fabs(side);
+    if (magnitude <= asphaltHalf) return side * scale;
+    return std::copysign(asphaltHalf * scale + magnitude - asphaltHalf, side);
+}
+
+float profileAsphaltHalfWidth(const RoadProfile& profile) {
+    float result = 0.f;
+    if (profile.explicitMaterials) {
+        const std::size_t count = profile.closed ? profile.points.size() : profile.points.size() - 1;
+        for (std::size_t i = 0; i < count; ++i)
+            if (profile.points[i].material == RoadMaterial::Asphalt)
+                result = std::max({result, std::fabs(profile.points[i].side),
+                                   std::fabs(profile.points[(i + 1) % profile.points.size()].side)});
+    } else
+        for (const auto& point : profile.points)
+            if (point.material == RoadMaterial::Asphalt) result = std::max(result, std::fabs(point.side));
+    return result;
+}
+
+float maximumAsphaltHalfWidth(const RoadEdge& edge) {
+    float scale   = 0.f;
+    float minimum = 16.f;
+    for (const auto& point : edge.controlPoints) {
+        scale   = std::max(scale, point.widthScale);
+        minimum = std::min(minimum, point.widthScale);
+    }
+    if (edge.style.widthInterpolation == RoadWidthInterpolation::CatmullRom) scale += .125f * (scale - minimum);
+    return asphaltHalfWidth(edge) * scale;
+}
+
+float junctionSocketDistance(const RoadNetwork& network, const RoadNode& node, const RoadEdge& edge, float pathLength) {
+    if (!node.connection.ports.empty()) return connectionSocketDistance(node, edge, pathLength);
+    float       required  = node.junctionRadius;
+    const V3    direction = authoredOutwardDirection(node, edge);
+    const float halfWidth = maximumAsphaltHalfWidth(edge);
+
+    // Only the immediate clockwise/counter-clockwise arms bound this mouth.
+    // Letting every incident arm participate makes dense junctions grow with
+    // unrelated opposite/diagonal roads and creates overlapping aprons.
+    const RoadEdge* clockwise             = nullptr;
+    const RoadEdge* counterClockwise      = nullptr;
+    float           clockwiseAngle        = std::numeric_limits<float>::max();
+    float           counterClockwiseAngle = std::numeric_limits<float>::max();
+    for (const auto& other : network.edges()) {
+        if (other.id == edge.id || (other.from != node.id && other.to != node.id)) continue;
+        const V3    otherDirection = authoredOutwardDirection(node, other);
+        const float cosine         = std::clamp(dot(direction, otherDirection), -1.f, 1.f);
+        const float signedAngle =
+            std::atan2(direction.x * otherDirection.z - direction.z * otherDirection.x, cosine);
+        const float angle = std::fabs(signedAngle);
+        if (signedAngle < 0.f && angle < clockwiseAngle) {
+            clockwise      = &other;
+            clockwiseAngle = angle;
+        } else if (signedAngle >= 0.f && angle < counterClockwiseAngle) {
+            counterClockwise      = &other;
+            counterClockwiseAngle = angle;
+        }
+    }
+
+    auto constrainTo = [&](const RoadEdge* other) {
+        if (other == nullptr) return;
+        const V3    otherDirection = authoredOutwardDirection(node, *other);
+        const float cosine         = std::clamp(dot(direction, otherDirection), -1.f, 1.f);
+        const float sine           = std::sqrt(std::max(0.f, 1.f - cosine * cosine));
+        // Collinear continuations constrain no corner; near-parallel duplicate
+        // arms are rejected by the network validator before reaching bake.
+        if (sine < 0.08f) return;
+        const float tangentDistance = (asphaltHalfWidth(*other) + halfWidth * std::fabs(cosine)) / sine;
+        required                    = std::max(required, tangentDistance + 0.35f);
+    };
+    constrainTo(clockwise);
+    if (counterClockwise != clockwise) constrainTo(counterClockwise);
+    return junctionTrimDistance(pathLength, required);
+}
+
+
+float planeHeight(const JunctionPlane& plane, float x, float z) {
+    return plane.origin.y + plane.gradeX * (x - plane.origin.x) + plane.gradeZ * (z - plane.origin.z);
+}
+
+/** Fit one bounded road plane through the authored node to all incident trim sockets. */
+JunctionPlane fitJunctionPlane(const RoadNetwork& network, const RoadNode& node) {
+    JunctionPlane plane{{node.x, node.y, node.z}};
+    float         xx = 0.f, xz = 0.f, zz = 0.f, xy = 0.f, zy = 0.f;
+    for (const auto& edge : network.edges()) {
+        if (edge.from != node.id && edge.to != node.id) continue;
+        auto spline = edgeToSpline(edge);
+        if (!spline.ok()) continue;
+        auto pathLength = spline.value().lengthResult(16);
+        if (!pathLength.ok()) continue;
+        const float trim  = junctionSocketDistance(network, node, edge, pathLength.value());
+        const float d     = edge.from == node.id ? trim : pathLength.value() - trim;
+        auto        frame = spline.value().travelFrameResult(d, "clamp", 16);
+        if (!frame.ok()) continue;
+        const float dx = frame.value().sample.x - node.x;
+        const float dz = frame.value().sample.z - node.z;
+        const float dy = frame.value().sample.y - node.y;
+        const float weight =
+            std::max(1.f, edge.style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward));
+        xx += weight * dx * dx;
+        xz += weight * dx * dz;
+        zz += weight * dz * dz;
+        xy += weight * dx * dy;
+        zy += weight * dz * dy;
+    }
+    const float determinant = xx * zz - xz * xz;
+    if (std::fabs(determinant) > 1e-5f) {
+        plane.gradeX = (xy * zz - zy * xz) / determinant;
+        plane.gradeZ = (zy * xx - xy * xz) / determinant;
+    }
+    // A road junction is a local construction plane, not a terrain patch. Limit
+    // the fitted grade so a single malformed arm cannot turn it into a wall.
+    const float grade = std::sqrt(plane.gradeX * plane.gradeX + plane.gradeZ * plane.gradeZ);
+    if (grade > 0.25f) {
+        plane.gradeX *= 0.25f / grade;
+        plane.gradeZ *= 0.25f / grade;
+    }
+    plane.up = normalize(V3{-plane.gradeX, 1.f, -plane.gradeZ});
+    return plane;
+}
+
+Result<void> validateJunctionGeometry(const RoadNetwork& network, const RoadNode& node) {
+    if (!node.connection.ports.empty()) return validateConnectionSeams(network, node);
+    for (const auto& edge : network.edges()) {
+        if ((edge.from != node.id && edge.to != node.id) || edge.style.crossSection.empty()) continue;
+        if (!edge.style.crossSectionClosed && edge.style.crossSection.size() == 2u &&
+            std::fabs(edge.style.crossSection[0].up) < 1e-4f && std::fabs(edge.style.crossSection[1].up) < 1e-4f &&
+            std::fabs(edge.style.crossSection[0].side + edge.style.crossSection[1].side) < 1e-4f)
+            continue;
+        auto standard = edge.style;
+        standard.crossSection.clear();
+        standard.crossSectionClosed = false;
+        auto canonical              = makeRoadProfile(standard, edge.lanesForward, edge.lanesBackward);
+        if (!canonical.ok()) return Result<void>::failure(canonical.status());
+        auto samePoint = [](const auto& a, const auto& b) {
+            return std::fabs(a.side - b.side) < 1e-4f && std::fabs(a.up - b.up) < 1e-4f;
+        };
+        for (const auto& point : edge.style.crossSection)
+            if (!std::any_of(canonical.value().points.begin(), canonical.value().points.end(),
+                             [&](const auto& p) { return samePoint(point, p); }))
+                return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                      "nonstandard sections require a compatible custom connection asset", "junction");
+        for (const auto& point : canonical.value().points)
+            if (!std::any_of(edge.style.crossSection.begin(), edge.style.crossSection.end(),
+                             [&](const auto& p) { return samePoint(point, p); }))
+                return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                      "custom profile does not match the procedural junction section", "junction");
+    }
+    std::vector<const RoadEdge*> incident;
+    std::vector<V3>              directions;
+    for (const auto& edge : network.edges()) {
+        if (edge.from != node.id && edge.to != node.id) continue;
+        incident.push_back(&edge);
+        directions.push_back(authoredOutwardDirection(node, edge));
+    }
+    for (std::size_t first = 0; directions.size() >= 3u && first < directions.size(); ++first)
+        for (std::size_t second = first + 1; second < directions.size(); ++second)
+            if (dot(directions[first], directions[second]) > 0.9999905f)
+                return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                      "junction contains two arms with indistinguishable outgoing directions",
+                                      "junction");
+
+    const JunctionPlane plane = fitJunctionPlane(network, node);
+    if (incident.size() < 4u) return Result<void>::success();
+    for (const RoadEdge* edge : incident) {
+        auto spline = edgeToSpline(*edge);
+        if (!spline.ok()) return Result<void>::failure(spline.status());
+        auto pathLength = spline.value().lengthResult(24);
+        if (!pathLength.ok()) return Result<void>::failure(pathLength.status());
+        const float trim     = junctionSocketDistance(network, node, *edge, pathLength.value());
+        const float distance = edge->from == node.id ? trim : pathLength.value() - trim;
+        auto        frame    = spline.value().travelFrameResult(distance, "clamp", 24);
+        if (!frame.ok()) return Result<void>::failure(frame.status());
+        const float expected  = planeHeight(plane, frame.value().sample.x, frame.value().sample.z);
+        const float tolerance = std::max(0.35f, asphaltHalfWidth(*edge) * 0.15f);
+        if (std::fabs(frame.value().sample.y - expected) > tolerance)
+            return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                  "junction arm sockets cannot share one bounded construction plane", "junction");
+    }
+    return Result<void>::success();
+}
+
+void blendFrameToJunctionPlane(SplineFrameSample& frame, const JunctionPlane& plane, float weight) {
+    weight              = std::clamp(weight, 0.f, 1.f);
+    const float targetY = planeHeight(plane, frame.sample.x, frame.sample.z);
+    frame.sample.y += (targetY - frame.sample.y) * weight;
+
+    const V3 oldForward = normalize(V3{frame.forwardX, frame.forwardY, frame.forwardZ});
+    const V3 oldSide    = normalize(V3{frame.sideX, frame.sideY, frame.sideZ});
+    V3       targetForward =
+        normalize(V3{oldForward.x, plane.gradeX * oldForward.x + plane.gradeZ * oldForward.z, oldForward.z});
+    V3 targetSide = normalize(cross(plane.up, targetForward));
+    if (dot(targetSide, oldSide) < 0.f) targetSide = targetSide * -1.f;
+    V3 targetUp = normalize(cross(targetForward, targetSide));
+    if (targetUp.y < 0.f) targetUp = targetUp * -1.f;
+
+    const V3 forward = normalize(oldForward * (1.f - weight) + targetForward * weight);
+    const V3 side    = normalize(oldSide * (1.f - weight) + targetSide * weight);
+    V3       up      = normalize(cross(forward, side));
+    if (dot(up, targetUp) < 0.f) up = up * -1.f;
+    frame.forwardX = forward.x;
+    frame.forwardY = forward.y;
+    frame.forwardZ = forward.z;
+    frame.sideX    = side.x;
+    frame.sideY    = side.y;
+    frame.sideZ    = side.z;
+    frame.upX      = up.x;
+    frame.upY      = up.y;
+    frame.upZ      = up.z;
+}
+
+float signedAreaXZ(const std::vector<V3>& polygon) {
+    float area = 0.f;
+    for (std::size_t i = 0; i < polygon.size(); ++i) {
+        const V3& a = polygon[i];
+        const V3& b = polygon[(i + 1) % polygon.size()];
+        area += a.x * b.z - b.x * a.z;
+    }
+    return area * 0.5f;
+}
+
+float crossXZ(V3 a, V3 b, V3 c) { return (b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x); }
+
+bool isPointInTriangleXZ(V3 p, V3 a, V3 b, V3 c, float orientation) {
+    constexpr float epsilon = 1e-5f;
+    // Boundary points on a sampled curve must not veto the ear; only a point
+    // strictly inside the candidate triangle makes that diagonal invalid.
+    return crossXZ(a, b, p) * orientation > epsilon && crossXZ(b, c, p) * orientation > epsilon &&
+           crossXZ(c, a, p) * orientation > epsilon;
+}
+
+/** Ear clipping keeps every sampled curb-return segment as a hard polygon boundary. */
+TriangulationStatus triangulateBoundary(const std::vector<V3>&                   polygon,
+                                        std::vector<std::array<std::size_t, 3>>& triangles,
+                                        BoundaryPointPolicy                      boundaryPolicy) {
+    if (polygon.size() < 3) return TriangulationStatus::Degenerate;
+    const float area = signedAreaXZ(polygon);
+    if (std::fabs(area) < 1e-5f) return TriangulationStatus::Degenerate;
+    const float              orientation = area > 0.f ? 1.f : -1.f;
+    std::vector<std::size_t> remaining(polygon.size());
+    for (std::size_t i = 0; i < remaining.size(); ++i) remaining[i] = i;
+    triangles.clear();
+    triangles.reserve(polygon.size() - 2);
+    std::size_t guard = polygon.size() * polygon.size();
+    while (remaining.size() > 3 && guard-- > 0) {
+        bool clipped = false;
+        for (std::size_t i = 0; i < remaining.size(); ++i) {
+            const std::size_t previous = remaining[(i + remaining.size() - 1) % remaining.size()];
+            const std::size_t current  = remaining[i];
+            const std::size_t next     = remaining[(i + 1) % remaining.size()];
+            if (crossXZ(polygon[previous], polygon[current], polygon[next]) * orientation <= 1e-5f) continue;
+            bool contains = false;
+            for (const std::size_t candidate : remaining) {
+                if (candidate == previous || candidate == current || candidate == next) continue;
+                const bool inclusive =
+                    boundaryPolicy == BoundaryPointPolicy::IncludeBoundary &&
+                    crossXZ(polygon[previous], polygon[current], polygon[candidate]) * orientation >= -1e-5f &&
+                    crossXZ(polygon[current], polygon[next], polygon[candidate]) * orientation >= -1e-5f &&
+                    crossXZ(polygon[next], polygon[previous], polygon[candidate]) * orientation >= -1e-5f;
+                if (inclusive || isPointInTriangleXZ(polygon[candidate], polygon[previous], polygon[current],
+                                                     polygon[next], orientation)) {
+                    contains = true;
+                    break;
+                }
+            }
+            if (contains) continue;
+            triangles.push_back({previous, current, next});
+            remaining.erase(remaining.begin() + static_cast<std::ptrdiff_t>(i));
+            clipped = true;
+            break;
+        }
+        if (!clipped) return TriangulationStatus::Degenerate;
+    }
+    if (remaining.size() == 3) triangles.push_back({remaining[0], remaining[1], remaining[2]});
+    return triangles.size() + 2 == polygon.size() ? TriangulationStatus::Complete : TriangulationStatus::Degenerate;
+}
+
+float laneCenterOffset(const RoadStyle& style, int lanesForward, int lanesBackward, int laneIndex,
+                       RoadLaneDirection direction) {
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(lanesForward + lanesBackward);
+    if (lanesBackward <= 0 || direction == RoadLaneDirection::Backward)
+        return -asphaltHalf + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
+    const float opposingBoundary = -asphaltHalf + style.laneWidth * static_cast<float>(lanesBackward);
+    return opposingBoundary + style.laneWidth * (static_cast<float>(laneIndex) + 0.5f);
 }
 
 void appendBox(MeshBuild& mesh, V3 center, V3 side, V3 up, V3 forward, float hx, float hy, float hz,
@@ -74,171 +423,66 @@ void appendBox(MeshBuild& mesh, V3 center, V3 side, V3 up, V3 forward, float hx,
 }
 
 void appendStripQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d, V3 normal, float u0, float u1, float v0, float v1,
-                     RoadMaterial material) {
+                     RoadMaterial material, QuadDiagonal diagonal) {
     mesh.setActiveGroup(roadMaterialGroup(material));
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.addVertex(a.x, a.y, a.z, normal.x, normal.y, normal.z, u0, v0);
     mesh.addVertex(b.x, b.y, b.z, normal.x, normal.y, normal.z, u1, v0);
     mesh.addVertex(c.x, c.y, c.z, normal.x, normal.y, normal.z, u1, v1);
     mesh.addVertex(d.x, d.y, d.z, normal.x, normal.y, normal.z, u0, v1);
-    mesh.addTriangle(base, base + 1, base + 2);
-    mesh.addTriangle(base, base + 2, base + 3);
+    const bool across           = diagonal == QuadDiagonal::SecondToFourth;
+    const V3   firstAreaNormal  = across ? cross(b - a, d - a) : cross(b - a, c - a);
+    const V3   secondAreaNormal = across ? cross(c - b, d - b) : cross(c - a, d - a);
+    if (dot(firstAreaNormal, firstAreaNormal) > 1e-12f) mesh.addTriangle(base, base + 1, base + (across ? 3 : 2));
+    if (dot(secondAreaNormal, secondAreaNormal) > 1e-12f) mesh.addTriangle(base + (across ? 1 : 0), base + 2, base + 3);
 }
 
 /** @brief Emit a quad whose winding matches @p normal (mesh3D expects object-space CCW). */
 void appendOrientedQuad(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 d, V3 normal, float u0, float u1, float v0, float v1,
-                        RoadMaterial material) {
+                        RoadMaterial material, QuadDiagonal diagonal) {
     const V3 n = normalize(normal);
-    // Tris (a,b,c) / (a,c,d); flip corner order when the geometric normal fights n.
-    if (dot(cross(b - a, c - a), n) < 0.f) {
-        appendStripQuad(mesh, a, d, c, b, n, u0, u1, v1, v0, material);
+    // Use both constituent triangles so a deliberately collapsed edge still
+    // gets the winding of its non-degenerate half.
+    const V3 geometricNormal = cross(b - a, c - a) + cross(c - a, d - a);
+    if (dot(geometricNormal, geometricNormal) <= 1e-12f) return;
+    if (dot(geometricNormal, n) < 0.f) {
+        appendStripQuad(mesh, a, d, c, b, n, u0, u1, v1, v0, material, diagonal);
     } else {
-        appendStripQuad(mesh, a, b, c, d, n, u0, u1, v0, v1, material);
+        appendStripQuad(mesh, a, b, c, d, n, u0, u1, v0, v1, material, diagonal);
     }
 }
 
-void appendOrientedTri(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 normal, RoadMaterial material) {
+void appendOrientedTri(MeshBuild& mesh, V3 a, V3 b, V3 c, V3 normal, float uvMeters, RoadMaterial material) {
     const V3 n = normalize(normal);
+    const V3 areaNormal = cross(b - a, c - a);
+    if (dot(areaNormal, areaNormal) <= 1e-12f) return;
+    const float uvScale = 1.f / std::max(uvMeters, 0.1f);
     mesh.setActiveGroup(roadMaterialGroup(material));
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
-    mesh.addVertex(a.x, a.y, a.z, n.x, n.y, n.z, 0.5f, 0.5f);
-    mesh.addVertex(b.x, b.y, b.z, n.x, n.y, n.z, 0.5f, 0.5f);
-    mesh.addVertex(c.x, c.y, c.z, n.x, n.y, n.z, 0.5f, 0.5f);
-    if (dot(cross(b - a, c - a), n) < 0.f) mesh.addTriangle(base, base + 2, base + 1);
+    mesh.addVertex(a.x, a.y, a.z, n.x, n.y, n.z, a.x * uvScale, a.z * uvScale);
+    mesh.addVertex(b.x, b.y, b.z, n.x, n.y, n.z, b.x * uvScale, b.z * uvScale);
+    mesh.addVertex(c.x, c.y, c.z, n.x, n.y, n.z, c.x * uvScale, c.z * uvScale);
+    if (dot(areaNormal, n) < 0.f)
+        mesh.addTriangle(base, base + 2, base + 1);
     else
         mesh.addTriangle(base, base + 1, base + 2);
 }
 
-Result<void> loftProfileClean(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames,
-                              const RoadProfile& profile, float uvMeters) {
-    if (frames.size() < 2 || profile.points.size() < 2)
-        return Result<void>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "loft needs >=2 frames and profile points", {}, {}, "procgen.road"));
-
-    const int ringCount    = static_cast<int>(frames.size());
-    const int profileCount = static_cast<int>(profile.points.size());
-    std::vector<V3> ringPositions(static_cast<std::size_t>(ringCount * profileCount));
-
-    for (int ring = 0; ring < ringCount; ++ring) {
-        const auto& frame = frames[static_cast<std::size_t>(ring)];
-        const V3    origin{frame.sample.x, frame.sample.y, frame.sample.z};
-        const V3    side{frame.sideX, frame.sideY, frame.sideZ};
-        const V3    up{frame.upX, frame.upY, frame.upZ};
-        for (int i = 0; i < profileCount; ++i) {
-            const auto& pp = profile.points[static_cast<std::size_t>(i)];
-            ringPositions[static_cast<std::size_t>(ring * profileCount + i)] = origin + side * pp.side + up * pp.up;
-        }
-    }
-
-    for (int ring = 0; ring < ringCount - 1; ++ring) {
-        const float u0 = static_cast<float>(ring) / static_cast<float>(ringCount - 1) *
-                         (uvMeters > 0.f ? uvMeters : 1.f);
-        const float u1 = static_cast<float>(ring + 1) / static_cast<float>(ringCount - 1) *
-                         (uvMeters > 0.f ? uvMeters : 1.f);
-        for (int i = 0; i < profileCount - 1; ++i) {
-            const auto& a = profile.points[static_cast<std::size_t>(i)];
-            const auto& b = profile.points[static_cast<std::size_t>(i + 1)];
-            // Prefer asphalt for near-horizontal driving strips (endpoint material alone
-            // would tag the asphalt span as curb because the left corner is a curb drop).
-            RoadMaterial mat = a.material;
-            if (std::fabs(a.up - b.up) <= 1e-3f &&
-                (a.material == RoadMaterial::Asphalt || b.material == RoadMaterial::Asphalt)) {
-                mat = RoadMaterial::Asphalt;
-            }
-            const V3&   p00 = ringPositions[static_cast<std::size_t>(ring * profileCount + i)];
-            const V3&   p01 = ringPositions[static_cast<std::size_t>(ring * profileCount + i + 1)];
-            const V3&   p10 = ringPositions[static_cast<std::size_t>((ring + 1) * profileCount + i)];
-            const V3&   p11 = ringPositions[static_cast<std::size_t>((ring + 1) * profileCount + i + 1)];
-            const V3    normal = normalize(cross(p10 - p00, p01 - p00));
-            const float v0 =
-                profile.halfWidth > 1e-5f
-                    ? (a.side / profile.halfWidth) * 0.5f + 0.5f
-                    : 0.f;
-            const float v1 =
-                profile.halfWidth > 1e-5f
-                    ? (b.side / profile.halfWidth) * 0.5f + 0.5f
-                    : 1.f;
-            appendStripQuad(mesh, p00, p10, p11, p01, normal, u0, u1, v0, v1, mat);
-        }
-    }
-    return Result<void>::success();
-}
-
-/** @brief Cap a lofted profile ring so junction-facing open U-channels are not see-through. */
-void capProfileRing(MeshBuild& mesh, const SplineFrameSample& frame, const RoadProfile& profile, bool outward) {
-    if (profile.points.size() < 3) return;
-    const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
-    const V3 side{frame.sideX, frame.sideY, frame.sideZ};
-    const V3 up{frame.upX, frame.upY, frame.upZ};
-    V3       fwd{frame.forwardX, frame.forwardY, frame.forwardZ};
-    if (!outward) fwd = fwd * -1.f;
-    const V3 nrm = normalize(fwd);
-    std::vector<V3> ring;
-    ring.reserve(profile.points.size());
-    for (const auto& pp : profile.points) ring.push_back(origin + side * pp.side + up * pp.up);
-    // Fan-fill the end polygon (closes the jersey-barrier U looking into the hub).
-    mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Curb));
-    const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
-    for (const V3& p : ring) mesh.addVertex(p.x, p.y, p.z, nrm.x, nrm.y, nrm.z, 0.f, 0.f);
-    for (std::size_t i = 1; i + 1 < ring.size(); ++i) {
-        if (outward) mesh.addTriangle(base, base + static_cast<std::uint32_t>(i), base + static_cast<std::uint32_t>(i + 1));
-        else
-            mesh.addTriangle(base, base + static_cast<std::uint32_t>(i + 1), base + static_cast<std::uint32_t>(i));
-    }
-}
-
-/**
- * @brief Close only curb/sidewalk shoulders at a tip — leave the asphalt U open.
- *
- * Full `capProfileRing` draws a dark tip bar across the asphalt that reads as a
- * salmon seam from above on large junction trims. Shoulder-only caps still stop
- * see-through holes at the outer gray edge.
- */
-void capProfileShoulders(MeshBuild& mesh, const SplineFrameSample& frame, const RoadProfile& profile, bool outward) {
-    if (profile.points.size() < 6) return;
-    const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
-    const V3 side{frame.sideX, frame.sideY, frame.sideZ};
-    const V3 up{frame.upX, frame.upY, frame.upZ};
-    V3       fwd{frame.forwardX, frame.forwardY, frame.forwardZ};
-    if (!outward) fwd = fwd * -1.f;
-    const V3 nrm = normalize(fwd);
-
-    // First Asphalt point marks the deck span start; shoulders are everything else.
-    std::size_t asphaltBegin = profile.points.size();
-    for (std::size_t i = 0; i < profile.points.size(); ++i) {
-        if (profile.points[i].material == RoadMaterial::Asphalt) {
-            asphaltBegin = i;
-            break;
-        }
-    }
-    if (asphaltBegin == 0 || asphaltBegin >= profile.points.size()) return;
-
-    auto emitFan = [&](std::size_t begin, std::size_t end, RoadMaterial mat) {
-        if (end < begin + 3) return;
-        mesh.setActiveGroup(roadMaterialGroup(mat));
-        const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
-        for (std::size_t i = begin; i < end; ++i) {
-            const auto& pp = profile.points[i];
-            const V3    p  = origin + side * pp.side + up * pp.up;
-            mesh.addVertex(p.x, p.y, p.z, nrm.x, nrm.y, nrm.z, 0.f, 0.f);
-        }
-        const auto count = static_cast<std::uint32_t>(end - begin);
-        for (std::uint32_t i = 1; i + 1 < count; ++i) {
-            if (outward) mesh.addTriangle(base, base + i, base + i + 1);
-            else
-                mesh.addTriangle(base, base + i + 1, base + i);
-        }
-    };
-
-    // Left shoulder: outer sidewalk → curb down to asphalt lip (excludes asphalt point).
-    emitFan(0, asphaltBegin, RoadMaterial::Sidewalk);
-    // Right shoulder: asphalt lip → curb → outer sidewalk.
-    emitFan(asphaltBegin, profile.points.size(), RoadMaterial::Sidewalk);
-}
-
 Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames, const RoadStyle& style,
-                             float halfWidth, bool includePiers) {
+                             float halfWidth, float asphaltHalf, bool includePiers, std::size_t budget) {
     if (frames.size() < 2) return Result<void>::success();
+    double travel = 0.;
+    for (std::size_t i = 1; i < frames.size(); ++i)
+        travel += length(V3{frames[i].sample.x - frames[i - 1].sample.x, frames[i].sample.y - frames[i - 1].sample.y,
+                            frames[i].sample.z - frames[i - 1].sample.z});
+    const double piers = includePiers && style.pierSpacing > 1e-3f ? std::ceil(travel / style.pierSpacing) : 0.;
+    const auto used = static_cast<std::size_t>(mesh.getVertexCount()) + static_cast<std::size_t>(mesh.getIndexCount());
+    if (!std::isfinite(piers) || piers > static_cast<double>(budget / 60u))
+        return bakeFail<void>(DiagnosticCode::PreconditionViolation, "bridge piers exceed the mesh/work budget",
+                              "mesh");
+    const std::size_t needed = (frames.size() - 1) * 10u + static_cast<std::size_t>(piers) * 60u;
+    if (used > budget || needed > budget - used)
+        return bakeFail<void>(DiagnosticCode::PreconditionViolation, "bridge deck exceeds mesh budget", "mesh");
     // Deck underside strip.
     for (int ring = 0; ring < static_cast<int>(frames.size()) - 1; ++ring) {
         const auto& f0 = frames[static_cast<std::size_t>(ring)];
@@ -249,10 +493,10 @@ Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSampl
         const V3    s1{f1.sideX, f1.sideY, f1.sideZ};
         const V3    u0{f0.upX, f0.upY, f0.upZ};
         const V3    u1{f1.upX, f1.upY, f1.upZ};
-        const V3    a = o0 + s0 * -halfWidth + u0 * -style.deckThickness;
-        const V3    b = o0 + s0 * halfWidth + u0 * -style.deckThickness;
-        const V3    c = o1 + s1 * halfWidth + u1 * -style.deckThickness;
-        const V3    d = o1 + s1 * -halfWidth + u1 * -style.deckThickness;
+        const V3 a = o0 + s0 * -scaledProfileSide(halfWidth, asphaltHalf, f0.sample.scaleX) + u0 * -style.deckThickness;
+        const V3 b = o0 + s0 * scaledProfileSide(halfWidth, asphaltHalf, f0.sample.scaleX) + u0 * -style.deckThickness;
+        const V3 c = o1 + s1 * scaledProfileSide(halfWidth, asphaltHalf, f1.sample.scaleX) + u1 * -style.deckThickness;
+        const V3 d = o1 + s1 * -scaledProfileSide(halfWidth, asphaltHalf, f1.sample.scaleX) + u1 * -style.deckThickness;
         appendStripQuad(mesh, a, b, c, d, normalize((u0 + u1) * -0.5f), 0.f, 1.f, 0.f, 1.f, RoadMaterial::Deck);
     }
 
@@ -292,13 +536,16 @@ Result<void> addDeckAndPiers(MeshBuild& mesh, const std::vector<SplineFrameSampl
     return Result<void>::success();
 }
 
-Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames, const RoadEdge& edge) {
+Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSample>& frames, const RoadEdge& edge,
+                             float pathLength, const RoadBakeOptions& options) {
     if (frames.size() < 2) return Result<void>::success();
-    const auto& style = edge.style;
-    const float asphaltHalf =
-        0.5f * style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward);
-    auto paintLine = [&](float lateral, bool dashed, RoadMaterial material) {
-        float traveled = 0.f;
+    const auto& style       = edge.style;
+    const float asphaltHalf = 0.5f * style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward);
+    auto        paintLine   = [&](float lateral, bool dashed, RoadMaterial material) -> Result<void> {
+        if (dashed && style.dashLength <= 1e-5f) return Result<void>::success();
+        const bool continuous = !dashed || style.dashGap <= 1e-5f;
+        // Retain the authored phase at the trim, then measure the emitted polyline.
+        double traveled = static_cast<double>(frames.front().sample.normalizedDistance) * pathLength;
         for (std::size_t i = 1; i < frames.size(); ++i) {
             const auto& a = frames[i - 1];
             const auto& b = frames[i];
@@ -309,27 +556,95 @@ Result<void> addLaneMarkings(MeshBuild& mesh, const std::vector<SplineFrameSampl
             const V3    ua{a.upX, a.upY, a.upZ};
             const V3    ub{b.upX, b.upY, b.upZ};
             const float seg = length(pb - pa);
-            const bool  draw =
-                !dashed || (std::fmod(traveled, style.dashLength + style.dashGap) < style.dashLength);
-            if (draw && seg > 1e-5f) {
+            if (seg <= 1e-5f) continue;
+            const double startDistance = traveled;
+            const double distanceSpan  = seg;
+            traveled += distanceSpan;
+            auto emitSpan = [&](float t0, float t1) -> Result<void> {
+                constexpr std::size_t quadElements = 10u;
+                const std::size_t     currentElements =
+                    static_cast<std::size_t>(mesh.getVertexCount()) + static_cast<std::size_t>(mesh.getIndexCount());
+                if (currentElements > options.maximumMeshElements ||
+                    options.maximumMeshElements - currentElements < quadElements)
+                    return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                          "road markings exceed the mesh element budget", "mesh");
                 const float hw = style.markingWidth * 0.5f;
-                const V3    a0 = pa + sa * (lateral - hw) + ua * 0.035f;
-                const V3    a1 = pa + sa * (lateral + hw) + ua * 0.035f;
-                const V3    b1 = pb + sb * (lateral + hw) + ub * 0.035f;
-                const V3    b0 = pb + sb * (lateral - hw) + ub * 0.035f;
-                appendStripQuad(mesh, a0, b0, b1, a1, normalize(ua + ub), 0.f, 1.f, 0.f, 1.f, material);
+                const V3    p0 = pa + (pb - pa) * t0;
+                const V3    p1 = pa + (pb - pa) * t1;
+                if (length(p1 - p0) <= 1e-5f) return Result<void>::success();
+                const V3    s0 = normalize(sa + (sb - sa) * t0);
+                const V3    s1       = normalize(sa + (sb - sa) * t1);
+                const V3    u0       = normalize(ua + (ub - ua) * t0);
+                const V3    u1       = normalize(ua + (ub - ua) * t1);
+                const float lateral0 = lateral * std::lerp(a.sample.scaleX, b.sample.scaleX, t0);
+                const float lateral1 = lateral * std::lerp(a.sample.scaleX, b.sample.scaleX, t1);
+                const V3    a0 =
+                    p0 + s0 * (lateral0 - hw) +
+                    u0 * (roadSurfaceHeight(style, lateral - hw / std::lerp(a.sample.scaleX, b.sample.scaleX, t0)) +
+                          0.035f);
+                const V3 a1 =
+                    p0 + s0 * (lateral0 + hw) +
+                    u0 * (roadSurfaceHeight(style, lateral + hw / std::lerp(a.sample.scaleX, b.sample.scaleX, t0)) +
+                          0.035f);
+                const V3 b1 =
+                    p1 + s1 * (lateral1 + hw) +
+                    u1 * (roadSurfaceHeight(style, lateral + hw / std::lerp(a.sample.scaleX, b.sample.scaleX, t1)) +
+                          0.035f);
+                const V3 b0 =
+                    p1 + s1 * (lateral1 - hw) +
+                    u1 * (roadSurfaceHeight(style, lateral - hw / std::lerp(a.sample.scaleX, b.sample.scaleX, t1)) +
+                          0.035f);
+                appendStripQuad(mesh, a0, b0, b1, a1, normalize(u0 + u1), 0.f, 1.f, 0.f, 1.f, material);
+                return Result<void>::success();
+            };
+            if (continuous) {
+                auto emitted = emitSpan(0.f, 1.f);
+                if (!emitted.ok()) return emitted;
+                continue;
             }
-            traveled += seg;
+            const double cycle = static_cast<double>(style.dashLength) + static_cast<double>(style.dashGap);
+            double       local = 0.0;
+            while (local < distanceSpan - 1e-7) {
+                const double phase    = std::fmod(startDistance + local, cycle);
+                const bool   draw     = phase < static_cast<double>(style.dashLength);
+                const double boundary = draw ? static_cast<double>(style.dashLength) - phase : cycle - phase;
+                const double next     = std::min(distanceSpan, local + boundary);
+                if (!(next > local))
+                    return bakeFail<void>(DiagnosticCode::PreconditionViolation,
+                                          "road marking period is too small to advance", "style.dashLength");
+                if (draw) {
+                    auto emitted = emitSpan(static_cast<float>(local / distanceSpan),
+                                            static_cast<float>(next / distanceSpan));
+                    if (!emitted.ok()) return emitted;
+                }
+                local = next;
+            }
         }
+        return Result<void>::success();
     };
 
-    // White edge lines.
-    paintLine(-asphaltHalf + style.markingWidth, false, RoadMaterial::Marking);
-    paintLine(asphaltHalf - style.markingWidth, false, RoadMaterial::Marking);
-    // Yellow dashed lane dividers (reference centerline look).
+    auto leftEdge = paintLine(-asphaltHalf + style.markingWidth, false, RoadMaterial::Marking);
+    if (!leftEdge.ok()) return leftEdge;
+    auto rightEdge = paintLine(asphaltHalf - style.markingWidth, false, RoadMaterial::Marking);
+    if (!rightEdge.ok()) return rightEdge;
+    const float divider = -asphaltHalf + style.laneWidth * static_cast<float>(edge.lanesBackward);
     for (int lane = 1; lane < edge.lanesForward; ++lane) {
+        const float lateral = (edge.lanesBackward > 0 ? divider : -asphaltHalf) +
+                              style.laneWidth * static_cast<float>(lane);
+        auto        line    = paintLine(lateral, true, RoadMaterial::Marking);
+        if (!line.ok()) return line;
+    }
+    for (int lane = 1; lane < edge.lanesBackward; ++lane) {
         const float lateral = -asphaltHalf + style.laneWidth * static_cast<float>(lane);
-        paintLine(lateral, true, RoadMaterial::MarkingYellow);
+        auto        line    = paintLine(lateral, true, RoadMaterial::Marking);
+        if (!line.ok()) return line;
+    }
+    if (edge.lanesForward > 0 && edge.lanesBackward > 0) {
+        const float offset  = std::max(0.08f, style.markingWidth);
+        auto        first   = paintLine(divider - offset, false, RoadMaterial::MarkingYellow);
+        if (!first.ok()) return first;
+        auto second = paintLine(divider + offset, false, RoadMaterial::MarkingYellow);
+        if (!second.ok()) return second;
     }
     return Result<void>::success();
 }
@@ -338,8 +653,7 @@ void appendArrow(MeshBuild& mesh, V3 pos, V3 forward, V3 up, float size) {
     const V3 side = normalize(cross(up, forward));
     const V3 tip  = pos + forward * size + up * 0.05f;
     const V3 left = pos - forward * size * 0.35f + side * (size * 0.5f) + up * 0.05f;
-    const V3 right =
-        pos - forward * size * 0.35f - side * (size * 0.5f) + up * 0.05f;
+    const V3 right = pos - forward * size * 0.35f - side * (size * 0.5f) + up * 0.05f;
     mesh.setActiveGroup(roadMaterialGroup(RoadMaterial::Nav));
     const auto base = static_cast<std::uint32_t>(mesh.getVertexCount());
     mesh.addVertex(tip.x, tip.y, tip.z, up.x, up.y, up.z, 0.5f, 1.f);
@@ -355,439 +669,19 @@ void appendArrow(MeshBuild& mesh, V3 pos, V3 forward, V3 up, float size) {
     mesh.addTriangle(back, back + 1, back + 2);
 }
 
-Result<void> bakeEdgeGeometry(MeshBuild& mesh, RoadOverlay& overlay, const RoadNetwork& network, const RoadEdge& edge,
-                              const RoadBakeOptions& options) {
-    auto spline = edgeToSpline(edge);
-    if (!spline.ok()) return Result<void>::failure(spline.status());
-    auto pathLength = spline.value().lengthResult(24);
-    if (!pathLength.ok()) return Result<void>::failure(pathLength.status());
 
-    auto fromNode = network.nodeResult(edge.from);
-    auto toNode   = network.nodeResult(edge.to);
-    if (!fromNode.ok() || !toNode.ok())
-        return Result<void>::failure(
-            Diagnostic::error(DiagnosticCode::NotFound, "edge endpoints missing during bake", {}, {}, "procgen.road"));
+}  // namespace detail
 
-    // Honour full junctionRadius so filleted corners meet the arm tips with G1
-    // tangents (square stubs from early trim read as sharp turn corners).
-    const float maxTrim   = std::max(0.f, pathLength.value() * 0.5f - 0.5f);
-    // Honour full junctionRadius so filleted corners meet the arm tips with G1
-    // tangents (square stubs from early trim read as sharp turn corners).
-    const float trimStart = std::min(std::max(0.f, fromNode.value().junctionRadius), maxTrim);
-    const float trimEnd   = std::min(std::max(0.f, toNode.value().junctionRadius), maxTrim);
-    if (trimStart + trimEnd >= pathLength.value() - 0.5f)
-        return Result<void>::success();  // fully inside junction; skip strip
+namespace detail {
 
-    const int segments = std::max(4, options.pathSegmentsPerEdge);
-    auto      frames   = spline.value().sampleFramesResult(segments, true, 0.f, 24);
-    if (!frames.ok()) return Result<void>::failure(frames.status());
+Result<SplinePath> edgeSplineForBake(const RoadEdge& edge) { return edgeToSpline(edge); }
 
-    // Keep mid frames, then force exact trim endpoints so the loft meets the
-    // junction apron (uniform samples alone leave ~segment-sized salmon gaps).
-    std::vector<SplineFrameSample> trimmed;
-    trimmed.reserve(frames.value().size() + 2);
-    if (trimStart > 1e-3f) {
-        auto tip = spline.value().travelFrameResult(trimStart, "clamp", 24);
-        if (!tip.ok()) return Result<void>::failure(tip.status());
-        trimmed.push_back(std::move(tip).takeValue());
-    }
-    const float endDist = pathLength.value() - trimEnd;
-    for (const auto& frame : frames.value()) {
-        const float d = frame.sample.normalizedDistance * pathLength.value();
-        if (d > trimStart + 1e-3f && d < endDist - 1e-3f) trimmed.push_back(frame);
-    }
-    if (trimEnd > 1e-3f) {
-        auto tip = spline.value().travelFrameResult(endDist, "clamp", 24);
-        if (!tip.ok()) return Result<void>::failure(tip.status());
-        trimmed.push_back(std::move(tip).takeValue());
-    }
-    if (trimmed.size() < 2) return Result<void>::success();
-
-    auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
-    if (!profile.ok()) return Result<void>::failure(profile.status());
-
-    auto lofted = loftProfileClean(mesh, trimmed, profile.value(), edge.style.uvMeters);
-    if (!lofted.ok()) return lofted;
-    // Cap stub ends fully. On large junction trims, only close curb/sidewalk
-    // shoulders — a full U-cap draws a dark asphalt tip bar that reads as a gap.
-    if (trimStart > 0.05f) {
-        if (trimStart < 2.5f) capProfileRing(mesh, trimmed.front(), profile.value(), false);
-        else
-            capProfileShoulders(mesh, trimmed.front(), profile.value(), false);
-    }
-    if (trimEnd > 0.05f) {
-        if (trimEnd < 2.5f) capProfileRing(mesh, trimmed.back(), profile.value(), true);
-        else
-            capProfileShoulders(mesh, trimmed.back(), profile.value(), true);
-    }
-    auto deck = addDeckAndPiers(mesh, trimmed, edge.style, profile.value().halfWidth, options.includePiers);
-    if (!deck.ok()) return deck;
-    if (options.includeMarkings) {
-        auto marks = addLaneMarkings(mesh, trimmed, edge);
-        if (!marks.ok()) return marks;
-    }
-
-    if (options.includeNavigation) {
-        for (int lane = 0; lane < edge.lanesForward; ++lane) {
-            const float lateral = laneCenterOffset(edge.style, edge.lanesForward, lane);
-            RoadPolyline poly;
-            poly.r = 0.15f;
-            poly.g = 0.9f;
-            poly.b = 1.f;
-            poly.width = options.navRibbonHalfWidth * 2.f;
-            float traveled = 0.f;
-            float nextArrow = options.arrowSpacing * 0.5f;
-            V3    prev{};
-            bool  hasPrev = false;
-            for (const auto& frame : trimmed) {
-                const V3 origin{frame.sample.x, frame.sample.y, frame.sample.z};
-                const V3 side{frame.sideX, frame.sideY, frame.sideZ};
-                const V3 up{frame.upX, frame.upY, frame.upZ};
-                if (!std::isfinite(origin.x) || !std::isfinite(origin.y) || !std::isfinite(origin.z)) continue;
-                const V3 pos = origin + side * lateral + up * 0.08f;
-                poly.xyz.push_back(pos.x);
-                poly.xyz.push_back(pos.y);
-                poly.xyz.push_back(pos.z);
-                if (hasPrev) {
-                    const float step = length(pos - prev);
-                    if (std::isfinite(step) && step > 1e-5f && step < 1.0e4f) {
-                        traveled += step;
-                        const V3 fwd = normalize(pos - prev);
-                        const V3 lat = normalize(cross(up, fwd));
-                        const float hw = options.navRibbonHalfWidth;
-                        appendStripQuad(mesh, prev + lat * -hw, pos + lat * -hw, pos + lat * hw, prev + lat * hw, up,
-                                        0.f, 1.f, 0.f, 1.f, RoadMaterial::Nav);
-                        int arrowGuard = 0;
-                        while (traveled >= nextArrow && arrowGuard++ < 64) {
-                            appendArrow(mesh, pos, fwd, up, 0.85f);
-                            nextArrow += std::max(options.arrowSpacing, 0.5f);
-                        }
-                        if (arrowGuard >= 64) nextArrow = traveled + std::max(options.arrowSpacing, 0.5f);
-                    }
-                }
-                prev    = pos;
-                hasPrev = true;
-            }
-            overlay.lanes.push_back(std::move(poly));
-        }
-    }
-    return Result<void>::success();
+float junctionSocketDistanceForBake(const RoadNetwork& network, const RoadNode& node, const RoadEdge& edge,
+                                    float pathLength) {
+    return junctionSocketDistance(network, node, edge, pathLength);
 }
 
-Result<void> bakeJunction(MeshBuild& mesh, const RoadNetwork& network, const RoadNode& node) {
-    struct ArmTip {
-        V3    origin;
-        float asphaltHalf = 0.f;
-        float halfWidth   = 0.f;
-        float curbHeight  = 0.f;
-        float sidewalkH   = 0.f;
-    };
-    std::vector<ArmTip> arms;
-    float               maxHalfWidth = 0.f;
-    float               maxAsphalt   = 0.f;
-    for (const auto& edge : network.edges()) {
-        if (edge.to != node.id && edge.from != node.id) continue;
-        auto spline = edgeToSpline(edge);
-        if (!spline.ok()) continue;
-        auto len = spline.value().lengthResult(16);
-        if (!len.ok()) continue;
-        const float d = edge.to == node.id ? std::max(0.f, len.value() - node.junctionRadius)
-                                           : std::min(node.junctionRadius, len.value());
-        auto frame = spline.value().travelFrameResult(d, "clamp", 16);
-        if (!frame.ok()) continue;
-        auto profile = makeRoadProfile(edge.style, edge.lanesForward, edge.lanesBackward);
-        if (!profile.ok()) continue;
-        const float asphaltHalf =
-            0.5f * edge.style.laneWidth * static_cast<float>(edge.lanesForward + edge.lanesBackward);
-        const auto& f = frame.value();
-        ArmTip      tip;
-        tip.origin      = V3{f.sample.x, f.sample.y, f.sample.z};
-        tip.asphaltHalf = asphaltHalf;
-        tip.halfWidth   = profile.value().halfWidth;
-        tip.curbHeight  = edge.style.curbHeight;
-        tip.sidewalkH   = edge.style.sidewalkHeight;
-        arms.push_back(tip);
-        maxHalfWidth = std::max(maxHalfWidth, tip.halfWidth);
-        maxAsphalt   = std::max(maxAsphalt, tip.asphaltHalf);
-    }
-    if (static_cast<int>(arms.size()) < 2) return Result<void>::success();
-
-    const float y        = node.y;
-    const float asphaltY = y + 0.01f;
-    const float jr       = node.junctionRadius;
-
-    // Detect an axis-aligned 4-way cross (the simple debug scene).
-    bool axisCross = arms.size() == 4;
-    if (axisCross) {
-        int axisHits = 0;
-        for (const auto& tip : arms) {
-            const float dx = std::fabs(tip.origin.x - node.x);
-            const float dz = std::fabs(tip.origin.z - node.z);
-            if ((dx < 0.35f && dz > jr * 0.4f) || (dz < 0.35f && dx > jr * 0.4f)) ++axisHits;
-        }
-        axisCross = axisHits == 4;
-    }
-
-    // Asphalt fill. Fan from a hub vertex — a single large strip-quad can vanish
-    // under Lavapipe even when the CPU triangles cover the origin.
-    if (axisCross) {
-        // Curb-return fillet: circle centers sit in the outer corner (jr,jr), so the
-        // asphalt edge is concave and sidewalks wrap toward the property corner.
-        const float ah      = maxAsphalt;
-        const float cornerR = std::max(0.75f, jr - ah);
-        const int   segs    = 16;
-        const V3    upN{0.f, 1.f, 0.f};
-
-        // Hub fan along the filleted outline (arm tips + concave corner arcs).
-        {
-            std::vector<std::pair<float, float>> rim;
-            rim.reserve(static_cast<std::size_t>(4 * (segs + 3)));
-            auto pushPt = [&](float x, float z) {
-                if (!rim.empty() && std::fabs(rim.back().first - x) < 1e-4f &&
-                    std::fabs(rim.back().second - z) < 1e-4f)
-                    return;
-                rim.emplace_back(x, z);
-            };
-            auto pushCornerArc = [&](int sx, int sz, bool reverse) {
-                const float sxf = static_cast<float>(sx);
-                const float szf = static_cast<float>(sz);
-                const float cx  = node.x + sxf * jr;
-                const float cz  = node.z + szf * jr;
-                for (int i = 0; i <= segs; ++i) {
-                    const int   ii = reverse ? (segs - i) : i;
-                    const float t  = static_cast<float>(ii) / static_cast<float>(segs);
-                    const float th = t * 1.5707963f;
-                    pushPt(cx - sxf * cornerR * std::sin(th), cz - szf * cornerR * std::cos(th));
-                }
-            };
-            pushPt(node.x + jr, node.z - ah);
-            pushPt(node.x + jr, node.z + ah);
-            pushCornerArc(+1, +1, false);
-            pushPt(node.x - ah, node.z + jr);
-            pushCornerArc(-1, +1, true);
-            pushPt(node.x - jr, node.z - ah);
-            pushCornerArc(-1, -1, false);
-            pushPt(node.x + ah, node.z - jr);
-            pushCornerArc(+1, -1, true);
-
-            const V3 hub{node.x, asphaltY, node.z};
-            for (std::size_t i = 0; i < rim.size(); ++i) {
-                const auto& p0 = rim[i];
-                const auto& p1 = rim[(i + 1) % rim.size()];
-                appendOrientedTri(mesh, hub, V3{p0.first, asphaltY, p0.second},
-                                  V3{p1.first, asphaltY, p1.second}, upN, RoadMaterial::Asphalt);
-            }
-
-            // Thin seal strips under each arm tip — hides residual sub-cm seams.
-            const float seal  = 0.12f;
-            const float ySeal = asphaltY + 0.002f;
-            auto        addSeal = [&](float x0, float z0, float x1, float z1, float x2, float z2, float x3,
-                               float z3) {
-                appendOrientedQuad(mesh, V3{x0, ySeal, z0}, V3{x1, ySeal, z1}, V3{x2, ySeal, z2}, V3{x3, ySeal, z3},
-                                   upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Asphalt);
-            };
-            addSeal(node.x - ah, node.z + jr - seal, node.x + ah, node.z + jr - seal, node.x + ah, node.z + jr + seal,
-                    node.x - ah, node.z + jr + seal);
-            addSeal(node.x - ah, node.z - jr - seal, node.x + ah, node.z - jr - seal, node.x + ah, node.z - jr + seal,
-                    node.x - ah, node.z - jr + seal);
-            addSeal(node.x + jr - seal, node.z - ah, node.x + jr + seal, node.z - ah, node.x + jr + seal, node.z + ah,
-                    node.x + jr - seal, node.z + ah);
-            addSeal(node.x - jr - seal, node.z - ah, node.x - jr + seal, node.z - ah, node.x - jr + seal, node.z + ah,
-                    node.x - jr - seal, node.z + ah);
-        }
-
-        const float curbW = 0.35f;
-        const float walkW = std::max(0.4f, maxHalfWidth - ah - curbW);
-        float       curbH = 0.45f;
-        float       walkH = 0.14f;
-        if (!arms.empty()) {
-            curbH = arms.front().curbHeight;
-            walkH = arms.front().sidewalkH;
-        }
-        const float walkY   = y + walkH;
-        const float curbTop = y + curbH;
-        const float r0 = cornerR;
-        const float r1 = std::max(0.2f, cornerR - curbW);
-        const float r2 = std::max(0.15f, cornerR - curbW - walkW);
-        for (int sx : {-1, 1}) {
-            for (int sz : {-1, 1}) {
-                const float sxf = static_cast<float>(sx);
-                const float szf = static_cast<float>(sz);
-                const float cx  = node.x + sxf * jr;
-                const float cz  = node.z + szf * jr;
-                auto        arcPt = [&](float radius, float t) {
-                    const float th = t * 1.5707963f;
-                    return V3{cx - sxf * radius * std::sin(th), 0.f, cz - szf * radius * std::cos(th)};
-                };
-                auto wall = [&](V3 p0, V3 p1, float y0, float y1, V3 n, RoadMaterial mat) {
-                    appendOrientedQuad(mesh, V3{p0.x, y0, p0.z}, V3{p1.x, y0, p1.z}, V3{p1.x, y1, p1.z},
-                                       V3{p0.x, y1, p0.z}, n, 0.f, 1.f, 0.f, 1.f, mat);
-                    appendOrientedQuad(mesh, V3{p0.x, y0, p0.z}, V3{p1.x, y0, p1.z}, V3{p1.x, y1, p1.z},
-                                       V3{p0.x, y1, p0.z}, n * -1.f, 0.f, 1.f, 0.f, 1.f, mat);
-                };
-                for (int i = 0; i < segs; ++i) {
-                    const float t0 = static_cast<float>(i) / static_cast<float>(segs);
-                    const float t1 = static_cast<float>(i + 1) / static_cast<float>(segs);
-                    const V3    a0 = arcPt(r0, t0);
-                    const V3    a1 = arcPt(r0, t1);
-                    const V3    b0 = arcPt(r1, t0);
-                    const V3    b1 = arcPt(r1, t1);
-                    const V3    s0 = arcPt(r2, t0);
-                    const V3    s1 = arcPt(r2, t1);
-                    // Sidewalk top slightly past r2 toward the property to cover the skirt seam.
-                    const V3    c0 = arcPt(std::max(0.05f, r2 - 0.06f), t0);
-                    const V3    c1 = arcPt(std::max(0.05f, r2 - 0.06f), t1);
-                    const V3    b0i = arcPt(r1 - 0.02f, t0);
-                    const V3    b1i = arcPt(r1 - 0.02f, t1);
-                    const V3    b0o = arcPt(r1 + 0.02f, t0);
-                    const V3    b1o = arcPt(r1 + 0.02f, t1);
-                    const V3 inToCorner = normalize(V3{cx - a0.x, 0.f, cz - a0.z});
-                    const V3 outToRoad  = inToCorner * -1.f;
-
-                    appendOrientedQuad(mesh, V3{a0.x, curbTop, a0.z}, V3{b0o.x, curbTop, b0o.z},
-                                       V3{b1o.x, curbTop, b1o.z}, V3{a1.x, curbTop, a1.z}, upN, 0.f, 1.f, 0.f, 1.f,
-                                       RoadMaterial::Curb);
-                    appendOrientedQuad(mesh, V3{b0i.x, walkY, b0i.z}, V3{c0.x, walkY, c0.z}, V3{c1.x, walkY, c1.z},
-                                       V3{b1i.x, walkY, b1i.z}, upN, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Sidewalk);
-
-                    wall(a0, a1, y, curbTop, outToRoad, RoadMaterial::Curb);
-                    wall(b0, b1, walkY, curbTop, outToRoad, RoadMaterial::Curb);
-                    wall(s0, s1, y, walkY, outToRoad, RoadMaterial::Sidewalk);
-                }
-            }
-        }
-    } else {
-        const float radius =
-            std::sqrt(jr * jr + maxHalfWidth * maxHalfWidth) + 0.35f;
-        const int segs = 32;
-        const V3  hub{node.x, asphaltY, node.z};
-        const V3  upN{0.f, 1.f, 0.f};
-        for (int i = 0; i < segs; ++i) {
-            const float a0 = static_cast<float>(i) * 6.2831853f / static_cast<float>(segs);
-            const float a1 = static_cast<float>(i + 1) * 6.2831853f / static_cast<float>(segs);
-            appendOrientedTri(mesh, hub,
-                              V3{node.x + std::cos(a0) * radius, asphaltY, node.z + std::sin(a0) * radius},
-                              V3{node.x + std::cos(a1) * radius, asphaltY, node.z + std::sin(a1) * radius}, upN,
-                              RoadMaterial::Asphalt);
-        }
-    }
-
-    // Zebra stripes on every arm tip that meets this hub.
-    for (const auto& edge : network.edges()) {
-        if (edge.to != node.id && edge.from != node.id) continue;
-        auto spline = edgeToSpline(edge);
-        if (!spline.ok()) continue;
-        auto len = spline.value().lengthResult(16);
-        if (!len.ok() || len.value() < node.junctionRadius + 1.5f) continue;
-        const float alongDist =
-            edge.to == node.id ? (len.value() - node.junctionRadius - 1.6f)
-                               : (node.junctionRadius + 1.6f);
-        auto frame = spline.value().travelFrameResult(alongDist, "clamp", 16);
-        if (!frame.ok()) continue;
-        const auto& f = frame.value();
-        const V3    origin{f.sample.x, f.sample.y, f.sample.z};
-        const V3    side{f.sideX, f.sideY, f.sideZ};
-        // Stripe direction: toward the hub from this tip.
-        V3          fwd{f.forwardX, f.forwardY, f.forwardZ};
-        if (edge.from == node.id) fwd = fwd * -1.f;
-        const V3    nrm{0.f, 1.f, 0.f};
-        const float stripeW = edge.style.laneWidth * static_cast<float>(edge.lanesForward) * 0.45f;
-        for (int s = 0; s < 4; ++s) {
-            const float along = static_cast<float>(s) * 0.5f;
-            const V3    c     = origin - fwd * along + nrm * 0.04f;
-            const V3    a     = c + side * -stripeW;
-            const V3    b     = c + side * stripeW;
-            const V3    d     = a - fwd * 0.25f;
-            const V3    e     = b - fwd * 0.25f;
-            appendStripQuad(mesh, a, b, e, d, nrm, 0.f, 1.f, 0.f, 1.f, RoadMaterial::Marking);
-        }
-    }
-    return Result<void>::success();
-}
-
-Result<void> bakeTurnOverlays(MeshBuild& mesh, RoadOverlay& overlay, const RoadNetwork& network,
-                              const RoadBakeOptions& options) {
-    std::unordered_map<std::uint32_t, SplinePath> paths;
-    for (const auto& edge : network.edges()) {
-        auto spline = edgeToSpline(edge);
-        if (!spline.ok()) return Result<void>::failure(spline.status());
-        paths.emplace(edge.id, std::move(spline).takeValue());
-    }
-
-    for (const auto& link : network.laneLinks()) {
-        auto inEdge  = network.edgeResult(link.inEdge);
-        auto outEdge = network.edgeResult(link.outEdge);
-        if (!inEdge.ok() || !outEdge.ok()) continue;
-        auto node = network.nodeResult(inEdge.value().to);
-        if (!node.ok()) continue;
-
-        auto& inPath  = paths[link.inEdge];
-        auto& outPath = paths[link.outEdge];
-        auto  inLen   = inPath.lengthResult(16);
-        auto  outLen  = outPath.lengthResult(16);
-        if (!inLen.ok() || !outLen.ok()) continue;
-
-        const float inDist  = std::max(0.f, inLen.value() - node.value().junctionRadius);
-        const float outDist = std::min(node.value().junctionRadius, outLen.value());
-        auto        inFrame = inPath.travelFrameResult(inDist, "clamp", 16);
-        auto        outFrame = outPath.travelFrameResult(outDist, "clamp", 16);
-        if (!inFrame.ok() || !outFrame.ok()) continue;
-
-        const float inLat  = laneCenterOffset(inEdge.value().style, inEdge.value().lanesForward, link.inLane);
-        const float outLat = laneCenterOffset(outEdge.value().style, outEdge.value().lanesForward, link.outLane);
-
-        const auto& fi = inFrame.value();
-        const auto& fo = outFrame.value();
-        const V3    p0{fi.sample.x, fi.sample.y, fi.sample.z};
-        const V3    p1{fo.sample.x, fo.sample.y, fo.sample.z};
-        const V3    si{fi.sideX, fi.sideY, fi.sideZ};
-        const V3    so{fo.sideX, fo.sideY, fo.sideZ};
-        const V3    ui{fi.upX, fi.upY, fi.upZ};
-        const V3    uo{fo.upX, fo.upY, fo.upZ};
-        const V3    ti{fi.forwardX, fi.forwardY, fi.forwardZ};
-        const V3    to{fo.forwardX, fo.forwardY, fo.forwardZ};
-        const V3    a = p0 + si * inLat + ui * 0.09f;
-        const V3    d = p1 + so * outLat + uo * 0.09f;
-        const float handle = std::max(2.f, node.value().junctionRadius * 0.65f);
-        const V3    b = a + ti * handle;
-        const V3    c = d - to * handle;
-
-        RoadPolyline poly;
-        poly.r = 0.25f;
-        poly.g = 0.95f;
-        poly.b = 0.45f;
-        poly.width = options.navRibbonHalfWidth * 2.f;
-        const int samples = std::max(4, options.turnSamples);
-        V3        prev{};
-        bool      hasPrev = false;
-        for (int i = 0; i <= samples; ++i) {
-            const float t  = static_cast<float>(i) / static_cast<float>(samples);
-            const float u  = 1.f - t;
-            const V3    p  = a * (u * u * u) + b * (3.f * u * u * t) + c * (3.f * u * t * t) + d * (t * t * t);
-            poly.xyz.push_back(p.x);
-            poly.xyz.push_back(p.y);
-            poly.xyz.push_back(p.z);
-            if (hasPrev) {
-                const V3 fwd = normalize(p - prev);
-                const V3 up  = normalize(ui + uo);
-                const V3 lat = normalize(cross(up, fwd));
-                const float hw = options.navRibbonHalfWidth * 0.9f;
-                appendStripQuad(mesh, prev + lat * -hw, p + lat * -hw, p + lat * hw, prev + lat * hw, up, 0.f, 1.f, 0.f,
-                                1.f, RoadMaterial::Nav);
-            }
-            if (i == samples / 2) {
-                const V3 fwd = normalize(d - a);
-                appendArrow(mesh, p, fwd, normalize(ui + uo), 0.7f);
-            }
-            prev    = p;
-            hasPrev = true;
-        }
-        overlay.turns.push_back(std::move(poly));
-    }
-    return Result<void>::success();
-}
-
-}  // namespace
+}  // namespace detail
 
 namespace {
 
@@ -796,7 +690,8 @@ struct MaterialColor {
 };
 
 MaterialColor colorForGroup(const std::string& name) {
-    if (name == "asphalt") return {0.28f, 0.28f, 0.30f, 1.f};
+    if (name == "asphalt" || name == "asphalt.bridge" || name == "asphalt.tunnel" || name == "asphalt.tunnel.portal")
+        return {0.28f, 0.28f, 0.30f, 1.f};
     if (name == "curb") return {0.78f, 0.78f, 0.76f, 1.f};
     if (name == "sidewalk") return {0.86f, 0.86f, 0.84f, 1.f};
     if (name == "deck") return {0.48f, 0.48f, 0.46f, 1.f};
@@ -832,31 +727,128 @@ Result<void> paintGroupVertexColors(MeshBuild& mesh) {
 }  // namespace
 
 Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBakeOptions& options) {
-    if (options.pathSegmentsPerEdge < 2 || options.turnSamples < 2)
-        return Result<RoadBakeResult>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "segment counts must be >= 2", {}, {}, "procgen.road"));
+    if (options.maximumSamplingEvaluations == 0 || options.maximumSamplingEvaluations > 4u * 1024u * 1024u)
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument, "sampling work budget must be in [1,4194304]",
+                                        "options.maximumSamplingEvaluations");
+    if (!std::isfinite(options.samplingScale) || options.samplingScale < 1.f || options.samplingScale > 64.f)
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument, "samplingScale must be in [1,64]",
+                                        "options.samplingScale");
+    auto topology = network.validate();
+    if (!topology.ok()) return Result<RoadBakeResult>::failure(topology.status());
+    constexpr int maximumSamples = 4096;
+    if (options.pathSegmentsPerEdge < 2 || options.turnSamples < 2 ||
+        options.pathSegmentsPerEdge > maximumSamples || options.turnSamples > maximumSamples)
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument,
+                                        "road sample counts must be in [2,4096]", "options");
+    if (options.includeNavigation &&
+        (!std::isfinite(options.navRibbonHalfWidth) || options.navRibbonHalfWidth <= 0.f ||
+         !std::isfinite(options.arrowSpacing) || options.arrowSpacing <= 0.f))
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument,
+                                        "road navigation dimensions must be finite and positive", "options");
+    if (!std::isfinite(options.junctionChordError) || options.junctionChordError <= 0.f ||
+        options.junctionChordError > 1.f)
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument,
+                                        "road junction chord error must be finite and in (0,1] metres", "options");
+    if (options.maximumMeshElements == 0u)
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvalidArgument,
+                                        "road mesh element budget must be positive", "options");
     if (network.edgeCount() == 0)
-        return Result<RoadBakeResult>::failure(Diagnostic::error(DiagnosticCode::PreconditionViolation,
-                                                                 "road network has no edges", {}, {}, "procgen.road"));
+        return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation, "road network has no edges");
 
     RoadBakeResult result;
+    std::unordered_set<std::uint32_t> activeJunctionNodes;
+    std::unordered_set<std::uint32_t> terminalNodes;
+    std::unordered_map<std::uint32_t, std::vector<const RoadEdge*>> incidentEdges;
+    incidentEdges.reserve(network.nodeCount());
     for (const auto& edge : network.edges()) {
-        auto baked = bakeEdgeGeometry(result.mesh, result.overlay, network, edge, options);
-        if (!baked.ok()) return Result<RoadBakeResult>::failure(baked.status());
+        incidentEdges[edge.from].push_back(&edge);
+        incidentEdges[edge.to].push_back(&edge);
+    }
+    for (const auto& node : network.nodes()) {
+        const auto found = incidentEdges.find(node.id);
+        if (found != incidentEdges.end() && found->second.size() == 1) terminalNodes.insert(node.id);
     }
     if (options.includeJunctions) {
         for (const auto& node : network.nodes()) {
-            auto junction = bakeJunction(result.mesh, network, node);
-            if (!junction.ok()) return Result<RoadBakeResult>::failure(junction.status());
+            const auto found = incidentEdges.find(node.id);
+            if (found == incidentEdges.end() || (found->second.size() < 2 && node.connection.ports.empty())) continue;
+            activeJunctionNodes.insert(node.id);
+            auto solvable = validateJunctionGeometry(network, node);
+            if (!solvable.ok()) return Result<RoadBakeResult>::failure(solvable.status());
         }
     }
+    for (const auto& edge : network.edges()) {
+        auto spline = edgeToSpline(edge);
+        if (!spline.ok()) return Result<RoadBakeResult>::failure(spline.status());
+        auto pathLength = spline.value().lengthResult(16);
+        if (!pathLength.ok()) return Result<RoadBakeResult>::failure(pathLength.status());
+        const auto from = network.nodeResult(edge.from);
+        const auto to   = network.nodeResult(edge.to);
+        if (!from.ok() || !to.ok())
+            return bakeFail<RoadBakeResult>(DiagnosticCode::InvariantViolation,
+                                            "edge endpoint disappeared during junction preflight", "edge");
+        const float start = activeJunctionNodes.contains(edge.from)
+                                ? junctionSocketDistance(network, from.value(), edge, pathLength.value())
+                                : 0.f;
+        const float end   = activeJunctionNodes.contains(edge.to)
+                                ? junctionSocketDistance(network, to.value(), edge, pathLength.value())
+                                : 0.f;
+        if ((!from.value().connection.ports.empty() || !to.value().connection.ports.empty()) &&
+            start + end >= pathLength.value() - .01f)
+            return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation,
+                                            "custom sockets consume the complete road edge", "edge");
+        const int laneCount = edge.lanesForward + edge.lanesBackward;
+        if (laneCount >= 6 && pathLength.value() - start - end <= 1.001f)
+            return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation,
+                                            "junction socket trims consume the complete road edge", "edge");
+    }
+    RoadFrameCache                      frameCache;
+    std::vector<RoadGeometrySourceSpan> geometrySources;
+    auto                                recordSource = [&](RoadGeometrySourceKind kind, std::uint32_t id, int first) {
+        const int end = result.mesh.getIndexCount() / 3;
+        if (end > first)
+            geometrySources.push_back(
+                {kind, id, static_cast<std::uint32_t>(first), static_cast<std::uint32_t>(end - first)});
+    };
+    for (const auto& edge : network.edges()) {
+        const int first = result.mesh.getIndexCount() / 3;
+        auto      baked = bakeEdgeGeometry(result.mesh, result.overlay, network, edge, options, activeJunctionNodes,
+                                           terminalNodes, frameCache);
+        if (!baked.ok()) return Result<RoadBakeResult>::failure(baked.status());
+        recordSource(RoadGeometrySourceKind::Edge, edge.id, first);
+        if (isMeshBudgetExceeded(result.mesh, options))
+            return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation,
+                                            "road edges exceed the mesh element budget", "mesh");
+    }
+    if (options.includeJunctions) {
+        for (const auto& node : network.nodes()) {
+            if (!activeJunctionNodes.contains(node.id)) continue;
+            const int first    = result.mesh.getIndexCount() / 3;
+            auto      junction = bakeJunction(result.mesh, network, node, options);
+            if (!junction.ok()) return Result<RoadBakeResult>::failure(junction.status());
+            recordSource(RoadGeometrySourceKind::Junction, node.id, first);
+            if (isMeshBudgetExceeded(result.mesh, options))
+                return bakeFail<RoadBakeResult>(DiagnosticCode::PreconditionViolation,
+                                                "road junctions exceed the mesh element budget", "mesh");
+        }
+    }
+    const int derivedFirst = result.mesh.getIndexCount() / 3;
+    auto      continued    = bakeFacilityContinuations(result.mesh, network, options, activeJunctionNodes);
+    if (!continued.ok()) return Result<RoadBakeResult>::failure(continued.status());
     if (options.includeNavigation) {
-        auto turns = bakeTurnOverlays(result.mesh, result.overlay, network, options);
+        auto turns = bakeTurnOverlays(result.mesh, result.overlay, network, options, activeJunctionNodes);
         if (!turns.ok()) return Result<RoadBakeResult>::failure(turns.status());
+    }
+    if (options.includePlacements) {
+        auto placements = bakePlacementPoints(result.placements, network, options, activeJunctionNodes, frameCache);
+        if (!placements.ok()) return Result<RoadBakeResult>::failure(placements.status());
     }
 
     auto painted = paintGroupVertexColors(result.mesh);
     if (!painted.ok()) return Result<RoadBakeResult>::failure(painted.status());
+    recordSource(RoadGeometrySourceKind::NetworkDerived, 0, derivedFirst);
+    auto sealed = sealRoadGeometrySources(result.mesh, geometrySources);
+    if (!sealed.ok()) return Result<RoadBakeResult>::failure(sealed.status());
 
     result.mesh.setMeta("generator", "procgen.road");
     result.mesh.setMeta("schema", "eve.procgen.roadNetwork");
@@ -865,8 +857,7 @@ Result<RoadBakeResult> bakeRoadNetwork(const RoadNetwork& network, const RoadBak
     result.mesh.setMeta("nodes", std::to_string(network.nodeCount()));
     result.mesh.setMeta("laneLinks", std::to_string(network.laneLinkCount()));
     if (result.mesh.getVertexCount() < 3)
-        return Result<RoadBakeResult>::failure(Diagnostic::error(
-            DiagnosticCode::InvariantViolation, "bake produced an empty mesh", {}, {}, "procgen.road"));
+        return bakeFail<RoadBakeResult>(DiagnosticCode::InvariantViolation, "bake produced an empty mesh");
     return Result<RoadBakeResult>::success(std::move(result));
 }
 

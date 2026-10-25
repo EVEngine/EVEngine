@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
@@ -30,6 +32,6 @@ struct CavePluckingSample {
  * @param input Cave position, near-bed angle, flow, fracture masks, block scale, and seed.
  * @return Bounded blocky retreat response and its controlling factors.
  */
-[[nodiscard]] CavePluckingSample sampleCaveFloodPlucking(const CavePluckingInput& input);
+[[nodiscard]] EVENGINE_API_DOMAINS CavePluckingSample sampleCaveFloodPlucking(const CavePluckingInput& input);
 
 }  // namespace eve::procgen

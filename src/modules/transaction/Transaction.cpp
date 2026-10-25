@@ -1,4 +1,5 @@
 #include "transaction/Transaction.h"
+#include "transaction/AtomicBatch.h"
 
 #include "common/Json.h"
 #include "common/SquirrelBinding.h"
@@ -16,25 +17,7 @@ namespace eve::transaction {
 namespace {
 
 std::string quote(const std::string& value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\b': out << "\\b"; break;
-            case '\f': out << "\\f"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
+    return eve::json::quoteString(value, eve::json::StringEscapeStyle::Canonical);
 }
 
 std::string canonicalJson(const eve::json::Value& value) {
@@ -102,13 +85,10 @@ const eve::SnapshotMigrationChain& transactionMigrations() {
 
 bool parseU64(const eve::json::Value& value, uint64_t& out) {
     if (!value.isString()) return false;
-    try {
-        size_t used = 0;
-        out         = std::stoull(value.asString(), &used);
-        return used == value.asString().size();
-    } catch (...) {
-        return false;
-    }
+    auto parsed = eve::json::scanUnsignedInteger(value.asString(), eve::json::UnsignedIntegerSyntax::LegacyStoull);
+    if (!parsed) return false;
+    out = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool parseState(const std::string& text, State& state) {
@@ -355,7 +335,7 @@ void Plan::emit(const std::string& type, const std::string& operationId, const s
 eve::Result<eve::OperationId> Plan::stage(const std::string& kind, const std::string& target,
                                           const std::string& payloadJson, eve::OperationId operationId) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<eve::OperationId>::failure(eve::Diagnostic::error(code, message));
     };
     error_.clear();
     if (state_ != State::Open) return failure(eve::DiagnosticCode::Conflict, "transaction plan is frozen");
@@ -399,15 +379,10 @@ Operation* findMutable(std::deque<Operation>& operations, eve::OperationId id) {
     return it == operations.end() ? nullptr : &*it;
 }
 
-template <class T = void>
-eve::Result<T> planFailure(eve::DiagnosticCode code, std::string message) {
-    return eve::Result<T>::failure(eve::Diagnostic::error(code, std::move(message), {}, {}, "transaction"));
-}
-
 eve::Result<void> Plan::markValid(const std::string& operationId) {
-    if (state_ != State::Open) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not open");
+    if (state_ != State::Open) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not open", {}, {}, "transaction"));
     Operation* operation = findMutable(operations_, operationId);
-    if (!operation) return planFailure(eve::DiagnosticCode::NotFound, "operation was not found");
+    if (!operation) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "operation was not found", {}, {}, "transaction"));
     operation->checked = true;
     operation->valid   = true;
     operation->error.clear();
@@ -416,9 +391,9 @@ eve::Result<void> Plan::markValid(const std::string& operationId) {
 }
 
 eve::Result<void> Plan::markValid(eve::OperationId operationId) {
-    if (state_ != State::Open) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not open");
+    if (state_ != State::Open) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not open", {}, {}, "transaction"));
     Operation* operation = findMutable(operations_, operationId);
-    if (!operation) return planFailure(eve::DiagnosticCode::NotFound, "operation was not found");
+    if (!operation) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "operation was not found", {}, {}, "transaction"));
     operation->checked = true;
     operation->valid   = true;
     operation->error.clear();
@@ -427,9 +402,9 @@ eve::Result<void> Plan::markValid(eve::OperationId operationId) {
 }
 
 eve::Result<void> Plan::markInvalid(const std::string& operationId, const std::string& error) {
-    if (state_ != State::Open) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not open");
+    if (state_ != State::Open) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not open", {}, {}, "transaction"));
     Operation* operation = findMutable(operations_, operationId);
-    if (!operation) return planFailure(eve::DiagnosticCode::NotFound, "operation was not found");
+    if (!operation) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "operation was not found", {}, {}, "transaction"));
     operation->checked = true;
     operation->valid   = false;
     operation->error   = error.empty() ? "invalid operation" : error;
@@ -438,9 +413,9 @@ eve::Result<void> Plan::markInvalid(const std::string& operationId, const std::s
 }
 
 eve::Result<void> Plan::markInvalid(eve::OperationId operationId, const std::string& error) {
-    if (state_ != State::Open) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not open");
+    if (state_ != State::Open) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not open", {}, {}, "transaction"));
     Operation* operation = findMutable(operations_, operationId);
-    if (!operation) return planFailure(eve::DiagnosticCode::NotFound, "operation was not found");
+    if (!operation) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "operation was not found", {}, {}, "transaction"));
     operation->checked = true;
     operation->valid   = false;
     operation->error   = error.empty() ? "invalid operation" : error;
@@ -450,17 +425,17 @@ eve::Result<void> Plan::markInvalid(eve::OperationId operationId, const std::str
 
 eve::Result<void> Plan::validate() {
     error_.clear();
-    if (state_ != State::Open) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not open");
+    if (state_ != State::Open) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not open", {}, {}, "transaction"));
     if (operations_.empty()) {
         error_ = "transaction has no operations";
         emit("validation_failed", {}, error_);
-        return planFailure(eve::DiagnosticCode::InvalidArgument, error_);
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error_, {}, {}, "transaction"));
     }
     for (const auto& operation : operations_) {
         if (!operation.checked || !operation.valid) {
             error_ = operation.checked ? operation.error : "operation was not validated: " + operation.id;
             emit("validation_failed", operation.id, error_);
-            return planFailure(eve::DiagnosticCode::InvalidArgument, error_);
+            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, error_, {}, {}, "transaction"));
         }
     }
     state_ = State::Validated;
@@ -469,7 +444,7 @@ eve::Result<void> Plan::validate() {
 }
 
 eve::Result<void> Plan::commit() {
-    if (state_ != State::Validated) return planFailure(eve::DiagnosticCode::Conflict, "transaction is not validated");
+    if (state_ != State::Validated) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is not validated", {}, {}, "transaction"));
     state_ = State::Committed;
     emit("committed");
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
@@ -477,7 +452,7 @@ eve::Result<void> Plan::commit() {
 
 eve::Result<void> Plan::rollback(const std::string& reason) {
     if (state_ != State::Open && state_ != State::Validated)
-        return planFailure(eve::DiagnosticCode::Conflict, "transaction cannot be rolled back in its current state");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction cannot be rolled back in its current state", {}, {}, "transaction"));
     state_ = State::RolledBack;
     error_ = reason;
     emit("rolled_back", {}, reason);
@@ -486,7 +461,7 @@ eve::Result<void> Plan::rollback(const std::string& reason) {
 
 eve::Result<void> Plan::fail(const std::string& error) {
     if (state_ == State::Committed || state_ == State::RolledBack || state_ == State::Failed)
-        return planFailure(eve::DiagnosticCode::Conflict, "transaction is already terminal");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Conflict, "transaction is already terminal", {}, {}, "transaction"));
     state_ = State::Failed;
     error_ = error.empty() ? "transaction failed" : error;
     emit("failed", {}, error_);
@@ -546,7 +521,7 @@ std::string Plan::snapshotJson() const {
 eve::Result<Plan*> Ledger::create(const std::string& correlation, const std::string& causation,
                                   eve::TransactionId identity) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<Plan*>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<Plan*>::failure(eve::Diagnostic::error(code, message));
     };
     if (identity.isNil()) {
         if (!transactionIdGenerator_)
@@ -591,7 +566,7 @@ std::string Ledger::snapshotJson() const {
 
 eve::Result<void> Ledger::restore(std::string_view json) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message), "transaction.ledger"));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message, "transaction.ledger"));
     };
     auto     document     = eve::json::Document::parse(std::string(json));
     auto     root         = document.root();
@@ -921,6 +896,7 @@ void Transaction::expose(ssq::Table& table) {
 
     auto cls = table.addClass(name, Transaction::create, false);
     expose(cls);
+    script_internal::exposeAtomicBatch(table, cls);
 }
 
 void Transaction::expose(ssq::Class& cls) {

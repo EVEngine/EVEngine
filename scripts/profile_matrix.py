@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -49,10 +50,12 @@ PROFILES = (
     "procgen-core-only",
     "physics-core-only",
     "asset-core-only",
+    "crowd-core-only",
+    "crowd-thread-core-only",
     "headless",
     "server",
 )
-HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "headless", "server"}
+HOSTLESS = {"procgen-core-only", "physics-core-only", "asset-core-only", "crowd-core-only", "crowd-thread-core-only", "headless", "server"}
 RUNTIME_ONLY = {"runtime-3d"}
 _MODULE_DIRS: dict[str, str] | None = None
 
@@ -68,6 +71,8 @@ CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
     "asset-core-only": ("common", "data", "asset"),
+    "crowd-core-only": ("common", "crowd"),
+    "crowd-thread-core-only": ("common", "crowd", "crowd_thread"),
     "headless": ("common", "data", "platform_event", "timer"),
     "server": (
         "common",
@@ -76,7 +81,6 @@ CORE_SEEDS = {
         "timer",
         "network",
         "authority",
-        "decision",
         "definitions",
         "effects",
         "game_event",
@@ -100,12 +104,27 @@ PHYSICS_CORE_SOURCES = (
     "physics/Body3D.cpp",
     "physics/Fixture.cpp",
     "physics/Joint3D.cpp",
+    "physics/box3d/Box3DJoint.cpp",
+    "physics/box3d/Box3DBody.cpp",
+    "physics/box3d/Box3DShape.cpp",
+    "physics/box3d/Box3DShapeCook.cpp",
+    "physics/box3d/Box3DWorld.cpp",
+    "physics/box3d/Box3DWorldJoints.cpp",
+    "physics/box3d/Box3DWorldQueries.cpp",
+    "physics/box3d/Box3DWorldMover.cpp",
+    "physics/box3d/Box3DWorldContacts.cpp",
     "physics/PhysicsHandles.cpp",
     "physics/PhysicsLink.cpp",
     "physics/Shape3D.cpp",
     "physics/backend/SimulationBackend.cpp",
     "physics/World.cpp",
     "physics/World3D.cpp",
+    "physics/World3DJoints.cpp",
+    "physics/World3DQueries.cpp",
+    "physics/World3DMover.cpp",
+    "physics/World3DContacts.cpp",
+    "physics/WorldSnapshot.cpp",
+    "physics/WorldSnapshotParsing.cpp",
 )
 
 
@@ -259,6 +278,15 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
     return ordered, groups
 
 
+def module_build_text(root: Path) -> str:
+    """Compose owner settings at their actual include sites for source-only audits."""
+    text = (root / "CMakeLists.txt").read_text(encoding="utf-8")
+    return re.sub(
+        r'^include\("\$\{CMAKE_CURRENT_SOURCE_DIR\}/([\w./-]+\.cmake)"\)',
+        lambda match: (root / match[1]).read_text(encoding="utf-8"), text, flags=re.MULTILINE,
+    )
+
+
 def check_contracts() -> int:
     declarations = manifest.parse_manifest()
     errors = manifest.validate(declarations, manifest.MODULES)
@@ -271,6 +299,7 @@ def check_contracts() -> int:
     if set(PROFILES) & names:
         errors.append("profile name collides with a module name")
 
+    module_cmake = module_build_text(ROOT / "src" / "modules")
     for profile in PROFILES:
         try:
             enabled, groups = resolve(profile, module_contracts)
@@ -286,18 +315,12 @@ def check_contracts() -> int:
             leaked = sorted(enabled_set & FORBIDDEN_HOSTLESS)
             if leaked:
                 errors.append(f"{profile}: hostless profile enables {', '.join(leaked)}")
-        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in module_cmake:
             errors.append("procgen-core-only: EVProcgenCoreCheck target is not wired")
-        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in module_cmake:
             errors.append("physics-core-only: EVPhysicsCoreCheck target is not wired")
         if profile == "physics-core-only":
-            physics_cmake = (ROOT / "src" / "modules" / "CMakeLists.txt").read_text(
-                encoding="utf-8"
-            )
+            physics_cmake = module_cmake
             missing_sources = [
                 source for source in PHYSICS_CORE_SOURCES if source not in physics_cmake
             ]

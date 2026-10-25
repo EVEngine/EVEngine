@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "audio/editing/AudioEditingTypes.h"
 
@@ -48,7 +50,7 @@ struct AudioWaveformResult {
 };
 
 /** @brief Codec-neutral waveform generation and loop QA service. */
-class AudioWaveformService {
+class EVENGINE_API_BACKENDS AudioWaveformService {
 public:
     /** @brief Maximum pixel width accepted by the standard waveform preview. */
     static constexpr int maximumPreviewPixels = 16384;

@@ -1,5 +1,6 @@
 #include "rx/Rx.h"
 
+#include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -158,10 +159,17 @@ Value callScript(const ssq::Function& fn, const std::vector<Value>& args, bool w
     sq_pushobject(raw, fn.getRaw());
     sq_pushroottable(raw);
     for (const auto& a : args) ssq::detail::pushValue(raw, a);
+    // The payload is a runtime vector, so the shared helper's typed-argument form does not
+    // fit; the count is derived from the pushes instead -- the same rule (R-FACE-7). A
+    // subscriber or operator callback that threw used to be dropped in silence: the failed
+    // call read the same as one that returned nothing, and the stream simply stopped
+    // producing.
+    const SQInteger params = sq_gettop(raw) - top - 1;  // receiver + arguments
     Value result = Value::makeNil();
-    if (SQ_SUCCEEDED(sq_call(raw, static_cast<SQInteger>(args.size() + 1),
-                             wantResult ? SQTrue : SQFalse, SQTrue))) {
+    if (SQ_SUCCEEDED(sq_call(raw, params, wantResult ? SQTrue : SQFalse, SQTrue))) {
         if (wantResult && sq_gettop(raw) > top) result = ssq::detail::popValue<Value>(raw, -1);
+    } else {
+        script::reportScriptCallFailure(raw, "rx.script-callback");
     }
     sq_settop(raw, top);
     return result;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <string>
 #include <cstdint>
@@ -9,23 +11,28 @@ namespace eve {
 namespace filesystem {
 
 /** @brief Data buffer paired with a filename (used for type identification). */
-class FileData : public Data {
+class EVENGINE_API_FOUNDATION FileData : public Data {
 public:
     /** @brief Allocates a buffer of the given size for the named file. */
     FileData(const std::string &filename, uint64_t size);
     /** @brief Deep-copies another FileData. */
     FileData(const FileData &c);
 
+    /** @brief File data. */
     virtual ~FileData();
 
     /** @brief Implements eve::Data. */
     FileData *clone() const;
+    /** @brief Pointer to the owned byte buffer. */
     void *    getData() const { return data; }
+    /** @brief Byte length of the owned buffer. */
     size_t    getSize() const { return size; }
 
     /** @brief Filename, extension (without dot) and base name. */
     const std::string &getFilename() const { return filename; }
+    /** @brief File extension without the leading dot. */
     const std::string &getExtension() const { return extension; }
+    /** @brief Basename without extension. */
     const std::string &getName() const { return name; }
 
 private:

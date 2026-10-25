@@ -2,7 +2,7 @@
 
 layout(location=0) in vec3 vNormal; layout(location=1) in vec2 vUV; layout(location=2) in vec4 vTint;
 layout(location=3) in vec3 vWorldPos; layout(location=4) in vec3 vCameraPos; layout(location=5) in vec3 vViewPos;
-struct Light3D{vec4 posRadius;vec4 color;};
+struct Light3D{vec4 posRadius;vec4 color;vec4 spot;};
 layout(set=0,binding=0,std140) uniform Frame{mat4 mvp;mat4 model;vec4 lightDirIntensity;vec4 lightColor;vec4 tint;vec4 cameraPos;vec4 ambient;Light3D lights[8];vec4 texBomb;vec4 parallax;mat4 view;vec4 clipInfo;vec4 cloud;vec4 cloudWind;vec4 bindlessEnv;vec4 envProbeCenter;vec4 envProbeExtent;vec4 skinInfo;vec4 reflectionProbeCenter[2];vec4 reflectionProbeExtent[2];}ubo;
 layout(set=0,binding=1)uniform sampler2D sceneColorTex; layout(set=0,binding=3)uniform samplerCube env;
 layout(set=0,binding=2)uniform sampler2D depthRampTex;

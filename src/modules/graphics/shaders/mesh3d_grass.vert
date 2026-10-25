@@ -7,6 +7,7 @@
 struct Light3D {
     vec4 posRadius;
     vec4 color;
+    vec4 spot;
 };
 
 layout(location = 0) in vec3 inPos;

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file EncounterCatalogue.h @brief Strict RPG encounter definitions and settlement projection. */
 
@@ -41,7 +43,7 @@ struct EncounterDefinition {
 };
 
 /** @brief Process-local strict encounter content catalogue. */
-class EncounterCatalogue {
+class EVENGINE_API_PLATFORM EncounterCatalogue {
 public:
     /**
      * @brief Validate and atomically replace every encounter definition.
@@ -52,7 +54,9 @@ public:
      */
     [[nodiscard]] static eve::Result<int> replaceFromJsonStrict(const std::string &json);
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
+    /** @brief Finds . */
     static const EncounterDefinition *find(const std::string &id);
     /** @brief Return the number of ordered enemy members in an encounter, or zero when unknown. */
     static int memberCount(const std::string &id);

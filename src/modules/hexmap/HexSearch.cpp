@@ -17,10 +17,7 @@ namespace {
     return Result<HexPath>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
 }
 
-[[nodiscard]] Result<void> voidInvalidArgument(const std::string& message) {
-    return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, message, "hexmap"));
-}
-
+[[nodiscard]] 
 [[nodiscard]] Result<HexPath> unreachable(const std::string& message) {
     return Result<HexPath>::failure(Diagnostic::error(DiagnosticCode::NotFound, message, "hexmap"));
 }
@@ -253,10 +250,10 @@ Result<HexPath> findPath(const HexMap& map, HexSearchContext& scratch, HexCoordi
 Result<void> collectVisibleCells(const HexMap& map, HexSearchContext& scratch, HexCoordinates from,
                                  std::int32_t range, std::vector<std::int32_t>& out) {
     out.clear();
-    if (map.empty()) return voidInvalidArgument("cannot collect visibility from an empty hex map");
-    if (!map.contains(from)) return voidInvalidArgument("view origin is outside the hex map");
+    if (map.empty()) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "cannot collect visibility from an empty hex map", "hexmap"));
+    if (!map.contains(from)) return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "view origin is outside the hex map", "hexmap"));
     if (scratch.cellCount() != map.cellCount())
-        return voidInvalidArgument("search scratch must be resized to map.cellCount() before collectVisibleCells");
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, "search scratch must be resized to map.cellCount() before collectVisibleCells", "hexmap"));
 
     const std::int32_t searchRange = range + map.values(from).viewElevation();
     const std::int32_t start       = map.indexOf(from);

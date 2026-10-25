@@ -14,7 +14,9 @@ namespace eve::graphics {
  */
 void exposeShaderScriptBindings(ssq::Table& table, ssq::Class& cls);
 namespace detail {
+/** @brief Reads shader stage file. */
 Result<std::vector<std::uint32_t>> readShaderStageFile(const std::string& path);
+/** @brief Expose shader resource bindings. */
 void                               exposeShaderResourceBindings(ssq::Table& table, ssq::Class& cls);
 }  // namespace detail
 }  // namespace eve::graphics

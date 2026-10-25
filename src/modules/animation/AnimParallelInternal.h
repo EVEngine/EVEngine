@@ -10,11 +10,13 @@ namespace eve::animation::detail {
 // Synchronous, bounded fork/join for disjoint native animation work. Nothing
 // survives the call, including when thread creation or an item throws.
 template <class Body>
+/** @brief Parallel animation items. */
 int parallelAnimationItems(std::size_t count, int requested, Body&& body) {
     if (count == 0) return 0;
     const auto                      limit   = requested > 0 ? static_cast<unsigned>(requested) : 8u;
     const auto                      workers = std::min({count, static_cast<std::size_t>(limit),
                                                         static_cast<std::size_t>(std::max(1u, std::thread::hardware_concurrency()))});
+    /** @brief Errors. */
     std::vector<std::exception_ptr> errors(count);
     std::atomic<std::size_t>        next{0};
     auto                            run = [&] {
@@ -22,6 +24,7 @@ int parallelAnimationItems(std::size_t count, int requested, Body&& body) {
             const auto index = next.fetch_add(1, std::memory_order_relaxed);
             if (index >= count) return;
             try {
+                /** @brief Body. */
                 body(index);
             } catch (...) {
                 errors[index] = std::current_exception();
@@ -36,6 +39,7 @@ int parallelAnimationItems(std::size_t count, int requested, Body&& body) {
         for (auto& thread : threads) thread.join();
         throw;
     }
+    /** @brief Run. */
     run();
     for (auto& thread : threads) thread.join();
     // Report the first failing input, independent of completion order.

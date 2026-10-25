@@ -16,7 +16,7 @@ class Graphics;
 namespace eve::map {
 
 /** @brief Draws all visible TileLayer entities via Graphics batch path (UV atlas quads). */
-class TileRenderSystem {
+class EVENGINE_API_WORLD TileRenderSystem {
 public:
     /** @brief Advance TileSet animation clocks once per map update. */
     static void update(float dt);
@@ -36,6 +36,7 @@ public:
     static int lastAtlasCount();
     /** @brief Spatial-index work counters for deterministic performance regressions. */
     static int lastVisitedChunkCount();
+    /** @brief Last visited cell count. */
     static int lastVisitedCellCount();
 };
 
@@ -45,6 +46,7 @@ public:
  */
 class TileConfigSystem {
 public:
+    /** @brief Polls . */
     static int poll();
 };
 

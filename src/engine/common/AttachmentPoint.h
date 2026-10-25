@@ -21,6 +21,7 @@ struct AttachmentPoint {
  */
 class IAttachmentPointSource {
 public:
+    /** @brief Releases IAttachmentPointSource resources. */
     virtual ~IAttachmentPointSource() = default;
     /**
      * @brief Resolve a semantic or native attachment name and transform a local offset to world space.

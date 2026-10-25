@@ -499,7 +499,7 @@ eve_render = function() {
     world.selectVisible(vp[0], vp[1], vp[2], vp[3], vp[4], vp[5], vp[6], vp[7],
                         vp[8], vp[9], vp[10], vp[11], vp[12], vp[13], vp[14], vp[15],
                         eye[0], eye[1], eye[2], VIEW_RANGE, true);
-    if (!statsPrinted) {
+    if (!statsPrinted && world.getVisibleRectCount() > 0) {
         print("voxel-terrain stats: chunks=" + world.getChunkCount() +
               " visible=" + world.getVisibleChunkCount() +
               " batches=" + world.getVisibleBatchCount() +
@@ -518,7 +518,7 @@ eve_render = function() {
 
     // 交换链回读截图：首次调用启用 readback，下一帧 present 后才有数据，
     // 所以每帧重试直到成功（保存一次后自动关闭）。
-    if (shotPending && gfx.saveFramePng(shotPath)) {
+    if (shotPending && world.getVisibleRectCount() > 0 && gfx.saveFramePng(shotPath)) {
         print("voxel-terrain: saved screenshot to " + shotPath + "\n");
         shotPending = false;
     }

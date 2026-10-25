@@ -1,4 +1,7 @@
 #pragma once
+#include "common/Export.h"
+#include "common/StringMapInstances.h"
+
 
 // 技能系统：数据驱动的 SkillDefinition（消耗、冷却、读条时间、命中后授予的效果……）。
 //
@@ -11,8 +14,8 @@
 //  - 消耗使用 common/resource 的 CostSpec，可以是内建的 "mana"，也可以是
 //    任何自定义资源；RPG 不再维护一份私有 Cost 类型。
 
+#include "common/Condition.h"
 #include "common/ResourceAccount.h"
-#include "decision/Condition.h"
 #include "definitions/Definitions.h"
 
 #include <optional>
@@ -22,6 +25,7 @@
 
 namespace eve::rpg {
 
+/** @brief SkillDefinition public API. */
 struct SkillDefinition {
     std::string id;
     float cooldown = 0.f;
@@ -32,13 +36,15 @@ struct SkillDefinition {
     std::vector<std::string> grantedEffects;  ///< 命中/释放后施加给目标的效果 id 列表
     std::vector<std::string> tags;
     /** @brief Side-effect-free condition tree required before this skill can cast. */
-    eve::decision::Condition                     castCondition;
+    eve::condition::Condition                    castCondition;
     std::unordered_map<std::string, std::string> extra;  ///< 游戏自定义附加数据
 
+    /** @brief True when tag. */
     bool hasTag(const std::string &tag) const;
 };
 
-class SkillRegistry {
+/** @brief EVENGINE_API_PLATFORM public API. */
+class EVENGINE_API_PLATFORM SkillRegistry {
 public:
     /**
      * @brief Return the common registry that owns canonical skill JSON.
@@ -58,8 +64,11 @@ public:
      * @reentrancy The lookup does not invoke callbacks and is not valid across re-entrant registry mutation.
      */
     static const SkillDefinition *find(const std::string &id);
+    /** @brief Removes . */
     static bool remove(const std::string &id);
+    /** @brief Clears . */
     static void clear();
+    /** @brief Returns the number of . */
     static int count();
 
     /**

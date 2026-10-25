@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include <memory>
 #include "animation/editing/AnimationClip.h"
@@ -26,17 +27,18 @@ struct AnimationPreviewPublication {
  * @note Final shared-provider release may run on the owner or worker thread; provider destruction must support both.
  * @lifetime Computation must be bounded and cooperate with cancellation; destruction joins the worker.
  */
-class IAnimationClipPreviewProvider {
+class EVENGINE_API_EDITORS IAnimationClipPreviewProvider {
 public:
     virtual ~IAnimationClipPreviewProvider() = default;
     /** @brief Sample pose and build its overlay from one document snapshot.
      * @cost Linear in authored keys and skeleton size per invalidation; result is consumed without recomputation.
      */
-    [[nodiscard]] virtual animation_editing::EditorResult<AnimationPreviewPublication> generate(
+    [[nodiscard]] virtual animation_editing::Result<AnimationPreviewPublication> generate(
         const animation_editing::AnimationClipDocumentTarget& document, double time,
         const std::vector<AnimationPreviewBone>& skeleton, const std::string& selectedBone,
         const editing::TaskContext& context) const = 0;
 };
 /** @brief Create the deterministic CPU pose/overlay provider. */
-[[nodiscard]] std::shared_ptr<const IAnimationClipPreviewProvider> makeAnimationClipPreviewProvider();
+[[nodiscard]] EVENGINE_API_EDITORS std::shared_ptr<const IAnimationClipPreviewProvider>
+                                   makeAnimationClipPreviewProvider();
 }  // namespace eve::animation_editor

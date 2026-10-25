@@ -100,8 +100,9 @@ enum class TurnOrder : std::uint8_t {
  * Implementations are stateless value-like objects shared across battles. They
  * must be pure: no clock reads, no random draws, no mutation of the battle.
  */
-class ITurnPolicy {
+class EVENGINE_API_DOMAINS ITurnPolicy {
 public:
+    /** @brief I turn policy. */
     virtual ~ITurnPolicy() = default;
 
     /** @brief Return the stable protocol id this policy is registered under. */
@@ -141,7 +142,7 @@ public:
  * immutable and lookups are read-only. Callers must not register while another
  * thread resolves.
  */
-class TurnPolicyRegistry final {
+class EVENGINE_API_DOMAINS TurnPolicyRegistry final {
 public:
     /**
      * @brief Register one policy under its own id.

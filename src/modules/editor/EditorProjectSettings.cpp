@@ -69,7 +69,7 @@ bool ProjectSettingsTarget::selectionMatches(const SelectionSnapshot& selection)
     return selection.items.size() == 1 && selection.items.front().target == TargetId(id_);
 }
 
-EditorResult<void> ProjectSettingsTarget::applyDomainOperation(const DomainOperation& domainOperation) {
+Result<void> ProjectSettingsTarget::applyDomainOperation(const DomainOperation& domainOperation) {
     if (domainOperation.target != TargetId(id_) || domainOperation.type != "project.setting.set.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.settings.operation"),
                                           "Unsupported or mismatched settings operation");
@@ -134,7 +134,7 @@ PropertyReadResult ProjectSettingsTarget::read(const SelectionSnapshot& selectio
     return {PropertyReadState::Value, found->second, {}};
 }
 
-EditorResult<DomainOperation> ProjectSettingsTarget::makeSet(const SelectionSnapshot& selection,
+Result<DomainOperation> ProjectSettingsTarget::makeSet(const SelectionSnapshot& selection,
                                                              const PropertyPath& path, const EditorValue& value,
                                                              PropertySetMode mode) const {
     if (!selectionMatches(selection))
@@ -159,7 +159,7 @@ EditorResult<DomainOperation> ProjectSettingsTarget::makeSet(const SelectionSnap
     return eve::editing::applied<DomainOperation>(operation(id_, path, candidate, values_.at(path.value())));
 }
 
-EditorResult<DomainOperation> ProjectSettingsTarget::makeReset(const SelectionSnapshot& selection,
+Result<DomainOperation> ProjectSettingsTarget::makeReset(const SelectionSnapshot& selection,
                                                                const PropertyPath&      path) const {
     return makeSet(selection, path, {}, PropertySetMode::Reset);
 }
@@ -183,7 +183,7 @@ EditorValue ProjectSettingsTarget::snapshotValue() const {
         {"schema", schema_.typeId}, {"schemaVersion", int64_t{schema_.version}}, {"values", std::move(values)}};
 }
 
-EditorResult<void> ProjectSettingsTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> ProjectSettingsTarget::loadSnapshot(const EditorValue& snapshot) {
     const auto* schemaEntry  = field(snapshot, "schema");
     const auto* versionEntry = field(snapshot, "schemaVersion");
     const auto* valuesEntry  = field(snapshot, "values");

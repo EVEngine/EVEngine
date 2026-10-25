@@ -2,13 +2,12 @@
 
 namespace eve::editor {
 namespace {
-EditorResult<void> failure(EditorStatus status, std::string message) {
+Result<void> failure(EditorStatus status, std::string message) {
     return editing::failed<void>(status, RuleId("editor.presentation"), std::move(message));
 }
 }  // namespace
 
-EditorResult<void> WorkspacePresentation::stage(IWorkspacePresentationSource& source, PropertyPath path,
-                                                EditorValue value) {
+Result<void> WorkspacePresentation::stage(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value) {
     if (draft_ && draft_->path != path)
         return failure(EditorStatus::Conflict, "Finish or cancel the active field before editing another field");
     const auto state = source.state();
@@ -37,7 +36,7 @@ EditorResult<void> WorkspacePresentation::stage(IWorkspacePresentationSource& so
     return editing::applied<void>();
 }
 
-EditorResult<void> WorkspacePresentation::commit(IWorkspacePresentationSource& source) {
+Result<void> WorkspacePresentation::commit(IWorkspacePresentationSource& source) {
     if (!draft_) return editing::noOp();
     Draft draft = std::move(*draft_);
     cancel();
@@ -55,14 +54,13 @@ EditorResult<void> WorkspacePresentation::commit(IWorkspacePresentationSource& s
 
 void WorkspacePresentation::cancel() noexcept { draft_.reset(); }
 
-EditorResult<void> WorkspacePresentation::edit(IWorkspacePresentationSource& source, PropertyPath path,
-                                               EditorValue value) {
+Result<void> WorkspacePresentation::edit(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value) {
     auto staged = stage(source, std::move(path), std::move(value));
     if (!staged.ok()) return staged;
     return commit(source);
 }
 
-EditorResult<void> WorkspacePresentation::action(IWorkspacePresentationSource& source, std::string_view id) {
+Result<void> WorkspacePresentation::action(IWorkspacePresentationSource& source, std::string_view id) {
     cancel();
     const auto state = source.state();
     if ((id == "undo" && !state.canUndo) || (id == "redo" && !state.canRedo))

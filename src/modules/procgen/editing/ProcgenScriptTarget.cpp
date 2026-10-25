@@ -246,7 +246,7 @@ void ProcgenScriptDocumentTarget::applySpec(ProcgenScriptModuleSpec spec) {
     values_      = std::move(next);
 }
 
-EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std::string uri, std::string id,
+Result<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std::string uri, std::string id,
                                                                              std::string displayName, std::string kind,
                                                                              const EditorValue& schema) {
     if (id.empty())
@@ -351,7 +351,7 @@ EditorResult<ProcgenScriptModuleSpec> ProcgenScriptDocumentTarget::parseSpec(std
     return eve::editing::applied(std::move(spec));
 }
 
-EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeLoadModule(
+Result<editing::DomainOperation> ProcgenScriptDocumentTarget::makeLoadModule(
     ProcgenScriptModuleSpec spec) const {
     if (spec.id.empty())
         return eve::editing::failed<editing::DomainOperation>(EditorStatus::Rejected,
@@ -384,7 +384,7 @@ EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeLoadModu
     return eve::editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeSet(
+Result<editing::DomainOperation> ProcgenScriptDocumentTarget::makeSet(
     const editing::SelectionSnapshot& selection, const editing::PropertyPath& path, const EditorValue& value,
     editing::PropertySetMode mode) const {
     if (mode == editing::PropertySetMode::Reset) return makeReset(selection, path);
@@ -412,7 +412,7 @@ EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeSet(
     return eve::editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> ProcgenScriptDocumentTarget::makeReset(
+Result<editing::DomainOperation> ProcgenScriptDocumentTarget::makeReset(
     const editing::SelectionSnapshot& selection, const editing::PropertyPath& path) const {
     const auto descriptor = schema(selection).find(path);
     if (!descriptor)
@@ -442,7 +442,7 @@ std::vector<EditorDiagnostic> ProcgenScriptDocumentTarget::validate() const {
     return diagnostics;
 }
 
-EditorResult<void> ProcgenScriptDocumentTarget::applyDomainOperation(const editing::DomainOperation& operation) {
+Result<void> ProcgenScriptDocumentTarget::applyDomainOperation(const editing::DomainOperation& operation) {
     if (operation.target != editing::TargetId(id_) || operation.type != "procgen.script.replace.v1")
         return eve::editing::failed<void>(EditorStatus::Rejected, editing::RuleId("editor.procgen-script.operation"),
                                           "Generator operation is invalid");
@@ -451,7 +451,7 @@ EditorResult<void> ProcgenScriptDocumentTarget::applyDomainOperation(const editi
                                   requireString(operation.payload, "kind", "points"),
                                   field(operation.payload, "schema") ? *field(operation.payload, "schema")
                                                                      : EditorValue{});
-    if (!parsed.ok()) return EditorResult<void>::failure(parsed.status());
+    if (!parsed.ok()) return Result<void>::failure(parsed.status());
     const EditorValue* valuesField = field(operation.payload, "values");
     const auto*        values      = valuesField ? valuesField->getIf<EditorValue::Object>() : nullptr;
     if (!values || values->size() > 128)
@@ -474,7 +474,7 @@ std::unique_ptr<editing::IDomainOperationTarget> ProcgenScriptDocumentTarget::cl
     return std::make_unique<ProcgenScriptDocumentTarget>(*this);
 }
 
-EditorResult<void> ProcgenScriptDocumentTarget::commitDomainState(
+Result<void> ProcgenScriptDocumentTarget::commitDomainState(
     std::unique_ptr<editing::IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<ProcgenScriptDocumentTarget*>(candidate.get());
     if (!typed || typed->id_ != id_)
@@ -488,7 +488,7 @@ EditorValue ProcgenScriptDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", std::int64_t{1}}, {"content", contentValue()}};
 }
 
-EditorResult<void> ProcgenScriptDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> ProcgenScriptDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionField = field(snapshot, "schemaVersion");
     const EditorValue* content      = field(snapshot, "content");
     const auto*        version      = versionField ? versionField->getIf<std::int64_t>() : nullptr;

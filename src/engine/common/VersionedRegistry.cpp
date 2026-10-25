@@ -4,14 +4,11 @@ namespace eve::detail {
 namespace {
 
 /** @brief ParseError carrying one registry validation message. */
-eve::Result<void> registryParseError(const char* message) {
-    return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, message));
-}
 
 }  // namespace
 
 eve::Result<void> validateRegistryNextSequence(EventSequence nextEventSequence) {
-    if (nextEventSequence.isZero()) return registryParseError("registry next event sequence must be positive");
+    if (nextEventSequence.isZero()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "registry next event sequence must be positive"));
     return eve::Result<void>::success();
 }
 
@@ -35,17 +32,17 @@ eve::Result<EventSequence> nextRegistryEventSequence(EventSequence current) {
 eve::Result<void> EventLogValidator::accept(EventSequence sequence, Generation generation, bool remove,
                                             bool tombstone) {
     if (sequence.isZero() || (!previous_.isZero() && sequence <= previous_))
-        return registryParseError("registry event sequence is not increasing");
-    if (generation.isZero()) return registryParseError("registry event generation must be positive");
-    if (remove && !tombstone) return registryParseError("remove event must describe a tombstone");
-    if (!remove && tombstone) return registryParseError("only remove events may describe tombstones");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "registry event sequence is not increasing"));
+    if (generation.isZero()) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "registry event generation must be positive"));
+    if (remove && !tombstone) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "remove event must describe a tombstone"));
+    if (!remove && tombstone) return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "only remove events may describe tombstones"));
     previous_ = sequence;
     return eve::Result<void>::success();
 }
 
 eve::Result<void> EventLogValidator::finish(EventSequence nextEventSequence) const {
     if (!previous_.isZero() && nextEventSequence <= previous_)
-        return registryParseError("next event sequence must exceed retained events");
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "next event sequence must exceed retained events"));
     return eve::Result<void>::success();
 }
 

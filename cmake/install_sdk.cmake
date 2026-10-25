@@ -8,6 +8,25 @@ include(GNUInstallDirs)
 set(EVENGINE_SDK_VERSION
     "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}")
 
+# load_third_party resolves both downloaded and source-built install trees.
+set(_eve_sdk_tp_prefix "${EVENGINE_TP_INSTALL_PREFIX}")
+if(NOT _eve_sdk_tp_prefix)
+    message(FATAL_ERROR "SDK install requires a resolved EVENGINE_TP_INSTALL_PREFIX")
+endif()
+
+set(EVENGINE_TARGET_ARCHITECTURE "")
+if(BUILD_PLATFORM STREQUAL "macosx")
+    if(CMAKE_OSX_ARCHITECTURES)
+        set(EVENGINE_TARGET_ARCHITECTURE "${CMAKE_OSX_ARCHITECTURES}")
+    else()
+        string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" EVENGINE_TARGET_ARCHITECTURE)
+    endif()
+    if(NOT EVENGINE_TARGET_ARCHITECTURE MATCHES "^(arm64|x86_64)$")
+        message(FATAL_ERROR "macOS SDKs require one architecture: arm64 or x86_64")
+    endif()
+    install(CODE "file(WRITE \"\${CMAKE_INSTALL_PREFIX}/share/eve/TARGET_ARCHITECTURE\" \"${EVENGINE_TARGET_ARCHITECTURE}\\n\")")
+endif()
+
 # ---- Host binary ----
 if(ANDROID OR (CMAKE_SYSTEM_NAME STREQUAL "Android"))
     install(TARGETS ${EVENGINE_NATIVE_TARGET}
@@ -53,11 +72,7 @@ endif()
 # MoltenVK are bundled by cmake/macosx_bundle_vulkan.cmake, so players do not
 # need to install the Vulkan SDK. SDL2 is linked statically.
 if(BUILD_PLATFORM STREQUAL "macosx")
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_eve_mac_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib")
-    else()
-        set(_eve_mac_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/macosx/lib")
-    endif()
+    set(_eve_mac_tp_lib "${_eve_sdk_tp_prefix}/lib")
     install(CODE "
         file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/lib\")
         file(GLOB _eve_tp_dylibs \"${_eve_mac_tp_lib}/*.dylib\")
@@ -78,6 +93,12 @@ endif()
 # so a packaged game is self-contained and can be produced from ANY host
 # (Linux/macOS cross-packaging included) without a Visual Studio install.
 if(BUILD_PLATFORM STREQUAL "win32")
+    # Install scripts run later; preserve the configured target architecture.
+    if(EVENGINE_NATIVE_ARM64)
+        install(CODE "set(EVE_RUNTIME_ARCH arm64)")
+    else()
+        install(CODE "set(EVE_RUNTIME_ARCH x64)")
+    endif()
     install(SCRIPT "${CMAKE_SOURCE_DIR}/cmake/win32_bundle_runtime.cmake")
 endif()
 
@@ -87,6 +108,7 @@ install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/engine/common/"
     FILES_MATCHING
         PATTERN "*.h"
         PATTERN "*.hpp"
+        PATTERN "ModuleRegistryState.h" EXCLUDE
 )
 install(FILES "${CMAKE_BINARY_DIR}/src/engine/common/config.h"
     DESTINATION include/eve/common
@@ -135,6 +157,14 @@ foreach(_eve_mod IN LISTS EVE_ENABLED_MODULES)
     foreach(_eve_nested IN LISTS _eve_nested_heads)
         list(APPEND _eve_install_excludes PATTERN "${_eve_nested}" EXCLUDE)
     endforeach()
+    # UiMotionSinks.h includes animation/MotionTypes.h and its .cpp is omitted when
+    # animation is trimmed; do not install a header the UI-only SDK cannot satisfy.
+    if(_eve_mod STREQUAL "ui")
+        list(FIND EVE_ENABLED_MODULES animation _eve_sdk_anim_idx)
+        if(_eve_sdk_anim_idx EQUAL -1)
+            list(APPEND _eve_install_excludes PATTERN "UiMotionSinks.h" EXCLUDE)
+        endif()
+    endif()
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/src/modules/${_eve_mod_dir}/"
         DESTINATION include/eve/${_eve_mod_dir}
         FILES_MATCHING
@@ -185,6 +215,12 @@ endforeach()
 # back to the embedded demo.
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/basic"
     DESTINATION share/eve/examples
+)
+
+# ---- Reusable rendering styles -------------------------------------------
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/assets/styles/"
+    DESTINATION share/eve/styles
+    COMPONENT styles
 )
 
 # ---- Agent knowledge pack (this SDK build, no engine git tree required) ----
@@ -241,24 +277,40 @@ endif()
 
 # ---- Android runtime shared libs needed to assemble an APK ----
 if(BUILD_PLATFORM STREQUAL "android")
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_eve_tp_lib "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-    else()
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-    endif()
-    if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-        set(_eve_tp_lib "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libSDL2.so")
-        install(FILES "${_eve_tp_lib}/lib/libSDL2.so" DESTINATION lib)
-    endif()
-    if(EXISTS "${_eve_tp_lib}/lib/libhidapi.so")
-        install(FILES "${_eve_tp_lib}/lib/libhidapi.so" DESTINATION lib)
-    endif()
-    # libc++_shared.so from NDK (best-effort; packaging docs note NDK fallback)
+    set(_eve_tp_lib "${_eve_sdk_tp_prefix}")
+    # `deps` is built after the first configure on clean CI runners, so these
+    # files do not exist while install rules are being generated. Resolve them
+    # at install time and fail instead of publishing an unusable Android SDK.
+    install(CODE "
+        set(_eve_android_tp_lib \"${_eve_tp_lib}/lib\")
+        foreach(_eve_required_lib IN ITEMS libSDL2.so)
+            if(NOT EXISTS \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+                message(FATAL_ERROR
+                    \"Android SDK runtime library missing: \${_eve_android_tp_lib}/\${_eve_required_lib}\")
+            endif()
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/\${_eve_required_lib}\")
+        endforeach()
+        if(EXISTS \"\${_eve_android_tp_lib}/libhidapi.so\")
+            file(INSTALL DESTINATION \"\${CMAKE_INSTALL_PREFIX}/lib\" TYPE FILE
+                FILES \"\${_eve_android_tp_lib}/libhidapi.so\")
+        endif()
+    ")
+    # libc++_shared.so from the NDK must match the SDK's configured ABI.
     if(DEFINED ANDROID_NDK AND EXISTS "${ANDROID_NDK}")
+        if(ANDROID_ABI STREQUAL "arm64-v8a")
+            set(_eve_android_ndk_triple "aarch64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "armeabi-v7a")
+            set(_eve_android_ndk_triple "arm-linux-androideabi")
+        elseif(ANDROID_ABI STREQUAL "x86_64")
+            set(_eve_android_ndk_triple "x86_64-linux-android")
+        elseif(ANDROID_ABI STREQUAL "x86")
+            set(_eve_android_ndk_triple "i686-linux-android")
+        else()
+            message(FATAL_ERROR "Unsupported Android ABI for libc++_shared.so: ${ANDROID_ABI}")
+        endif()
         file(GLOB _eve_cxx_shared
-            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/aarch64-linux-android/libc++_shared.so")
+            "${ANDROID_NDK}/toolchains/llvm/prebuilt/*/sysroot/usr/lib/${_eve_android_ndk_triple}/libc++_shared.so")
         if(_eve_cxx_shared)
             list(GET _eve_cxx_shared 0 _eve_cxx_one)
             install(FILES "${_eve_cxx_one}" DESTINATION lib)
@@ -267,14 +319,7 @@ if(BUILD_PLATFORM STREQUAL "android")
 endif()
 
 # ---- Selected third-party headers needed to compile plugins (SSQ bindings) ----
-if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-    set(_eve_tp_inc "${EVENGINE_THIRD_PARTY_BINARY_DIR}")
-else()
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}")
-endif()
-if(NOT EVENGINE_THIRD_PARTY_BINARY_DIR AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_tp_inc "${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug")
-endif()
+set(_eve_tp_inc "${_eve_sdk_tp_prefix}")
 get_filename_component(_eve_tp_inc "${_eve_tp_inc}" ABSOLUTE)
 # The third-party tree is built by the deps target *after* configure, so the
 # existence check must run at install time, not configure time (a configure-time
@@ -298,6 +343,11 @@ install(CODE "
         endforeach()
     endif()
 ")
+
+# Plugins use the same member and stateless binding templates as the engine.
+install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+    DESTINATION include)
+install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

@@ -1,8 +1,34 @@
 #include "editing/EditingValue.h"
+#include "editing/EditingValueRead.h"
 
 #include <type_traits>
 
 namespace eve::editing {
+
+Result<double> numericValue(const Value& value) {
+    if (const auto* real = value.getIf<double>()) return Result<double>::success(*real);
+    if (const auto* integer = value.getIf<std::int64_t>())
+        return Result<double>::success(static_cast<double>(*integer));
+    return Result<double>::failure(Diagnostic::error(DiagnosticCode::TypeMismatch, "expected Integer or Number"));
+}
+
+Value::Value() noexcept                                                               = default;
+Value::~Value() noexcept                                                              = default;
+Value::Value(const Value&)                                                            = default;
+Value& Value::operator=(const Value&)                                                 = default;
+Value::Value(Value&&) noexcept(std::is_nothrow_move_constructible_v<Storage>)         = default;
+Value& Value::operator=(Value&&) noexcept(std::is_nothrow_move_assignable_v<Storage>) = default;
+Value::Value(std::nullptr_t) {}
+Value::Value(bool value) : storage_(value) {}
+Value::Value(int value) : storage_(static_cast<int64_t>(value)) {}
+Value::Value(int64_t value) : storage_(value) {}
+Value::Value(float value) : storage_(static_cast<double>(value)) {}
+Value::Value(double value) : storage_(value) {}
+Value::Value(const char* value) : storage_(std::string(value ? value : "")) {}
+Value::Value(std::string value) : storage_(std::move(value)) {}
+Value::Value(Array value) : storage_(std::move(value)) {}
+Value::Value(Object value) : storage_(std::move(value)) {}
+bool Value::operator==(const Value& other) const { return storage_ == other.storage_; }
 
 Value::Type Value::type() const { return static_cast<Type>(storage_.index()); }
 
@@ -54,3 +80,27 @@ bool Value::isWithinLimits(size_t maxDepth, size_t maxElements, size_t maxString
 }
 
 }  // namespace eve::editing
+
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL)
+template class __declspec(dllexport) std::vector<eve::editing::Value>;
+template class __declspec(dllexport) std::map<std::string, eve::editing::Value>;
+#endif
+
+#if defined(_WIN32) && defined(EVENGINE_MODULE_DLL)
+template __declspec(dllexport) std::monostate* eve::editing::Value::getIf<std::monostate>();
+template __declspec(dllexport) const std::monostate* eve::editing::Value::getIf<std::monostate>() const;
+template __declspec(dllexport) bool*                 eve::editing::Value::getIf<bool>();
+template __declspec(dllexport) const bool*           eve::editing::Value::getIf<bool>() const;
+template __declspec(dllexport) int64_t*              eve::editing::Value::getIf<int64_t>();
+template __declspec(dllexport) const int64_t*        eve::editing::Value::getIf<int64_t>() const;
+template __declspec(dllexport) double*               eve::editing::Value::getIf<double>();
+template __declspec(dllexport) const double*         eve::editing::Value::getIf<double>() const;
+template __declspec(dllexport) std::string* eve::editing::Value::getIf<std::string>();
+template __declspec(dllexport) const std::string* eve::editing::Value::getIf<std::string>() const;
+template __declspec(dllexport) eve::editing::Value::Array* eve::editing::Value::getIf<eve::editing::Value::Array>();
+template __declspec(dllexport) const                       eve::editing::Value::Array*
+                               eve::editing::Value::getIf<eve::editing::Value::Array>() const;
+template __declspec(dllexport) eve::editing::Value::Object* eve::editing::Value::getIf<eve::editing::Value::Object>();
+template __declspec(dllexport) const                        eve::editing::Value::Object*
+eve::editing::Value::getIf<eve::editing::Value::Object>() const;
+#endif

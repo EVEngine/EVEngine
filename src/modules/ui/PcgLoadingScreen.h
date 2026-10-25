@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Result.h"
 
@@ -23,7 +25,7 @@ struct PcgMissingTerrainScene {
  *          invokes no callbacks and exposes an immutable UI snapshot through getters.
  * @thread UI thread only.
  */
-class PcgLoadingScreen {
+class EVENGINE_API_WORLD PcgLoadingScreen {
 public:
     /** @brief Set the alpha units removed per second. */
     [[nodiscard]] Result<void> configure(float fadeOutSpeed);

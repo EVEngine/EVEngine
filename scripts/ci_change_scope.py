@@ -10,7 +10,7 @@ from pathlib import Path
 import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
-BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
+BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu", "dawn")
 SCOPES = (*BUILD_SCOPES, "tools")
 ALL = frozenset(SCOPES)
 TEST_CASE_RE = re.compile(r"\bTEST_CASE(?:_FIXTURE)?\s*\(")
@@ -25,7 +25,8 @@ def classify_path(path: str) -> set[str]:
     if path.startswith("platform/macos"):
         return {"macos"}
     if path.startswith(("web/", "platform/web", "cmake/webgpu")) or "webgpu" in path.lower():
-        return {"webgpu"}
+        # WebGPU source changes also select the independent native Dawn smoke job.
+        return {"webgpu", "dawn"}
     if path.startswith("tools/"):
         return {"tools"}
     if path.startswith(".github/"):

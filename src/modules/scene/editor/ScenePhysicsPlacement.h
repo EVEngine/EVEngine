@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "editing/EditingResult.h"
 #include "editor/EditorSimulationPreview.h"
@@ -113,6 +115,13 @@ struct PhysicsPlacementRequest {
     PhysicsPlacementAdmissionPolicy     admission;
 };
 
+/** @brief Owning contact evidence, with normal directed from subject toward reference. */
+struct PhysicsPlacementContact {
+    editing::ObjectId subject, reference;
+    double            x = 0, y = 0, z = 0;
+    double            normalX = 0, normalY = 0, normalZ = 0;
+    double            separation = 0;
+};
 /** @brief Captured placement state suitable for drawing and final transaction planning. */
 struct PhysicsPlacementFrame {
     std::uint64_t                       tick           = 0;
@@ -123,6 +132,9 @@ struct PhysicsPlacementFrame {
     double                              surfaceNormalY = 1.0;
     double                              surfaceNormalZ = 0.0;
     std::vector<PhysicsPlacementObject> objects;
+    std::vector<PhysicsPlacementContact> contacts;
+    bool                                 contactsComplete              = false;
+    bool                                 selectedPairCollisionsEnabled = false;
 };
 
 /**
@@ -133,8 +145,9 @@ struct PhysicsPlacementFrame {
  * driven toward a shared handle while collision resolution remains authoritative
  * inside the preview. The class is owner-thread-only and invokes no callbacks.
  */
-class ScenePhysicsPlacementBackend final : public editor::IEditorSimulationBackend {
+class EVENGINE_API_EDITORS ScenePhysicsPlacementBackend final : public editor::IEditorSimulationBackend {
 public:
+    /** @brief Scene physics placement backend. */
     ~ScenePhysicsPlacementBackend() override;
     ScenePhysicsPlacementBackend(const ScenePhysicsPlacementBackend&)            = delete;
     ScenePhysicsPlacementBackend& operator=(const ScenePhysicsPlacementBackend&) = delete;
@@ -161,6 +174,13 @@ public:
                                                              double toY, double toZ, double offset = 0.0);
     /** @brief Capture all admitted objects, retaining bounds and selection metadata. */
     [[nodiscard]] editing::Result<PhysicsPlacementFrame> placementFrame() const;
+    /**
+     * @brief Copy pair-qualified collision-proxy evidence without changing scene or advancing simulation.
+     * @return Owning frame; contactsComplete is false on bounded-query truncation.
+     * @thread Owner thread only; no callbacks. Internal contact-query scratch buffers are overwritten.
+     * @cost Linear in admitted objects and contact points per explicit relation evaluation.
+     */
+    [[nodiscard]] editing::Result<PhysicsPlacementFrame> relationFrame() const;
     /** @brief Revision copied from the scene when this candidate was admitted. */
     [[nodiscard]] editing::Revision sourceRevision() const noexcept;
 

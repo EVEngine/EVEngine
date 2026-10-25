@@ -1,16 +1,20 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/Result.h"
 #include "ui/NinePatch.h"
 #include "ui/UIBackend.h"
 #include "ui/UIHost.h"
+#include "ui/UiTween.h"
 #include "ui/Widget.h"
 
 #include <SDL2/SDL.h>
-#include <simplesquirrel/simplesquirrel.hpp>
+#include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -19,7 +23,7 @@ namespace eve::graphics {
 class Canvas;
 class Graphics;
 class Texture;
-}
+}  // namespace eve::graphics
 
 namespace eve::ui {
 
@@ -34,10 +38,12 @@ struct UIEvent;
  *
  * ECS: named UIHost panels. Builder + Component.build (C++/script) + list/when/theme.
  */
-class UI : public Module {
+class EVENGINE_API_WORLD UI : public Module {
 public:
     Module_REG(UI);
+    /** @brief Ui. */
     UI();
+    /** @brief Ui. */
     ~UI() override;
 
     /**
@@ -176,7 +182,23 @@ public:
     /** @brief Opens a two-child resizable split pane. */
     void beginSplitPane(const std::string &direction = "row", float ratio = 0.25f,
                         const std::string &id = "");
+    /** @brief Opens a horizontal tab strip. */
+    void beginTabBar(const std::string &id = "");
+    /**
+     * @brief Opens a tabbed page stack; activePageId selects the visible page.
+     * Add pages with beginPanelFrame / beginChild / beginGroup; each page id is its tab key.
+     */
+    void beginTabContainer(const std::string &activePageId, const std::string &id = "");
+    /** @brief Opens a fixed titled panel frame (not a free-floating Window host). */
+    void beginPanelFrame(const std::string &title, const std::string &id = "");
+    /** @brief Opens a named dock fill slot (region: left/right/top/bottom/center). */
+    void beginDockArea(const std::string &region, const std::string &id = "");
+    /** @brief Opens a fixed editor frame body that hosts toolbar/dock/status children. */
+    void beginAppFrame(const std::string &id = "");
+    /** @brief Adds a selectable tab label; pageId identifies the page to activate. */
+    void addTab(const std::string &label, const std::string &pageId, bool selected = false, const std::string &id = "");
     /** Virtualized scroll list; rows are the children added before end(). */
+    /** @brief Begins scroll list. */
     void beginScrollList(const std::string &id = "", float height = 0.f, float itemHeight = 0.f);
     /**
      * @brief Begin a Flex container.
@@ -198,6 +220,7 @@ public:
     /** @brief Adds a text label to the current container. */
     void addText(const std::string &content, const std::string &id = "");
     /** Text with an explicit wrap width (0 = no wrap). */
+    /** @brief Adds text wrapped. */
     void addTextWrapped(const std::string &content, float width, const std::string &id = "");
     /** @brief Adds a button to the current container. */
     void addButton(const std::string &label, const std::string &id = "");
@@ -223,18 +246,42 @@ public:
                          const std::string &id = "");
     /** @brief Adds a progress bar. */
     void addProgress(float fraction, const std::string &id = "", const std::string &overlay = "");
+    /** @brief Adds a linear filled image; layout keeps its complete rectangle. @thread UI thread; no callbacks. */
+    void addFilledImage(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a solid radial sector/ring overlay. @thread UI thread; no callbacks. */
+    void addRadialFill(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a composed resource bar with /value, /trail and /label child IDs. @thread UI thread. */
+    void addResourceBar(const std::string &id, float width, float height, float fraction);
+    /** @brief Adds a composed skill slot; click ID ends in /activate. @thread UI thread; caller owns icon registration.
+     */
+    void addSkillSlot(const std::string &id, float size, uint64_t iconTexture, float cooldown, const std::string &key);
+    /** @brief Configures the last built fill: right/left/down/up; stretch retains complete UVs. @thread UI thread. */
+    void setItemFillDirection(const std::string &direction, bool stretch);
+    /** @brief Configures the last radial fill; degrees point right at zero, inner radius is [0,1]. @thread UI thread.
+     */
+    void setItemRadialFill(float startDegrees, bool clockwise, float innerRadius);
     /** Colored / textured image; size 0 = default (32px or flex-assigned). */
+    /** @brief Adds image. */
     void addImage(const std::string &id = "", float width = 0.f, float height = 0.f);
     /** @brief Adds a .9.png image after removing its one-pixel marker frame. */
     bool addNinePatch(const std::string &path, const std::string &id = "",
                       float width = 0.f, float height = 0.f);
     /** Clickable image button (click routes through consumeClick / callbacks). */
+    /** @brief Adds image button. */
     void addImageButton(const std::string &id, float width, float height);
     /** Embedded viewport widget (see viewportCanvas / viewport* input getters). */
+    /** @brief Adds viewport. */
     void addViewport(const std::string &id, float width = 0.f, float height = 0.f);
     /** Dropdown; options separated by '\n', `selected` = initial index. */
+    /** @brief Adds combo. */
     void addCombo(const std::string &label, const std::string &options, int selected,
                   const std::string &id = "");
+    /** @brief Add clickable text; target is metadata and activation emits a click event. */
+    void addLink(const std::string &label, const std::string &target, const std::string &id);
+    /** @brief Configure the last control's plain-text editor options. */
+    void setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder);
+    /** @brief Set the last control's help and disabled explanation. */
+    void setItemHelp(const std::string &help, const std::string &disabledReason);
     /** @brief Adds an editable text field. */
     void addInputText(const std::string &label, const std::string &value, const std::string &id = "");
     /** @brief Adds a compact search field. */
@@ -269,12 +316,18 @@ public:
     /** @brief Sets width/height on the most recently added child. */
     void setItemSize(float width, float height);
     /** Layout box model on the most recently added child (no-op if none). */
+    /** @brief Sets the item margin. */
     void setItemMargin(float l, float t, float r, float b);
+    /** @brief Sets the item padding. */
     void setItemPadding(float l, float t, float r, float b);
+    /** @brief Sets the item min size. */
     void setItemMinSize(float w, float h);
+    /** @brief Sets the item max size. */
     void setItemMaxSize(float w, float h);
+    /** @brief Sets the item percent. */
     void setItemPercent(float w, float h);
     /** Place the most recently added child absolutely inside the current Flex. */
+    /** @brief Sets the item absolute. */
     void setItemAbsolute(float anchorX, float anchorY, float x = 0.f, float y = 0.f);
     /** @brief Sets hover help on the most recently added item. */
     void setItemTooltip(const std::string &text);
@@ -347,22 +400,32 @@ public:
 
     /** @brief Widget state setters/getters on the current host (by node id). */
     void setText(const std::string &id, const std::string &text);
+    /** @brief Sets the text wrap. */
     void setTextWrap(const std::string &id, float width);
+    /** @brief Sets the visible. */
     void setVisible(const std::string &id, bool visible);
     /** @brief Enables or disables a mounted control. */
     void setEnabled(const std::string &id, bool enabled);
+    /** @brief Sets the checked. */
     void setChecked(const std::string &id, bool checked);
+    /** @brief Sets the value. */
     void setValue(const std::string &id, float value);
+    /** @brief Sets the value text. */
     void setValueText(const std::string &id, const std::string &value);
     /** @brief Sets RGBA on a ColorPalette (or image tint) node. */
     void setColor(const std::string &id, float r, float g, float b, float a = 1.f);
+    /** @brief Sets the image tint. */
     void setImageTint(const std::string &id, float r, float g, float b, float a = 1.f);
+    /** @brief Sets the image uv. */
     void setImageUv(const std::string &id, float u0, float v0, float u1, float v1);
+    /** @brief Sets the image nine patch. */
     void setImageNinePatch(const std::string &id, float l, float t, float r, float b);
     /** @brief Applies a .9.png texture and its parsed stretch metadata to an image. */
     bool setImageNinePatchFile(const std::string &id, const std::string &path);
+    /** @brief Sets the image corner radius. */
     void setImageCornerRadius(const std::string &id, float radius);
     /** Bind a texture id from registerTexture() to an Image/ImageButton node. */
+    /** @brief Sets the image texture id. */
     void setImageTextureId(const std::string &id, uint64_t textureId);
     /**
      * @brief Register an engine texture for UI drawing.
@@ -376,13 +439,19 @@ public:
      * @param textureId Opaque backend-neutral texture id; zero is ignored.
      */
     void unregisterTexture(uint64_t textureId);
+    /** @brief Returns the value. */
     float getValue(const std::string &id) const;
+    /** @brief Returns the value text. */
     std::string getValueText(const std::string &id) const;
     /** @brief ColorPalette / image tint channels; missing nodes return 0. */
     float getColorR(const std::string &id) const;
+    /** @brief Returns the color g. */
     float getColorG(const std::string &id) const;
+    /** @brief Returns the color b. */
     float getColorB(const std::string &id) const;
+    /** @brief Returns the color a. */
     float getColorA(const std::string &id) const;
+    /** @brief Returns the checked. */
     bool getChecked(const std::string &id) const;
     /** @brief Requests keyboard/gamepad focus for a mounted control. */
     bool requestFocus(const std::string &id);
@@ -392,10 +461,21 @@ public:
     std::string getFocusedId() const;
     /** @brief Host-level state. */
     void setHostVisible(bool visible);
+    /** @brief Sets the host layer. */
     void setHostLayer(int layer);
     /** @brief Marks the host as a modal (blocks other hosts) / overlay. */
     void setHostModal(bool modal);
+    /** @brief Sets the host overlay. */
     void setHostOverlay(bool overlay);
+    /** @brief Makes a display-only host ignore mouse and keyboard input. @thread UI thread; no callbacks. */
+    void setHostInputTransparent(bool transparent);
+    /** @brief Enables fit-scaled design units on this screen host; positive finite dimensions/scale required.
+     * @thread UI thread. @reentrancy Invokes no callbacks. World anchors use their own projection instead. */
+    void setHostHudCanvas(float referenceWidth, float referenceHeight, float userScale);
+    /** @brief Returns this host to existing pixel layout. @thread UI thread; no callbacks. */
+    void clearHostHudCanvas();
+    /** @brief Sets nonnegative safe margins in display logical pixels. @thread UI thread; no callbacks. */
+    void setHostSafeArea(float left, float top, float right, float bottom);
     /** @brief Sets overlay opacity (0..1); zero also removes the host border and outer padding. */
     void setHostOverlayAlpha(float alpha);
     /** @brief Allows or prevents user movement after the initial position. */
@@ -444,19 +524,93 @@ public:
     /** @brief Returns the selected host's derived screen Y coordinate. @return Screen Y in pixels. */
     float getHostWorldScreenY() const;
     /** Host anchor in display (0..1); offsets come from setHostPos. */
+    /** @brief Sets the host anchor. */
     void setHostAnchor(float x, float y);
     /** Explicit host window size (px). */
+    /** @brief Sets the host size. */
     void setHostSize(float w, float h);
     /** Host window size as a fraction of the display (0..1). */
+    /** @brief Sets the host percent. */
     void setHostPercent(float w, float h);
     /**
-     * Animate the selected host's window position (px) from its current value
-     * to the target x and y over durationMs; zero jumps immediately. Driven by wall clock
-     * inside beginFrameAndRender().
+     * @brief Animate the selected host's window position (px).
+     * @param x Target posX in pixels.
+     * @param y Target posY in pixels.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep"; see evaluateUiEase).
+     * @param delayMs Delay before the first sample moves.
+     * @note Retrigger replaces any prior pos tween on the same host. Driven by
+     *       the presentation clock inside beginFrameAndRender() / tickTweens().
      */
-    void animateHostPos(float x, float y, float durationMs);
-    /** @brief Smoothly animates one retained node's transient opacity without rebuilding its tree. */
-    void animateItemOpacity(const std::string &id, float opacity, float durationMs);
+    void animateHostPos(float x, float y, float durationMs, const std::string &ease = "smoothstep",
+                        float delayMs = 0.f);
+    /**
+     * @brief Animate the selected host's explicit window size (px).
+     * @param w Target width.
+     * @param h Target height.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateHostSize(float w, float h, float durationMs, const std::string &ease = "smoothstep",
+                         float delayMs = 0.f);
+    /**
+     * @brief Animate the selected host's overlay background alpha.
+     * @param alpha Target alpha clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateHostOverlayAlpha(float alpha, float durationMs, const std::string &ease = "smoothstep",
+                                 float delayMs = 0.f);
+    /**
+     * @brief Smoothly animates one retained node's transient opacity without rebuilding its tree.
+     * @param id Node id on the selected host.
+     * @param opacity Target opacity clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateItemOpacity(const std::string &id, float opacity, float durationMs,
+                            const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /**
+     * @brief Animate one node's absolute placement offset (marks the node absolute).
+     * @param id Node id on the selected host.
+     * @param x Target posX.
+     * @param y Target posY.
+     * @param durationMs Duration; <=0 jumps immediately (after delay).
+     * @param ease Ease kind (default "smoothstep").
+     * @param delayMs Delay before the first sample moves.
+     */
+    void animateItemPos(const std::string &id, float x, float y, float durationMs,
+                        const std::string &ease = "smoothstep", float delayMs = 0.f);
+    /** @brief Animate a normalized HUD fill on the selected host without rebuilding the tree.
+     * @param id Node id. @param value Target clamped to [0,1].
+     * @param durationMs Duration; <=0 jumps after delay. @param ease Easing name.
+     * @param delayMs Delay in milliseconds. Replacing a tween starts from its current sample.
+     * @note Missing host/node is a no-op; nonfinite inputs are rejected by the driver.
+     */
+    void animateItemValue(const std::string &id, float value, float durationMs, const std::string &ease = "smoothstep",
+                          float delayMs = 0.f);
+    /** @brief Cancel pending host-level tweens on the selected host. */
+    void cancelHostTweens();
+    /**
+     * @brief Cancel pending item tweens on the selected host.
+     * @param id Node id; empty cancels every item tween on the host.
+     */
+    void cancelItemTweens(const std::string &id = "");
+    /** @brief Cancel every pending tween on the selected host. */
+    void cancelAllTweens();
+    /**
+     * @brief Advance pending UI tweens using an explicit clock (ms).
+     * @param nowMs Monotonic presentation clock in milliseconds.
+     * @note beginFrameAndRender() calls this with the wall clock; tests inject time here.
+     */
+    void tickTweens(double nowMs);
+    /** @brief Number of pending host tweens (diagnostics / tests). */
+    std::size_t getHostTweenCount() const;
+    /** @brief Number of pending item tweens (diagnostics / tests). */
+    std::size_t getItemTweenCount() const;
     /** @brief Returns the id of the clicked widget since the last frame (or ""). */
     std::string consumeClick();
     /** @brief Returns the id of the changed widget since the last frame (or ""). */
@@ -480,7 +634,9 @@ public:
      * registers a value callback whose kind is toggle, value or text. Handlers
      * run inside dispatchEvents after C++ callbacks and before poll queues.
      */
+    /** @brief On click. */
     void onClick(const std::string &id, ssq::Function fn);
+    /** @brief On change. */
     void onChange(const std::string &id, ssq::Function fn);
     /** @brief Internal UIComponent callback registration scoped to one component owner. */
     void componentOnClick(uint64_t owner, const std::string &id, ssq::Function fn);
@@ -491,6 +647,7 @@ public:
 
     /** @brief Applies the dark/light built-in theme. */
     void setThemeDark();
+    /** @brief Sets the theme light. */
     void setThemeLight();
     /** @brief Named preset: "dark" / "light" (case-insensitive). Returns false if unknown. */
     bool setTheme(const std::string &name);
@@ -508,20 +665,24 @@ public:
     void clearStyleClasses();
     /** @brief Enables/disables keyboard navigation support. */
     void setNavKeyboard(bool enabled);
+    /** @brief Sets the nav gamepad. */
     void setNavGamepad(bool enabled);
     /** @brief Global UI scale factor (default 1). */
     void setScale(float scale);
     /** @brief Current UI scale factor. */
     float getScale() const;
     /** "hosts=.. nodes=.. measureMs=.. walkMs=.." from the last render frame. */
+    /** @brief Returns the stats. */
     std::string getStats() const;
     /** @brief JSON diagnostics for measured size and overflow of the selected retained tree. */
     std::string getLayoutDiagnostics() const;
     /** @brief JSON accessibility snapshot for semantically named nodes in the selected tree. */
     std::string getAccessibilitySnapshot() const;
     /** Serialize the selected host's tree to JSON (UI asset pipeline). */
+    /** @brief Saves tree json. */
     std::string saveTreeJson() const;
     /** Replace the selected host's tree from JSON produced by saveTreeJson(). */
+    /** @brief Loads tree json. */
     bool loadTreeJson(const std::string &json);
     /**
      * @brief Returns the offscreen render target of a selected-host Viewport widget.
@@ -533,12 +694,19 @@ public:
      * @reentrancy The query invokes no callbacks; do not destroy or replace the target re-entrantly.
      */
     graphics::Canvas *viewportCanvas(const std::string &id);
+    /** @brief Viewport hovered. */
     bool viewportHovered(const std::string &id);
+    /** @brief Viewport active. */
     bool viewportActive(const std::string &id);
+    /** @brief Viewport mouse x. */
     float viewportMouseX(const std::string &id);
+    /** @brief Viewport mouse y. */
     float viewportMouseY(const std::string &id);
+    /** @brief Viewport drag dx. */
     float viewportDragDX(const std::string &id);
+    /** @brief Viewport drag dy. */
     float viewportDragDY(const std::string &id);
+    /** @brief Viewport wheel. */
     float viewportWheel(const std::string &id);
 
     /** @brief One-shot convenience: a window with a label and a button. */
@@ -566,6 +734,16 @@ public:
     bool inspectPickScene();
     /** @brief Creates another instance of the selected inspector class. */
     bool inspectAddInstance();
+    /**
+     * @brief Return the reflection-derived `PropertySchema` for a live script instance.
+     *
+     * The schema is built by `ReflectedPropertyModel` (attributes → kinds/flags) and
+     * projected as a Squirrel table `{ typeId, version, properties = [ { path, kind,
+     * displayName, description, category, readOnly, choices, min, max, step, units,
+     * presenterHint }, ... ] }`. Scripts use this to inspect or drive custom UI; the
+     * authoritative editable view remains `ui.inspectObject` / PropertyView.
+     */
+    ssq::Object propertySchema(ssq::Object instance);
 
     // ---- Reflection-driven database panel -------------------------------
     /** @brief Opens the database panel (class menu + editable instance grid). */
@@ -675,9 +853,12 @@ private:
     std::string lastDropOrigin_;
 
     struct ScriptHandler {
+        /** @brief Constructs a ScriptHandler. */
         ScriptHandler(std::string host, std::string node, std::string k, ssq::Function f,
                       uint64_t componentOwner = 0)
+            /** @brief Host name. */
             : hostName(std::move(host)), nodeId(std::move(node)), kind(std::move(k)),
+              /** @brief Fn. */
               fn(std::move(f)), owner(componentOwner) {}
         std::string hostName;
         std::string nodeId;
@@ -688,26 +869,7 @@ private:
     std::vector<ScriptHandler> scriptHandlers_;
     void fireScriptHandlers(const UIEvent &ev);
 
-    struct HostTween {
-        UIHostHandle host{};
-        float fromX = 0.f;
-        float fromY = 0.f;
-        float toX = 0.f;
-        float toY = 0.f;
-        double startMs = 0.0;
-        double durationMs = 0.0;
-    };
-    struct ItemTween {
-        UIHostHandle host{};
-        std::string nodeId;
-        float from = 1.f;
-        float to = 1.f;
-        double startMs = 0.0;
-        double durationMs = 0.0;
-    };
-    std::vector<HostTween> hostTweens_;
-    std::vector<ItemTween> itemTweens_;
-    void updateHostTweens();
+    UiTweenDriver                  tweens_;
     ssq::Object callPickHandler();
     void callScenePickHandler(const std::string &nodeId);
     std::unique_ptr<Inspector> inspector_;

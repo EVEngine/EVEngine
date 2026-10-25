@@ -292,6 +292,9 @@ process 全局主题。
 
 启用 `ui_editor` 时，`eve.UiEditorModule().create(targetId)` 返回脚本拥有的 `UiThemeEditor`。
 `configureWorkspace` 安装 Themes / Theme Preview / Theme Inspector（capability `ui.theme`）。
+原子 getter（`getSelectedId` / `getActiveId` / `getThemeCount` / `getRevision` 等）保持兼容；
+加法 API `getState()` 返回 Result 投影，`value` 为含 `selectedId`、`activeId`、
+`previewRuntimeName`、`revision`、`previewRevision`、`themeCount` 的快照对象。
 完整可运行示例见 [`examples/ui-theme-editor`](../../../examples/ui-theme-editor)。
 
 ## 流体表面与湿润材质（C++）
@@ -376,7 +379,7 @@ Clip 解码和 Source 创建仍由 audio/sound host 负责；Editor 文档不保
 
 ## Particle Graph（C++）
 
-规范 API 位于 `particles_editing/ParticleGraph.h`；`particles_editor/EditorParticleGraph.h` 仅作为旧 include/namespace
+规范 API 位于 `particles_editing/ParticleGraph.h`（空壳 `particles_editor` 转发层已删除；直接 include editing / graphics_editing）
 兼容入口。通用图文档契约位于 `editing/EditingGraph.h`。
 
 `ParticleGraphDomain` 在通用 `GraphDocument` 上定义 `particles.emitter` 领域。模块链从唯一的
@@ -587,6 +590,17 @@ ws.select("world", "scene", "level-1", "tree-42", "vegetation.tree", false);
 完整组合示例见 [`examples/composable-editor`](../../../examples/composable-editor)：项目脚本用
 五个面板 builder 组合地形、材质、反射 MVVM、ECS 与游戏命令；C++ 不认识这些具体面板。
 
+需要固定 IDE 壳（而不是每个面板一个可拖动 Window）时，用 `ui` 的 `AppFrame` /
+`DockArea` / `PanelFrame` / `TabContainer`，或直接：
+
+```squirrel
+local uiEditor = eve.UiEditorModule();
+uiEditor.mountWorkspaceShell(ui, ws, "workspace-shell");
+```
+
+这会把 Workspace 描述符映射到锁定的单 Host 布局（见
+[`examples/editor-workspace-shell`](../../../examples/editor-workspace-shell)）。
+
 ### 动作时间轴编辑器
 
 `eve.ActionEditorModule().create(targetId, timelineTable)` 把版本化的 `eve.action.timeline`
@@ -652,6 +666,11 @@ actionEditor.editAnimationSection("combat-section:strike", 0.30, 0.70, 0.10,
                                   "asset://combat.glb#StrikeHeavy");
 actionEditor.editAnimationSectionSource("combat-section:strike", 0.05, 0.40,
                                         "ease-in-out");
+actionEditor.editAnimationSectionEnvelope("combat-section:strike", 0.10, 0.12,
+                                          "ease-in-out", "ease-out");
+local blendOut = actionEditor.getAnimationSectionBlendOut(0);
+local blendInCurve = actionEditor.getAnimationSectionBlendInCurve(0);
+local blendOutCurve = actionEditor.getAnimationSectionBlendOutCurve(0);
 
 // Montage-wide settings commit atomically and update a prepared preview.
 actionEditor.setMontageSettings(1.25, false, true, 2,
@@ -685,7 +704,11 @@ if (actionEditor.hasPreviewHost())
 三种修改都通过 Timeline 的规范替换事务提交，拒绝 0、末尾、重复或越界时间，并立即更新同一编辑器拥有的
 Montage 运行时副本；Undo/Redo、`jumpRuntimeSection`、`evaluateRuntimeSectionProgress`、
 `syncRuntimeSection`、`syncRuntimeSectionAndJump`、`clearRuntimeSectionSync` 和磁吸目标因此共享一份边界事实。
-归一化求值把 `[0,1]` 映射到物理 Section；同步倍率可以只配置，也可以配置后立即跳到该段起点，并可明确清除。
+归一化求值把 `[0,1]` 映射到物理 Section。Section 同步把正数目标时长配置到当前
+`ActionExecution`；随后由 `ActionRuntime` 把注入 delta 分段映射到唯一权威时间游标，因此生命周期阶段、
+Notify/State、Montage 表现和 Section 进度保持同步，而不是由编辑器单独改变动画速度。运行中修改目标时长
+保持当前游标连续，只影响后续推进；清除后恢复该段 1:1 时间。该覆盖是 execution 瞬态状态，不写回资产，
+重启预览 execution 时编辑器会显式重新应用当前预览配置。
 运行时按资产的 `animationLayer` 选择协调器层，视口读取该层的双槽归一化合成姿态。
 `setRuntimeBoneMask` 会同步复制一个与预览骨架匹配的 `AnimBoneMask` 到当前层，调用方随后可以安全销毁或修改
 原 Mask；`clearRuntimeBoneMask` 恢复全骨骼影响。示例的 Montage Inspector 可从当前选中关节生成 Mask，选择是否
@@ -791,7 +814,7 @@ insp.addFloat3("pos", "Position", 0, 0, 0);
 
 Scene 和 Map 的规范 C++ authoring API 分别位于 `scene_editing/SceneTarget.h`、
 `scene_editing/SceneComponentPayload.h` 与 `map_editing/MapDocument.h`。对应的
-`editor/EditorScene*.h`、`map_editor/EditorMapDocument.h` 只用于源代码兼容。
+`editor/EditorScene*.h` 只用于源代码兼容。空壳 `map_editor`（及同类仅 `using` 转发的 `*_editor`）已删除；请直接 include `map/editing/MapDocument.h` 等 editing 头。
 
 Animation clip 的规范 authoring API 位于 `animation_editing/AnimationClip.h`；
 `animation_editor/EditorAnimationClip.h` 是兼容入口。启用 `animation_editor` 时，
@@ -953,12 +976,21 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - 笔刷直接改 `TileLayer`——请先画在 `TileBuffer`，再同步，避免模块硬耦合。
 - `getPart*` 在 mode/TRS 变化后过期——调用 `rebuildParts()` 或任意 set*（多数 set 已自动重建）。
 
-## API 快查
+## 绑定与行为说明
 
 - Editor 核心模块：`newWorkspace` / `newSession` / `newScriptTool` / `newFieldBrushTool` / `newVolumeBrushTool` / `newConstantBrushFalloff` / `newLinearBrushFalloff` / `newSmoothBrushFalloff` / `newCircleBrushKernel` / `newBoxBrushKernel` / `newSphereVolumeBrushKernel` / `newBoxVolumeBrushKernel` / `newPaintIntFieldOperation` / `newAddScalarFieldOperation` / `newPaintIntVolumeOperation` / `registerScriptCommand` / `unregisterScriptCommand` / `newGizmo` / `newGizmoManager` / `newToolbar` / `newInspector` / `newDock`
 - Toolbar：`clear` / `addTool` / `setIcon` / `setShortcut` / `setActive` / `getActive` / `matchShortcut` / `getToolCount` / `getToolId` / `getToolLabel` / `getToolIcon` / `getToolShortcut`
 - Level Editor 模块：`newTileBuffer` / `newBrush` / `newHistory` / `createTarget` / `bind`
 - Action editor adapter：`eve.ActionEditorModule().create`
+- Action 资产预览：`configurePreviewProfile` 接受 `eve.action.preview-profile` v1 对象；
+  `previewProfile` 返回当前 owning snapshot，`savePreviewProfile` / `loadPreviewProfile`
+  以稳定 Action AssetGuid 在项目 `.eve/action-preview/` 下原子保存 sidecar。
+  `canPreviewProfile`、`getPreviewCompatibilityCount`、
+  `getPreviewCompatibilitySectionId`、`getPreviewCompatibilityStatus` 和
+  `getPreviewCompatibilityMessage` 提供逐动画片段的骨架兼容性诊断。
+  `registerPreviewModelSkeleton`、`registerRuntimeClip` 和 `registerPreviewBoneMask`
+  会把已加载资源的 owning 骨架拓扑注册到文档内 Provider；宿主也可提供全局
+  `IActionPreviewAssetProvider`。两者均缺失时状态为 `unsupported`，不会静默使用替代骨架。
 - Heightmap Target 模块：`create` / `bind` / `applyBrush` / `newMesh` / `updateMesh` / `newSmoothMesh` / `updateSmoothMesh` / `encodeDocument` / `decodeDocument`
 - Workspace：`getId` / `getTitle` / `setTitle` / `registerPanel` / `removePanel` / `clearPanels` / `movePanel` / `setPanelCapability` / `setPanelContext` / `setPanelVisible` / `setPanelSingleton` / `activatePanel` / `getActivePanel` / `getPanelCount` / `getPanelId` / `getPanelTitle` / `getPanelRegion` / `getPanelCapability` / `getPanelContext` / `getPanelOrder` / `getPanelVisible` / `getPanelSingleton` / `setRegionSize` / `layout` / `getRegionX` / `getRegionY` / `getRegionW` / `getRegionH` / `setMode` / `getMode` / `select` / `clearSelection` / `getSelectionCount` / `getSelectionItem` / `getSelectionType` / `getPrimarySelection` / `getSelectionSequence` / `focus` / `getFocusedSurface` / `getRevision`
 - 动作时间轴：`configureWorkspace` / `setViewport` / `pointerDown` / `pointerMove` / `pointerUp` / `seekX` / `seekSeconds` / `resizeState` / `undo` / `redo` / `update` / `snapshot` / `play` / `pause` / `isPlaying` / `canUndo` / `canRedo` / `isDragging` / `getDuration` / `getPreviewTime` / `getRevision` / `getAnimationUri` / `getTrackCount` / `getTrackId` / `getTrackLabel` / `getTrackKind` / `getTrackMuted` / `getLayoutWidth` / `getLayoutHeight` / `getPlayheadX` / `getItemCount` / `getItemId` / `getItemType` / `getItemState` / `getItemSelected` / `getItemMinX` / `getItemMaxX` / `getItemMinY` / `getItemMaxY` / `getStateStart` / `getStateEnd` / `getEventCount` / `getEventItemId` / `getEventType` / `getEventTime` / `getEventKind`
@@ -967,6 +999,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 - Biome 规则：`eve.BiomeEditorModule().create` / `configureWorkspace` / `selectLayer` / `selectAsset` / `setLayerDensity` / `setLayerPriority` / `setAssetWeight` / `addExclusion` / `removeExclusion` / `setSeed` / `undo` / `redo` / `getPoint*` / `getLayer*` / `getAsset*` / `getExclusion*`
 - Procgen 脚本生成器：`eve.ProcgenEditorModule().create` / `configureWorkspace` / `loadModule` / `setInt` / `setFloat` / `setBool` / `setString` / `publishPreview` / `publishStage` / `failPreview` / `selectStage` / `undo` / `redo` / `getParam*` / `getPoint*` / `getStage*`
 - Voxel catalog：`eve.VoxelEditorModule().create` / `configureWorkspace` / `selectPart` / `selectPrefab` / `selectFace` / `setPartVoxel` / `setSelectedSocket` / `setPrefabCell` / `createPart` / `deleteSelectedPart` / `undo` / `redo` / `getPart*` / `getPrefab*` / `getPreviewCell*` / `getSelectedSocket*` / `getJoinPartner*`
+- UI Theme：`eve.UiEditorModule().create` / `configureWorkspace` / `selectTheme` / `createFromPreset` / `duplicateSelected` / `deleteSelected` / `setActiveSelected` / `resetSelectedToBase` / `setColor` / `setFloat` / `applyPreviewHost` / `undo` / `redo` / `getSelectedId` / `getActiveId` / `getTheme*` / `getColor*` / `getFloat` / `getState`
 - 会话：`addTool` / `addFieldTool` / `addVolumeTool` / `removeTool` / `clearTools` / `clearTarget` / `activateTool` / `getActiveToolId` / `dispatchPointer` / `dispatchPointer3D` / `hasPointerCapture` / `update` / `cancelActiveTool` / `undo` / `redo` / `canUndo` / `canRedo` / `clearHistory` / `getCommandCount` / `getCommandId` / `getCommandName` / `getCommandCategory` / `planCommand` / `executePlan` / `executeCommand`。领域 Target 通过各自模块的 `bind(session, target)` 接入。
 - 脚本工具：`setShortcut` / `setActivateCallback` / `setDeactivateCallback` / `setPointerCallback` / `setKeyCallback` / `setUpdateCallback` / `setCancelCallback`
 - 字段工具：`setRadius` / `setStrength` / `getRadius` / `getStrength` / `setCircleKernel` / `setBoxKernel` / `setPaintIntOperation` / `setAddScalarOperation`
@@ -987,7 +1020,7 @@ height scale 和 wall UV。`Hd2dFramePreviewService` 可按时间确定性计算
 
 **源码：** [`src/modules/editor/`](../../../src/modules/editor/)  
 **设计文档：** [`docs/dev/编辑器模块设计.md`](../../dev/编辑器模块设计.md)  
-**相关测试：** [`test/editor.cpp`](../../../test/editor.cpp)
+**相关测试：** [`test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp`](../../../test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp)
 
 ### PR #287 新增绑定
 
@@ -1002,9 +1035,22 @@ Inspector 根据 schema 自动生成，其余面板由项目配方提供。
 
 两个领域类共用 `presentationState()`、`presentationSnapshot()`、
 `presentationEdit(path, value, staged)`、`presentationCommit()`、`presentationCancel()`、
-`presentationAction(id)`。除 cancel 外均返回公共 Result 表；snapshot 的 value 含 revision、
+`presentationAction(id)`，以及取消草稿和待发布预览的 `presentationClose()`。除 cancel/close 外均返回公共 Result 表；snapshot 的 value 含 revision、
 context、canUndo/canRedo、playing、rows。数值拖动只暂存草稿，释放提交一次历史；
 Esc、失焦和关闭取消，revision/selection 冲突拒绝覆盖。action 的 undo/redo 使用领域原历史。
 完整接入与验证见 [迁移说明](../../dev/2026-10-23-editor-ui-migration.md)。
 
 Audio / Animation 的预览默认异步：编辑或 seek 成功后，显示可能暂时保留上一份有效预览；主循环 `update()` 在新结果就绪时发布。共享 Inspector 显示预览状态。provider 被取消、替换或关闭后，旧结果不会覆盖当前预览。音频示例保持静音。开发接口及生命周期见 `docs/dev/2026-10-24-async-editor-preview.md`。
+
+## 补充绑定参考
+
+参数与接收者见 [源码生成参考](editor/api-reference.md)，使用前先确认本章的前置条件与生命周期。
+
+## 集成任务：组装一个可撤销的编辑工具
+
+建立 Workspace/Session → 创建领域 target 并绑定 → 注册满足 capability 的工具 → 转换输入坐标 → begin/update/end 手势 → validate/commit → 消费变化更新预览。一次拖拽是一个命令；取消不写权威文档，撤销不从画面推导旧数据。连续笔刷写入的候选与运行时发布分开，revision 防止慢生成覆盖新编辑。先撤销 preview/target 注册，再释放资源和 provider。工具缺少 capability 时显示明确不可用原因。
+
+完整项目：[examples/editor-api-v2](../../../examples/editor-api-v2/README.md)，
+其 [main.nut](../../../examples/editor-api-v2/main.nut) 展示实际生命周期。
+先验证现有资产可加载，再换成自己的资源。测试失败、取消、资源缺失和旧 revision，
+不能只以脚本没有语法错误作为渲染或玩法正确的证据。

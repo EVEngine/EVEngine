@@ -1,5 +1,6 @@
 #include "physics/Body.h"
 #include "physics/Fixture.h"
+#include "physics/Joint2D.h"
 #include "physics/World.h"
 
 #include "common/Exception.h"
@@ -7,8 +8,8 @@
 #include <Box2D/Box2D.h>
 
 #include <cmath>
-
 #include <cstring>
+#include <vector>
 
 namespace eve::physics {
 namespace {
@@ -36,6 +37,11 @@ Body::Body(World *world, b2Body *body, int id, PhysicsBodyHandle runtimeHandle)
 
 Body::~Body() {
     if (body_ && world_ && world_->raw()) {
+        std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
+        for (Joint2D *joint : joints) {
+            if (joint && joint->isValid() && (joint->getBodyAId() == getId() || joint->getBodyBId() == getId()))
+                joint->destroy();
+        }
         // Invalidate fixture wrappers before DestroyBody frees b2Fixtures.
         b2Fixture *f = body_->GetFixtureList();
         while (f) {
@@ -48,6 +54,7 @@ Body::~Body() {
             f = next;
         }
         body_->SetUserData(nullptr);
+        world_->releaseBodyJoints2D(*this);
         world_->raw()->DestroyBody(body_);
         world_->forgetBody(this);
     }
@@ -68,6 +75,11 @@ void Body::destroy() {
         invalidate();
         return;
     }
+    std::vector<Joint2D *> joints(world_->joints_.begin(), world_->joints_.end());
+    for (Joint2D *joint : joints) {
+        if (joint && joint->isValid() && (joint->getBodyAId() == getId() || joint->getBodyBId() == getId()))
+            joint->destroy();
+    }
     b2Fixture *f = body_->GetFixtureList();
     while (f) {
         b2Fixture *next = f->GetNext();
@@ -79,6 +91,7 @@ void Body::destroy() {
         f = next;
     }
     body_->SetUserData(nullptr);
+    world_->releaseBodyJoints2D(*this);
     world_->raw()->DestroyBody(body_);
     world_->forgetBody(this);
     body_  = nullptr;

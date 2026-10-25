@@ -1,15 +1,18 @@
+// eve-hot-path
 #include "scene/TransformSystem.h"
+#include "scene/SceneComponent.h"
 
 #include "common/Profile.h"
 #include "scene/SceneHost.h"
 #include "scene/SceneLink.h"
+#include "scene/SceneTransformInternal.h"
 
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 namespace eve::scene {
-namespace {
+namespace detail {
 
 glm::mat4 localMatrix(const SceneNode &n) {
     glm::mat4 m(1.f);
@@ -24,10 +27,13 @@ glm::mat4 localMatrix(const SceneNode &n) {
     m = glm::scale(m, glm::vec3(n.sx, n.sy, n.sz));
     return m;
 }
+}  // namespace detail
+
+namespace {
 
 void updateNode(SceneHost::Tree &tree, int nodeIndex, const glm::mat4 &parentWorld) {
     SceneNode &n = tree.nodes[size_t(nodeIndex)];
-    n.world = parentWorld * localMatrix(n);
+    n.world      = parentWorld * detail::localMatrix(n);
     n.localDirty = false;
     for (int c = n.firstChild; c >= 0; c = tree.nodes[size_t(c)].nextSibling) {
         updateNode(tree, c, n.world);
@@ -54,11 +60,11 @@ void pullTargets(SceneHost *host) {
 void pushTarget(const SceneNode &n, const SceneLink &l);
 void updateNodeIncremental(SceneHost::Tree &tree, int nodeIndex,
                            const glm::mat4 &parentWorld, bool force) {
-    SceneNode &n = tree.nodes[size_t(nodeIndex)];
+    SceneNode &n    = tree.nodes[size_t(nodeIndex)];
     const bool need = force || n.subtreeDirty;
     if (need) {
-        n.world = parentWorld * localMatrix(n);
-        n.localDirty = false;
+        n.world        = parentWorld * detail::localMatrix(n);
+        n.localDirty   = false;
         n.subtreeDirty = false;
         for (auto &l : n.links) {
             if (l.syncMode == 0) pushTarget(n, l);
@@ -164,6 +170,7 @@ void TransformSystem::updateHost(SceneHost *host) {
 }
 
 void TransformSystem::updateAll() {
+    detail::flushPendingComponents();
     EV_PROFILE_MODULE("scene", "TransformSystem::updateAll");
     if (ecs::current()->getManager<SceneHost>() == nullptr) return;
     auto view = ecs::View<SceneHost, SceneHost::Meta, SceneHost::Tree>();

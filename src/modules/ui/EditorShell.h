@@ -18,9 +18,11 @@ class UIHost;
  * user-movable/resizable so ImGui's ini persistence restores the
  * workspace.
  */
-class EVENGINE_API EditorShell {
+class EVENGINE_API_WORLD EditorShell {
 public:
+    /** @brief Editor shell. */
     EditorShell() = default;
+    /** @brief Editor shell. */
     ~EditorShell();
     EditorShell(const EditorShell&)            = delete;
     EditorShell& operator=(const EditorShell&) = delete;

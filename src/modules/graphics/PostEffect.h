@@ -7,6 +7,7 @@ namespace eve::graphics {
 /** @brief Stable insertion points for full-screen effects. */
 enum class PostEffectStage { AfterOpaque, BeforeTransparent, BeforeTonemap, AfterTonemap };
 
+/** @brief PostEffectInput public API. */
 enum PostEffectInput : uint32_t {
     PostInputColor    = 1u << 0u,
     PostInputDepth    = 1u << 1u,
@@ -23,6 +24,7 @@ struct PostEffectDesc {
     float           resolutionScale = 1.f;
 };
 
+/** @brief Post effect stage name. */
 inline const char* postEffectStageName(PostEffectStage stage) {
     switch (stage) {
         case PostEffectStage::AfterOpaque: return "afterOpaque";

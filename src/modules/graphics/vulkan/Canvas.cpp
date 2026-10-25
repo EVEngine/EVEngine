@@ -20,7 +20,8 @@ OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height, bool hd
     auto &device = owner->getDevice();
     const vk::Format format =
         hdr ? vk::Format::eR16G16B16A16Sfloat : vk::Format::eR8G8B8A8Unorm;
-    color = device.createColorTarget(uint32_t(width), uint32_t(height), format);
+    // TransferDst so same-frame snapshots / blits can land on this canvas.
+    color = device.createCopyableColorTarget(uint32_t(width), uint32_t(height), format);
 
     fb = owner->getOffscreenRenderPass(hdr).createFramebuffer(
         device, uint32_t(width), uint32_t(height), {color.asAttachment()});

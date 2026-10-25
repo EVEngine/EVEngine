@@ -11,254 +11,263 @@ include(${CMAKE_SOURCE_DIR}/cmake/shader_asset_validation.cmake)
 
 eve_module_enabled(font _has_font)
 if(NOT _has_font)
-  set(EVENGINE_EXCLUDED_MODULE_FILES "${EVENGINE_EXCLUDED_MODULE_FILES};Font.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES Font.cpp)
+endif()
+
+# weather::Snow applies SnowField onto procgen::Heightmap. Without procgen the
+# precipitation Weather surface stays, but Snow sources and the boot slot drop
+# so web/WASM (and any trim that leaves weather without procgen) never pull
+# procgen → map.
+eve_module_enabled(weather _has_weather_snow_bridge)
+eve_module_enabled(procgen _has_procgen_for_snow)
+if(_has_weather_snow_bridge AND NOT _has_procgen_for_snow)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES Snow.cpp SnowField.cpp)
+  set(EVE_MODULE_weather_SCRIPT Weather CACHE INTERNAL "" FORCE)
+  set(EVE_MODULE_weather_SLOT weather CACHE INTERNAL "" FORCE)
+endif()
+
+# HexMapTerrain.cpp bakes hexmap cells. HexTerrain.cpp is the unrelated
+# mesh.hexterrain continent recipe and must stay compiled either way.
+# Without hexmap the absent stubs still expose generateHexTerrain /
+# generateHexSphere so scripts get a structured NotFound instead of a
+# missing method.
+#
+# All optional-bridge exclusions above/below use list(APPEND) on the *normal*
+# variable: root already FORCE-set the CACHE entry, and CMP0126 NEW leaves that
+# normal value as what create_module() reads. set(... CACHE) without FORCE is a
+# no-op here and previously left Snow.cpp / SpriteStackModel.cpp linked on web.
+eve_module_enabled(hexmap _has_hexmap)
+if(_has_hexmap)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HexTerrainAbsent.cpp)
+else()
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HexMapTerrain.cpp)
 endif()
 
 # editor/EditorParticleGraphRuntime.cpp applies compiled particle module graphs
 # to the real emitter only when the particles module is enabled.
 eve_module_enabled(particles _has_particles_editor_bridge)
 if(NOT _has_particles_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};ParticleGraphRuntime.cpp;ParticleOffscreenRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES ParticleGraphRuntime.cpp ParticleOffscreenRuntime.cpp)
 endif()
 
 # Crowd authoring documents stay standalone; this bridge applies them to the
 # live simulation only when the crowd runtime module is selected.
 eve_module_enabled(crowd _has_crowd_editor_bridge)
 if(NOT _has_crowd_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};CrowdRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES CrowdRuntime.cpp)
 endif()
 
 # The shared queue inspector copies both Orders and Production runtime state.
 eve_module_enabled(orders _has_orders_editor_bridge)
 eve_module_enabled(production _has_production_editor_bridge)
 if(NOT _has_orders_editor_bridge OR NOT _has_production_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};QueueInspector.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES QueueInspector.cpp)
 endif()
 
 eve_module_enabled(social _has_social_editor_bridge)
 if(NOT _has_social_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SocialRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES SocialRuntime.cpp)
 endif()
 
 # Lighting and environment documents are standalone; each live applier follows
 # only the runtime module it includes.
 eve_module_enabled(graphics _has_graphics_editor_bridge)
 if(NOT _has_graphics_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};LightingRuntime.cpp;MaterialRuntime.cpp;ParticleOffscreenRuntime.cpp;EditorSurfaceFluidOffscreen.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES LightingRuntime.cpp MaterialRuntime.cpp ParticleOffscreenRuntime.cpp EditorSurfaceFluidOffscreen.cpp)
 endif()
 eve_module_enabled(image _has_image_editor_bridge)
 if(NOT _has_graphics_editor_bridge OR NOT _has_image_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};OffscreenPreview.cpp;EditorMaterialOffscreen.cpp;ParticleOffscreen.cpp;EditorUiOffscreen.cpp;EditorSurfaceFluidOffscreen.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
-endif()
-eve_module_enabled(building _has_building_editor_bridge)
-if(NOT _has_building_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};BuildingTarget.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES OffscreenPreview.cpp EditorMaterialOffscreen.cpp ParticleOffscreen.cpp EditorUiOffscreen.cpp EditorSurfaceFluidOffscreen.cpp)
 endif()
 eve_module_enabled(daynight _has_daynight_editor_bridge)
 if(NOT _has_daynight_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EnvironmentDayNightRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES EnvironmentDayNightRuntime.cpp)
 endif()
 eve_module_enabled(weather _has_weather_editor_bridge)
 if(NOT _has_weather_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};EnvironmentWeatherRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES EnvironmentWeatherRuntime.cpp)
 endif()
 
 # audio_editing runtime bridges apply backend-neutral source documents to a
 # live OpenAL Source only when the audio module is enabled.
 eve_module_enabled(audio _has_audio_editor_bridge)
 if(NOT _has_audio_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};AudioRuntime.cpp;AudioTransportRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AudioRuntime.cpp AudioTransportRuntime.cpp)
 endif()
 
 # graphics/SceneLinks.cpp registers the link kinds graphics owns and
-# graphics/ScenePicking.cpp implements the scene picking entry points that
-# need a complete Camera3D; both include scene headers, so dropping scene
-# drops both files. physics / audio each have their own SceneLinks.cpp with
-# the same basename, so one rule covers all three.
+# graphics/ScenePicking.cpp provides the ISceneCameraProjection capability that
+# scene's picking entry points query; both include scene headers, so dropping
+# scene drops both files. physics / audio each have their own SceneLinks.cpp
+# with the same basename, so one rule covers all three.
 eve_module_enabled(scene _has_scene)
 if(NOT _has_scene)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneLinks.cpp;ScenePicking.cpp;EditorSceneRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES SceneLinks.cpp ScenePicking.cpp EditorSceneRuntime.cpp)
 endif()
 
 # editor/EditorPcgGraph.cpp is the optional bridge to procgen PointGraph.
 eve_module_enabled(procgen _has_procgen)
 if(NOT _has_procgen)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};PcgGraph.cpp;BiomeTarget.cpp;BiomeRuntime.cpp;HeightmapTarget.cpp;HeightmapMesh.cpp;TextureRecipeTarget.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES PcgGraph.cpp BiomeTarget.cpp BiomeRuntime.cpp HeightmapTarget.cpp HeightmapMesh.cpp TextureRecipeTarget.cpp)
 endif()
 
 # Map authoring documents remain available without the runtime map provider;
 # these bridges are the only map_editing sources that require live map types.
 eve_module_enabled(map _has_map_editor_bridge)
 if(NOT _has_map_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};MapIntegration.cpp;TileLayerTarget.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES MapIntegration.cpp TileLayerTarget.cpp)
 endif()
 
 eve_module_enabled(network _has_network_editor_bridge)
 if(NOT _has_network_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};NetworkTelemetryRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES NetworkTelemetryRuntime.cpp)
 endif()
 
 eve_module_enabled(sceneloader _has_sceneloader_editor_bridge)
 if(NOT _has_sceneloader_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SceneImportRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES SceneImportRuntime.cpp)
 endif()
 
 # Animation editor documents remain standalone; these files are optional bridges
 # to real runtime clips and state machines.
 eve_module_enabled(animation _has_animation_editor_bridge)
 if(NOT _has_animation_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};AnimationGraphRuntime.cpp;AnimationClipRuntime.cpp;SkeletonOverlayRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp ControlRigDocument.cpp)
 endif()
 
 # UI document style/layout preview stays standalone. Runtime publication is
 # included only when the retained UI module is enabled.
 eve_module_enabled(ui _has_ui_editor_bridge)
 if(NOT _has_ui_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};UiRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES UiRuntime.cpp)
+endif()
+
+# Retained UI keeps its own presentation tweens (UiTween.cpp). Motion push
+# binders include animation headers and are omitted when animation is trimmed.
+eve_module_enabled(animation _has_animation_ui_bridge)
+if(NOT _has_animation_ui_bridge)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES UiMotionSinks.cpp)
 endif()
 
 eve_module_enabled(decal _has_decal_editor_bridge)
 if(NOT _has_decal_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};DecalRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES DecalRuntime.cpp)
 endif()
 
 eve_module_enabled(stylize _has_stylize_editor_bridge)
 if(NOT _has_stylize_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};StylizeTarget.cpp;StylizeRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES StylizeTarget.cpp StylizeRuntime.cpp)
 endif()
 
 # Camera assets are renderer-neutral; only the publication bridge needs the
 # runtime CameraController module.
 eve_module_enabled(camera _has_camera_editor_bridge)
 if(NOT _has_camera_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};CameraTarget.cpp;CameraRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES CameraTarget.cpp CameraRuntime.cpp)
 endif()
 
-eve_module_enabled(housegen _has_housegen_editor_bridge)
-if(NOT _has_housegen_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};HouseGenTarget.cpp;HouseGenRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+eve_module_enabled(procgen _has_procgen_editor_bridge)
+if(NOT _has_procgen_editor_bridge)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES HouseGenTarget.cpp HouseGenRuntime.cpp)
 endif()
 
 eve_module_enabled(spritestack _has_spritestack_editor_bridge)
 if(NOT _has_spritestack_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};SpriteStackTarget.cpp;SpriteStackRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES SpriteStackTarget.cpp SpriteStackRuntime.cpp)
+endif()
+
+# Assimp-backed sliceModel + the editor bake path that calls it. Primitive /
+# atlas SpriteStack2D remains available when model3d is trimmed (web/WASM).
+eve_module_enabled(model3d _has_model3d_for_spritestack)
+eve_module_enabled(spritestack _has_spritestack_model_bridge)
+if(_has_spritestack_model_bridge AND NOT _has_model3d_for_spritestack)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES SpriteStackModel.cpp SpriteStackRuntime.cpp)
+endif()
+
+# Assimp/ModelData import for skeletons, clips, skins and lattices. Fixture text
+# import and all pose/skin runtime stay compiled without model3d.
+eve_module_enabled(model3d _has_model3d_for_animation)
+eve_module_enabled(animation _has_animation_model_bridge)
+if(_has_animation_model_bridge AND NOT _has_model3d_for_animation)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimImporterAssimp.cpp AnimImporterModel.cpp AnimSkinFromModel.cpp AnimLatticeFromModel.cpp AnimationModelImport.cpp)
 endif()
 
 eve_module_enabled(virtualgeometry _has_virtualgeometry_editor_bridge)
 if(NOT _has_virtualgeometry_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};VirtualGeometryTarget.cpp;VirtualGeometryRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES VirtualGeometryTarget.cpp VirtualGeometryRuntime.cpp)
 endif()
 
 eve_module_enabled(avatar _has_avatar_editor_bridge)
 if(NOT _has_avatar_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};AvatarTarget.cpp;AvatarRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AvatarTarget.cpp AvatarRuntime.cpp)
 endif()
 
 # Voxel brush targets are neutral; palette publication follows the voxel runtime.
 eve_module_enabled(voxel _has_voxel_editor_bridge)
 if(NOT _has_voxel_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};VoxelPaletteTarget.cpp;VoxelPaletteRuntime.cpp;VoxelWorldTarget.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES VoxelPaletteTarget.cpp VoxelPaletteRuntime.cpp VoxelWorldTarget.cpp)
 endif()
 
 eve_module_enabled(hd2d _has_hd2d_editor_bridge)
 if(NOT _has_hd2d_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};Hd2dTarget.cpp;Hd2dRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES Hd2dTarget.cpp Hd2dRuntime.cpp)
 endif()
 
 # Schema-driven definition forms consume reflected SchemaDefinition metadata;
 # raw DefinitionDocument editing remains available without the schema module.
 eve_module_enabled(schema _has_schema_editor_bridge)
 if(NOT _has_schema_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};DefinitionFormRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES DefinitionFormRuntime.cpp)
 endif()
 
 # Fluid settings and budget previews are standalone; only the live parameter
 # applier includes FluidSimulation.
 eve_module_enabled(fluids _has_fluids_editor_bridge)
 if(NOT _has_fluids_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};FluidRuntime.cpp;SurfaceFluidRuntime.cpp;EditorSurfaceFluidPreview.cpp;EditorSurfaceFluidOffscreen.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES FluidRuntime.cpp SurfaceFluidRuntime.cpp EditorSurfaceFluidPreview.cpp EditorSurfaceFluidOffscreen.cpp)
 endif()
 
 # editor/EditorDialogueGraphRuntime.cpp converts the standalone graph value to
 # ConversationDocument only when the dialogue module is enabled.
 eve_module_enabled(dialogue _has_dialogue_editor_bridge)
 if(NOT _has_dialogue_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};DialogueGraphRuntime.cpp;LocalizationRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES DialogueGraphRuntime.cpp LocalizationRuntime.cpp)
 endif()
 
 # definitions_editing/DefinitionRuntime.cpp publishes neutral definition documents to
 # DefinitionRegistry only when the definitions module is enabled.
 eve_module_enabled(definitions _has_definitions_editor_bridge)
 if(NOT _has_definitions_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};DefinitionRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES DefinitionRuntime.cpp)
 endif()
 
 # Voice audition needs both the dialogue voice service and a live audio Source.
 if(NOT _has_audio_editor_bridge)
-  set(EVENGINE_EXCLUDED_MODULE_FILES
-      "${EVENGINE_EXCLUDED_MODULE_FILES};LocalizationRuntime.cpp"
-      CACHE INTERNAL "Exact basenames excluded from module source scan")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES LocalizationRuntime.cpp)
+endif()
+
+# The pinned package owns the native ABI/compiler policy. Only physics TUs reference
+# Jolt symbols; its static archive is pulled into EVWorld once in SHARED builds.
+eve_module_enabled(physics _eve_jolt_physics)
+if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHECK OR EVENGINE_PROFILE STREQUAL "physics-core-only"))
+  if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}"
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+    # Link groups and tests are assembled in parent/sibling directories.
+    set_property(TARGET Jolt::Jolt PROPERTY IMPORTED_GLOBAL TRUE)
+  else()
+    include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
+    eve_add_jolt()
+    set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
+  # This private native subclass must match Jolt's default no-RTTI ABI. Keep
+  # RTTI enabled for engine-facing provider types in the other translation units.
+  if(NOT MSVC AND NOT CPP_RTTI_ENABLED)
+    set_property(SOURCE physics/jolt/JoltDistanceConstraint.cpp APPEND PROPERTY
+      COMPILE_OPTIONS -fno-rtti)
+  endif()
+else()
+  list(APPEND EVENGINE_EXCLUDED_BACKEND_SUBDIRS jolt)
 endif()
 
 # --- create every enabled module -------------------------------------------
@@ -270,10 +279,25 @@ foreach(_mod IN LISTS EVE_ENABLED_MODULES)
   create_module(${EVE_MODULE_${_mod}_LIB} ${_mod})
 endforeach()
 
+if(TARGET EVPhysics)
+  target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
+  if(TARGET Jolt::Jolt)
+    target_link_libraries(EVPhysics PRIVATE Jolt::Jolt)
+  endif()
+endif()
+
 if(TARGET EVAnimation_editor AND _has_animation_editor_bridge)
   # Runtime clip/skeleton import is an optional bridge. Web authoring profiles
   # retain the standalone clip editor without pulling Assimp/model3d into WASM.
   target_compile_definitions(EVAnimation_editor PRIVATE EVE_ANIMATION_EDITOR_RUNTIME=1)
+endif()
+
+if(TARGET EVSpriteStack AND _has_spritestack_model_bridge AND _has_model3d_for_spritestack)
+  target_compile_definitions(EVSpriteStack PRIVATE EVE_SPRITESTACK_MODEL3D=1)
+endif()
+
+if(TARGET EVAnimation AND _has_animation_model_bridge AND _has_model3d_for_animation)
+  target_compile_definitions(EVAnimation PRIVATE EVE_ANIMATION_MODEL3D=1)
 endif()
 
 # create_module() globs both physics bridge TUs; keep exactly one.
@@ -285,8 +309,23 @@ if(_has_vehicle)
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "VehiclePhysicsAbsent\\.cpp$")
   else()
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires2D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires3D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTireRuntime\\.cpp$")
   endif()
   set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
+endif()
+
+# Same exclusive-pair rule as VehiclePhysics: the scan may still have both
+# names until cmake rewrites procgen_src.txt.
+if(TARGET EVProcgen)
+  get_target_property(_eve_procgen_hex_srcs EVProcgen SOURCES)
+  if(_has_hexmap)
+    list(FILTER _eve_procgen_hex_srcs EXCLUDE REGEX "HexTerrainAbsent\\.cpp$")
+  else()
+    list(FILTER _eve_procgen_hex_srcs EXCLUDE REGEX "HexMapTerrain\\.cpp$")
+  endif()
+  set_target_properties(EVProcgen PROPERTIES SOURCES "${_eve_procgen_hex_srcs}")
 endif()
 
 # Poco's MSVC #pragma comment auto-link names libraries without the md/mdd
@@ -330,65 +369,7 @@ if(_has_asset)
   target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
-# In-process GLSL -> SPIR-V through the Vulkan SDK's shaderc archive (glslang +
-# SPIRV-Tools). Every runtime GLSL compile in the engine goes through
-# graphics/vulkan/GlslCompiler.cpp, so enabling this on EVGraphics also covers the
-# modules above it: gpgpu's compute codegen inherits the INTERFACE link through its
-# dependency on graphics. Linking the archive removes the external glslc.exe
-# dependency from Windows builds — players do not install the Vulkan SDK.
-function(eve_enable_inprocess_shaderc target)
-  if(NOT WIN32 OR NOT DEFINED ENV{VULKAN_SDK} OR "$ENV{VULKAN_SDK}" STREQUAL "")
-    return()
-  endif()
-  set(_eve_shaderc_libnames shaderc_combined)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_shaderc_libnames shaderc_combinedd)
-  endif()
-  find_library(EVE_SHADERC_LIB NAMES ${_eve_shaderc_libnames}
-    HINTS "$ENV{VULKAN_SDK}/Lib" "$ENV{VULKAN_SDK}/lib")
-  unset(_eve_shaderc_libnames)
-  if(NOT EVE_SHADERC_LIB)
-    message(STATUS "${target}: shaderc lib not found; runtime GLSL compilation will spawn glslc")
-    return()
-  endif()
-  # INTERFACE: module libraries are OBJECT libraries, so their private link deps
-  # would not reach the final executable.
-  target_link_libraries(${target} INTERFACE ${EVE_SHADERC_LIB})
-  # PRIVATE: GlslCompiler.cpp selects shaderc at compile time; INTERFACE would only
-  # define the macro for consumers and silently leave the target spawning glslc.
-  target_compile_definitions(${target} PRIVATE EVE_HAS_SHADERC=1)
-  message(STATUS "${target}: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
-endfunction()
-
-eve_module_enabled(graphics _has_graphics)
-if(_has_graphics)
-  # Header-only VKBuilder: prefer the source tree over a stale third-party install.
-  target_include_directories(EVGraphics BEFORE PUBLIC
-    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
-  # Graphics.h includes <assimp/matrix4x4.h> (header-only usage). On WASM the
-  # vendored assimp library is skipped but the header tree is still present.
-  target_include_directories(EVGraphics BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
-
-  if(BUILD_PLATFORM STREQUAL "webgpu")
-    # Regenerate WGSL .inc arrays from the GLSL shader sources when tooling
-    # (glslc + tint) is available; committed .inc files keep the build going
-    # otherwise.
-    find_package(Python3 COMPONENTS Interpreter QUIET)
-    if(Python3_Interpreter_FOUND)
-      add_custom_target(webgpu_shaders
-        COMMAND ${Python3_EXECUTABLE}
-          ${CMAKE_SOURCE_DIR}/scripts/compile_webgpu_shaders.py
-          --shaders-dir ${CMAKE_SOURCE_DIR}/src/modules/graphics/shaders
-        COMMENT "Generating WGSL shader .inc files for the WebGPU backend"
-        VERBATIM)
-      add_dependencies(EVGraphics webgpu_shaders)
-    endif()
-  endif()
-
-  # Runtime GLSL compilation (newShader / newMeshShader / gpgpu compute codegen).
-  eve_enable_inprocess_shaderc(EVGraphics)
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
 if(_has_ik)
@@ -396,9 +377,9 @@ if(_has_ik)
 endif()
 
 eve_module_enabled(animation _has_animation)
-if(_has_animation)
-  # AnimImporter uses Assimp headers (same install tree as model3d / medialoader).
-  # Spine JSON uses Poco via data/JsonDocument; atlas/skeleton loaders use filesystem.
+eve_module_enabled(model3d _has_model3d_for_animation_includes)
+if(_has_animation AND _has_model3d_for_animation_includes)
+  # Assimp import bridge TUs only; runtime animation sources do not include Assimp.
   target_include_directories(EVAnimation PRIVATE
     ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include
     ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include
@@ -436,66 +417,14 @@ if(_has_audio_editor AND _has_audio AND _has_sound)
   target_compile_definitions(EVAudio_editor PRIVATE EVE_AUDIO_EDITOR_LIVE=1)
 endif()
 
-eve_module_enabled(physics _has_physics)
-option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
-  "Compile the physics domain core without graphics/gpgpu presentation paths" OFF)
-set(_eve_physics_core_profile FALSE)
-if(EVENGINE_PROFILE STREQUAL "physics-core-only")
-  set(_eve_physics_core_profile TRUE)
+# stylize_action's Audio AttackVfx executor is the same optional bridge: compile
+# the OpenAL path only when audio+sound are in the profile (not on WASM/web).
+eve_module_enabled(stylize_action _has_stylize_action)
+if(_has_stylize_action AND _has_audio AND _has_sound)
+  target_compile_definitions(EVStylize_action PRIVATE EVE_STYLIZE_ACTION_AUDIO=1)
 endif()
-if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHECK)
-  # Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
-  # Box3D (Erin Catto) is a compiled library linked by name from the manifest.
-  if(_has_physics)
-    target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
-  endif()
 
-  # World/Body/Shape/Joint/query/fixed-step are the physics domain boundary.
-  # Keep its source list explicit so this check cannot accidentally pull in the
-  # graphics debug bridge, ClothGPU, or another presentation/accelerator TU.
-  set(_eve_physics_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp)
-  set(_eve_physics_core_boundary_files ${_eve_physics_core_sources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h)
-  foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)
-    if(NOT EXISTS "${_eve_physics_core_file}")
-      message(FATAL_ERROR "Physics core source is missing: ${_eve_physics_core_file}")
-    endif()
-    file(READ "${_eve_physics_core_file}" _eve_physics_core_content)
-    if(_eve_physics_core_content MATCHES "include[ \t]*[\"<](graphics|gpgpu)/")
-      message(FATAL_ERROR
-        "Physics core source must not include graphics/gpgpu: ${_eve_physics_core_file}")
-    endif()
-  endforeach()
-  if(EVENGINE_BUILD_PHYSICS_CORE_CHECK OR _eve_physics_core_profile)
-    add_library(EVPhysicsCoreCheck OBJECT ${_eve_physics_core_sources})
-    target_link_libraries(EVPhysicsCoreCheck PRIVATE eve_engine_includes)
-    target_include_directories(EVPhysicsCoreCheck PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/modules
-      ${CMAKE_SOURCE_DIR}/third-party
-      ${CMAKE_SOURCE_DIR}/third-party/box3d/include)
-    set_target_properties(EVPhysicsCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  endif()
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/physics/BuildSettings.cmake")
 
 # vehicle 在 physics 开启时会包含 physics 头文件（Body3D.h -> <box3d/id.h>），
 # 需要与 EVPhysics 相同的第三方头文件路径。
@@ -535,106 +464,7 @@ if(_has_font)
   endif()
 endif()
 
-eve_module_enabled(procgen _has_procgen)
-option(EVENGINE_BUILD_PROCGEN_CORE_CHECK
-  "Compile procgen CPU core sources without graphics/map/scene adapters" OFF)
-set(_eve_procgen_core_profile FALSE)
-if(EVENGINE_PROFILE STREQUAL "procgen-core-only")
-  set(_eve_procgen_core_profile TRUE)
-endif()
-if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHECK)
-  if(_has_procgen)
-    # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL),
-    # then DTL. BEFORE must precede the visibility keyword so -I dtl_compat wins
-    # over the submodule.
-    target_include_directories(EVProcgen BEFORE PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
-    target_include_directories(EVProcgen PUBLIC
-      ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
-  endif()
-
-  # Procgen's CPU data and recipe path is compiled separately as a dependency
-  # boundary check. This is intentionally an OBJECT target: it proves that the
-  # selected core translation units compile without linking graphics, map or
-  # scene adapters, while the normal EVProcgen target keeps the public facade
-  # and all compatibility implementations unchanged.
-  set(_eve_procgen_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PcgSpawnProgress.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/AttributeTable.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailPlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainObjectPlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlan.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlanCodec.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePreset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePresetCodec.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainCollisionMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainPolygonMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainProbePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBakedMaskCache.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainGenerationSession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/PcgRuntimeStamper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainImageMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainEffect.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainErosion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyHydraulic.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyThermal.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSediment.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWaterField.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointDelta.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGeneration.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGenerationAsset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
-  set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
-  foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)
-    if(NOT EXISTS "${_eve_procgen_core_file}")
-      message(FATAL_ERROR "Procgen core source is missing: ${_eve_procgen_core_file}")
-    endif()
-    file(READ "${_eve_procgen_core_file}" _eve_procgen_core_content)
-    if(_eve_procgen_core_content MATCHES "include[ \t]*[\"<](graphics|map|scene)/")
-      message(FATAL_ERROR
-        "Procgen core source must not include a presentation adapter: ${_eve_procgen_core_file}")
-    endif()
-  endforeach()
-  if(EVENGINE_BUILD_PROCGEN_CORE_CHECK OR _eve_procgen_core_profile)
-    add_library(EVProcgenCoreCheck OBJECT ${_eve_procgen_core_sources})
-    target_link_libraries(EVProcgenCoreCheck PRIVATE eve_engine_includes)
-    target_include_directories(EVProcgenCoreCheck PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/modules)
-    set_target_properties(EVProcgenCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  endif()
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/procgen/BuildSettings.cmake")
 
 if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   # Scene serialization needs Poco JSON; the browser build has no Poco headers,
@@ -642,74 +472,7 @@ if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   target_compile_definitions(EVScene PUBLIC EVENGINE_SCENE_JSON=1)
 endif()
 
-# --- Dear ImGui --------------------------------------------------------------
-
-eve_module_enabled(ui _has_ui)
-if(_has_ui)
-  # Stage the editor icon font beside other runtime shared data. The backend
-  # resolves this from SDL_GetBasePath, so games may run from any working dir.
-  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/share/eve/fonts")
-  configure_file(
-    "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
-    "${CMAKE_BINARY_DIR}/share/eve/fonts/FontAwesome.ttf" COPYONLY)
-  if(EVENGINE_THIRD_PARTY_BINARY_ONLY AND NOT BUILD_PLATFORM STREQUAL "webgpu")
-    # The shared prefix already contains ImGui and its SDL/Vulkan backends.
-    add_library(eve_imgui INTERFACE)
-    if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_link_libraries(eve_imgui INTERFACE imguimdd)
-    elseif(WIN32)
-      target_link_libraries(eve_imgui INTERFACE imguimd)
-    else()
-      target_link_libraries(eve_imgui INTERFACE imgui)
-    endif()
-    # INTERFACE library: only propagate the shared include set to consumers.
-    target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
-  else()
-    # Compiled from third-party sources (also installed by the ExternalProject).
-    set(_eve_imgui_sources
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-    )
-    if(BUILD_PLATFORM STREQUAL "webgpu")
-      # Vulkan renderer is compiled out; the WebGPU backend is compiled by EVUI.
-      list(REMOVE_ITEM _eve_imgui_sources
-        ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
-    endif()
-    add_library(eve_imgui STATIC ${_eve_imgui_sources})
-    # Vendored third-party imgui mixes public/private enums (input-text/tree
-    # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this
-    # bundled library. Engine call sites that mix enums are fixed at the
-    # source instead (only relevant when strict warnings are enabled).
-    if(NOT MSVC AND EVENGINE_ENABLE_STRICT_WARNINGS)
-      target_compile_options(eve_imgui PRIVATE -Wno-deprecated-enum-enum-conversion)
-    endif()
-    target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-    # On Emscripten SDL2 headers come from the port sysroot.
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-      target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
-    else()
-      target_include_directories(eve_imgui PRIVATE
-        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
-        ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
-        ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
-      )
-    endif()
-    target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
-    # STATIC library: PUBLIC so eve_imgui's own TUs (imgui_impl_vulkan.cpp /
-    # imgui_impl_sdl.cpp) compile against the shared include set (Vulkan SDK,
-    # SDL2, engine headers) and consumers inherit it transitively.
-    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
-  endif()
-
-  target_link_libraries(EVUI PUBLIC eve_imgui)
-  target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-  target_include_directories(EVUI BEFORE PUBLIC
-    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/ui/BuildSettings.cmake")
 
 # WebP headers remain private to the image codec implementation.
 if(TARGET EVImage)

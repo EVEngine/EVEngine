@@ -1,0 +1,50 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "avatar",
+  "origins": [
+    "avatar_appearance.cpp"
+  ]
+}
+*/
+// clang-format on
+
+#include "avatar/Appearance.h"
+#include "common/Module.h"
+#include "zeroerr/unittest.h"
+
+#include <cmath>
+#include <simplesquirrel/simplesquirrel.hpp>
+
+TEST_CASE("avatar.appearance.scriptBoundaryUsesCheckedResults") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    vm.run(vm.compileSource(R"(
+        avatarModule <- eve.Avatar();
+        appearance <- eve.AvatarAppearance();
+        configured <- appearance.configure({schema="eve.appearance.definition",version=1,profile="test.v1",
+            parameters=[{id="eye",min=0.0,max=1.0,["default"]=0.0}],drivers=[],slots=[],items=[]}).ok;
+        applied <- appearance.apply({parameters={eye=0.7}}).ok;
+        saved <- appearance.snapshot();
+        rejected <- !appearance.apply({parameters={eye=2.0}}).ok;
+        restored <- appearance.restore(saved.value).ok;
+        value <- appearance.snapshot().value.parameters.eye;
+        graphicsModule <- eve.Graphics();
+        sourceMaterial <- graphicsModule.newMaterial();
+        targetMaterial <- graphicsModule.newMaterial();
+        sourceMaterial.setTint(0.2, 0.3, 0.4, 1.0);
+        targetMaterial.setRoughness(0.7);
+        copiedPbr <- targetMaterial.copyPbrSurfaceFrom(sourceMaterial).ok;
+        targetRoughness <- targetMaterial.getRoughness();
+    )"));
+    REQUIRE(vm.find("configured").toBool());
+    REQUIRE(vm.find("applied").toBool());
+    REQUIRE(vm.find("rejected").toBool());
+    REQUIRE(vm.find("restored").toBool());
+    REQUIRE(std::abs(vm.find("value").toFloat() - 0.7f) < 1e-6f);
+    REQUIRE(vm.find("copiedPbr").toBool());
+    REQUIRE(std::abs(vm.find("targetRoughness").toFloat() - 0.7f) < 1e-6f);
+}

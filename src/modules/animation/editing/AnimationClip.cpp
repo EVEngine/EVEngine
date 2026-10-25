@@ -1,4 +1,5 @@
 #include "animation/editing/AnimationClip.h"
+#include "editing/EditingValueRead.h"
 
 #include <algorithm>
 #include <cctype>
@@ -23,17 +24,12 @@ const std::string* stringField(const EditorValue& value, const char* key) {
 }
 
 bool readNumber(const EditorValue& value, const char* key, double& out) {
-    const EditorValue* entry = field(value, key);
+    const auto* entry = field(value, key);
     if (!entry) return false;
-    if (const auto* real = entry->getIf<double>()) {
-        out = *real;
-        return true;
-    }
-    if (const auto* integer = entry->getIf<std::int64_t>()) {
-        out = static_cast<double>(*integer);
-        return true;
-    }
-    return false;
+    auto number = editing::numericValue(*entry);
+    if (!number) return false;
+    out = number.value();
+    return true;
 }
 
 EditorValue keyValue(const AnimationTransformKey& key) {
@@ -44,7 +40,7 @@ EditorValue keyValue(const AnimationTransformKey& key) {
                                {"sz", key.scaleZ}};
 }
 
-EditorResult<AnimationTransformKey> parseKey(const EditorValue& value) {
+Result<AnimationTransformKey> parseKey(const EditorValue& value) {
     const auto* id = stringField(value, "id");
     double time = 0, px = 0, py = 0, pz = 0, rx = 0, ry = 0, rz = 0, rw = 0, sx = 0, sy = 0, sz = 0;
     if (!id || id->empty() || !readNumber(value, "time", time) || !readNumber(value, "px", px) ||
@@ -76,7 +72,7 @@ EditorValue trackValue(const AnimationBoneTrack& track) {
     return EditorValue::Object{{"id", track.id.value()}, {"bone", track.bone}, {"keys", std::move(keys)}};
 }
 
-EditorResult<AnimationBoneTrack> parseTrack(const EditorValue& value) {
+Result<AnimationBoneTrack> parseTrack(const EditorValue& value) {
     const auto* id = stringField(value, "id");
     const auto* bone = stringField(value, "bone");
     const EditorValue* keyEntry = field(value, "keys");
@@ -106,7 +102,7 @@ EditorValue eventValue(const AnimationEventRecord& event) {
                                {"name", event.name}, {"payload", event.payload}};
 }
 
-EditorResult<AnimationEventRecord> parseEvent(const EditorValue& value) {
+Result<AnimationEventRecord> parseEvent(const EditorValue& value) {
     const auto* id = stringField(value, "id");
     double time = 0;
     const auto* name = stringField(value, "name");
@@ -168,7 +164,7 @@ void* AnimationClipDocumentTarget::queryCapability(const CapabilityId& capabilit
     return nullptr;
 }
 
-EditorResult<void> AnimationClipDocumentTarget::applyDomainOperation(const DomainOperation& op) {
+Result<void> AnimationClipDocumentTarget::applyDomainOperation(const DomainOperation& op) {
     if (op.target != TargetId(id_))
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.target-mismatch"),
                                           "Operation targets another clip");
@@ -232,7 +228,7 @@ std::unique_ptr<IDomainOperationTarget> AnimationClipDocumentTarget::cloneDomain
     return std::make_unique<AnimationClipDocumentTarget>(*this);
 }
 
-EditorResult<void> AnimationClipDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
+Result<void> AnimationClipDocumentTarget::commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* clip = dynamic_cast<AnimationClipDocumentTarget*>(candidate.get());
     if (!clip || clip->id_ != id_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.animation.invalid-candidate"),
@@ -240,7 +236,7 @@ EditorResult<void> AnimationClipDocumentTarget::commitDomainState(std::unique_pt
     *this = std::move(*clip); return eve::editing::applied<void>();
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetSettings(double duration, double sampleRate, bool loop) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeSetSettings(double duration, double sampleRate, bool loop) const {
     if (!std::isfinite(duration) || !std::isfinite(sampleRate) || duration <= 0.0 || sampleRate <= 0.0)
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected,
                                                      RuleId("editor.animation.invalid-settings"),
@@ -260,7 +256,7 @@ EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetSettings(doubl
         settingsValue(duration, sampleRate, loop), settingsValue(duration_, sampleRate_, loop_), "settings"));
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetTrack(const AnimationBoneTrack& track) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeSetTrack(const AnimationBoneTrack& track) const {
     auto parsed = parseTrack(trackValue(track));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.animation.invalid-track"),
@@ -270,7 +266,7 @@ EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetTrack(const An
         old == tracks_.end() ? "animation.clip.track.delete.v1" : "animation.clip.track.set.v1", id_, trackValue(parsed.value()), std::move(inverse), track.id.value()));
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteTrack(const StableId& id) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeDeleteTrack(const StableId& id) const {
     const auto found = tracks_.find(id);
     if (found == tracks_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.animation.track-not-found"),
@@ -278,7 +274,7 @@ EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteTrack(const
     return eve::editing::applied<DomainOperation>(operation("animation.clip.track.delete.v1", "animation.clip.track.set.v1", id_, trackValue(found->second), trackValue(found->second), id.value()));
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetEvent(const AnimationEventRecord& event) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeSetEvent(const AnimationEventRecord& event) const {
     auto parsed = parseEvent(eventValue(event));
     if (!parsed.ok())
         return eve::editing::failed<DomainOperation>(parsed.code(), RuleId("editor.animation.invalid-event"),
@@ -288,7 +284,7 @@ EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetEvent(const An
         old == events_.end() ? "animation.clip.event.delete.v1" : "animation.clip.event.set.v1", id_, eventValue(parsed.value()), std::move(inverse), event.id.value()));
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteEvent(const StableId& id) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeDeleteEvent(const StableId& id) const {
     const auto found = events_.find(id);
     if (found == events_.end())
         return eve::editing::failed<DomainOperation>(EditorStatus::NotFound, RuleId("editor.animation.event-not-found"),
@@ -296,7 +292,7 @@ EditorResult<DomainOperation> AnimationClipDocumentTarget::makeDeleteEvent(const
     return eve::editing::applied<DomainOperation>(operation("animation.clip.event.delete.v1", "animation.clip.event.set.v1", id_, eventValue(found->second), eventValue(found->second), id.value()));
 }
 
-EditorResult<DomainOperation> AnimationClipDocumentTarget::makeSetMask(const AnimationMaskEntry& mask) const {
+Result<DomainOperation> AnimationClipDocumentTarget::makeSetMask(const AnimationMaskEntry& mask) const {
     if (mask.bone.empty() || !std::isfinite(mask.weight) || mask.weight < 0.0 || mask.weight > 1.0)
         return eve::editing::failed<DomainOperation>(EditorStatus::Rejected, RuleId("editor.animation.invalid-mask"),
                                                      "Mask weight must be in [0, 1]");
@@ -369,7 +365,7 @@ EditorValue AnimationClipDocumentTarget::snapshotValue() const {
     return EditorValue::Object{{"schemaVersion", int64_t{1}}, {"settings", settingsValue(duration_, sampleRate_, loop_)}, {"tracks", std::move(tracks)}, {"events", std::move(events)}, {"masks", std::move(masks)}};
 }
 
-EditorResult<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
+Result<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* versionEntry = field(snapshot, "schemaVersion"); const auto* version = versionEntry ? versionEntry->getIf<int64_t>() : nullptr;
     const EditorValue* settings = field(snapshot, "settings"); const EditorValue* tracksEntry = field(snapshot, "tracks"); const EditorValue* eventsEntry = field(snapshot, "events"); const EditorValue* masksEntry = field(snapshot, "masks");
     const auto* tracks = tracksEntry ? tracksEntry->getIf<EditorValue::Array>() : nullptr; const auto* events = eventsEntry ? eventsEntry->getIf<EditorValue::Array>() : nullptr; const auto* masks = masksEntry ? masksEntry->getIf<EditorValue::Array>() : nullptr;
@@ -422,7 +418,7 @@ EditorResult<void> AnimationClipDocumentTarget::loadSnapshot(const EditorValue& 
     return eve::editing::applied<void>();
 }
 
-EditorResult<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value) { return parseTrack(value); }
-EditorResult<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value) { return parseEvent(value); }
+Result<AnimationBoneTrack> parseAnimationBoneTrack(const EditorValue& value) { return parseTrack(value); }
+Result<AnimationEventRecord> parseAnimationEventRecord(const EditorValue& value) { return parseEvent(value); }
 
 }  // namespace eve::animation_editing

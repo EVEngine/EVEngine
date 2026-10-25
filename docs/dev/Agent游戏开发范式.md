@@ -12,8 +12,8 @@ Discover -> Modify -> Run -> Observe -> Verify -> Complete
                                       Verify -> Modify（未收敛时继续迭代）
 ```
 
-- **Discover**：先读游戏根目录的 `game.agent.json`（入口、观察面、合法动作、截图后端），再枚举 MCP tools、
-  Editor commands、模块能力和当前 runtime 状态。没有契约时 `eve_play` 仍可 `status`/`clock`，但 `observe` 会返回 `Unsupported`。
+- **Discover**：先调用 `eve_game_world`（或读 `eve://game-world` / `eve_play` `op=status.gameWorld`）了解**运行时**世界：`config.title`、已配置/已实例化模块、gameplay domains，以及脚本可选发布的 summary 等；再读 `game.agent.json`（Play 入口、观察面、合法动作、截图后端；不是世界文案权威），并枚举 MCP tools、
+  Editor commands 与当前 runtime 状态。没有契约时 `eve_play` 仍可 `status`/`clock`，但 `observe` 会返回 `Unsupported`。
 - **Modify**：编辑 `config.nut/main.nut`、资源或 Editor target；副作用通过明确的文件保存、热重载或
   Editor transaction 发生。
 - **Run**：启动/继续真实帧循环，或执行一个确定性 smoke/update 路径。
@@ -30,6 +30,8 @@ Agent 首先调用 `eve_agent_session_start`，传入 objective 和稳定 criter
 ```json
 {
   "objective": "实现并验证可玩的冲刺技能",
+  "taskKind": "verify",
+  "profile": "verify.play",
   "criteria": [
     {"id": "gameplay", "description": "玩家可触发冲刺且冷却生效"},
     {"id": "visual", "description": "冲刺反馈在截图中清晰可见"},
@@ -38,7 +40,9 @@ Agent 首先调用 `eve_agent_session_start`，传入 objective 和稳定 criter
 }
 ```
 
-会话返回 `schema: eve.agent-development-session`、`schemaVersion: 1` 和进程内 `sessionId`。
+会话返回 `schema: eve.agent-development-session`、`schemaVersion: 2` 和进程内 `sessionId`。
+省略 `taskKind` / `profile` 时默认 `verify` / `verify.play`（最窄可玩验证面，不是全工具）。
+越权 `tools/call` 返回 `filtered` 与可选 `escalate`；合法换面用 `eve_agent_session_escalate`。
 `eve_agent_session_advance` 强制阶段图；跳过 Run/Observe 直接宣称 Verify 会返回
 `invalid-transition`。`eve_agent_session_evidence` 追加带单调 sequence 的不可变 receipt；后续 fail
 会撤销同一 criterion 的通过状态，新的 pass 可再次满足它。`manual` 可保存设计判断或待办，但不会

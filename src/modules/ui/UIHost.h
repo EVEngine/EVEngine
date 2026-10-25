@@ -1,11 +1,17 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
+#include "ui/HudCanvas.h"
+#include "ui/HudGeometry.h"
 #include "ui/Theme.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -13,43 +19,61 @@ namespace eve::ui {
 
 using UIHostHandle = ecs::EntityHandle;
 
+/** @brief Non-owning node token; valid across property reconciliation, invalid after tree replacement.
+ * @thread Resolve only on the owning UI thread; never persist in serialized documents.
+ */
+struct UINodeHandle {
+    UIHostHandle  host{};
+    std::uint64_t treeGeneration = 0;
+    std::size_t   index          = 0;
+};
+
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
-    Window = 0,
-    Text = 1,
-    Button = 2,
-    SameLine = 3,
-    Group = 4,
-    Separator = 5,
-    Checkbox = 6,
-    Slider = 7,
-    Progress = 8,
-    InputText = 9,
+    Window           = 0,
+    Text             = 1,
+    Button           = 2,
+    SameLine         = 3,
+    Group            = 4,
+    Separator        = 5,
+    Checkbox         = 6,
+    Slider           = 7,
+    Progress         = 8,
+    InputText        = 9,
     CollapsingHeader = 10,
-    Child = 11,
-    Flex = 12,    // elastic row/column container
-    Spacer = 13,  // flexible empty space (default flexGrow=1)
-    Image = 14,   // colored rect or engine texture (nine-patch capable)
-    ImageButton = 15,  // clickable image
-    Combo = 16,   // dropdown; options newline-separated in valueText, index in value
-    ScrollList = 17,  // virtualized scrollable list (uniform itemHeight)
-    Viewport = 18,  // embedded render target: offscreen Canvas shown + input routed
-    SearchField = 19,   // compact input with a search hint/icon
-    Switch = 20,        // modern boolean toggle
-    Badge = 21,         // compact status/category pill
-    Card = 22,          // bordered surface container
-    SectionHeader = 23, // non-collapsible editor section heading
-    MenuBar = 24,       // native ImGui window menu bar
-    Menu = 25,          // popup menu container
-    MenuItem = 26,      // selectable menu command
-    Toolbar = 27,       // horizontal editor command strip
-    Toolbox = 28,       // wrapping grid of editor tools
-    Sidebar = 29,       // vertical editor side panel
-    StatusBar = 30,     // compact horizontal status strip
-    SplitPane = 31,      // two resizable panes
-    NinePatchPanel = 32, // .9.png-backed stretchable content container
-    ColorPalette = 33,   // color editor + swatch grid; RGBA lives in tint*
-    Grid = 34,           // fixed-column retained grid container
+    Child            = 11,
+    Flex             = 12,  // elastic row/column container
+    Spacer           = 13,  // flexible empty space (default flexGrow=1)
+    Image            = 14,  // colored rect or engine texture (nine-patch capable)
+    ImageButton      = 15,  // clickable image
+    Combo            = 16,  // dropdown; options newline-separated in valueText, index in value
+    ScrollList       = 17,  // virtualized scrollable list (uniform itemHeight)
+    Viewport         = 18,  // embedded render target: offscreen Canvas shown + input routed
+    SearchField      = 19,  // compact input with a search hint/icon
+    Switch           = 20,  // modern boolean toggle
+    Badge            = 21,  // compact status/category pill
+    Card             = 22,  // bordered surface container
+    SectionHeader    = 23,  // non-collapsible editor section heading
+    MenuBar          = 24,  // native ImGui window menu bar
+    Menu             = 25,  // popup menu container
+    MenuItem         = 26,  // selectable menu command
+    Toolbar          = 27,  // horizontal editor command strip
+    Toolbox          = 28,  // wrapping grid of editor tools
+    Sidebar          = 29,  // vertical editor side panel
+    StatusBar        = 30,  // compact horizontal status strip
+    SplitPane        = 31,  // two resizable panes
+    NinePatchPanel   = 32,  // .9.png-backed stretchable content container
+    ColorPalette     = 33,  // color editor + swatch grid; RGBA lives in tint*
+    Grid             = 34,  // fixed-column retained grid container
+    Tab              = 35,  // selectable tab label (page id in valueText)
+    TabBar           = 36,  // horizontal strip of Tab children
+    TabContainer     = 37,  // TabBar + pages; active page id in valueText
+    PanelFrame       = 38,  // titled fixed chrome (not a free-floating Window host)
+    DockArea         = 39,  // named fill slot for a dock region (region in valueText)
+    AppFrame         = 40,  // fixed editor frame: toolbar + body + status bar
+    Link             = 41,  // clickable text; target URI in valueText
+    FilledImage      = 42,  // cropped image or solid fill
+    RadialFill       = 43,  // solid sector/ring for cooldown overlays
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -116,7 +140,8 @@ enum class AccessibilityRole : uint8_t {
     Progress,
     Region,
     Tab,
-    Window
+    Window,
+    Link
 };
 
 /**
@@ -130,6 +155,16 @@ struct UINode {
     std::string text;       // label / title
     std::string valueText;  // InputText content
     std::string tooltip;    // hover help; empty disables the tooltip
+    /** @brief Plain help shown beneath the control. */
+    std::string helpText;
+    /** @brief Explanation shown when interaction is disabled. */
+    std::string disabledReason;
+    /** @brief Empty-input hint; applies to single-line text inputs. */
+    std::string placeholder;
+    /** @brief Use a multiline plain-text editor. */
+    bool multiline = false;
+    /** @brief Allow selection and copying while preventing text edits. */
+    bool              readOnly    = false;
     bool visible = true;
     bool enabled = true;
     bool checked = false;
@@ -185,22 +220,30 @@ struct UINode {
     float posY = 0.f;
     bool absolute = false; // skip flex flow; placed by anchor/pos
     // --- Image / ImageButton props (NodeType::Image*) ---
-    uint64_t textureId = 0;  // opaque id from UIBackend::registerTexture; 0 = solid color
-    float tintR = 1.f;
-    float tintG = 1.f;
-    float tintB = 1.f;
-    float tintA = 1.f;
-    float uv0x = 0.f;  // source rect in texture (UV)
-    float uv0y = 0.f;
-    float uv1x = 1.f;
-    float uv1y = 1.f;
-    float borderL = 0.f;  // nine-patch border (px); all 0 = plain image
-    float borderT = 0.f;
-    float borderR = 0.f;
-    float borderB = 0.f;
-    float cornerRadius = 0.f;  // solid-color rounded rect radius
-    float wrapWidth = 0.f;     // Text wrap width (0 = no wrap)
-    float itemHeight = 0.f;    // ScrollList uniform row height (0 = frame height)
+    uint64_t      textureId        = 0;  // opaque id from UIBackend::registerTexture; 0 = solid color
+    float         tintR            = 1.f;
+    float         tintG            = 1.f;
+    float         tintB            = 1.f;
+    float         tintA            = 1.f;
+    float         uv0x             = 0.f;  // source rect in texture (UV)
+    float         uv0y             = 0.f;
+    float         uv1x             = 1.f;
+    float         uv1y             = 1.f;
+    float         borderL          = 0.f;  // nine-patch border (px); all 0 = plain image
+    float         borderT          = 0.f;
+    float         borderR          = 0.f;
+    float         borderB          = 0.f;
+    FillDirection fillDirection    = FillDirection::Right;
+    bool          fillStretch      = false;
+    float         fillStartDegrees = -90.f;
+    bool          fillClockwise    = true;
+    float         fillInnerRadius  = 0.f;  // fraction of outer radius, [0,1]
+    float         cornerRadius     = 0.f;  // solid-color rounded rect radius
+    float         fontSize         = 0.f;  // zero inherits host font; positive values are logical UI units
+    float         textR = 1.f, textG = 1.f, textB = 1.f, textA = 1.f;
+    float         textAlignX = 0.f, textAlignY = 0.f;
+    float         wrapWidth  = 0.f;  // Text wrap width (0 = no wrap)
+    float         itemHeight = 0.f;  // ScrollList uniform row height (0 = frame height)
     // --- Computed by measure/arrange pass (per frame) ---
     float measuredW = 0.f;
     float measuredH = 0.f;
@@ -238,25 +281,34 @@ struct WidgetDesc;
  * Subclass to attach UI to game entities, e.g. `class Hud : public UIHost`.
  * UISystem walks `ecs::View<UIHost, Meta, Tree>` (includes subclasses).
  */
-class UIHost : public ecs::Entity {
+class EVENGINE_API_WORLD UIHost : public ecs::Entity {
 public:
+    /** @brief Entity. */
     ENTITY(UIHost, ecs::Entity)
 
+    /** @brief Release. */
     void release() override {}
 
+    /** @brief Meta public API. */
     struct Meta {
-        bool visible = true;
-        int layer = 0;
-        bool modal = false;
-        bool overlay = false;  // no title bar / chrome (HUD-style)
-        bool hasPos = false;
-        bool lockPos = true;       // false: initial position only; user may move/persist it
+        bool      visible = true;
+        int       layer   = 0;
+        bool      modal   = false;
+        HudCanvas canvas;
+        bool      inputTransparent = false;  // explicit display-only host; all pointer/key input passes through
+        bool      overlay          = false;  // no title bar / chrome (HUD-style)
+        bool      hasPos           = false;
+        bool      lockPos          = true;  // false: initial position only; user may move/persist it
+        /** @brief When true, renderer applies pos with Always for this frame (tween/Motion). */
+        bool  animDrivePos = false;
         float posX = 0.f;
         float posY = 0.f;
         float pivotX = 0.f;
         float pivotY = 0.f;
         bool hasSize = false;      // explicit window size
         bool lockSize = true;      // false: initial size only; user may resize/persist it
+        /** @brief When true, renderer applies size with Always for this frame (tween/Motion). */
+        bool         animDriveSize = false;
         float sizeX = 0.f;
         float sizeY = 0.f;
         float percentW = 0.f;      // 0..1 of display width; overrides sizeX
@@ -273,12 +325,17 @@ public:
     };
 
     struct Tree {
-        bool dirty = true;
+        std::uint64_t       generation = 0;
+        bool                dirty      = true;
         std::vector<UINode> nodes;
         int root = -1;
+        /** @brief Void. */
         std::vector<std::function<void()>> clickHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(bool)>> toggleHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(float)>> valueHandlers;
+        /** @brief Void. */
         std::vector<std::function<void(const std::string &)>> textHandlers;
     };
 
@@ -395,6 +452,17 @@ public:
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
+    /** @brief Resolve an id once into a non-owning, generation-checked node token.
+     * @return Empty when the id is missing. @cost Linear in tree size.
+     * @thread UI thread only. @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] std::optional<UINodeHandle> nodeHandle(const std::string &id);
+    /** @brief Resolve a node token in constant time without transferring ownership.
+     * @return Borrowed node, or empty after host destruction or tree replacement.
+     * @lifetime Borrow valid until tree mutation or host destruction; retain the token across frames.
+     * @thread UI thread only. @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static eve::OptionalRef<UINode> resolveNode(UINodeHandle handle);
     /**
      * @brief Looks up a node by stable id without transferring ownership.
      * @return Borrowed nullable node owned by this host's tree.

@@ -67,6 +67,7 @@ struct HandleCoordinates {
      */
     [[nodiscard]] constexpr std::optional<generation_type> bumpedGeneration() const noexcept {
         if (index == invalidIndex) return std::nullopt;
+        /** @brief Next generation. */
         return nextGeneration(generation);
     }
 
@@ -88,7 +89,9 @@ struct HandleCoordinates {
                                  static_cast<generation_type>(value >> 32u)};
     }
 
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const HandleCoordinates&, const HandleCoordinates&) noexcept  = default;
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const HandleCoordinates&, const HandleCoordinates&) noexcept = default;
 };
 
@@ -109,6 +112,7 @@ struct HandleCoordinates {
  *             implicitly interchangeable.
  */
 template <typename Tag>
+/** @brief RuntimeHandle public API. */
 class RuntimeHandle {
 public:
     /** @brief Unsigned owner-local slot index type. */
@@ -166,6 +170,7 @@ public:
     [[nodiscard]] constexpr std::optional<RuntimeHandle> nextGeneration() const noexcept {
         const auto next = coordinates_.bumpedGeneration();
         if (!next) return std::nullopt;
+        /** @brief Constructs a RuntimeHandle. */
         return RuntimeHandle(coordinates_.index, *next);
     }
 
@@ -184,12 +189,15 @@ public:
      */
     [[nodiscard]] static constexpr RuntimeHandle fromPacked(std::uint64_t value) noexcept {
         const auto coordinates = detail::HandleCoordinates::fromPacked(value);
+        /** @brief Constructs a RuntimeHandle. */
         return RuntimeHandle(coordinates.index, coordinates.generation);
     }
 
+    /** @brief Operator ==. */
     friend constexpr bool operator==(const RuntimeHandle& left, const RuntimeHandle& right) noexcept {
         return left.coordinates_ == right.coordinates_;
     }
+    /** @brief Operator <=>. */
     friend constexpr auto operator<=>(const RuntimeHandle& left, const RuntimeHandle& right) noexcept {
         return left.coordinates_ <=> right.coordinates_;
     }
@@ -204,7 +212,9 @@ namespace std {
 
 /** @brief Hashes a tagged RuntimeHandle for unordered containers. */
 template <typename Tag>
+/** @brief hash public API. */
 struct hash<eve::RuntimeHandle<Tag>> {
+    /** @brief Operator . */
     std::size_t operator()(const eve::RuntimeHandle<Tag>& handle) const noexcept {
         return std::hash<std::uint64_t>{}(handle.packed());
     }

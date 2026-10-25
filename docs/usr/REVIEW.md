@@ -1,65 +1,112 @@
-# 用户模块文档逐章 Review 记录
+# 用户文档验证记录
 
-本记录不是对文字长度的检查，而是对每章执行相同的 API 审核。审核基准是当前代码，而不是 `docs/dev` 中的设计草案。
+本记录区分源码核对、脚本执行与实际画面；绑定名称覆盖并不证明所有参数、生命周期、
+平台或 GPU 输出正确。审核基准为当前仓库的绑定实现和 module_manifest，不以设计草案
+或不同版本的已安装 SDK 代替。旧的“全部 API 已逐章验证”结论不再适用。
 
-## Review 标准
+## 本轮补齐范围
 
-每章合入前必须确认：
+1. [存档](SAVE.md)：RPGSaveSession 的整数成功投影、Tactics restoreJson 的 Result、
+   fs 原子写盘、保存目录身份与有效备份；明确单文件原子性不自动跨业务域原子。
+2. [导航](MODULES.md)：补上既有玩法/组合模块和新增基础/编辑卫星章节；修复 Procgen
+   子目录到源码、示例、测试的相对路径，以及 GPGPU 已不存在的 shader 文件链接。
+3. [ECS](modules/entity.md)：独立组件、类型查询、系统顺序、延迟结构变化、销毁和
+   热重载重建，CPU/GPU 状态权威边界。
+4. 玩法基础：Economy、Attributes、Decision、Definitions、Tags、GameEvent、PolicyRegistry、
+   Transaction、RTS；同时补 Profiler、平台事件、资源管线与 Fluids 的实际工作流。
+5. [完整游戏教程](GAME_DEVELOPMENT.md)：配置/import、规则、输入、纹理、HUD、版本化
+   存档/备份、重开、热重载、调试和交付，配套 [game-tutorial](../../examples/game-tutorial/README.md)。
+6. 高级模块：Graphics/Animation/Building/Editor/Procgen/Scene 的集成顺序，以及
+   Rope、Scene–Physics、Procgen–Physics/Animation、RayTracing、StylizeAction、Tensor provider、
+   PixelWorld 的组合与清理；编辑器/可编辑目标卫星拥有各自章节及真实示例/测试链接。
 
-1. **入口正确**：模块名来自 `Module_REG`，辅助类型来自 `addClass` 或脚本注入类。
-2. **示例可调用**：代码块中的方法存在于 `addFunc` / `addVar` / 注入脚本中，不把未绑定的 C++ public 方法写成脚本 API。
-3. **调用顺序明确**：说明对象由谁创建、谁持有，以及 init/update/render 中应在哪一阶段调用。
-4. **任务可落地**：至少有两个游戏开发目标，而不是只复述模块用途。
-5. **限制不隐藏**：明确当前绑定缺失、线程限制、单位、资源生命周期和平台差异。
-6. **API 不遗漏**：本章 API 快查覆盖对应模块源码中全部 `addFunc` 名称。
-7. **证据可追踪**：至少链接模块源码，并用测试或仓库示例交叉检查典型流程。
+## 可以自动重现的检查
 
-## 逐章结果
+```sh
+python3 scripts/generate_binding_contracts.py --json-output eve-api.json
+python3 scripts/generate_user_api_reference.py --catalogue eve-api.json --check
+python3 scripts/check_bindings.py --strict --quiet
+python3 scripts/check_binding_gap_metadata.py
+python3 scripts/check_examples.py
+make check
+```
 
-| 章节 | 核对实现 | 交叉检查 | Review 结论 |
-|---|---|---|---|
-| Window | `src/modules/window/Window.cpp` | `test/window.nut`、`test/window_cpp.cpp` | 补齐 Graphics → Settings → 回读尺寸顺序与移动端差异 |
-| Event | `src/modules/event/*/Event.cpp` | `test/event.cpp` | 区分平台 pump、一次性消息和持久状态 |
-| Rx | `src/modules/rx/Rx.cpp` | `test/rx.cpp` | 区分推送流/事件桥接；脚本闭包仅主线程调用；subscribe 与 subscribe3 参数必填 |
-| Timer | `src/modules/timer/Timer.cpp` | `test/timer.nut`、`test/timer_cpp.cpp` | 确认秒单位、单次 step 与暂停大 dt 风险 |
-| OS | `src/modules/os/OS.cpp` | `test/os.cpp` | 区分 wall time、帧计时和阻塞 sleep |
-| Keyboard | `src/modules/keyboard/Keyboard.cpp` | `test/keyboard_cpp.cpp` | 说明状态查询、边沿检测、key/scancode 和文本输入 |
-| Mouse | `src/modules/mouse/Mouse.cpp` | `test/mouse.nut`、`test/mouse_cpp.cpp` | 已补齐相对模式、可见性、位置与抓取的脚本绑定 |
-| Touch | `src/modules/touch/Touch.cpp` | `test/touch.cpp` | 明确触点索引仅当前帧有效 |
-| Joystick | `src/modules/joystick/Joystick.cpp` | `test/joystick_cpp.cpp`、`test/joystick_script.cpp` | 已补齐 Pad 对象与轴/按钮/hat/振动绑定 |
-| Filesystem / HotReload | `src/modules/filesystem/Filesystem.cpp`、`HotReload.cpp` | `test/filesystem.nut`、`test/hotreload.cpp` | 区分虚拟路径、写目录、watch 与资源替换 |
-| Data | `src/modules/data/DataModule.cpp` | `test/data.cpp` | 区分 ByteData 所有权、DataView 引用和文档树 |
-| Image | `src/modules/image/Image.cpp` | `test/image.cpp`、`test/image_script.cpp` | 已补齐 newImageData/newImageDataFromFile 与 ImageData 类绑定 |
-| Font | `src/modules/font/Font.cpp` | `test/font.cpp`、`test/graphics_font.cpp` | 补充 advance/bearing/kerning 的布局职责 |
-| Sound | `src/modules/sound/Sound.cpp` | `test/sound.cpp` | 区分 Decoder、PCM SoundData 和 Audio Source |
-| Audio | `src/modules/audio/Audio.cpp` | `test/audio.cpp` | 补充 listener/source、3D/relative 与资源生命周期 |
-| Model3D | `src/modules/model3d/Model3D.cpp` | `test/model3d.cpp` | 区分 CPU ModelData 与 Graphics GPU/渲染职责 |
-| Network | `src/modules/network/Network.cpp` | `test/network.cpp` | 补充 pump、HTTP、Socket、Channel、Session 和消息边界 |
-| Thread | `src/modules/thread/Thread.cpp`、`ThreadPool.cpp` | `test/thread.cpp` | 明确 worker 禁止访问 VM/GPU/UI，主线程消费 Channel |
-| Plugins | `src/modules/plugins/Plugins.cpp` | `examples/native-plugin/` | 补充 ABI、平台扩展名与依赖库排错 |
-| Entity | `src/modules/entity/EntityModule.cpp` | `examples/ecs/main.nut`、`test/ECS.cpp` | 说明 Component/Entity/System 分工和系统顺序 |
-| Physics | `src/modules/physics/Physics.cpp`、`World.cpp`、`World3D.cpp` | `examples/basic/main.nut`、`test/box2d.cpp`、`test/box3d.cpp` | 确认 2D 像素/米与 3D 米制、Body 中心、sensor、每帧 update，以及 rayCast/queryAABB/testPoint |
-| Map | `src/modules/map/Map.cpp` | `examples/basic/maps/`、`test/map.cpp` | 补充 GID、投影坐标、运行时修改和 JSON 热更 |
-| Particles | `src/modules/particles/Particles.cpp` | `examples/basic/particles/`、`test/particles.cpp` | 补充容量、生命周期、模块统一 update/render |
-| Animation | `src/modules/animation/Animation.cpp`、`Tween.cpp` | `test/animation.cpp` | 说明 Tween 只算值，游戏负责写回属性 |
-| RPG | `src/modules/rpg/RPG.cpp` | `examples/rpg/`、`test/rpg.cpp` | 串联 definition、actor、update、事件和 settlement |
-| Inventory | `src/modules/inventory/Inventory.cpp` | `examples/inventory/`、`test/inventory.cpp` | 串联物品定义、Bag、转移、装备与变更事件 |
-| Procgen | `src/modules/procgen/Procgen.cpp` | `examples/procgen/`、`test/procgen.cpp` | 补充 seed 可复现、Params/Grid/Output 与缓存策略 |
-| Graphics | `src/modules/graphics/Graphics.cpp` | `examples/basic/main.nut`、渲染测试 | 明确资源创建与逐帧提交边界、2D/3D/UI 顺序，以及 Camera2D/3D 拾取换算 |
-| UI | `src/modules/ui/UI.cpp` | `examples/basic/ui_demo.nut`、UI 测试 | 补充 Host、稳定 ID、事件消费和局部更新 |
-| Scene | `src/modules/scene/Scene.cpp` | `test/scene.cpp` | 补充 Host/Node、local/world TRS、link 和 build 配对 |
-| Math | `src/modules/math/Math.cpp` | `test/math.cpp` | 补充随机确定性、角度单位、临时对象风险，以及 2D/3D 拾取/重叠/射线几何 |
-| IK | `src/modules/ik/IK.cpp` | `test/ik.cpp` | 补充 Skeleton/Solver 生命周期、目标和迭代成本 |
-| GPGPU | `src/modules/gpgpu/Gpgpu.cpp` | `examples/basic/compute/`、`test/gpgpu.cpp` | 补充 binding、group 数、readback 同步与可用性检查 |
-| Tensor | `src/modules/tensor/TF.cpp` | `test/tensor.cpp` | 区分 eager/symbolic/compiled，确认 run0–run4 |
-| Demo | `src/modules/demo/Demo.cpp` | `src/scripts/demo.nut` | 明确可选构建、验证用途和生成资源生命周期 |
+源码契约目录本轮生成 11168 项、0 unresolved、0 placeholder 参数。用户章节的名称扫描
+覆盖 9949 个绑定、209 个模块目录，没有缺失章节或待补名称；历史 gap 条目已移除，
+metadata 的只读基准保持不变，没有新增白名单。扫描不是全平台能力验收。make check 已通过，包括其 246 项脚本测试。
 
-## 自动一致性检查
+补充参考由 [generate_user_api_reference.py](../../scripts/generate_user_api_reference.py)
+生成；主章保留人工维护的任务、前置对象、调用阶段和失败处理。dynamic 返回类型与没有
+明确接收者的记录必须继续查绑定源码，不能从生成器推断默认参数或 Result/借用规则。
+修改主章后重新生成，再执行 --check；不要手工添加一个未绑定的脚本函数到参考页。
 
-本次 review 另执行三个仓库级检查：
+用户文档的相对链接检查排除 fenced code、外部 URL 和锚点后，所有文件/目录目标存在。
+这只验证目标存在，不把源码测试链接当作本轮已经运行了那个测试。
 
-- 各 `src/modules/*` 目录均有同名用户章节；
-- 各目录 C++ 文件中的全部 `addFunc("...")` 均出现在对应章节 API 快查；
-- 所有 Squirrel 示例代码块中的方法调用均能在实际绑定或注入脚本中找到（模块构造器单独由 `Module_REG` 校验）。
+## 直接执行文档代码
 
-这些检查用于防止后续 API 演进时文档悄悄失真；语义和调用顺序仍必须按上表人工复核。
+[script_user_doc_examples.cpp](../../test/integration/script-api/script_api_graphics_scene_tests.cpp) 读取 Markdown 的
+squirrel 代码块，使用当前源码 Runtime 执行，覆盖经济余额/满仓、属性修饰、AI 决策与
+恢复、定义版本/失效 handle、标签、事件多消费者、策略、事务及整帧性能捕获。
+另执行 Rope 示例、ECS 创建/移动/延迟销毁，并加载教程实际 rules.nut
+检查存档往返、坏版本/数量/额外字段、边界移动和一次命中计分。
+
+```sh
+make unit-test/win32-debug DOMAIN=scripts
+ctest --test-dir build/win32-debug -R userDocs --output-on-failure
+```
+
+测试中的 ECS 图形 stub 只隔离生命周期断言，不作为实际渲染证据。完整游戏仍须通过
+正式 eve run 和引擎拥有的截图路径验证。Windows 本轮 13 个 userDocs 定向用例全部通过；教程的完整 main.nut 另通过
+图形/UI/文件系统 fixture 验证初始化、坏档保留、备份失败不覆盖主档和纹理原位更新。
+这些 fixture 仍不作为实际输入/渲染证据。Windows 本轮仅运行这些定向用例，未运行
+所有平台的完整引擎套件。
+
+## 实际游戏验证
+
+```sh
+MIN_RUN_SECONDS=2 RUN_SECONDS=15 bash scripts/smoke_examples.sh game-tutorial
+```
+
+本轮已用当前源码的 OBJECT 引擎运行教程：15 秒烟测通过，无已知错误标记；
+引擎 eve_screenshot 的 960×540 帧确认角色棋盘纹理、黄色目标及右上 HUD 可见。
+正式 eve_play 的 save/restart/load 路径执行成功，实际存档落盘为 tutorial.collect|1|0。
+另用显式外部测试档 score=7 验证加载、保存、重开和坏主档的有效备份恢复；
+这属于存档 fixture，不代表通过输入取得分数。修改实际 main.nut 后，热重载保留状态、
+纹理原位更新并重建 HUD。eve zip 生成归档，归档冷启动成功呈现首帧。
+归档运行的 eve_play 当前找不到 game.agent.json 契约；正式动作验证采用目录工程。
+本轮没有验证真实键盘/鼠标操作、目标平台 SDK package 或全部高级示例。
+
+Windows 使用 Git Bash；本工作树脚本为 CRLF，运行内容相同的 LF 临时副本，
+并以独立命名的当前引擎副本避免 taskkill 影响其他会话。烟测只证明程序进循环并在最小窗口内存活、没有已知错误标记。交互验收按教程逐项检查
+移动、重开、主档/备份、坏档保留旧状态与热重载；截图由 eve_screenshot 捕获，不能用
+桌面/Xvfb 图像替代引擎帧。现存的高级示例本轮以源码/fixture 交叉核对，没有全部重新
+执行，其资源、设备和平台条件仍需相应用户手册和 CI 验证。
+
+## 本地构建条件
+
+本轮 Windows 构建复用预编译依赖。默认严格构建遇到 Poco 外部头 C4244，
+OBJECT 配置还要求缓存中不存在的 SDL2-staticd 库名。为继续验证，仅修改 git-ignored
+的生成构建规则：将缓存头作为外部头处理，并链接缓存实际提供的 SDL2d。
+运行验证链接关闭 PDB 以减少内存占用。引擎源码仍保留 /W4 /WX；这不能作为默认严格构建或静态 SDK 发布通过的证据。
+SHARED 游戏启动还出现必需模块注册失败，定向脚本测试通过不代表该启动路径通过。
+
+## 当前边界与发现
+
+- Attributes 的 min/max 历史别名分别代表 clamp_min/clamp_max，不能按数学函数理解。
+- 模块内导出函数直接按名字调用另一个导出函数会发生 root lookup；教程使用模块私有
+  local 闭包复用实现，并以实际 import 文件验证。
+- Profiler.begin 直接绑定 const char*，普通字符串的脚本调用类型转换失败。文档采用
+  可运行的整帧捕获；原生 zone 与已有 profiler.nut 的待修绑定分别说明，不宣称 zone 已通过。
+- eve test 当前命令为空实现，教程不把返回 0 当作游戏测试证据。
+- rayTracing 只公开能力查询；没有脚本 BLAS/TLAS/dispatch 入口。PixelWorld Thread 与
+  部分 provider 通过原生组合使用，不能虚构脚本构造和推理函数。
+- Texture 属于 Graphics；普通脚本重载原位更新，不每次创建新纹理。没有脚本
+  releaseTexture，清脚本引用不代表 GPU 资源释放，设备重建需重新建立缓存。
+
+## 架构规范适用性
+
+本轮没有修改公共引擎 API、ECS 模型、持久格式或模块边界。文档按既有 Result/状态投影、
+唯一 owner、Link/handle 失效、注入时间及候选验证说明调用；教程的教学存档显式携带
+schema/version 并拒绝未知字段。新测试独立成文件，示例拥有 config/main/README 和导航行。
+没有新增兼容 facade、架构基线或豁免。编译、源门禁与实际运行证据分别记录，不互相代替。

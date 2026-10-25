@@ -8,7 +8,7 @@ namespace eve::animation_editor {
 namespace {
 class NativeClipProvider final : public IAnimationClipPreviewProvider {
 public:
-    animation_editing::EditorResult<AnimationPreviewPublication> generate(
+    animation_editing::Result<AnimationPreviewPublication> generate(
         const animation_editing::AnimationClipDocumentTarget& document, double time,
         const std::vector<AnimationPreviewBone>& skeleton, const std::string& selectedBone,
         const editing::TaskContext& context) const override {
@@ -68,19 +68,19 @@ void AnimationClipEditor::PreviewSessionDeleter::operator()(PreviewSession* valu
 void AnimationClipEditor::initializePreview() { previewSession_.reset(new PreviewSession); }
 AnimationClipEditor::~AnimationClipEditor() { closePreview(); }
 editor::PreviewState AnimationClipEditor::previewState() const noexcept { return previewSession_->async.state(); }
-animation_editing::EditorResult<void> AnimationClipEditor::setPreviewProvider(
+animation_editing::Result<void> AnimationClipEditor::setPreviewProvider(
     std::shared_ptr<const IAnimationClipPreviewProvider> provider) {
     auto changed = previewSession_->async.replaceProvider(provider != nullptr);
     if (!changed.ok()) return changed;
     previewSession_->provider = std::move(provider);
     return editing::applied<void>();
 }
-animation_editing::EditorResult<void> AnimationClipEditor::cancelPreview() { return previewSession_->async.cancel(); }
-void                                  AnimationClipEditor::closePreview() {
+animation_editing::Result<void> AnimationClipEditor::cancelPreview() { return previewSession_->async.cancel(); }
+void                            AnimationClipEditor::closePreview() {
     previewSession_->async.close();
     previewSession_->provider.reset();
 }
-animation_editing::EditorResult<void> AnimationClipEditor::requestPreview() {
+animation_editing::Result<void> AnimationClipEditor::requestPreview() {
     auto provider = previewSession_->provider;
     if (!provider)
         return editing::failed<void>(editing::Status::Unsupported, editing::RuleId("editor.animation.preview-provider"),
@@ -97,7 +97,7 @@ animation_editing::EditorResult<void> AnimationClipEditor::requestPreview() {
             return editing::applied(Publication{std::move(result).takeValue(), selected, time});
         });
 }
-animation_editing::EditorResult<void> AnimationClipEditor::pollPreview() {
+animation_editing::Result<void> AnimationClipEditor::pollPreview() {
     auto result = previewSession_->async.poll();
     if (!result) return previewState().phase == editor::PreviewPhase::Pending ? editing::pending() : editing::noOp();
     if (!result->ok()) return editing::Result<void>::failure(result->status());

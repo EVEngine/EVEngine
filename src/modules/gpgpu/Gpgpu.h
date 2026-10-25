@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "common/MeshDeformationCompute.h"
@@ -18,10 +20,12 @@ class Sequence;
  * Script: `gpgpu <- eve.Gpgpu(); shader <- gpgpu.newShader(glsl);`
  * ECS: `eve.ShaderSystem` / `eve.EcsShaderSystem` bridge entity float fields to SSBOs.
  */
-class Gpgpu : public Module, public IMeshDeformationCompute {
+class EVENGINE_API_WORLD Gpgpu : public Module, public IMeshDeformationCompute {
 public:
     Module_REG(Gpgpu);
+    /** @brief Gpgpu. */
     Gpgpu();
+    /** @brief Gpgpu. */
     ~Gpgpu() override;
 
     /** @brief Execute mesh deformation through the active compute backend. */
@@ -45,7 +49,8 @@ public:
 
     /**
      * @brief Allocate a GPU buffer.
-     * usage: "storage" (SSBO, device-local) | "staging" (host-visible transfer).
+     * usage: "storage" (SSBO) | "staging" (host transfer) |
+     * "storage_vertex" (Vulkan SSBO + vertex stream, same-device rendering).
      */
     GpuBuffer *newBuffer(int byteSize, const std::string &usage = "storage");
 

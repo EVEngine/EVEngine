@@ -27,7 +27,7 @@ struct PrototypePieceDescriptor {
  * @thread Safe for concurrent reads.
  * @reentrancy Does not invoke callbacks.
  */
-std::span<const PrototypePieceDescriptor> prototypePieceDescriptors() noexcept;
+EVENGINE_API_DOMAINS std::span<const PrototypePieceDescriptor> prototypePieceDescriptors() noexcept;
 
 /**
  * @brief Build one prototype module as an owning CPU triangle mesh.
@@ -45,7 +45,8 @@ std::span<const PrototypePieceDescriptor> prototypePieceDescriptors() noexcept;
  * @thread Safe; the function mutates no shared state.
  * @reentrancy Does not invoke external callbacks.
  */
-[[nodiscard]] eve::Result<MeshBuild> generatePrototypePiece(std::string_view pieceId, const Params& params);
+[[nodiscard]] EVENGINE_API_DOMAINS eve::Result<MeshBuild> generatePrototypePiece(std::string_view pieceId,
+                                                                                 const Params&    params);
 
 /**
  * @brief Register all prototype modules as `prototype.*` mesh recipes.

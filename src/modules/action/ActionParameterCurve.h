@@ -1,6 +1,12 @@
 #pragma once
+#include "common/Export.h"
 
-/** @file ActionParameterCurve.h @brief Typed continuous parameter-curve action block. */
+
+/** @file ActionParameterCurve.h
+ *  @brief Typed continuous parameter-curve action block.
+ *  @remarks L1 typed payload contract only — no domain mutation;
+ *           providers own handlers/sinks (`IActionNotifyProvider` / capabilities).
+ */
 
 #include "action/ActionNotifyRegistry.h"
 
@@ -31,11 +37,12 @@ struct ActionParameterKey {
     /** @brief Interpolation from this key to the following key. */
     ActionParameterInterpolation interpolation = ActionParameterInterpolation::Linear;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionParameterKey&) const = default;
 };
 
 /** @brief Validated owning continuous parameter binding. */
-struct ActionParameterCurveBinding {
+struct EVENGINE_API_PLATFORM ActionParameterCurveBinding {
     /** @brief Stable sink-owned parameter target. */
     LogicalId                      target;
     /** @brief Composition operation applied at the target. */
@@ -43,6 +50,7 @@ struct ActionParameterCurveBinding {
     /** @brief Strictly ordered normalized keys, including endpoints 0 and 1. */
     std::vector<ActionParameterKey> keys;
 
+    /** @brief Operator <=>. */
     auto operator<=>(const ActionParameterCurveBinding&) const = default;
 
     /** @brief Decode and validate target, operation and normalized ordered keys. */
@@ -54,12 +62,14 @@ struct ActionParameterCurveBinding {
 };
 
 /** @brief Stable persisted interpolation spelling. */
-[[nodiscard]] std::string_view actionParameterInterpolationName(ActionParameterInterpolation value) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterInterpolationName(
+    ActionParameterInterpolation value) noexcept;
 /** @brief Parse a stable persisted interpolation spelling. */
-[[nodiscard]] std::optional<ActionParameterInterpolation> actionParameterInterpolationFromName(
+[[nodiscard]] EVENGINE_API_PLATFORM std::optional<ActionParameterInterpolation> actionParameterInterpolationFromName(
     std::string_view value) noexcept;
 /** @brief Stable persisted operation spelling. */
-[[nodiscard]] std::string_view actionParameterOperationName(ActionParameterOperation value) noexcept;
+[[nodiscard]] EVENGINE_API_PLATFORM std::string_view actionParameterOperationName(
+    ActionParameterOperation value) noexcept;
 
 /** @brief Parameter lifecycle projected to a target-specific optional sink. */
 enum class ActionParameterPhase : std::uint8_t { Begin, Update, End };
@@ -92,6 +102,7 @@ struct ActionParameterSample {
 class IActionParameterSink {
 public:
     static constexpr const char* capabilityName = "IActionParameterSink";
+    /** @brief Releases IActionParameterSink resources. */
     virtual ~IActionParameterSink() = default;
 
     /** @brief Whether this sink owns the supplied stable target. */

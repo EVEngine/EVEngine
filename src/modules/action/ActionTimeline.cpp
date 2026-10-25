@@ -9,8 +9,9 @@
 namespace eve::action {
 namespace {
 
-Result<void> invalid(std::string message, std::string path) {
-    return Result<void>::failure(
+template <class T>
+Result<T> invalid(std::string message, std::string path) {
+    return Result<T>::failure(
         Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
 }
 
@@ -20,7 +21,7 @@ Result<std::string> stringField(const Value& value, std::string_view name, std::
     const Value* member = field(value, name);
     if (!member || !member->isString())
         return Result<std::string>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected string field", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected string field", path));
     return Result<std::string>::success(member->asString());
 }
 
@@ -28,7 +29,7 @@ Result<std::int64_t> intField(const Value& value, std::string_view name, std::st
     const Value* member = field(value, name);
     if (!member || !member->isInt64())
         return Result<std::int64_t>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected integer field", path));
     return Result<std::int64_t>::success(member->asInt());
 }
 
@@ -36,7 +37,7 @@ Result<bool> boolField(const Value& value, std::string_view name, std::string pa
     const Value* member = field(value, name);
     if (!member || !member->isBool())
         return Result<bool>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected boolean field", path));
     return Result<bool>::success(member->asBool());
 }
 
@@ -46,7 +47,7 @@ Result<LogicalId> logicalIdField(const Value& value, std::string_view name, std:
     auto parsed = LogicalId::parse(text.value());
     if (!parsed)
         return Result<LogicalId>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected namespace:name logical id", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected namespace:name logical id", path));
     return Result<LogicalId>::success(std::move(*parsed));
 }
 
@@ -56,7 +57,7 @@ Result<Value::Object> payloadField(const Value& value, std::string path) {
     const Value* payload = field(value, "payload");
     if (!payload || !payload->isObject())
         return Result<Value::Object>::failure(
-            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object payload", std::move(path)));
+            Diagnostic::error(DiagnosticCode::InvalidArgument, "expected object payload", path));
     return Result<Value::Object>::success(*payload->getIf<Value::Object>());
 }
 
@@ -88,9 +89,11 @@ Value encodeAnimationSection(const ActionAnimationSection& section) {
     object["startNs"]       = section.start.nanoseconds();
     object["endNs"]         = section.end.nanoseconds();
     object["blendInNs"]     = section.blendIn.nanoseconds();
+    object["blendOutNs"]    = section.blendOut.nanoseconds();
     object["sourceStartNs"] = section.sourceStart.nanoseconds();
     object["sourceEndNs"]   = section.sourceEnd.nanoseconds();
-    object["blendCurve"]    = std::string(actionBlendCurveName(section.blendCurve));
+    object["blendInCurve"]  = std::string(actionBlendCurveName(section.blendInCurve));
+    object["blendOutCurve"] = std::string(actionBlendCurveName(section.blendOutCurve));
     return Value(std::move(object));
 }
 
@@ -117,15 +120,34 @@ Result<ActionAnimationSection> decodeAnimationSection(const Value& value, const 
         if (!sourceStart) return Result<ActionAnimationSection>::failure(sourceStart.status());
         auto sourceEnd = intField(value, "sourceEndNs", path + ".sourceEndNs");
         if (!sourceEnd) return Result<ActionAnimationSection>::failure(sourceEnd.status());
-        auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
-        if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
-        auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
-        if (!parsedCurve)
-            return Result<ActionAnimationSection>::failure(Diagnostic::error(
-                DiagnosticCode::InvalidArgument, "unknown animation blend curve", path + ".blendCurve"));
         section.sourceStart = Duration::fromNanoseconds(sourceStart.value());
         section.sourceEnd   = Duration::fromNanoseconds(sourceEnd.value());
-        section.blendCurve  = *parsedCurve;
+        if (schemaVersion < 5) {
+            auto blendCurve = stringField(value, "blendCurve", path + ".blendCurve");
+            if (!blendCurve) return Result<ActionAnimationSection>::failure(blendCurve.status());
+            auto parsedCurve = actionBlendCurveFromName(blendCurve.value());
+            if (!parsedCurve)
+                return invalid<ActionAnimationSection>("unknown animation blend curve", path + ".blendCurve");
+            section.blendInCurve  = *parsedCurve;
+            section.blendOut      = Duration::zero();
+            section.blendOutCurve = ActionBlendCurve::EaseInOut;
+        } else {
+            auto blendOut = intField(value, "blendOutNs", path + ".blendOutNs");
+            auto blendInCurve = stringField(value, "blendInCurve", path + ".blendInCurve");
+            auto blendOutCurve = stringField(value, "blendOutCurve", path + ".blendOutCurve");
+            if (!blendOut) return Result<ActionAnimationSection>::failure(blendOut.status());
+            if (!blendInCurve) return Result<ActionAnimationSection>::failure(blendInCurve.status());
+            if (!blendOutCurve) return Result<ActionAnimationSection>::failure(blendOutCurve.status());
+            auto parsedIn = actionBlendCurveFromName(blendInCurve.value());
+            auto parsedOut = actionBlendCurveFromName(blendOutCurve.value());
+            if (!parsedIn)
+                return invalid<ActionAnimationSection>("unknown animation blend-in curve", path + ".blendInCurve");
+            if (!parsedOut)
+                return invalid<ActionAnimationSection>("unknown animation blend-out curve", path + ".blendOutCurve");
+            section.blendOut      = Duration::fromNanoseconds(blendOut.value());
+            section.blendInCurve  = *parsedIn;
+            section.blendOutCurve = *parsedOut;
+        }
     }
     return Result<ActionAnimationSection>::success(std::move(section));
 }
@@ -187,15 +209,33 @@ bool inWindow(Duration value, Duration previous, Duration current, bool includeP
 std::string_view actionBlendCurveName(ActionBlendCurve curve) noexcept {
     switch (curve) {
         case ActionBlendCurve::Linear: return "linear";
+        case ActionBlendCurve::EaseIn: return "ease-in";
+        case ActionBlendCurve::EaseOut: return "ease-out";
         case ActionBlendCurve::EaseInOut: return "ease-in-out";
+        case ActionBlendCurve::SmoothStep: return "smooth-step";
     }
     return "ease-in-out";
 }
 
 std::optional<ActionBlendCurve> actionBlendCurveFromName(std::string_view name) noexcept {
     if (name == "linear") return ActionBlendCurve::Linear;
+    if (name == "ease-in") return ActionBlendCurve::EaseIn;
+    if (name == "ease-out") return ActionBlendCurve::EaseOut;
     if (name == "ease-in-out") return ActionBlendCurve::EaseInOut;
+    if (name == "smooth-step") return ActionBlendCurve::SmoothStep;
     return std::nullopt;
+}
+
+double evaluateActionBlendCurve(ActionBlendCurve curve, double normalized) noexcept {
+    const double t = std::clamp(normalized, 0.0, 1.0);
+    switch (curve) {
+        case ActionBlendCurve::Linear: return t;
+        case ActionBlendCurve::EaseIn: return t * t;
+        case ActionBlendCurve::EaseOut: return 1.0 - (1.0 - t) * (1.0 - t);
+        case ActionBlendCurve::EaseInOut: return t * t * (3.0 - 2.0 * t);
+        case ActionBlendCurve::SmoothStep: return t * t * (3.0 - 2.0 * t);
+    }
+    return t;
 }
 
 std::string_view actionTrackKindName(ActionTrackKind kind) noexcept {
@@ -223,69 +263,97 @@ Result<ActionTrackKind> parseActionTrackKind(std::string_view text) {
 
 Result<void> ActionTimeline::validate() const {
     if (schemaVersion.value() != kActionTimelineSchemaVersion)
-        return invalid("unsupported action timeline schema version", "schemaVersion");
-    if (!actionId.isValid()) return invalid("action timeline requires a valid action id", "actionId");
-    if (duration.nanoseconds() < 0) return invalid("timeline duration must be non-negative", "durationNs");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "unsupported action timeline schema version", "schemaVersion"));
+    if (!actionId.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "action timeline requires a valid action id", "actionId"));
+    if (duration.nanoseconds() < 0) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "timeline duration must be non-negative", "durationNs"));
     if (!std::isfinite(montage.basePlayRate) || montage.basePlayRate <= 0.0)
-        return invalid("montage base play rate must be positive and finite", "montage.basePlayRate");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "montage base play rate must be positive and finite", "montage.basePlayRate"));
     if (montage.defaultBlendIn < Duration::zero() || montage.defaultBlendOut < Duration::zero() ||
         montage.blendOutOffset < Duration::zero())
-        return invalid("montage blend durations must be non-negative", "montage");
+        return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "montage blend durations must be non-negative", "montage"));
     for (std::size_t index = 0; index < splitTimestamps.size(); ++index) {
         if (splitTimestamps[index] <= Duration::zero() || splitTimestamps[index] >= duration ||
             (index > 0 && splitTimestamps[index - 1] >= splitTimestamps[index]))
-            return invalid("physical section splits must be strictly ordered inside the timeline",
-                           "splitTimestampsNs[" + std::to_string(index) + "]");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "physical section splits must be strictly ordered inside the timeline", "splitTimestampsNs[" + std::to_string(index) + "]"));
     }
 
     std::set<std::string> ids;
     for (std::size_t index = 0; index < animationSections.size(); ++index) {
         const auto&       section = animationSections[index];
         const std::string path    = "animationSections[" + std::to_string(index) + "]";
-        if (!section.id.isValid()) return invalid("animation section id is invalid", path + ".id");
-        if (!ids.insert(section.id.format()).second) return invalid("timeline item ids must be unique", path + ".id");
-        if (section.animationUri.empty()) return invalid("animation section requires a URI", path + ".animationUri");
+        if (!section.id.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "animation section id is invalid", path + ".id"));
+        if (!ids.insert(section.id.format()).second) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "timeline item ids must be unique", path + ".id"));
+        if (section.animationUri.empty()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "animation section requires a URI", path + ".animationUri"));
         if (section.start < Duration::zero() || section.end <= section.start || section.end > duration)
-            return invalid("animation section range is invalid", path);
-        if (section.blendIn < Duration::zero() ||
-            section.blendIn.nanoseconds() > section.end.nanoseconds() - section.start.nanoseconds())
-            return invalid("animation section blend-in is outside its range", path + ".blendInNs");
+            return Result<void>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "animation section range is invalid", path));
+        const auto sectionDuration = section.end.nanoseconds() - section.start.nanoseconds();
+        if (section.blendIn < Duration::zero() || section.blendIn.nanoseconds() > sectionDuration)
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "animation section blend-in is outside its range",
+                path + ".blendInNs"));
+        if (section.blendOut < Duration::zero() || section.blendOut.nanoseconds() > sectionDuration)
+            return Result<void>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "animation section blend-out is outside its range",
+                path + ".blendOutNs"));
         if (section.sourceStart < Duration::zero() || section.sourceEnd < Duration::zero() ||
             (!section.sourceEnd.isZero() && section.sourceEnd <= section.sourceStart))
-            return invalid("animation section source trim is invalid", path + ".sourceStartNs");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "animation section source trim is invalid", path + ".sourceStartNs"));
         if (index > 0) {
             const auto& previous = animationSections[index - 1];
             if (previous.start > section.start)
-                return invalid("animation sections must be sorted by start time", path + ".startNs");
-            if (previous.end > section.start) return invalid("animation sections must not overlap", path + ".startNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "animation sections must be sorted by start time", path + ".startNs"));
+            if (previous.end > section.start) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "animation sections must not overlap", path + ".startNs"));
         }
     }
     for (std::size_t trackIndex = 0; trackIndex < tracks.size(); ++trackIndex) {
         const auto&       track = tracks[trackIndex];
         const std::string path  = "tracks[" + std::to_string(trackIndex) + "]";
-        if (!track.id.isValid()) return invalid("track id is invalid", path + ".id");
-        if (!ids.insert(track.id.format()).second) return invalid("timeline item ids must be unique", path + ".id");
+        if (!track.id.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "track id is invalid", path + ".id"));
+        if (!ids.insert(track.id.format()).second) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "timeline item ids must be unique", path + ".id"));
         for (std::size_t index = 0; index < track.notifies.size(); ++index) {
             const auto&       notify   = track.notifies[index];
             const std::string itemPath = path + ".notifies[" + std::to_string(index) + "]";
-            if (!notify.id.isValid() || !notify.type.isValid()) return invalid("notify ids are invalid", itemPath);
+            if (!notify.id.isValid() || !notify.type.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notify ids are invalid", itemPath));
             if (!ids.insert(notify.id.format()).second)
-                return invalid("timeline item ids must be unique", itemPath + ".id");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "timeline item ids must be unique", itemPath + ".id"));
             if (notify.time < Duration::zero() || notify.time > duration)
-                return invalid("notify time is outside the timeline", itemPath + ".timeNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notify time is outside the timeline", itemPath + ".timeNs"));
             if (index > 0 && track.notifies[index - 1].time > notify.time)
-                return invalid("notifies must be sorted by time", itemPath + ".timeNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notifies must be sorted by time", itemPath + ".timeNs"));
         }
         for (std::size_t index = 0; index < track.states.size(); ++index) {
             const auto&       state    = track.states[index];
             const std::string itemPath = path + ".states[" + std::to_string(index) + "]";
-            if (!state.id.isValid() || !state.type.isValid()) return invalid("notify-state ids are invalid", itemPath);
+            if (!state.id.isValid() || !state.type.isValid()) return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notify-state ids are invalid", itemPath));
             if (!ids.insert(state.id.format()).second)
-                return invalid("timeline item ids must be unique", itemPath + ".id");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "timeline item ids must be unique", itemPath + ".id"));
             if (state.start < Duration::zero() || state.end <= state.start || state.end > duration)
-                return invalid("notify-state range is invalid", itemPath);
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notify-state range is invalid", itemPath));
             if (index > 0 && track.states[index - 1].start > state.start)
-                return invalid("notify states must be sorted by start time", itemPath + ".startNs");
+                return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, "notify states must be sorted by start time", itemPath + ".startNs"));
         }
     }
     return Result<void>::success();
@@ -502,6 +570,10 @@ Result<ActionTimeline> ActionTimeline::fromValue(const Value& value) {
             candidate.montage.rootMotionHorizontal = rootHorizontal.value();
             candidate.montage.rootMotionVertical   = rootVertical.value();
             candidate.montage.rootMotionRotation   = rootRotation.value();
+            if (version.value() == 4) {
+                for (auto& section : candidate.animationSections)
+                    section.blendOut = candidate.montage.defaultBlendOut;
+            }
         }
     }
     const auto& tracks = *tracksValue->getIf<Value::Array>();

@@ -1,8 +1,10 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file AbilityController.h @brief Shared player and AI ability-intent routing. */
 
-#include "action/AbilitySystem.h"
+#include "action/AbilityRuntime.h"
 
 #include <cstddef>
 #include <deque>
@@ -24,6 +26,7 @@ struct AbilityIntent {
  */
 class IAbilityIntentSource {
 public:
+    /** @brief Releases IAbilityIntentSource resources. */
     virtual ~IAbilityIntentSource() = default;
 
     /** @brief Produce at most one intent for the supplied deterministic simulation tick. */
@@ -31,7 +34,7 @@ public:
 };
 
 /** @brief Owner-thread FIFO adapter for player input and command bindings. */
-class PlayerAbilityIntentQueue final : public IAbilityIntentSource {
+class EVENGINE_API_PLATFORM PlayerAbilityIntentQueue final : public IAbilityIntentSource {
 public:
     /** @brief Append an owning player intent; zero grant ids are rejected. */
     [[nodiscard]] Result<void> enqueue(AbilityIntent intent);
@@ -53,7 +56,7 @@ private:
  * at most one intent. Source failure performs no ability mutation; once a source
  * returns an intent it is consumed exactly once, including rejected activations.
  */
-class AbilityControllerRuntime {
+class EVENGINE_API_PLATFORM AbilityControllerRuntime {
 public:
     /** @brief Construct a controller borrowing the canonical ability runtime. */
     explicit AbilityControllerRuntime(AbilityRuntime& abilities) : abilities_(abilities) {}

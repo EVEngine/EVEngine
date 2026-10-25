@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "id": "editing-authority-module-interface",
+      "rule": "module-interface",
+      "scope": "src/modules/editing/**",
+      "owner": "editing::LocalWorldAuthority",
+      "issue": "whitebox-transaction-atomicity",
+      "reason": "Atomic candidate publication for multi-agent authoring through the existing editing authority.",
+      "expiry": "2027-12-31",
+      "evidence": [
+        "src/modules/editing/EditingAuthority.cpp",
+        "src/modules/editing/EditingTargetOperations.h",
+        "examples/level-designer/level_transactions.nut"
+      ],
+      "tests": [
+        "test/integration/transaction-authority/editor_authority_atomic.cpp",
+        "test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp",
+        "examples/level-designer/transaction_check.py",
+        "examples/level-designer/transaction_smoke.nut"
+      ],
+      "provides": [],
+      "requires": [],
+      "emits": [],
+      "observes": [],
+      "binds": [],
+      "protocol": [
+        "Existing owning TransactionSpec/AuthorityPlan/TransactionReceipt; no new persistent format.",
+        "Whitebox MCP transaction v1 requires revision and session-local idempotency key."
+      ],
+      "thread_affinity": "Owner thread only; no reentrant target callbacks during authority operations.",
+      "trim": {
+        "absent_profile": "No new trim claim. Focused native authority test links without graphics or editor UI. Full-host acceptance is performed in the isolated task worktree."
+      },
+      "cost_notes": [
+        "Stage one complete target candidate per batch. Legacy targets without staging retain explicit compensation semantics."
+      ],
+      "hot_path": []
+    }
+  ]
+}

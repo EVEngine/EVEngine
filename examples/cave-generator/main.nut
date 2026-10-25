@@ -1,3 +1,5 @@
+import { generateCave } from "./generators/cave.nut";
+
 // Karst Lab: R changes seed; 1..5 select cave styles; 6..8 select limestone microstructure.
 
 persist caveSeed = 20260830
@@ -26,111 +28,31 @@ function cavePressed(key) {
 }
 
 function rebuildCave() {
-    local paramsResult = procgen.newParams();
-    if (!paramsResult.ok) { print("cave parameter creation failed: " + paramsResult.status.summary); return; }
-    local p = paramsResult.value;
-    p.setSeed(caveSeed);
-    p.setString("style", caveStyles[caveStyleIndex]);
-    p.setString("genesis", "mixed");
-    p.setInt("resolution", 64);
-    p.setFloat("width", 32.0);
-    p.setFloat("height", 13.0);
-    p.setFloat("depth", 25.0);
-    p.setInt("chambers", 7);
-    p.setInt("branches", 6);
-    p.setFloat("tunnelRadius", 0.18);
-    p.setFloat("chamberScale", 1.22);
-    p.setFloat("chamberHierarchy", 0.92);
-    p.setFloat("passageVariation", 0.82);
-    p.setFloat("chamberIrregularity", 0.72);
-    p.setFloat("roughness", 0.10);
-    p.setFloat("multiscaleRoughness", 0.70);
-    p.setFloat("roughnessFlowCoupling", 0.72);
-    p.setFloat("surfaceSlopeReactivity", 0.74);
-    p.setFloat("reactivePatchiness", 0.68);
-    p.setFloat("erosion", 0.72);
-    p.setFloat("bedding", 0.68);
-    p.setFloat("fractureDissolution", 0.62);
-    p.setFloat("fractureApertureVariability", 0.76);
-    p.setFloat("fractureStressControl", 0.82);
-    p.setFloat("fractureFlowFeedback", 0.74);
-    p.setFloat("vadoseIncision", 0.48);
-    p.setFloat("waterTableCorrosion", 0.72);
-    p.setFloat("waterTableLevel", 0.26);
-    p.setInt("waterTableStages", 3);
-    p.setFloat("waterTableDrop", 0.19);
-    p.setFloat("waterTableFluctuation", 0.42);
-    p.setFloat("scallopErosion", 0.72);
-    p.setFloat("scallopScale", 0.11);
-    p.setFloat("scallopHydraulicScaling", 1.0);
-    p.setFloat("scallopMaturity", 0.68);
-    p.setFloat("scallopScaleVariability", 0.72);
-    p.setFloat("scallopFlowSeparation", 0.78);
-    p.setFloat("scallopFlowHistory", 0.68);
-    p.setFloat("bendUndercut", 0.72);
-    p.setFloat("fragmentDetachment", 1.0);
-    p.setFloat("curvatureDissolution", 0.72);
-    p.setFloat("reactiveSurfaceCoupling", 0.88);
-    p.setFloat("hydraulicErosion", 0.86);
-    p.setFloat("mixingCorrosion", 0.76);
-    p.setFloat("lithologicHeterogeneity", 0.82);
-    p.setFloat("floodAbrasion", 0.78);
-    p.setFloat("sedimentLoad", 0.48);
-    p.setFloat("floodPlucking", 0.66);
-    p.setFloat("pluckingBlockScale", 0.12);
-    p.setFloat("constrictionScour", 0.78);
-    p.setFloat("knickpointErosion", 0.74);
-    p.setFloat("streamBedKarren", 0.72);
-    p.setFloat("eddyPotholes", 0.70);
-    p.setFloat("potholeGravelSize", 0.42);
-    p.setFloat("breakdownScour", 0.68);
-    p.setFloat("hydraulicGradient", 0.52);
-    p.setFloat("recharge", 0.78);
-    p.setFloat("flowFocusing", 0.82);
-    p.setFloat("damkohler", 0.0035);
-    p.setFloat("transportG", 1.6);
-    p.setFloat("microstructure", 0.78);
-    p.setFloat("microporosityAccess", caveMicroporosity[caveRockIndex]);
-    p.setFloat("permeabilityContrast", cavePermeabilityContrast[caveRockIndex]);
-    p.setInt("fractureCount", 7);
-    p.setInt("cupolas", 7);
-    p.setInt("feeders", 4);
-    p.setInt("dripstones", 4);
-    p.setFloat("dripstoneScale", 0.90);
-    p.setString("stalagmiteShape", "conical");
-    p.setFloat("normalSmoothing", 0.86);
-    p.setString("surfaceNormalMode", "densityGradient");
-    p.setInt("wetnessRefinement", 1);
-    p.setFloat("boundaryClosure", 1.0);
-    p.setFloat("condensationCorrosion", 0.72);
-    p.setFloat("biogenicCorrosion", 0.68);
-    p.setFloat("mineralArmoring", 0.52);
-    p.setFloat("condensationFaceting", 0.62);
-    p.setFloat("differentialVeinErosion", 0.58);
-    p.setFloat("breakdown", 0.68);
-    p.setInt("breakdownEvents", 5);
-    p.setFloat("sedimentDeposition", 0.64);
-    p.setFloat("paragenesis", 0.7);
-    p.setInt("sedimentBars", 5);
-    p.setInt("isosurfaceSampling", 2);
-    p.setInt("surfaceRefinement", 2);
-    p.setFloat("refinementThreshold", 0.0015);
-    p.setInt("flowstones", 2);
-    p.setInt("curtains", 1);
-    p.setFloat("flowstoneScale", 1.0);
-    local buildResult = procgen.buildMesh("mesh.cave", p);
-    if (!buildResult.ok) { print("cave generation failed: " + buildResult.status.summary); return; }
-    local build = buildResult.value;
+    local build;
+    try {
+        build = generateCave(caveSeed, caveStyles[caveStyleIndex],
+                             caveMicroporosity[caveRockIndex], cavePermeabilityContrast[caveRockIndex]);
+    } catch (error) {
+        print("Runtime error: cave generation failed: " + error.tostring());
+        return;
+    }
     local tints = {
         caveWalls=[0.34, 0.30, 0.25], speleothems=[0.43, 0.39, 0.32],
         wetWalls=[0.30, 0.31, 0.29], breakdown=[0.28, 0.25, 0.21],
         sediment=[0.40, 0.29, 0.18]
     };
+    local pendingMeshes = [];
     for (local i = 0; i < build.getGroupCount(); ++i) {
         local component = build.copyGroup(i);
-        if (component == null) continue;
+        if (component == null) { pendingMeshes.append(null); continue; }
         local uploadResult = procgen.uploadMesh(component, gfx);
-        if (!uploadResult.ok) { print("cave upload failed: " + uploadResult.status.summary); continue; }
+        if (!uploadResult.ok) { print("Runtime error: cave upload failed: " + uploadResult.status.summary); return; }
+        pendingMeshes.append(uploadResult.value);
+    }
+    // Publish only after all nonempty groups upload successfully; hide omitted deposits on rebuild.
+    for (local i = 0; i < caveParts.len(); ++i) caveParts[i].setVisible(false);
+    for (local i = 0; i < pendingMeshes.len(); ++i) {
+        if (pendingMeshes[i] == null) continue;
         while (caveParts.len() <= i) caveParts.append(eve.Renderable3D());
         local name = build.getGroupName(i);
         if (!(name in caveMaterials)) {
@@ -144,7 +66,8 @@ function rebuildCave() {
             material.setDoubleSided(false);
             caveMaterials[name] <- material;
         }
-        caveParts[i].setMesh(uploadResult.value);
+        caveParts[i].setMesh(pendingMeshes[i]);
+        caveParts[i].setVisible(true);
         caveParts[i].setMaterial(caveMaterials[name]);
         caveParts[i].setCastShadow(name == "speleothems" || name == "breakdown");
         caveParts[i].setReceiveShadow(true);
@@ -225,3 +148,5 @@ function eve_render() {
     gfx.clear();
     gfx.render3D();
 }
+
+function eve_reload() { rebuildCave(); }

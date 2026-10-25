@@ -1,6 +1,6 @@
 # Canonical material v5: motion highlight
 
-Historical format contract: the current format is [material v6](canonical-material-v6.md).
+Historical format contract: the current write format is [material v15](canonical-material-v15.md).
 V5 remains the N-1 read/migration format. Material/4 is outside the current
 window. The historical 4-to-5 migration preserved existing fields and identity,
 including translucency, and rejects unversioned `motionHighlightColor` in v4.

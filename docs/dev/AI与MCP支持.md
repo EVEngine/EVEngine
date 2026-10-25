@@ -1,11 +1,33 @@
 # AI 生成 / 辅助开发与 MCP 支持
 
+[English practical setup](../en/usr/AI-MCP.md)
+
+
 > 状态：首版落地（嵌入式 MCP + DevTools AI 面板 + Cursor stdio 桥）。
 > 代码：[`src/engine/devtools/McpServer.*`](../../src/engine/devtools/McpServer.hpp)、
 > [`AiPanel.*`](../../src/engine/devtools/AiPanel.hpp)、[`DevTool.*`](../../src/engine/devtools/DevTool.hpp)；
 > 桥接：[`tools/eve-mcp/`](../../tools/eve-mcp/)。
 
 ## 目标
+
+### 原生工具家族的扩展与组合
+
+在 provider 自己的 `.cpp` 中声明
+`EVE_MCP_TOOL_FAMILY(Id, schemasFunction, handlerFunction, PayloadMode)`；
+两个函数分别返回逗号分隔的完整 schema 对象和工具调用结果。
+`PayloadMode` 为 `TextValue`（普通文本）或 `ContentEnvelope`（完整 MCP content）。
+处理函数可接收 `(name, args)` 或 `(McpServer&, name, args)`，不得保留请求参数引用。
+无需修改 `McpServer.cpp` 的目录或分发列表。
+
+CMake 从实际编译的 `EVDevTools` 源文件生成类型化 factory 引用，链接器不会丢弃 provider。
+未编译的 provider 不出现在目录或路由中；目录构造拒绝重复家族 ID、重复工具名和无效 schema。
+schema 与路由属于同一不可变进程快照；provider 回调由二进制拥有，不能用于可卸载插件。
+构造时无锁调用 schema 函数，schema 函数不可重入目录构造；请求 handler 在目录查找后调用。
+脚本工具继续使用原有热重载路径，注册时也拒绝与已编译工具重名。
+
+独立原生契约检查：`make check/mcp-families MCP_DEPENDENCIES=<预编译依赖目录>`。
+通过 `MCP_CMAKE_ARGS=-DMCP_SHARED=ON` 检查 DLL 边界，
+`-DMCP_WITH_PROVIDER=OFF` 检查 provider 缺席；完整宿主测试还验证每个实际列出的工具均有唯一路由。
 
 让 EVEngine 对 **AI 生成游戏** 与 **AI 辅助开发** 提供底层可测接口：
 
@@ -62,6 +84,8 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | 名称 | 用途 |
 |------|------|
 | `eve_status` | 附着 / 暂停 / 端口 / callgraph 摘要 |
+| `eve_script_components` | 引擎侧**脚本组件数据**的 JSON 视图：每个实体的已登记组件及其当前字段值（权威存储，不是脚本槽位）。未登记组件不出现；没有数据时是空列表 |
+| `eve_game_world` | Discover：当前运行时是什么世界（`config.title` / `config.modules` + 已实例化模块 + gameplay domains；可选 `eve.dev.publishWorldContext` 补 summary 等叙述字段）；等价资源 `eve://game-world`，也出现在 `eve_play` `op=status.gameWorld`。静态长文直接读仓库文件，不经契约转发 |
 | `eve_api_search` / `eve_api_get` | 查询本构建的 EveScript Binding Contracts（先查再写脚本；见 [AI 知识补偿](AI知识补偿.md)） |
 | `eve_ui_tree` / `eve_ui_get` / `eve_ui_click` | 普通游戏 retained UI 的语义树查询、控件状态读取和按 ID 点击；与 `eve_host_*` 编辑器宿主互补 |
 | `eve_eval` | 求值表达式 |
@@ -69,19 +93,50 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_stack` / `eve_locals` | 栈与局部变量 |
 | `eve_set_breakpoint` / `eve_list_breakpoints` | 断点 |
 | `eve_watch_*` | Watch |
-| `eve_snapshot_*` | 脚本状态快照（AI 测试可复位） |
+| `eve_snapshot_*` | 脚本状态快照：v3 保留共享表、共享数组和循环引用，兼容读取 v1/v2 |
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
+| `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
-| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_info` / `eve_camera_generate` | AI 场景导演：搭台 kit 安装 / 状态 / 清场 / 摆物调光摄像机 / 场景真值 / 生成机位（见 [AI 场景导演](AI场景导演.md)） |
+| `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
+| `eve_recipe_list` / `eve_recipe_apply` | 内容 recipe：注册表 id + 少量 params → 一次 `scene_director.batch` 事务（`content.scene` / workshop 转发） |
+| `eve_workshop` | 工坊窄 facade：`status` / `set_mode` / `recipe.apply` / `map.brush` / `play.observe` / `play.submit`（仅 `workshop.rpg`） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
-| `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG） |
+| `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
+| `eve_screenshot_image` | 把当前帧作为 MCP image content 返回（客户端没有共享文件系统时也能看到画面） |
+| `eve_console_read` / `eve_console_write` / `eve_console_clear` | 运行期控制台：按 `seq` 游标增量读取 Squirrel `print` / 脚本错误 / 引擎 stderr（level `engine`）/ `eve.dev.console.*` / Agent 标记行 |
+| `eve_crash_report` | 崩溃取证：读取持久化 `eve.log`，给出会话/崩溃计数、最近崩溃时间、上一个会话是正常结束还是崩溃、以及有界 tail |
 | `eve_render_describe` | 采集当前帧 + 渲染参数，交给配置的视觉模型，返回文字描述与「渲染参数↔画面效果」对应关系 |
 | `eve_render_vision_config` | 设置 / 读取视觉模型配置（baseUrl/apiKey/model/path/timeoutMs，密钥掩码） |
 | `eve_particles_status` / `eve_particles_emit` | 粒子系统状态与发射 |
 | `eve_audio_status` / `eve_audio_set_volume` / `eve_audio_stop_all` | 音频主控 |
+| `eve_editor_target_list` / `eve_editor_target_create` | 编辑器目标发现：列出当前工程可创建的目标类型（带 cap），并按类型创建；`provider` 为空时用该列表现查现建，避免 schema 与实现漂移 |
+| `eve_decal_status` / `eve_decal_project` / `eve_decal_remove` / `eve_decal_clear` / `eve_decal_set_limit` | 贴花查询与投影（`IDecalQuery`）：当前贴花、把包围盒/射线投到网格、清理与上限 |
+| `eve_physics_sphere_cast` | 3D 物理球体扫描（世界由脚本创建；返回命中点/法线/距离） |
+| `eve_world_project_down` | 相机障碍投影（`ICameraObstructionQuery`）：从机位向下取可用落点，供无人值守取景 |
+| `eve_profiler_frame` / `eve_profiler_report` | CPU profiler 采样：当前帧 zone 树与聚合报告（总时长/自耗时/热点） |
+| `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
+| `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
+| `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |
+
+### 快照引用与失败语义
+
+`eve_snapshot_capture` / `eve_snapshot_save` 输出 v3 对象图：每个表、数组有独立 ID，
+根和成员通过 `{ "$ref": ID }` 引用它。同一个对象只保存一次；跨根共享、自引用和
+相互循环都能恢复，恢复后通过任一别名修改对象，其他别名会观察到同一修改。
+用户表中的 `$ref`、`type`、`value` 字段仍是普通数据，不会被当作格式元数据。
+
+`eve_snapshot_restore` / `eve_snapshot_load` 先验证整个图并构造全部容器，再提交脚本根。
+悬空引用、非法节点、未知版本等错误会明确返回失败，保留恢复前的脚本值和引用关系。
+原生 provider 恢复失败时回滚本次操作；provider 必须能恢复自己刚捕获的状态，回滚失败
+会单独报告。热重载合并新默认字段时也保留对象身份；已有值和数组内容以捕获状态为准。
+
+旧 v1/v2 树格式仍可读取，但旧文件中已被写成 `null` 的引用无法补回。当前支持字符串键的
+表和数组；非字符串表键会明确拒绝。捕获最多 65536 个容器，首次遍历的嵌套深度最多 32
+条边；重复引用立即终止展开，循环不会导致无限递归。类实例、函数等活对象仍按原有
+`skipped` 规则处理。
 
 ### Resources
 
@@ -89,6 +144,7 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 - `eve://error-report`
 - `eve://ai-session`
 - `eve://callgraph`
+- `eve://crash-log`（`eve.log` 的尾部，按 64 KiB 截断；结构化版本用 `eve_crash_report`）
 
 ### 普通游戏 UI 自动化
 
@@ -106,13 +162,190 @@ eve_ui_click { "host": "editor-v2", "widget": "asset-tree" }
 `ui.dispatchEvents()` 分发，再由下一帧游戏逻辑通过 `ui.consumeClick()` 或注册回调消费；
 它不会直接调用业务函数。省略 `host` 时，widget id 必须在全部 host 中唯一，否则返回歧义错误。
 
+### 运行期控制台与截帧（无人值守诊断）
+
+`eve_console_read` 暴露引擎内的 `ConsolePanel` 环形缓冲：Squirrel `print()`、脚本错误、
+`eve.dev.console.*` 以及 Agent 自己写入的标记行。stdio 传输下 stdout 只承载 JSON-RPC 帧、
+所有诊断都走 stderr，因此在此之前 Agent 根本无法通过 MCP 看到 `print()` 输出。
+
+每行带一个进程内单调递增的 `seq`：
+
+```text
+eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
+→ {"ok":true,"attached":true,"firstSeq":12,"cursor":30,"nextSeq":31,"droppedThrough":11,
+   "truncated":false,"count":19,
+   "lines":[{"seq":12,"time":"10:31:02","level":"print","text":"boss phase 1"}]}
+```
+
+- 游标语义：只返回 `seq > sinceSeq` 的行；`sinceSeq=0` 返回最新若干行。
+- **把响应里的 `cursor` 原样回传作为下一次的 `sinceSeq`**。`nextSeq` 只是「下一行将要使用的
+  序号」，用它当游标会正好跳过一行。
+- `eve_console_clear` 只丢行、不回退游标。被丢弃的行通过 `droppedThrough` 与 `truncated`
+  显式上报，Agent 不会把“行被丢弃”误判成“没有新输出”。
+- `limit` 上限 1000；`level` 过滤可选（`debug|info|warn|error|print|cmd|result|engine`）。
+- 单行上限 64 KiB，超长时附带 `[console: truncated …]` 标记，不再静默截断到 1 KiB。
+- **引擎 stderr 也在内**：`ConsolePanel::attach()` 把描述符 2 重定向进管道，drain 线程一边把字节
+  原样转发回真实 stderr、一边按行投递到控制台（level `engine`）。`fprintf(stderr, …)` 与
+  `std::cerr` 这两条互不相通的输出路径因此都能出现在 `eve_console_read {"level":"engine"}` 里，
+  `[startup]` 计时、Vulkan/驱动告警、校验层 VUID 都包含在内。脚本 `print`/错误经
+  `capturePrint`/`captureError` 转发到 stderr 会被去重：只丢弃与上一条脚本行完全相同的回声，
+  引擎自身的连续重复行保留。`eve_console_read` 的 `stderrCaptured` 字段报告该捕获是否生效。
+
+截帧契约（`eve_screenshot` / `eve_screenshot_image`）：readback 打开后，交换链拷贝要到
+**下一次 present** 才可取回，所以单次调用无法既开启又读回。首次调用返回
+`{"ok":false,"retryable":true,"reason":"no-presented-frame","readbackEnabled":false}`，
+等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
+的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
+返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+需要同时检查深度、法线、材质和阴影时，使用[同帧附件捕获工具](mcp-frame-capture.md)：一次请求生成不可变快照，再按 token 获取预览、原始像素或导出文件。
+
+### 软重启（AI 调试不要反复杀进程）
+
+反复 `eve run` 会重新解码贴图/模型等资源，冷启动很慢。`eve_restart` 在**同一进程**里把游戏
+状态复位并重新进入 `eve_init`，**不**调用 `ResourceManager::clear()`，也不关掉 MCP / Vulkan：
+
+```text
+eve_restart { "args": { "seed": 7, "scene": "boss" }, "reloadScripts": true }
+→ {"ok":true,"keptResources":true,"resourceCountBefore":42,"resourceCountAfter":42,
+   "scriptsReloaded":true,"initCalled":true,"args":{"seed":7,"scene":"boss"}}
+```
+
+| 字段 | 含义 |
+|------|------|
+| `args` | 可选 JSON 对象，安装为 `eve.restartArgs`，供 `eve_init` / `eve_before_restart` / `eve_after_restart` / `eve_restart` 读取 |
+| `reloadScripts` | 默认 `true`：清掉已登记的 persist/state roots、重置全部 `IStateProvider`、重新 dofile 已跟踪脚本再调 `eve_init`。`false` 时只重置原生 provider，并优先调用脚本 `eve_restart(args)`（没有则 `eve_init()`），适合只改参数的快速重试 |
+
+与热重载的区别：`soft_reload_scripts`（文件保存触发）是 **保留状态** 换定义；`eve_restart` 是
+**丢掉状态** 重新开局，但资源缓存仍在。脚本侧也可调用 `eve.dev.softRestart(requestJson, reloadScripts)` /
+`eve.dev.resetNativeState()` / `eve.dev.resourceCacheCount()`。
+
+游戏作者约定：
+
+- 在 `eve_init` 里读 `eve.restartArgs`（缺省当空表）；
+- 需要拆场景 / 卸 UI 时实现 `eve_before_restart(args)`；
+- `reloadScripts=false` 路径下若要用参数重开，实现 `eve_restart(args)` 自行复位 persist 根。
+
+### 崩溃取证（重启后的第一手证据）
+
+MCP server 与它服务的进程同生共死，所以“上一次运行为什么死了”只能由持久日志回答。
+`common/CrashLog.h` 在进程启动时写会话开始标记、退出时写会话结束标记（带退出码），崩溃处理器
+写异常码与符号化栈；`eve_crash_report` 把这些读成结论：
+
+```text
+eve_crash_report { "lines": 60 }
+→ {"ok":true,"exists":true,"path":"<root>/eve.log","bytes":1582,"scannedBytes":1582,
+   "sessions":2,"crashes":1,"lastCrashAt":"2026-09-18 22:55:07",
+   "previousSessionEnded":false,"previousSessionCrashed":true,
+   "tail":["…","[crash] code=0xc0000005 at 0x…"]}
+```
+
+- `previousSession*` 描述**当前会话之前**那一个会话块，因此重连后就能判定上次是崩溃还是正常退出；
+  仅当日志窗口里只剩一个会话块时这两个字段才不出现。
+- 计数与 tail 都是**窗口内**统计（默认读取文件末尾 512 KiB），`scannedBytes` 与 `bytes` 分别给出
+  窗口大小与文件总大小。
+- `eve_status.crashLog` 只做 stat（`path`/`exists`/`bytes`）不读文件；`eve://crash-log` 资源返回
+  日志尾部 64 KiB 文本，便于客户端直接挂载。
+- 控制台中 level 为 `error` 的行会同时写入 `eve.log`，崩溃前的脚本错误也在工件里。
+- `EVE_LOG_DIR` 决定日志目录，默认是启动时的当前目录；`crashLogPath()` 报告实际路径。
+
+### 脚本导出 MCP 工具（`eve.mcp`）
+
+开发者用 Squirrel 描述的领域模型可以直接成为一等 MCP 工具，出现在 `tools/list` 里并按名调用，
+不再只能靠 `eve_run_script` / `eve_host_script` 这类不可发现的逃生口。
+
+```squirrel
+// main.nut（`eve run --debug`）或 mcp.nut（`eve mcp`，保存后自动重载）
+eve.mcp.tool("game_npcs", {
+    description = "列出存活 NPC",
+    inputSchema = { type = "object", properties = { lane = { type = "string" } } },
+    handler = function(args) {
+        local lane = ("lane" in args) ? args.lane : "all";
+        return { count = npcs.len(), lane = lane };
+    }
+});
+
+eve.mcp.tools();              // -> ["game_npcs"]
+eve.mcp.remove("game_npcs"); // -> bool
+eve.mcp.clear();              // -> 移除数量
+```
+
+- `handler(args)` 收到的是由 `arguments` 还原的 Squirrel 表（缺省时是空表），返回值序列化为 JSON
+  作为工具结果；抛异常会变成 `isError` 的工具错误而不是协议错误。
+- 名字必须是 `[a-z][a-z0-9_]{2,63}`，且不得占用内置前缀（`eve_` / `inspect_` / `set_` /
+  `capture_` / `get_`）：内置工具在派发时优先，被遮蔽的工具将永远不可达，所以注册直接拒绝。
+- 边界：本接口用于**观测/驱动游戏领域状态**。修改可编辑文档仍然走编辑器命令协议
+  （`editor.registerScriptCommand` + `eve_editor_execute`，由它持有事务、校验与撤销）；不要再为
+  同一份文档开第二条写入路径。
+- 上限：128 个工具、描述 512 字符、`inputSchema` 16 KiB、序列化参数/结果最多 16 层嵌套；
+  被拒绝的注册会以 `warn` 写进运行期控制台，便于开发者自查。
+- 同名重复注册是**替换**（热重载 `mcp.nut` 不会堆积或泄漏闭包）；VM 分离时引用被释放。
+
+### 玩法域（gameplay domains）
+
+`eve.mcp.tool` 让开发者自己描述领域，但引擎侧已经有完整实现的玩法域不应该再各写一套脚本投影：
+它们通过共享玩法协议（`eve_gameplay` 工具 / `eve.dev.gameplay(...)`）发布，Agent 与玩家走**同一条
+权威写入路径**，而不是调试旁路。协议 schema 为 `evengine.gameplay-control-request` v1。
+
+| op | 作用 |
+|----|------|
+| `domains` | 列出当前注册的领域（每个领域唯一 provider） |
+| `instances` | 列出可枚举的领域及其实例；无法枚举的领域单独出现在 `unenumerable`，与「没有实例」区分开 |
+| `observe` | 读取一个实例的权威观察结果（含 `revision` / `tick`） |
+| `actions` | 列出该实例对当前 `access` 档位**合法**的动作（不会广播会被拒绝的动作） |
+| `submit` | 提交一条命令：需带 `observedTick` / `expectedRevision`，过期即 `conflict` |
+| `advance` | 推进该实例的注入式 tick（必须递增，回退即 `conflict`） |
+| `events` | 按实例内 `afterSequence` 游标增量取事件（新增事件带 `causationCommandId`） |
+
+发现实例不需要 session：`instances` 只回答「有什么」。`observe`/`actions`/`submit` 需要
+`session.access`（`player` / `test-driver` / `developer-cheat`）与 `controlledSubjects`；`player`
+档位必须控制实例 owner，发放类动作（`inventory:add-item`、`economy:credit`、`card:set-attribute`）
+对 `player` 档位既不广播也不接受。
+
+```jsonc
+// eve_gameplay { "request": { ... } }
+{ "schemaId": "evengine.gameplay-control-request", "schemaVersion": 1, "op": "observe",
+  "domain": "inventory", "instance": "<uuid>",
+  "session": { "id": "mcp", "access": "player", "controlledSubjects": ["<owner-uuid>"] } }
+```
+
+已发布的领域（都在模块内提供 `publishGameplay(instanceId, ownerId, ...)`，脚本可直接调用；
+instance / owner 必须是规范持久 id）：
+
+| 领域 | 实例 | 动作 | 权限与披露 |
+|------|------|------|-----------|
+| `inventory` | 一副 `Bag` + 可选 `EquipmentSet` | `remove-item` / `move-slot` / `equip` / `unequip` + `add-item` | `add-item` 仅 test-driver / developer-cheat；`remove-item` 沿用容器「最多取 N」语义，实际生效量以 `quantity` 出现在收据与事件里 |
+| `economy` | 一个玩家账本 | `debit` + `credit` | `credit` 仅非玩家档位；超上限部分不谎报成功，另发 `economy.wasted` 事件；未知资源类型报 `not_found` |
+| `dialogue` | 对话运行器（一次一个对话，最多一个实例） | `start` / `advance` / `select` | 观察结果给出当前节点、说话人、文本与**路由词表**，Agent 无需猜 route id；自动化启动没有 Squirrel 调用帧，绑定表为空（`"bindings":"empty"`） |
+| `card` | 一副手牌 | `draw` / `play` / `set-attribute` | `set-attribute` 仅非玩家档位；出牌需要游戏自己的支付账户，未绑定时 `observe` 报 `"payment":"unbound"`，零费卡照常出牌、收费卡得到明确诊断（而不是动作消失） |
+| `npc_ai` | —（**未发布**，见下） | — | 该模块目前没有 `Module` 实例、也没有脚本面（`NpcAiWorld` 只在模块内部与 editor 中被引用），因此没有「游戏能从脚本发布」的挂点 |
+
+多实例：一个领域只注册一个 provider（路由器要求领域唯一），provider 内部按实例分派。
+`inventory` / `economy` / `card` 支持同时发布多个实例（每个玩家一份），`dialogue` 的运行器
+全局唯一，因此重复发布直接返回 `conflict` 并报出已占用它的实例 id。
+
+`npc_ai` 的正确做法不是加一个 C++-only 适配器：先让该模块拥有模块实例与脚本面（现在脚本
+既不能构造 `NpcAiWorld`，也就无从发布 agent）。这属于模块设计变更，需要在架构评审里单独决策，
+本文件如实记录现状而不静默跳过。
+
+真实会话自检（示例工程 `examples/inventory` 已发布玩家背包）：
+
+```bash
+# 1) 启动带 MCP 的游戏进程
+cd examples/inventory && ../../build/win32-debug/src/engine/eve run --mcp-port 8791
+# 2) 走 TCP 单行 JSON-RPC：initialize -> tools/call eve_gameplay
+#    op=instances 拿到 instance uuid，再用同一 uuid observe / actions / submit / events
+```
+
 ### Prompts
 
 - `debug_failure` — 用切片排查失败
 - `test_scenario` — 暂停 → 快照 → 断言 → 恢复
 - `ai_game_review` — 审查 AI 生成内容的运行态风险
 
-协议版本默认协商 `2025-06-18`。传输：TCP + **单行 JSON**（与 MCP stdio 一致，载荷内不得含裸换行）。
+协议版本在 `2024-11-05` / `2025-03-26` / `2025-06-18` 之间协商：客户端请求其中之一时按该版本应答，
+请求其他版本时返回服务端最新支持的 `2025-06-18`（不再原样回显客户端字符串）。传输：TCP + **单行
+JSON**（与 MCP stdio 一致，载荷内不得含裸换行）。
 
 ## DevTools AI 面板
 
@@ -280,9 +513,11 @@ passing evidence 才能完成；失败可显式进入 Recover 后回到 Modify/R
 `eve_renderable3d_get` 用完整的 `entityId` + `generation` 返回 live Renderable3D 的位置、
 字段材质和渲染开关；旧 generation 返回 `status: stale`，Agent 应重新获取当前 identity，
 而不是继续向已复用的 entity id 提交事务。
-`eve_editor_target_create` 的 `type` 支持 `scene`、`material`、`scene-host` 和
-`material-renderable3d`；前两者创建由 Editor 持有的 document，`scene-host` 必须提供已有
-SceneHost 的 `host` 名称，`material-renderable3d` 必须提供运行中 Renderable3D 的
+`eve_editor_target_create` 的 `type` 是**运行期发现**的：先调用 `eve_editor_target_list` 读它返回的
+`supportedTypes`（内建为 `scene`、`material`、`scene-host` 和 `material-renderable3d`，工程脚本注册的适配器
+还会追加自己的类型，例如 `archspace`、tile layer、height map、voxel world），不要假设固定集合；同一个响应
+也会列出脚本已创建并绑定的 target id，这是获知这些 id 的唯一途径。前两者创建由 Editor 持有的 document，
+`scene-host` 必须提供已有 SceneHost 的 `host` 名称，`material-renderable3d` 必须提供运行中 Renderable3D 的
 `entityId` 与 `generation`。live target 只借用 ECS 对象，关闭 target 不会销毁 host 或
 renderable；实体被销毁、generation 不匹配、graphics/scene 模块被裁剪时会返回结构化
 `conflict` / `unsupported` / `not-found`。当前 live material 只接受没有 packed Material、
@@ -337,22 +572,79 @@ capture / save / runScript / reloadResource / hotReloadStatus`。脚本可定义
 `eve_host_update(dt)` 与 `eve_host_render()`
 钩子参与每帧更新与绘制（用 `eve.host.widgetRect` 在 viewport 内自绘预览）。
 
+`eve.mcp`：`tool(name, spec) / remove(name) / tools() / clear()`，见上文
+[脚本导出 MCP 工具](#脚本导出-mcp-工具evemcp)。
+
 ### 测试
 
 ```bash
 ./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
+./build/<platform>-debug/test/unit_test --testcase='^gameplay\.control\.(inventory|economy|dialogue|card).*$'
 ```
+
+玩法域用例：`gameplay.control.inventory*`（vocabulary 对等、多实例路由、权限档位、修订号账本、
+JSON 门面、脚本发布）、`gameplay.control.economy*`（账本观察、上限浪费、未知类型、多账本隔离）、
+`gameplay.control.dialogue*`（节点/路由观察、start→select→advance 全流程、单实例发布规则）、
+`gameplay.control.card*`（手牌与支付边界观察、抽牌与零费出牌、作弊档位改属性）。
 
 新增用例：`devtools.mcp.stdioTransport`（stdio 握手 + tools/list）、
 `devtools.mcp.hostEditorBinding`（VM 注册、双向绑定、onChange、事件、
 save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
-（View / ViewModel / mcp.nut 重载、状态保留、错误回退、路径隔离与诊断）。
+（View / ViewModel / mcp.nut 重载、状态保留、错误回退、路径隔离与诊断）、
+`devtools.mcp.consoleCursorSurvivesEvictionAndClear`（seq 游标、淘汰与 clear 后的
+`droppedThrough`/`truncated` 语义）、`devtools.mcp.consoleToolsRoundTripScriptPrint`
+（MCP 读回 Squirrel `print()`、Agent 标记、非法 level 拒绝、clear 后无新行）、
+`devtools.mcp.everyDeclaredToolIsRouted`（tools/list 声明的每个工具都必须被
+tools/call 路由，防止 schema 表与 dispatcher 漂移）、
+`devtools.mcp.initializeNegotiatesSupportedProtocol`（未知版本不回显）、
+`devtools.mcp.stderrCaptureFeedsConsole`（`fprintf(stderr)` 与 `std::cerr` 都进控制台、
+level 为 `engine`、detach 后关闭捕获）、`devtools.mcp.engineLineDropsScriptEchoOnly`
+（只去重脚本回声，引擎自身重复行保留）、`devtools.mcp.crashReportExplainsPreviousRun`
+（会话/崩溃计数、`previousSessionCrashed` 与 `previousSessionEnded`、`eve_status.crashLog`）、
+`devtools.mcp.scriptToolExportRoundTrip`（脚本注册→tools/list→tools/call 参数与返回值、
+抛异常报错、remove 后从发现中消失、反遮蔽不变量、detach 不遗留 handler）、
+`devtools.mcp.scriptToolNameRules`（命名规则与非法注册拒绝）、
+`devtools.mcp.inputBatchInjectsThroughCapability` /
+`devtools.mcp.inputBatchWaitCompletesAcrossPoll` /
+`devtools.mcp.inputBatchReportsMissingProvider`、
+`devtools.mcp.toolTagsClassifyFamilies` /
+`devtools.mcp.toolsetFilterHidesAndRejects`。
 
 ## 测试
 
 ```bash
 ./build/<platform>-debug/test/unit_test --testcase='^devtools\.(mcp|ai)\..*$'
 ```
+
+## 工具面裁剪（Toolset / read-only / exclude）
+
+Agent 上下文塞满 130+ schema 会伤命中率。引擎在 `tools/list` 与 `tools/call` 共用同一过滤：
+
+| 环境变量 | 含义 |
+|----------|------|
+| `EVE_MCP_TOOLSET` | 逗号分隔标签，默认 `all`；可选 `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_PROFILE` | 命名任务剖面（`verify.play` / `content.scene` / …）；与 toolset 叠加，并与 `eve_agent_session_start` 的 session 剖面叠加。`tools/eve-mcp --profile=` 可写入此项 |
+| `EVE_MCP_READONLY` | `1` 时隐藏/拒绝会改状态的工具 |
+| `EVE_MCP_EXCLUDE` | 逗号分隔的精确工具名黑名单 |
+
+被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`；
+任务剖面拒绝时另带 `profile` 与可选 `escalate:{to,reason,errorCode}`。
+`eve_agent_session_start` 可传 `taskKind` / `profile`（省略时默认 `verify` / `verify.play`），
+并用 `eve_agent_session_escalate` 沿合法边换剖面。
+
+## `tools/eve-mcp` 生命周期
+
+`tools/eve-mcp/server.js` 仍是 stdio↔TCP 转发器；另支持：
+
+- `EVE_MCP_AUTO_START=1`：端口未开时自动 `spawn(EVE_MCP_EVE_BIN run --debug --mcp-port=… EVE_MCP_GAME)`
+- 断开 / SIGTERM 时结束子进程
+
+详见 [`tools/eve-mcp/README.md`](../../tools/eve-mcp/README.md)。
+
+## 错误可自愈字段
+
+结构化失败尽量带 `hint` / `retryable` / `nextTools`（见 `mcpFailureObject`），方便 Agent
+在截图未就绪、输入 provider 缺失、toolset 过滤等情况下自己改调用路径。
 
 ## 后续可扩展
 
@@ -363,3 +655,14 @@ save→unload→reload 持久化往返）、`devtools.mcp.hostResourceHotReload`
 - 与 `eve test` 场景脚本联动的 MCP 资源
 - AI 生成内容的静态校验（nut AST / 资源清单；API 目录查询已由 `eve_api_search` 覆盖）
 - 编辑器 JSON：更多控件（image/视频预览、节点图）、多 OS 窗口、编辑器间拖拽
+- 玩法域：`npc_ai` 需要先有模块实例与脚本面（`NpcAiWorld` 目前只在模块内部与 editor 中被引用），
+  之后才有「游戏能发布 agent」的挂点
+- 玩法域（结构性）：`weapon` / `climbing` / `rpg.battle` / `rpg.product` 是**每实例一个
+  provider**。路由器现在按实例分派：当同一领域有多个 provider 时，用
+  `IGameplayInstanceCatalog` 找出声明了该实例的那一个——恰好一个就直接路由，多个同时声明报
+  `conflict: several gameplay providers claim that instance`，谁都不声明则保持原来的
+  `conflict: multiple gameplay providers publish the same domain`。路由器**不会**靠"逐个调用
+  看谁成功"来猜，那等于为了回答路由问题去执行未知副作用。全部 10 个 provider 都已实现
+  `IGameplayInstanceCatalog`，`domains` 也已对重复域去重
+- MCP 协议 `2026-07-28` stateless / tools/list cache hints
+- 危险工具 elicitation / strict 模式（远程暴露时再谈 token）

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -13,28 +15,39 @@ class Graphics;
  * @brief GPU texture created via Graphics::newTexture.
  * Owns GPU resources through an opaque backend handle.
  */
-class Texture : public Drawable {
+class EVENGINE_API_BACKENDS Texture : public Drawable {
 public:
+    /** @brief Texture. */
     Texture();
+    /** @brief Texture. */
     ~Texture() override;
 
+    /** @brief Draws . */
     void draw(Graphics *gfx, const glm::mat4 &matrix) const override;
     /** @brief Black silhouette using texture alpha (volumetric occlusion map). */
     void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
 
+    /** @brief Returns the width. */
     int getWidth() const;
+    /** @brief Returns the height. */
     int getHeight() const;
+    /** @brief Returns the pixel width. */
     int getPixelWidth() const;
+    /** @brief Returns the pixel height. */
     int getPixelHeight() const;
+    /** @brief Returns the mipmap count. */
     int getMipmapCount() const;
+    /** @brief Returns the sampler. */
     const TextureSampler &getSampler() const { return sampler; }
     /** @brief Declare whether RGB is straight or already multiplied by alpha. */
     void setAlphaConvention(const std::string &value) {
         premultipliedAlpha_ = value == "premultiplied";
     }
+    /** @brief Returns the alpha convention. */
     std::string getAlphaConvention() const {
         return premultipliedAlpha_ ? "premultiplied" : "straight";
     }
+    /** @brief True when premultiplied alpha. */
     bool hasPremultipliedAlpha() const { return premultipliedAlpha_; }
 
     /** Backend-private GPU object (vulkan::GpuTexture*). */
@@ -49,8 +62,11 @@ public:
     int pixelHeight = 0;
     TextureSampler sampler{};
 
+    /** @brief Mark deferred file pixels. */
     void markDeferredFilePixels(Graphics *graphics);
+    /** @brief Clears deferred file pixels. */
     void clearDeferredFilePixels();
+    /** @brief True when deferred file pixels. */
     bool hasDeferredFilePixels() const { return filePixelsPending_; }
 
 private:

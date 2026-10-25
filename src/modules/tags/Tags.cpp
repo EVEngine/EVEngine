@@ -1,8 +1,27 @@
 #include "tags/Tags.h"
 
+#include "common/Capability.h"
+#include "common/StateAccess.h"
+#include "tags/StateAccessAdapter.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
 
 namespace eve::tags {
+
+Tags::Tags() {
+    worldAdapter_ = std::make_unique<TagStoreStateAdapter>(store_);
+    eve::cap::addListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(worldAdapter_.get()));
+    eve::cap::addListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(worldAdapter_.get()));
+}
+
+Tags::~Tags() {
+    if (worldAdapter_) {
+        eve::cap::removeListener<eve::IStateQuery>(static_cast<eve::IStateQuery*>(worldAdapter_.get()));
+        eve::cap::removeListener<eve::IStateMutation>(static_cast<eve::IStateMutation*>(worldAdapter_.get()));
+        worldAdapter_.reset();
+    }
+}
+
 namespace {
 
 std::string valueAt(const std::vector<std::string>& values, int index) {

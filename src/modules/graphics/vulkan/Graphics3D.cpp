@@ -19,6 +19,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
@@ -60,6 +61,7 @@ namespace eve::graphics::vulkan {
 
 void Graphics::begin3DFrame() {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrame: graphics not initialized");
     if (isCanvasActive()) throw Exception("begin3DFrame: cannot start 3D while a Canvas is active");
@@ -247,6 +249,7 @@ void Graphics::destroyOffscreen3DResources() {
 
 void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     ensureFileTexturesReady();
+    applyPendingResourceChanges();
     ASSERT(initialized);
     if (!initialized) throw Exception("begin3DFrameToCanvas: graphics not initialized");
     if (!canvas) throw Exception("begin3DFrameToCanvas: null canvas");
@@ -271,6 +274,38 @@ void Graphics::begin3DFrameToCanvas(Canvas *canvas) {
     offscreenPrimitive3DDrawIndex = 0;
     vk::CommandBufferBeginInfo beginInfo{};
     offscreen3DCB.begin(beginInfo);
+    if (mesh3dShadows.active && shadowPendingMask != 0) {
+        // Offscreen previews submit synchronously, before any swapchain pass.
+        // Replay pending shadows on this same command buffer so color samples
+        // this camera's maps, including headless and repeated previews per frame.
+        waitForSharedGpuResources();
+        auto &slot = currentShadowMap();
+        slot.image.beginDepthAttachment();
+        vk::ClearValue clear{};
+        clear.depthStencil = vk::ClearDepthStencilValue{1.f, 0};
+        for (int cascade = 0; cascade < ShadowConfig::kTotalLayers; ++cascade) {
+            if ((shadowPendingMask & (1u << cascade)) == 0) continue;
+            vk::RenderPassBeginInfo shadowBegin{};
+            shadowBegin.renderPass      = shadowRenderPass;
+            shadowBegin.framebuffer     = slot.framebuffers[cascade];
+            const uint32_t atlasSize =
+                uint32_t(allocatedShadowMapSize > 0 ? allocatedShadowMapSize : ShadowConfig::kMapSize);
+            uint32_t viewportSize = atlasSize;
+            if (cascade >= 0 && cascade < ShadowConfig::kCascades && mesh3dShadows.active) {
+                viewportSize = uint32_t(std::max(1, mesh3dShadows.cascadeMapSizes[cascade]));
+            }
+            shadowBegin.renderArea      = vk::Rect2D{{0, 0}, {atlasSize, atlasSize}};
+            shadowBegin.clearValueCount = 1;
+            shadowBegin.pClearValues    = &clear;
+            offscreen3DCB.beginRenderPass(shadowBegin, vk::SubpassContents::eInline);
+            recordShadowCascadeDraws(offscreen3DCB, cascade, viewportSize);
+            offscreen3DCB.endRenderPass();
+            shadowCascadeDraws[cascade].clear();
+        }
+        slot.image.endSampledLayout();
+        shadowPendingMask = 0;
+    }
+
     lastOffscreen3DGpuDurationMs = 0.f;
     if (offscreen3DTimestampQueryPool) {
         offscreen3DCB.resetQueryPool(offscreen3DTimestampQueryPool, 0, 2);
@@ -633,8 +668,18 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
     cb.endRenderPass();
     sceneColorPassOpen = false;
     source.color.endSampledLayout();
-    source.color.setLayout(cb, vk::ImageLayout::eTransferSrcOptimal);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eTransferDstOptimal);
+    const vk::ImageSubresourceRange       range{vk::ImageAspectFlagBits::eColor, 0, 1, 0, 1};
+    std::array<vk::ImageMemoryBarrier, 2> before{};
+    before[0] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eColorAttachmentWrite, vk::AccessFlagBits::eTransferRead,
+                                       vk::ImageLayout::eShaderReadOnlyOptimal, vk::ImageLayout::eTransferSrcOptimal,
+                                       VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    before[1] = vk::ImageMemoryBarrier(
+        snapshot.color.currentLayout() == vk::ImageLayout::eUndefined ? vk::AccessFlags{}
+                                                                      : vk::AccessFlagBits::eShaderRead,
+        vk::AccessFlagBits::eTransferWrite, snapshot.color.currentLayout(), vk::ImageLayout::eTransferDstOptimal,
+        VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eFragmentShader,
+                       vk::PipelineStageFlagBits::eTransfer, {}, {}, {}, before);
     vk::ImageCopy copy{};
     copy.srcSubresource =
         vk::ImageSubresourceLayers{vk::ImageAspectFlagBits::eColor, 0, 0, 1};
@@ -644,9 +689,20 @@ Graphics::Mesh3DSceneColorCaptureStatus Graphics::captureMesh3DSceneColor() {
                               static_cast<uint32_t>(sceneColorHeight), 1};
     cb.copyImage(source.color.image(), vk::ImageLayout::eTransferSrcOptimal,
                  snapshot.color.image(), vk::ImageLayout::eTransferDstOptimal, 1, &copy);
-    snapshot.color.setLayout(cb, vk::ImageLayout::eShaderReadOnlyOptimal);
-
-    source.color.setLayout(cb, vk::ImageLayout::eColorAttachmentOptimal);
+    std::array<vk::ImageMemoryBarrier, 2> after{};
+    after[0] =
+        vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferRead,
+                               vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+                               vk::ImageLayout::eTransferSrcOptimal, vk::ImageLayout::eColorAttachmentOptimal,
+                               VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, source.color.image(), range);
+    after[1] = vk::ImageMemoryBarrier(vk::AccessFlagBits::eTransferWrite, vk::AccessFlagBits::eShaderRead,
+                                      vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal,
+                                      VK_QUEUE_FAMILY_IGNORED, VK_QUEUE_FAMILY_IGNORED, snapshot.color.image(), range);
+    cb.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
+                       vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eColorAttachmentOutput,
+                       {}, {}, {}, after);
+    source.color.setCurrentLayout(vk::ImageLayout::eColorAttachmentOptimal);
+    snapshot.color.setCurrentLayout(vk::ImageLayout::eShaderReadOnlyOptimal);
     source.depth.setLayout(cb, vk::ImageLayout::eDepthStencilAttachmentOptimal,
                            vk::ImageAspectFlagBits::eDepth);
     vk::RenderPassBeginInfo resume{};
@@ -691,8 +747,9 @@ void Graphics::setMesh3DSkinInfluenceLimit(SkinInfluenceLimit count) {
 
 void Graphics::beginShadowPass(int cascadeIndex) {
     ASSERT(initialized);
-    if (!shadowPipeline) createShadowResources();
-    if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kCascades) {
+    // Recreate when scheme map size changes (dynamic shadow resolution).
+    createShadowResources();
+    if (cascadeIndex < 0 || cascadeIndex >= ShadowConfig::kTotalLayers) {
         throw Exception("beginShadowPass: cascadeIndex out of range");
     }
     shadowPassCascade = cascadeIndex;
@@ -772,17 +829,17 @@ void Graphics::drawMeshGBuffer(Mesh *mesh, const glm::mat4 &mvp, const glm::mat4
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
-    // A float exactly represents every integer through 24 bits. Numeric packing avoids
-    // NaN canonicalization and subnormal flush-to-zero corrupting bit-cast payloads.
-    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
-    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
-    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
-                                (rough3 << 18) | (metal3 << 21);
+    // Phase B: tint RGB6 | rough7 | metal7. Payload exceeds the 24-bit exact
+    // integer range of float, so bit-cast through the push constant (shader
+    // reads floatBitsToUint). Motion stays numeric (≤24 bits).
+    const uint32_t rough7     = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7     = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) | (rough7 << 18) | (metal7 << 25);
     auto motion12 = [](float value) {
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
+    d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
@@ -804,15 +861,14 @@ void Graphics::drawMeshGBufferAlpha(Mesh *mesh, const glm::mat4 &mvp, const glm:
     auto u6 = [](float x) -> uint32_t {
         return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f));
     };
-    const uint32_t rough3 = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 7.f));
-    const uint32_t metal3 = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 7.f));
-    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) |
-                                (rough3 << 18) | (metal3 << 21);
+    const uint32_t rough7     = uint32_t(std::lround(std::clamp(roughness, 0.f, 1.f) * 127.f));
+    const uint32_t metal7     = uint32_t(std::lround(std::clamp(metallic, 0.f, 1.f) * 127.f));
+    const uint32_t packedTint = u6(tintR) | (u6(tintG) << 6) | (u6(tintB) << 12) | (rough7 << 18) | (metal7 << 25);
     auto motion12 = [](float value) {
         return uint32_t(std::lround(std::clamp(value, -1.f, 1.f) * 2047.f)) + 2047u;
     };
     const uint32_t packedMotion = motion12(motionX) | (motion12(motionY) << 12);
-    d.push.clip = glm::vec4(nearZ, farZ, float(packedTint), float(packedMotion));
+    d.push.clip                 = glm::vec4(nearZ, farZ, std::bit_cast<float>(packedTint), float(packedMotion));
     prepareSkinPass(mesh, albedo, mvp, model, d.push.clip, d.skinSet, d.skinUboOffset);
     gbufferPassDraws.push_back(d);
 }
@@ -825,15 +881,14 @@ void Graphics::endGBufferPass() {
     if (!gbufferPipeline || !gbufferRenderPass || !slot || !slot->framebuffer) {
         gbufferPassDraws.clear();
         gbufferPending = false;
-        if (renderControl_) renderControl_->getGBuffer()->clear();
+        if (RenderControl* rc = getRenderControl()) rc->getGBuffer()->clear();
         return;
     }
 
     gbufferPending = true;
-    if (renderControl_) {
-        Texture *albedo = &slot->albedoTex;
-        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex,
-                                                 &slot->normalTex, albedo, &slot->depthTex);
+    if (RenderControl* rc = getRenderControl()) {
+        rc->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &slot->depthColorTex, &slot->normalTex,
+                                     &slot->albedoTex, &slot->depthTex, &slot->pbrParamsTex, &slot->emissiveTex);
     }
 }
 
@@ -869,7 +924,8 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
                          Texture *params, const float uvRect[4], float fade,
                          float normalStrength, float roughnessStrength, float metalStrength,
                          float emissiveStrength, int blendMode, int projectionMode,
-                         float blendSharpness) {
+                         float blendSharpness, float parallaxScale, float parallaxMinLayers,
+                         float parallaxMaxLayers, float edgeFadeWidth) {
     if (!decalPassActive) throw Exception("drawDecal: call beginDecalPass first");
     DecalDraw d{};
     d.model = model;
@@ -885,8 +941,12 @@ void Graphics::drawDecal(const glm::mat4 &model, Texture *albedo, Texture *norma
     d.metalStrength = metalStrength;
     d.emissiveStrength = emissiveStrength;
     d.blendMode = blendMode == 1 ? 1 : 0;
-    d.projectionMode = projectionMode == 1 ? 1 : 0;
+    d.projectionMode = std::clamp(projectionMode, 0, 3);
     d.blendSharpness = blendSharpness > 0.f ? blendSharpness : 4.f;
+    d.parallaxScale = std::clamp(parallaxScale, 0.f, 1.f);
+    d.parallaxMinLayers = std::clamp(parallaxMinLayers, 1.f, 64.f);
+    d.parallaxMaxLayers = std::clamp(parallaxMaxLayers, d.parallaxMinLayers, 64.f);
+    d.edgeFadeWidth = std::clamp(edgeFadeWidth, 0.f, 0.49f);
     if (decalPassDraws.size() >= kMaxDecalInstances) return;  // SSBO capacity guard
     decalPassDraws.push_back(d);
 }
@@ -971,6 +1031,8 @@ void Graphics::recordDecalPassInto(vk::CommandBuffer cb, DecalSlot &slot, GBuffe
             glm::vec4(d.fade, d.normalStrength, d.roughnessStrength, d.metalStrength);
         inst.extraParams = glm::vec4(d.emissiveStrength, float(d.blendMode),
                                      float(d.projectionMode), d.blendSharpness);
+        inst.surfaceParams =
+            glm::vec4(d.parallaxScale, d.parallaxMinLayers, d.parallaxMaxLayers, d.edgeFadeWidth);
         const vkb::BoundSet set = decalSetFor(slot, gpuAlb, gpuNrm, gpuPrm, &gslot.depthGpu,
                                               &gslot.normalGpu);
         cb.bindDescriptorSets(vk::PipelineBindPoint::eGraphics, decalPipelineLayout, 0, 1,

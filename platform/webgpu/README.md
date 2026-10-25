@@ -35,17 +35,31 @@ emcmake cmake -B build/webgpu-web -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build/webgpu-web           # produces eve.js / eve.wasm / eve.data
 ```
 
-The Emscripten build **trims** third-party dependencies and engine modules:
+The Emscripten build selects **`EVENGINE_PROFILE=web`** automatically. Module
+membership comes from `GROUP web` in `cmake/module_manifest/` (plus dependency
+closure and `OPTIONAL_DEPS` bridge exclusions). There is no separate hand-written
+module delete list.
 
-- **Skipped deps**: Poco, OpenAL-soft, medialoader (assimp/mpg123/vorbis), FreeType,
-  googletest. SDL2 + zlib come from Emscripten ports (`-sUSE_SDL=2`, `-sUSE_ZLIB`).
-  Kept: squirrel/simplesquirrel, physfs, lz4, Box2D, xxHash, imgui, and a minimal
-  `medialoader_image` (stb/lodepng/dds/tinyexr image decoders, needed by EVImage).
-- **Compiled-out modules** (their deps were dropped):
-  `EVAnimation EVAudio EVAvatar EVBuilding EVDatabase EVDialogue EVFont EVInventory
-  EVMap EVModel3D EVNetwork EVParticles EVPlugins EVProcgen EVRPG EVSound EVStylize
-  EVVoxel`, plus `graphics/Font.cpp` and the Poco-heavy `DataModule/JsonDocument/
-  XmlDocument`.
+- **Skipped third-party groups** (see `cmake/thirdparty_libs.cmake`): Poco,
+  OpenAL-soft, Assimp / `medialoader_model`, audio codecs / `medialoader_sound`.
+  SDL2, zlib and FreeType come from Emscripten ports (`-sUSE_SDL=2`, `-sUSE_ZLIB`,
+  `-sUSE_FREETYPE=1`). Kept from the vendored aggregate: squirrel/simplesquirrel,
+  physfs, lz4, Box2D/box3d, xxHash, imgui, and `medialoader_image` (stb/lodepng/dds/
+  tinyexr for `image`).
+- **In `web` (among others)**: `virtualgeometry`, `hexmap`, `archspace`,
+  `spritestack` (primitive/atlas path; no Assimp), `inventory` / `dnut_interpreter`
+  / `card` / `weapon` / `vehicle`, `stylize` / `decal` / precipitation `weather`,
+  `font` (FreeType port). Interactive `Snow` drops when `procgen` is absent;
+  `spritestack.sliceModel` drops when `model3d` is absent.
+- **Still outside `web`**: `model3d` / `animation` / `sceneloader` / `avatar`
+  (Assimp), `audio` / `sound`, `network` / `database` / `plugins` / `devtools`,
+  `particles` (Poco JSON + animation), `procgen` / `map` / `voxel` / `hd2d`
+  (map→Poco; voxel embeds procgen types in its public header), and shells that
+  need those (`rpg`, `dialogue`, `building`, …).
+- **File blacklists**: Emscripten still drops Poco-heavy data sources
+  (`DataModule.cpp` / `JsonDocument.cpp` / `XmlDocument.cpp`). Optional bridges
+  (`Snow.cpp`, `SpriteStackModel.cpp`) follow `OPTIONAL_DEPS` like every other
+  profile.
 - **Threads**: `main()` runs on the browser main thread so the WebGPU surface
   can reach the DOM canvas directly (no `PROXY_TO_PTHREAD`); pthreads stay
   available for the Thread module, and **all TUs are compiled with `-matomics
@@ -169,6 +183,6 @@ when not running from the game directory itself.
 - ImGui overlays use `imgui_impl_wgpu.cpp` (compiled by the EVUI module scan;
   `imgui_impl_wgpu.cpp` includes `common/config.h` **before** its
   `#if defined(EVENGINE_WEBGPU)` guard so the platform define is visible).
-- Poco/OpenAL/medialoader/FreeType are not built on WASM; the corresponding
-  modules are compiled out (see the trim list above). The native Dawn build
-  still compiles them.
+- Poco / OpenAL / Assimp are not linked on WASM; FreeType is the Emscripten
+  port. Module membership follows the `web` profile (see above). Native Dawn
+  still builds the full third-party set.

@@ -1,5 +1,11 @@
 # Audio / Animation 共用 UI 框架迁移
 
+## 最新 dev 兼容调整（2026-10-25）
+
+当前使用规范 `Result` 类型；Audio 绑定接入 `AudioEditorModule.cpp`，保留上游的共享绑定辅助函数。新增测试位于 `test/integration/editor-workspace/`，原有用例的调整移植到上游合并后的集成测试文件，不恢复旧路径或重复注册测试。独立 CPU 目标使用当前拆分/归并后的真实源文件，并编译检查两个领域的真实绑定入口。
+
+当前 dev 的架构门禁以源码为准，不再使用已删除的 `scripts/architecture_contracts.json`；下文 catalogue 路径及旧验证数字属于原始实现基线的历史记录。冲突解决后的独立组合测试为 23/23，绑定生成器及架构检查器回归为 24/24。
+
 ## 开发入口
 
 `src/modules/editor/presentation/WorkspacePresentation` 负责属性验证、拖动草稿、revision/context 冲突、单次提交和 action 路由。它不保存领域对象指针、不保存 history、不广播第二份领域状态。

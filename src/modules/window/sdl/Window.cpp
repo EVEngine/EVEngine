@@ -16,6 +16,7 @@
 #include "common/StartupTiming.h"
 #include "common/WindowSurfaceHost.h"
 #include "common/config.h"
+#include "window/sdl/EventSinkOwner.h"
 
 #ifdef EVENGINE_ANDROID
 #include "android/android.h"
@@ -49,6 +50,7 @@ Uint32 messageBoxFlag(const std::string& type) {
 }  // namespace
 
 Window::Window() : open(false) {
+    bindWindowEventSinkOwner(this);
 #if defined(__EMSCRIPTEN__)
     // Bind SDL keyboard to the render canvas instead of the whole window, so
     // typing in the playground editor / REPL never reaches the game. The
@@ -59,7 +61,10 @@ Window::Window() : open(false) {
         throw Exception("Could not initialize SDL video subsystem (%s)", SDL_GetError());
 }
 
-Window::~Window() { SDL_QuitSubSystem(SDL_INIT_VIDEO); }
+Window::~Window() {
+    bindWindowEventSinkOwner(nullptr);
+    SDL_QuitSubSystem(SDL_INIT_VIDEO);
+}
 
 void Window::setSize(int w, int h) {
     WindowSettings f = settings;
@@ -545,7 +550,14 @@ bool Window::createWindowAndContext(int x, int y, int w, int h, Uint32 windowfla
     }
 #endif
 
-    window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
+    for (int attempt = 0; attempt < 4; ++attempt) {
+        window = SDL_CreateWindow(title.c_str(), x, y, w, h, windowflags);
+        if (window || SDL_strcmp(SDL_GetError(),
+                                 "Getting Vulkan extensions failed: vkEnumerateInstanceExtensionProperties returned "
+                                 "VK_INCOMPLETE(5)") != 0) {
+            break;
+        }
+    }
 
     if (!window) {
         throw Exception("Window Create Failed: %s", SDL_GetError());

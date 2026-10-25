@@ -32,6 +32,7 @@ struct PrefabInstanceInfo {
 class IActionPrefabInstances {
 public:
     static constexpr const char* capabilityName = "eve.action.prefab-instances";
+    /** @brief Releases IActionPrefabInstances resources. */
     virtual ~IActionPrefabInstances() = default;
 
     /**

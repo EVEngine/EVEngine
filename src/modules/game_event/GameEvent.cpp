@@ -81,36 +81,15 @@ eve::Result<void> validateCurrentEventStream(std::string_view json) {
 }
 
 std::string quote(const std::string& value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\b': out << "\\b"; break;
-            case '\f': out << "\\f"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
+    return eve::json::quoteString(value, eve::json::StringEscapeStyle::Canonical);
 }
 
 bool parseU64(const eve::json::Value& value, uint64_t& out) {
     if (!value.isString()) return false;
-    try {
-        size_t used = 0;
-        out         = std::stoull(value.asString(), &used);
-        return used == value.asString().size();
-    } catch (...) {
-        return false;
-    }
+    auto parsed = eve::json::scanUnsignedInteger(value.asString(), eve::json::UnsignedIntegerSyntax::LegacyStoull);
+    if (!parsed) return false;
+    out = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool parseI64(const eve::json::Value& value, int64_t& out) {
@@ -254,7 +233,7 @@ GameEventLog::GameEventLog(eve::UuidEntropySource entropy, eve::UuidClock clock)
 
 eve::Result<EventSequence> GameEventLog::append(GameEvent envelope) {
     const auto failure = [](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<EventSequence>::failure(eve::Diagnostic::error(code, message));
     };
     if (envelope.type.empty()) return failure(eve::DiagnosticCode::InvalidArgument, "event type must not be empty");
     if (!envelope.schemaId.isValid())
@@ -399,7 +378,7 @@ eve::Result<void> GameEventLog::restore(std::string_view json) {
     auto        document = eve::json::Document::parse(std::string(json), &error);
     const auto  root     = document.root();
     const auto  invalid  = [&](eve::DiagnosticCode code, std::string message) {
-        return eve::Result<void>::failure(eve::Diagnostic::error(code, std::move(message)));
+        return eve::Result<void>::failure(eve::Diagnostic::error(code, message));
     };
     const int snapshotVersion = root.getInt("version");
     if (!document.valid() || !root.isObject() || (snapshotVersion != 1 && snapshotVersion != 2)) {

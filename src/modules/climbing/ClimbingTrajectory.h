@@ -3,17 +3,35 @@
 #include "climbing/Climbing.h"
 
 #include <algorithm>
+#include <cmath>
 
 namespace eve::climbing::detail {
 
+/** @brief Smooth step. */
 inline float smoothStep(float value) noexcept {
     value = std::clamp(value, 0.f, 1.f);
     return value * value * (3.f - 2.f * value);
 }
 
+/** @brief Interpolate. */
 inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
     return {start.x + (end.x - start.x) * amount, start.y + (end.y - start.y) * amount,
             start.z + (end.z - start.z) * amount};
+}
+
+// Join the two support planes in the horizontal plane. Each eased leg stays
+// on its own support plane; a direct chord can cut through a convex corner.
+inline Vec3 cornerPathPoint(Vec3 start, Vec3 end, Vec3 sourceNormal, Vec3 targetNormal, float normalizedTime) noexcept {
+    const float determinant = sourceNormal.x * targetNormal.z - sourceNormal.z * targetNormal.x;
+    const float t           = std::clamp(normalizedTime, 0.f, 1.f);
+    if (std::abs(determinant) < 1e-4f) return interpolate(start, end, smoothStep(t));
+    const float sourcePlane = sourceNormal.x * start.x + sourceNormal.z * start.z;
+    const float targetPlane = targetNormal.x * end.x + targetNormal.z * end.z;
+    const Vec3  join{(sourcePlane * targetNormal.z - sourceNormal.z * targetPlane) / determinant,
+                    (start.y + end.y) * 0.5f,
+                    (sourceNormal.x * targetPlane - sourcePlane * targetNormal.x) / determinant};
+    return t < 0.5f ? interpolate(start, join, smoothStep(t * 2.f))
+                    : interpolate(join, end, smoothStep((t - 0.5f) * 2.f));
 }
 
 /**
@@ -22,10 +40,12 @@ inline Vec3 interpolate(Vec3 start, Vec3 end, float amount) noexcept {
  * Vaults with takeoff clearance and ledge
  * approaches retain an arc.
  */
-inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
-                            const ClimbingActionDefinition& action, const ClimbingProfileDefinition& profile,
-                            float normalizedTime) noexcept {
+inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate, const ClimbingActionDefinition& action,
+                            const ClimbingProfileDefinition& profile, float normalizedTime,
+                            Vec3 sourceNormal = {}) noexcept {
     const float t = std::clamp(normalizedTime, 0.f, 1.f);
+    if (action.kind == ClimbingActionKind::CornerInner || action.kind == ClimbingActionKind::CornerOuter)
+        return cornerPathPoint(start, candidate.landingFeet, sourceNormal, candidate.surfaceNormal, t);
     const bool surfaceFollow = action.trajectory == ClimbingTrajectoryKind::SurfaceFollow ||
                                action.trajectory == ClimbingTrajectoryKind::AnchorToAnchor;
     const bool ballistic = action.trajectory == ClimbingTrajectoryKind::BallisticArc;
@@ -44,7 +64,9 @@ inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
         const Vec3      raisedLanding{candidate.landingFeet.x, clearance, candidate.landingFeet.z};
         if (t < riseEnd) return interpolate(start, raisedStart, smoothStep(t / riseEnd));
         if (t < crossEnd)
+            /** @brief Interpolate. */
             return interpolate(raisedStart, raisedLanding, smoothStep((t - riseEnd) / (crossEnd - riseEnd)));
+        /** @brief Interpolate. */
         return interpolate(raisedLanding, candidate.landingFeet, smoothStep((t - crossEnd) / (1.f - crossEnd)));
     }
 
@@ -54,6 +76,7 @@ inline Vec3 trajectoryPoint(Vec3 start, const ClimbingCandidate& candidate,
         action.kind == ClimbingActionKind::LadderMount || action.kind == ClimbingActionKind::LadderClimb ||
         action.kind == ClimbingActionKind::LadderDismount || action.kind == ClimbingActionKind::Slide ||
         action.kind == ClimbingActionKind::BeamBalance)
+        /** @brief Interpolate. */
         return interpolate(start, candidate.landingFeet, smoothStep(t));
 
     Vec3 point = interpolate(start, candidate.landingFeet, t);

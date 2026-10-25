@@ -115,6 +115,64 @@ checkout is on that commit.
   Then `make test/win32-debug` (or `FILTER=<prefix>`) for the host test lane.
 - Release (Visual Studio generator):
   `make build/win32`
+- **Module linkage policy**: `EVENGINE_MODULE_LINKAGE=SHARED` (one DLL per link
+  group) is the default, and the full suite is green under it on Windows and
+  Linux (5561 cases on Windows), so iterating on a domain test relinks a test
+  executable instead of the whole engine. Anything that ships an artifact must
+  pass `OBJECT` explicitly (the release Makefile config `WIN32_CMAKE_ARGS` pins
+  it, so `make build/win32` and `make sdk/win32`), because the shipped artifact
+  must be a single exe with no engine DLLs beside it; the debug SDK intentionally
+  follows the development configuration and therefore ships the link-group DLLs.
+  macOS, iOS, Android and WebAssembly keep the archive route: a mobile app bundle
+  cannot be told where to find seven group libraries, and macOS additionally needs
+  its platform support library (`EVPlatformMacOSX`) linked into the group that
+  calls it before the dynamic route can work there. Every piece of process-level
+  state that used to be duplicated per link unit (SDL video, box2d/box3d world
+  registries, ImGui's context, the header-only ECS default table) now has exactly
+  one owner; the per-family inventory, the third-party/submodule patches and the
+  traps are in
+  `docs/dev/superpowers/specs/2026-08-18-test-suite-optimization.md` §7.25.
+- **Annotating a declaration for the SHARED split.** When you add a symbol that
+  crosses a link-group boundary (a new module API, or new dev code that a higher
+  group or a test uses), the declaration needs `EVENGINE_API_<GROUP>` — ELF group
+  libraries export default-visibility symbols anyway, so *only* the Windows job
+  notices a missing macro (`LNK2019`/`LNK2001` + `LNK1120`). Four rules that each
+  cost a full CI cycle to learn:
+  1. The header must be able to see `common/Export.h`; otherwise the macro parses
+     as a type name (`C2079 ... uses undefined class 'eve::rpg::EVENGINE_API_PLATFORM'`)
+     and breaks **every** platform.
+  2. Annotate the whole family the linker will reach, not just the one symbol CI
+     named: one target fails per run.
+  3. Check the class before using a class-level macro. A class that holds a
+     `unique_ptr`/`optional` member whose type this header only forward declares
+     must declare its constructor, destructor and move operations *out of line*
+     (defaulted in the `.cpp` that sees the complete type); an in-class
+     `= default` makes the export pull in the member's deleter
+     (`C2027 use of undefined type` + `C2338 can't delete an incomplete type`).
+     A class with an implicitly deleted copy assignment needs those two spelled
+     `= delete` (`C2280`). Never put a class-level macro on a class with an
+     `inline static` data member (`C2491`).
+  4. Local compile checks lie unless the translation units actually rebuild:
+     Ninja's "unscanned" dependency tracking does not reliably recompile a `.cpp`
+     after a header edit, so touch every `.cpp` that includes the header (or
+     delete their `.obj`) before building. Details and the full trap list: §7.31
+     and §7.32 of the same spec.
+- **Run the full suite in CI, not locally.** Locally, verify the *link* (build
+  both routes plus `make check`) and let CI run every platform's cases. A local
+  full `ctest` starts thousands of test executables, so one group library that
+  failed to link turns into thousands of modal loader dialogs ("找不到
+  EVWorld.dll") that take over the desktop, and it is the same suite CI runs
+  anyway on a clean merge ref. Use `make test/<platform> DOMAIN=<domain>` when a
+  single domain really needs running locally. Details: §7.30 of the same spec.
+- **Test suite shape**: `EVENGINE_TEST_DOMAIN_SPLIT` decides whether the suite is
+  one executable per domain (`unit_test_<domain>`, ctest label of the same name)
+  or a single `unit_test`. It defaults to the linkage: `ON` for SHARED, where each
+  executable is a thin consumer of the group libraries, and `OFF` for OBJECT,
+  where every executable would statically contain the whole engine -- 30 of those
+  plus their incremental-link state measured 93 GB on Windows, against 0.4 GB exe
+  + 0.4 GB pdb for the monolithic binary. Pass the option explicitly to force
+  either shape; `make test/<platform> DOMAIN=<domain>` and
+  `make unit-test/<platform> DOMAIN=<domain>` only apply to the split shape.
 - Do not invoke `cl.exe` manually outside a Developer prompt; the `cmake\with-msvc.cmd`
   wrapper calls vcvars64 before CMake so the MSVC compiler and STL are found.
 - First build compiles third-party through the `deps` target — slow once, cached
@@ -243,11 +301,12 @@ versions.
   the SDL/driver layer.
 
 ## Collaboration conventions (multi-agent parallel work)
-## Collaboration conventions (multi-agent parallel work)
 
 These rules exist to keep several agents working in the same tree without
 stepping on each other. `docs/dev/模块编排与裁剪架构.md` explains the layering
-model behind them.
+model behind them. For shrinking merge-conflict hotspots while keeping one
+composed dependency contract, see
+`docs/dev/superpowers/specs/2026-10-10-decentralize-conflict-hotspots.md`.
 
 - **Cross-module calls go through interfaces, not includes.** When a lower
   module must reach a higher one (e.g. `filesystem` reaching `graphics`), the
@@ -255,23 +314,39 @@ model behind them.
   the provider registers it via `eve::cap::provide/query`
   (`src/engine/common/Capability.h`). Do not add a new upward `#include` —
   `scripts/module_depgraph.py --check` (CI `layering` job) fails on it.
-- **One manifest, one boot list.** New modules are declared only in
-  `cmake/module_manifest.cmake`; the link list, third-party closure and
+- **One manifest, one boot list.** New modules are declared only through the
+  composed `cmake/module_manifest.cmake` tree (ordered `include` fragments
+  under `cmake/module_manifest/`); the link list, third-party closure and
   `eve.moduleList` are derived. Do not hand-edit `EVELIBS` / `ThirdParty` /
-  `load.nut` module wiring. Domain satellites live under the host package
-  (`src/modules/<host>/editing`, `editor`, `graphics`, `physics`, `fx`, …) —
-  do not add a new top-level `*_editing` / `*_editor` / `asset_*` /
-  `pixelworld_*` / `buildingfx` directory. Runtime-only profiles exclude
-  authoring directories (`editing` / `editor` / `graphics_editing`) by leaf
-  name; optional runtime satellites stay independently switchable.
+  `load.nut` module wiring, and do not add a second declaration channel.
+  Prefer putting a host package's `eve_declare_module` lines in that host's
+  fragment so unrelated modules do not edit the same file. Domain satellites
+  live under the host package (`src/modules/<host>/editing`, `editor`,
+  `graphics`, `physics`, `fx`, …) — do not add a new top-level `*_editing` /
+  `*_editor` / `asset_*` / `pixelworld_*` / `buildingfx` directory.
+  Runtime-only profiles exclude authoring directories (`editing` / `editor` /
+  `graphics_editing`) by leaf name; optional runtime satellites stay
+  independently switchable.
 - **Keep public headers free of cross-module includes.** Prefer forward
   declarations and Pimpl so a low-level type change does not recompile every
   dependent module. Check `python3 scripts/module_depgraph.py` for `*` marks
   (leaks into a module's own headers).
-- **Big files get split, not extended.** A `.cpp` over ~1000 lines is a
-  single-agent-at-a-time file. Split it along existing section comments into
-  multiple TUs (pure moves, no behavior change) instead of appending more
-  methods.
+- **Group cohesive implementation, split contention hotspots.** A stable,
+  cohesive `.cpp` may grow when combining closely related small TUs reduces
+  repeated debug information and build overhead. Above 2000 lines, review
+  unrelated responsibilities, edit frequency, and concurrent ownership.
+  At 5000 lines or more, decide whether to split along stable sections based on
+  that review. Do not merge actively edited files owned by different agents
+  merely to reduce the OBJ count. Shared catalogues still put module-scoped
+  user-manual topics in module-owned fragments
+  (`cmake/module_manifest/modules/<host>.cmake`), and keep only
+  order/composition in the hub file. Architecture shape checks are code-first
+  (`scripts/check_architecture_contracts.py`); do not reintroduce a parallel
+  JSON catalogue.
+- **Mechanical cross-module sweeps are their own PR.** Repo-wide renames,
+  export-macro annotation, and Doxygen sweeps must not ride along inside a
+  feature branch; land them alone (preferably batched by host package) so
+  they do not collide with unrelated editor/header edits.
 - **Formatting is enforced on changed lines of existing files.** `make check`
   (and CI) run `.github/scripts/check-format.sh` (clang-format-18, `.clang-format`)
   with `git clang-format`; pre-existing debt in untouched regions does not block
@@ -281,10 +356,22 @@ model behind them.
 - **Tests stay per-module.** New tests go into their own file under `test/`
   (zeroerr cases; each case is process-isolated via CTest). Do not grow a
   shared test main.
+  Ordinary `test/unit/<module>/` C++ files are discovered without registration;
+  exceptional classifications and integration ownership belong in source-local
+  `eve-test-policy` comments. There is no central Test Levels JSON; see `test/README.md`.
+- **Native MCP tools own their family.** Declare `EVE_MCP_TOOL_FAMILY` beside
+  a provider's schema and handler. Composition is generated from compiled sources;
+  do not append new families to `McpServer.cpp` schema arrays or dispatch chains.
+  The protocol host keeps lifecycle and filtering. See `docs/dev/AI与MCP支持.md`.
+- **Build rules and guides have owners.** Platform recipes live under
+  `cmake/platforms/`, feature checks under `cmake/tasks/`, and module-specific
+  settings beside their sources in `BuildSettings.cmake`. Keep declaration and
+  dependency wiring in the existing module manifest. Extend graphics topic
+  pages under `docs/usr/modules/graphics/` rather than growing the overview.
 - **Examples are a tested surface.** A new `examples/<name>/` must be runnable
   (`main.nut` + a `config.nut` that assigns the engine `config` table), or be
   listed with a reason in `scripts/check_examples.py`'s `NON_RUNNABLE_EXAMPLES`;
-  it must own a `README.md` and a row in `examples/README.md`. `make check/examples`
+  it must own a `README.md`; overview rows are optional documentation maintenance. `make check/examples`
   (source-quality) enforces that layout, and `scripts/smoke_examples.sh` launches
   every runnable example in CI for at least `MIN_RUN_SECONDS` (2s) — dying early,
   exiting non-zero, or printing an error marker fails the job. Run
@@ -383,9 +470,13 @@ make check
 
 That includes architecture contracts against `CI_BASE` (default `origin/dev`).
 Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA.
-`scripts/architecture_contracts.json` is the single catalogue for contract
-evidence; do not silence a finding with a new baseline, allowlist, or broad
-scope. A compatibility facade may retain a legacy shape only when the public
+`make check/architecture-contracts` is a **changed-line code lint**
+(`scripts/check_architecture_contracts.py`: api-shape, raw-pointer lifetime
+tags, runtime `getModInst` ban, hot-path primitive ban, `@cost`). There is no
+JSON contract catalogue — do not reintroduce hand-copied `provides`/`requires`/
+`systems` lists. Hot-path files declare `// eve-hot-path` in leading comments. Directory policies live in a local `.eve-hot-path` file containing `eve.hot-path-directory/v1:*.cpp`.
+See `docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`.
+A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical
 Result/status API is the inward implementation. New debt markers still require the
 owner/issue/reason/expiry/removal metadata enforced by `check/quality-metadata`.

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /**
  * @file AudioSourceEditor.h
@@ -31,13 +33,21 @@ class IAudioSourcePreviewProvider;
  */
 class AudioClockTransportBackend final : public audio_editing::IAudioTransportBackend {
 public:
+    /** @brief Play. */
     void play() override;
+    /** @brief Pause. */
     void pause() override;
+    /** @brief Stops . */
     void stop() override;
-    [[nodiscard]] audio_editing::EditorResult<void> seek(double seconds) override;
+    /** @brief Seeks . */
+    [[nodiscard]] audio_editing::Result<void> seek(double seconds) override;
+    /** @brief Tell. */
     double tell() const override { return position_; }
+    /** @brief Duration. */
     double duration() const override { return duration_; }
+    /** @brief Playing. */
     bool   playing() const override { return playing_; }
+    /** @brief Sets the native looping. */
     void   setNativeLooping(bool) override {}
 
     /** @brief Install clip length before bind. */
@@ -63,7 +73,7 @@ private:
  * @threadaffinity Owner thread only.
  * @reentrancy No unknown callbacks.
  */
-class AudioSourceEditor {
+class EVENGINE_API_EDITORS AudioSourceEditor {
 public:
     /**
      * @brief Construct a seeded preview source with a generated tone clip.
@@ -73,6 +83,7 @@ public:
 
     AudioSourceEditor(const AudioSourceEditor&)            = delete;
     AudioSourceEditor& operator=(const AudioSourceEditor&) = delete;
+    /** @brief Audio source editor. */
     ~AudioSourceEditor();
 
     /**
@@ -82,19 +93,19 @@ public:
      * cancellation.
      * @reentrancy Provider callbacks never run under editor locks or access this editor.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> setPreviewProvider(
+    [[nodiscard]] audio_editing::Result<void> setPreviewProvider(
         std::shared_ptr<const IAudioSourcePreviewProvider> provider);
     /**
      * @brief Queue a preview of the current domain inputs; accepted work returns Pending.
      * @cost Copies the PCM/clip input once per request; computation runs on the editing task worker, amortized over
      * polls.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> requestPreview();
+    [[nodiscard]] audio_editing::Result<void> requestPreview();
     /** @brief Publish the current completed preview atomically; Pending while work runs, NoOp when idle. Owner thread
      * only. */
-    [[nodiscard]] audio_editing::EditorResult<void> pollPreview();
+    [[nodiscard]] audio_editing::Result<void> pollPreview();
     /** @brief Cancel pending publication while keeping the last valid preview; a new explicit request may resume. */
-    [[nodiscard]] audio_editing::EditorResult<void> cancelPreview();
+    [[nodiscard]] audio_editing::Result<void> cancelPreview();
     /** @brief Permanently cancel and close preview publication; idempotent. Destruction joins cooperative work. */
     void closePreview();
     /** @brief Observe request sequence, provider generation and phase without copying preview payloads. */
@@ -107,58 +118,74 @@ public:
      * @brief Install Sources / Waveform / Inspector / Transport panels.
      * @note Does not retain @p workspace.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
+    [[nodiscard]] audio_editing::Result<void> configureWorkspace(editor::EditorWorkspace& workspace) const;
 
     /**
      * @brief Rebuild waveform envelopes for the given pixel width.
      * @param width Viewport width in pixels; finite, at least 8, and within waveform service limits.
      * @return Rejected on invalid input; failed rebuilds preserve the last valid waveform and layout.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> setViewportWidth(float width);
+    [[nodiscard]] audio_editing::Result<void> setViewportWidth(float width);
 
     /**
      * @brief Seek from a waveform x coordinate in the current viewport.
      * @param x Pixel x in the waveform view.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> seekX(float x);
+    [[nodiscard]] audio_editing::Result<void> seekX(float x);
 
     /** @brief Seek preview to an exact time in seconds. */
-    [[nodiscard]] audio_editing::EditorResult<void> seekSeconds(double seconds);
+    [[nodiscard]] audio_editing::Result<void> seekSeconds(double seconds);
 
     /** @brief Commit an absolute property assignment through the document transaction path. */
-    [[nodiscard]] audio_editing::EditorResult<void> setProperty(const std::string& path,
+    [[nodiscard]] audio_editing::Result<void> setProperty(const std::string& path,
                                                                 const audio_editing::EditorValue& value);
 
-    [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> undo();
-    [[nodiscard]] audio_editing::EditorResult<editor::TransactionReceipt> redo();
+    /** @brief Undo. */
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> undo();
+    /** @brief Redo. */
+    [[nodiscard]] audio_editing::Result<editor::TransactionReceipt> redo();
 
-    [[nodiscard]] audio_editing::EditorResult<void> play();
-    [[nodiscard]] audio_editing::EditorResult<void> pause();
-    [[nodiscard]] audio_editing::EditorResult<void> stop();
+    /** @brief Play. */
+    [[nodiscard]] audio_editing::Result<void> play();
+    /** @brief Pause. */
+    [[nodiscard]] audio_editing::Result<void> pause();
+    /** @brief Stops . */
+    [[nodiscard]] audio_editing::Result<void> stop();
 
     /**
      * @brief Poll audition and advance the clock backend.
      * @param deltaSeconds Injected frame time.
      */
-    [[nodiscard]] audio_editing::EditorResult<audio_editing::AudioTransportSnapshot> update(double deltaSeconds);
+    [[nodiscard]] audio_editing::Result<audio_editing::AudioTransportSnapshot> update(double deltaSeconds);
 
     /**
      * @brief Bind a live OpenAL Source generated from the preview PCM when Audio/Sound exist.
      * @return Applied when live audition is bound; Unsupported when modules are absent.
      */
-    [[nodiscard]] audio_editing::EditorResult<void> attachLiveAudition();
+    [[nodiscard]] audio_editing::Result<void> attachLiveAudition();
 
     bool          canUndo() const noexcept { return transactions_.canUndo(); }
+    /** @brief Can redo. */
     bool          canRedo() const noexcept { return transactions_.canRedo(); }
+    /** @brief True when playing. */
     bool          isPlaying() const noexcept;
+    /** @brief Revision. */
     std::uint64_t revision() const noexcept { return target_.revision(); }
+    /** @brief Pcm revision. */
     std::uint64_t pcmRevision() const noexcept { return pcmRevision_; }
+    /** @brief Duration. */
     double        duration() const noexcept;
+    /** @brief Playhead. */
     double        playhead() const noexcept;
+    /** @brief Layout width. */
     float         layoutWidth() const noexcept { return viewportWidth_; }
+    /** @brief Bucket count. */
     int           bucketCount() const noexcept;
+    /** @brief Playhead x. */
     float         playheadX() const noexcept;
+    /** @brief Loop start x. */
     float         loopStartX() const noexcept;
+    /** @brief Loop end x. */
     float         loopEndX() const noexcept;
 
     /** @brief Read a property using the source selection. */
@@ -185,10 +212,10 @@ private:
     std::unique_ptr<PreviewSession, PreviewSessionDeleter> previewSession_;
     void                                                   initializePreview();
     [[nodiscard]] editor::SelectionSnapshot selection() const;
-    [[nodiscard]] audio_editing::EditorResult<void>        rebuildWaveform(float viewportWidth);
-    [[nodiscard]] audio_editing::EditorResult<void> bindClockAudition();
-    [[nodiscard]] audio_editing::EditorResult<void> syncLoop();
-    [[nodiscard]] audio_editing::EditorResult<void> publishLive();
+    [[nodiscard]] audio_editing::Result<void>              rebuildWaveform(float viewportWidth);
+    [[nodiscard]] audio_editing::Result<void> bindClockAudition();
+    [[nodiscard]] audio_editing::Result<void> syncLoop();
+    [[nodiscard]] audio_editing::Result<void> publishLive();
     [[nodiscard]] audio_editing::Revision           auditionRevision() const;
     void                                            seedPreviewDocument();
     void                                            generateTonePcm();

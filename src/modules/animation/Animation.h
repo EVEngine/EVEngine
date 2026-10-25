@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/MotionBuilder.h"
 #include "animation/MotionSequence.h"
@@ -12,6 +13,10 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+
+namespace ssq {
+class Class;
+}
 
 namespace eve::model3d {
 class ModelData;
@@ -35,6 +40,7 @@ class MotionDatabase;
 class MotionMatcher;
 class ControlAnim;
 class ControlPose;
+class PhysicalBalancePose;
 class AnimSkin;
 class AnimLattice;
 class AnimTrail;
@@ -71,11 +77,26 @@ class SpineAnim;
  * `ControlPose` (pose tracking with the same control laws).
  * Trails: `AnimTrail` records samples and draws fading trajectories.
  */
-class Animation : public Module {
+class EVENGINE_API_WORLD Animation : public Module {
 public:
     Module_REG(Animation);
-    Animation() = default;
+    // Declared, not `= default`: class-level dllexport forces MSVC to compute the
+    // defaulted constructor's exception specification, which needs the destructor of
+    // every member -- and `SpriteSheet` is only forward-declared here (line 47), so an
+    // in-class `= default` is C2027 "can't delete an incomplete type". Defined in
+    // Animation.cpp, which includes animation/SpriteSheet.h.
+    /** @brief Animation. */
+    Animation();
+    /** @brief Animation. */
     ~Animation() override;
+    // `spriteSequenceCache_` is a container of `unique_ptr`: dllexport instantiates
+    // every member, so the implicitly-defined copy operations would instantiate the
+    // container's copy (hard C2280). Copy is deleted; no move is declared because
+    // `MotionRuntime motions_` is itself neither copyable nor movable
+    // (MotionRuntime.h:130 deletes copy and declares no move), which would make a
+    // defaulted move operation ill-formed.
+    Animation(const Animation &)            = delete;
+    Animation &operator=(const Animation &) = delete;
 
     /** @brief Create a tween (duration in seconds). Returned pointer is owned by script GC. */
     Tween *newTween(float duration = 1.f);
@@ -90,11 +111,20 @@ public:
     SpriteSheet *newSpriteSheetFromSequence(eve::graphics::Graphics *gfx,
                                              const std::string &pattern, int first,
                                              int last, int columns = 0);
-    /** @brief Import Aseprite/TexturePacker JSON frame metadata and its atlas texture. */
+    /**
+     * @brief Import Aseprite/TexturePacker JSON Hash frames and their atlas texture.
+     * Clockwise-packed frames are normalized to upright pixels; frame.w/h are
+     * logical dimensions. Use the returned sheet's texture and frame coordinates.
+     * Original canvas sizes and trim offsets are preserved; JSON pivot is ignored.
+     * @cost With rotated frames, copies all frame pixels and uploads a padded grid
+     * once per import; reuse the returned sheet across animation instances.
+     */
     SpriteSheet *newSpriteSheetFromAtlasJson(eve::graphics::Graphics *gfx,
                                               const std::string &texturePath,
                                               const std::string &jsonPath);
+    /** @brief Creates a sprite clip. @ownership Caller deletes unless documented otherwise. */
     SpriteClip  *newSpriteClip(const std::string &name = "");
+    /** @brief Creates a sprite anim. @ownership Caller deletes unless documented otherwise. */
     SpriteAnim  *newSpriteAnim();
     /** @brief Number of decoded runtime sequence atlases retained for reuse. */
     int getSpriteSequenceCacheCount() const;
@@ -105,19 +135,27 @@ public:
 
     /** @brief Spine (region attachment subset) factories. */
     SpineAtlas        *newSpineAtlas();
+    /** @brief Creates a spine skeleton data. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonData();
+    /** @brief Creates a spine skeleton. @ownership Caller deletes unless documented otherwise. */
     SpineSkeleton     *newSpineSkeleton(SpineSkeletonData *data);
+    /** @brief Creates a spine anim. @ownership Caller deletes unless documented otherwise. */
     SpineAnim         *newSpineAnim(SpineSkeleton *skeleton);
 
     /** @brief Load helpers (allocate + parse; false → empty object still returned? prefer nullable). */
     SpineAtlas        *newSpineAtlasFromFile(const std::string &path);
+    /** @brief Creates a spine atlas from text. @ownership Caller deletes unless documented otherwise. */
     SpineAtlas        *newSpineAtlasFromText(const std::string &text);
+    /** @brief Creates a spine skeleton data from file. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonDataFromFile(const std::string &path);
+    /** @brief Creates a spine skeleton data from json. @ownership Caller deletes unless documented otherwise. */
     SpineSkeletonData *newSpineSkeletonDataFromJson(const std::string &json);
 
     /** @brief 3D skeletal animation factories (script GC owns returned objects). */
     AnimSkeleton     *newSkeleton();
+    /** @brief Creates a clip. @ownership Caller deletes unless documented otherwise. */
     AnimClip         *newClip(const std::string &name = "");
+    /** @brief Creates a pose. @ownership Caller deletes unless documented otherwise. */
     AnimPose         *newPose(int boneCount = 0);
     /** @brief Create a parallel batch clip evaluator. */
     AnimBatch        *newBatch();
@@ -154,6 +192,7 @@ public:
     FootIKSolver *newFootIKSolver(AnimSkeleton *skeleton);
     /** @brief Create a normalized-time player synchronization group. */
     AnimSyncGroup* newSyncGroup();
+    /** @brief Creates a player. @ownership Caller deletes unless documented otherwise. */
     AnimPlayer       *newPlayer(AnimSkeleton *skeleton);
     /** @brief Create a composable pose graph for the skeleton. */
     AnimGraph        *newGraph(AnimSkeleton *skeleton);
@@ -161,8 +200,11 @@ public:
     AnimBoneMask* newBoneMask(AnimSkeleton* skeleton);
     /** @brief Create an override/additive animation layer mixer. */
     AnimLayerMixer*   newLayerMixer(AnimSkeleton* skeleton);
+    /** @brief Creates a state machine. @ownership Caller deletes unless documented otherwise. */
     AnimStateMachine *newStateMachine(AnimSkeleton *skeleton);
+    /** @brief Creates a motion database. @ownership Caller deletes unless documented otherwise. */
     MotionDatabase   *newMotionDatabase(AnimSkeleton *skeleton);
+    /** @brief Creates a motion matcher. @ownership Caller deletes unless documented otherwise. */
     MotionMatcher    *newMotionMatcher(AnimSkeleton *skeleton, MotionDatabase *database);
 
     /**
@@ -171,13 +213,27 @@ public:
      */
     ControlAnim *newControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f,
                                 float response = 1.f);
+    /** @brief Creates a control pose. @ownership Caller deletes unless documented otherwise. */
     ControlPose *newControlPose(AnimSkeleton *skeleton);
+    /**
+     * @brief Impulse-driven balance overlay that wobbles then recovers toward the authored pose.
+     * @param skeleton Borrowed hierarchy; must outlive the returned object.
+     * @return Newly allocated overlay owned by the caller; never null.
+     * @ownership Owned; the caller (or script GC) deletes the object.
+     * @lifetime Independent of this Animation module after construction.
+     * @throws eve::Exception when skeleton is null.
+     * @thread Owner thread only; no callbacks.
+     */
+    PhysicalBalancePose* newPhysicalBalancePose(AnimSkeleton* skeleton);
 
     /**
-     * @brief Import skeleton/clip from Assimp-backed ModelData, or from compact
-     * `*.anim.txt` test fixtures (see AnimImporter).
+     * @brief Import skeleton/clip from Assimp-backed ModelData.
+     * @remarks Linked only when `OPTIONAL_DEPS model3d` is enabled
+     *          (`AnimationModelImport.cpp`). Prefer fixture text helpers when
+     *          model3d is trimmed.
      */
     AnimSkeleton *newSkeletonFromModel(eve::model3d::ModelData *model);
+    /** @brief Creates a clip from model. @ownership Caller deletes unless documented otherwise. */
     AnimClip     *newClipFromModel(eve::model3d::ModelData *model, AnimSkeleton *skeleton,
                                    int animIndex = 0);
     /**
@@ -276,7 +332,9 @@ public:
     /** @brief Legacy seconds facade; invalid input is explicitly consumed and ignored. */
     void update(float dt);
 
+    /** @brief Returns the tween count. */
     int getTweenCount() const { return static_cast<int>(tweens_.size()); }
+    /** @brief Returns the motion count. */
     int getMotionCount() const { return motions_.activeCount(); }
 
     /**
@@ -284,14 +342,19 @@ public:
      * @param floatCount Target number of float slots (Inactive + free-list).
      */
     void ensureMotionCapacity(std::size_t floatCount) { motions_.ensureCapacity(floatCount); }
+    /** @brief Returns the motion float capacity. */
     [[nodiscard]] std::size_t getMotionFloatCapacity() const noexcept {
         return motions_.floatCapacity();
     }
+    /** @brief Returns the motion float free count. */
     [[nodiscard]] std::size_t getMotionFloatFreeCount() const noexcept {
         return motions_.floatFreeCount();
     }
+    /** @brief Returns the sprite anim count. */
     int getSpriteAnimCount() const { return static_cast<int>(spriteAnims_.size()); }
+    /** @brief Returns the spine anim count. */
     int getSpineAnimCount() const { return static_cast<int>(spineAnims_.size()); }
+    /** @brief Returns the active count. */
     int getActiveCount() const;
 
     /** @brief Drop finished/stopped entries from the registry (does not delete Tween objects). */
@@ -319,5 +382,11 @@ private:
     eve::SimulationTick       lastTick_    = eve::SimulationTick::zero();
     bool                      hasLastTick_ = false;
 };
+
+/**
+ * @brief Register ModelData/Assimp import factories when AnimationModelImport.cpp
+ *        is linked (`OPTIONAL_DEPS model3d`).
+ */
+void exposeAnimationModelImportBindings(ssq::Class &cls);
 
 }  // namespace eve::animation

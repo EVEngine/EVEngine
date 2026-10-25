@@ -46,7 +46,7 @@ if (!restored.ok) print(restored.status.summary + "\n");
 `restoreJson` 先完整解析和校验，再替换可观察状态；失败不会留下部分恢复结果。
 恢复成功会使旧 batch 句柄失效，恢复后必须重新调用 `newBatch()`。
 
-## API 快查
+## 绑定与行为说明
 
 ### 模块、Store 与 Batch
 

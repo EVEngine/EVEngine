@@ -1,4 +1,6 @@
 create_module(EVCommon common)
+# ECS script component reflection uses the pinned VM internal class/instance layouts.
+target_include_directories(EVCommon PRIVATE "${CMAKE_SOURCE_DIR}/third-party/squirrel/squirrel")
 
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/config.h.in common/config.h)
 eve_configure_file_if_changed(${CMAKE_CURRENT_SOURCE_DIR}/common/BuildInfo.h.in common/BuildInfo.h)
@@ -25,6 +27,29 @@ add_custom_command(
             --json-output "${_eve_binding_contract_json}"
             --dts-output "${_eve_binding_contract_dts}"
     DEPENDS "${CMAKE_SOURCE_DIR}/scripts/generate_binding_contracts.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_architecture.py"
+            "${CMAKE_SOURCE_DIR}/scripts/binding_semantics.py"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.hpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/common/ScriptStructure.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexAutomatic.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexGraph.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/ProjectIndexScan.cpp"
+            "${CMAKE_SOURCE_DIR}/src/engine/devtools/McpProjectIndexTools.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/game_event/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/rpg/binding_semantics.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/Scene.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
+            "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp" "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.cpp"
+            "${CMAKE_SOURCE_DIR}/src/modules/inventory/Bag.h"
+            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_dap_tests.cpp"
     COMMENT "Generating strict EveScript Binding Contracts"
     VERBATIM)
 target_sources(EVCommon PRIVATE "${_eve_binding_contract_cpp}")
@@ -40,6 +65,7 @@ endif()
 eve_module_enabled(devtools _has_devtools)
 if(_has_devtools)
     create_module(EVDevTools devtools)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/devtools/McpToolFamilies.cmake")
     # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
     # (would request PocoFoundationd.lib instead of our *mdd postfix).
     # NOMINMAX: Poco headers pull in windows.h; without it the min/max macros
@@ -47,6 +73,8 @@ if(_has_devtools)
     target_compile_definitions(EVDevTools PUBLIC POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
 endif()
 create_module(EVCmdLine cmdline)
+# Derived from the resolved manifest, not a separately configurable feature flag.
+target_compile_definitions(EVCmdLine PRIVATE EVENGINE_CMDLINE_DEVTOOLS=$<BOOL:${_has_devtools}>)
 target_sources(EVCmdLine PRIVATE cmdline/Sha256.cpp)
 # DevTool.hpp (pulled in by cmdline/Run.cpp) includes Poco JSON/Net headers;
 # keep the same no-auto-link contract so the debug Poco libs (*mdd) are used.
@@ -83,23 +111,7 @@ endif()
 # Crash-backtrace support (backward-cpp from EVEngine/third-party, MIT). The
 # host binary installs an unhandled-exception handler (main.cpp) that prints a
 # symbolized stack trace on crash; it is a host-only tool, not a game module.
-if(WIN32)
-    add_library(EVBacktrace INTERFACE)
-    # backward.hpp lives in the third-party install; get its include dirs
-    # through the shared include target instead of global include_directories.
-    target_link_libraries(EVBacktrace INTERFACE eve_engine_includes)
-    if(EVENGINE_THIRD_PARTY_BINARY_DIR)
-        # Prebuilt-install mode: point at the install tree directly.
-        target_include_directories(EVBacktrace INTERFACE ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include)
-        target_link_libraries(EVBacktrace INTERFACE
-            ${EVENGINE_THIRD_PARTY_BINARY_DIR}/lib/backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>.lib)
-    else()
-        # ExternalProject mode (CI): the root CMakeLists already added the
-        # third-party install include/lib dirs to the global search paths.
-        target_link_libraries(EVBacktrace INTERFACE
-            backward$<$<CONFIG:Debug>:mdd>$<$<NOT:$<CONFIG:Debug>>:md>)
-    endif()
-endif()
+include(${CMAKE_SOURCE_DIR}/cmake/host_backtrace.cmake)
 
 # Engine entry-point sources include common/config.h / cmdline/*.h directly;
 # link the shared include set explicitly (also propagates the third-party
@@ -122,7 +134,9 @@ message(STATUS "Third-party groups: ${EVE_THIRDPARTY_GROUPS}")
 
 # Module link list, derived from the module manifest; EVCommon, EVCmdLine and
 # EVDevTools are declared there too, so only the embedded scripts are added here.
-set(EVELIBS EVScripts ${EVE_MODULE_LIBS})
+# EVE_LINK_TARGETS is the module libraries in OBJECT mode and the link-group
+# shared libraries in SHARED mode (see cmake/link_groups.cmake).
+set(EVELIBS EVScripts ${EVE_LINK_TARGETS})
 if(_has_devtools)
     # DevTools ImGui host panels (AI + console) compile into the host binary --
     # not EVDevTools, which avoids imgui.h to protect MSVC export limits.

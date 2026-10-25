@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 namespace eve::scene {
 
@@ -8,9 +10,11 @@ class SceneHost;
  * @brief Propagates local TRS → world matrices for all SceneHost trees (or one host).
  * Call after mount/reconcile or local transform edits.
  */
-class TransformSystem {
+class EVENGINE_API_PLATFORM TransformSystem {
 public:
+    /** @brief Updates all. */
     static void updateAll();
+    /** @brief Updates host. */
     static void updateHost(SceneHost *host);
 };
 

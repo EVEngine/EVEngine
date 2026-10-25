@@ -23,18 +23,18 @@ editor::PropertySchema AudioSourcePresentation::schema() const {
 editor::PropertyReadResult AudioSourcePresentation::read(const editor::PropertyPath& path) const {
     return source_.read(path.value());
 }
-editor::EditorResult<void> AudioSourcePresentation::write(const editor::PropertyPath& path,
-                                                          const editor::EditorValue&  value) {
+editor::Result<void> AudioSourcePresentation::write(const editor::PropertyPath& path,
+                                                    const editor::EditorValue&  value) {
     const auto descriptor = schema().find(path);
     if (!descriptor || editor::hasPropertyFlag(descriptor->flags, editor::PropertyFlag::ReadOnly))
         return editing::failed<void>(editor::EditorStatus::Rejected, editor::RuleId("editor.audio.property"),
                                      "Property is unavailable in this preview host");
     return source_.setProperty(path.value(), value);
 }
-editor::EditorResult<void> AudioSourcePresentation::action(std::string_view id) {
+editor::Result<void> AudioSourcePresentation::action(std::string_view id) {
     if (id == "undo" || id == "redo") {
         auto result = id == "undo" ? source_.undo() : source_.redo();
-        if (!result.ok()) return editor::EditorResult<void>::failure(result.status());
+        if (!result.ok()) return editor::Result<void>::failure(result.status());
         return editing::applied<void>();
     }
     if (id == "play-pause") return source_.isPlaying() ? source_.pause() : source_.play();

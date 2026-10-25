@@ -76,8 +76,8 @@ editor::PropertyReadResult AnimationClipPresentation::read(const editor::Propert
         return {};
     return {editor::PropertyReadState::Value, std::move(value), {}};
 }
-editor::EditorResult<void> AnimationClipPresentation::write(const editor::PropertyPath& path,
-                                                            const editor::EditorValue&  value) {
+editor::Result<void> AnimationClipPresentation::write(const editor::PropertyPath& path,
+                                                      const editor::EditorValue&  value) {
     const auto descriptor = schema().find(path);
     if (!descriptor || editor::hasPropertyFlag(descriptor->flags, editor::PropertyFlag::ReadOnly))
         return editing::failed<void>(editor::EditorStatus::Rejected, editor::RuleId("editor.animation.property"),
@@ -106,10 +106,10 @@ editor::EditorResult<void> AnimationClipPresentation::write(const editor::Proper
     return editing::failed<void>(editor::EditorStatus::NotFound, editor::RuleId("editor.animation.property"),
                                  "Unknown property");
 }
-editor::EditorResult<void> AnimationClipPresentation::action(std::string_view id) {
+editor::Result<void> AnimationClipPresentation::action(std::string_view id) {
     if (id == "undo" || id == "redo") {
         auto result = id == "undo" ? source_.undo() : source_.redo();
-        if (!result.ok()) return editor::EditorResult<void>::failure(result.status());
+        if (!result.ok()) return editor::Result<void>::failure(result.status());
         return editing::applied<void>();
     }
     if (id == "set-key") return source_.keySelectedBone();

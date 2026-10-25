@@ -1,4 +1,4 @@
-// Terrain reference: the level stores *how to obtain* terrain, not the samples.
+// Terrain source reference; v2 documents additionally embed the sculpted samples.
 //
 // mode = "generated" recreates the heightmap deterministically from the sampler
 // parameters below, so the level file stays small and diffable.
@@ -72,11 +72,19 @@ function terrainSampleBounds(heightmap) {
 
 // Builds the sampling surface for `reference` and returns it, or null with
 // level.status set. The caller owns attaching it to the scene and collider.
-function terrainBuild(reference) {
+function terrainBuild(reference, surface = null, publish = true) {
     local heightmap = null, spacingX = reference.spacing, spacingZ = reference.spacing;
     local decodedMin = 0.0, decodedMax = 1.0;
 
-    if (reference.mode == "asset") {
+    if (surface != null) {
+        local created = procgen.newHeightmap(2, 2);
+        if (!created.ok) { level.status = created.status.summary; return null; }
+        heightmap = created.value;
+        local decoded = level.heightmapTargets.decodeDocument(surface, heightmap);
+        if (!decoded.ok) { level.status = decoded.status.summary; return null; }
+        local bounds = terrainSampleBounds(heightmap);
+        decodedMin = bounds.minimum; decodedMax = bounds.maximum;
+    } else if (reference.mode == "asset") {
         local loaded = procgen.loadTerrainFile(reference.path, reference.format);
         if (!loaded.ok) { level.status = loaded.status.summary; return null; }
         heightmap = loaded.value;
@@ -104,19 +112,25 @@ function terrainBuild(reference) {
 
     // EVTRN stores metres already; the procedural path stores normalized samples.
     local scale = reference.mode == "asset" ? 1.0 : reference.heightScale;
+    if (fabs(spacingX - spacingZ) > 0.00001) {
+        level.status = "anisotropic terrain spacing is unsupported by the smooth mesh"; return null;
+    }
     local mesh = level.heightmapTargets.newSmoothMesh(heightmap, spacingX, scale);
     if (mesh == null) { level.status = "terrain mesh build failed"; return null; }
 
     local entity = eve.Renderable3D();
     entity.setMesh(mesh);
+    entity.setVisible(publish);
     entity.setPosition(reference.originX, 0.0, reference.originZ);
     entity.setTint(0.30, 0.38, 0.30, 1.0);
     entity.setRoughness(0.92);
     entity.setReceiveShadow(true);
     entity.setCastShadow(false);
 
+    local stored=levelCopy(reference);
+    stored.width=heightmap.getWidth();stored.height=heightmap.getHeight();stored.spacing=spacingX;
     local terrain = {
-        reference = reference,
+        reference = stored,
         heightmap = heightmap,
         mesh = mesh,
         entity = entity,
@@ -133,13 +147,13 @@ function terrainBuild(reference) {
         body = null
     };
     terrain.mesh = mesh;
-    level.terrain = terrain;
+    if (publish) level.terrain = terrain;
     return terrain;
 }
 
 function terrainDispose() {
     if (level.terrain == null) return;
-    if (level.terrain.entity != null) level.terrain.entity.setVisible(false);
+    levelReleaseRenderable(level.terrain.entity);
     level.terrain = null;
 }
 
@@ -154,19 +168,22 @@ function terrainRebuild(reference) {
     local previous = level.terrain;
     local built = terrainBuild(reference);
     if (built == null) return null;
-    if (previous != null && previous != built && previous.entity != null) previous.entity.setVisible(false);
+    if (previous != null && previous != built) levelReleaseRenderable(previous.entity);
     return built;
 }
 
 /** @brief Rebuild from the level's own reference, then re-frame the view. */
 function levelRebuildTerrain() {
-    local reference = level.terrain != null ? level.terrain.reference : terrainDefaultReference();
+    terrainEndStroke();
+    local reference = level.terrainDraft != null ? level.terrainDraft :
+        (level.terrain != null ? level.terrain.reference : terrainDefaultReference());
     local previous = level.terrain;
     if (terrainRebuild(reference) == null) {
         level.status = "terrain rebuild failed: " + level.status;
         level.terrain = previous;
         return;
     }
+    level.terrainUndo.clear(); level.terrainRedo.clear(); level.terrainDraft=null;
     whiteboxSyncTransforms();
     spawnSyncTransforms();
     levelFrameTerrain();
@@ -227,10 +244,11 @@ function terrainBuildCollider(world) {
         }
     }
     local body = world.newBody("static", terrain.originX, 0.0, terrain.originZ);
-    body.newHeightFieldShapeFull(terrain.width, terrain.height,
+    local shape = body.newHeightFieldShapeFull(terrain.width, terrain.height,
         terrain.spacingX, terrain.spacingZ, heights,
         terrain.minSample * terrain.heightScale - 0.01,
         terrain.maxSample * terrain.heightScale + 0.01, false);
+    if (shape == null) { body.destroy(); return null; }
     terrain.body = body;
     return body;
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "common/Export.h"
 
 #include "animation/AnimControlMath.h"
 #include "common/Time.h"
@@ -21,23 +22,32 @@ namespace eve::animation {
  * - "spring"      — closed-form damped spring about set-point (f, ζ; r ignored)
  * - "pd"          — τ/m = Kp(x − y) + Kd(ẋ − ẏ) with Kp=ω², Kd=2ζω
  */
-class ControlAnim {
+class EVENGINE_API_WORLD ControlAnim {
 public:
+    /** @brief Control anim. */
     ControlAnim(float frequencyHz = 3.f, float dampingZeta = 1.f, float response = 1.f);
+    /** @brief Control anim. */
     ~ControlAnim() = default;
 
     ControlAnim(const ControlAnim &)            = delete;
     ControlAnim &operator=(const ControlAnim &) = delete;
 
+    /** @brief Sets the frequency. */
     void  setFrequency(float frequencyHz);
+    /** @brief Returns the frequency. */
     float getFrequency() const { return frequencyHz_; }
+    /** @brief Sets the damping. */
     void  setDamping(float dampingZeta);
+    /** @brief Returns the damping. */
     float getDamping() const { return dampingZeta_; }
+    /** @brief Sets the response. */
     void  setResponse(float response);
+    /** @brief Returns the response. */
     float getResponse() const { return response_; }
 
     /** @brief Integrator: "secondOrder" | "spring" | "pd". Invalid → exception. */
     void        setIntegrator(const std::string &kind);
+    /** @brief Returns the integrator. */
     std::string getIntegrator() const;
 
     /** @brief Create/update a channel: current value snaps to `value`, velocity cleared. */
@@ -49,14 +59,22 @@ public:
     /** @brief Inject an instantaneous velocity impulse (procedural “hit”). */
     void impulse(const std::string &name, float deltaVelocity);
 
+    /** @brief True when active. */
     bool  has(const std::string &name) const;
+    /** @brief Returns the value. */
     float get(const std::string &name) const;
+    /** @brief Returns the velocity. */
     float getVelocity(const std::string &name) const;
+    /** @brief Returns the target. */
     float getTarget(const std::string &name) const;
 
+    /** @brief Clears . */
     void clear();
+    /** @brief Removes . */
     void remove(const std::string &name);
+    /** @brief Returns the property count. */
     int  getPropertyCount() const { return static_cast<int>(order_.size()); }
+    /** @brief Returns the property name. */
     std::string getPropertyName(int index) const;
 
     /** @brief Advance all channels by one scheduler-owned deterministic step. */

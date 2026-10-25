@@ -41,6 +41,20 @@ struct ActionPreviewCue {
 struct ActionPreviewFrame {
     ActionPreviewReason              reason = ActionPreviewReason::Refresh;
     std::string                      animationUri;
+    /** @brief Editor-selected model URI; empty delegates model choice to the host. */
+    std::string                      previewModelUri;
+    /** @brief Optional locomotion/base-motion URI evaluated beneath the action layer. */
+    std::string                      baseMotionUri;
+    /** @brief Optional animation profile used for retargeting and named-bone policies. */
+    std::string                      animationProfileUri;
+    /** @brief Optional per-asset bone-mask URI. */
+    std::string                      boneMaskUri;
+    bool                             footIk         = false;
+    bool                             showRootMotion = true;
+    bool                             showGrid       = true;
+    bool                             showSkeleton   = false;
+    bool                             showJointNames = false;
+    bool                             litShading     = true;
     Duration                         previous;
     Duration                         current;
     std::vector<ActionPreviewCue>    cues;
@@ -58,6 +72,7 @@ struct ActionPreviewFrame {
  */
 class IActionPreviewSink {
 public:
+    /** @brief Releases IActionPreviewSink resources. */
     virtual ~IActionPreviewSink() = default;
     /** @brief Validate and stage every resource required by a frame. */
     [[nodiscard]] virtual Result<void> prepare(const ActionPreviewFrame& frame) = 0;
@@ -77,6 +92,7 @@ public:
 class IActionPreviewSinkProvider {
 public:
     static constexpr const char* capabilityName = "eve.action.preview-sink-provider";
+    /** @brief Releases IActionPreviewSinkProvider resources. */
     virtual ~IActionPreviewSinkProvider() = default;
     /** @brief Create one isolated preview sink owned by the caller. */
     [[nodiscard]] virtual Result<std::unique_ptr<IActionPreviewSink>> createActionPreviewSink() = 0;
@@ -85,6 +101,7 @@ public:
 /** @brief Optional animation provider that samples an owning root-motion polyline. */
 class IActionRootMotionSource {
 public:
+    /** @brief Releases IActionRootMotionSource resources. */
     virtual ~IActionRootMotionSource() = default;
     /** @brief Sample animation root motion from zero through duration, including both endpoints. */
     [[nodiscard]] virtual Result<std::vector<ActionPreviewPoint3>> sampleRootMotion(

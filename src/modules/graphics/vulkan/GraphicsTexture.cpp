@@ -142,7 +142,7 @@ Texture *Graphics::newTexture(int w, int h, const uint8_t *rgba, const TextureCr
 Result<Texture *> Graphics::newTextureMipChain(uint32_t width, uint32_t height, uint32_t levels,
                                                std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
-        return Result<Texture *>::failure(Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.mips"));
+        return Result<Texture *>::failure(Diagnostic::error(code, message, {}, {}, "graphics.texture.mips"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto maximum = device.physical_device.properties.limits.maxImageDimension2D;
@@ -202,7 +202,7 @@ Result<Texture *> Graphics::newTextureArrayRgba16f(uint32_t width, uint32_t heig
                                                    std::span<const uint16_t> rgbaHalf) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.array"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.array"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -256,7 +256,7 @@ Result<Texture *> Graphics::newTexture3DRgba8(uint32_t width, uint32_t height, u
                                               std::span<const uint8_t> rgba) {
     auto fail = [](DiagnosticCode code, std::string message) {
         return Result<Texture *>::failure(
-            Diagnostic::error(code, std::move(message), {}, {}, "graphics.texture.volume"));
+            Diagnostic::error(code, message, {}, {}, "graphics.texture.volume"));
     };
     if (!initialized) return fail(DiagnosticCode::Failed, "graphics is not initialized");
     const auto    &limits = device.physical_device.properties.limits;
@@ -368,46 +368,13 @@ Texture *Graphics::newHDRCubemap(int faceSize) {
     if (!initialized || faceSize <= 0) return nullptr;
     const uint32_t size = static_cast<uint32_t>(faceSize);
     const uint32_t mipLevels = uint32_t(mipmapCountForSize(faceSize, faceSize));
-    vk::ImageCreateInfo imageInfo{};
-    imageInfo.flags = vk::ImageCreateFlagBits::eCubeCompatible;
-    imageInfo.imageType = vk::ImageType::e2D;
-    imageInfo.format = vk::Format::eR16G16B16A16Sfloat;
-    imageInfo.extent = vk::Extent3D{size, size, 1};
-    imageInfo.mipLevels = mipLevels;
-    imageInfo.arrayLayers = 6;
-    imageInfo.samples = vk::SampleCountFlagBits::e1;
-    imageInfo.tiling = vk::ImageTiling::eOptimal;
-    imageInfo.usage = vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferDst |
-                      vk::ImageUsageFlagBits::eTransferSrc |
-                      vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eStorage;
-    imageInfo.sharingMode = vk::SharingMode::eExclusive;
 
     auto gpu = std::make_unique<GpuTexture>();
-    gpu->rawCubeImage = device->createImageUnique(imageInfo);
-    const vk::MemoryRequirements requirements =
-        device->getImageMemoryRequirements(*gpu->rawCubeImage);
-    uint32_t memoryType = UINT32_MAX;
-    const auto &memoryProperties = device.physical_device.memory_properties;
-    for (uint32_t index = 0; index < memoryProperties.memoryTypeCount; ++index) {
-        if ((requirements.memoryTypeBits & (1u << index)) != 0u &&
-            (memoryProperties.memoryTypes[index].propertyFlags &
-             vk::MemoryPropertyFlagBits::eDeviceLocal) != vk::MemoryPropertyFlags{}) {
-            memoryType = index;
-            break;
-        }
+    try {
+        gpu->hdrCube = device.createCubemapRenderTarget(size, mipLevels);
+    } catch (const std::exception &) {
+        return nullptr;
     }
-    if (memoryType == UINT32_MAX) return nullptr;
-    gpu->rawCubeMemory = device->allocateMemoryUnique(
-        vk::MemoryAllocateInfo{requirements.size, memoryType});
-    device->bindImageMemory(*gpu->rawCubeImage, *gpu->rawCubeMemory, 0);
-
-    vk::ImageViewCreateInfo viewInfo{};
-    viewInfo.image = *gpu->rawCubeImage;
-    viewInfo.viewType = vk::ImageViewType::eCube;
-    viewInfo.format = imageInfo.format;
-    viewInfo.subresourceRange =
-        vk::ImageSubresourceRange{vk::ImageAspectFlagBits::eColor, 0, mipLevels, 0, 6};
-    gpu->rawCubeView = device->createImageViewUnique(viewInfo);
     gpu->width = faceSize;
     gpu->height = faceSize;
     gpu->isCube = true;
@@ -416,22 +383,9 @@ Texture *Graphics::newHDRCubemap(int faceSize) {
     gpu->samplerState = TextureSampler::linearMipmap();
     gpu->sampler = createVkSampler(gpu->samplerState, mipLevels);
 
-    vkb::executeImmediately(device.instance, uploadPool,
-                            device.getQueue(vkb::QueueType::graphics),
-                            [&](vk::CommandBuffer command) {
-                                vk::ImageMemoryBarrier barrier{};
-                                barrier.srcAccessMask = {};
-                                barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
-                                barrier.oldLayout = vk::ImageLayout::eUndefined;
-                                barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
-                                barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                barrier.image = *gpu->rawCubeImage;
-                                barrier.subresourceRange = viewInfo.subresourceRange;
-                                command.pipelineBarrier(vk::PipelineStageFlagBits::eTopOfPipe,
-                                                        vk::PipelineStageFlagBits::eFragmentShader,
-                                                        {}, 0, nullptr, 0, nullptr, 1, &barrier);
-                            });
+    vkb::executeImmediately(
+        device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
+        [&](vk::CommandBuffer command) { gpu->hdrCube.setLayout(command, vk::ImageLayout::eShaderReadOnlyOptimal); });
     registerBindlessTextureCube(gpu.get());
 
     auto texture = std::make_unique<Texture>();
@@ -454,8 +408,8 @@ bool Graphics::copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int 
     if (!canvas || !canvas->isHDR() || !cubemap || !cubemap->gpuHandle || face < 0 || face >= 6)
         return false;
     auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
-    if (!target->isCube || !target->isHDR || !target->rawCubeImage ||
-        canvas->getWidth() != target->width || canvas->getHeight() != target->height)
+    if (!target->isCube || !target->isHDR || !target->hdrCube.valid() || canvas->getWidth() != target->width ||
+        canvas->getHeight() != target->height)
         return false;
     ensureOffscreen3DResources();
     lastOffscreen3DGpuDurationMs = 0.f;
@@ -476,7 +430,7 @@ bool Graphics::copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int 
                                 toCopy.newLayout = vk::ImageLayout::eTransferDstOptimal;
                                 toCopy.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                                 toCopy.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                toCopy.image = *target->rawCubeImage;
+                                toCopy.image               = target->hdrCube.image();
                                 toCopy.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1,
                                                            uint32_t(face), 1};
                                 command.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
@@ -488,10 +442,9 @@ bool Graphics::copyHDRCanvasToCubemapFace(Canvas *source, Texture *cubemap, int 
                                                        uint32_t(face), 1};
                                 copy.extent = vk::Extent3D{uint32_t(target->width),
                                                            uint32_t(target->height), 1};
-                                command.copyImage(canvas->colorImage().image(),
-                                                  vk::ImageLayout::eTransferSrcOptimal,
-                                                  *target->rawCubeImage,
-                                                  vk::ImageLayout::eTransferDstOptimal, 1, &copy);
+                                command.copyImage(canvas->colorImage().image(), vk::ImageLayout::eTransferSrcOptimal,
+                                                  target->hdrCube.image(), vk::ImageLayout::eTransferDstOptimal, 1,
+                                                  &copy);
                                 std::swap(toCopy.srcAccessMask, toCopy.dstAccessMask);
                                 std::swap(toCopy.oldLayout, toCopy.newLayout);
                                 command.pipelineBarrier(vk::PipelineStageFlagBits::eTransfer,
@@ -521,7 +474,7 @@ bool Graphics::copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
     if (!sources || faceCount < 1 || faceCount > 6 || !cubemap || !cubemap->gpuHandle)
         return false;
     auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
-    if (!target->isCube || !target->isHDR || !target->rawCubeImage) return false;
+    if (!target->isCube || !target->isHDR || !target->hdrCube.valid()) return false;
 
     std::array<OffscreenCanvas *, 6> canvases{};
     for (int face = 0; face < faceCount; ++face) {
@@ -554,7 +507,7 @@ bool Graphics::copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                     toCopy.newLayout = vk::ImageLayout::eTransferDstOptimal;
                                     toCopy.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                                     toCopy.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                    toCopy.image = *target->rawCubeImage;
+                                    toCopy.image               = target->hdrCube.image();
                                     toCopy.subresourceRange =
                                         vk::ImageSubresourceRange(vk::ImageAspectFlagBits::eColor,
                                                                   0, 1, uint32_t(face), 1);
@@ -573,10 +526,8 @@ bool Graphics::copyHDRCanvasesToCubemap(Canvas *const *sources, int faceCount,
                                     copy.extent = vk::Extent3D(uint32_t(canvas->getWidth()),
                                                                uint32_t(canvas->getHeight()), 1);
                                     command.copyImage(canvas->colorImage().image(),
-                                                      vk::ImageLayout::eTransferSrcOptimal,
-                                                      *target->rawCubeImage,
-                                                      vk::ImageLayout::eTransferDstOptimal, 1,
-                                                      &copy);
+                                                      vk::ImageLayout::eTransferSrcOptimal, target->hdrCube.image(),
+                                                      vk::ImageLayout::eTransferDstOptimal, 1, &copy);
 
                                     std::swap(toCopy.srcAccessMask, toCopy.dstAccessMask);
                                     std::swap(toCopy.oldLayout, toCopy.newLayout);
@@ -612,8 +563,7 @@ bool Graphics::filterHDRReflectionCubemap(Texture *cubemap, int sampleCount) {
 #else
     if (!cubemap || !cubemap->gpuHandle) return false;
     auto *target = static_cast<GpuTexture *>(cubemap->gpuHandle);
-    if (!target->isCube || !target->isHDR || !target->rawCubeImage || target->mipLevels < 2)
-        return false;
+    if (!target->isCube || !target->isHDR || !target->hdrCube.valid() || target->mipLevels < 2) return false;
     sampleCount = std::clamp(sampleCount, 8, 512);
     ensureOffscreen3DResources();
     lastOffscreen3DGpuDurationMs = 0.f;
@@ -638,22 +588,11 @@ bool Graphics::filterHDRReflectionCubemap(Texture *cubemap, int sampleCount) {
             return false;
     }
 
-    vk::ImageViewCreateInfo sourceInfo{};
-    sourceInfo.image = *target->rawCubeImage;
-    sourceInfo.viewType = vk::ImageViewType::eCube;
-    sourceInfo.format = vk::Format::eR16G16B16A16Sfloat;
-    sourceInfo.subresourceRange = {vk::ImageAspectFlagBits::eColor, 0, 1, 0, 6};
-    vk::UniqueImageView sourceView = device->createImageViewUnique(sourceInfo);
+    vk::UniqueImageView              sourceView = target->hdrCube.createBaseCubeView();
     std::vector<vk::UniqueImageView> targetViews;
     targetViews.reserve(target->mipLevels - 1u);
-    for (uint32_t mip = 1; mip < target->mipLevels; ++mip) {
-        vk::ImageViewCreateInfo info{};
-        info.image = *target->rawCubeImage;
-        info.viewType = vk::ImageViewType::e2DArray;
-        info.format = sourceInfo.format;
-        info.subresourceRange = {vk::ImageAspectFlagBits::eColor, mip, 1, 0, 6};
-        targetViews.push_back(device->createImageViewUnique(info));
-    }
+    for (uint32_t mip = 1; mip < target->mipLevels; ++mip)
+        targetViews.push_back(target->hdrCube.createMipArrayView(mip));
 
     std::array<vk::DescriptorPoolSize, 2> poolSizes{
         vk::DescriptorPoolSize{vk::DescriptorType::eCombinedImageSampler,
@@ -702,7 +641,7 @@ bool Graphics::filterHDRReflectionCubemap(Texture *cubemap, int sampleCount) {
                                     toWrite.newLayout = vk::ImageLayout::eGeneral;
                                     toWrite.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                                     toWrite.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                                    toWrite.image = *target->rawCubeImage;
+                                    toWrite.image               = target->hdrCube.image();
                                     toWrite.subresourceRange = {vk::ImageAspectFlagBits::eColor, mip,
                                                                 1, 0, 6};
                                     command.pipelineBarrier(vk::PipelineStageFlagBits::eFragmentShader,
@@ -764,23 +703,24 @@ Texture *Graphics::newTexture(image::ImageData *data, const TextureCreateInfo &i
                       static_cast<const uint8_t *>(data->getData()), info);
 }
 
-
-void Graphics::setTextureSampler(Texture *texture, const TextureSampler &sampler) {
-    ensureFileTexturesReady();
-    if (!texture || !texture->gpuHandle || !initialized) return;
-    for (auto &owned : ownedGpuTextures) {
-        if (owned.get() != texture->gpuHandle) continue;
-        // In-flight frames may still be sampling the old sampler / descriptor.
-        waitForSharedGpuResources();
-        if (owned->sampler) device->destroySampler(owned->sampler);
-        owned->samplerState = sampler;
-        owned->sampler = createVkSampler(sampler, owned->mipLevels);
-        texture->sampler = sampler;
-        if (!owned->isCube) writeCombinedImageDescriptor(owned.get());
-        invalidateTextureBindings();
-        return;
+ResultRef<Texture> Graphics::newSharedTexture(image::ImageData *data, const std::string &contentKey) {
+    if (!data || contentKey.empty() || data->getFormat() != "RGBA8")
+        return ResultRef<Texture>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
+                                                             "RGBA8 image and nonempty content key are required", {},
+                                                             {}, "graphics.texture.shared"));
+    if (auto found = sharedTexturesByContent.find(contentKey); found != sharedTexturesByContent.end())
+        return ResultRef<Texture>::success(std::ref(*found->second));
+    try {
+        Texture *texture = newTexture(data);
+        if (!texture) throw Exception("shared texture upload produced no texture");
+        sharedTexturesByContent.emplace(contentKey, texture);
+        return ResultRef<Texture>::success(std::ref(*texture));
+    } catch (const std::exception &error) {
+        return ResultRef<Texture>::failure(
+            Diagnostic::error(DiagnosticCode::Failed, error.what(), {}, {}, "graphics.texture.shared"));
     }
 }
+
 
 bool Graphics::releaseTexture(Texture *texture) {
     if (!texture) return false;
@@ -794,6 +734,12 @@ bool Graphics::releaseTexture(Texture *texture) {
         for (auto it = texturesByPath.begin(); it != texturesByPath.end();) {
             if (it->second == texture)
                 it = texturesByPath.erase(it);
+            else
+                ++it;
+        }
+        for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+            if (it->second == texture)
+                it = sharedTexturesByContent.erase(it);
             else
                 ++it;
         }
@@ -827,11 +773,17 @@ bool Graphics::releaseTexture(Texture *texture) {
         else
             ++it;
     }
+    for (auto it = sharedTexturesByContent.begin(); it != sharedTexturesByContent.end();) {
+        if (it->second == texture)
+            it = sharedTexturesByContent.erase(it);
+        else
+            ++it;
+    }
 
     // In-flight frames may still sample the image / sampler; drain first.
     waitForSharedGpuResources();
     unregisterBindlessTexture(gpu);
-    if ((*gpuIt)->sampler) device->destroySampler((*gpuIt)->sampler);
+    if ((*gpuIt)->sampler && !(*gpuIt)->sharedSampler) device->destroySampler((*gpuIt)->sampler);
     texture->gpuHandle = nullptr;
     ownedGpuTextures.erase(gpuIt);
     // Transfer the CPU facade to the caller instead of destroying it.
@@ -1061,7 +1013,7 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
         // samples it is a typical TDR. Drain first, then drop cached sets.
         waitForSharedGpuResources();
         unregisterBindlessTexture(static_cast<GpuTexture *>(oldHandle));
-        if (owned->sampler) device->destroySampler(owned->sampler);
+        if (owned->sampler && !owned->sharedSampler) device->destroySampler(owned->sampler);
         owned = std::move(gpu);
         tex->gpuHandle = owned.get();
         tex->width = w;
@@ -1088,57 +1040,5 @@ bool Graphics::replaceTexturePixelsRGBA(Texture *tex, int w, int h, const uint8_
     return true;
 }
 
-Texture *Graphics::newTextureFromFile(const std::string &filename) {
-    ASSERT(!filename.empty());
-    if (filename.empty()) throw Exception("newTextureFromFile: empty filename");
-
-    const std::string key = normalizeTexPath(filename);
-    if (!fileTextureSourceExists(filename) && !fileTextureSourceExists(key))
-        throw Exception("Could not load image file: %s", filename.c_str());
-
-    auto it = texturesByPath.find(key);
-    if (it != texturesByPath.end() && it->second) {
-        requestFileImageDecode(key);
-        if (it->second->hasDeferredFilePixels()) return it->second;
-        auto waited = eve::ResourceManager::getInstance().waitFor(key);
-        if (!waited.ok()) throw Exception("%s", waited.status().describe().c_str());
-        auto *data = dynamic_cast<image::ImageData *>(&waited.value().get());
-        if (!data || !replaceTexturePixels(it->second, data))
-            throw Exception("newTextureFromFile: reload failed '%s'", filename.c_str());
-        return it->second;
-    }
-
-    requestFileImageDecode(key);
-    auto tex = std::make_unique<Texture>();
-    tex->markDeferredFilePixels(this);
-    Texture *raw = tex.get();
-    ownedTextures.push_back(std::move(tex));
-    texturesByPath[key] = raw;
-    deferredFileTextures_.push_back({key, raw});
-    return raw;
-}
-
-bool Graphics::uploadDeferredFileTexture(Texture *texture, image::ImageData *data) {
-    return replaceTexturePixels(texture, data);
-}
-
-bool Graphics::reloadTextureFromFile(const std::string &filename) {
-    if (filename.empty()) return false;
-    const std::string key = normalizeTexPath(filename);
-    auto it = texturesByPath.find(key);
-    if (it == texturesByPath.end() || !it->second) return false;
-
-    ensureFileTexturesReady();
-    image::ImageData *data = nullptr;
-    try {
-        auto *imgMod = image::Image::create();
-        eve::ref<image::ImageData> cached(imgMod->newImageDataFromFile(filename));
-        data = cached.get();
-    } catch (...) {
-        return false;
-    }
-    if (!data) return false;
-    return replaceTexturePixels(it->second, data);
-}
 
 }  // namespace eve::graphics::vulkan

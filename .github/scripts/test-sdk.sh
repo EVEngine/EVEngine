@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# test-sdk.sh <sdk-root> <platform> [expected-version]
+# test-sdk.sh <sdk-root> <platform> [expected-version] [android-abi|macos-arch]
+# macos-arch is required for macOS: arm64 or x86_64.
 #
 # Verify a freshly-built target-platform SDK is usable by consumers, before it is
 # zipped and published to a GitHub Release. Runs on the same host as the SDK:
@@ -34,6 +35,9 @@ case "$SDK" in
 esac
 PLAT="${2:?usage: test-sdk.sh <sdk-root> <platform> [expected-version]}"
 EXPECTED="${3:-}"
+ANDROID_PACKAGE_ABI="${4:-arm64-v8a}"
+SCRIPTS="$(cd "$(dirname "$0")" && pwd)"
+SDK_TEST_CONFIG="${SDK_TEST_CONFIG:-Release}"
 
 case "$PLAT" in
   win32)           RUNTIME="eve.exe" ;;
@@ -74,13 +78,15 @@ if [ "$PLAT" = "android" ]; then
     fail "android template launcher must be EVEngineActivity (EVTestActivity has MAIN)"
   fi
 
-  JNI="$TEMPLATE/app/src/main/jniLibs/arm64-v8a"
+  JNI="$TEMPLATE/app/src/main/jniLibs/$ANDROID_PACKAGE_ABI"
   mkdir -p "$JNI"
   [ -f "$SDK/lib/libmain.so" ] || fail "missing lib/libmain.so"
   cp "$SDK/lib/libmain.so" "$JNI/"
-  for lib in libSDL2.so libhidapi.so libc++_shared.so; do
-    [ -f "$SDK/lib/$lib" ] && cp "$SDK/lib/$lib" "$JNI/"
+  for lib in libSDL2.so libc++_shared.so; do
+    [ -f "$SDK/lib/$lib" ] || fail "missing lib/$lib"
+    cp "$SDK/lib/$lib" "$JNI/"
   done
+  [ ! -f "$SDK/lib/libhidapi.so" ] || cp "$SDK/lib/libhidapi.so" "$JNI/"
 
   GAME="$TEMPLATE/app/src/main/assets/game"
   mkdir -p "$GAME"
@@ -94,10 +100,9 @@ EOF
   printf 'sdk.dir=%s\n' "$ANDROID_SDK" > "$TEMPLATE/local.properties"
 
   echo "== [test-sdk] assembling APK from $TEMPLATE =="
-  ( cd "$TEMPLATE" && sh gradlew :app:assembleDebug --no-daemon --console=plain ) \
-    >"$WORK/apk-build.log" 2>&1
-  rc=$?
-  if [ $rc -ne 0 ]; then
+  if ! ( cd "$TEMPLATE" && bash gradlew :app:assembleDebug \
+      -PevengineAbi="$ANDROID_PACKAGE_ABI" --no-daemon --console=plain ) \
+      >"$WORK/apk-build.log" 2>&1; then
     tail -n 40 "$WORK/apk-build.log"
     fail "gradle assembleDebug failed"
   fi
@@ -164,6 +169,14 @@ esac
 TP="$(cat "$SDK/share/eve/TARGET_PLATFORM")"
 [ "$TP" = "$PLAT" ] || fail "TARGET_PLATFORM '$TP' != expected '$PLAT'"
 echo "OK: SDK layout + markers"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$SDK/bin"
+  if [ "$PLAT" = win32 ]; then
+    for dll in vulkan-1.dll msvcp140.dll vcruntime140.dll; do
+      [ -f "$SDK/bin/$dll" ] || fail "ARM64 SDK missing runtime $dll"
+    done
+  fi
+fi
 
 VERSION_FILE="$(cat "$SDK/share/eve/VERSION")"
 [ -n "$VERSION_FILE" ] || fail "share/eve/VERSION is empty"
@@ -173,8 +186,13 @@ if [ -n "$EXPECTED" ]; then
 fi
 echo "OK: SDK version marker -> $VERSION_FILE"
 
+if [ "$PLAT" = macosx ]; then
+  MACOS_ARCH="${4:?macOS SDK test requires arm64 or x86_64}"
+  bash "$(dirname "$0")/check-macos-sdk.sh" "$SDK" "$MACOS_ARCH"
+fi
+
 # --- 2. Host runtime runs ------------------------------------------------------
-VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || true
+VER="$("$SDK/bin/$RUNTIME" -v 2>&1)" || fail "eve -v failed: $VER"
 echo "  eve -v -> ${VER:-<empty>}"
 if [ -n "$EXPECTED" ]; then
   echo "$VER" | grep -qF "$EXPECTED" || \
@@ -247,17 +265,24 @@ void SdkTestPlugin::expose(ssq::Class& cls) {
 EVE_PLUGIN_EXPORT int eve_plugin_init(void) { return 0; }
 EOF
 
-CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE=Release)
+CMAKE_ARGS=(-S "$PLUGIN" -B "$PLUGIN/build" -DEVEngine_DIR="$SDK/cmake" -DCMAKE_BUILD_TYPE="$SDK_TEST_CONFIG")
+if [ "$PLAT" = macosx ]; then
+  CMAKE_ARGS+=(-DCMAKE_OSX_ARCHITECTURES="$MACOS_ARCH" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.3)
+fi
 if [ "$PLAT" = "win32" ]; then
   # Default generator: GitHub-hosted windows images ship VS 2026, local dev
   # machines may have 2022/2026. Let CMake pick the installed instance.
-  CMAKE_ARGS+=(-A x64)
+  if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+    CMAKE_ARGS+=(-A ARM64)
+  else
+    CMAKE_ARGS+=(-A x64)
+  fi
 fi
 cmake "${CMAKE_ARGS[@]}" >"$WORK/plugin-cmake.log" 2>&1 || {
   tail -n 30 "$WORK/plugin-cmake.log"
   fail "plugin cmake configure failed"
 }
-cmake --build "$PLUGIN/build" --config Release --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
+cmake --build "$PLUGIN/build" --config "$SDK_TEST_CONFIG" --parallel 2 >"$WORK/plugin-build.log" 2>&1 || {
   tail -n 40 "$WORK/plugin-build.log"
   fail "plugin cmake build failed"
 }
@@ -267,7 +292,19 @@ case "$PLAT" in
   *)       PLUGIN_OUT="$(find "$PLUGIN/build" -type f -name 'eve_sdk_plugin.so' | head -1)" ;;
 esac
 [ -n "$PLUGIN_OUT" ] || fail "plugin shared library not produced"
+if [ "$PLAT" = macosx ]; then
+  [ "$(lipo -archs "$PLUGIN_OUT")" = "$MACOS_ARCH" ] || fail "native plugin architecture mismatch"
+fi
 echo "OK: native C++ plugin compiled: $(basename "$PLUGIN_OUT")"
+if [ "${SDK_TEST_ARCH:-}" = arm64 ]; then
+  python3 "$SCRIPTS/verify-arm64-sdk.py" "$PLUGIN_OUT"
+fi
+
+if [ "${SDK_TEST_REQUIRE_RUN:-0}" = 1 ]; then
+  python3 "$SCRIPTS/run-sdk-game.py" "$PKG/$RUNTIME"
+  echo "== [test-sdk] PASS ($PLAT, required runtime) =="
+  exit 0
+fi
 
 # --- Best-effort: run the packaged game from memory -----------------------------
 echo "== best-effort in-memory run =="

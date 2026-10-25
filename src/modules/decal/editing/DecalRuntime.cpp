@@ -16,7 +16,7 @@ const EditorValue::Array& array(const DecalDocumentTarget& document, const char*
     return *document.value(path)->getIf<EditorValue::Array>();
 }
 
-EditorResult<graphics::Texture*> resolve(const DecalDocumentTarget& document,
+Result<graphics::Texture*> resolve(const DecalDocumentTarget& document,
                                          const IDecalRuntimeAssetResolver* assets, const char* path) {
     const auto& name = *document.value(path)->getIf<std::string>();
     if (name.empty()) return eve::editing::applied<graphics::Texture*>(nullptr);
@@ -28,21 +28,21 @@ EditorResult<graphics::Texture*> resolve(const DecalDocumentTarget& document,
 
 }  // namespace
 
-EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& document) {
+Result<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& document) {
     if (!manager_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.decal.manager"),
                                           "Live DecalManager is required");
     const auto diagnostics = document.validate();
     if (std::any_of(diagnostics.begin(), diagnostics.end(),
                     [](const auto& diagnostic) { return diagnostic.severity() == DiagnosticSeverity::Error; }))
-        return EditorResult<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+        return Result<void>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
 
     auto albedo = resolve(document, assets_, "texture.albedo");
-    if (!albedo.ok()) return EditorResult<void>::failure(albedo.status());
+    if (!albedo.ok()) return Result<void>::failure(albedo.status());
     auto normal = resolve(document, assets_, "texture.normal");
-    if (!normal.ok()) return EditorResult<void>::failure(normal.status());
+    if (!normal.ok()) return Result<void>::failure(normal.status());
     auto params = resolve(document, assets_, "texture.params");
-    if (!params.ok()) return EditorResult<void>::failure(params.status());
+    if (!params.ok()) return Result<void>::failure(params.status());
 
     decal::DecalInstance candidate;
     const auto& position = array(document, "transform.position");
@@ -68,9 +68,14 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
     candidate.metalStrength = static_cast<float>(number(document, "channel.metal"));
     candidate.emissiveStrength = static_cast<float>(number(document, "channel.emissive"));
     candidate.blendMode = *document.value("blend.mode")->getIf<std::string>() == "add" ? 1 : 0;
-    candidate.projectionMode =
-        *document.value("projection.mode")->getIf<std::string>() == "triplanar" ? 1 : 0;
+    const auto& projectionMode = *document.value("projection.mode")->getIf<std::string>();
+    candidate.projectionMode = projectionMode == "triplanar" ? 1 : projectionMode == "spherical" ? 2 :
+                               projectionMode == "world" ? 3 : 0;
     candidate.blendSharpness = static_cast<float>(number(document, "projection.blendSharpness"));
+    candidate.parallaxScale = static_cast<float>(number(document, "projection.parallaxScale"));
+    candidate.parallaxMinLayers = static_cast<float>(number(document, "projection.parallaxMinLayers"));
+    candidate.parallaxMaxLayers = static_cast<float>(number(document, "projection.parallaxMaxLayers"));
+    candidate.edgeFadeWidth = static_cast<float>(number(document, "projection.edgeFadeWidth"));
     candidate.lifetime = static_cast<float>(number(document, "lifetime.seconds"));
     candidate.fadeIn = static_cast<float>(number(document, "lifetime.fadeIn"));
     candidate.fadeOut = static_cast<float>(number(document, "lifetime.fadeOut"));
@@ -83,7 +88,7 @@ EditorResult<void> DecalRuntimeBinding::publish(const DecalDocumentTarget& docum
     return eve::editing::applied<void>(diagnostics);
 }
 
-EditorResult<void> DecalRuntimeBinding::clear() {
+Result<void> DecalRuntimeBinding::clear() {
     if (runtimeId_ == 0) return eve::editing::noOp();
     if (!manager_ || !manager_->remove(runtimeId_))
         return eve::editing::failed<void>(EditorStatus::NotFound, RuleId("editor.decal.runtime-stale"),
@@ -92,7 +97,7 @@ EditorResult<void> DecalRuntimeBinding::clear() {
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> DecalPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
+Result<void> DecalPublishingTarget::applyDomainOperation(const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
     auto applied = candidate->applyDomainOperation(operation);
@@ -106,7 +111,7 @@ std::unique_ptr<IDomainOperationTarget> DecalPublishingTarget::cloneDomainState(
     return candidate;
 }
 
-EditorResult<void> DecalPublishingTarget::commitDomainState(
+Result<void> DecalPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<DecalPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)

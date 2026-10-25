@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include "common/Module.h"
 #include "model3d/ModelData.h"
@@ -38,11 +40,13 @@ struct ModelLoadOptions {
  * @brief Resource module for decoding 3D models via medialoader (Assimp).
  * Produces ModelData; GPU upload is graphics' responsibility.
  */
-class Model3D : public Module {
+class EVENGINE_API_WORLD Model3D : public Module {
 public:
     Module_REG(Model3D);
 
+    /** @brief Model 3 d. */
     Model3D();
+    /** @brief Model 3 d. */
     ~Model3D() override;
 
     /**
@@ -100,8 +104,21 @@ public:
      * and albedo / normal / height textures loaded (embedded or through the
      * VFS). Script-friendly counterpart of the C++ buildRenderable helpers.
      */
+    /** @brief Creates renderable. */
     graphics::Renderable3D *createRenderable(graphics::Graphics *gfx, ModelData *model,
                                              int meshIndex);
+
+    /**
+     * @brief Prepare one default-imported renderable for native PBR vegetation motion.
+     * @param model Borrowed decoded model.
+     * @param meshIndex Matching imported mesh index.
+     * @param renderable Borrowed renderable returned by createRenderable for that index.
+     * @return Success or InvalidArgument; failure preserves the mesh stream.
+     * @ownership Retains nothing; call on the render thread before submitting the prototype.
+     * @cost O(vertex count) and nine persistent floats per vertex; intended as a one-time prototype build step.
+     */
+    [[nodiscard]] eve::Result<void> prepareFoliageDeformation(ModelData *model, int meshIndex,
+                                                              graphics::Renderable3D *renderable);
 
     /**
      * @brief Pack a self-contained source model (normally GLB or embedded FBX) into

@@ -9,12 +9,7 @@ namespace {
 
 Result<int> invalidInt(std::string message, std::string path) {
     return Result<int>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
-}
-
-Result<void> invalidVoid(std::string message, std::string path) {
-    return Result<void>::failure(
-        Diagnostic::error(DiagnosticCode::InvalidArgument, std::move(message), std::move(path)));
+        Diagnostic::error(DiagnosticCode::InvalidArgument, message, path));
 }
 
 }  // namespace
@@ -45,8 +40,8 @@ Result<void> setupChains(DynamicBoneSolver &solver, const std::vector<ChainDesc>
         auto added = addChain(solver, chains[i]);
         if (!added) {
             const Diagnostic *diag = added.status().primaryDiagnostic();
-            return invalidVoid(diag ? std::string(diag->message()) : added.status().describe(),
-                               "hair.chains[" + std::to_string(i) + "]");
+            return Result<void>::failure(
+        Diagnostic::error(DiagnosticCode::InvalidArgument, diag ? std::string(diag->message()) : added.status().describe(), "hair.chains[" + std::to_string(i) + "]"));
         }
     }
     return Result<void>::success();

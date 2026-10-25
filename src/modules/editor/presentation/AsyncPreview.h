@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common/Assert.h"
+
 #include "editing/EditingTaskService.h"
 #include "editor/presentation/PreviewState.h"
 

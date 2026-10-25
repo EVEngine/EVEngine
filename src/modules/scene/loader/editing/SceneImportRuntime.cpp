@@ -3,7 +3,7 @@
 #include "scene/loader/editing/SceneImportTarget.h"
 namespace eve::sceneloader_editing {
 namespace {}  // namespace
-EditorResult<SceneImportPreflight> SceneImportPreflightRuntime::inspect(
+Result<SceneImportPreflight> SceneImportPreflightRuntime::inspect(
     const SceneImportTarget& target, sceneloader::SceneLoader* loader) const {
     if (!loader)
         return eve::editing::failed<SceneImportPreflight>(EditorStatus::Rejected, RuleId("editor.scene-import.loader"),
@@ -11,7 +11,7 @@ EditorResult<SceneImportPreflight> SceneImportPreflightRuntime::inspect(
     auto diagnostics = target.validate();
     for (const auto& d : diagnostics)
         if (d.severity() == DiagnosticSeverity::Error)
-            return EditorResult<SceneImportPreflight>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
+            return Result<SceneImportPreflight>::failure(eve::Status(EditorStatus::Rejected, diagnostics));
     const auto&              v = target.value();
     sceneloader::LoadOptions o;
     o.triangulate              = v.triangulate;

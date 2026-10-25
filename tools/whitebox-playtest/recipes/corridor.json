@@ -1,0 +1,51 @@
+{
+  "schemaId": "eve.whitebox.playtest-recipe",
+  "schemaVersion": 1,
+  "id": "blockout-corridor",
+  "reset": true,
+  "scene": [
+    {
+      "action": "add_object",
+      "target": "floor",
+      "params": { "id": "floor", "kind": "ground", "pos": [0, 0, 0], "scale": [12, 0.2, 12] }
+    },
+    {
+      "action": "add_object",
+      "target": "wall_l",
+      "params": { "id": "wall_l", "kind": "box", "pos": [-4, 1, 0], "scale": [0.4, 2, 8] }
+    },
+    {
+      "action": "add_object",
+      "target": "wall_r",
+      "params": { "id": "wall_r", "kind": "box", "pos": [4, 1, 0], "scale": [0.4, 2, 8] }
+    },
+    {
+      "action": "add_object",
+      "target": "pillar",
+      "params": { "id": "pillar", "kind": "cylinder", "pos": [0, 1, -2], "scale": [0.6, 2, 0.6] }
+    },
+    {
+      "action": "lighting",
+      "target": "scene",
+      "params": { "timeOfDay": "day", "intensity": 1.0 }
+    },
+    {
+      "action": "camera",
+      "target": "scene",
+      "params": { "eye": [0, 8, 14], "target": [0, 1, 0], "fov": 55 }
+    }
+  ],
+  "inputs": [
+    { "op": "key", "key": "W", "down": true },
+    { "op": "wait", "frames": 3 },
+    { "op": "key", "key": "W", "down": false }
+  ],
+  "waitFrames": 1,
+  "capture": false,
+  "play": [{ "op": "status" }],
+  "assert": [
+    { "path": "scene.applied", "op": "gte", "value": 4 },
+    { "path": "info.count", "op": "gte", "value": 3 },
+    { "path": "ok", "op": "eq", "value": true }
+  ]
+}

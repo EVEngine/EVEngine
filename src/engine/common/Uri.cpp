@@ -9,12 +9,12 @@ namespace eve {
 namespace {
 
 [[nodiscard]] Result<Uri> uriFailure(std::string message, std::string_view path = {}) {
-    return Result<Uri>::failure(Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
+    return Result<Uri>::failure(Diagnostic::error(DiagnosticCode::ParseError, message, std::string(path)));
 }
 
 [[nodiscard]] Result<ResourceUri> resourceUriFailure(std::string message, std::string_view path = {}) {
     return Result<ResourceUri>::failure(
-        Diagnostic::error(DiagnosticCode::ParseError, std::move(message), std::string(path)));
+        Diagnostic::error(DiagnosticCode::ParseError, message, std::string(path)));
 }
 
 [[nodiscard]] bool isSchemeCharacter(char value, bool first) noexcept {

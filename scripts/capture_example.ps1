@@ -4,13 +4,12 @@
   Launch an EVEngine example and capture a real rendered frame to PNG.
 
 .DESCRIPTION
-  Runs a prebuilt `eve.exe` (see -Eve) as `eve run -r scripts/capture_root.nut
-  <examples/<Example>>`. The wrapper root script mirrors the engine's standard
+  Runs a prebuilt `eve.exe` (see -Eve) with a temporary root composed from
+  src/scripts/load.nut and scripts/capture_root.nut. The capture hook runs inside the repository standard
   load.nut, waits N frames for the scene to settle, then calls
   `gfx.saveFramePng()` so the engine itself writes the last presented frame
   from the swapchain readback. If the engine-side capture does not produce a
-  PNG, the script falls back to capturing the game window's client area via
-  Win32 (PrintWindow / CopyFromScreen).
+  PNG, the script fails and preserves the previous output.
 
 .EXAMPLE
   ./scripts/capture_example.ps1 -Example weather -Out docs/images/weather.png -Frames 240
@@ -24,17 +23,23 @@
   Extra seconds to wait for the process to finish after capture (default 15).
 .PARAMETER KeepLogs
   Keep the eve stdout/stderr logs in $env:TEMP for debugging (default off).
+.PARAMETER Setup
+  Optional script run after normal initialization to select a reproducible scene preset.
 .PARAMETER Eve
   Path to eve.exe. Defaults to $env:EVE, the parent EVEngine workspace build,
   or a local build/win32-debug binary.
+.PARAMETER Game
+  Explicit game directory instead of an examples/ name; useful for generated test fixtures.
 #>
 param(
-    [Parameter(Mandatory = $true)][string]$Example,
+    [Parameter(Mandatory = $true, ParameterSetName = "Example")][string]$Example,
+    [Parameter(Mandatory = $true, ParameterSetName = "Game")][string]$Game,
     [string]$Out,
     [int]$Frames = 180,
     [int]$WaitSec = 15,
     [switch]$KeepLogs,
-    [string]$Eve
+    [string]$Eve,
+    [string]$Setup
 )
 
 $ErrorActionPreference = "Stop"
@@ -51,12 +56,16 @@ if (-not $Eve) {
 }
 if (-not (Test-Path $Eve)) { throw "eve.exe not found at $Eve (set -Eve)" }
 
-$GameDir = Join-Path $RepoRoot "examples\$Example"
+$GameDir = if ($Game) { (Resolve-Path -LiteralPath $Game).Path } else { Join-Path $RepoRoot "examples\$Example" }
+if ($Game) { $Example = Split-Path -Leaf $GameDir }
 if (-not (Test-Path (Join-Path $GameDir "main.nut"))) {
     throw "examples\$Example has no main.nut"
 }
 if (-not $Out) { $Out = Join-Path $RepoRoot "docs\images\$Example.png" }
 $Out = [IO.Path]::GetFullPath($Out)
+$FinalOut = $Out
+$Out = "$Out.capture-$([Guid]::NewGuid().ToString('N')).png"
+New-Item -ItemType Directory -Force -Path (Split-Path -Parent $Out) | Out-Null
 $OutFwd = $Out.Replace('\', '/')
 
 $RootScript = Join-Path $PSScriptRoot "capture_root.nut"
@@ -86,22 +95,44 @@ function Show-CaptureStats([string]$Path) {
 $stamp = Get-Date -Format "HHmmssfff"
 $stdoutLog = Join-Path $env:TEMP "eve_${Example}_${stamp}.out.log"
 $stderrLog = Join-Path $env:TEMP "eve_${Example}_${stamp}.err.log"
-$settingsFile = Join-Path $GameDir "capture_settings.nut"
+$settingsFile = Join-Path $env:TEMP "eve_capture_settings_$stamp.nut"
+$setupPath = ""
+if ($Setup) { $setupPath = (Resolve-Path -LiteralPath $Setup).Path.Replace('\', '/') }
 $proc = $null
+$generatedRoot = Join-Path $env:TEMP "eve_capture_root_$stamp.nut"
+$originalPath = $env:PATH
 try {
-    # Per-run settings consumed by capture_root.nut (removed afterwards).
+    # SHARED builds place link-group DLLs at the build root.
+    $engineDir = Split-Path -Parent ([IO.Path]::GetFullPath($Eve))
+    $buildRoot = Split-Path -Parent (Split-Path -Parent $engineDir)
+    $env:PATH = "$engineDir;$buildRoot;$originalPath"
+    # Isolated run settings; existing example capture_settings.nut stays intact.
     $settings = @"
 capture_path <- "$OutFwd";
 capture_frame <- $Frames;
 capture_tries <- 30;
+capture_setup <- "$setupPath";
 "@
-    Set-Content -Path $settingsFile -Value $settings -Encoding ASCII
+    Set-Content -Path $settingsFile -Value $settings -Encoding utf8
+
+    # Compose the standard startup with one post-frame hook, rather than
+    # maintaining a separate copy of module/input/lifecycle initialization.
+    $startup = Get-Content (Join-Path $RepoRoot "src/scripts/load.nut") -Raw -Encoding utf8
+    $loopMarker = "while (eve_frame()) {"
+    if (($startup.Split(@($loopMarker), [StringSplitOptions]::None)).Count -ne 2) {
+        throw "standard load.nut must contain exactly one desktop frame loop"
+    }
+    $hookPath = $RootScript.Replace('\', '/')
+    $settingsPath = $settingsFile.Replace('\', '/')
+    $startup = $startup.Replace($loopMarker, "dofile(`"$settingsPath`");`n        dofile(`"$hookPath`");`n        $loopMarker`n            if (capture_after_frame()) break;")
+    Set-Content -LiteralPath $generatedRoot -Value $startup -Encoding utf8
 
     $proc = Start-Process -FilePath $Eve `
-        -ArgumentList @("run", "-r", $RootScript, $GameDir) `
+        -ArgumentList "run -r `"$generatedRoot`" `"$GameDir`"" `
         -WorkingDirectory $RepoRoot `
         -RedirectStandardOutput $stdoutLog `
         -RedirectStandardError $stderrLog `
+        -WindowStyle Hidden `
         -PassThru
 
     Write-Host "[capture] running '$Example' ($Frames frames) ..."
@@ -135,110 +166,30 @@ capture_tries <- 30;
         Start-Sleep -Seconds 1
     }
 
-    # The engine writes the PNG itself; if it exists and is non-empty, treat the
-    # capture as successful even when the CAPTURED marker was not observed.
-    if ((Test-Path $Out) -and (Get-Item $Out).Length -gt 0) {
+    # Require the engine marker and a fresh file; never reuse an old screenshot.
+    $captureLog = (Get-Content $stderrLog -Raw -ErrorAction SilentlyContinue) + "`n" + (Get-Content $stdoutLog -Raw -ErrorAction SilentlyContinue)
+    if ($captureLog -match "(?im)(frame error:|update error:|render error:|present error:|eve_init failed:|main.nut failed:|failed to initialize:|\[crash\])") {
+        throw "example reported a runtime error: $captureLog"
+    }
+    if ($engineCapture -and (Test-Path $Out) -and (Get-Item $Out).Length -gt 0) {
         $fi = Get-Item $Out
         if ($fi.Length -eq 0) { throw "screenshot is empty: $Out" }
         Write-Host "[capture] OK (engine frame): $Out ($($fi.Length) bytes)"
         Show-CaptureStats $Out
+        Move-Item -LiteralPath $Out -Destination $FinalOut -Force
         return
     }
 
-    # ---- Fallback: capture the game window client area (desktop) ----
-    Write-Host "[capture] engine capture unavailable; falling back to window capture ..."
-    Add-Type @"
-using System;
-using System.Runtime.InteropServices;
-public static class EveCapture {
-    [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
-    [DllImport("user32.dll")] public static extern bool GetClientRect(IntPtr hWnd, out RECT rect);
-    [DllImport("user32.dll")] public static extern bool ClientToScreen(IntPtr hWnd, ref POINT pt);
-    [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, uint nFlags);
-    [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr lParam);
-    [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint pid);
-    [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr hWnd);
-    [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern int GetClassName(IntPtr hWnd, System.Text.StringBuilder sb, int max);
-    public delegate bool EnumProc(IntPtr hWnd, IntPtr lParam);
-    [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
-    [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X, Y; }
-}
-"@
-    Add-Type -AssemblyName System.Drawing
-    [EveCapture]::SetProcessDPIAware() | Out-Null
-
-    $script:targetPid = $proc.Id
-    $hwnd = [IntPtr]::Zero
-    $deadline2 = (Get-Date).AddSeconds(20)
-    while ((Get-Date) -lt $deadline2 -and -not $proc.HasExited) {
-        $script:windows = [System.Collections.Generic.List[IntPtr]]::new()
-        $cb = {
-            param($h, $l)
-            $pid2 = 0
-            [EveCapture]::GetWindowThreadProcessId($h, [ref]$pid2) | Out-Null
-            if ($pid2 -eq $script:targetPid) { $script:windows.Add($h) }
-            return $true
-        }
-        [EveCapture]::EnumWindows($cb, [IntPtr]::Zero) | Out-Null
-        foreach ($cand in $script:windows) {
-            $r = New-Object EveCapture+RECT
-            if (-not [EveCapture]::GetClientRect($cand, [ref]$r)) { continue }
-            if (($r.Right - $r.Left) -le 0 -or ($r.Bottom - $r.Top) -le 0) { continue }
-            if (-not [EveCapture]::IsWindowVisible($cand)) { continue }
-            $cls = New-Object System.Text.StringBuilder 128
-            [EveCapture]::GetClassName($cand, $cls, $cls.Capacity) | Out-Null
-            if ($cls.ToString() -eq "SDL_app") { $hwnd = $cand; break }
-        }
-        if ($hwnd -ne [IntPtr]::Zero) { break }
-        Start-Sleep -Milliseconds 300
-    }
-    if ($hwnd -eq [IntPtr]::Zero) {
-        $log = (Get-Content $stderrLog -Raw -ErrorAction SilentlyContinue) + "`n" + (Get-Content $stdoutLog -Raw -ErrorAction SilentlyContinue)
-        throw "no SDL window found. log: $log"
-    }
-
-    $client = New-Object EveCapture+RECT
-    [EveCapture]::GetClientRect($hwnd, [ref]$client) | Out-Null
-    $w = $client.Right - $client.Left
-    $h = $client.Bottom - $client.Top
-    if ($w -le 0 -or $h -le 0) { throw "invalid client rect ${w}x${h}" }
-
-    $dir = Split-Path -Parent $Out
-    if ($dir) { New-Item -ItemType Directory -Force -Path $dir | Out-Null }
-    $bmp = New-Object System.Drawing.Bitmap($w, $h)
-    try {
-        $gfx = [System.Drawing.Graphics]::FromImage($bmp)
-        try {
-            $hdc = $gfx.GetHdc()
-            $pw = [EveCapture]::PrintWindow($hwnd, $hdc, 3)
-            $gfx.ReleaseHdc($hdc)
-            if (-not $pw) {
-                $origin = New-Object EveCapture+POINT
-                [EveCapture]::ClientToScreen($hwnd, [ref]$origin) | Out-Null
-                $gfx2 = [System.Drawing.Graphics]::FromImage($bmp)
-                try {
-                    $gfx2.CopyFromScreen($origin.X, $origin.Y, 0, 0, $bmp.Size,
-                        [System.Drawing.CopyPixelOperation]::SourceCopy)
-                } finally {
-                    $gfx2.Dispose()
-                }
-            }
-        } finally {
-            $gfx.Dispose()
-        }
-        $bmp.Save($Out, [System.Drawing.Imaging.ImageFormat]::Png)
-    } finally {
-        $bmp.Dispose()
-    }
-    $fi = Get-Item $Out
-    if ($fi.Length -eq 0) { throw "screenshot is empty: $Out" }
-    Write-Host "[capture] OK (window capture): $Out (${w}x${h}, $($fi.Length) bytes)"
-    Show-CaptureStats $Out
+    $log = (Get-Content $stderrLog -Raw -ErrorAction SilentlyContinue) + "`n" + (Get-Content $stdoutLog -Raw -ErrorAction SilentlyContinue)
+    throw "engine frame capture failed for $Example. log: $log"
 } finally {
+    $env:PATH = $originalPath
     if ($proc -and -not $proc.HasExited) {
         Stop-Process -Id $proc.Id -Force
         Wait-Process -Id $proc.Id -ErrorAction SilentlyContinue
     }
+    Remove-Item -LiteralPath $generatedRoot -ErrorAction SilentlyContinue
+    Remove-Item -LiteralPath $Out -ErrorAction SilentlyContinue
     Remove-Item $settingsFile -ErrorAction SilentlyContinue
     if (-not $KeepLogs) {
         Remove-Item $stdoutLog, $stderrLog -ErrorAction SilentlyContinue

@@ -11,8 +11,10 @@ struct TransformTRS {
     float qx = 0.f, qy = 0.f, qz = 0.f, qw = 1.f;
     float sx = 1.f, sy = 1.f, sz = 1.f;
 
+    /** @brief Identity. */
     static TransformTRS identity() { return {}; }
 
+    /** @brief Normalize rotation. */
     void normalizeRotation() {
         const float len = std::sqrt(qx * qx + qy * qy + qz * qz + qw * qw);
         if (len > 1e-8f) {
@@ -28,12 +30,16 @@ struct TransformTRS {
     }
 };
 
+/** @brief Clampf. */
 inline float clampf(float v, float lo, float hi) {
+    /** @brief Max. */
     return std::max(lo, std::min(hi, v));
 }
 
+/** @brief Lerpf. */
 inline float lerpf(float a, float b, float t) { return a + (b - a) * t; }
 
+/** @brief Slerp quat. */
 inline void slerpQuat(float ax, float ay, float az, float aw, float bx, float by, float bz, float bw,
                       float t, float &ox, float &oy, float &oz, float &ow) {
     float cosTheta = ax * bx + ay * by + az * bz + aw * bw;
@@ -69,6 +75,7 @@ inline void slerpQuat(float ax, float ay, float az, float aw, float bx, float by
     ow                   = aw * w0 + bw * w1;
 }
 
+/** @brief Blend trs. */
 inline TransformTRS blendTRS(const TransformTRS &a, const TransformTRS &b, float t) {
     t = clampf(t, 0.f, 1.f);
     TransformTRS out;
@@ -78,6 +85,7 @@ inline TransformTRS blendTRS(const TransformTRS &a, const TransformTRS &b, float
     out.sx = lerpf(a.sx, b.sx, t);
     out.sy = lerpf(a.sy, b.sy, t);
     out.sz = lerpf(a.sz, b.sz, t);
+    /** @brief Slerp quat. */
     slerpQuat(a.qx, a.qy, a.qz, a.qw, b.qx, b.qy, b.qz, b.qw, t, out.qx, out.qy, out.qz, out.qw);
     return out;
 }
@@ -116,11 +124,14 @@ inline void applyAdditiveTRS(TransformTRS &base, const TransformTRS &sample, con
     base.sz *= lerpf(1.f, std::fabs(reference.sz) > 1e-8f ? sample.sz / reference.sz : sample.sz, weight);
 
     float dx, dy, dz, dw;
+    /** @brief Multiply quat. */
     multiplyQuat(sample.qx, sample.qy, sample.qz, sample.qw, -reference.qx, -reference.qy, -reference.qz, reference.qw,
                  dx, dy, dz, dw);
     float ax, ay, az, aw;
+    /** @brief Slerp quat. */
     slerpQuat(0.f, 0.f, 0.f, 1.f, dx, dy, dz, dw, weight, ax, ay, az, aw);
     float qx, qy, qz, qw;
+    /** @brief Multiply quat. */
     multiplyQuat(base.qx, base.qy, base.qz, base.qw, ax, ay, az, aw, qx, qy, qz, qw);
     base.qx = qx;
     base.qy = qy;
@@ -135,6 +146,7 @@ inline void yawToForward(float yaw, float &fx, float &fz) {
     fz = std::cos(yaw);
 }
 
+/** @brief Length 2. */
 inline float length2(float x, float z) { return std::sqrt(x * x + z * z); }
 
 /**
@@ -144,8 +156,10 @@ inline float length2(float x, float z) { return std::sqrt(x * x + z * z); }
 struct Mat4 {
     float m[16] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 
+    /** @brief Identity. */
     static Mat4 identity() { return {}; }
 
+    /** @brief From trs. */
     static Mat4 fromTRS(const TransformTRS &t) {
         Mat4 out;
         const float x = t.qx, y = t.qy, z = t.qz, w = t.qw;
@@ -173,6 +187,7 @@ struct Mat4 {
         return out;
     }
 
+    /** @brief Mul. */
     static Mat4 mul(const Mat4 &a, const Mat4 &b) {
         Mat4 out;
         for (int col = 0; col < 4; ++col) {
@@ -186,6 +201,7 @@ struct Mat4 {
         return out;
     }
 
+    /** @brief Transform point. */
     void transformPoint(float x, float y, float z, float &ox, float &oy, float &oz) const {
         ox = m[0] * x + m[4] * y + m[8] * z + m[12];
         oy = m[1] * x + m[5] * y + m[9] * z + m[13];

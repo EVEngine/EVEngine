@@ -21,7 +21,7 @@ namespace eve::audio_editor {
 namespace {
 
 template <class T = void>
-audio_editing::EditorResult<T> editorError(audio_editing::EditorStatus status, std::string rule,
+audio_editing::Result<T> editorError(audio_editing::EditorStatus status, std::string rule,
                                            std::string message) {
     return eve::editing::failed<T>(status, audio_editing::RuleId(std::move(rule)), std::move(message));
 }
@@ -63,7 +63,7 @@ void AudioClockTransportBackend::stop() {
     position_ = 0.0;
 }
 
-audio_editing::EditorResult<void> AudioClockTransportBackend::seek(double seconds) {
+audio_editing::Result<void> AudioClockTransportBackend::seek(double seconds) {
     if (!std::isfinite(seconds) || seconds < 0.0 || seconds > duration_)
         return editorError(audio_editing::EditorStatus::Rejected, "editor.audio.clock-seek",
                            "Clock seek is outside the clip");
@@ -166,14 +166,14 @@ audio_editing::Revision AudioSourceEditor::auditionRevision() const {
     return audio_editing::Revision(pcmRevision_);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::rebuildWaveform(float viewportWidth) {
+audio_editing::Result<void> AudioSourceEditor::rebuildWaveform(float viewportWidth) {
     requestedViewportWidth_ = viewportWidth;
     const auto phase        = previewState().phase;
     if (phase == editor::PreviewPhase::Unavailable || phase == editor::PreviewPhase::Closed) return editing::noOp();
     return requestPreview();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::bindClockAudition() {
+audio_editing::Result<void> AudioSourceEditor::bindClockAudition() {
     transport_.unbind();
     liveAudition_.reset();
     liveBound_ = false;
@@ -181,7 +181,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::bindClockAudition() {
     return transport_.bind(audio_editing::StableId(target_.targetId().value()), auditionRevision(), &clock_);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::syncLoop() {
+audio_editing::Result<void> AudioSourceEditor::syncLoop() {
     const bool   loop  = readFlag(target_, selection(), "play.loop", false);
     const double start = readNumber(target_, selection(), "play.loop-start", 0.0);
     double       end   = readNumber(target_, selection(), "play.loop-end", 0.0);
@@ -191,7 +191,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::syncLoop() {
     return rebuildWaveform(requestedViewportWidth_);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::publishLive() {
+audio_editing::Result<void> AudioSourceEditor::publishLive() {
 #if defined(EVE_AUDIO_EDITOR_LIVE)
     if (!liveAudition_ || !liveAudition_->source) return eve::editing::applied<void>();
     return audio_editing::AudioSourceRuntimeApplier().apply(target_, liveAudition_->source);
@@ -200,7 +200,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::publishLive() {
 #endif
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
+audio_editing::Result<void> AudioSourceEditor::configureWorkspace(editor::EditorWorkspace& workspace) const {
     editor::EditorWorkspace candidate = workspace;
     struct Panel {
         const char* id;
@@ -229,7 +229,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::configureWorkspace(editor::
     return eve::editing::applied<void>();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::setViewportWidth(float width) {
+audio_editing::Result<void> AudioSourceEditor::setViewportWidth(float width) {
     if (!std::isfinite(width) || width < 8.0f ||
         width > static_cast<float>(audio_editing::AudioWaveformService::maximumPreviewPixels))
         return editorError(audio_editing::EditorStatus::Rejected, "editor.audio.viewport",
@@ -237,7 +237,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::setViewportWidth(float widt
     return rebuildWaveform(width);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::seekX(float x) {
+audio_editing::Result<void> AudioSourceEditor::seekX(float x) {
     if (!std::isfinite(x) || viewportWidth_ <= 0.0f)
         return editorError(audio_editing::EditorStatus::Rejected, "editor.audio.seek-x",
                            "Waveform seek requires a finite x and viewport");
@@ -245,7 +245,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::seekX(float x) {
     return seekSeconds(seconds);
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::seekSeconds(double seconds) {
+audio_editing::Result<void> AudioSourceEditor::seekSeconds(double seconds) {
     auto sought = transport_.seek(auditionRevision(), seconds);
     if (!sought.ok()) return sought;
     auto snap = transport_.snapshot(auditionRevision());
@@ -253,12 +253,12 @@ audio_editing::EditorResult<void> AudioSourceEditor::seekSeconds(double seconds)
     return eve::editing::applied<void>();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::setProperty(const std::string& path,
+audio_editing::Result<void> AudioSourceEditor::setProperty(const std::string& path,
                                                                  const audio_editing::EditorValue& value) {
     auto operation = target_.makeSet(selection(), audio_editing::PropertyPath(path), value,
                                      audio_editing::PropertySetMode::Absolute);
     if (!operation.ok())
-        return audio_editing::EditorResult<void>::failure(operation.status());
+        return audio_editing::Result<void>::failure(operation.status());
     if (path == "play.loop" || path == "play.loop-start" || path == "play.loop-end") {
         // Validate with the canonical transport contract before publishing a document/history entry.
         AudioClockTransportBackend candidateClock;
@@ -290,41 +290,41 @@ audio_editing::EditorResult<void> AudioSourceEditor::setProperty(const std::stri
     auto appended = transactions_.append(std::move(operation).takeValue());
     if (!appended.ok()) {
         (void)transactions_.rollback();
-        return audio_editing::EditorResult<void>::failure(appended.status());
+        return audio_editing::Result<void>::failure(appended.status());
     }
     auto committed = transactions_.commit();
     if (!committed.ok())
-        return audio_editing::EditorResult<void>::failure(committed.status());
+        return audio_editing::Result<void>::failure(committed.status());
     auto looped = syncLoop();
     if (!looped.ok()) return looped;
     return publishLive();
 }
 
-audio_editing::EditorResult<editor::TransactionReceipt> AudioSourceEditor::undo() {
+audio_editing::Result<editor::TransactionReceipt> AudioSourceEditor::undo() {
     auto result = transactions_.undo();
     if (!result.ok()) return result;
     auto looped = syncLoop();
     if (!looped.ok())
-        return audio_editing::EditorResult<editor::TransactionReceipt>::failure(looped.status());
+        return audio_editing::Result<editor::TransactionReceipt>::failure(looped.status());
     auto published = publishLive();
     if (!published.ok())
-        return audio_editing::EditorResult<editor::TransactionReceipt>::failure(published.status());
+        return audio_editing::Result<editor::TransactionReceipt>::failure(published.status());
     return result;
 }
 
-audio_editing::EditorResult<editor::TransactionReceipt> AudioSourceEditor::redo() {
+audio_editing::Result<editor::TransactionReceipt> AudioSourceEditor::redo() {
     auto result = transactions_.redo();
     if (!result.ok()) return result;
     auto looped = syncLoop();
     if (!looped.ok())
-        return audio_editing::EditorResult<editor::TransactionReceipt>::failure(looped.status());
+        return audio_editing::Result<editor::TransactionReceipt>::failure(looped.status());
     auto published = publishLive();
     if (!published.ok())
-        return audio_editing::EditorResult<editor::TransactionReceipt>::failure(published.status());
+        return audio_editing::Result<editor::TransactionReceipt>::failure(published.status());
     return result;
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::play() {
+audio_editing::Result<void> AudioSourceEditor::play() {
     auto played = transport_.play(auditionRevision());
     if (!played.ok()) return played;
     auto snap = transport_.snapshot(auditionRevision());
@@ -332,7 +332,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::play() {
     return eve::editing::applied<void>();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::pause() {
+audio_editing::Result<void> AudioSourceEditor::pause() {
     auto paused = transport_.pause(auditionRevision());
     if (!paused.ok()) return paused;
     auto snap = transport_.snapshot(auditionRevision());
@@ -340,7 +340,7 @@ audio_editing::EditorResult<void> AudioSourceEditor::pause() {
     return eve::editing::applied<void>();
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::stop() {
+audio_editing::Result<void> AudioSourceEditor::stop() {
     auto stopped = transport_.stop(auditionRevision());
     if (!stopped.ok()) return stopped;
     auto snap = transport_.snapshot(auditionRevision());
@@ -348,17 +348,17 @@ audio_editing::EditorResult<void> AudioSourceEditor::stop() {
     return eve::editing::applied<void>();
 }
 
-audio_editing::EditorResult<audio_editing::AudioTransportSnapshot> AudioSourceEditor::update(double deltaSeconds) {
+audio_editing::Result<audio_editing::AudioTransportSnapshot> AudioSourceEditor::update(double deltaSeconds) {
     auto previewed = pollPreview();
     if (!previewed.ok())
-        return audio_editing::EditorResult<audio_editing::AudioTransportSnapshot>::failure(previewed.status());
+        return audio_editing::Result<audio_editing::AudioTransportSnapshot>::failure(previewed.status());
     if (!liveBound_) clock_.advance(deltaSeconds);
     auto observed = transport_.update(auditionRevision());
     if (observed.ok()) lastTransport_ = observed.value();
     return observed;
 }
 
-audio_editing::EditorResult<void> AudioSourceEditor::attachLiveAudition() {
+audio_editing::Result<void> AudioSourceEditor::attachLiveAudition() {
 #if !defined(EVE_AUDIO_EDITOR_LIVE)
     return editorError(audio_editing::EditorStatus::Unsupported, "editor.audio.live-module",
                        "Audio module is not available for live audition");

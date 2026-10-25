@@ -1,0 +1,402 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-audio",
+  "cases": {
+    "render-window": [
+      "demo.newPlanetTexture"
+    ],
+    "platform-file": [
+      "sound.modplug.midi.decode"
+    ]
+  },
+  "module": "demo",
+  "modules": [
+    "demo",
+    "sound"
+  ],
+  "origins": [
+    "demo.cpp",
+    "sound.cpp"
+  ]
+}
+*/
+// clang-format on
+
+#include "zeroerr/assert.h"
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_demo)
+#include "PrivateTestScope.h"
+#include "common/Exception.h"
+#include "demo/Demo.h"
+#include "graphics/AmbientOcclusion.h"
+#include "graphics/AntiAliasing.h"
+#include "graphics/Canvas.h"
+#include "graphics/DrawItem2D.h"
+#include "graphics/Font.h"
+#include "graphics/GBuffer.h"
+#include "graphics/GlobalIllumination.h"
+#include "graphics/Graphics.h"
+#include "graphics/Grass.h"
+#include "graphics/Light.h"
+#include "graphics/Material.h"
+#include "graphics/Mesh.h"
+#include "graphics/Outline.h"
+#include "graphics/Quad.h"
+#include "graphics/RenderControl.h"
+#include "graphics/ScreenSpaceReflection.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
+#include "graphics/Volumetric.h"
+#include "graphics/Water.h"
+#include "graphics/Waterfall.h"
+#include "sound/SoundData.h"
+#include "window/Window.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// demo.cpp
+namespace test_demo {
+TEST_CASE("demo.newSound.music") {
+    auto *demo = eve::demo::Demo::create();
+    auto *sd   = demo->newSound("music");
+    REQUIRE(sd != nullptr);
+    CHECK(sd->getSampleRate() == 22050);
+    CHECK(sd->getBitDepth() == 16);
+    CHECK(sd->getChannelCount() == 1);
+    CHECK(sd->getSampleCount() == 22050 * 4);
+    CHECK(sd->getDuration() > 3.9);
+    delete sd;
+}
+
+TEST_CASE("demo.newSound.sfx") {
+    auto *demo = eve::demo::Demo::create();
+    for (const char *kind : {"shoot", "explode", "hit"}) {
+        auto *sd = demo->newSound(kind);
+        REQUIRE(sd != nullptr);
+        CHECK(sd->getSampleCount() > 0);
+        CHECK(sd->getSize() == size_t(sd->getSampleCount()) * 2u);
+        delete sd;
+    }
+}
+
+TEST_CASE("demo.newSound.unknownThrows") {
+    auto *demo = eve::demo::Demo::create();
+    try {
+        demo->newSound("nope");
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+}
+
+TEST_CASE("demo.newPlanetTexture") {
+    auto *win = eve::window::Window::create();
+    auto *gfx = eve::graphics::Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings s;
+    s.width    = 64;
+    s.height   = 64;
+    s.centered = true;
+    REQUIRE(win->setWindowSettings(s));
+
+    auto *demo = eve::demo::Demo::create();
+    auto *tex  = demo->newPlanetTexture(gfx);
+    REQUIRE(tex != nullptr);
+    CHECK_EQ(tex->getWidth(), 512);
+    CHECK_EQ(tex->getHeight(), 256);
+
+    win->close();
+}
+}  // namespace test_demo
+#endif
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sound)
+#include "PrivateTestScope.h"
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
+#include "PathBesideSource.h"
+#include "common/Exception.h"
+#include "data/ByteData.h"
+#include "filesystem/FileData.h"
+#include "sound/Decoder.h"
+#include "sound/Sound.h"
+#include "sound/SoundData.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+// sound.cpp
+namespace test_sound {
+namespace {
+
+
+EVE_DEFINE_PATH_BESIDE_SOURCE()
+
+std::vector<char> readBinaryFile(const std::string &path) {
+    std::ifstream in(path, std::ios::binary);
+    if (!in) return {};
+    return std::vector<char>((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+}
+
+}  // namespace
+
+static std::vector<char> makeSilentWav(int samples = 441) {
+    const int         dataBytes = samples * 2;
+    std::vector<char> buf(44 + dataBytes, 0);
+    auto              w32 = [&](int off, uint32_t v) { std::memcpy(buf.data() + off, &v, 4); };
+    auto              w16 = [&](int off, uint16_t v) { std::memcpy(buf.data() + off, &v, 2); };
+    std::memcpy(buf.data(), "RIFF", 4);
+    w32(4, 36 + dataBytes);
+    std::memcpy(buf.data() + 8, "WAVEfmt ", 8);
+    w32(16, 16);
+    w16(20, 1);
+    w16(22, 1);
+    w32(24, 44100);
+    w32(28, 44100 * 2);
+    w16(32, 2);
+    w16(34, 16);
+    std::memcpy(buf.data() + 36, "data", 4);
+    w32(40, dataBytes);
+    return buf;
+}
+
+TEST_CASE("sound.newDecoder.wav") {
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav();
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto               *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+    CHECK(dec->getSampleRate() == 44100);
+    CHECK(dec->getChannelCount() == 1);
+    CHECK(dec->getBitDepth() == 16);
+    delete dec;
+}
+
+TEST_CASE("sound.newSoundData.wav") {
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(4410);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto               *sd = sound->newSoundData(&data);
+    REQUIRE(sd != nullptr);
+    CHECK(sd->getSampleRate() == 44100);
+    CHECK(sd->getChannelCount() == 1);
+    CHECK(sd->getBitDepth() == 16);
+    CHECK(sd->getSampleCount() == 4410);
+    CHECK(sd->getDuration() > 0.09);
+    CHECK(sd->getSize() == 4410 * 2);
+    delete sd;
+}
+
+TEST_CASE("sound.newSoundDataEmpty") {
+    auto *sound = eve::sound::Sound::create();
+    auto *sd    = sound->newSoundDataEmpty(100, 22050, 16, 2);
+    REQUIRE(sd != nullptr);
+    CHECK(sd->getSampleCount() == 100);
+    CHECK(sd->getChannelCount() == 2);
+    CHECK(sd->getSize() == 100 * 2 * 2);
+    delete sd;
+}
+
+TEST_CASE("sound.decoder.seekRewindIsFinished") {
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(44100);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto               *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+    CHECK(dec->isSeekable());
+    CHECK(!dec->isFinished());
+    CHECK(dec->getDuration() > 0.9);
+
+    CHECK(dec->decode() > 0);
+    CHECK(dec->seek(0.5));
+    CHECK(!dec->isFinished());
+
+    while (!dec->isFinished()) {
+        if (dec->decode() <= 0) break;
+    }
+    CHECK(dec->isFinished());
+
+    CHECK(dec->rewind());
+    CHECK(!dec->isFinished());
+    CHECK(dec->decode() > 0);
+    delete dec;
+}
+
+TEST_CASE("sound.decoder.clone") {
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(4410);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto               *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+
+    auto *cloned = dec->clone();
+    REQUIRE(cloned != nullptr);
+    CHECK(cloned->getSampleRate() == dec->getSampleRate());
+    CHECK(cloned->getChannelCount() == dec->getChannelCount());
+    CHECK(cloned->getBitDepth() == dec->getBitDepth());
+
+    dec->decode();
+    CHECK(cloned->decode() > 0);
+    delete cloned;
+    delete dec;
+}
+
+TEST_CASE("sound.newSoundDataFromDecoder") {
+    auto               *sound = eve::sound::Sound::create();
+    auto                wav   = makeSilentWav(4410);
+    eve::data::ByteData data(wav.data(), wav.size());
+    auto               *dec = sound->newDecoder(&data);
+    REQUIRE(dec != nullptr);
+
+    auto *sd = sound->newSoundDataFromDecoder(dec);
+    REQUIRE(sd != nullptr);
+    CHECK(sd->getSampleCount() == 4410);
+    CHECK(sd->getSampleRate() == 44100);
+    CHECK(sd->getChannelCount() == 1);
+    CHECK(sd->getBitDepth() == 16);
+    CHECK(sd->getSize() == 4410 * 2);
+    delete sd;
+    delete dec;
+}
+
+TEST_CASE("sound.invalidData") {
+    auto *sound = eve::sound::Sound::create();
+
+    try {
+        sound->newDecoder(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        const char          garbage[] = "not a sound file";
+        eve::data::ByteData bad(garbage, sizeof(garbage) - 1);
+        sound->newDecoder(&bad);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        sound->newSoundDataFromDecoder(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        sound->newSoundData(nullptr);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+
+    try {
+        const char          garbage[] = "not a sound file either";
+        eve::data::ByteData bad(garbage, sizeof(garbage) - 1);
+        sound->newSoundData(&bad);
+        CHECK(false);
+    } catch (const eve::Exception &) {
+        CHECK(true);
+    }
+}
+
+TEST_CASE("sound.modplug.midi.decode") {
+    const std::string path  = pathBesideThisSource("angel.mid");
+    auto              bytes = readBinaryFile(path);
+    REQUIRE(!bytes.empty());
+    REQUIRE(bytes.size() >= 4);
+    CHECK(std::memcmp(bytes.data(), "MThd", 4) == 0);
+
+    eve::filesystem::FileData fd("angel.mid", bytes.size());
+    std::memcpy(fd.getData(), bytes.data(), bytes.size());
+
+    auto                *sound = eve::sound::Sound::create();
+    eve::sound::Decoder *dec   = nullptr;
+    try {
+        dec = sound->newDecoder(&fd);
+    } catch (const eve::Exception &e) {
+        std::cerr << "MIDI decode failed: " << e.what() << "\n";
+        CHECK(false);
+        return;
+    }
+    REQUIRE(dec != nullptr);
+    CHECK(dec->getSampleRate() > 0);
+    CHECK(dec->getChannelCount() == 2);
+    CHECK(dec->getBitDepth() == 16);
+    CHECK(dec->getDuration() > 0.0);
+
+    int     decoded        = 0;
+    int64_t absSum         = 0;
+    int     samplesChecked = 0;
+    while (!dec->isFinished()) {
+        int n = dec->decode();
+        if (n <= 0) break;
+        decoded += n;
+        auto *buf     = static_cast<const int16_t *>(dec->getBuffer());
+        int   samples = n / 2;
+        for (int i = 0; i < samples && samplesChecked < 44100 * 4; ++i) {
+            absSum += buf[i] < 0 ? -buf[i] : buf[i];
+            ++samplesChecked;
+        }
+        if (samplesChecked >= 44100 * 4) break;
+    }
+
+    std::cerr << "MIDI decode: duration=" << dec->getDuration() << "s bytes=" << decoded << " absSum=" << absSum
+              << "\n";
+    CHECK(decoded > 0);
+    // ModPlug may load MIDI but output silence without instrument patches.
+    if (absSum == 0) std::cerr << "WARNING: MIDI decoded to silence (likely no instruments)\n";
+
+    // Optional: EVENGINE_DUMP_MIDI=1 writes ~3s WAV for manual afplay.
+    if (const char *dump = std::getenv("EVENGINE_DUMP_MIDI"); dump && dump[0] == '1') {
+        eve::filesystem::FileData fd2("angel.mid", bytes.size());
+        std::memcpy(fd2.getData(), bytes.data(), bytes.size());
+        auto                *dec2      = sound->newDecoder(&fd2);
+        const int            rate      = dec2->getSampleRate();
+        const int            ch        = dec2->getChannelCount();
+        const int            wantBytes = rate * ch * 2 * 3;
+        std::vector<uint8_t> pcm;
+        pcm.reserve(static_cast<size_t>(wantBytes));
+        while ((int)pcm.size() < wantBytes && !dec2->isFinished()) {
+            int n = dec2->decode();
+            if (n <= 0) break;
+            auto *buf = static_cast<const uint8_t *>(dec2->getBuffer());
+            pcm.insert(pcm.end(), buf, buf + n);
+        }
+        delete dec2;
+        if (pcm.size() > static_cast<size_t>(wantBytes)) pcm.resize(static_cast<size_t>(wantBytes));
+        const uint32_t    dataBytes = static_cast<uint32_t>(pcm.size());
+        std::vector<char> wav(44 + pcm.size());
+        auto              w32 = [&](int off, uint32_t v) { std::memcpy(wav.data() + off, &v, 4); };
+        auto              w16 = [&](int off, uint16_t v) { std::memcpy(wav.data() + off, &v, 2); };
+        std::memcpy(wav.data(), "RIFF", 4);
+        w32(4, 36 + dataBytes);
+        std::memcpy(wav.data() + 8, "WAVEfmt ", 8);
+        w32(16, 16);
+        w16(20, 1);
+        w16(22, static_cast<uint16_t>(ch));
+        w32(24, static_cast<uint32_t>(rate));
+        w32(28, static_cast<uint32_t>(rate * ch * 2));
+        w16(32, static_cast<uint16_t>(ch * 2));
+        w16(34, 16);
+        std::memcpy(wav.data() + 36, "data", 4);
+        w32(40, dataBytes);
+        std::memcpy(wav.data() + 44, pcm.data(), pcm.size());
+        const std::string out = std::string(EVENGINE_TEST_BINARY_DIR) + "/angel_modplug.wav";
+        std::ofstream     ofs(out, std::ios::binary);
+        ofs.write(wav.data(), static_cast<std::streamsize>(wav.size()));
+        std::cerr << "Wrote " << out << " (" << pcm.size() << " pcm bytes)\n";
+    }
+
+    delete dec;
+}
+}  // namespace test_sound
+#endif

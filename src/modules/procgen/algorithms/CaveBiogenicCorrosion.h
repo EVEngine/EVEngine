@@ -1,9 +1,12 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 
 namespace eve::procgen {
 
+/** @brief CaveBiogenicCorrosionInput public API. */
 struct CaveBiogenicCorrosionInput {
     float    along             = 0.f;
     float    angle             = 0.f;
@@ -14,6 +17,7 @@ struct CaveBiogenicCorrosionInput {
     uint32_t seed              = 0;
 };
 
+/** @brief CaveBiogenicCorrosionSample public API. */
 struct CaveBiogenicCorrosionSample {
     float erosion                 = 0.f;
     float fluvialScallopRetention = 1.f;
@@ -24,6 +28,6 @@ struct CaveBiogenicCorrosionSample {
  * @param input Passage-local coordinates, wet-film exposure, intensity, and deterministic seed.
  * @return Secondary erosion and the retained fraction of older fluvial scallops.
  */
-CaveBiogenicCorrosionSample sampleCaveBiogenicCorrosion(const CaveBiogenicCorrosionInput& input);
+EVENGINE_API_DOMAINS CaveBiogenicCorrosionSample sampleCaveBiogenicCorrosion(const CaveBiogenicCorrosionInput& input);
 
 }  // namespace eve::procgen

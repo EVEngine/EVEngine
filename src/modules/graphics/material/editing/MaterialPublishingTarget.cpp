@@ -18,7 +18,7 @@ void* MaterialPublishingTarget::queryCapability(const CapabilityId& capability) 
     return document_.queryCapability(capability);
 }
 
-EditorResult<void> MaterialPublishingTarget::applyDomainOperation(
+Result<void> MaterialPublishingTarget::applyDomainOperation(
     const DomainOperation& operation) {
     if (staging_) return document_.applyDomainOperation(operation);
     auto candidate = cloneDomainState();
@@ -33,7 +33,7 @@ std::unique_ptr<IDomainOperationTarget> MaterialPublishingTarget::cloneDomainSta
     return candidate;
 }
 
-EditorResult<void> MaterialPublishingTarget::commitDomainState(
+Result<void> MaterialPublishingTarget::commitDomainState(
     std::unique_ptr<IDomainOperationTarget> candidate) {
     auto* typed = dynamic_cast<MaterialPublishingTarget*>(candidate.get());
     if (!typed || typed->targetId() != targetId() || typed->sink_ != sink_ || !typed->staging_)
@@ -43,13 +43,13 @@ EditorResult<void> MaterialPublishingTarget::commitDomainState(
     if (!sink_)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.material.publishing-sink-missing"),
                                           "Material publishing target requires a live runtime sink");
-    EditorResult<void> published = sink_->publish(typed->document_);
+    Result<void> published = sink_->publish(typed->document_);
     if (!published.ok()) return published;
     document_ = typed->document_;
     return eve::editing::applied<void>();
 }
 
-EditorResult<void> MaterialPublishingTarget::reloadSnapshot(const EditorValue& snapshot) {
+Result<void> MaterialPublishingTarget::reloadSnapshot(const EditorValue& snapshot) {
     auto candidate = std::make_unique<MaterialPublishingTarget>(*this);
     candidate->staging_ = true;
     auto loaded = candidate->document_.loadSnapshot(snapshot);

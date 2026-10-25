@@ -1,4 +1,6 @@
 #include "climbing/ClimbingAnchorGraph.h"
+#include "common/Assert.h"
+#include "common/ValueRead.h"
 
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
@@ -29,41 +31,34 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const eve::Value* value = field(object, name);
-    const auto* text = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
 bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
-    const eve::Value* value = field(object, name);
-    const auto* number = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!number) return false;
-    output = *number;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& output) {
-    const eve::Value* value = field(object, name);
-    const auto* boolean = value ? value->getIf<bool>() : nullptr;
-    if (!boolean) return false;
-    output = *boolean;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool numericFloat(const eve::Value& value, float& output) {
-    double number = 0.0;
-    if (const auto* integer = value.getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else if (const auto* real = value.getIf<double>())
-        number = *real;
-    else
-        return false;
-    if (!std::isfinite(number) || number < -static_cast<double>(std::numeric_limits<float>::max()) ||
-        number > static_cast<double>(std::numeric_limits<float>::max()))
-        return false;
-    output = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 

@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 #include <cstdint>
 #include <string>
@@ -45,16 +47,25 @@ struct [[nodiscard]] AgentDevelopmentResult {
  * game, Editor, renderer, filesystem, or test-runner state; evidence is an immutable
  * receipt that refers to those authoritative systems.
  */
-class AgentDevelopmentSession final {
+class EVENGINE_API_FOUNDATION AgentDevelopmentSession final {
 public:
     /** @brief Return the process-lifetime session authority. */
     static AgentDevelopmentSession& instance();
 
-    /** @brief Start one session; rejects empty objectives, duplicate criteria, or an active session. */
-    [[nodiscard]] AgentDevelopmentResult start(std::string objective,
-                                               std::vector<AgentAcceptanceCriterion> criteria);
+    /**
+     * @brief Start one session; rejects empty objectives, duplicate criteria, or an active session.
+     * @param taskKind Optional kind (`content|script|verify|fix|workshop`); empty defaults to `verify`.
+     * @param profile Optional profile id; empty selects the taskKind default (verify → `verify.play`).
+     */
+    [[nodiscard]] AgentDevelopmentResult start(std::string objective, std::vector<AgentAcceptanceCriterion> criteria,
+                                               std::string taskKind = {}, std::string profile = {});
     /** @brief Advance through the declared workflow graph without mutating game state. */
     [[nodiscard]] AgentDevelopmentResult advance(std::string_view sessionId, AgentDevelopmentPhase phase);
+    /**
+     * @brief Narrow or widen the MCP tool surface along a declared escalate edge.
+     * @remarks Does not change workflow phase. Rejects unknown profiles and illegal edges.
+     */
+    [[nodiscard]] AgentDevelopmentResult escalate(std::string_view sessionId, std::string_view toProfile);
     /** @brief Append evidence; only pass evidence updates criterion satisfaction. */
     [[nodiscard]] AgentDevelopmentResult record(std::string_view sessionId, AgentDevelopmentEvidence evidence);
     /** @brief Complete only from Verify when every required criterion has passing evidence. */
@@ -72,6 +83,12 @@ public:
     AgentDevelopmentPhase phase() const { return phase_; }
     /** @brief User-supplied objective. */
     const std::string& objective() const { return objective_; }
+    /** @brief Resolved task kind for this session (`verify` when omitted at start). */
+    const std::string& taskKind() const { return taskKind_; }
+    /** @brief Resolved MCP task profile id (`verify.play` when omitted at start). */
+    const std::string& profile() const { return profile_; }
+    /** @brief How many successful profile escalations occurred in this session. */
+    std::uint64_t escalateCount() const { return escalateCount_; }
     /** @brief Terminal summary or abort reason. */
     const std::string& summary() const { return summary_; }
     /** @brief Immutable acceptance snapshot owned by this session. */
@@ -84,20 +101,22 @@ public:
 private:
     AgentDevelopmentSession() = default;
 
-    std::string                            sessionId_;
-    std::string                            objective_;
-    std::string                            summary_;
-    AgentDevelopmentPhase                  phase_ = AgentDevelopmentPhase::Aborted;
-    std::vector<AgentAcceptanceCriterion>  criteria_;
-    std::vector<AgentDevelopmentEvidence>  evidence_;
-    std::uint64_t                          nextSession_  = 1;
-    std::uint64_t                          nextEvidence_ = 1;
+    std::string                           sessionId_;
+    std::string                           objective_;
+    std::string                           taskKind_;
+    std::string                           profile_;
+    std::string                           summary_;
+    AgentDevelopmentPhase                 phase_ = AgentDevelopmentPhase::Aborted;
+    std::vector<AgentAcceptanceCriterion> criteria_;
+    std::vector<AgentDevelopmentEvidence> evidence_;
+    std::uint64_t                         nextSession_   = 1;
+    std::uint64_t                         nextEvidence_  = 1;
+    std::uint64_t                         escalateCount_ = 0;
 };
 
 /** @brief Stable JSON protocol name for a development phase. */
-std::string_view agentDevelopmentPhaseName(AgentDevelopmentPhase phase);
+EVENGINE_API_FOUNDATION std::string_view agentDevelopmentPhaseName(AgentDevelopmentPhase phase);
 /** @brief Parse a stable JSON protocol phase name. */
-[[nodiscard]] AgentDevelopmentResult parseAgentDevelopmentPhase(std::string_view name,
-                                                                AgentDevelopmentPhase* phase);
+[[nodiscard]] AgentDevelopmentResult parseAgentDevelopmentPhase(std::string_view name, AgentDevelopmentPhase* phase);
 
 }  // namespace eve::dev

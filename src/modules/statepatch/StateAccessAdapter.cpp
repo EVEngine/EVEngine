@@ -1,4 +1,5 @@
 #include "statepatch/StateAccessAdapter.h"
+#include "common/ValueRead.h"
 
 #include "transaction/Transaction.h"
 
@@ -15,7 +16,7 @@ namespace {
 
 eve::Result<eve::MutationReceipt> failure(eve::DiagnosticCode code, std::string message, std::string path = {}) {
     return eve::Result<eve::MutationReceipt>::failure(
-        eve::Diagnostic::error(code, std::move(message), std::move(path)));
+        eve::Diagnostic::error(code, message, path));
 }
 
 eve::Result<eve::Value> readJsonValue(const Store& store, std::string_view subject, std::string_view key) {
@@ -28,15 +29,10 @@ eve::Result<eve::Value> readJsonValue(const Store& store, std::string_view subje
 }
 
 bool numeric(const eve::Value& value, double& output) {
-    if (value.isInt64()) {
-        output = static_cast<double>(value.asInt());
-        return true;
-    }
-    if (value.isDouble()) {
-        output = value.asDouble();
-        return std::isfinite(output);
-    }
-    return false;
+    auto parsed = eve::readNumericDoubleValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
+    return std::isfinite(output);
 }
 
 std::string tagKey(std::string_view tag) { return "tag." + std::string(tag); }
@@ -166,10 +162,10 @@ eve::Result<eve::MutationReceipt> StatePatchStateAdapter::apply(std::span<const 
     auto committed = coordinator.execute(transaction, participants);
     if (!committed) return eve::Result<eve::MutationReceipt>::failure(committed.status());
 
-    const PatchResult& result = batch->result();
+    const PatchResult& summary = batch->result();
     return eve::Result<eve::MutationReceipt>::success(
-        eve::MutationReceipt{context.transactionId, static_cast<std::size_t>(result.changedCount)},
-        eve::Status::success(result.changedCount == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
+        eve::MutationReceipt{context.transactionId, static_cast<std::size_t>(summary.changedCount)},
+        eve::Status::success(summary.changedCount == 0 ? eve::StatusCode::NoOp : eve::StatusCode::Applied));
 }
 
 }  // namespace eve::statepatch

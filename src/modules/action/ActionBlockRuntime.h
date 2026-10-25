@@ -1,4 +1,6 @@
 #pragma once
+#include "common/Export.h"
+
 
 /** @file ActionBlockRuntime.h @brief Deterministic notify-state lifecycle routing. */
 
@@ -17,8 +19,12 @@ namespace eve::action {
  * exits. The borrowed registry must outlive this object. Handler callbacks are
  * synchronous, run without locks, and may reenter unrelated systems but must
  * not reenter this instance.
+ *
+ * Hosts that need both a registry and this router should prefer
+ * `ActionNotifyPlayback`, which is the canonical composition face. Do not fold
+ * this into ScriptActionRuntime — that façade owns phase/ability projection only.
  */
-class ActionBlockRuntime {
+class EVENGINE_API_PLATFORM ActionBlockRuntime {
 public:
     /**
      * @brief Bind the canonical registry used for all synchronous callbacks.
