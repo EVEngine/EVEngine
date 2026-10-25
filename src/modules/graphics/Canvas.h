@@ -52,8 +52,8 @@ public:
      */
     virtual image::ImageData *newHDRImageData() { return nullptr; }
 
-    /** @brief Draws . */
-    virtual void draw(Canvas *C, const glm::mat4 &matrix) const = 0;
+    /** @brief Draws this canvas into another canvas with a transform. */
+    virtual void draw(Canvas* C, Mat4Param matrix) const = 0;
 };
 
 }  // namespace eve::graphics

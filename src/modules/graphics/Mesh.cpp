@@ -9,6 +9,9 @@
 #include <cmath>
 #include <limits>
 
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
 namespace eve::graphics {
 Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
     if (gpuVertexCount <= 0 || values.size() != size_t(gpuVertexCount) * 2 ||
@@ -148,12 +151,13 @@ Result<std::array<float, 6>> Mesh::localBounds() const {
     return Result<std::array<float, 6>>::success(localBounds_);
 }
 
-void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+void Mesh::drawOcclusion(Graphics* gfx, Mat4Param matrixParam) const {
     if (!gfx || !getCastOcclusion()) return;
-    const float x = matrix[3][0];
-    const float y = matrix[3][1];
-    const float w = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);
-    const float h = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);
+    const glm::mat4& matrix = matrixParam.as<glm::mat4>();
+    const float      x      = matrix[3][0];
+    const float      y      = matrix[3][1];
+    const float      w      = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);
+    const float      h      = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);
     if (w <= 0.f || h <= 0.f) return;
     gfx->drawOcclusionSolid(x, y, w, h);
 }

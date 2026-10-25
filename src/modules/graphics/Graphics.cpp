@@ -1872,9 +1872,9 @@ Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, b
                                          float lodBias) {
     TextureCreateInfo info;
     info.generateMipmaps = generateMipmaps;
-    info.sampler.min     = TextureSampler::parseFilter(filter);
+    info.sampler.min     = TextureSampler::parseFilter(filter.c_str());
     info.sampler.mag     = info.sampler.min;
-    info.sampler.mipmap  = TextureSampler::parseMipmap(mipmap);
+    info.sampler.mipmap  = TextureSampler::parseMipmap(mipmap.c_str());
     if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled) info.sampler.mipmap = MipmapMode::Linear;
     info.sampler.repeatU       = repeatU;
     info.sampler.repeatV       = repeatV;
@@ -1896,9 +1896,9 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
         throw eve::Exception("Graphics::setTextureSampler: unknown mipmap mode '%s'", mipmap.c_str());
     }
     TextureSampler s = texture->getSampler();
-    s.min            = TextureSampler::parseFilter(filter);
+    s.min            = TextureSampler::parseFilter(filter.c_str());
     s.mag            = s.min;
-    s.mipmap         = TextureSampler::parseMipmap(mipmap);
+    s.mipmap         = TextureSampler::parseMipmap(mipmap.c_str());
     s.maxAnisotropy  = maxAnisotropy;
     s.lodBias        = lodBias;
     setTextureSampler(texture, s);

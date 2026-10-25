@@ -38,9 +38,9 @@ public:
     image::ImageData *newHDRImageData() override;
 
     /** @brief Draws . */
-    void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}
+    void draw(eve::graphics::Graphics*, Mat4Param) const override {}
     /** @brief Draws . */
-    void draw(Canvas *, const glm::mat4 &) const override {}
+    void draw(Canvas*, Mat4Param) const override {}
 
     /** @brief Framebuffer. */
     vk::Framebuffer framebuffer() const { return fb; }

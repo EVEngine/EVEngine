@@ -5022,12 +5022,12 @@ Texture* Graphics::getTexture() {
     return sceneColorTexture;
 }
 
-void Graphics::draw(eve::graphics::Graphics* gfx, const glm::mat4& matrix) const {
+void Graphics::draw(eve::graphics::Graphics* gfx, Mat4Param matrix) const {
     (void)gfx;
     (void)matrix;
 }
 
-void Graphics::draw(Canvas* C, const glm::mat4& matrix) const {
+void Graphics::draw(Canvas* C, Mat4Param matrix) const {
     (void)C;
     (void)matrix;
 }

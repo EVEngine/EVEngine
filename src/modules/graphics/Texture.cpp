@@ -3,6 +3,7 @@
 #include "graphics/Graphics.h"
 
 #include <cmath>
+#include <cstring>
 #include <glm/glm.hpp>
 
 namespace eve::graphics {
@@ -14,8 +15,8 @@ Texture::~Texture() {
     gpuHandle = nullptr;
 }
 
-void Texture::markDeferredFilePixels(Graphics *graphics) {
-    graphics_ = graphics;
+void Texture::markDeferredFilePixels(Graphics* graphics) {
+    graphics_          = graphics;
     filePixelsPending_ = graphics != nullptr;
 }
 
@@ -50,19 +51,26 @@ int Texture::getMipmapCount() const {
     return mipmapCount;
 }
 
-void Texture::draw(Graphics *, const glm::mat4 &) const {
+void Texture::setAlphaConvention(const char* value) {
+    premultipliedAlpha_ = value != nullptr && std::strcmp(value, "premultiplied") == 0;
+}
+
+const char* Texture::getAlphaConvention() const { return premultipliedAlpha_ ? "premultiplied" : "straight"; }
+
+void Texture::draw(Graphics*, Mat4Param) const {
     // Declarative path uses RenderSystem; immediate draw left for later.
 }
 
-void Texture::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+void Texture::drawOcclusion(Graphics* gfx, Mat4Param matrixParam) const {
     if (!gfx || !getCastOcclusion()) return;
+    const glm::mat4& matrix = matrixParam.as<glm::mat4>();
     // Treat matrix as 2D affine: translation in column 3, scale from basis lengths.
     const float x = matrix[3][0];
     const float y = matrix[3][1];
     const float w = std::sqrt(matrix[0][0] * matrix[0][0] + matrix[0][1] * matrix[0][1]);
     const float h = std::sqrt(matrix[1][0] * matrix[1][0] + matrix[1][1] * matrix[1][1]);
     if (w <= 0.f || h <= 0.f) return;
-    gfx->drawOcclusionTexture(const_cast<Texture *>(this), x, y, w, h);
+    gfx->drawOcclusionTexture(const_cast<Texture*>(this), x, y, w, h);
 }
 
 }  // namespace eve::graphics
