@@ -1618,7 +1618,11 @@ TEST_CASE("devtools.snapshot.skipsFunctionInsideRootAndNamesIt") {
 
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    const eve::StateValue* state = roots->find("gameState");
+    const eve::StateValue* root = roots->find("gameState");
+    REQUIRE(root != nullptr);
+    const auto* objects = out.find("objects");
+    REQUIRE(objects != nullptr);
+    const auto* state = objects->at(static_cast<size_t>(root->find("$ref")->asInt())).find("value");
     REQUIRE(state != nullptr);
     REQUIRE(state->find("level") != nullptr);
     REQUIRE(state->find("tick") == nullptr);
@@ -1655,7 +1659,11 @@ TEST_CASE("devtools.snapshot.skipsInstanceInsideContainerAndNamesIt") {
 
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    const eve::StateValue* state = roots->find("progress");
+    const eve::StateValue* root = roots->find("progress");
+    REQUIRE(root != nullptr);
+    const auto* objects = out.find("objects");
+    REQUIRE(objects != nullptr);
+    const auto* state = objects->at(static_cast<size_t>(root->find("$ref")->asInt())).find("value");
     REQUIRE(state != nullptr);
     REQUIRE(state->find("level") != nullptr);
     REQUIRE(state->find("leader") == nullptr);
