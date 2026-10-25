@@ -942,6 +942,9 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // Aggregate one synthetic frame the way the frame loop does, so the tool has
     // real zone data to report.
+    const bool enabledBefore = profilerModule->enabled();
+    profilerModule->setEnabled(true);
+    profilerModule->reset();
     profilerModule->beginFrame();
     {
         eve::prof::Profiler::zoneBegin("mcp.test.zone", "mcp.test");
@@ -958,6 +961,7 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // The text report is the same hotspot view the profiler panel shows.
     CHECK(callToolOnce("eve_profiler_report", "{}").find("mcp.test.zone") != std::string::npos);
+    profilerModule->setEnabled(enabledBefore);
 }
 
 TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
@@ -3077,14 +3081,14 @@ TEST_CASE("render_graph.engineTopology") {
         }
         if (p.name == "shadow0" || p.name == "shadow1" || p.name == "shadow2") {
             REQUIRE_EQ(p.attachments.size(), size_t(1));
-            const bool folded = p.attachments[0].finalLayout == vk::ImageLayout::eDepthStencilReadOnlyOptimal;
-            CHECK(folded);
+            // Match the next sample() access, not the resource's end-of-frame layout.
+            CHECK_EQ(p.attachments[0].finalLayout, vk::ImageLayout::eShaderReadOnlyOptimal);
         }
     }
 }
 
 TEST_CASE("render_graph.jobSystemExecutorParallel") {
-    auto* jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    auto* jobs = eve::thread::createJobSystem(4);  // Matches the timing assumption below on every host.
     REQUIRE(jobs != nullptr);
     jobs->beginFrame();
 
@@ -3111,6 +3115,7 @@ TEST_CASE("render_graph.jobSystemExecutorParallel") {
     delete jobs;
 
     CHECK_EQ(recorded.size(), layer.size());
+    std::sort(recorded.begin(), recorded.end());
     for (size_t i = 0; i < recorded.size(); ++i) CHECK_EQ(recorded[i], int(i));
     // Every pass recorded exactly once (recorded already proves count; sort
     // check proves no duplicates and no gaps).
@@ -3118,8 +3123,8 @@ TEST_CASE("render_graph.jobSystemExecutorParallel") {
     // At least two distinct threads participated -> the layer was truly
     // recorded in parallel, not just serialized through the executor.
     std::sort(threads.begin(), threads.end());
-    const bool parallel = threads.size() >= 2 && std::unique(threads.begin(), threads.end()) != threads.end();
-    CHECK(parallel);
+    const auto distinctEnd = std::unique(threads.begin(), threads.end());
+    CHECK(std::distance(threads.begin(), distinctEnd) >= 2);
 }
 
 TEST_CASE("render_graph.jobSystemExecutorSerialFallback") {

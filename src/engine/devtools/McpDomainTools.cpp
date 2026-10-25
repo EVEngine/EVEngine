@@ -147,9 +147,9 @@ std::string decalSetLimit(Poco::JSON::Object::Ptr args) {
 // capabilities already existed and only lacked an agent surface.
 
 std::string physicsSphereCast(Poco::JSON::Object::Ptr args) {
+    if (!args || !args->has("from") || !args->has("to")) return errorPayload("from and to are required");
     auto* cast = eve::cap::query<eve::ICameraObstructionQuery>();
     if (!cast) return unavailablePayload(eve::ICameraObstructionQuery::capabilityName);
-    if (!args || !args->has("from") || !args->has("to")) return errorPayload("from and to are required");
 
     const std::array<float, 3> from   = getArgVec3(args, "from", {0.f, 0.f, 0.f});
     const std::array<float, 3> to     = getArgVec3(args, "to", {0.f, 0.f, 0.f});
