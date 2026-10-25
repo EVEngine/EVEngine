@@ -354,6 +354,11 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             (frame.root ? glm::scale(glm::mat4(1.f), glm::vec3(node.sx, node.sy, node.sz)) : local);
         // #region agent log
         {
+            std::fprintf(stderr,
+                         "[prefab-debug] walk root=%d xyz=(%.6f,%.6f,%.6f) localT=(%.6f,%.6f,%.6f) "
+                         "worldT=(%.6f,%.6f,%.6f)\n",
+                         frame.root ? 1 : 0, node.x, node.y, node.z, local[3][0], local[3][1], local[3][2],
+                         world[3][0], world[3][1], world[3][2]);
             std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
             if (agentLog) {
                 agentLog << "{\"hypothesisId\":\"A,B,C\",\"location\":\"EvpackStaticPrefab.cpp:walk\","
@@ -366,6 +371,12 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
             }
         }
         // #endregion
+        // Catch lost root translation before bounds (GCC aarch64 -O2 regression probe).
+        if (frame.root && (std::fabs(world[3][0] - node.x) > 1e-4f || std::fabs(world[3][1] - node.y) > 1e-4f ||
+                           std::fabs(world[3][2] - node.z) > 1e-4f))
+            return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
+                DiagnosticCode::Failed, "prefab root world translation lost during hierarchy walk", {}, {},
+                "asset.graphics.prefab"));
         transforms.emplace(node.persistentId, world);
         placementTransforms.emplace(node.persistentId, placed);
         for (auto it = node.children.rbegin(); it != node.children.rend(); ++it)
@@ -422,6 +433,10 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         const auto& placementMatrix = placementTransforms.at(binding.object);
         // #region agent log
         {
+            std::fprintf(stderr,
+                         "[prefab-debug] meshBounds=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] worldT=(%.6f,%.6f,%.6f)\n",
+                         bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], matrix[3][0],
+                         matrix[3][1], matrix[3][2]);
             std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
             if (agentLog) {
                 agentLog << "{\"hypothesisId\":\"D,E\",\"location\":\"EvpackStaticPrefab.cpp:bounds\","
@@ -456,9 +471,12 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
     }
     // #region agent log
     {
+        const auto& b = out->impl_->localBounds;
+        std::fprintf(stderr,
+                     "[prefab-debug] final localBounds=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] draws=%zu\n", b[0], b[1],
+                     b[2], b[3], b[4], b[5], out->impl_->draws.size());
         std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
         if (agentLog) {
-            const auto& b = out->impl_->localBounds;
             agentLog << "{\"hypothesisId\":\"A,B,C,D,E\",\"location\":\"EvpackStaticPrefab.cpp:load-exit\","
                         "\"message\":\"final localBounds\","
                         "\"data\":{\"localBounds\":["
