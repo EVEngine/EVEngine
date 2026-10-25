@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "common/Profile.h"
 #include "crowd/CrowdInternal.h"
 

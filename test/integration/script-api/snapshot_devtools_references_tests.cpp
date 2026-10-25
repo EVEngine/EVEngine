@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "devtools",
+  "cases": {
+    "platform-file": [
+      "devtools.snapshot.reloadMergesDefaultsWithoutBreakingGraph",
+      "devtools.snapshot.reloadDefaultAliasesToCapturedArrayChildren"
+    ]
+  }
+}
+*/
+// clang-format on
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

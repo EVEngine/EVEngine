@@ -1,3 +1,44 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "BloomSettings.cpp",
+    "ClusteredLighting.cpp",
+    "CubemapPrefilter.cpp",
+    "Lighting2D.cpp",
+    "MeshInstanceRange.cpp",
+    "ParallaxMap.cpp",
+    "Quad.cpp",
+    "RenderSceneEffects.cpp",
+    "RenderSystem3D.cpp",
+    "Shadow3D.cpp",
+    "ShadowScheme.cpp",
+    "SkyAtmosphereLuts.cpp",
+    "Volumetric.cpp",
+    "atmosphere_volume.cpp",
+    "depth_of_field_focus.cpp",
+    "diffuse_light_probe.cpp",
+    "graphics_camera_factory.cpp",
+    "graphics_display_output.cpp",
+    "graphics_pbr_surface.cpp",
+    "graphics_primitives.cpp",
+    "graphics_skin_palette.cpp",
+    "graphics_vegetation_extras.cpp",
+    "graphics_webgpu_pbr_variant.cpp",
+    "grass_billboard.cpp",
+    "grass.cpp",
+    "grass_wind.cpp",
+    "hair.cpp",
+    "indirect_builder.cpp",
+    "reflection_probe_culling.cpp",
+    "tree_wind.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_BloomSettings)

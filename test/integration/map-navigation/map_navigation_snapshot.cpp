@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "map",
+  "origins": [
+    "map_navigation_snapshot.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <limits>
 #include "map/Pathfinder.h"
 #include "zeroerr/unittest.h"

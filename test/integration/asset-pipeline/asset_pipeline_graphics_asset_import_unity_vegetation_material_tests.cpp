@@ -1,3 +1,51 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-pipeline",
+  "cases": {
+    "asset-files": [
+      "asset.import.unityFbxCharacterProducesSkinAndAnimation"
+    ],
+    "render-offscreen": [
+      "asset.mesh.unityV11AuthoringChannelsSurviveCookAndRuntimeLoad",
+      "graphics.vegetation.translucency_gpu_backlight_and_ambient"
+    ],
+    "render-window": [
+      "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource",
+      "asset.import.unityStaticPrefabRendersOwnedEcsInstances"
+    ]
+  },
+  "module": "asset_import",
+  "modules": [
+    "asset",
+    "asset_graphics",
+    "asset_import",
+    "asset_procgen",
+    "asset_scene",
+    "common",
+    "graphics"
+  ],
+  "origins": [
+    "asset_import_unity_fbx.cpp",
+    "asset_import_unity_native.cpp",
+    "asset_import_unity_package.cpp",
+    "asset_import_unity_sprite.cpp",
+    "asset_import_unity_vegetation_material.cpp",
+    "asset_mesh_attributes.cpp",
+    "asset_mesh_uv.cpp",
+    "asset_migration.cpp",
+    "asset_procgen_terrain_detail_render.cpp",
+    "asset_scene_bindings.cpp",
+    "asset_shader.cpp",
+    "graphics_vegetation_translucency.cpp",
+    "medialoader_model_link.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_unity_fbx)

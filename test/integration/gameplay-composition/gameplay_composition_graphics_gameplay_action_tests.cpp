@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "concurrency": [
+      "editor.v2.task_queue_is_queryable_and_cancellable"
+    ],
+    "script-binding": [
+      "editor.script.composes_live_tile_layer_target_with_field_tool",
+      "editor.ui.theme_editor_script_composes_workspace_and_transactions"
+    ]
+  },
+  "module": "editor",
+  "modules": [
+    "action",
+    "editor",
+    "effects",
+    "gpuagents",
+    "inventory",
+    "rpg"
+  ],
+  "origins": [
+    "editor_spline_path_binder.cpp",
+    "editor_stylize_mesh_vfx.cpp",
+    "editor_surface_fluid_preview.cpp",
+    "editor_task_diagnostic_v2.cpp",
+    "editor_texture_recipe_target.cpp",
+    "editor_transaction_consumer.cpp",
+    "editor_ui_document.cpp",
+    "editor_ui_skin_preview.cpp",
+    "editor_voxel_catalog.cpp",
+    "editor_workspace_layout_shell.cpp",
+    "effects_domain_adapters.cpp",
+    "game_save_integration.cpp",
+    "gameplay_action.cpp",
+    "gameplay_control_rpg_product.cpp",
+    "gameplay_control_weapon.cpp",
+    "gpuagents.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_spline_path_binder)

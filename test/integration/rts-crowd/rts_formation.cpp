@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "rts"
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include <cstdio>
 #include <limits>

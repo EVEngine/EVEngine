@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "graphics/DamageNumbersInternal.h"
 #include "graphics/Font.h"
 #include "graphics/Graphics.h"

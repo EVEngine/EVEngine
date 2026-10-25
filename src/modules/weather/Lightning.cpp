@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "weather/Lightning.h"
 #include <algorithm>
 #include <cmath>

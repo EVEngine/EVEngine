@@ -1,3 +1,12 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "procgen"
+}
+*/
+// clang-format on
 #include <cmath>
 #include <limits>
 #include "map/Path.h"

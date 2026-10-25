@@ -1,3 +1,59 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "test-framework": [
+      "common.zeroerr.preservesExpressionAndSource",
+      "common.zeroerr.preservesAssertionCounters",
+      "common.zeroerr.preservesFixtureRegistration",
+      "common.zeroerr.expressionValueLifecycle",
+      "common.zeroerr.testMetadataLifecycle",
+      "common.zeroerr.assertionExceptionLifecycle",
+      "common.zeroerr.formatPreservesGrammarAndOrder",
+      "common.zeroerr.printerOwnsAndResetsStream",
+      "common.zeroerr.printerBorrowsExternalStream",
+      "common.zeroerr.printerFormattingModes",
+      "common.zeroerrRegistration.borrowedDecoratorsKeepOrder",
+      "common.zeroerrRegistration.borrowedNamesBecomeOwned",
+      "common.zeroerrRegistration.skippedCase",
+      "common.zeroerrRegistration.fixtureFactory"
+    ]
+  },
+  "origins": [
+    "capability.cpp",
+    "protocol_dispatch.cpp",
+    "common_diagnostic_storage.cpp",
+    "common_diagnostic_vector_instances.cpp",
+    "diagnostic_value.cpp",
+    "ECS.cpp",
+    "ecs_container_instances.cpp",
+    "common_identity_version.cpp",
+    "common_result_assertion.cpp",
+    "value.cpp",
+    "value_lifecycle.cpp",
+    "common_zeroerr_diagnostics.cpp",
+    "common_zeroerr_registration.cpp",
+    "json.cpp",
+    "result.cpp",
+    "runtime_handle.cpp",
+    "script_compiler.cpp",
+    "script_structure.cpp",
+    "state_value.cpp",
+    "string_instances.cpp",
+    "time_contract.cpp",
+    "versioned_registry.cpp",
+    "xml.cpp",
+    "capability_owned.cpp",
+    "condition.cpp",
+    "sdf_field3d.cpp",
+    "ecs_view_preparation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_capability) || \

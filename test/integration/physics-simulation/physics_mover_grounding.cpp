@@ -1,3 +1,23 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "physics-backend": [
+      "physics.mover.grounding.leavingLedgeClearsSupportAtDestination",
+      "physics.mover.grounding.horizontalMotionHasUsableSupportNormal",
+      "physics.mover.grounding.jumpingClearsStartingFloorContact",
+      "physics.mover.grounding.kinematicSupportRemovalIsObservedImmediately",
+      "physics.mover.grounding.destinationProbeHonorsSensorAndBodyExclusions",
+      "physics.mover.grounding.sensorWallDoesNotBlockCapsuleTravel"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
 #include "physics/Body3D.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"

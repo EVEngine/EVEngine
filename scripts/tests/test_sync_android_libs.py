@@ -59,6 +59,10 @@ class AndroidLibraryStagingTests(unittest.TestCase):
         for filename in ("native_arm64.mk", "native_macos.mk"):
             shutil.copyfile(SCRIPT.parent / filename, helper.parent / filename)
         shutil.copyfile(SCRIPT.parent.parent / "Makefile", self.root / "Makefile")
+        # Stage the real recipe composition too: sync/android-libs now belongs
+        # to the Android fragment rather than the root Makefile.
+        for directory in ("platforms", "tasks"):
+            shutil.copytree(SCRIPT.parent / directory, helper.parent / directory)
         result = subprocess.run(
             ["make", "sync/android-libs", f"BUILD_DIR={self.build}",
              f"JNI_LIBS={self.destination}", f"ANDROID_NDK={self.ndk}", "ANDROID_ABI=arm64-v8a"],

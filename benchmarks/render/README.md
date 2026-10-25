@@ -121,7 +121,7 @@ false on the tested device. Engine-owned presented shadow captures were byte-ide
 SDK binaries and captures are deliberately not versioned. PR-head validation is reported separately
 in the pull request and hosted checks; the historical results must not be interpreted as hosted CI.
 
-All new native tests are process-isolated and registered in `test/test_levels.json`; generated
+All new native tests are process-isolated and discovered from their paths/source policies; generated
 module evidence comes from `scripts/test_module_coverage.py`. Resource ownership/lifetime, costs,
 resize and teardown are documented; no module boundary, persistent format or ECS lifecycle changes
 or architecture-rule exceptions are introduced.

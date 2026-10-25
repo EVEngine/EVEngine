@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "concurrency",
+  "module": "crowd",
+  "origins": [
+    "CrowdThread.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "crowd/thread/CrowdThread.h"
 #include <atomic>

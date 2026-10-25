@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "weapon"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <functional>
 #include <limits>

@@ -1,3 +1,12 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "combat"
+}
+*/
+// clang-format on
 #include "combat/Damage.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

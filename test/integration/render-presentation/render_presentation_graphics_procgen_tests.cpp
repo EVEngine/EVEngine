@@ -1,3 +1,44 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "cases": {
+    "render-offscreen": [
+      "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
+      "procgen.terrain.waterShaderShipsEmbeddedSpirv"
+    ],
+    "script-binding": [
+      "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+      "procgen.script.pointsetPolygonAndBatchApiAreBound"
+    ]
+  },
+  "module": "particles",
+  "modules": [
+    "image",
+    "particles",
+    "procgen",
+    "rpg"
+  ],
+  "origins": [
+    "particles_gpu_resident.cpp",
+    "particles_p2_p3.cpp",
+    "particles_playback.cpp",
+    "particles_reference_effects.cpp",
+    "particles_scalability.cpp",
+    "procgen.cpp",
+    "procgen_foliage_clusters.cpp",
+    "procgen_lsystem.cpp",
+    "procgen_preview.cpp",
+    "resource_lifetime.cpp",
+    "rpg_simulation.cpp",
+    "procgen_pointset.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_gpu_resident)
