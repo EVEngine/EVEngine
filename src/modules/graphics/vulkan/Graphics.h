@@ -789,7 +789,11 @@ public:
     void setMesh3DClip(float nearZ, float farZ) override;
     /** @brief Returns the scene color texture. */
     Texture *getSceneColorTexture() override;
-    /** @brief Renders entity id mask. */
+    /**
+     * @brief Renders entity id mask.
+     * @ownership Result transfers to caller. Draw inputs are borrowed only for this call.
+     * @lifetime Returned ImageData is owned by the caller; draws are valid only for the call.
+     */
     image::ImageData* renderEntityIdMask(const std::vector<EntityIdDraw>& draws, const glm::mat4& viewProj, int width,
                                          int height) override;
     /** @brief Private-target synchronous opaque ID and float depth readback. */

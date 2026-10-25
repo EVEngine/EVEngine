@@ -51,6 +51,7 @@ public:
     /**
      * @brief Per-pixel mesh entity-ID pass into an offscreen target, then CPU readback.
      * @ownership Result transfers to caller. Draw inputs are borrowed only for this call.
+     * @lifetime Returned ImageData is owned by the caller; draws are valid only for the call.
      */
     [[nodiscard]] virtual image::ImageData* renderEntityIdMask(const std::vector<EntityIdDraw>& draws,
                                                                const glm::mat4& viewProj, int w, int h) = 0;

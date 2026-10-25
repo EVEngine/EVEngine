@@ -154,7 +154,10 @@ public:
     [[nodiscard]] virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
                                                         const GpuParticleSpawn* spawns, std::uint32_t spawnCount) = 0;
 
-    /** @brief Queue an indirect draw at the current 2D overlay position. */
+    /**
+     * @brief Queue an indirect draw at the current 2D overlay position.
+     * @compatibility Preserves the established GPU-particle boolean submission contract.
+     */
     [[nodiscard]] virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) = 0;
 
     /** @brief Return the latest fence-complete counters without waiting on the GPU. */
