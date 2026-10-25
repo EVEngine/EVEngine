@@ -549,6 +549,26 @@ function(main)
             endif()
         endforeach()
     endif()
+    # ik.hpp: chain-scoped FABRIK, pole vector, influence, tip rotation. Kept as an
+    # EVEngine patch until upstream sunxfancy/ik.hpp accepts the same API (this
+    # agent cannot push that submodule). Drop the patch once the submodule pin
+    # includes those solver methods.
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp/ik/solver.hpp")
+        set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+            "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ik-chain-solve-pole-influence.patch")
+        execute_process(
+            COMMAND ${CMAKE_COMMAND}
+                -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/ik-chain-solve-pole-influence.patch
+                -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
+            RESULT_VARIABLE _eve_ik_patch_result)
+        if(NOT _eve_ik_patch_result EQUAL 0)
+            message(FATAL_ERROR
+                "Patching external/ik.hpp failed (exit ${_eve_ik_patch_result}). "
+                "The vendored submodule moved away from the pinned commit; "
+                "update cmake/patches/ik-chain-solve-pole-influence.patch.")
+        endif()
+    endif()
     # set_include() generated the ECS overlay before the patch above. Refresh
     # it now so a clean checkout compiles the patched default-table API.
     eve_prepare_ecs_container_headers()

@@ -7,7 +7,7 @@ Dependencies have distinct responsibilities:
 - Squirrel: scripting; SimpleSquirrel: C++ bindings.
 - VKBuilder: Vulkan integration combining features of vk-bootstrap and Vookoo; submodule `external/VKBuilder`.
 - ECS.hpp: class-enabled ECS for entities/declarative rendering; `external/ECS.hpp`.
-- ik.hpp: header-only FABRIK/joint constraints exposed by the `ik` module; `external/ik.hpp`.
+- ik.hpp: header-only FABRIK/joint constraints exposed by the `ik` module; `external/ik.hpp`. Chain `solveChain` / pole / influence / tip rotation currently arrive via `cmake/patches/ik-chain-solve-pole-influence.patch` until upstream lands the same API.
 - zeroerr: tests, assertions and logging; `external/zeroerr`.
 - Poco: networking, database support and filesystem watching.
 - medialoader and its codecs: image/audio loading extracted for standalone use.

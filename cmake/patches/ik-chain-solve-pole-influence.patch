@@ -1,0 +1,596 @@
+diff --git a/Readme.md b/Readme.md
+index f9b0869..ea22382 100644
+--- a/Readme.md
++++ b/Readme.md
+@@ -6,9 +6,12 @@ ik.hpp
+ 
+ ## Features
+ 
+-1. Compute Inverse Kinematics for each bone 
+-2. joint constraints 
+-3. Force-based movement simulation
++1. FABRIK Inverse Kinematics for 2D/3D bone chains
++2. Joint angle constraints
++3. Force-based soft IK (`step`) and influence blending
++4. Chain-scoped solve (`solveChain` / `stepChain`) that pins an arbitrary chain root
++5. 3D pole vector (magnet / hint) for bend direction
++6. Tip orientation override after solving
+ 
+ 
+ ## Compare
+diff --git a/ik/solver.hpp b/ik/solver.hpp
+index fe16309..a527735 100644
+--- a/ik/solver.hpp
++++ b/ik/solver.hpp
+@@ -51,10 +51,123 @@ inline void apply_angle_constraints(const std::vector<bone<D>*>& bones, ecs<D>&
+     }
+ }
+ 
++template <unsigned D>
++inline void place_on_line(vec<float, D>& point, const vec<float, D>& anchor, float bone_length) {
++    vec<float, D> dir = point - anchor;
++    float len = length(dir);
++    if (len <= 1e-8f) {
++        dir = default_forward<D>();
++        len = 1.0f;
++    }
++    point = anchor + dir * (bone_length / len);
++}
++
++template <unsigned D>
++inline std::vector<bone<D>*> build_chain(skeleton<D>& sk, unsigned root_id, unsigned tip_id) {
++    if (sk.bones().empty()) {
++        sk.topologicalSort();
++    }
++    const auto& bones = sk.bones();
++    if (root_id >= bones.size() || tip_id >= bones.size()) {
++        return {};
++    }
++
++    std::vector<bone<D>*> chain;
++    for (bone<D>* b = bones[tip_id]; b != nullptr; b = b->parent) {
++        chain.push_back(b);
++        if (b->id == root_id) {
++            break;
++        }
++    }
++    if (chain.empty() || chain.back()->id != root_id || chain.size() < 2) {
++        return {};
++    }
++    std::reverse(chain.begin(), chain.end());
++    return chain;
++}
++
++/** One FABRIK reach on chain[0..tip_index], pinning chain[0]. */
++template <unsigned D>
++inline void reach_target(ecs<D>& state, const std::vector<bone<D>*>& chain, unsigned tip_index,
++                         const vec<float, D>& desired) {
++    const vec<float, D> root_pos = chain[0]->position(state);
++
++    float chain_length = 0.f;
++    for (unsigned i = 1; i <= tip_index; ++i) {
++        chain_length += chain[i]->length;
++    }
++
++    if (distance(root_pos, desired) >= chain_length) {
++        const vec<float, D> dir = safe_normalize(desired - root_pos);
++        for (unsigned i = 1; i <= tip_index; ++i) {
++            chain[i]->position(state) = chain[i - 1]->position(state) + dir * chain[i]->length;
++        }
++        return;
++    }
++
++    chain[tip_index]->position(state) = desired;
++    for (int i = static_cast<int>(tip_index); i >= 1; --i) {
++        place_on_line(chain[static_cast<size_t>(i) - 1]->position(state),
++                      chain[static_cast<size_t>(i)]->position(state),
++                      chain[static_cast<size_t>(i)]->length);
++    }
++
++    chain[0]->position(state) = root_pos;
++    for (unsigned i = 1; i <= tip_index; ++i) {
++        place_on_line(chain[i]->position(state), chain[i - 1]->position(state), chain[i]->length);
++    }
++}
++
++/** Pull mid-chain joints toward a pole (3D only). Preserves distance to the root→goal axis. */
++template <unsigned D>
++inline void apply_pole(ecs<D>& state, const std::vector<bone<D>*>& chain, const vec<float, D>& goal,
++                       const vec3& pole, float weight) {
++    if constexpr (D == 3) {
++        if (weight <= 0.f || chain.size() < 2) {
++            return;
++        }
++        const vec3 root_pos = chain[0]->position(state);
++        const vec3 to_goal = goal - root_pos;
++        const float goal_len = length(to_goal);
++        if (goal_len <= 1e-8f) {
++            return;
++        }
++        const vec3 axis = to_goal / goal_len;
++
++        const vec3 to_pole = pole - root_pos;
++        const vec3 proj = to_pole - axis * dot(to_pole, axis);
++        if (length_squared(proj) <= 1e-8f) {
++            return;
++        }
++        const vec3 pole_dir = safe_normalize(proj);
++
++        for (size_t i = 1; i + 1 < chain.size(); ++i) {
++            const vec3 v = chain[i]->position(state) - root_pos;
++            const float along = dot(v, axis);
++            vec3 radial = v - axis * along;
++            const float radial_len = length(radial);
++            if (radial_len <= 1e-8f) {
++                continue;
++            }
++            const vec3 dir = radial / radial_len;
++            const vec3 new_dir = safe_normalize(dir + (pole_dir - dir) * weight);
++            chain[i]->position(state) = root_pos + axis * along + new_dir * radial_len;
++        }
++    } else {
++        (void)state;
++        (void)chain;
++        (void)goal;
++        (void)pole;
++        (void)weight;
++    }
++}
++
+ } // namespace detail
+ 
+-// Iterative FABRIK solver with optional force blending, joint limits, and traces.
+-// Works for both 2D and 3D (and any D with position-based FABRIK).
++/**
++ * Iterative FABRIK solver with force blending, joint limits, chain-scoped solves,
++ * optional 3D pole vector, tip orientation override, and influence blending.
++ */
+ template <unsigned D>
+ class solver
+ {
+@@ -76,6 +189,42 @@ public:
+     solver& setTolerance(float tol) { tolerance = tol; return *this; }
+     // 0 = hard IK (FABRIK teleports effector); (0,1] blends effector toward target each iter.
+     solver& setForce(float f) { force = f; return *this; }
++    // 0 = keep input pose, 1 = full solve (default). Applied after solve / solveChain.
++    solver& setInfluence(float inf) {
++        influence = std::min(1.0f, std::max(0.0f, inf));
++        return *this;
++    }
++    float getInfluence() const { return influence; }
++
++    // 3D magnet / hint: pulls mid-chain joints toward pole during solveChain / stepChain.
++    solver& setPole(vec3 pole_pos, float weight = 1.0f) {
++        usePole = true;
++        pole = pole_pos;
++        poleWeight = std::min(1.0f, std::max(0.0f, weight));
++        return *this;
++    }
++    solver& clearPole() {
++        usePole = false;
++        poleWeight = 1.0f;
++        return *this;
++    }
++    bool hasPole() const { return usePole; }
++    float getPoleWeight() const { return usePole ? poleWeight : 0.0f; }
++
++    // After solving, blend the tip bone's local angles toward the given values.
++    solver& setTipRotation(unsigned bone_id, vec<float, D - 1> angles, float weight = 1.0f) {
++        tipBoneId = static_cast<int>(bone_id);
++        tipAngles = angles;
++        tipRotWeight = std::min(1.0f, std::max(0.0f, weight));
++        return *this;
++    }
++    solver& clearTipRotation() {
++        tipBoneId = -1;
++        tipAngles = {};
++        tipRotWeight = 0.0f;
++        return *this;
++    }
++    float getTipRotationWeight() const { return tipRotWeight; }
+ 
+     solver& clearTargets() { targets_.clear(); return *this; }
+     solver& addTarget(unsigned bone_id, vec<float, D> position, float weight = 1.0f) {
+@@ -101,16 +250,22 @@ public:
+         trace.clear();
+     }
+ 
+-    // Returns true if every target is within tolerance after solving.
++    // Full-skeleton FABRIK (pins the skeleton root). Returns true if every target is within tolerance.
+     bool solve(skeleton<D>& sk, ecs<D>& state) {
+         if (sk.bones().empty()) {
+             sk.topologicalSort();
+         }
+         const auto& bones = sk.bones();
+         if (bones.empty() || targets_.empty()) {
++            apply_tip_rotation(sk, state);
+             return true;
+         }
+ 
++        std::vector<vec<float, D>> original;
++        if (influence < 1.0f) {
++            original = state.position_;
++        }
++
+         clearTrace();
+         if (keepTrace) {
+             recordTrace(state);
+@@ -121,7 +276,7 @@ public:
+         for (unsigned iter = 0; iter < iterations; ++iter) {
+             for (const auto& t : targets_) {
+                 if (t.bone_id >= bones.size()) continue;
+-                solve_chain(bones, state, bones[t.bone_id], t);
++                solve_from_effector(state, bones[t.bone_id], t);
+             }
+ 
+             apply_constraints(bones, state);
+@@ -141,6 +296,9 @@ public:
+             }
+             if (reached) break;
+         }
++
++        blend_influence(sk, state, original);
++        apply_tip_rotation(sk, state);
+         return reached;
+     }
+ 
+@@ -159,27 +317,167 @@ public:
+         force = previous_force;
+     }
+ 
++    /**
++     * FABRIK restricted to root_id..tip_id. The chain root stays pinned; bones outside
++     * the chain are untouched. Only targets on the chain participate. Pole applies here.
++     * Returns false if the chain is invalid; true when every chain target is within tolerance
++     * (or there are no chain targets).
++     */
++    bool solveChain(skeleton<D>& sk, ecs<D>& state, unsigned root_id, unsigned tip_id) {
++        std::vector<bone<D>*> chain = detail::build_chain(sk, root_id, tip_id);
++        if (chain.size() < 2) {
++            return false;
++        }
++
++        struct ChainTarget {
++            unsigned index = 0;
++            const target* tgt = nullptr;
++        };
++        std::vector<ChainTarget> chain_targets;
++        for (const auto& t : targets_) {
++            for (size_t i = 0; i < chain.size(); ++i) {
++                if (chain[i]->id == t.bone_id) {
++                    chain_targets.push_back({static_cast<unsigned>(i), &t});
++                    break;
++                }
++            }
++        }
++        if (chain_targets.empty()) {
++            apply_tip_rotation(sk, state);
++            return true;
++        }
++
++        const ChainTarget* goal = &chain_targets.front();
++        for (const auto& ct : chain_targets) {
++            if (ct.index > goal->index) {
++                goal = &ct;
++            }
++        }
++
++        std::vector<vec<float, D>> original_pos(chain.size());
++        for (size_t i = 0; i < chain.size(); ++i) {
++            original_pos[i] = chain[i]->position(state);
++        }
++
++        const float pole_w = std::min(1.f, std::max(0.f, poleWeight));
++        const unsigned iterations = maxIterations == 0 ? 1u : maxIterations;
++        bool reached = false;
++        for (unsigned iter = 0; iter < iterations; ++iter) {
++            for (const auto& ct : chain_targets) {
++                vec<float, D> desired = ct.tgt->position;
++                if (force > 0.f && force < 1.f) {
++                    const vec<float, D> cur = chain[ct.index]->position(state);
++                    desired = cur + (desired - cur) * (force * ct.tgt->weight);
++                }
++                detail::reach_target(state, chain, ct.index, desired);
++            }
++
++            if (usePole && pole_w > 0.f) {
++                vec<float, D> goal_pos = goal->tgt->position;
++                if (force > 0.f && force < 1.f) {
++                    const vec<float, D> cur = chain[goal->index]->position(state);
++                    goal_pos = cur + (goal_pos - cur) * (force * goal->tgt->weight);
++                }
++                detail::apply_pole(state, chain, goal_pos, pole, pole_w);
++            }
++
++            if (chain.size() >= 2) {
++                std::vector<bone<D>*> rest(chain.begin() + 1, chain.end());
++                detail::apply_angle_constraints<D>(rest, state);
++            }
++            sk.update_rotations(state);
++
++            reached = true;
++            for (const auto& ct : chain_targets) {
++                if (distance(chain[ct.index]->position(state), ct.tgt->position) > tolerance) {
++                    reached = false;
++                    break;
++                }
++            }
++            if (reached) {
++                break;
++            }
++        }
++
++        if (influence < 1.f) {
++            const float t = std::min(1.f, std::max(0.f, influence));
++            for (size_t i = 0; i < chain.size(); ++i) {
++                vec<float, D>& pos = chain[i]->position(state);
++                pos = original_pos[i] + (pos - original_pos[i]) * t;
++            }
++            sk.update_rotations(state);
++        }
++
++        apply_tip_rotation(sk, state);
++        return reached;
++    }
++
++    // Time-scaled chain-scoped step (same force/dt semantics as step()).
++    void stepChain(skeleton<D>& sk, ecs<D>& state, unsigned root_id, unsigned tip_id, float dt = 1.0f) {
++        float previous_force = force;
++        if (force <= 0.0f) {
++            force = std::min(1.0f, std::max(0.0f, dt));
++        } else {
++            force = std::min(1.0f, force * std::max(0.0f, dt));
++        }
++        unsigned previous_iters = maxIterations;
++        maxIterations = 1;
++        solveChain(sk, state, root_id, tip_id);
++        maxIterations = previous_iters;
++        force = previous_force;
++    }
++
+ protected:
+     void recordTrace(const ecs<D>& state) {
+         trace.push_back(state.clone());
+     }
+ 
+-    static void place_on_line(vec<float, D>& point,
+-                              const vec<float, D>& anchor,
+-                              float bone_length) {
+-        vec<float, D> dir = point - anchor;
+-        float len = length(dir);
+-        if (len <= 1e-8f) {
+-            dir = detail::default_forward<D>();
+-            len = 1.0f;
++    void blend_influence(skeleton<D>& sk, ecs<D>& state, const std::vector<vec<float, D>>& original) {
++        if (influence >= 1.0f || original.empty()) {
++            return;
+         }
+-        point = anchor + dir * (bone_length / len);
++        const float t = influence;
++        const size_t n = std::min(original.size(), state.position_.size());
++        for (size_t i = 0; i < n; ++i) {
++            state.position_[i] = original[i] + (state.position_[i] - original[i]) * t;
++        }
++        sk.update_rotations(state);
+     }
+ 
+-    void solve_chain(const std::vector<bone<D>*>& /*bones*/,
+-                     ecs<D>& state,
+-                     bone<D>* end,
+-                     const target& t) {
++    void apply_tip_rotation(skeleton<D>& sk, ecs<D>& state) {
++        if (tipRotWeight <= 0.0f || tipBoneId < 0) {
++            return;
++        }
++        if (sk.bones().empty()) {
++            sk.topologicalSort();
++        }
++        const auto& bones = sk.bones();
++        if (static_cast<size_t>(tipBoneId) >= bones.size()) {
++            return;
++        }
++        bone<D>* b = bones[static_cast<size_t>(tipBoneId)];
++        if (!b->parent) {
++            return;
++        }
++        const float w = tipRotWeight;
++        vec<float, D - 1> rot = b->rotation(state);
++        for (unsigned i = 0; i < D - 1; ++i) {
++            rot[i] = rot[i] + wrap_angle(tipAngles[i] - rot[i]) * w;
++        }
++        b->rotation(state) = rot;
++
++        const vec<float, D>* gp = nullptr;
++        vec<float, D> gp_pos;
++        if (b->parent->parent) {
++            gp_pos = b->parent->parent->position(state);
++            gp = &gp_pos;
++        }
++        const vec<float, D> parent_fwd =
++            detail::parent_forward_of<D>(b->parent->orientation(state), b->parent->position(state), gp);
++        b->orientation(state) = detail::direction_from_local_angles<D>(parent_fwd, rot);
++    }
++
++    void solve_from_effector(ecs<D>& state, bone<D>* end, const target& t) {
+         std::vector<bone<D>*> chain;
+         for (bone<D>* b = end; b != nullptr; b = b->parent) {
+             chain.push_back(b);
+@@ -188,51 +486,13 @@ protected:
+             return;
+         }
+         std::reverse(chain.begin(), chain.end());
+-        bone<D>* root = chain.front();
+-        vec<float, D> root_pos = root->position(state);
+-
+-        float chain_length = 0.0f;
+-        for (size_t i = 1; i < chain.size(); ++i) {
+-            chain_length += chain[i]->length;
+-        }
+ 
+         vec<float, D> desired = t.position;
+         if (force > 0.0f && force < 1.0f) {
+             vec<float, D> cur = end->position(state);
+             desired = cur + (t.position - cur) * (force * t.weight);
+         }
+-
+-        if (distance(root_pos, desired) >= chain_length) {
+-            for (size_t i = 1; i < chain.size(); ++i) {
+-                vec<float, D> dir = desired - chain[i - 1]->position(state);
+-                float len = length(dir);
+-                if (len > 1e-8f) {
+-                    chain[i]->position(state) =
+-                        chain[i - 1]->position(state) + dir * (chain[i]->length / len);
+-                } else {
+-                    place_on_line(chain[i]->position(state),
+-                                  chain[i - 1]->position(state),
+-                                  chain[i]->length);
+-                }
+-            }
+-            return;
+-        }
+-
+-        // Backward reaching.
+-        end->position(state) = desired;
+-        for (size_t i = chain.size() - 1; i > 0; --i) {
+-            place_on_line(chain[i - 1]->position(state),
+-                          chain[i]->position(state),
+-                          chain[i]->length);
+-        }
+-
+-        // Forward reaching: pin root.
+-        root->position(state) = root_pos;
+-        for (size_t i = 1; i < chain.size(); ++i) {
+-            place_on_line(chain[i]->position(state),
+-                          chain[i - 1]->position(state),
+-                          chain[i]->length);
+-        }
++        detail::reach_target(state, chain, static_cast<unsigned>(chain.size() - 1), desired);
+     }
+ 
+     void apply_constraints(const std::vector<bone<D>*>& bones, ecs<D>& state) {
+@@ -243,6 +503,15 @@ protected:
+     unsigned maxIterations = 16;
+     float tolerance = 1e-3f;
+     float force = 0.0f;
++    float influence = 1.0f;
++
++    bool usePole = false;
++    vec3 pole{};
++    float poleWeight = 1.0f;
++
++    int tipBoneId = -1;
++    vec<float, D - 1> tipAngles{};
++    float tipRotWeight = 0.0f;
+ 
+     std::vector<target> targets_;
+     std::vector<ecs<D>*> trace;
+diff --git a/test.cpp b/test.cpp
+index efd4574..8575aab 100644
+--- a/test.cpp
++++ b/test.cpp
+@@ -397,3 +397,105 @@ TEST_CASE("22. 3d rotation extraction roundtrip") {
+     CHECK(near(b1->rotation(ecs)[1], -0.25f, 1e-3f));
+     CHECK(near_vec(b1->position(ecs), pos, 1e-4f));
+ }
++
++TEST_CASE("23. solveChain pins chain root and ignores side branch") {
++    ik::skeleton2d skeleton;
++    auto* r = skeleton.root;
++    auto* b1 = r->createBone(1.0f);
++    auto* b2 = b1->createBone(1.0f);
++    auto* b3 = r->createBone(1.0f);
++    skeleton.topologicalSort();
++
++    ik::ecs2d ecs(4);
++    skeleton.init_straight_pose(ecs, {10, 20});
++
++    ik::solver2d s;
++    s.setMaxIterations(32).setTolerance(1e-3f);
++    s.addTarget(b2, {11.0f, 21.0f});
++    CHECK(s.solveChain(skeleton, ecs, b1->id, b2->id));
++
++    CHECK(near_vec(r->position(ecs), {10, 20}));
++    CHECK(near_vec(b1->position(ecs), {11, 20}));
++    CHECK(near_vec(b3->position(ecs), {11, 20}));
++    CHECK(near_vec(b2->position(ecs), {11, 21}, 1e-2f));
++}
++
++TEST_CASE("24. influence blends solved pose") {
++    ik::skeleton2d skeleton;
++    auto* r = skeleton.root;
++    auto* b1 = r->createBone(1.0f);
++    auto* b2 = b1->createBone(1.0f);
++    skeleton.topologicalSort();
++
++    ik::ecs2d ecs(3);
++    skeleton.init_straight_pose(ecs, {0, 0});
++
++    ik::solver2d s;
++    s.setMaxIterations(32).setInfluence(0.5f).addTarget(b2, {0.0f, 2.0f});
++    s.solve(skeleton, ecs);
++    CHECK(near_vec(b2->position(ecs), {1.0f, 1.0f}, 1e-2f));
++
++    skeleton.init_straight_pose(ecs, {0, 0});
++    s.setInfluence(0.0f);
++    s.solve(skeleton, ecs);
++    CHECK(near_vec(b2->position(ecs), {2.0f, 0.0f}));
++}
++
++TEST_CASE("25. 3d pole bends the mid joint") {
++    ik::skeleton3d skeleton;
++    auto* r = skeleton.root;
++    auto* b1 = r->createBone(1.0f);
++    auto* b2 = b1->createBone(1.0f);
++    skeleton.topologicalSort();
++
++    ik::ecs3d ecs(3);
++    skeleton.init_straight_pose(ecs, {0, 0, 0});
++
++    ik::solver3d s;
++    s.setMaxIterations(64).setTolerance(1e-4f).addTarget(b2, {1.5f, 0.5f, 0.0f});
++    s.setPole({1.0f, 1.0f, 0.0f}, 1.0f);
++    CHECK(s.hasPole());
++    CHECK(s.solveChain(skeleton, ecs, 0, b2->id));
++    CHECK(b1->position(ecs)[1] > 0.1f);
++
++    skeleton.init_straight_pose(ecs, {0, 0, 0});
++    s.setPole({1.0f, -1.0f, 0.0f}, 1.0f);
++    CHECK(s.solveChain(skeleton, ecs, 0, b2->id));
++    CHECK(b1->position(ecs)[1] < -0.1f);
++}
++
++TEST_CASE("26. tip rotation override") {
++    ik::skeleton3d skeleton;
++    auto* r = skeleton.root;
++    auto* b1 = r->createBone(1.0f);
++    auto* b2 = b1->createBone(1.0f);
++    skeleton.topologicalSort();
++
++    ik::ecs3d ecs(3);
++    skeleton.init_straight_pose(ecs, {0, 0, 0});
++
++    const float pi = 3.14159265f;
++    ik::solver3d s;
++    s.setMaxIterations(48).addTarget(b2, {2.0f, 0.0f, 0.0f});
++    s.setTipRotation(b2->id, {0.0f, pi / 2.0f}, 1.0f);
++    CHECK(s.solveChain(skeleton, ecs, 0, b2->id));
++    CHECK(near_vec(b2->position(ecs), {2.0f, 0.0f, 0.0f}, 2e-2f));
++    CHECK(near(b2->orientation(ecs)[2], 1.0f, 1e-2f));
++    CHECK(near(b2->rotation(ecs)[1], pi / 2.0f, 1e-2f));
++}
++
++TEST_CASE("27. stepChain soft convergence") {
++    ik::skeleton2d skeleton;
++    auto* r = skeleton.root;
++    auto* b1 = r->createBone(1.0f);
++    auto* b2 = b1->createBone(1.0f);
++    skeleton.topologicalSort();
++
++    ik::ecs2d ecs(3);
++    skeleton.init_straight_pose(ecs, {0, 0});
++
++    ik::solver2d s;
++    s.addTarget(b2, {0.0f, 2.0f});
++    s.stepChain(skeleton, ecs, 0, b2->id, 1.0f);
++    CHECK(near_vec(b2->position(ecs), {0.0f, 2.0f}, 1e-2f));
++}
