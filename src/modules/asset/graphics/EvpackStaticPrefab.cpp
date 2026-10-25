@@ -11,7 +11,6 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-#include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
@@ -46,6 +45,34 @@ glm::mat4 nodeLocalTransform(const scene::NodeDesc& node) {
     local[3][1] = ty;
     local[3][2] = tz;
     return local;
+}
+
+// Expand an AABB by the eight corners of `mesh` after an affine transform.
+// Do not use glm::mat4 * glm::vec4 here: under GCC aarch64 -O2 inside load(),
+// that path kept worldT.z=-3 in the matrix but still produced localBounds
+// zmax=0 for mesh zmax=0 (translation term dropped on the zero-Z corners).
+#if defined(__GNUC__) && !defined(__clang__)
+__attribute__((noinline))
+#endif
+bool expandAabbByTransformedCorners(const glm::mat4& matrix, const std::array<float, 6>& mesh,
+                                    std::array<float, 6>& aabb) {
+    const float tx = matrix[3][0], ty = matrix[3][1], tz = matrix[3][2];
+    for (unsigned corner = 0; corner < 8; ++corner) {
+        const float x = mesh[(corner & 1u) ? 3u : 0u];
+        const float y = mesh[(corner & 2u) ? 4u : 1u];
+        const float z = mesh[(corner & 4u) ? 5u : 2u];
+        const float px = matrix[0][0] * x + matrix[1][0] * y + matrix[2][0] * z + tx;
+        const float py = matrix[0][1] * x + matrix[1][1] * y + matrix[2][1] * z + ty;
+        const float pz = matrix[0][2] * x + matrix[1][2] * y + matrix[2][2] * z + tz;
+        if (!std::isfinite(px) || !std::isfinite(py) || !std::isfinite(pz)) return false;
+        aabb[0] = std::min(aabb[0], px);
+        aabb[1] = std::min(aabb[1], py);
+        aabb[2] = std::min(aabb[2], pz);
+        aabb[3] = std::max(aabb[3], px);
+        aabb[4] = std::max(aabb[4], py);
+        aabb[5] = std::max(aabb[5], pz);
+    }
+    return true;
 }
 }  // namespace
 
@@ -352,25 +379,6 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         const glm::mat4 placed =
             frame.placedParent *
             (frame.root ? glm::scale(glm::mat4(1.f), glm::vec3(node.sx, node.sy, node.sz)) : local);
-        // #region agent log
-        {
-            std::fprintf(stderr,
-                         "[prefab-debug] walk root=%d xyz=(%.6f,%.6f,%.6f) localT=(%.6f,%.6f,%.6f) "
-                         "worldT=(%.6f,%.6f,%.6f)\n",
-                         frame.root ? 1 : 0, node.x, node.y, node.z, local[3][0], local[3][1], local[3][2],
-                         world[3][0], world[3][1], world[3][2]);
-            std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
-            if (agentLog) {
-                agentLog << "{\"hypothesisId\":\"A,B,C\",\"location\":\"EvpackStaticPrefab.cpp:walk\","
-                            "\"message\":\"node TRS and world translation\","
-                            "\"data\":{\"x\":"
-                         << node.x << ",\"y\":" << node.y << ",\"z\":" << node.z << ",\"localT\":[" << local[3][0]
-                         << "," << local[3][1] << "," << local[3][2] << "],\"worldT\":[" << world[3][0] << ","
-                         << world[3][1] << "," << world[3][2] << "],\"root\":" << (frame.root ? "true" : "false")
-                         << "},\"timestamp\":1}\n";
-            }
-        }
-        // #endregion
         // Catch lost root translation before bounds (GCC aarch64 -O2 regression probe).
         if (frame.root && (std::fabs(world[3][0] - node.x) > 1e-4f || std::fabs(world[3][1] - node.y) > 1e-4f ||
                            std::fabs(world[3][2] - node.z) > 1e-4f))
@@ -431,62 +439,16 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         const auto& bounds          = out->impl_->meshBounds.at(meshKey);
         const auto& matrix          = transforms.at(binding.object);
         const auto& placementMatrix = placementTransforms.at(binding.object);
-        // #region agent log
-        {
-            std::fprintf(stderr,
-                         "[prefab-debug] meshBounds=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] worldT=(%.6f,%.6f,%.6f)\n",
-                         bounds[0], bounds[1], bounds[2], bounds[3], bounds[4], bounds[5], matrix[3][0],
-                         matrix[3][1], matrix[3][2]);
-            std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
-            if (agentLog) {
-                agentLog << "{\"hypothesisId\":\"D,E\",\"location\":\"EvpackStaticPrefab.cpp:bounds\","
-                            "\"message\":\"mesh bounds and binding world T\","
-                            "\"data\":{\"meshBounds\":["
-                         << bounds[0] << "," << bounds[1] << "," << bounds[2] << "," << bounds[3] << "," << bounds[4]
-                         << "," << bounds[5] << "],\"worldT\":[" << matrix[3][0] << "," << matrix[3][1] << ","
-                         << matrix[3][2] << "]},\"timestamp\":1}\n";
-            }
-        }
-        // #endregion
-        for (unsigned corner = 0; corner < 8; ++corner) {
-            const auto p      = matrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
-                                                   bounds[(corner & 4) ? 5 : 2], 1.f);
-            const auto placed = placementMatrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
-                                                            bounds[(corner & 4) ? 5 : 2], 1.f);
-            for (unsigned axis = 0; axis < 3; ++axis) {
-                if (!std::isfinite(p[axis]) || !std::isfinite(placed[axis]))
-                    return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
-                        DiagnosticCode::InvalidArgument, "transformed prefab bounds are not representable", {}, {},
-                        "asset.graphics.prefab"));
-                out->impl_->localBounds[axis]         = std::min(out->impl_->localBounds[axis], p[axis]);
-                out->impl_->localBounds[axis + 3]     = std::max(out->impl_->localBounds[axis + 3], p[axis]);
-                out->impl_->placementBounds[axis]     = std::min(out->impl_->placementBounds[axis], placed[axis]);
-                out->impl_->placementBounds[axis + 3] = std::max(out->impl_->placementBounds[axis + 3], placed[axis]);
-            }
-        }
+        if (!expandAabbByTransformedCorners(matrix, bounds, out->impl_->localBounds) ||
+            !expandAabbByTransformedCorners(placementMatrix, bounds, out->impl_->placementBounds))
+            return Result<std::unique_ptr<EvpackStaticPrefab>>::failure(Diagnostic::error(
+                DiagnosticCode::InvalidArgument, "transformed prefab bounds are not representable", {}, {},
+                "asset.graphics.prefab"));
         out->impl_->hasLocalBounds = true;
         out->impl_->draws.push_back({transforms.at(binding.object), placementTransforms.at(binding.object),
                                      out->impl_->meshLeases.at(meshKey), image, std::move(parameters).takeValue(),
                                      binding.castShadows, binding.receiveShadows});
     }
-    // #region agent log
-    {
-        const auto& b = out->impl_->localBounds;
-        std::fprintf(stderr,
-                     "[prefab-debug] final localBounds=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] draws=%zu\n", b[0], b[1],
-                     b[2], b[3], b[4], b[5], out->impl_->draws.size());
-        std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
-        if (agentLog) {
-            agentLog << "{\"hypothesisId\":\"A,B,C,D,E\",\"location\":\"EvpackStaticPrefab.cpp:load-exit\","
-                        "\"message\":\"final localBounds\","
-                        "\"data\":{\"localBounds\":["
-                     << b[0] << "," << b[1] << "," << b[2] << "," << b[3] << "," << b[4] << "," << b[5]
-                     << "],\"hasLocalBounds\":" << (out->impl_->hasLocalBounds ? "true" : "false")
-                     << ",\"drawCount\":" << out->impl_->draws.size()
-                     << "},\"timestamp\":1,\"runId\":\"post-fix\"}\n";
-        }
-    }
-    // #endregion
     return Result<std::unique_ptr<EvpackStaticPrefab>>::success(std::move(out));
 }
 Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform,
