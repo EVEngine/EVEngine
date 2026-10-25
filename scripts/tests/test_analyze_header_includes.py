@@ -5,6 +5,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -54,31 +55,45 @@ class AnalyzeHeaderIncludesTest(unittest.TestCase):
         )
         return repo
 
-    def test_reverse_dependents_and_priority(self):
-        import tempfile
+    def _sysroot(self, tmp_path: Path) -> Path:
+        """Tiny fake libstdc++-style root so system expansion is deterministic."""
+        root = tmp_path / "sysroot"
+        bits = root / "bits"
+        bits.mkdir(parents=True)
+        (root / "vector").write_text(
+            "#pragma once\n#include <bits/stl_vector.h>\n",
+            encoding="utf-8",
+        )
+        (bits / "stl_vector.h").write_text(
+            "#pragma once\n// fake stl vector body\n" + ("x\n" * 10),
+            encoding="utf-8",
+        )
+        return root
 
+    def test_reverse_dependents_and_priority(self):
         with tempfile.TemporaryDirectory() as tmp:
             repo = self._repo(Path(tmp))
-            graph = MODULE.build_graph(repo)
+            # Project-only expansion keeps line counts stable across hosts.
+            graph = MODULE.build_graph(repo, system_roots=[])
             stats = {s.include_key: s for s in MODULE.all_stats(graph)}
 
             heavy = stats["common/Heavy.h"]
-            self.assertEqual(heavy.header_users, 1)  # Graphics.h
-            self.assertEqual(heavy.cpp_users, 1)  # test/graphics_test.cpp
-            self.assertEqual(heavy.outgoing_project, 1)  # Types.h
-            self.assertEqual(heavy.outgoing_system, 1)  # vector
+            self.assertEqual(heavy.header_users, 1)
+            self.assertEqual(heavy.cpp_users, 1)
+            self.assertEqual(heavy.outgoing_project, 1)
+            self.assertEqual(heavy.outgoing_system, 0)  # <vector> unresolved w/o roots
+            self.assertEqual(heavy.unresolved, 1)
             self.assertEqual(heavy.priority, 1)
-            # Heavy.h (5 lines) + Types.h (3 lines) — trailing newlines counted.
             self.assertEqual(heavy.expand_headers, 2)
             self.assertEqual(heavy.expand_lines, 8)
             self.assertEqual(heavy.include_lines, 3)
+            self.assertEqual(heavy.expand_system_lines, 0)
 
             graphics = stats["graphics/Graphics.h"]
             self.assertEqual(graphics.header_users, 0)
-            self.assertEqual(graphics.cpp_users, 2)  # Graphics.cpp + main.cpp
+            self.assertEqual(graphics.cpp_users, 2)
             self.assertEqual(graphics.outgoing_project, 1)
             self.assertEqual(graphics.priority, 0)
-            # Graphics.h (4) + Heavy.h (5) + Types.h (3)
             self.assertEqual(graphics.expand_headers, 3)
             self.assertEqual(graphics.expand_lines, 12)
             self.assertEqual(graphics.include_lines, 8)
@@ -88,22 +103,43 @@ class AnalyzeHeaderIncludesTest(unittest.TestCase):
             self.assertEqual(hdrs, ["src/modules/graphics/Graphics.h"])
             self.assertEqual(cpps, ["test/graphics_test.cpp"])
 
-    def test_sort_by_expand_lines(self):
-        import tempfile
-
+    def test_system_headers_expand_through_include_path(self):
         with tempfile.TemporaryDirectory() as tmp:
-            repo = self._repo(Path(tmp))
-            graph = MODULE.build_graph(repo)
+            root = Path(tmp)
+            repo = self._repo(root)
+            sysroot = self._sysroot(root)
+            graph = MODULE.build_graph(repo, system_roots=[sysroot.resolve()])
+            heavy = MODULE.header_stat(graph, "common/Heavy.h")
+            assert heavy is not None
+            self.assertEqual(heavy.outgoing_system, 1)
+            self.assertEqual(heavy.unresolved, 0)
+            vector_lines = (sysroot / "vector").read_text(encoding="utf-8").count("\n") + 1
+            stl_lines = (sysroot / "bits" / "stl_vector.h").read_text(encoding="utf-8").count("\n") + 1
+            self.assertEqual(heavy.expand_project_lines, 8)
+            self.assertEqual(heavy.expand_system_lines, vector_lines + stl_lines)
+            self.assertEqual(heavy.expand_lines, 8 + vector_lines + stl_lines)
+            self.assertEqual(heavy.expand_system_headers, 2)
+
+            graphics = MODULE.header_stat(graph, "graphics/Graphics.h")
+            assert graphics is not None
+            self.assertEqual(graphics.expand_system_lines, vector_lines + stl_lines)
+            self.assertGreater(graphics.expand_lines, graphics.expand_project_lines)
+
+    def test_sort_by_expand_lines(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = self._repo(root)
+            sysroot = self._sysroot(root)
+            graph = MODULE.build_graph(repo, system_roots=[sysroot.resolve()])
             stats = MODULE.all_stats(graph, sort="expand")
             self.assertEqual(stats[0].include_key, "graphics/Graphics.h")
             self.assertGreaterEqual(stats[0].expand_lines, stats[1].expand_lines)
 
     def test_header_detail_and_json_cli(self):
-        import tempfile
-
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             repo = self._repo(root)
+            sysroot = self._sysroot(root)
             out = root / "report.json"
             status = MODULE.main(
                 [
@@ -111,6 +147,8 @@ class AnalyzeHeaderIncludesTest(unittest.TestCase):
                     str(repo),
                     "--header",
                     "common/Heavy.h",
+                    "--include-path",
+                    str(sysroot),
                     "--json",
                     str(out),
                     "--limit",
@@ -120,19 +158,25 @@ class AnalyzeHeaderIncludesTest(unittest.TestCase):
             self.assertEqual(status, 0)
             payload = json.loads(out.read_text(encoding="utf-8"))
             self.assertGreaterEqual(payload["header_count"], 3)
-            keys = {entry["include_key"] for entry in payload["headers"]}
-            self.assertIn("common/Heavy.h", keys)
+            self.assertTrue(any(str(sysroot.resolve()) == r or str(sysroot) in r for r in payload["system_roots"]))
+            entry = next(h for h in payload["headers"] if h["include_key"] == "common/Heavy.h")
+            self.assertGreater(entry["expand_system_lines"], 0)
+            self.assertEqual(entry["includes"]["system"][0]["name"], "vector")
 
     def test_no_test_skips_test_includers(self):
-        import tempfile
-
         with tempfile.TemporaryDirectory() as tmp:
             repo = self._repo(Path(tmp))
-            graph = MODULE.build_graph(repo, scan_roots=("src",))
+            graph = MODULE.build_graph(repo, scan_roots=("src",), system_roots=[])
             heavy = MODULE.header_stat(graph, "common/Heavy.h")
             assert heavy is not None
             self.assertEqual(heavy.cpp_users, 0)
             self.assertEqual(heavy.header_users, 1)
+
+    def test_compiler_system_paths_discoverable(self):
+        roots = MODULE.compiler_system_include_paths("c++")
+        # Host may lack a compiler in odd environments; then the list is empty.
+        if roots:
+            self.assertTrue(any((r / "vector").is_file() or (r / "stdio.h").is_file() for r in roots))
 
 
 if __name__ == "__main__":

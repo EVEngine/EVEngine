@@ -528,10 +528,12 @@ python3 scripts/analyze_header_includes.py --json /tmp/headers.json --limit 0
 `priority` is `header_users * outgoing_project`: headers that both include many
 project headers *and* are themselves included by many other headers are the
 cheapest wins for shrinking object size and compile time. The summary also
-reports `expL` / `incL` — unique project-header lines in the transitive
-`#include` closure, and that total minus the header itself (what one include
-pulls in). Sort by expansion or fan-out impact with
-`HEADER_STATS_ARGS='--sort expand'` or `--sort impact`.
+reports `expL` / `incL` / `projL` / `sysL` — unique lines in the transitive
+`#include` closure (project **and** resolved system/third-party headers), that
+total minus the header itself, and the project/system split. Include roots come
+from the host C++ driver, vendored `third-party/` / prebuilt include trees, and
+`compile_commands.json` `-I`/`-isystem` when `make stats/headers` finds one.
+Sort with `HEADER_STATS_ARGS='--sort expand'` or `--sort impact`.
 
 Output layout:
 

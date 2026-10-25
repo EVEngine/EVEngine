@@ -340,10 +340,15 @@ stats/build:
 
 # Reverse-include report: which .h/.cpp files include each project header, ranked
 # by how much moving heavy #includes into a .cpp would shrink the compile cascade.
+# Expands system/third-party headers via compiler defaults, vendored roots, and
+# compile_commands.json -I/-isystem when present.
 # HEADER_STATS_ARGS forwards extra flags, e.g. HEADER_STATS_ARGS='--header graphics/Graphics.h'
 HEADER_STATS_ARGS ?=
+COMPILE_COMMANDS ?= build/$(PLATFORM)-debug/compile_commands.json
 stats/headers:
-	python3 scripts/analyze_header_includes.py --source-dir . $(HEADER_STATS_ARGS)
+	python3 scripts/analyze_header_includes.py --source-dir . \
+		$(if $(wildcard $(COMPILE_COMMANDS)),--compile-commands "$(COMPILE_COMMANDS)",) \
+		$(HEADER_STATS_ARGS)
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).
