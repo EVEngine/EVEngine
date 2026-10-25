@@ -5,10 +5,11 @@
 // instead of the full graphics::Graphics god class. All methods are pure
 // virtual; the concrete backend implements them.
 
+#include "common/Result.h"
 #include "graphics/Color.h"
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec3.hpp>
+// Incomplete glm types suffice for const-reference / pointer parameters.
+#include <glm/fwd.hpp>
 
 #include <cstdint>
 #include <string>
@@ -19,24 +20,8 @@ namespace eve::graphics {
 enum class SkinInfluenceLimit : int { One = 1, Two = 2, Four = 4 };
 struct PbrSurface;
 
-
 class Texture;
-
-/** @brief ReflectionProbeUpload public API. */
-struct ReflectionProbeUpload {
-    static constexpr int kMaxProbes = 2;
-    /** @brief Probe public API. */
-    struct Probe {
-        Texture *cubemap = nullptr;
-        glm::vec3 center{0.f};
-        glm::vec3 extent{0.f};
-        float intensity = 0.f;
-        float blendDistance = 0.f;
-        int priority = 0;
-    };
-    Probe probes[kMaxProbes]{};
-    int count = 0;
-};
+struct ReflectionProbeUpload;
 
 class Canvas;
 class Camera3D;

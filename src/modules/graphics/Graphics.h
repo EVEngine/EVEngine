@@ -3,11 +3,11 @@
 
 
 #include <cstdint>
-// mat4/vec3 arrive via IGraphics3D; EntityIdDraw + transform helpers need vec2/vec4.
-#include <glm/vec2.hpp>
-#include <glm/vec4.hpp>
+// Incomplete glm types cover const-ref / pointer / reference-return APIs.
+// Particle spawn layouts, entity-ID draws and complete vec3 color-grade records
+// live in GpuParticles.h / GraphicsVisibility.h / GraphicsRgb.h.
+#include <glm/fwd.hpp>
 #include <memory>
-#include <optional>
 #include <span>
 #include <string>
 #include <vector>
@@ -19,7 +19,7 @@
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
 #include "graphics/GpuDrivenApi.h"
-#include "graphics/GpuParticles.h"
+#include "graphics/GraphicsRgb.h"
 #include "graphics/ICanvasFactory.h"
 #include "graphics/ICanvasTarget.h"
 #include "graphics/IGraphics2D.h"
@@ -114,6 +114,8 @@ struct Lighting3DPack;
 struct ShadowUpload;
 struct TextureCreateInfo;
 struct TextureSampler;
+class IGpuParticles;
+class IVisibilityCapture;
 
 class EVENGINE_API_BACKENDS Graphics : public Module,
                                        public Canvas,
@@ -319,49 +321,14 @@ public:
         return kInvalidGpuDrivenSlot;
     }
 
-    // ---- GPU-resident 2D particles ---------------------------------------
+    // ---- GPU-resident 2D particles (see GpuParticles.h / IGpuParticles) ----
 
-    /** @brief True when this backend supports resident compute + indirect particle draws. */
-    virtual bool supportsGpuParticles() const { return false; }
-
-    /** @brief True when the current frame topology can accept a GPU particle compute section. */
-    virtual bool canSubmitGpuParticles() const { return false; }
-
-    /** @brief Allocate backend-owned resident state for one particle emitter. */
-    virtual GpuParticleHandle createGpuParticleEmitter(std::uint32_t capacity) {
-        (void)capacity;
-        return kInvalidGpuParticleHandle;
-    }
-
-    /** @brief Release a GPU particle emitter. Explicit release may wait for in-flight frames. */
-    virtual void releaseGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
-
-    /** @brief Clear resident state before the next submitted frame. */
-    virtual void resetGpuParticleEmitter(GpuParticleHandle handle) { (void)handle; }
-
-    /** @brief Upload one simulation step and optional spawn commands.
-     * @compatibility Preserves the established GPU-particle boolean submission contract. */
-    virtual bool updateGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleUpdate& update,
-                                          const GpuParticleSpawn* spawns, std::uint32_t spawnCount) {
-        (void)handle;
-        (void)update;
-        (void)spawns;
-        (void)spawnCount;
-        return false;
-    }
-
-    /** @brief Queue an indirect draw at the current 2D overlay position. */
-    virtual bool drawGpuParticleEmitter(GpuParticleHandle handle, const GpuParticleDraw& draw) {
-        (void)handle;
-        (void)draw;
-        return false;
-    }
-
-    /** @brief Return the latest fence-complete counters without waiting on the GPU. */
-    virtual GpuParticleStats getGpuParticleStats(GpuParticleHandle handle) const {
-        (void)handle;
-        return {};
-    }
+    /**
+     * @brief Borrow the backend particle compute surface when present.
+     * @return Null when the backend has no resident GPU particle path.
+     * @ownership Borrowed; Graphics retains ownership for its lifetime.
+     */
+    [[nodiscard]] virtual IGpuParticles* gpuParticles() noexcept { return nullptr; }
 
     /**
      * @brief Upload + record GPU-driven opaque draws (call inside the open 3D frame).
@@ -876,9 +843,15 @@ public:
      * @param mesh Borrowed mesh handle returned by this backend.
      * @return Backend layout facts, or empty for an unknown/foreign handle.
      */
-    [[nodiscard]] virtual std::optional<MeshBackendDescriptor> describeMesh(Mesh *mesh) const {
+    /**
+     * @brief Describe a backend mesh without exposing Vulkan/WebGPU headers.
+     * @return Descriptor on success, or Unsupported when the backend has no mesh table entry.
+     */
+    [[nodiscard]] virtual eve::Result<MeshBackendDescriptor> describeMesh(Mesh* mesh) const {
         (void)mesh;
-        return std::nullopt;
+        return eve::Result<MeshBackendDescriptor>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Unsupported, "mesh backend descriptor is unavailable", {}, {},
+                                   "graphics.mesh.describe"));
     }
 
     /**
@@ -1085,50 +1058,12 @@ public:
     virtual Texture* getSceneLinearDepthTexture() { return nullptr; }
 
     /**
-     * @brief Per-pixel mesh entity-ID pass. Renders each EntityIdDraw's mesh with the
-     * given flat idColor (RGB encodes a stable entity id) into an offscreen
-     * target using the same viewProj, then reads it back to CPU. Pixels not
-     * covered by any entity are (0,0,0,0). Caller owns the returned ImageData*.
-     * Returns nullptr when the backend does not support offscreen ID capture.
+     * @brief Borrow the entity-ID / isolated visibility capture surface when present.
+     * @return Null when the backend has no offscreen ID capture path.
+     * @ownership Borrowed; Graphics retains ownership for its lifetime.
+     * @remarks Layout types live in `GraphicsVisibility.h`.
      */
-    struct EntityIdDraw {
-        Mesh *mesh = nullptr;
-        glm::mat4 model{1.f};
-        glm::vec4 idColor{0.f, 0.f, 0.f, 1.f};
-    };
-    /** @ownership Result transfers to caller.
-     * @lifetime Draw inputs are borrowed only for this call. */
-    /** @brief Renders entity id mask. */
-    virtual image::ImageData *renderEntityIdMask(const std::vector<EntityIdDraw> &draws,
-                                                 const glm::mat4 &viewProj, int w, int h) {
-        (void)draws;
-        (void)viewProj;
-        (void)w;
-        (void)h;
-        return nullptr;
-    }
-
-    /** @brief Owning isolated raster evidence; depth is Vulkan NDC in [0,1]. */
-    struct VisibilityPixels {
-        int                        width = 0, height = 0;
-        std::vector<std::uint32_t> ids;
-        std::vector<float>         depth;
-    };
-    /**
-     * @brief Render opaque draw IDs and float depth into private targets and wait for readback.
-     * @ownership Draw meshes are borrowed for this synchronous call; output owns its storage.
-     * @thread Render owner thread only. No callbacks or scene mutations.
-     * @cost GPU raster and blocking readback proportional to pixels and triangles per requested pass.
-     */
-    [[nodiscard]] virtual Result<VisibilityPixels> captureVisibilityPixels(const std::vector<EntityIdDraw> &draws,
-                                                                           const glm::mat4 &viewProj, int w, int h) {
-        (void)draws;
-        (void)viewProj;
-        (void)w;
-        (void)h;
-        return Result<VisibilityPixels>::failure(
-            Diagnostic::error(DiagnosticCode::Unsupported, "Backend has no isolated visibility capture"));
-    }
+    [[nodiscard]] virtual IVisibilityCapture* visibilityCapture() noexcept { return nullptr; }
 
     /**
      * @brief Read a G-buffer attachment back to CPU as RGBA8. name is one of
@@ -1467,17 +1402,17 @@ public:
     /** @brief Current linear manual exposure multiplier. */
     virtual float getSceneExposure() const = 0;
     /** @brief Set a non-negative linear RGB multiplier applied during final HDR exposure. */
-    virtual void setSceneColorFilter(const glm::vec3& color) = 0;
+    virtual void setSceneColorFilter(const RgbF& color) = 0;
     /** @brief Current linear RGB multiplier applied during final HDR exposure. */
-    virtual glm::vec3 getSceneColorFilter() const = 0;
+    [[nodiscard]] virtual RgbF getSceneColorFilter() const = 0;
     /** @brief Set pre-tonemap HDR lift, inverse-gamma and gain coefficients. */
-    virtual void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma, const glm::vec3& gain) = 0;
+    virtual void setSceneLiftGammaGain(const RgbF& lift, const RgbF& inverseGamma, const RgbF& gain) = 0;
     /** @brief Current pre-tonemap lift coefficients. */
-    virtual glm::vec3 getSceneLift() const = 0;
+    [[nodiscard]] virtual RgbF getSceneLift() const = 0;
     /** @brief Current pre-tonemap inverse-gamma coefficients. */
-    virtual glm::vec3 getSceneInverseGamma() const = 0;
+    [[nodiscard]] virtual RgbF getSceneInverseGamma() const = 0;
     /** @brief Current pre-tonemap gain coefficients. */
-    virtual glm::vec3 getSceneGain() const = 0;
+    [[nodiscard]] virtual RgbF getSceneGain() const = 0;
     /** @brief Set final-composite vignette and radial lens distortion strengths in [0,1]. */
     virtual void setSceneTransitionFx(float vignette, float vignetteSmoothness, float lensDistortion,
                                       float lensScale) = 0;
@@ -2183,11 +2118,6 @@ public:
 
 
     /**
-     * @brief Draws a series of points at the specified positions.
-     **/
-    void points(const std::vector<glm::vec2> &positions, const std::vector<Color> &colors);
-
-    /**
      * @brief Draws a series of lines connecting the given vertices.
      * @param coords Vertex positions (v1, ..., vn). If v1 == vn the line will be drawn closed.
      * @param count Number of vertices.
@@ -2259,15 +2189,6 @@ public:
     /** @brief Arc. */
     void arc(std::string mode, std::string arcmode, float x, float y, float radius, float angle1, float angle2);
 
-    /**
-     * @brief Draws a polygon with an arbitrary number of vertices.
-     * @param mode The type of drawing (line/filled).
-     * @param coords Vertex positions.
-     * @param count Vertex array size.
-     **/
-    void polygon(std::string mode, const std::vector<glm::vec2> &vertices, bool skipLastFilledVertex = true);
-
-
     /** @brief Pushes . */
     void push(bool all);
 	/** @brief Pops . */
@@ -2286,14 +2207,6 @@ public:
 	void translate(float x, float y);
 	/** @brief Origin. */
 	void origin();
-
-	// void applyTransform(love::math::Transform *transform);
-	// void replaceTransform(love::math::Transform *transform);
-
-	/** @brief Transform point. */
-	glm::vec2 transformPoint(glm::vec2 point);
-	/** @brief Inverse transform point. */
-	glm::vec2 inverseTransformPoint(glm::vec2 point);
 
 	// virtual void draw(const DrawCommand &cmd) = 0;
 	// virtual void draw(const DrawIndexedCommand &cmd) = 0;

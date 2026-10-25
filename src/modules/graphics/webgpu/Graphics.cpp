@@ -10,6 +10,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
@@ -2507,15 +2508,19 @@ Mesh* Graphics::newMeshFromArraysColored(const float* posXYZ, const float* nrmXY
     return mesh;
 }
 
-std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
-    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+eve::Result<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
+    if (!mesh || !mesh->gpuHandle)
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh has no backend upload", {}, {}, "graphics.mesh.describe"));
     const auto* gpu = static_cast<const GpuMesh*>(mesh->gpuHandle);
     const auto  owned =
         std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
                      [gpu](const std::unique_ptr<GpuMesh>& candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return std::nullopt;
-    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount, gpu->vertexStride,
-                                                gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u};
+    if (owned == ownedGpuMeshes.end())
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh is not owned by this graphics", {}, {}, "graphics.mesh.describe"));
+    return eve::Result<eve::graphics::MeshBackendDescriptor>::success(eve::graphics::MeshBackendDescriptor{
+        gpu->vertexCount, gpu->indexCount, gpu->vertexStride, gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u});
 }
 
 Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh) { return newMeshFromAssimp(mesh, glm::mat4(1.f)); }

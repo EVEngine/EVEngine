@@ -24,6 +24,7 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -1683,13 +1684,14 @@ TEST_CASE("graphics.visibility.request_rejects_degenerate_camera_and_duplicate_h
 }
 
 TEST_CASE("graphics.visibility.backend_absence_and_stale_query_fail_without_mutation") {
-    using Base = eve::graphics::Graphics;
 #ifdef EVENGINE_WEBGPU
     eve::graphics::webgpu::Graphics graphics;
 #else
     eve::graphics::vulkan::Graphics graphics;
 #endif
-    auto absent = graphics.Base::captureVisibilityPixels({}, glm::mat4(1.f), 16, 16);
+    auto* capture = graphics.visibilityCapture();
+    REQUIRE(capture);
+    auto absent = capture->captureVisibilityPixels({}, glm::mat4(1.f), 16, 16);
     REQUIRE(!absent.ok());
     auto prepared = eve::graphics::SceneVisibilityQuery::prepare(request());
     REQUIRE(prepared.ok());

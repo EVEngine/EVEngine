@@ -1,4 +1,5 @@
 #include "card/CardTypes.h"
+#include <glm/vec2.hpp>
 
 #include "card/CardAttributes.h"
 

@@ -12,7 +12,8 @@
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 struct aiMesh;
 

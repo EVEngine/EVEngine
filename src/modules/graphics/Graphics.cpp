@@ -13,6 +13,7 @@
 #include "graphics/Exposure.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/GraphicsMeshBindings.h"
+#include "graphics/GraphicsRgb.h"
 #include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
@@ -1646,11 +1647,15 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
     }
     Texture* meterSource = resolved;
     resolved             = pipelineBloom()->apply(resolved, getSceneBloomIntensity(), getSceneBloomThreshold());
-    return pipelineExposure()->apply(resolved, getSceneExposure(), getSceneAutoExposure(), getSceneAutoExposureMinEV(),
-                                     getSceneAutoExposureMaxEV(), getSceneColorFilter(), getSceneLift(),
-                                     getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
-                                     getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
-                                     getSceneTransitionLensScale(), meterSource);
+    const RgbF filter    = getSceneColorFilter();
+    const RgbF lift      = getSceneLift();
+    const RgbF invG      = getSceneInverseGamma();
+    const RgbF gain      = getSceneGain();
+    return pipelineExposure()->apply(
+        resolved, getSceneExposure(), getSceneAutoExposure(), getSceneAutoExposureMinEV(), getSceneAutoExposureMaxEV(),
+        glm::vec3(filter.r, filter.g, filter.b), glm::vec3(lift.r, lift.g, lift.b), glm::vec3(invG.r, invG.g, invG.b),
+        glm::vec3(gain.r, gain.g, gain.b), getSceneTransitionVignette(), getSceneTransitionVignetteSmoothness(),
+        getSceneTransitionLensDistortion(), getSceneTransitionLensScale(), meterSource);
 }
 
 Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {

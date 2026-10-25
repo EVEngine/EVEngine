@@ -5,6 +5,7 @@
 
 #include "graphics/AntiAliasing.h"
 #include "graphics/Light.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
@@ -307,16 +308,20 @@ Mesh *Graphics::newMeshFromArraysColored(const float *posXYZ, const float *nrmXY
     return raw;
 }
 
-std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh *mesh) const {
-    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+eve::Result<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
+    if (!mesh || !mesh->gpuHandle)
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh has no backend upload", {}, {}, "graphics.mesh.describe"));
     const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
     const auto  owned =
         std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
                      [gpu](const std::unique_ptr<GpuMesh> &candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return std::nullopt;
-    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount,
-                                                static_cast<std::uint32_t>(sizeof(MeshVertex)),
-                                                gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u};
+    if (owned == ownedGpuMeshes.end())
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh is not owned by this graphics", {}, {}, "graphics.mesh.describe"));
+    return eve::Result<eve::graphics::MeshBackendDescriptor>::success(eve::graphics::MeshBackendDescriptor{
+        gpu->vertexCount, gpu->indexCount, static_cast<std::uint32_t>(sizeof(MeshVertex)),
+        gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u});
 }
 
 bool Graphics::bakeMeshMorph(Mesh *mesh) {

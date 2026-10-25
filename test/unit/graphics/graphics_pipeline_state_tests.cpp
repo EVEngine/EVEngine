@@ -39,12 +39,12 @@ TEST_CASE("graphics.bloom rejects invalid reconstruction settings") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ClusteredLighting)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -54,6 +54,7 @@ TEST_CASE("graphics.bloom rejects invalid reconstruction settings") {
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
