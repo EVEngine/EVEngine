@@ -1,5 +1,6 @@
 #include "procgen/GeneratedArtifact.h"
 #include "common/StringMapInstances.h"
+#include "common/ValueRead.h"
 #include "procgen/GeneratedArtifactMeshCodec.h"
 
 
@@ -438,18 +439,18 @@ eve::Value encodeArtifact(const GeneratedArtifact &artifact) {
 }
 
 bool readStringValue(const eve::Value::Object &object, const char *name, std::string &output, bool allowEmpty = false) {
-    const eve::Value *value = stateMember(object, name);
-    const auto       *text  = value ? value->getIf<std::string>() : nullptr;
-    if (!text || (!allowEmpty && text->empty())) return false;
-    output = *text;
+    auto parsed = allowEmpty ? eve::readStringMember(object, name) : eve::readNonEmptyStringMember(object, name);
+    if (!parsed) return false;
+    output = std::move(parsed.value());
     return true;
 }
 
 bool readIntValue(const eve::Value::Object &object, const char *name, std::int64_t &output) {
-    const eve::Value *value   = stateMember(object, name);
-    const auto       *integer = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!integer) return false;
-    output = *integer;
+    const auto *value = stateMember(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
@@ -471,10 +472,11 @@ bool readFloatValue(const eve::Value::Object &object, const char *name, float &o
 }
 
 bool readBoolValue(const eve::Value::Object &object, const char *name, bool &output) {
-    const eve::Value *value   = stateMember(object, name);
-    const auto       *boolean = value ? value->getIf<bool>() : nullptr;
-    if (!boolean) return false;
-    output = *boolean;
+    const auto *value = stateMember(object, name);
+    if (!value) return false;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 

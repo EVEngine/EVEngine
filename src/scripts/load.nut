@@ -34,6 +34,7 @@ function format_script_error(e) {
 _loop_errors <- {}
 
 function emit_loop_error(slot, prefix, e) {
+    if ("packageCheck" in eve && eve.packageCheck) throw e;
     local msg = prefix + format_script_error(e);
     local st = (slot in _loop_errors) ? _loop_errors[slot] : null;
     if (st != null && st.text == msg) {
@@ -98,6 +99,7 @@ function ensure_module(slot) {
     try {
         getroottable()[slot] <- eve[m.cls]();
     } catch (e) {
+        if ("packageCheck" in eve && eve.packageCheck) throw e;
         print("module " + m.cls + " failed to initialize: " + format_script_error(e) + "\n");
         return false;
     }
@@ -290,6 +292,8 @@ if (!has_module("win") || !has_module("gfx")) {
 }
 
 local editor_host = ("editorHost" in config) && config.editorHost;
+if (editor_host && "packageCheck" in eve && eve.packageCheck)
+    throw "Package acceptance currently requires the standard game frame loop";
 
 // Apply before either window owner creates its swapchain. A project may replace
 // the entire default table, so absence must still select the enabled default.
@@ -332,6 +336,7 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
         // Report FIRST: with "break on error" the debugger pauses at the
         // throwing script line / catch site before stdout is flushed.
         if ("dev" in eve) eve.dev.reportError("" + e);
+        if ("packageCheck" in eve && eve.packageCheck) throw e;
         print("async runtime failed to load: " + format_script_error(e) + "\n");
     }
 } else if (file_exists("async.nut")) {
@@ -339,6 +344,7 @@ if ("asyncScript" in eve && eve.asyncScript != null && eve.asyncScript != "") {
         dofile("async.nut");
     } catch (e) {
         if ("dev" in eve) eve.dev.reportError("" + e);
+        if ("packageCheck" in eve && eve.packageCheck) throw e;
         print("async.nut failed to load: " + format_script_error(e) + "\n");
     }
 }
@@ -844,6 +850,7 @@ try {
     eve_init();
 } catch (e) {
     if ("dev" in eve) eve.dev.reportError("" + e);
+    if ("packageCheck" in eve && eve.packageCheck) throw e;
     print("eve_init failed: " + format_script_error(e) + "\n");
 }
 _startup_ms("eve_init done");
@@ -1067,6 +1074,8 @@ eve_frame <- function() {
         _startup_ms("first present - window shows content");
         _log("frame: first present");
     }
+    if ("packageCheck" in eve && eve.packageCheck && getroottable()._frame_count >= 30)
+        return false;
     if ("bootBench" in eve && eve.bootBench)
         return false;
     return running;

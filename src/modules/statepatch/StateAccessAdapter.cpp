@@ -1,4 +1,5 @@
 #include "statepatch/StateAccessAdapter.h"
+#include "common/ValueRead.h"
 
 #include "transaction/Transaction.h"
 
@@ -28,15 +29,10 @@ eve::Result<eve::Value> readJsonValue(const Store& store, std::string_view subje
 }
 
 bool numeric(const eve::Value& value, double& output) {
-    if (value.isInt64()) {
-        output = static_cast<double>(value.asInt());
-        return true;
-    }
-    if (value.isDouble()) {
-        output = value.asDouble();
-        return std::isfinite(output);
-    }
-    return false;
+    auto parsed = eve::readNumericDoubleValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
+    return std::isfinite(output);
 }
 
 std::string tagKey(std::string_view tag) { return "tag." + std::string(tag); }
