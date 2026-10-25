@@ -265,11 +265,12 @@ void checkDestruction(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
     provider.reset();
     REQUIRE(!weak.expired());
     // The owner is destroyed while the worker holds an immutable input snapshot.
-    std::jthread release([gate] {
+    std::thread release([gate] {
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         gate->release();
     });
     editor.reset();
+    release.join();
     REQUIRE(gate->cancelled.load());
     REQUIRE(weak.expired());
 }
