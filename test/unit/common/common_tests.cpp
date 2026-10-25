@@ -3381,6 +3381,7 @@ TEST_CASE("common.xml.spec.treeEntitiesAndInvalidInput") {
 #include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/CapabilityOwned.h"
+#include "zeroerr/unittest.h"
 namespace test_owned_capability_contract {
 class IWidget {
 public:
