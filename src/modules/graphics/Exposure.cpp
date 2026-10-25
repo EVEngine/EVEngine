@@ -2,10 +2,10 @@
 #include "common/Profile.h"
 
 #include <algorithm>
+#include <glm/vec3.hpp>
 #include <string>
 #include <utility>
 #include <vector>
-#include <glm/vec3.hpp>
 
 #include "common/Exception.h"
 #include "graphics/BlendMode.h"
