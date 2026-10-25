@@ -31,3 +31,18 @@ ASAN_OPTIONS=detect_leaks=1 ctest --test-dir build/physics-mechanics-asan \
 该组覆盖本次新增的恢复、失败回滚及 VM 引用生命周期；不代表完整引擎的 sanitizer 结果。
 夹具也链接实际 Physics world 工厂与 sensing 坐标实现，避免只在未启用 ASan 的链接器
 剔除路径下碰巧通过。World 工厂从绑定文件纯移动到 PhysicsWorldFactory.cpp，行为不变。
+
+## 可选弹射物组合
+
+夹具还编译真实 `WorldHitProbe`、`CombatCarrierRuntime` 和 World3D 显式冲量绑定。
+`carrierComposition.*` 覆盖 Box3D/Jolt 的无反馈与主动反馈、陈旧身份拒绝、真实 VM 参数验证，
+`carrierWorldSweep.*` 覆盖世界恢复后会话及接触失效。
+
+```sh
+ctest --test-dir build/physics-mechanics -R 'carrierComposition\.|carrierWorldSweep\.' --output-on-failure
+```
+
+`carrier_probe_absent` 单独链接弹射物实现与 common，不链接任何 physics 源码／库；
+`carrierComposition.physicsImplementationAbsent` 验证缺席查询会话明确失败、关闭碰撞不访问会话、
+项目映射可用普通查询实现注入且失败不提交帧。这是该适配器 L1/L2/L4 的聚焦证据，
+不等价于完整引擎所有模块的裁剪矩阵。GUI 示例仍需正式 `eve` 的 smoke 验证。

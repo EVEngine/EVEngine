@@ -148,6 +148,7 @@ eve::Result<std::vector<eve::WorldSphereContact>> World3D::sweepSphereOwned(doub
                 eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "Sweep returned a stale body", "body"));
         eve::WorldSphereContact contact;
         contact.identity = {runtimeHandle().packed(), body->runtimeHandle().packed()};
+        contact.worldEpoch = queryEpoch();
         contact.bodyId   = bodyId;
         contact.shapeId  = getShapeCastResultShapeId(i);
         contact.fraction = getShapeCastResultFraction(i);
@@ -160,5 +161,28 @@ eve::Result<std::vector<eve::WorldSphereContact>> World3D::sweepSphereOwned(doub
         output.push_back(contact);
     }
     return Output::success(std::move(output));
+}
+
+eve::Result<void> World3D::applySweepContactImpulse(const eve::WorldSphereContact& contact, PhysicsVector3D impulse,
+                                                    PhysicsVector3D worldPoint) {
+    if (!isValid() || contact.identity.world != runtimeHandle().packed() || contact.worldEpoch == 0 ||
+        contact.worldEpoch != queryEpoch())
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "Sweep contact world was destroyed, replaced or restored", "contact.world"));
+    auto* body = findBody(PhysicsBodyHandle::fromPacked(contact.identity.body));
+    if (!body || !body->isValid() || body->getId() != contact.bodyId)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "Sweep contact body was destroyed or replaced", "contact.body"));
+    for (float value : {impulse.x, impulse.y, impulse.z, worldPoint.x, worldPoint.y, worldPoint.z})
+        if (!std::isfinite(value))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::InvalidArgument, "Impulse and application point must be finite", "impulse"));
+    auto type = body->backend_->getType();
+    if (!type) return eve::Result<void>::failure(type.status());
+    if (type.value() != "dynamic")
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Unsupported, "Sweep impulse requires a dynamic body", "contact.body"));
+    return body->backend_->applyLinearImpulseAt(impulse.x, impulse.y, impulse.z, worldPoint.x, worldPoint.y,
+                                                worldPoint.z);
 }
 }  // namespace eve::physics

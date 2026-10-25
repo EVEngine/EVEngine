@@ -22,6 +22,8 @@ struct WorldSphereContact {
     double             fraction = 0;
     double             x = 0, y = 0, z = 0;
     double             nx = 0, ny = 0, nz = 0;
+    /** @brief Process-local world restore revision; zero means no revision-qualified provenance. */
+    std::uint64_t worldEpoch = 0;
 };
 /** @brief Immutable per-binding sphere and filter policy. */
 struct WorldSphereSweepSettings {

@@ -450,3 +450,11 @@
 
 重建：`python3 scripts/generate_binding_contracts.py --json-output eve-api.json`，
 再运行 `python3 scripts/generate_user_api_reference.py --catalogue eve-api.json`。
+
+### 显式弹射物命中反馈（可选）
+
+`World3D.applySweepContactImpulse(event, ix, iy, iz, px, py, pz)` 返回标准 Result。
+调用者在弹射物帧成功后主动消费物理命中事件，传入 N·s 冲量和米制世界作用点。
+身份、世界恢复代次、有限参数及 dynamic 类型检查失败时不施力；不会自动订阅事件或从伤害推算冲量。
+无默认反馈、无跨域回滚、无自动重复事件去重。详见
+[weapon 可选组合扩展](../weapon.md#可选组合扩展物理命中映射与显式冲量)。
