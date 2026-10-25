@@ -612,13 +612,15 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
 
     gfx->setBackgroundColorRGBA(0.07f, 0.08f, 0.11f, 1.f);
 
-    // Phase timeline (~2.4s): Idle → Run → Idle → Jump → Idle
+    // Allow the imported jump clip to reach its exit time and finish blending.
+    const int previewFrames = 100 + static_cast<int>(std::ceil((pack.jump->getDuration() + 0.2f) / 0.016f));
+    // Phase timeline: Idle → Run → Idle → Jump → Idle
     enum Phase { IdleA, RunA, IdleB, JumpA, IdleC };
     Phase phase       = IdleA;
     int   phaseFrames = 0;
     int   drawnBones  = 0;
 
-    for (int frame = 0; frame < 150; ++frame) {
+    for (int frame = 0; frame < previewFrames; ++frame) {
         ++phaseFrames;
         if (phase == IdleA && phaseFrames > 30) {
             sm->setFloat("speed", 200.f);

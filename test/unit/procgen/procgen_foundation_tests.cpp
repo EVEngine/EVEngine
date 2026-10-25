@@ -1132,6 +1132,7 @@ TEST_CASE("procgen.mesh.bush.validatesOptions") {
 
 
 TEST_CASE("procgen.dungeon.bsp.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(42);
     p.setSize(48, 36);
@@ -1147,6 +1148,7 @@ TEST_CASE("procgen.dungeon.bsp.reproducible") {
 }
 
 TEST_CASE("procgen.cave.cellular.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(7);
     p.setSize(32, 24);
@@ -1161,6 +1163,7 @@ TEST_CASE("procgen.cave.cellular.reproducible") {
 }
 
 TEST_CASE("procgen.cave.drunkard.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(99);
     p.setSize(40, 30);
@@ -1174,6 +1177,7 @@ TEST_CASE("procgen.cave.drunkard.reproducible") {
 }
 
 TEST_CASE("procgen.maze.backtrack.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(123);
     p.setSize(21, 15);
@@ -1186,6 +1190,7 @@ TEST_CASE("procgen.maze.backtrack.reproducible") {
 }
 
 TEST_CASE("procgen.noise.terrain.reproducible") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(55);
     p.setSize(32, 32);
@@ -2135,6 +2140,7 @@ TEST_CASE("procgen.wfc.simple.reproducible") {
 }
 
 TEST_CASE("procgen.wfc.simple.cavePreset") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(11);
     p.setSize(20, 16);
@@ -2152,6 +2158,7 @@ TEST_CASE("procgen.wfc.simple.cavePreset") {
 }
 
 TEST_CASE("procgen.wfc.simple.terrainPreset") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(7);
     p.setSize(24, 20);
@@ -2171,6 +2178,7 @@ TEST_CASE("procgen.wfc.simple.terrainPreset") {
 }
 
 TEST_CASE("procgen.wfc.simple.dungeonObjectsAndMeta") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(99);
     p.setSize(28, 20);
@@ -2193,6 +2201,7 @@ TEST_CASE("procgen.wfc.simple.dungeonObjectsAndMeta") {
 }
 
 TEST_CASE("procgen.wfc.simple.seedVaries") {
+    GeneratorRegistry::instance().registerBuiltins();
     Params a, b;
     a.setSeed(1);
     b.setSeed(2);
@@ -2214,6 +2223,7 @@ TEST_CASE("procgen.wfc.simple.seedVaries") {
 }
 
 TEST_CASE("procgen.wfc.simple.errors") {
+    GeneratorRegistry::instance().registerBuiltins();
     std::string err;
     Grid2D      g;
     Params      tooSmall;
@@ -2372,6 +2382,7 @@ TEST_CASE("procgen.mesh.marchingcubes.allFields") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.noiseReproducibleAndVaries") {
+    MeshRecipeRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(9);
     p.setInt("resolution", 16);
@@ -2498,6 +2509,7 @@ TEST_CASE("procgen.mesh.marchingcubes.recipeErrors") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.isolevelAffectsMesh") {
+    MeshRecipeRegistry::instance().registerBuiltins();
     Params lo;
     lo.setSeed(1);
     lo.setInt("resolution", 16);
@@ -2591,6 +2603,7 @@ TEST_CASE("procgen.wfc.simple.dungeonAdjacencyAndListing") {
 }
 
 TEST_CASE("procgen.wfc.simple.multiSeedBatch") {
+    GeneratorRegistry::instance().registerBuiltins();
     // Stress: several seeds/presets must all collapse successfully.
     const char *presets[] = {"dungeon", "cave", "terrain"};
     int         okCount   = 0;
@@ -2615,6 +2628,7 @@ TEST_CASE("procgen.wfc.simple.multiSeedBatch") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.resolutionScales") {
+    MeshRecipeRegistry::instance().registerBuiltins();
     Params lo;
     lo.setSeed(1);
     lo.setInt("resolution", 12);
@@ -2631,6 +2645,7 @@ TEST_CASE("procgen.mesh.marchingcubes.resolutionScales") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.torusAndAxisResolution") {
+    MeshRecipeRegistry::instance().registerBuiltins();
     Params torus;
     torus.setSeed(2);
     torus.setInt("resolution", 20);
@@ -2657,6 +2672,7 @@ TEST_CASE("procgen.mesh.marchingcubes.torusAndAxisResolution") {
 }
 
 TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
+    MeshRecipeRegistry::instance().registerBuiltins();
     Params p;
     p.setSeed(1);
     p.setInt("resolution", 18);
