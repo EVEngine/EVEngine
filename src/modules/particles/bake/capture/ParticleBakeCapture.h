@@ -3,10 +3,8 @@
 #include "common/Export.h"
 #include "common/Identity.h"
 #include "common/Result.h"
+#include "particles/ParticleEventJournal.h"
 #include "physics/backend/bake/ParticleTrack.h"
-namespace eve::particles {
-struct ParticleRecordEvent;
-}
 namespace eve::particles {
 /** @brief Borrowed complete journal for one uniquely identified emitter recording session.
  * @ownership Events are borrowed only during buildParticleTrack; no view survives that call.
