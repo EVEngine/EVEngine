@@ -1,3 +1,32 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "gameplay_control_tactics.cpp",
+    "tactics_ability.cpp",
+    "tactics_board.cpp",
+    "tactics_edges.cpp",
+    "tactics_graph.cpp",
+    "tactics_line_of_sight.cpp",
+    "tactics_path.cpp",
+    "tactics_interaction.cpp",
+    "tactics_objective.cpp",
+    "tactics_presentation_script.cpp",
+    "tactics_presentation.cpp",
+    "tactics_reaction.cpp",
+    "tactics_migration.cpp",
+    "tactics_replay.cpp",
+    "tactics_snapshot_script.cpp",
+    "tactics_charge_time.cpp",
+    "tactics_turn.cpp",
+    "tactics_turn_policy.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_control_tactics)

@@ -10,8 +10,8 @@ Every directory under ``examples/`` is one of two reviewed kinds:
   listed in :data:`NON_RUNNABLE_EXAMPLES` with the reason it cannot be started
   by ``eve run``.
 
-Both kinds must own a ``README.md``, and every example must appear in the
-``examples/README.md`` overview so the directory stays discoverable.
+Both kinds must own a ``README.md``. Directory discovery is authoritative;
+the curated overview is maintained independently during documentation work.
 
 The runtime half of the contract lives in ``scripts/smoke_examples.sh``: every
 directory that this gate classifies as runnable is launched for at least
@@ -203,7 +203,6 @@ def conformance_findings(
             )
 
     linked = linked_examples(read_index_text(root))
-    linked_set = set(linked)
     if not index_exists(root):
         findings.append("examples/README.md: missing example overview")
     for name in linked:
@@ -211,11 +210,6 @@ def conformance_findings(
             findings.append(
                 f"examples/README.md: links examples/{name}/README.md but that directory "
                 "does not exist"
-            )
-    for example in examples:
-        if example.name not in linked_set:
-            findings.append(
-                f"examples/README.md: {example.relative} is not listed in the overview table"
             )
     return findings
 
@@ -265,7 +259,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument(
         "--print-missing-rows",
         action="store_true",
-        help="print the overview rows needed for unregistered examples",
+        help="print optional overview rows for documentation maintenance",
     )
     parser.add_argument(
         "--changed-base",

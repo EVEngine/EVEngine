@@ -30,15 +30,30 @@ if(TARGET eve AND TARGET EVGraphics)
         zeroerr eve_engine_includes)
     add_test(NAME profile.skin_palette COMMAND eve_skin_palette_check)
     eve_label_test_group(profile.skin_palette graphics_skin_palette.cpp graphics_skin_palette_render.cpp)
-    eve_add_test_executable(eve_pbr_surface_check
-        "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
-        "${CMAKE_SOURCE_DIR}/test/graphics_pbr_surface.cpp"
-        "${CMAKE_SOURCE_DIR}/test/model3d_gltf_uv.cpp")
-    target_compile_features(eve_pbr_surface_check PRIVATE cxx_std_20)
-    target_link_libraries(eve_pbr_surface_check PRIVATE ${_eve_skin_host_libraries}
-        zeroerr eve_engine_includes)
-    add_test(NAME profile.pbr_surface COMMAND eve_pbr_surface_check)
-    eve_label_test_group(profile.pbr_surface graphics_pbr_surface.cpp model3d_gltf_uv.cpp)
+    if(TARGET EVCombat)
+        eve_add_test_executable(eve_combat_presentation_check
+            "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/combat-presentation/combat_settlement.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/combat-presentation/combat_presentation_script.cpp"
+            "${CMAKE_SOURCE_DIR}/test/unit/graphics/graphics_damage_numbers.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/combat-presentation/combat_damage_numbers.cpp"
+            "${CMAKE_SOURCE_DIR}/test/integration/combat-presentation/graphics_damage_numbers_script.cpp")
+        target_compile_features(eve_combat_presentation_check PRIVATE cxx_std_20)
+        target_link_libraries(eve_combat_presentation_check PRIVATE ${_eve_skin_host_libraries}
+            zeroerr eve_engine_includes)
+        add_test(NAME profile.combat_presentation COMMAND eve_combat_presentation_check)
+    endif()
+    if(TARGET EVModel3D)
+        eve_add_test_executable(eve_pbr_surface_check
+            "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"
+            "${CMAKE_SOURCE_DIR}/test/graphics_pbr_surface.cpp"
+            "${CMAKE_SOURCE_DIR}/test/model3d_gltf_uv.cpp")
+        target_compile_features(eve_pbr_surface_check PRIVATE cxx_std_20)
+        target_link_libraries(eve_pbr_surface_check PRIVATE ${_eve_skin_host_libraries}
+            zeroerr eve_engine_includes)
+        add_test(NAME profile.pbr_surface COMMAND eve_pbr_surface_check)
+        eve_label_test_group(profile.pbr_surface graphics_pbr_surface.cpp model3d_gltf_uv.cpp)
+    endif()
     if(TARGET EVAsset_graphics)
         eve_add_test_executable(eve_texture_mip_check
             "${CMAKE_SOURCE_DIR}/test/profile/gltf_animation_main.cpp"

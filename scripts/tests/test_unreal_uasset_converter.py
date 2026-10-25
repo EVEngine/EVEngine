@@ -1,6 +1,7 @@
 import importlib.util
 import hashlib
 import json
+import os
 import struct
 import subprocess
 import sys
@@ -482,10 +483,20 @@ class UnrealUassetConverterTests(unittest.TestCase):
                 ],
                 "diagnostics": [],
             }
-            artifacts = converter._validate_result(result, request, output)
-            self.assertEqual(artifacts[0]["dependencies"][0]["path"], "Vault.bin")
-            self.assertEqual(len(artifacts[0]["dependencies"][0]["sha256"]), 64)
-            self.assertEqual(artifacts[0]["content"]["animationCount"], 1)
+            # Absolute aliases and relative roots must share the resolved sidecar boundary.
+            for root in (output, output.resolve(), Path(os.path.relpath(output))):
+                with self.subTest(root=root):
+                    artifacts = converter._validate_result(result, request, root)
+                    self.assertEqual(artifacts[0]["dependencies"][0]["path"], "Vault.bin")
+                    self.assertEqual(len(artifacts[0]["dependencies"][0]["sha256"]), 64)
+                    self.assertEqual(artifacts[0]["content"]["animationCount"], 1)
+            document = json.loads((output / "Vault.gltf").read_text(encoding="utf-8"))
+            document["buffers"][0]["uri"] = "../outside.bin"
+            (output / "Vault.gltf").write_text(json.dumps(document), encoding="utf-8")
+            for root in (output, output.resolve(), Path(os.path.relpath(output))):
+                with self.subTest(escaping_root=root):
+                    with self.assertRaisesRegex(converter.ConversionError, "sidecar escapes"):
+                        converter._validate_result(result, request, root)
 
 
 if __name__ == "__main__":

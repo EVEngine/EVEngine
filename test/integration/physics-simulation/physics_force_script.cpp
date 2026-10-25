@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "script-binding": [
+      "physics.forces.scriptModelsProjectResults",
+      "physics.forces.scriptFieldSetsOwnValuesAndBatchRights",
+      "physics.forces.scriptWingAssembliesControlBothDimensions"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>

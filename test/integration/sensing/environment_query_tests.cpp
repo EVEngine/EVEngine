@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "sensing.environment.scriptPositionsUseCanonicalExecutor"
+    ]
+  },
+  "module": "sensing",
+  "origins": [
+    "sensing_environment.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include <stdexcept>

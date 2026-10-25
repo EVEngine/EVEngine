@@ -1,3 +1,4 @@
+// eve-hot-path
 // Lets ImGui see platform events before anything else claims them.
 //
 // The SDL event pump used to call UI::processEvent directly, which was one of

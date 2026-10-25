@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "helper",
+  "default": "render-window",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include "Fixtures.h"
 
 #include <cstdio>

@@ -1,3 +1,4 @@
+// eve-hot-path
 // Jolt requires its platform header before any other native header.
 #include <Jolt/Jolt.h>
 

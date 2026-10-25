@@ -45,12 +45,15 @@ public:
 
     /**
      * @brief Restore captured state onto the (possibly new) definitions.
-     * @return false when the captured state is incompatible with the new
-     *         definitions; the reload session then falls back to resetToDefaults().
+     * @return Structured failure when the state is incompatible with the current
+     *         definitions. Snapshot restore rolls affected providers back on failure.
+     * @note Must accept this provider's own capture() result against unchanged
+     *       definitions, including after a failed restore/reset, so rollback can
+     *       recover its pre-operation state. Must not invoke script callbacks.
      */
     [[nodiscard]] virtual Result<void> restore(const Value& in) = 0;
 
-    /** @brief Reset this provider to its default state (restore fallback). */
+    /** @brief Reset this provider to its default state (Reset reload policy). */
     [[nodiscard]] virtual Result<void> resetToDefaults() = 0;
 
     /** @brief Whether live state is preserved or reset across code reload. */

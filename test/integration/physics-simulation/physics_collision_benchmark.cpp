@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "performance",
+  "cases": {
+    "performance": [
+      "physics.benchmark.collision.grid1000"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
 #include "zeroerr/assert.h"

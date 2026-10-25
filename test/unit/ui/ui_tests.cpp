@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "UIBuilder.cpp",
+    "UIEditorKit.cpp",
+    "UIPhaseAdv.cpp",
+    "UIPhaseB.cpp",
+    "UISystem.cpp",
+    "pcg_color_preview_sync.cpp",
+    "pcg_photo_mode_color_picker.cpp",
+    "pcg_photo_mode_session.cpp",
+    "ui_color_palette.cpp",
+    "ui_control_semantics.cpp",
+    "ui_drag_drop.cpp",
+    "UIMoveRepro.cpp",
+    "UITween.cpp",
+    "ui_nine_patch.cpp",
+    "ui_parent_scaler.cpp",
+    "ui_world_anchor.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIBuilder)

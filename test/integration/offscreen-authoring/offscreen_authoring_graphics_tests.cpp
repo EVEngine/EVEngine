@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "procgen_graphics_editing",
+  "modules": [
+    "procgen_graphics_editing",
+    "stylize_editor"
+  ],
+  "origins": []
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #include "common/Module.h"

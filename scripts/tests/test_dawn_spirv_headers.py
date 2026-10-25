@@ -4,6 +4,8 @@ import os
 import shutil
 import subprocess
 import tempfile
+import re
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,7 +15,7 @@ REVISION = "0d25db97cb9b8f725e4c95e4553001710e7fc39d"
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required")
 class DawnSpirvHeadersTests(unittest.TestCase):
     def configure(self, root, *, revision=REVISION, missing_header=False,
-                  missing_support=None, broken_jinja=False, support_revision=REVISION):
+                  missing_support=None, broken_jinja=False, support_revision=REVISION, unsupported_modules=False):
         dawn = root / "dawn"
         headers = root / "headers"
         dawn.mkdir()
@@ -60,6 +62,21 @@ class DawnSpirvHeadersTests(unittest.TestCase):
         header.parent.mkdir(parents=True)
         if not missing_header:
             header.write_text("// fixture\n", encoding="utf-8")
+        module_fixture = ""
+        if unsupported_modules:
+            (dawn / "dawn.cppm").write_text("export module dawn;\n", encoding="utf-8")
+            module_fixture = '''
+# Model Dawn's successful -fmodules-ts probe on a compiler without CMake's
+# module dependency scanner. Its cached result must be disabled by the host.
+if(NOT DEFINED DAWN_SUPPORTS_CXX_MODULES)
+    set(DAWN_SUPPORTS_CXX_MODULES ON CACHE BOOL "")
+endif()
+if(DAWN_SUPPORTS_CXX_MODULES)
+    add_library(dawncpp_module OBJECT)
+    target_sources(dawncpp_module PUBLIC FILE_SET modules TYPE CXX_MODULES FILES dawn.cppm)
+    target_compile_features(dawncpp_module PUBLIC cxx_std_20)
+endif()
+'''
         (dawn / "CMakeLists.txt").write_text(
             '''if(NOT DAWN_SPIRV_HEADERS_DIR STREQUAL SPIRV-Headers_SOURCE_DIR)
     message(FATAL_ERROR "Dawn and SPIRV-Tools header paths diverged")
@@ -75,9 +92,14 @@ endforeach()
 add_subdirectory("${DAWN_ABSEIL_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/abseil")
 add_subdirectory("${DAWN_GLFW_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
 add_subdirectory("${DAWN_SPIRV_HEADERS_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/headers")
+# Model the pinned OpenGL pipeline's dependency independently of the Null backend.
+option(TINT_BUILD_NULL_WRITER "" ${DAWN_ENABLE_NULL})
+if(NOT TINT_BUILD_NULL_WRITER OR DAWN_ENABLE_NULL)
+    message(FATAL_ERROR "OpenGL reflection needs the Tint null writer without the Null backend")
+endif()
 add_library(native_dawn INTERFACE)
 add_library(dawn::webgpu_dawn ALIAS native_dawn)
-''', encoding="utf-8",
+''' + module_fixture, encoding="utf-8",
         )
         overrides = "\n".join(
             f'set(FETCHCONTENT_SOURCE_DIR_EVE_DAWN_{name.upper()} "{(support / name).as_posix()}")'
@@ -85,7 +107,8 @@ add_library(dawn::webgpu_dawn ALIAS native_dawn)
         )
         (root / "CMakeLists.txt").write_text(
             f'''cmake_minimum_required(VERSION 3.24)
-project(DawnDependencyFixture NONE)
+project(DawnDependencyFixture {"LANGUAGES CXX" if unsupported_modules else "NONE"})
+{"set(CMAKE_CXX_SCANDEP_SOURCE)" if unsupported_modules else ""}
 set(EVENGINE_BUILD_HOST ON)
 set(BUILD_PLATFORM webgpu)
 set(FETCHCONTENT_SOURCE_DIR_DAWN "{dawn.as_posix()}")
@@ -100,7 +123,7 @@ endif()
 ''', encoding="utf-8",
         )
         return subprocess.run(
-            ["cmake", "-S", str(root), "-B", str(root / "build")],
+            ["cmake", *(["-G", "Ninja"] if unsupported_modules else []), "-S", str(root), "-B", str(root / "build")],
             capture_output=True, text=True, encoding="utf-8", check=False,
         )
 
@@ -108,6 +131,13 @@ endif()
         with tempfile.TemporaryDirectory() as temporary:
             result = self.configure(Path(temporary))
             self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_header_integration_does_not_require_optional_cpp_module_scanner(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            result = self.configure(Path(temporary), unsupported_modules=True)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            cache = (Path(temporary) / "build/CMakeCache.txt").read_text(encoding="utf-8")
+            self.assertIn("DAWN_SUPPORTS_CXX_MODULES:BOOL=OFF", cache)
 
     def test_incomplete_archive_fails_before_dawn_configuration(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -159,12 +189,21 @@ endif()
             self.assertIn("Incomplete pinned Dawn glfw checkout", result.stderr)
 
 
-class DawnCiDependencyCheckTests(unittest.TestCase):
-    def check_dependencies(self, root):
+class DawnCiConfigureTests(unittest.TestCase):
+    def check_dependencies(self, root, cmake_status):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
-        start = workflow.index("          dawn_tp=build/webgpu-macos/")
-        end = workflow.index("          for attempt in", start)
-        script = workflow[start:end] + "\ndawn_deps_ok\n"
+        step = workflow.split("      - name: Configure native Dawn smoke lane\n", 1)[1]
+        step = step.split("      - name:", 1)[0]
+        script = textwrap.dedent(step.split("        run: |\n", 1)[1])
+        script = re.sub(r"\$\{\{.*?\}\}", "", script)
+        binaries = root / "bin"
+        binaries.mkdir(exist_ok=True)
+        cmake = binaries / "cmake"
+        cmake.write_text(f"#!/bin/sh\necho attempt >> attempts\nexit {cmake_status}\n", encoding="utf-8")
+        cmake.chmod(0o755)
+        sleep = binaries / "sleep"
+        sleep.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+        sleep.chmod(0o755)
         bash = "bash"
         if os.name == "nt":
             git = shutil.which("git")
@@ -173,18 +212,19 @@ class DawnCiDependencyCheckTests(unittest.TestCase):
             git_path = Path(git).resolve()
             candidates = [parent / "bin" / "bash.exe" for parent in git_path.parents]
             bash = str(next(path for path in candidates if path.is_file()))
-        return subprocess.run([bash, "-c", script], cwd=root, check=False,
+        env = {**os.environ, "PATH": str(binaries) + os.pathsep + os.environ["PATH"]}
+        return subprocess.run([bash, "-c", script], cwd=root, env=env, check=False,
                               capture_output=True, text=True, encoding="utf-8")
 
-    def test_accepts_prepared_headers_outside_dawn_checkout(self):
+    def test_cmake_validates_prepared_dependencies_and_failed_configures_are_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            for relative in ["dawn-src/third_party/abseil-cpp", "dawn-src/third_party/glfw3/src",
-                             "eve_spirv_headers-src"]:
-                directory = root / "build/webgpu-macos/_deps" / relative
-                directory.mkdir(parents=True)
-                (directory / "CMakeLists.txt").write_text("# fixture\n", encoding="utf-8")
-            result = self.check_dependencies(root)
+            # Dependency layout is owned and checked by CMake, not CI shell guesses.
+            result = self.check_dependencies(root, 0)
             self.assertEqual(result.returncode, 0, result.stderr)
-            (root / "build/webgpu-macos/_deps/eve_spirv_headers-src/CMakeLists.txt").unlink()
-            self.assertNotEqual(self.check_dependencies(root).returncode, 0)
+            attempts = root / "attempts"
+            self.assertEqual(len(attempts.read_text(encoding="utf-8").splitlines()), 1)
+            attempts.unlink()
+            result = self.check_dependencies(root, 1)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(len(attempts.read_text(encoding="utf-8").splitlines()), 3)

@@ -1,3 +1,4 @@
+// eve-hot-path
 // Jolt requires its platform header before any other native header.
 #include <Jolt/Jolt.h>
 
@@ -55,6 +56,12 @@ eve::Result<CapsuleMove3D> WorldBackend::moveCapsuleOwned(float ax, float ay, fl
             record(normal);
             const float needed = hit.mPenetrationDepth + .0001f - correction.Dot(normal);
             if (needed > 0) correction += needed * normal;
+            const float upDot = normal.Dot(up);
+            if (upDot > 0.f && upDot < std::cos(policy.maxSlopeRadians)) {
+                const auto  horizontal = (normal - upDot * up).NormalizedOr(JPH::Vec3::sZero());
+                const float uphill     = remaining.Dot(horizontal);
+                if (uphill < 0.f) remaining -= uphill * horizontal;
+            }
             const float inward = remaining.Dot(normal);
             if (inward < 0) remaining -= inward * normal;
         }

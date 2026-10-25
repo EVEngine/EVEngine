@@ -1,3 +1,25 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "graphics",
+  "modules": [
+    "graphics",
+    "thread",
+    "common",
+    "window"
+  ],
+  "cases": {
+    "module-composition": [
+      "graphics.frameRecording.inlineBudgetAndPeriodicReprobe"
+    ]
+  }
+}
+*/
+// clang-format on
+
 #include "common/config.h"
 #if !defined(EVENGINE_WEBGPU)
 #include "common/Profile.h"
@@ -71,9 +93,10 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
     auto         *redTexture   = gfx->newTexture(1, 1, red);
     auto         *greenTexture = gfx->newTexture(1, 1, green);
     for (int frame = 0; frame < 12; ++frame) {
-        if (frame == 6) {
-            settings.width  = 160;
-            settings.height = 96;
+        // Resize on both even and odd frames to cover both in-flight slots.
+        if (frame == 6 || frame == 9) {
+            settings.width  = frame == 6 ? 160 : 96;
+            settings.height = frame == 6 ? 96 : 160;
             auto *native    = static_cast<SDL_Window *>(win->getHandle());
             SDL_SetWindowSize(native, settings.width, settings.height);
             // Cocoa applies the content-view / Metal-layer resize while pumping

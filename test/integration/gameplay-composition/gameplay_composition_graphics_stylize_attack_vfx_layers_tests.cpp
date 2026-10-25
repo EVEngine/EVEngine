@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "render-window": [
+      "stylize.effects.gpu.postPasses",
+      "stylize.effects.gpu.meshShaders",
+      "stylize.ysa.realGpuPipeline"
+    ],
+    "render-offscreen": [
+      "stylize.ysa.skinnedMeshFollowsPalette",
+      "stylize.ysa.vertexColorFeedsMaterialColor"
+    ],
+    "physics-backend": [
+      "vehicle.physics2d.wheelDrivesAndSteers",
+      "vehicle.physics2d.trackRotatesInPlace",
+      "vehicle.physics3d.suspensionDrives"
+    ]
+  },
+  "module": "stylize_action",
+  "modules": [
+    "animation",
+    "stylize",
+    "stylize_action",
+    "tactics",
+    "ui",
+    "vehicle"
+  ],
+  "origins": [
+    "stylize_attack_vfx_audio_decal.cpp",
+    "stylize_attack_vfx_layers.cpp",
+    "tactics_action.cpp",
+    "tactics_rpg_integration.cpp",
+    "tactics_settlement.cpp",
+    "time_subscription_consumers.cpp",
+    "ui_motion_bind.cpp",
+    "ui_presentation.cpp",
+    "vehicle_physics.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_attack_vfx_audio_decal)

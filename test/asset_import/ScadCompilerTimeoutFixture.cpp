@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "concurrency",
+  "module": "common"
+}
+*/
+// clang-format on
+
 #include <chrono>
 #include <thread>
 

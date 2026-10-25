@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "local-logic",
+  "cases": {
+    "asset-pipeline": [
+      "asset.shader GPU admission rejects foreign descriptor slots",
+      "asset.shader GPU admission validates both stage semantics and pipeline layout"
+    ]
+  },
+  "module": "asset_graphics"
+}
+*/
+// clang-format on
+
 #include "asset/ShaderAsset.h"
 #include "asset/graphics/ShaderAssetValidation.h"
 #include "graphics/shaders/textured_frag_spv.inc"

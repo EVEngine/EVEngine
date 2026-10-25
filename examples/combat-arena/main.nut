@@ -222,7 +222,7 @@ function consumeArenaActivation(record) {
     if(dx*dx+dz*dz>2.7*2.7) {arenaNote("Miss / target outside 2.7m range");return;}
     local damage=arenaStats.getFinal("Attribute.Attack",0.0)*s.damage*
         arenaTargetStats.getFinal("Attribute.DamageTaken",1.0);
-    local hit=requireArena(arena.applyDamage(playerId,enemyId,"Damage.Physical.Slash",damage,8.0,0.0,0.0,0.0),"Apply damage");
+    local hit=requireArena(arena.applyDamage(playerId,enemyId,"Damage.Physical.Slash",damage,8.0,0.0,0.0,0.0,false,tick),"Apply damage");
     arenaLastDamage=hit.appliedHealthDamage; arenaHitCount+=1; arenaFlash=0.55;
     if(hit.appliedHealthDamage>0.0) applyArenaExposed();
     arenaNote(format("Damage %.2f / target %.2f HP",arenaLastDamage,hit.health));
