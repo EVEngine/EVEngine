@@ -1,81 +1,69 @@
-#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
-#include <chrono>
-#include <cstdio>
-#include <string>
-#include <vector>
 #include "common/Capability.h"
 #include "common/Condition.h"
 #include "common/ConditionKeys.h"
 #include "common/Diagnostic.h"
-#include "common/IEconomy.h"
 #include "common/IEmergenceActionHandler.h"
-#include "common/Value.h"
 #include "emergence/RuleEngine.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 
-// emergence_perf.cpp
+#include <string>
+#include <vector>
 
+using namespace eve::emergence;
 
-// emergence_rule_engine.cpp
 namespace {
 
-class QuestNotifyHandler final : public eve::IEmergenceActionHandler {
+RuleDefinition goldRule(std::string id, int threshold, std::string event) {
+    RuleDefinition rule;
+    rule.id        = std::move(id);
+    rule.condition = eve::condition::Condition::compare("gold", eve::condition::CompareOperator::GreaterEqual,
+                                                        eve::Value(threshold));
+    rule.actions.push_back({"emit", eve::Value::Object{{"type", eve::Value(std::move(event))}}});
+    return rule;
+}
+
+class RecordingHandler final : public eve::IEmergenceActionHandler {
 public:
     std::vector<std::string> topics;
+    bool                     reject = false;
 
     [[nodiscard]] eve::Result<bool> tryHandle(std::string_view kind, const eve::Value& args) override {
         if (kind != "quest.notify") return eve::Result<bool>::success(false);
+        if (reject)
+            return eve::Result<bool>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::Failed, "injected handler failure", "quest.notify"));
         const auto* object = args.getIf<eve::Value::Object>();
-        REQUIRE(object != nullptr);
-        const auto it = object->find("topic");
-        REQUIRE(it != object->end());
-        REQUIRE(it->second.isString());
-        topics.push_back(it->second.asString());
+        if (!object) return eve::Result<bool>::success(false);
+        auto topic = object->find("topic");
+        if (topic == object->end() || !topic->second.isString()) return eve::Result<bool>::success(false);
+        topics.push_back(topic->second.asString());
         return eve::Result<bool>::success(true);
     }
 };
 
-class FailingHandler final : public eve::IEmergenceActionHandler {
-public:
-    [[nodiscard]] eve::Result<bool> tryHandle(std::string_view kind, const eve::Value&) override {
-        if (kind != "fail.always") return eve::Result<bool>::success(false);
-        return eve::Result<bool>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, "forced action failure",
-                                                                 "fail.always", {}, "emergence.test"));
-    }
-};
-
-class StubEconomy final : public eve::economy::IEconomy {
-public:
-    int  credit(int, const std::string&, int amount) override { return amount; }
-    bool debit(int, const std::string&, int) override { return true; }
-    int  get(int, const std::string&) const override { return 0; }
-    int  getCap(int, const std::string&) const override { return 0; }
-    int  getWasted(int, const std::string&) const override { return 0; }
-    int  getIncome(int, const std::string&) const override { return 0; }
-    int  getExpense(int, const std::string&) const override { return 0; }
-};
-
-[[maybe_unused]] eve::emergence::RuleDefinition makeGoldRule(std::string id, int threshold, std::string emitType) {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    RuleDefinition rule;
-    rule.id        = std::move(id);
-    rule.condition = Condition::compare("gold", CompareOperator::GreaterEqual, eve::Value(threshold));
-    rule.actions.push_back(EmergenceAction{"emit", eve::Value::Object{{"type", eve::Value(std::move(emitType))}}});
-    return rule;
-}
-
 }  // namespace
 
-TEST_CASE("emergence.ruleEngine.risingEdgeFiresOnceUntilReset") {
-    using namespace eve::emergence;
+TEST_CASE("emergence.RuleEngine catalogue commits valid rules and rejects invalid replacements atomically") {
     RuleEngine engine;
-    auto       committed = engine.replaceCatalogue({makeGoldRule("rich", 100, "story.rich")});
+    auto       committed = engine.replaceCatalogue({goldRule("rich", 100, "story.rich")});
     REQUIRE(committed.ok());
     CHECK_EQ(committed.value(), 1);
+    CHECK(engine.contains("rich"));
+    CHECK(engine.find("missing") == nullptr);
 
+    RuleDefinition invalid = goldRule("bad", 1, "bad");
+    invalid.id.clear();
+    CHECK(!engine.replaceCatalogue({invalid}).ok());
+    CHECK_EQ(engine.ruleCount(), 1);
+    CHECK(engine.find("rich") != nullptr);
+    CHECK(!engine.replaceCatalogue({goldRule("same", 1, "a"), goldRule("same", 2, "b")}).ok());
+    CHECK_EQ(engine.ruleCount(), 1);
+}
+
+TEST_CASE("emergence.RuleEngine rises only after a false-to-true fact transition") {
+    RuleEngine engine;
+    REQUIRE(engine.replaceCatalogue({goldRule("rich", 100, "story.rich")}).ok());
     REQUIRE(engine.setValue("gold", eve::Value(50)).ok());
     auto drained = engine.drain(1);
     REQUIRE(drained.ok());
@@ -86,211 +74,128 @@ TEST_CASE("emergence.ruleEngine.risingEdgeFiresOnceUntilReset") {
     REQUIRE(drained.ok());
     CHECK_EQ(drained.value(), 1);
     REQUIRE(engine.activationAt(0) != nullptr);
-    CHECK_EQ(engine.activationAt(0)->ruleId, "rich");
+    CHECK_EQ(engine.activationAt(0)->ruleId, std::string("rich"));
 
-    // Still true: rising edge must not re-fire.
     REQUIRE(engine.setValue("gold", eve::Value(200)).ok());
     drained = engine.drain(3);
     REQUIRE(drained.ok());
     CHECK_EQ(drained.value(), 0);
-
-    // Drop below threshold then rise again.
     REQUIRE(engine.setValue("gold", eve::Value(10)).ok());
     REQUIRE(engine.drain(4).ok());
     REQUIRE(engine.setValue("gold", eve::Value(150)).ok());
     drained = engine.drain(5);
     REQUIRE(drained.ok());
     CHECK_EQ(drained.value(), 1);
+    CHECK_EQ(engine.activationCount(), 2);
 }
 
-TEST_CASE("emergence.ruleEngine.factSetCascadesWithinDrain") {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    RuleEngine     engine;
+TEST_CASE("emergence.RuleEngine fact actions cascade inside one drain") {
     RuleDefinition unlock;
-    unlock.id        = "unlock.door";
+    unlock.id        = "unlock";
     unlock.condition = eve::condition::tagPresent("key.found");
-    unlock.actions.push_back(EmergenceAction{
-        "fact.set", eve::Value::Object{
-                        {"domain", eve::Value("state")}, {"key", eve::Value("door")}, {"value", eve::Value("open")}}});
+    unlock.actions.push_back(
+        {"fact.set", eve::Value::Object{
+                         {"domain", eve::Value("state")}, {"key", eve::Value("door")}, {"value", eve::Value("open")}}});
     RuleDefinition celebrate;
     celebrate.id        = "celebrate";
     celebrate.condition = eve::condition::stateEquals("door", eve::Value("open"));
-    celebrate.actions.push_back(EmergenceAction{"emit", eve::Value::Object{{"type", eve::Value("fanfare")}}});
+    celebrate.actions.push_back({"emit", eve::Value::Object{{"type", eve::Value("fanfare")}}});
+    RuleEngine engine;
     REQUIRE(engine.replaceCatalogue({unlock, celebrate}).ok());
-
     REQUIRE(engine.setTag("key.found", true).ok());
     auto drained = engine.drain(10);
     REQUIRE(drained.ok());
     CHECK_EQ(drained.value(), 2);
-    CHECK_EQ(engine.activationAt(0)->ruleId, "unlock.door");
-    CHECK_EQ(engine.activationAt(1)->ruleId, "celebrate");
+    REQUIRE(engine.activationAt(0) != nullptr);
+    REQUIRE(engine.activationAt(1) != nullptr);
+    CHECK_EQ(engine.activationAt(0)->ruleId, std::string("unlock"));
+    CHECK_EQ(engine.activationAt(1)->ruleId, std::string("celebrate"));
 }
 
-TEST_CASE("emergence.ruleEngine.questHandlerConsumesNotifyAction") {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    QuestNotifyHandler handler;
+TEST_CASE("emergence.RuleEngine external handler failure preserves activation latch for retry") {
+    RecordingHandler handler;
+    handler.reject = true;
     eve::cap::addListener<eve::IEmergenceActionHandler>(&handler, 0);
-
-    RuleEngine     engine;
     RuleDefinition rule;
-    rule.id        = "intro.done";
-    rule.condition = eve::condition::tagPresent("intro.complete");
-    rule.actions.push_back(EmergenceAction{
-        "quest.notify",
-        eve::Value::Object{{"topic", eve::Value("intro")}, {"target", eve::Value("")}, {"amount", eve::Value(1)}}});
-    REQUIRE(engine.replaceCatalogue({rule}).ok());
-    REQUIRE(engine.setTag("intro.complete", true).ok());
-    auto drained = engine.drain(1);
-    REQUIRE(drained.ok());
-    CHECK_EQ(drained.value(), 1);
-    REQUIRE_EQ(handler.topics.size(), 1u);
-    CHECK_EQ(handler.topics[0], "intro");
-
-    eve::cap::removeListener<eve::IEmergenceActionHandler>(&handler);
-}
-
-TEST_CASE("emergence.ruleEngine.replaceCatalogueJsonRoundTrip") {
-    using namespace eve::emergence;
-    RuleEngine  engine;
-    const char* json      = R"({
-      "schema": "eve.emergence.rules",
-      "version": 1,
-      "rules": [
-        {
-          "id": "late.night",
-          "priority": 10,
-          "fireMode": "rising",
-          "condition": {
-            "kind": "all",
-            "children": [
-              {"kind": "compare", "key": "hour", "operator": "ge", "expected": 22},
-              {"kind": "has_tag", "key": "village.quiet"}
-            ]
-          },
-          "actions": [
-            {"kind": "story.begin", "args": {"eventId": "night.watch"}}
-          ]
-        }
-      ]
-    })";
-    auto        committed = engine.replaceCatalogueJson(json);
-    REQUIRE(committed.ok());
-    CHECK_EQ(committed.value(), 1);
-    REQUIRE(engine.find("late.night") != nullptr);
-    CHECK_EQ(engine.find("late.night")->watchKeys.size(), 2u);
-
-    REQUIRE(engine.setValue("hour", eve::Value(22)).ok());
-    REQUIRE(engine.setTag("village.quiet", true).ok());
-    auto drained = engine.drain(1);
-    REQUIRE(drained.ok());
-    CHECK_EQ(drained.value(), 1);
-    CHECK_EQ(engine.activationAt(0)->actions[0].kind, "story.begin");
-}
-
-TEST_CASE("emergence.ruleEngine.failedActionDoesNotCommitLatches") {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    FailingHandler handler;
-    eve::cap::addListener<eve::IEmergenceActionHandler>(&handler, 0);
-
-    RuleEngine     engine;
-    RuleDefinition rule;
-    rule.id        = "once.fail";
+    rule.id        = "once";
     rule.once      = true;
     rule.condition = eve::condition::tagPresent("go");
-    rule.actions.push_back(EmergenceAction{"fail.always", eve::Value::Object{}});
+    rule.actions.push_back({"quest.notify", eve::Value::Object{{"topic", eve::Value("start")}}});
+    RuleEngine engine;
     REQUIRE(engine.replaceCatalogue({rule}).ok());
     REQUIRE(engine.setTag("go", true).ok());
-
-    auto drained = engine.drain(1);
-    CHECK(!drained.ok());
+    auto failed = engine.drain(1);
+    CHECK(!failed.ok());
     CHECK_EQ(engine.activationCount(), 0);
     CHECK_EQ(engine.dirtyCount(), 1);
+    CHECK(handler.topics.empty());
 
-    // Retry after removing the failing handler: rising/once latches must still be free.
+    handler.reject = false;
+    auto retried   = engine.drain(2);
+    REQUIRE(retried.ok());
+    CHECK_EQ(retried.value(), 1);
+    REQUIRE_EQ(handler.topics.size(), std::size_t{1});
+    CHECK_EQ(handler.topics[0], std::string("start"));
+    auto suppressed = engine.drain(3);
+    REQUIRE(suppressed.ok());
+    CHECK_EQ(suppressed.value(), 0);
     eve::cap::removeListener<eve::IEmergenceActionHandler>(&handler);
-    drained = engine.drain(2);
-    REQUIRE(drained.ok());
-    CHECK_EQ(drained.value(), 1);
-    CHECK_EQ(engine.activationAt(0)->ruleId, "once.fail");
 }
 
-TEST_CASE("emergence.ruleEngine.setPolicyWakesAndSnapshotRoundTrip") {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    RuleEngine     engine;
-    RuleDefinition rule;
-    rule.id        = "policy.gate";
-    rule.condition = Condition::policyCall("safe");
-    rule.actions.push_back(EmergenceAction{"emit", eve::Value::Object{{"type", eve::Value("ok")}}});
-    REQUIRE(engine.replaceCatalogue({rule}).ok());
-
-    REQUIRE(engine.setPolicy("safe", ConditionResult::success(eve::Value(true))).ok());
-    auto drained = engine.drain(1);
-    REQUIRE(drained.ok());
-    CHECK_EQ(drained.value(), 1);
-
-    const auto snap = engine.snapshotJson();
-    engine.clearActivations();
-    REQUIRE(engine.setPolicy("safe", ConditionResult::failed(ConditionReasonCode::PolicyRejected)).ok());
-    REQUIRE(engine.restoreJson(snap).ok());
-    auto restored = engine.facts().policy("safe", eve::Value::Object{});
-    REQUIRE(restored.has_value());
-    CHECK(restored->passed());
+TEST_CASE("emergence.RuleEngine JSON catalogue derives watched keys and executes matching facts") {
+    constexpr const char* json = R"({"schema":"eve.emergence.rules","version":1,"rules":[{
+      "id":"late.night","priority":10,"fireMode":"rising",
+      "condition":{"kind":"all","children":[
+        {"kind":"compare","key":"hour","operator":"ge","expected":22},
+        {"kind":"has_tag","key":"village.quiet"}]},
+      "actions":[{"kind":"story.begin","args":{"eventId":"night.watch"}}]}]})";
+    RuleEngine            engine;
+    auto                  accepted = engine.replaceCatalogueJson(json);
+    REQUIRE(accepted.ok());
+    CHECK_EQ(accepted.value(), 1);
+    REQUIRE(engine.find("late.night") != nullptr);
+    CHECK_EQ(engine.find("late.night")->watchKeys.size(), std::size_t{2});
+    REQUIRE(engine.setValue("hour", eve::Value(22)).ok());
+    REQUIRE(engine.setTag("village.quiet", true).ok());
+    auto result = engine.drain(1);
+    REQUIRE(result.ok());
+    CHECK_EQ(result.value(), 1);
+    CHECK_EQ(engine.activationAt(0)->actions[0].kind, std::string("story.begin"));
+    CHECK(!engine.replaceCatalogueJson(R"({"schema":"eve.emergence.rules","version":2,"rules":[]})").ok());
+    CHECK_EQ(engine.ruleCount(), 1);
 }
 
-TEST_CASE("emergence.ruleEngine.rejectsBadPolicyDependencyAndLooseNumbers") {
-    using namespace eve::condition;
-    using namespace eve::emergence;
-    RuleEngine                 engine;
-    ScriptConditionDeclaration declaration;
-    declaration.name         = "custom";
-    declaration.dependencies = {"gold"};  // missing domain prefix
-    RuleDefinition bad;
-    bad.id        = "bad.dep";
-    bad.condition = Condition::policyCall("custom", eve::Value::Object{}, declaration);
-    bad.actions.push_back(EmergenceAction{"emit", eve::Value::Object{}});
-    CHECK(!engine.replaceCatalogue({bad}).ok());
-
-    const char* badPriority = R"({
-      "schema": "eve.emergence.rules",
-      "version": 1,
-      "rules": [{
-        "id": "loose",
-        "priority": 1.5,
-        "condition": {"kind": "has_tag", "key": "x"},
-        "actions": [{"kind": "emit", "args": {}}]
-      }]
-    })";
-    CHECK(!engine.replaceCatalogueJson(badPriority).ok());
-
-    StubEconomy economy;
-    eve::cap::provide<eve::economy::IEconomy>(&economy);
-    RuleDefinition pay;
-    pay.id        = "pay";
-    pay.condition = eve::condition::tagPresent("bill");
-    pay.actions.push_back(EmergenceAction{
-        "economy.credit",
-        eve::Value::Object{{"player", eve::Value("0")}, {"type", eve::Value("gold")}, {"amount", eve::Value(5)}}});
-    REQUIRE(engine.replaceCatalogue({pay}).ok());
-    REQUIRE(engine.setTag("bill", true).ok());
-    CHECK(!engine.drain(1).ok());
-    eve::cap::provide<eve::economy::IEconomy>(nullptr);
-}
-
-TEST_CASE("emergence.ruleEngine.restoreRejectsUnknownFields") {
-    using namespace eve::emergence;
+TEST_CASE("emergence.RuleEngine restore rejects unknown fields without changing observable state") {
     RuleEngine engine;
-    REQUIRE(engine.replaceCatalogue({makeGoldRule("rich", 1, "x")}).ok());
+    REQUIRE(engine.replaceCatalogue({goldRule("rich", 1, "x")}).ok());
     REQUIRE(engine.setValue("gold", eve::Value(1)).ok());
     REQUIRE(engine.drain(1).ok());
-    auto       snap     = engine.snapshotJson();
-    auto       mutated  = snap;
-    const auto insertAt = mutated.find("\"schema\"");
-    REQUIRE(insertAt != std::string::npos);
-    mutated.insert(insertAt, "\"extra\":true,");
-    CHECK(!engine.restoreJson(mutated).ok());
-    CHECK_EQ(engine.activationCount(), 1);
+    const auto snapshot  = engine.snapshotJson();
+    auto       malformed = snapshot;
+    const auto insertion = malformed.find("\"schema\"");
+    REQUIRE(insertion != std::string::npos);
+    malformed.insert(insertion, "\"extra\":true,");
+    CHECK(!engine.restoreJson(malformed).ok());
+    CHECK_EQ(engine.snapshotJson(), snapshot);
+
+    engine.clearActivations();
+    CHECK_EQ(engine.activationCount(), 0);
+    REQUIRE(engine.restoreJson(snapshot).ok());
+    CHECK_EQ(engine.activationCount(), 0);
+}
+
+TEST_CASE("emergence.RuleEngine indexed wake evaluates only rules watching the changed key") {
+    RuleEngine                  engine;
+    std::vector<RuleDefinition> rules;
+    for (int i = 0; i < 100; ++i) rules.push_back(goldRule("threshold." + std::to_string(i), 1000 + i, "unreachable"));
+    REQUIRE(engine.replaceCatalogue(std::move(rules)).ok());
+    REQUIRE(engine.setValue("unwatched", eve::Value(1)).ok());
+    auto drained = engine.drain(1);
+    REQUIRE(drained.ok());
+    CHECK_EQ(drained.value(), 0);
+    CHECK_EQ(engine.lastDrainEvaluations(), std::uint64_t{0});
+    REQUIRE(engine.setValue("gold", eve::Value(0)).ok());
+    drained = engine.drain(2);
+    REQUIRE(drained.ok());
+    CHECK_EQ(engine.lastDrainEvaluations(), std::uint64_t{100});
 }

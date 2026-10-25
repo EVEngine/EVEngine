@@ -1,56 +1,38 @@
-#include "zeroerr/assert.h"
-
+#include "platform_event/PlatformEvent.h"
+#include "thread/Thread.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Module.h"
-#include "platform_event/PlatformEvent.h"
-#include "scripts.h"
-#include "thread/Thread.h"
-#include "timer/Timer.h"
-
-#include <simplesquirrel/simplesquirrel.hpp>
-
-#include <memory>
 #include <string>
 
-namespace {
+// The thread API publishes an event into the platform queue. A poll consumes
+// exactly one event and exposes its first string argument as lastData.
+TEST_CASE("async.post_main.delivers_name_and_payload_once") {
+    auto* events  = eve::platform_event::PlatformEvent::create();
+    auto* threads = eve::thread::Thread::create();
+    events->clear();
 
-[[maybe_unused]] void exposeCore(ssq::VM& vm) { eve::ModuleManager::expose(vm); }
-
-[[maybe_unused]] std::string runAsyncSnippet(const std::string& body) {
-    ssq::VM vm(1024, ssq::Libs::ALL);
-    exposeCore(vm);
-    {
-        ssq::Table eve(vm.find("eve"));
-        eve.set("asyncScript", std::string(eve::async_content ? eve::async_content : ""));
-    }
-
-    // Minimal globals expected by async.nut / load prelude.
-    std::string prelude = R"(
-        timer <- eve.Timer();
-        thread <- eve.Thread();
-        event <- eve.PlatformEvent();
-        if ("asyncScript" in eve && eve.asyncScript != "")
-            compilestring(eve.asyncScript)();
-    )";
-
-    vm.run(vm.compileSource((prelude + "\n" + body).c_str()));
-    // Return a global `result` string if set.
-    try {
-        return vm.find("result").toString();
-    } catch (...) {
-        return {};
-    }
+    threads->postMain("async.sample", "payload");
+    CHECK_EQ(events->pollName(), std::string("async.sample"));
+    CHECK_EQ(events->getLastData(), std::string("payload"));
+    CHECK_EQ(events->pollName(), std::string(""));
+    REQUIRE_EQ(events->getLastData(), std::string(""));
 }
 
-}  // namespace
+TEST_CASE("async.post_main.preserves_fifo_order_and_empty_payload") {
+    auto* events  = eve::platform_event::PlatformEvent::create();
+    auto* threads = eve::thread::Thread::create();
+    events->clear();
 
+    threads->postMain("first", "one");
+    threads->postMain("second");
+    threads->postMain("third", "three");
 
-TEST_CASE("async.postMain.event") {
-    auto* th = eve::thread::Thread::create();
-    auto* ev = eve::platform_event::PlatformEvent::create();
-    th->postMain("asynctest", "payload");
-    CHECK_EQ(ev->pollName(), std::string("asynctest"));
-    CHECK_EQ(ev->getLastData(), std::string("payload"));
+    CHECK_EQ(events->pollName(), std::string("first"));
+    CHECK_EQ(events->getLastData(), std::string("one"));
+    CHECK_EQ(events->pollName(), std::string("second"));
+    CHECK_EQ(events->getLastData(), std::string(""));
+    CHECK_EQ(events->pollName(), std::string("third"));
+    CHECK_EQ(events->getLastData(), std::string("three"));
+    REQUIRE_EQ(events->pollName(), std::string(""));
 }

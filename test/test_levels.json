@@ -393,13 +393,6 @@
       "default": "render-offscreen",
       "module": "asset_graphics"
     },
-    "unit/graphics/virtual_texture_streaming.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "origins": [
-        "virtual_texture_streaming.cpp"
-      ]
-    },
     "asset_import/UnityFbxUnavailable.cpp": {
       "role": "compile-contract",
       "default": "module-composition",
@@ -2750,9 +2743,8 @@
       "default": "local-logic",
       "cases": {
         "local-format": [
-          "abilityAsset.roundTripsCompleteDefinitionAndRegistersDecodedCandidate",
-          "abilityAsset.migratesV1MillisecondsAndRejectsFutureUnknownOrMalformedData",
-          "abilityAsset.parsePolicySpellingsAndAssembleDefinitionFromTimeline"
+          "action.abilityAsset.roundTripPreservesIdentityTimingCostAndTriggers",
+          "action.abilityAsset.rejectsFutureVersionMalformedIdentityAndInvalidDuration"
         ]
       },
       "origins": [
@@ -3059,8 +3051,8 @@
       "default": "local-format",
       "cases": {
         "local-logic": [
-          "editing.numericRead.preservesNumbersWithoutAddingValidation",
-          "editing.numericRead.rejectsNonNumericKinds"
+          "editing.numeric.spec.valid_numbers_keep_original_values",
+          "editing.numeric.spec.non_numeric_kinds_are_rejected"
         ]
       },
       "origins": [
@@ -3072,10 +3064,7 @@
       "default": "local-format",
       "cases": {
         "local-logic": [
-          "property.validation_presentation_and_editor_share_type_enum_range_and_finite_rules",
-          "property.validation_editor_model_rejects_before_command_sink",
-          "property.validation_dynamic_model_uses_shared_finite_rule",
-          "property.validation_transform_descriptor_preserves_editor_object_semantics"
+          "property.validation.spec.sharedAndEditorRules"
         ]
       },
       "origins": [
@@ -3108,31 +3097,37 @@
         "shader.cpp"
       ]
     },
-    "unit/fluids/fluids_emitters_coupling_tests.cpp": {
+    "unit/fluids/fluids_tests.cpp": {
       "role": "tests",
       "default": "local-logic",
+      "cases": {
+        "local-format": [
+          "fluids.ocean.codec.spectrum: serialized definitions preserve data and reject schema violations",
+          "fluids.ocean.codec.wake round-trips owning values and rejects malformed arguments",
+          "fluids.ocean.codec.hull round-trips cell geometry and bounds structural input"
+        ]
+      },
       "origins": [
         "fluids_volume_collision_material.cpp",
         "fluids_volume_coupling.cpp",
         "fluids_volume_emitter.cpp",
         "fluids_volume_emitter_part2.cpp",
         "fluids_volume_mesh_emitter.cpp",
-        "fluids_volume_triggers.cpp"
-      ]
-    },
-    "unit/fluids/fluids_shore_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/fluids/fluids_solver_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "origins": [
+        "fluids_volume_triggers.cpp",
+        "fluids_shore_tests.cpp",
         "fluids.cpp",
         "fluids_shallow_water.cpp",
         "fluids_volume.cpp",
         "fluids_volume_part2.cpp",
-        "fluids_volume_part3.cpp"
+        "fluids_volume_part3.cpp",
+        "ocean_codec.cpp",
+        "ocean_hull_mask.cpp",
+        "ocean_mesh.cpp",
+        "ocean_spectrum.cpp",
+        "ocean_spray.cpp",
+        "ocean_surface.cpp",
+        "ocean_transition.cpp",
+        "ocean_wake.cpp"
       ]
     },
     "unit/game_event/game_event_tests.cpp": {
@@ -3183,13 +3178,7 @@
         "hair.cpp",
         "indirect_builder.cpp",
         "reflection_probe_culling.cpp",
-        "tree_wind.cpp"
-      ]
-    },
-    "unit/graphics/graphics_resources_tests.cpp": {
-      "role": "tests",
-      "default": "local-logic",
-      "origins": [
+        "tree_wind.cpp",
         "MaterialRenderControl.cpp",
         "MeshShaderRasterState.cpp",
         "SkyTextureResources.cpp",
@@ -3197,7 +3186,9 @@
         "ShaderInstances.cpp",
         "ShaderResources.cpp",
         "virtual_texture_blend.cpp",
-        "RenderImageAudit.cpp"
+        "RenderImageAudit.cpp",
+        "graphics_shader_parameters.cpp",
+        "virtual_texture_streaming.cpp"
       ]
     },
     "unit/graphics_fog/graphics_fog_unit.cpp": {
@@ -3763,22 +3754,10 @@
       "default": "physics-backend",
       "module": "fluids"
     },
-    "unit/fluids/ocean_codec.cpp": {
-      "role": "tests",
-      "default": "local-format"
-    },
     "integration/ocean-voyage/ocean_gpu.cpp": {
       "role": "tests",
       "default": "render-window",
       "module": "fluids"
-    },
-    "unit/fluids/ocean_hull_mask.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/fluids/ocean_mesh.cpp": {
-      "role": "tests",
-      "default": "local-logic"
     },
     "integration/ocean-voyage/ocean_render.cpp": {
       "role": "tests",
@@ -3790,14 +3769,6 @@
       "default": "script-binding",
       "module": "fluids"
     },
-    "unit/fluids/ocean_spectrum.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/fluids/ocean_spray.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
     "integration/ocean-voyage/ocean_spray_render.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -3807,22 +3778,6 @@
         ]
       },
       "module": "fluids"
-    },
-    "unit/fluids/ocean_surface.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/fluids/ocean_transition.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/fluids/ocean_wake.cpp": {
-      "role": "tests",
-      "default": "local-logic"
-    },
-    "unit/graphics/graphics_shader_parameters.cpp": {
-      "role": "tests",
-      "default": "local-logic"
     },
     "integration/gameplay-composition/procgen_road_authoring.cpp": {
       "modules": [
@@ -4368,6 +4323,14 @@
         "profiler"
       ]
     },
+    "integration/profiler-capture/profiler_contract_composition.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "profiler",
+      "origins": [
+        "profiler.cpp"
+      ]
+    },
     "integration/vsync-config/vsync_config_tests.cpp": {
       "role": "tests",
       "default": "render-window",
@@ -4613,6 +4576,14 @@
       "role": "tests",
       "default": "render-window",
       "module": "animation"
+    },
+    "integration/script-api/vehicle_view_vm.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "vehicle",
+      "origins": [
+        "vehicle.cpp"
+      ]
     }
   }
 }

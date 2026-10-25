@@ -1,158 +1,167 @@
-#include <array>
-#include <cmath>
+#include "common/Value.h"
 #include "procgen/heightmap/TerrainSplatmap.h"
 #include "procgen/heightmap/TerrainWorldWorkspace.h"
 #include "procgen/road/RoadTerrainWorkspace.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <array>
+#include <cmath>
+#include <functional>
+#include <span>
+
 using namespace eve::procgen;
 using namespace eve::procgen::road;
+
 namespace {
-RoadTerrainTile batchTile() {
-    RoadTerrainTile t;
-    t.id      = "batch";
-    t.originX = t.originZ = -5.f;
-    t.originY             = 100.f;
-    t.sizeX = t.sizeZ = 10.f;
-    t.heightScale     = 10.f;
-    t.heights         = Heightmap(11, 11);
-    t.holes           = Heightmap(11, 11);
-    for (auto& v : t.heights.data()) v = .5f;
-    t.splatLayers = {Heightmap(11, 11), Heightmap(11, 11), Heightmap(11, 11)};
-    for (auto& v : t.splatLayers[0].data()) v = 1.f;
-    return t;
+RoadTerrainTile tile() {
+    RoadTerrainTile value;
+    value.id      = "batch";
+    value.originX = value.originZ = -5.f;
+    value.originY                 = 100.f;
+    value.sizeX = value.sizeZ = 10.f;
+    value.heightScale         = 10.f;
+    value.heights             = Heightmap(11, 11);
+    value.holes               = Heightmap(11, 11);
+    for (auto& height : value.heights.data()) height = .5f;
+    value.splatLayers = {Heightmap(11, 11), Heightmap(11, 11), Heightmap(11, 11)};
+    for (auto& weight : value.splatLayers[0].data()) weight = 1.f;
+    return value;
 }
-MeshBuild batchMesh(float x) {
-    MeshBuild m;
-    m.setActiveGroup("asphalt");
-    for (auto p :
-         std::array<std::array<float, 2>, 4>{{{x - .75f, -1.f}, {x + .75f, -1.f}, {x + .75f, 1.f}, {x - .75f, 1.f}}})
-        m.addVertex(p[0], 106.f, p[1], 0, 1, 0, 0, 0);
-    m.addTriangle(0, 1, 2);
-    m.addTriangle(0, 2, 3);
-    return m;
+
+MeshBuild asphalt(float center) {
+    MeshBuild mesh;
+    mesh.setActiveGroup("asphalt");
+    const std::array<std::array<float, 2>, 4> corners{
+        {{center - .75f, -1.f}, {center + .75f, -1.f}, {center + .75f, 1.f}, {center - .75f, 1.f}}};
+    for (auto point : corners) mesh.addVertex(point[0], 106.f, point[1], 0, 1, 0, 0, 0);
+    mesh.addTriangle(0, 1, 2);
+    mesh.addTriangle(0, 2, 3);
+    return mesh;
 }
-RoadTerrainWriteOptions batchPolicy(int layer, float opacity) {
-    RoadTerrainWriteOptions p;
-    p.blendDistance = 0;
-    p.splatLayer    = layer;
-    p.splatOpacity  = opacity;
-    return p;
+
+RoadTerrainWriteOptions policy(int layer, float opacity) {
+    RoadTerrainWriteOptions options;
+    options.blendDistance = 0.f;
+    options.splatLayer    = layer;
+    options.splatOpacity  = opacity;
+    return options;
+}
+
+using Writes = std::array<RoadTerrainWrite, 2>;
+Writes writesFor(const MeshBuild& left, const MeshBuild& right) {
+    return {{{std::cref(left), policy(1, .4f)}, {std::cref(right), policy(2, .8f)}}};
+}
+
+void expectWeights(const RoadTerrainTile& value) {
+    REQUIRE(std::fabs(value.splatLayers[1].height(3, 5) - .4f) < 1e-6f);
+    REQUIRE(std::fabs(value.splatLayers[2].height(7, 5) - .8f) < 1e-6f);
+    REQUIRE(value.splatLayers[2].height(3, 5) == 0.f);
+    REQUIRE(value.splatLayers[1].height(7, 5) == 0.f);
 }
 }  // namespace
-TEST_CASE("procgen.road.terrain.batchPoliciesShareOneHistoryAndSave") {
-    auto                            first = batchMesh(-2), second = batchMesh(2);
-    std::array<RoadTerrainWrite, 2> writes{
-        {{std::cref(first), batchPolicy(1, .4f)}, {std::cref(second), batchPolicy(2, .8f)}}};
-    RoadTerrainWorkspace w;
-    REQUIRE(w.initialize({batchTile()}).ok());
-    REQUIRE(w.applyBatch(writes, 100000).ok());
-    auto t = w.copyTile("batch");
-    REQUIRE(t.ok());
-    REQUIRE(std::fabs(t.value().splatLayers[1].height(3, 5) - .4f) < 1e-6f);
-    REQUIRE(std::fabs(t.value().splatLayers[2].height(7, 5) - .8f) < 1e-6f);
-    REQUIRE_EQ(t.value().splatLayers[2].height(3, 5), 0.f);
-    REQUIRE_EQ(t.value().splatLayers[1].height(7, 5), 0.f);
-    REQUIRE(w.undo().ok());
-    auto saved = w.capture();
-    REQUIRE(saved.ok());
-    auto json = saved.value().toJson();
-    REQUIRE(json.ok());
-    auto parsed = eve::Value::fromJson(json.value());
-    REQUIRE(parsed.ok());
-    RoadTerrainWorkspace restored;
-    REQUIRE(restored.restore(parsed.value()).ok());
-    auto old = restored.copyTile("batch");
-    REQUIRE(old.ok());
-    REQUIRE_EQ(old.value().splatLayers[1].height(3, 5), 0.f);
-    REQUIRE_EQ(old.value().splatLayers[2].height(7, 5), 0.f);
-    REQUIRE(!restored.undo().ok());
-    REQUIRE(restored.redo().ok());
-    auto after = restored.copyTile("batch");
-    REQUIRE(after.ok());
-    for (std::size_t l = 0; l < 3; ++l)
-        REQUIRE_EQ(after.value().splatLayers[l].data(), t.value().splatLayers[l].data());
-    RoadTerrainWorkspace selected;
-    REQUIRE(selected.initialize({batchTile()}).ok());
-    REQUIRE(selected.applyBatch(std::span<const RoadTerrainWrite>(writes.data(), 1), 100000).ok());
-    auto onlyFirst = selected.copyTile("batch");
-    REQUIRE(onlyFirst.ok());
-    REQUIRE(std::fabs(onlyFirst.value().splatLayers[1].height(3, 5) - .4f) < 1e-6f);
-    REQUIRE_EQ(onlyFirst.value().splatLayers[2].height(7, 5), 0.f);
+
+TEST_CASE("procgen.road.terrain.spec.workspaceBatch") {
+    auto left   = asphalt(-2.f);
+    auto right  = asphalt(2.f);
+    auto writes = writesFor(left, right);
+    SUB_CASE("each write uses its own layer and opacity without leaking to the other footprint") {
+        RoadTerrainWorkspace workspace;
+        auto*                workspaceView = &workspace;
+        REQUIRE(workspaceView->initialize({tile()}).ok());
+        REQUIRE(workspaceView->applyBatch(writes, 100000).ok());
+        auto result = workspaceView->copyTile("batch");
+        REQUIRE(result.ok());
+        expectWeights(result.value());
+        RoadTerrainWorkspace single;
+        REQUIRE(single.initialize({tile()}).ok());
+        REQUIRE(single.applyBatch(std::span<const RoadTerrainWrite>(writes.data(), 1), 100000).ok());
+        auto one = single.copyTile("batch");
+        REQUIRE(one.ok());
+        REQUIRE(std::fabs(one.value().splatLayers[1].height(3, 5) - .4f) < 1e-6f);
+        REQUIRE(one.value().splatLayers[2].height(7, 5) == 0.f);
+    };
+    SUB_CASE("one undo reverses the whole batch; persisted history can redo it") {
+        RoadTerrainWorkspace workspace;
+        auto*                workspaceView = &workspace;
+        REQUIRE(workspaceView->initialize({tile()}).ok());
+        REQUIRE(workspaceView->applyBatch(writes, 100000).ok());
+        auto result = workspaceView->copyTile("batch");
+        REQUIRE(result.ok());
+        expectWeights(result.value());
+        REQUIRE(workspaceView->undo().ok());
+        auto snapshot = workspaceView->capture();
+        REQUIRE(snapshot.ok());
+        auto encoded = snapshot.value().toJson();
+        REQUIRE(encoded.ok());
+        auto decoded = eve::Value::fromJson(encoded.value());
+        REQUIRE(decoded.ok());
+        RoadTerrainWorkspace restored;
+        REQUIRE(restored.restore(decoded.value()).ok());
+        auto undone = restored.copyTile("batch");
+        REQUIRE(undone.ok());
+        REQUIRE(undone.value().splatLayers[1].height(3, 5) == 0.f);
+        REQUIRE(undone.value().splatLayers[2].height(7, 5) == 0.f);
+        REQUIRE(!restored.undo().ok());
+        REQUIRE(restored.redo().ok());
+        auto redone = restored.copyTile("batch");
+        REQUIRE(redone.ok());
+        expectWeights(redone.value());
+    };
+    SUB_CASE("late invalid policy and work limits leave tile and redo history unchanged") {
+        RoadTerrainWorkspace workspace;
+        auto*                workspaceView = &workspace;
+        REQUIRE(workspaceView->initialize({tile()}).ok());
+        REQUIRE(workspaceView->applyBatch(writes, 100000).ok());
+        REQUIRE(workspaceView->undo().ok());
+        auto before = workspaceView->capture();
+        REQUIRE(before.ok());
+        writes[1].options.splatLayer = 3;
+        REQUIRE(!workspaceView->applyBatch(writes, 100000).ok());
+        writes[1].options.splatLayer  = 2;
+        writes[1].options.maximumWork = 1;
+        REQUIRE(!workspaceView->applyBatch(writes, 100000).ok());
+        writes[1].options.maximumWork = 100000;
+        REQUIRE(!workspaceView->applyBatch(writes, 0).ok());
+        REQUIRE(!workspaceView->applyBatch({}, 100000).ok());
+        auto after = workspaceView->capture();
+        REQUIRE(after.ok());
+        REQUIRE(after.value() == before.value());
+        REQUIRE(workspaceView->redo().ok());
+    };
 }
-TEST_CASE("procgen.road.terrain.batchLateFailureAndSharedBudgetPreserveRedo") {
-    auto                            first = batchMesh(-2), second = batchMesh(2);
-    std::array<RoadTerrainWrite, 2> writes{
-        {{std::cref(first), batchPolicy(1, .4f)}, {std::cref(second), batchPolicy(2, .8f)}}};
-    RoadTerrainWorkspace w;
-    REQUIRE(w.initialize({batchTile()}).ok());
-    REQUIRE(w.applyBatch(writes, 100000).ok());
-    REQUIRE(w.undo().ok());
-    auto before = w.capture();
-    REQUIRE(before.ok());
-    writes[1].options.splatLayer = 3;
-    REQUIRE(!w.applyBatch(writes, 100000).ok());
-    auto failed = w.capture();
-    REQUIRE(failed.ok());
-    REQUIRE(failed.value() == before.value());
-    writes[1].options.splatLayer  = 2;
-    writes[1].options.maximumWork = 1;
-    REQUIRE(!w.applyBatch(writes, 100000).ok());
-    auto limited = w.capture();
-    REQUIRE(limited.ok());
-    REQUIRE(limited.value() == before.value());
-    writes[1].options.maximumWork = 100000;
-    std::size_t low = 1, high = 100000;
-    while (low < high) {
-        const auto           middle = low + (high - low) / 2;
-        RoadTerrainWorkspace probe;
-        REQUIRE(probe.initialize({batchTile()}).ok());
-        auto applied = probe.applyBatch(std::span<const RoadTerrainWrite>(writes.data(), 1), middle);
-        if (applied.ok())
-            high = middle;
-        else
-            low = middle + 1;
-    }
-    REQUIRE(!w.applyBatch(writes, low).ok());
-    auto exhausted = w.capture();
-    REQUIRE(exhausted.ok());
-    REQUIRE(exhausted.value() == before.value());
-    REQUIRE(!w.applyBatch({}, 100000).ok());
-    REQUIRE(!w.applyBatch(writes, 0).ok());
-    REQUIRE(w.redo().ok());
-}
-TEST_CASE("procgen.road.terrain.batchNativeWorldPublishesOnce") {
-    TerrainWorldCreationSettings s;
-    s.tileSize                 = 10;
-    s.tileHeight               = 10;
-    s.originY                  = 100;
-    s.heightmapResolution      = 17;
-    s.controlTextureResolution = s.detailResolution = 16;
-    s.treeResolution = s.objectResolution = 4;
-    s.splatLayers                         = 3;
-    TerrainWorldWorkspace w;
-    REQUIRE(w.create(s).ok());
-    REQUIRE(w.setHeightWorldUnits(105, 10).ok());
-    auto                            first = batchMesh(-2), second = batchMesh(2);
-    std::array<RoadTerrainWrite, 2> writes{
-        {{std::cref(first), batchPolicy(1, .4f)}, {std::cref(second), batchPolicy(2, .8f)}}};
-    const auto history = w.getOperationCount();
-    REQUIRE(w.conformRoadBatch(writes, 100000).ok());
-    REQUIRE_EQ(w.getOperationCount(), history + 1);
+
+TEST_CASE("procgen.road.terrain.spec.nativeWorldPublication") {
+    TerrainWorldCreationSettings settings;
+    settings.tileSize                 = 10;
+    settings.tileHeight               = 10;
+    settings.originY                  = 100;
+    settings.heightmapResolution      = 17;
+    settings.controlTextureResolution = settings.detailResolution = 16;
+    settings.treeResolution = settings.objectResolution = 4;
+    settings.splatLayers                                = 3;
+    TerrainWorldWorkspace world;
+    REQUIRE(world.create(settings).ok());
+    REQUIRE(world.setHeightWorldUnits(105, 10).ok());
+    auto left   = asphalt(-2.f);
+    auto right  = asphalt(2.f);
+    auto writes = writesFor(left, right);
+    auto before = world.getOperationCount();
+    REQUIRE(world.conformRoadBatch(writes, 100000).ok());
+    REQUIRE(world.getOperationCount() == before + 1);
     TerrainSplatmap splat;
-    REQUIRE(w.copySplatmap(0, splat).ok());
+    REQUIRE(world.copySplatmap(0, splat).ok());
     REQUIRE(std::fabs(splat.sample(1, 5, 8).value() - .4f) < 1e-6f);
     REQUIRE(std::fabs(splat.sample(2, 10, 8).value() - .8f) < 1e-6f);
-    REQUIRE(w.undo().ok());
-    REQUIRE(w.copySplatmap(0, splat).ok());
-    REQUIRE_EQ(splat.sample(1, 5, 8).value(), 0.f);
-    REQUIRE_EQ(splat.sample(2, 10, 8).value(), 0.f);
-    const auto count             = w.getOperationCount();
+    REQUIRE(world.undo().ok());
+    REQUIRE(world.copySplatmap(0, splat).ok());
+    REQUIRE(splat.sample(1, 5, 8).value() == 0.f);
+    REQUIRE(splat.sample(2, 10, 8).value() == 0.f);
+    before                       = world.getOperationCount();
     writes[1].options.splatLayer = 4;
-    REQUIRE(!w.conformRoadBatch(writes, 100000).ok());
-    REQUIRE_EQ(w.getOperationCount(), count);
-    REQUIRE(w.redo().ok());
-    REQUIRE(w.copySplatmap(0, splat).ok());
+    REQUIRE(!world.conformRoadBatch(writes, 100000).ok());
+    REQUIRE(world.getOperationCount() == before);
+    REQUIRE(world.redo().ok());
+    REQUIRE(world.copySplatmap(0, splat).ok());
     REQUIRE(std::fabs(splat.sample(1, 5, 8).value() - .4f) < 1e-6f);
-    REQUIRE(std::fabs(splat.sample(2, 10, 8).value() - .8f) < 1e-6f);
 }

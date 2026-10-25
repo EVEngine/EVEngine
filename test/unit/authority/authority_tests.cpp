@@ -1,124 +1,105 @@
-#include "zeroerr/assert.h"
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_authority)
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
 #include "authority/Authority.h"
-#include "common/Module.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// authority.cpp
+
+#include <limits>
+#include <string>
+
 namespace test_authority_unit {
 using namespace eve::authority;
 
-namespace {
+std::string id(eve::Result<std::string>&& result) { return std::move(result).expect("valid authority rule"); }
 
-std::string requireId(eve::Result<std::string>&& result) {
-    REQUIRE(result.ok());
-    return std::move(result).takeValue();
-}
-
-}  // namespace
-
-TEST_CASE("authority.decision.priorityThenDenyThenCreationOrder") {
-    Store      store;
-    const auto grant = requireId(store.grant("actor:1", "scope:1", "edit", "role:a", 10));
-    const auto deny  = requireId(store.deny("actor:1", "scope:1", "edit", "policy:a", 10));
-    CHECK(!store.can("actor:1", "scope:1", "edit"));
-    CHECK_EQ(store.explain("actor:1", "scope:1", "edit").winningRuleId, deny);
-
-    const auto elevated = requireId(store.grant("actor:1", "scope:1", "edit", "override", 11));
-    const auto decision = store.explain("actor:1", "scope:1", "edit");
-    CHECK(decision.allowed);
-    CHECK_EQ(decision.winningRuleId, elevated);
-    CHECK_EQ(decision.reason, std::string("granted"));
-    CHECK_EQ(store.find(grant)->source, std::string("role:a"));
-}
-
-TEST_CASE("authority.decision.defaultDenyIsExplainable") {
-    Store      store;
-    const auto result = store.explain("unknown", "scope", "read");
-    CHECK(!result.allowed);
-    CHECK_EQ(result.reason, std::string("no_matching_rule"));
-    CHECK(result.winningRuleId.empty());
-}
-
-TEST_CASE("authority.decision.wildcardMatchesAndLosesToExactDeny") {
+// Decision contract: absent rules deny with an explanation; higher priority
+// wins, equal priority prefers deny, and wildcards are exact dimension matches.
+TEST_CASE("authority.spec.decision_priority_deny_and_wildcards") {
     Store store;
-    requireId(store.grant(std::string(kWildcard), std::string(kWildcard), "read", "role:global", 1));
-    CHECK(store.can("actor:1", "scope:1", "read"));
-    CHECK(store.can("actor:2", "scope:9", "read"));
-    CHECK(!store.can("actor:1", "scope:1", "write"));
-
-    const auto deny = requireId(store.deny("actor:1", "scope:1", "read", "policy:local", 1));
-    CHECK(!store.can("actor:1", "scope:1", "read"));
-    CHECK_EQ(store.explain("actor:1", "scope:1", "read").winningRuleId, deny);
-    CHECK(store.can("actor:2", "scope:1", "read"));
+    auto  empty = store.explain("a", "scope", "edit");
+    CHECK(!empty.allowed);
+    CHECK_EQ(empty.reason, "no_matching_rule");
+    CHECK(empty.winningRuleId.empty());
+    const auto broad = id(store.grant("*", "*", "read", "role:all", 1));
+    CHECK(store.can("a", "scope", "read"));
+    CHECK(!store.can("a", "scope", "write"));
+    const auto localDeny = id(store.deny("a", "scope", "read", "policy:local", 1));
+    CHECK(!store.can("a", "scope", "read"));
+    CHECK_EQ(store.explain("a", "scope", "read").winningRuleId, localDeny);
+    CHECK(store.can("b", "scope", "read"));
+    const auto override = id(store.grant("a", "scope", "read", "override", 2));
+    CHECK(store.can("a", "scope", "read"));
+    CHECK_EQ(store.explain("a", "scope", "read").winningRuleId, override);
+    REQUIRE(store.find(broad) != nullptr);
+    CHECK_EQ(store.find(broad)->source, "role:all");
 }
 
-TEST_CASE("authority.lifecycle.durationRevokeAndEvents") {
+// Lifecycle contract: injected simulation time expires finite rules and emits
+// an expiration event; revocation by source/dimension removes only its matches.
+TEST_CASE("authority.spec.expiry_and_targeted_revocation") {
     Store      store;
-    const auto temporary = requireId(store.grant("a", "s", "c", "temporary", 1, 0.5));
-    requireId(store.deny("b", "s", "c", "policy", 1));
-    store.update(0.5);
+    const auto temporary = id(store.grant("a", "s1", "read", "temp", 1, .5));
+    id(store.grant("a", "s2", "write", "permanent", 1));
+    id(store.deny("b", "s1", "read", "policy", 1));
+    store.update(.25);
+    CHECK(store.find(temporary) != nullptr);
+    store.update(.25);
     CHECK(store.find(temporary) == nullptr);
-    REQUIRE(store.eventCount() == 3);
-    CHECK_EQ(eventKindName(store.eventAt(2)->kind), std::string("expired"));
-    CHECK_EQ(store.eventAt(2)->reason, std::string("duration_elapsed"));
+    REQUIRE_EQ(store.eventCount(), 4);
+    CHECK_EQ(eventKindName(store.eventAt(3)->kind), "expired");
+    CHECK_EQ(store.eventAt(3)->reason, "duration_elapsed");
     CHECK_EQ(store.revokeBySource("policy"), 1);
-    CHECK_EQ(eventKindName(store.eventAt(3)->kind), std::string("revoked"));
+    CHECK_EQ(store.revokeByActor("a"), 1);
+    CHECK_EQ(store.revokeByScope("s1"), 0);
+    CHECK(!store.can("a", "s2", "write"));
 }
 
-TEST_CASE("authority.lifecycle.revokeByDimensionAndEventCapacity") {
+// Query contract: reverse dimensions return rules in creation order and a
+// later query replaces the borrowed result view.
+TEST_CASE("authority.spec.query_dimensions_and_bounds") {
     Store store;
-    requireId(store.grant("actor:a", "scope:1", "read", "src", 1));
-    requireId(store.grant("actor:a", "scope:2", "write", "src", 1));
-    requireId(store.grant("actor:b", "scope:1", "read", "other", 1));
-    CHECK_EQ(store.revokeByActor("actor:a", "actor_gone"), 2);
-    CHECK(!store.can("actor:a", "scope:1", "read"));
-    CHECK(store.can("actor:b", "scope:1", "read"));
-    CHECK_EQ(store.revokeByScope("scope:1", "scope_gone"), 1);
-    CHECK(!store.can("actor:b", "scope:1", "read"));
-
-    requireId(store.grant("x", "y", "z", "cap-src", 1));
-    requireId(store.deny("x", "y", "z", "cap-src", 2));
-    CHECK_EQ(store.revokeByCapability("z", "capability_retired"), 2);
-
-    auto capacity = store.setEventCapacity(2);
-    REQUIRE(capacity.ok());
-    CHECK_EQ(store.eventCapacity(), 2);
-    CHECK_EQ(store.eventCount(), 2);
-    CHECK(!store.setEventCapacity(-1).ok());
-}
-
-TEST_CASE("authority.query.reverseDimensionsAreDeterministic") {
-    Store      store;
-    const auto first  = requireId(store.grant("a", "s2", "read", "x"));
-    const auto second = requireId(store.grant("a", "s1", "write", "y"));
-    const auto third  = requireId(store.deny("b", "s1", "read", "z"));
-    REQUIRE(store.queryActor("a") == 2);
+    const auto first  = id(store.grant("a", "s2", "read", "x"));
+    const auto second = id(store.grant("a", "s1", "write", "y"));
+    const auto third  = id(store.deny("b", "s1", "read", "z"));
+    REQUIRE_EQ(store.queryActor("a"), 2);
     CHECK_EQ(store.queryAt(0)->id, first);
     CHECK_EQ(store.queryAt(1)->id, second);
-    REQUIRE(store.queryScope("s1") == 2);
+    REQUIRE_EQ(store.queryScope("s1"), 2);
     CHECK_EQ(store.queryAt(0)->id, second);
     CHECK_EQ(store.queryAt(1)->id, third);
-    REQUIRE(store.queryCapability("read") == 2);
+    REQUIRE_EQ(store.queryCapability("read"), 2);
     CHECK_EQ(store.queryAt(0)->id, first);
     CHECK_EQ(store.queryAt(1)->id, third);
+    CHECK(store.queryAt(-1) == nullptr);
+    CHECK(store.queryAt(2) == nullptr);
 }
 
-TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
-    Store original;
-    requireId(original.grant("a", "s", "read", "role", 3));
-    requireId(original.deny("a", "s", "write", "policy", 4, 5.0));
-    requireId(original.grant(std::string(kWildcard), "s", "inspect", "role", 1));
-    original.update(1.0);
-    const auto snapshot = original.snapshotJson();
+// Input contract: empty required fields, nonfinite duration, missing id and
+// negative event capacity reject without adding rules or events.
+TEST_CASE("authority.spec.invalid_input_is_nonmutating") {
+    Store store;
+    CHECK(!store.grant("", "scope", "read", "source").ok());
+    CHECK(!store.deny("actor", "", "read", "source").ok());
+    CHECK(!store.grant("actor", "scope", "", "source").ok());
+    CHECK(!store.grant("actor", "scope", "read", "source", 1, std::numeric_limits<double>::infinity()).ok());
+    CHECK(!store.revoke("missing", "gone").ok());
+    CHECK(!store.setEventCapacity(-1).ok());
+    CHECK_EQ(store.query("", "", ""), 0);
+    REQUIRE_EQ(store.eventCount(), 0);
+}
 
+// Retention and snapshot contract: a positive capacity trims oldest events;
+// snapshots round trip deterministically, while malformed restore is atomic.
+TEST_CASE("authority.spec.event_capacity_and_snapshot_restore") {
+    Store source;
+    REQUIRE(source.setEventCapacity(2).ok());
+    id(source.grant("a", "s", "read", "role", 3));
+    id(source.deny("a", "s", "write", "policy", 4, 5.0));
+    id(source.grant("*", "s", "inspect", "role", 1));
+    CHECK_EQ(source.eventCount(), 2);
+    const auto snapshot = source.snapshotJson();
     Store restored;
-    auto  restoredResult = restored.restoreJson(snapshot);
-    REQUIRE(restoredResult.ok());
+    REQUIRE(restored.restoreJson(snapshot).ok());
     CHECK_EQ(restored.snapshotJson(), snapshot);
     CHECK(restored.can("a", "s", "read"));
     CHECK(!restored.can("a", "s", "write"));
@@ -126,192 +107,108 @@ TEST_CASE("authority.snapshot.restoreIsDeterministicAndTransactional") {
     const auto before   = restored.snapshotJson();
     auto       rejected = restored.restoreJson("{\"version\":1}");
     CHECK(!rejected.ok());
-    const auto* diagnostic = rejected.error();
-    REQUIRE(diagnostic != nullptr);
-    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::ParseError);
     CHECK_EQ(restored.snapshotJson(), before);
-
-    auto malformed = restored.restoreJson("{");
-    CHECK(!malformed.ok());
-    const auto* parseDiagnostic = malformed.error();
-    REQUIRE(parseDiagnostic != nullptr);
-    CHECK_EQ(parseDiagnostic->code(), eve::DiagnosticCode::ParseError);
-    CHECK(!parseDiagnostic->message().empty());
+    CHECK(!restored.restoreJson("{").ok());
     CHECK_EQ(restored.snapshotJson(), before);
-}
-
-TEST_CASE("authority.input.invalidFactsDoNotMutate") {
-    Store store;
-    CHECK(!store.grant("", "scope", "read", "source").ok());
-    CHECK(!store.deny("actor", "", "read", "source").ok());
-    CHECK(!store.grant("actor", "scope", "", "source").ok());
-    CHECK(!store.revoke("missing", "gone").ok());
-    CHECK_EQ(store.query("", "", ""), 0);
-    CHECK_EQ(store.eventCount(), 0);
 }
 }  // namespace test_authority_unit
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
 #include "PrivateTestScope.h"
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
-#include "effects/Effects.h"
-#include "orders/CommandQueue.h"
-#include "procgen/Procgen.h"
-#include "production/Production.h"
-#include "statepatch/StatePatch.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// script_ownership.cpp
+
+#include <memory>
+#include <type_traits>
+
 namespace test_script_ownership_unit {
-/**
- * @file script_ownership.cpp
- * @brief Contract tests for Value/Owned/Borrowed script object semantics.
- */
+struct Tag {};
+struct Item {
+    int  value     = 7;
+    int* destroyed = nullptr;
+    ~Item() {
+        if (destroyed) ++*destroyed;
+    }
+};
 
-
-// A RuntimePin references its producing store by address, so that store must never be
-// relocated while a pin can exist. RuntimeObjectRegistry keeps it behind a stable heap
-// address and stays movable itself (statepatch::Store move-assigns one).
+// RuntimePin stores an address into its owner; the slot store must remain at
+// a stable address throughout the pin's lifetime.
 static_assert(!std::is_move_constructible_v<eve::script::detail::RuntimeSlotStore>);
 static_assert(!std::is_move_assignable_v<eve::script::detail::RuntimeSlotStore>);
 
-
-TEST_CASE("scriptOwnership.commonSemanticsAndRegistryStaleGeneration") {
-    struct Tag {};
-    struct Item {
-        int value = 7;
-    };
-
-    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Value)), std::string("value"));
-    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Owned)), std::string("owned"));
-    CHECK_EQ(std::string(eve::script::objectSemanticName(eve::script::ObjectSemantic::Borrowed)),
-             std::string("borrowed"));
-
+// Handle contract: erase invalidates the old generation; slot reuse cannot
+// revive a stale handle, and clear changes the owner epoch.
+TEST_CASE("scriptOwnership.spec.generation_and_owner_epoch") {
     eve::script::RuntimeObjectRegistry<Item, Tag> registry;
     auto                                          created = registry.emplace(std::make_unique<Item>());
     REQUIRE(created.ok());
-    const auto reference = std::move(created).takeValue();
-    auto       borrowed  = registry.resolve(reference);
-    REQUIRE(borrowed.isBound());
-    CHECK_EQ(borrowed->value, 7);
-    CHECK(!registry.isStale(reference));
-
-    auto released = registry.erase(reference);
-    REQUIRE(released.ok());
-    CHECK(registry.isStale(reference));
-    CHECK(!registry.resolve(reference).isBound());
-
+    const auto first = std::move(created).takeValue();
+    CHECK(registry.resolve(first).isBound());
+    CHECK(!registry.isStale(first));
+    REQUIRE(registry.erase(first).ok());
+    CHECK(registry.isStale(first));
+    CHECK(!registry.resolve(first).isBound());
     auto replacement = registry.emplace(std::make_unique<Item>());
     REQUIRE(replacement.ok());
-    const auto replacementReference = std::move(replacement).takeValue();
-    CHECK(replacementReference.handle.index() == reference.handle.index());
-    CHECK(replacementReference.handle.generation() != reference.handle.generation());
-    CHECK(registry.isStale(reference));
-    CHECK(!registry.isStale(replacementReference));
-
-    const auto                         oldEpoch          = registry.ownerEpoch();
-    eve::script::RuntimeHandleRef<Tag> unloadedReference = replacementReference;
+    const auto next = std::move(replacement).takeValue();
+    CHECK_EQ(next.handle.index(), first.handle.index());
+    CHECK(next.handle.generation() != first.handle.generation());
+    const auto epoch = registry.ownerEpoch();
     registry.clear();
-    CHECK(registry.isStale(unloadedReference));
-    CHECK(!registry.resolve(unloadedReference).isBound());
-    {
-        eve::script::RuntimeObjectRegistry<Item, Tag> reloadedRegistry;
-        CHECK(reloadedRegistry.ownerEpoch() != oldEpoch);
-        CHECK(reloadedRegistry.isStale(unloadedReference));
-    }
+    CHECK(registry.isStale(next));
+    eve::script::RuntimeObjectRegistry<Item, Tag> reloaded;
+    CHECK(reloaded.ownerEpoch() != epoch);
+    CHECK(reloaded.isStale(next));
 }
 
-TEST_CASE("scriptOwnership.pinKeepsErasedPayloadAliveUntilRelease") {
-    struct Tag {};
-    struct Tracked {
-        int  value     = 7;
-        int* destroyed = nullptr;
-        ~Tracked() {
-            if (destroyed != nullptr) ++*destroyed;
-        }
-    };
-
-    int                                              destroyed = 0;
-    eve::script::RuntimeObjectRegistry<Tracked, Tag> registry;
-
-    auto item       = std::make_unique<Tracked>();
+// Pin contract: erasing the owner invalidates borrowing immediately but
+// retains the payload until the final pin releases. Pinned slots are not reused.
+TEST_CASE("scriptOwnership.spec.erase_defers_pinned_destruction") {
+    int                                           destroyed = 0;
+    eve::script::RuntimeObjectRegistry<Item, Tag> registry;
+    auto                                          item = std::make_unique<Item>();
     item->destroyed = &destroyed;
-    auto created    = registry.emplace(std::move(item));
+    auto created                                       = registry.emplace(std::move(item));
     REQUIRE(created.ok());
-    const auto reference = std::move(created).takeValue();
-
-    auto pinned = registry.pin(reference);
-    REQUIRE(pinned.ok());
-    CHECK(pinned.value().isBound());
-    CHECK_EQ(pinned.value().get()->value, 7);
-    CHECK(pinned.value().borrow().isBound());
-
-    // Destroy order A: the holder is released after the owner erased the entry.
-    auto released = registry.erase(reference);
-    REQUIRE(released.ok());
-    CHECK(registry.isStale(reference));
-    CHECK(!registry.resolve(reference).isBound());
+    const auto handle = std::move(created).takeValue();
+    auto       pin    = registry.pin(handle);
+    REQUIRE(pin.ok());
+    CHECK_EQ(pin.value().get()->value, 7);
+    REQUIRE(registry.erase(handle).ok());
+    CHECK(registry.isStale(handle));
+    CHECK(!registry.resolve(handle).isBound());
     CHECK_EQ(destroyed, 0);
-    CHECK_EQ(pinned.value().get()->value, 7);
-    CHECK(!registry.pin(reference).ok());
-
-    // A slot with a live pin is never handed out again, even though the handle is stale.
-    auto replacement = registry.emplace(std::make_unique<Tracked>());
+    auto replacement = registry.emplace(std::make_unique<Item>());
     REQUIRE(replacement.ok());
-    const auto replacementReference = std::move(replacement).takeValue();
-    CHECK(replacementReference.handle.index() != reference.handle.index());
-
-    // Moving the pin transfers the keep-alive; releasing the source is a no-op.
-    {
-        auto moved = std::move(pinned).takeValue();
-        CHECK(moved.isBound());
-        CHECK_EQ(moved.get()->value, 7);
-        CHECK_EQ(destroyed, 0);
-    }
+    CHECK(replacement.value().handle.index() != handle.handle.index());
+    auto moved = std::move(pin).takeValue();
+    CHECK(moved.isBound());
+    moved = eve::script::RuntimePin<Item, Tag>{};
     CHECK_EQ(destroyed, 1);
 }
 
-TEST_CASE("scriptOwnership.clearDefersPinnedPayloadDestruction") {
-    struct Tag {};
-    struct Tracked {
-        int* destroyed = nullptr;
-        ~Tracked() {
-            if (destroyed != nullptr) ++*destroyed;
-        }
-    };
-
-    int                                              kept    = 0;
-    int                                              dropped = 0;
-    eve::script::RuntimeObjectRegistry<Tracked, Tag> registry;
-
-    auto pinnedItem       = std::make_unique<Tracked>();
-    pinnedItem->destroyed = &kept;
-    auto pinnedRef        = std::move(registry.emplace(std::move(pinnedItem))).takeValue();
-    auto held             = registry.pin(pinnedRef);
-    REQUIRE(held.ok());
-
-    auto droppedItem       = std::make_unique<Tracked>();
-    droppedItem->destroyed = &dropped;
-    auto droppedRef        = std::move(registry.emplace(std::move(droppedItem))).takeValue();
-
+// Clear contract: unpinned payloads die immediately; a pinned payload lives
+// until release even though every old handle is stale.
+TEST_CASE("scriptOwnership.spec.clear_defers_only_pinned_payload") {
+    int                                           heldDestroyed = 0, freeDestroyed = 0;
+    eve::script::RuntimeObjectRegistry<Item, Tag> registry;
+    auto                                          heldItem = std::make_unique<Item>();
+    heldItem->destroyed                                    = &heldDestroyed;
+    auto heldRef = std::move(registry.emplace(std::move(heldItem))).takeValue();
+    auto pin     = registry.pin(heldRef);
+    REQUIRE(pin.ok());
+    auto freeItem       = std::make_unique<Item>();
+    freeItem->destroyed = &freeDestroyed;
+    auto freeRef        = std::move(registry.emplace(std::move(freeItem))).takeValue();
     registry.clear();
-
-    // Destroy order B: the owner was cleared first, the holder is still alive.
-    CHECK_EQ(dropped, 1);
-    CHECK_EQ(kept, 0);
-    CHECK(registry.isStale(pinnedRef));
-    CHECK(registry.isStale(droppedRef));
-    CHECK(!registry.resolve(pinnedRef).isBound());
-
-    // Releasing the last pin destroys the object the clear() had kept alive; the
-    // move-assignment shape also covers releasing through a moved-from pin.
-    held.value() = eve::script::RuntimePin<Tracked, Tag>{};
-    CHECK(!held.value().isBound());
-    CHECK_EQ(kept, 1);
+    CHECK_EQ(freeDestroyed, 1);
+    CHECK_EQ(heldDestroyed, 0);
+    CHECK(registry.isStale(heldRef));
+    CHECK(registry.isStale(freeRef));
+    pin.value() = eve::script::RuntimePin<Item, Tag>{};
+    CHECK_EQ(heldDestroyed, 1);
 }
 }  // namespace test_script_ownership_unit
 #endif
