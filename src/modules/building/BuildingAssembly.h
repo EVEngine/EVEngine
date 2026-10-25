@@ -1,6 +1,7 @@
 #pragma once
 #include "common/Export.h"
 
+#include "building/BuildingAssemblyProtocol.h"
 #include "building/BuildingSnapshot.h"
 #include "common/Identity.h"
 #include "common/RuntimeHandle.h"
