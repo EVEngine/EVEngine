@@ -126,7 +126,7 @@ GAME ?=
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
-	wsl/linux wsl/linux-debug show-targets stats/build \
+	wsl/linux wsl/linux-debug show-targets stats/build stats/headers \
 	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
@@ -337,6 +337,13 @@ debug: build/$(PLATFORM)-debug
 BUILD_STATS_DIR ?= build/$(PLATFORM)-debug
 stats/build:
 	python3 scripts/analyze_build.py --source-dir . --build-dir "$(BUILD_STATS_DIR)"
+
+# Reverse-include report: which .h/.cpp files include each project header, ranked
+# by how much moving heavy #includes into a .cpp would shrink the compile cascade.
+# HEADER_STATS_ARGS forwards extra flags, e.g. HEADER_STATS_ARGS='--header graphics/Graphics.h'
+HEADER_STATS_ARGS ?=
+stats/headers:
+	python3 scripts/analyze_header_includes.py --source-dir . $(HEADER_STATS_ARGS)
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).

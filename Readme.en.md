@@ -515,6 +515,20 @@ project headers, and template-bearing headers. It is an explicit target rather
 than part of every incremental build, so collecting diagnostics does not slow
 normal development builds.
 
+To see *which* `.h` / `.cpp` files include each project header (and which
+headers pull the largest include sets into other headers — the usual place to
+forward-declare or move includes into a `.cpp`):
+
+```sh
+make stats/headers
+make stats/headers HEADER_STATS_ARGS='--header graphics/Graphics.h'
+python3 scripts/analyze_header_includes.py --json /tmp/headers.json --limit 0
+```
+
+`priority` is `header_users * outgoing_project`: headers that both include many
+project headers *and* are themselves included by many other headers are the
+cheapest wins for shrinking object size and compile time.
+
 Output layout:
 
 | Target | Build dir | Notes |
