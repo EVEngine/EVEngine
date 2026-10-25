@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include "common/Profile.h"
+#include "graphics/RenderControl.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/GraphicsInternal.h"
@@ -247,6 +248,15 @@ void Graphics::recordDeferredFrameGraph() {
     if (!graph || !gbufferPipeline || !gbufferRenderPass || !shadowPipeline) {
         dropPendingOffscreenPasses();
         return;
+    }
+    // Acquisition can rebuild the swapchain and change the slot after
+    // endGBufferPass published its targets. Consumers must sample the slot
+    // this graph actually writes, including the first frame after a resize.
+    if (gbufferPending && renderControl_) {
+        auto *targets = currentGBufferSlot();
+        renderControl_->getGBuffer()->setTargets(gbufferWidth, gbufferHeight, &targets->depthColorTex,
+                                                 &targets->normalTex, &targets->albedoTex, &targets->depthTex,
+                                                 &targets->pbrParamsTex, &targets->emissiveTex);
     }
     // Record the declarative deferred passes (3 CSM cascades + G-buffer, one
     // independent layer) with the JobSystem executor — the four command
