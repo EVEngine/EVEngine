@@ -92,6 +92,11 @@ endforeach()
 add_subdirectory("${DAWN_ABSEIL_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/abseil")
 add_subdirectory("${DAWN_GLFW_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/glfw")
 add_subdirectory("${DAWN_SPIRV_HEADERS_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/headers")
+# Model the pinned OpenGL pipeline's dependency independently of the Null backend.
+option(TINT_BUILD_NULL_WRITER "" ${DAWN_ENABLE_NULL})
+if(NOT TINT_BUILD_NULL_WRITER OR DAWN_ENABLE_NULL)
+    message(FATAL_ERROR "OpenGL reflection needs the Tint null writer without the Null backend")
+endif()
 add_library(native_dawn INTERFACE)
 add_library(dawn::webgpu_dawn ALIAS native_dawn)
 ''' + module_fixture, encoding="utf-8",
