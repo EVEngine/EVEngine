@@ -16,6 +16,13 @@ Typical use when hunting object-size / compile-time cost:
 ``priority`` is ``header_users * outgoing_project``: headers that both pull in
 many project includes *and* are themselves included by many other headers are
 the cheapest wins for "hide details in the ``.cpp``".
+
+``expand_lines`` is the unique project-header lines in the transitive
+``#include`` closure (including the header itself); ``include_lines`` is that
+total minus the header's own size — i.e. how much code a single ``#include``
+of this header brings in from other project headers. System / third-party
+headers are counted by name only (``outgoing_system`` / transitive system set),
+not by line count, because their sources are outside the tree.
 """
 
 from __future__ import annotations
@@ -38,6 +45,7 @@ INCLUDE_RE = re.compile(r'^\s*#\s*include\s*([<"])([^">]+)[">]', re.MULTILINE)
 # compile commands use for ``-I src/engine -I src/modules``).
 DEFAULT_INCLUDE_ROOTS = ("src/engine", "src/modules")
 DEFAULT_SCAN_ROOTS = ("src", "test")
+SORT_CHOICES = ("priority", "expand", "impact", "fanout")
 
 
 @dataclass
@@ -48,6 +56,14 @@ class FileIncludes:
     project: list[str] = field(default_factory=list)
     system: list[str] = field(default_factory=list)
     unresolved: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class HeaderSize:
+    """Cached size of one header file."""
+
+    lines: int
+    bytes: int
 
 
 @dataclass(frozen=True)
@@ -63,6 +79,15 @@ class HeaderStat:
     lines: int
     bytes: int
     priority: int
+    # Transitive unique project-header closure (including self).
+    expand_headers: int
+    expand_lines: int
+    expand_bytes: int
+    # expand_* minus this header itself — code brought in by its #includes.
+    include_lines: int
+    include_bytes: int
+    # total_users * expand_lines: rough "lines recompiled because of this header".
+    impact: int
 
     @property
     def total_users(self) -> int:
@@ -187,11 +212,27 @@ class IncludeGraph:
     repo: Path
     headers_by_key: dict[str, Path]
     files: dict[str, FileIncludes]
+    sizes: dict[str, HeaderSize]
     # header include-key -> relative paths that include it directly
     dependents: dict[str, set[str]] = field(default_factory=lambda: collections.defaultdict(set))
+    _closure_cache: dict[str, frozenset[str]] = field(default_factory=dict, repr=False)
 
     def header_keys(self) -> list[str]:
         return sorted(self.headers_by_key)
+
+    def key_to_rel(self, key: str) -> str | None:
+        path = self.headers_by_key.get(key)
+        if path is None:
+            return None
+        return path.relative_to(self.repo).as_posix()
+
+
+def measure_header(path: Path) -> HeaderSize:
+    text = path.read_text(encoding="utf-8", errors="ignore")
+    return HeaderSize(
+        lines=text.count("\n") + (1 if text else 0),
+        bytes=len(text.encode("utf-8")),
+    )
 
 
 def build_graph(
@@ -202,6 +243,10 @@ def build_graph(
     headers_by_key = index_headers(repo, include_roots)
     files: dict[str, FileIncludes] = {}
     dependents: dict[str, set[str]] = collections.defaultdict(set)
+    sizes: dict[str, HeaderSize] = {}
+
+    for key, path in headers_by_key.items():
+        sizes[key] = measure_header(path)
 
     for path in iter_sources(repo, scan_roots):
         info = scan_file(path, repo, headers_by_key, include_roots)
@@ -213,8 +258,51 @@ def build_graph(
         repo=repo,
         headers_by_key=headers_by_key,
         files=files,
+        sizes=sizes,
         dependents=dependents,
     )
+
+
+def transitive_project_closure(graph: IncludeGraph, key: str) -> frozenset[str]:
+    """Unique project include-keys reachable from ``key`` (including itself)."""
+    cached = graph._closure_cache.get(key)
+    if cached is not None:
+        return cached
+
+    seen: set[str] = set()
+    stack = [key]
+    while stack:
+        current = stack.pop()
+        if current in seen:
+            continue
+        seen.add(current)
+        rel = graph.key_to_rel(current)
+        if rel is None:
+            continue
+        outgoing = graph.files.get(rel)
+        if outgoing is None:
+            continue
+        for child in outgoing.project:
+            # Only walk headers indexed under the public include roots; keys that
+            # point at test/ fixtures are dependents, not expansion inputs.
+            if child in graph.headers_by_key and child not in seen:
+                stack.append(child)
+
+    result = frozenset(seen)
+    graph._closure_cache[key] = result
+    return result
+
+
+def expansion_totals(graph: IncludeGraph, keys: frozenset[str]) -> tuple[int, int]:
+    lines = 0
+    nbytes = 0
+    for key in keys:
+        size = graph.sizes.get(key)
+        if size is None:
+            continue
+        lines += size.lines
+        nbytes += size.bytes
+    return lines, nbytes
 
 
 def header_stat(graph: IncludeGraph, key: str) -> HeaderStat | None:
@@ -229,8 +317,12 @@ def header_stat(graph: IncludeGraph, key: str) -> HeaderStat | None:
     outgoing = graph.files.get(rel)
     outgoing_project = len(outgoing.project) if outgoing else 0
     outgoing_system = len(outgoing.system) if outgoing else 0
-    text = path.read_text(encoding="utf-8", errors="ignore")
-    size = len(text.encode("utf-8"))
+    size = graph.sizes.get(key) or measure_header(path)
+    closure = transitive_project_closure(graph, key)
+    expand_lines, expand_bytes = expansion_totals(graph, closure)
+    include_lines = max(0, expand_lines - size.lines)
+    include_bytes = max(0, expand_bytes - size.bytes)
+    total_users = header_users + cpp_users
     return HeaderStat(
         path=rel,
         include_key=key,
@@ -238,13 +330,37 @@ def header_stat(graph: IncludeGraph, key: str) -> HeaderStat | None:
         cpp_users=cpp_users,
         outgoing_project=outgoing_project,
         outgoing_system=outgoing_system,
-        lines=text.count("\n") + (1 if text else 0),
-        bytes=size,
+        lines=size.lines,
+        bytes=size.bytes,
         priority=header_users * outgoing_project,
+        expand_headers=len(closure),
+        expand_lines=expand_lines,
+        expand_bytes=expand_bytes,
+        include_lines=include_lines,
+        include_bytes=include_bytes,
+        impact=total_users * expand_lines,
     )
 
 
-def all_stats(graph: IncludeGraph) -> list[HeaderStat]:
+def sort_key(stat: HeaderStat, sort: str):
+    if sort == "expand":
+        return (-stat.expand_lines, -stat.header_users, -stat.total_users, stat.path)
+    if sort == "impact":
+        return (-stat.impact, -stat.expand_lines, -stat.total_users, stat.path)
+    if sort == "fanout":
+        return (-stat.header_users, -stat.total_users, -stat.expand_lines, stat.path)
+    # priority (default)
+    return (
+        -stat.priority,
+        -stat.expand_lines,
+        -stat.header_users,
+        -stat.outgoing_project,
+        -stat.total_users,
+        stat.path,
+    )
+
+
+def all_stats(graph: IncludeGraph, sort: str = "priority") -> list[HeaderStat]:
     stats = []
     for key in graph.header_keys():
         # Skip headers that nothing includes and that pull nothing — noise.
@@ -254,10 +370,7 @@ def all_stats(graph: IncludeGraph) -> list[HeaderStat]:
         if stat.total_users == 0 and stat.outgoing_project == 0:
             continue
         stats.append(stat)
-    return sorted(
-        stats,
-        key=lambda s: (-s.priority, -s.header_users, -s.outgoing_project, -s.total_users, s.path),
-    )
+    return sorted(stats, key=lambda s: sort_key(s, sort))
 
 
 def split_dependents(graph: IncludeGraph, key: str) -> tuple[list[str], list[str]]:
@@ -267,27 +380,31 @@ def split_dependents(graph: IncludeGraph, key: str) -> tuple[list[str], list[str
     return headers, cpps
 
 
-def print_summary(stats: list[HeaderStat], limit: int) -> None:
+def print_summary(stats: list[HeaderStat], limit: int, sort: str) -> None:
     print("Header include reverse-dependency summary")
     print(
-        "  priority = header_users * outgoing_project  "
-        "(high => move heavy #includes into the .cpp / forward-declare)"
+        "  priority = header_users * outgoing_project;  "
+        "expand_lines = unique project-header lines in the transitive #include closure;  "
+        "include_lines = expand_lines minus this header;  "
+        "impact = total_users * expand_lines"
     )
+    print(f"  sorted by: {sort}")
     print()
     print(
-        f"  {'prio':>6} {'hdr':>5} {'cpp':>5} {'outP':>5} {'outS':>5} "
-        f"{'lines':>7} {'KiB':>7}  header"
+        f"  {'prio':>6} {'hdr':>5} {'cpp':>5} {'outP':>5} "
+        f"{'expH':>5} {'expL':>7} {'incL':>7} {'ownL':>6} {'impact':>10}  header"
     )
     for stat in stats[:limit]:
         print(
             f"  {stat.priority:6} {stat.header_users:5} {stat.cpp_users:5} "
-            f"{stat.outgoing_project:5} {stat.outgoing_system:5} "
-            f"{stat.lines:7} {stat.bytes / 1024:7.1f}  {stat.path}"
+            f"{stat.outgoing_project:5} {stat.expand_headers:5} {stat.expand_lines:7} "
+            f"{stat.include_lines:7} {stat.lines:6} {stat.impact:10}  {stat.path}"
         )
     print()
     print(
-        "Columns: hdr/cpp = direct includers; outP/outS = project/system "
-        "includes inside this header."
+        "Columns: hdr/cpp = direct includers; outP = direct project includes; "
+        "expH/expL = transitive unique project headers / lines; "
+        "incL = lines brought in by #includes (expL - ownL); ownL = this file."
     )
 
 
@@ -306,19 +423,35 @@ def print_header_detail(graph: IncludeGraph, key: str, list_limit: int | None) -
 
     headers, cpps = split_dependents(graph, key)
     outgoing = graph.files.get(stat.path)
+    closure = transitive_project_closure(graph, key)
 
     print(f"Header: {stat.path}")
     print(f"  include key     : {stat.include_key}")
     print(f"  size            : {stat.lines} lines, {stat.bytes / 1024:.1f} KiB")
     print(f"  direct users    : {stat.header_users} headers, {stat.cpp_users} cpp")
     print(f"  outgoing        : {stat.outgoing_project} project, {stat.outgoing_system} system")
+    print(
+        f"  expand          : {stat.expand_headers} project headers, "
+        f"{stat.expand_lines} lines, {stat.expand_bytes / 1024:.1f} KiB "
+        f"(unique transitive closure, including self)"
+    )
+    print(
+        f"  include payload : {stat.include_lines} lines, "
+        f"{stat.include_bytes / 1024:.1f} KiB "
+        f"(closure minus self — what one #include pulls in)"
+    )
     print(f"  priority        : {stat.priority}")
+    print(f"  impact          : {stat.impact}  (total_users * expand_lines)")
     print()
 
     if outgoing and outgoing.project:
-        print("Project includes pulled in by this header:")
+        print("Direct project includes:")
         for inc in outgoing.project:
-            print(f"  + {inc}")
+            size = graph.sizes.get(inc)
+            if size is None:
+                print(f"  + {inc}")
+            else:
+                print(f"  + {inc}  ({size.lines} lines)")
         print()
     if outgoing and outgoing.system:
         print("System / third-party includes in this header:")
@@ -328,10 +461,31 @@ def print_header_detail(graph: IncludeGraph, key: str, list_limit: int | None) -
             print(f"  ... {len(outgoing.system) - list_limit} more")
         print()
 
+    # Transitive closure ranked by size — the actual compile payload.
+    closure_rows = []
+    for child in closure:
+        if child == key:
+            continue
+        size = graph.sizes.get(child)
+        if size is None:
+            continue
+        closure_rows.append((size.lines, size.bytes, child))
+    closure_rows.sort(reverse=True)
+    print(
+        f"Transitive project includes by size "
+        f"({len(closure_rows)} headers, {stat.include_lines} lines):"
+    )
+    shown = closure_rows if list_limit is None else closure_rows[:list_limit]
+    for lines, nbytes, child in shown:
+        print(f"  * {lines:6} lines  {nbytes / 1024:7.1f} KiB  {child}")
+    if list_limit is not None and len(closure_rows) > list_limit:
+        print(f"  ... {len(closure_rows) - list_limit} more")
+    print()
+
     def dump(title: str, items: list[str]) -> None:
         print(f"{title} ({len(items)}):")
-        shown = items if list_limit is None else items[:list_limit]
-        for item in shown:
+        shown_items = items if list_limit is None else items[:list_limit]
+        for item in shown_items:
             print(f"  <- {item}")
         if list_limit is not None and len(items) > list_limit:
             print(f"  ... {len(items) - list_limit} more")
@@ -348,6 +502,7 @@ def graph_to_json(graph: IncludeGraph, stats: list[HeaderStat], limit: int | Non
     for stat in selected:
         hdrs, cpps = split_dependents(graph, stat.include_key)
         outgoing = graph.files.get(stat.path)
+        closure = sorted(transitive_project_closure(graph, stat.include_key))
         headers_out.append(
             {
                 **asdict(stat),
@@ -357,6 +512,7 @@ def graph_to_json(graph: IncludeGraph, stats: list[HeaderStat], limit: int | Non
                     "system": list(outgoing.system) if outgoing else [],
                     "unresolved": list(outgoing.unresolved) if outgoing else [],
                 },
+                "transitive_project": closure,
             }
         )
     return {
@@ -407,6 +563,18 @@ def main(argv: list[str] | None = None) -> int:
         help="only show headers that themselves include at least this many project headers",
     )
     parser.add_argument(
+        "--min-expand-lines",
+        type=int,
+        default=0,
+        help="only show headers whose transitive project closure has at least this many lines",
+    )
+    parser.add_argument(
+        "--sort",
+        choices=SORT_CHOICES,
+        default="priority",
+        help="summary order: priority (default), expand, impact, fanout",
+    )
+    parser.add_argument(
         "--no-test",
         action="store_true",
         help="do not scan test/ as includers",
@@ -421,12 +589,14 @@ def main(argv: list[str] | None = None) -> int:
     repo = args.source_dir.resolve()
     scan_roots = ("src",) if args.no_test else DEFAULT_SCAN_ROOTS
     graph = build_graph(repo, scan_roots=scan_roots)
-    stats = all_stats(graph)
-    if args.min_header_users or args.min_outgoing:
+    stats = all_stats(graph, sort=args.sort)
+    if args.min_header_users or args.min_outgoing or args.min_expand_lines:
         stats = [
             s
             for s in stats
-            if s.header_users >= args.min_header_users and s.outgoing_project >= args.min_outgoing
+            if s.header_users >= args.min_header_users
+            and s.outgoing_project >= args.min_outgoing
+            and s.expand_lines >= args.min_expand_lines
         ]
 
     limit = None if args.limit <= 0 else args.limit
@@ -435,7 +605,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.header:
         status = print_header_detail(graph, args.header, list_limit)
     else:
-        print_summary(stats, limit or len(stats))
+        print_summary(stats, limit or len(stats), args.sort)
         status = 0
 
     if args.json:

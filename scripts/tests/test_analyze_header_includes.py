@@ -68,16 +68,35 @@ class AnalyzeHeaderIncludesTest(unittest.TestCase):
             self.assertEqual(heavy.outgoing_project, 1)  # Types.h
             self.assertEqual(heavy.outgoing_system, 1)  # vector
             self.assertEqual(heavy.priority, 1)
+            # Heavy.h (5 lines) + Types.h (3 lines) — trailing newlines counted.
+            self.assertEqual(heavy.expand_headers, 2)
+            self.assertEqual(heavy.expand_lines, 8)
+            self.assertEqual(heavy.include_lines, 3)
 
             graphics = stats["graphics/Graphics.h"]
             self.assertEqual(graphics.header_users, 0)
             self.assertEqual(graphics.cpp_users, 2)  # Graphics.cpp + main.cpp
             self.assertEqual(graphics.outgoing_project, 1)
             self.assertEqual(graphics.priority, 0)
+            # Graphics.h (4) + Heavy.h (5) + Types.h (3)
+            self.assertEqual(graphics.expand_headers, 3)
+            self.assertEqual(graphics.expand_lines, 12)
+            self.assertEqual(graphics.include_lines, 8)
+            self.assertEqual(graphics.impact, 2 * 12)
 
             hdrs, cpps = MODULE.split_dependents(graph, "common/Heavy.h")
             self.assertEqual(hdrs, ["src/modules/graphics/Graphics.h"])
             self.assertEqual(cpps, ["test/graphics_test.cpp"])
+
+    def test_sort_by_expand_lines(self):
+        import tempfile
+
+        with tempfile.TemporaryDirectory() as tmp:
+            repo = self._repo(Path(tmp))
+            graph = MODULE.build_graph(repo)
+            stats = MODULE.all_stats(graph, sort="expand")
+            self.assertEqual(stats[0].include_key, "graphics/Graphics.h")
+            self.assertGreaterEqual(stats[0].expand_lines, stats[1].expand_lines)
 
     def test_header_detail_and_json_cli(self):
         import tempfile
