@@ -1,4 +1,5 @@
 #include "procgen/biome/editing/BiomeEditingCommands.h"
+#include "editing/EditingValueRead.h"
 
 #include "procgen/biome/editing/BiomeTarget.h"
 #include "editing/EditingProperty.h"
@@ -23,17 +24,12 @@ const std::string* stringField(const editing::Value& value, const char* key) {
 }
 
 bool readNumber(const editing::Value& value, const char* key, double& output, bool required) {
-    const editing::Value* entry = field(value, key);
+    const auto* entry = field(value, key);
     if (!entry) return !required;
-    if (const auto* real = entry->getIf<double>()) {
-        output = *real;
-        return std::isfinite(output);
-    }
-    if (const auto* integer = entry->getIf<std::int64_t>()) {
-        output = static_cast<double>(*integer);
-        return true;
-    }
-    return false;
+    auto number = editing::numericValue(*entry);
+    if (!number) return false;
+    output = number.value();
+    return std::isfinite(output);
 }
 
 bool readInt(const editing::Value& value, const char* key, int& output, bool required) {

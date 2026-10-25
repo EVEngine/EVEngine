@@ -12,7 +12,7 @@
 #include <io.h>
 #endif
 
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
 #include "devtools/LanguageServer.hpp"
 
 #include <filesystem>
@@ -38,9 +38,9 @@ struct LanguageServerArgs : Handler {
 CMD_REG(LanguageServerArgs);
 
 int Cmdline::LanguageServer(std::string path) {
-#if defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
+#if !EVENGINE_CMDLINE_DEVTOOLS || defined(EVENGINE_ANDROID) || defined(EVENGINE_IOS) || defined(EVENGINE_WEBGPU)
     (void)path;
-    std::cerr << "eve language-server: desktop-only" << std::endl;
+    std::cerr << "eve language-server: requires a desktop build with the devtools module" << std::endl;
     return 4;
 #else
 #if defined(_WIN32)

@@ -1,4 +1,5 @@
 #include "animation/editing/AnimationClip.h"
+#include "editing/EditingValueRead.h"
 
 #include <algorithm>
 #include <cctype>
@@ -23,17 +24,12 @@ const std::string* stringField(const EditorValue& value, const char* key) {
 }
 
 bool readNumber(const EditorValue& value, const char* key, double& out) {
-    const EditorValue* entry = field(value, key);
+    const auto* entry = field(value, key);
     if (!entry) return false;
-    if (const auto* real = entry->getIf<double>()) {
-        out = *real;
-        return true;
-    }
-    if (const auto* integer = entry->getIf<std::int64_t>()) {
-        out = static_cast<double>(*integer);
-        return true;
-    }
-    return false;
+    auto number = editing::numericValue(*entry);
+    if (!number) return false;
+    out = number.value();
+    return true;
 }
 
 EditorValue keyValue(const AnimationTransformKey& key) {

@@ -105,6 +105,9 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         REQUIRE_EQ(image->getSize(), size_t(gfx->getWidth() * gfx->getHeight() * 4));
         const auto  *pixels = static_cast<const uint8_t *>(image->getData());
         const size_t center = size_t((gfx->getHeight() / 2) * gfx->getWidth() + gfx->getWidth() / 2) * 4;
+        std::fprintf(stderr, "FRAME_RECORDING frame=%d size=%dx%d centerRGBA=%u,%u,%u,%u\n", frame, gfx->getWidth(),
+                     gfx->getHeight(), unsigned(pixels[center]), unsigned(pixels[center + 1]),
+                     unsigned(pixels[center + 2]), unsigned(pixels[center + 3]));
         REQUIRE_GT(pixels[center + (frame % 2 ? 1 : 0)], pixels[center + (frame % 2 ? 0 : 1)]);
     }
     // Steady-state default post path must no longer drain every in-flight frame.

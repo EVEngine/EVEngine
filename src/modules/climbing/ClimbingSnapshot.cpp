@@ -1,4 +1,5 @@
 #include "climbing/Climbing.h"
+#include "common/ValueRead.h"
 
 #include "climbing/ClimbingCodec.h"
 #include "climbing/ClimbingEventValue.h"
@@ -19,38 +20,38 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const eve::Value* value = field(object, name);
-    const auto*       text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
 bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
-    const eve::Value* value  = field(object, name);
-    const auto*       number = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!number) return false;
-    output = *number;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& output, bool defaultValue, bool required) {
-    const eve::Value* value = field(object, name);
+    const auto* value = field(object, name);
     if (!value) {
         output = defaultValue;
         return !required;
     }
-    const auto* boolean = value->getIf<bool>();
-    if (!boolean) return false;
-    output = *boolean;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readUint64String(const eve::Value::Object& object, std::string_view name, std::uint64_t& output) {
-    std::string text;
-    if (!readString(object, name, text) || text.empty()) return false;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), output);
-    return error == std::errc{} && end == text.data() + text.size();
+    auto parsed = eve::scanUnsignedStringMember(object, name);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 eve::Value vecValue(Vec3 value) {
@@ -58,17 +59,9 @@ eve::Value vecValue(Vec3 value) {
 }
 
 bool numericFloat(const eve::Value& value, float& output) {
-    double number = 0.0;
-    if (const auto* integer = value.getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else if (const auto* real = value.getIf<double>())
-        number = *real;
-    else
-        return false;
-    if (!std::isfinite(number) || number < -static_cast<double>(std::numeric_limits<float>::max()) ||
-        number > static_cast<double>(std::numeric_limits<float>::max()))
-        return false;
-    output = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
