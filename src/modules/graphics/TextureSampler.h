@@ -75,18 +75,32 @@ struct TextureSampler {
     /**
      * @brief Parse a filter name (`nearest` / `linear`, case-insensitive).
      * @param name Borrowed NUL-terminated spelling; nullptr treated as linear.
+     * @ownership Not retained; caller keeps ownership of the buffer.
+     * @lifetime Valid only for this call.
      */
     EVENGINE_API_BACKENDS static FilterMode parseFilter(const char* name);
     /**
      * @brief Parse a mipmap name (`none` / `nearest` / `linear`, case-insensitive).
      * @param name Borrowed NUL-terminated spelling; nullptr/empty means Disabled.
+     * @ownership Not retained; caller keeps ownership of the buffer.
+     * @lifetime Valid only for this call.
      */
     EVENGINE_API_BACKENDS static MipmapMode parseMipmap(const char* name);
 
-    /** @brief Filter name. */
+    /**
+     * @brief Stable filter spelling for logs and script bindings.
+     * @return Static non-owning `"nearest"` or `"linear"`; never null.
+     * @ownership Borrowed static storage; valid for the process lifetime.
+     * @lifetime Stable indefinitely.
+     */
     static const char* filterName(FilterMode m) { return m == FilterMode::Nearest ? "nearest" : "linear"; }
 
-    /** @brief Mipmap name. */
+    /**
+     * @brief Stable mipmap-mode spelling for logs and script bindings.
+     * @return Static non-owning `"none"`, `"nearest"`, or `"linear"`; never null.
+     * @ownership Borrowed static storage; valid for the process lifetime.
+     * @lifetime Stable indefinitely.
+     */
     static const char* mipmapName(MipmapMode m) {
         switch (m) {
             case MipmapMode::Disabled: return "none";

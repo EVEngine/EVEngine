@@ -1622,8 +1622,8 @@ public:
     void clear(std::optional<eve::graphics::Color>, std::optional<int>, std::optional<double>) override {}
     eve::graphics::Color   getPixel(int, int) override { return {}; }
     eve::image::ImageData* newImageData() override { return new eve::image::ImageData(width_, height_); }
-    void                   draw(eve::graphics::Graphics*, eve::graphics::Mat4Param) const override {}
-    void                   draw(eve::graphics::Canvas*, eve::graphics::Mat4Param) const override {}
+    void                   draw(eve::graphics::Graphics*, const glm::mat4&) const override {}
+    void                   draw(eve::graphics::Canvas*, const glm::mat4&) const override {}
 
 private:
     int width_, height_;

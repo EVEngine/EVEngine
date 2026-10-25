@@ -20,9 +20,9 @@ public:
     ~Texture() override;
 
     /** @brief Draws . */
-    void draw(Graphics* gfx, Mat4Param matrix) const override;
+    void draw(Graphics* gfx, const glm::mat4& matrix) const override;
     /** @brief Black silhouette using texture alpha (volumetric occlusion map). */
-    void drawOcclusion(Graphics* gfx, Mat4Param matrix) const override;
+    void drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const override;
 
     /** @brief Returns the width. */
     int getWidth() const;
@@ -36,9 +36,18 @@ public:
     int getMipmapCount() const;
     /** @brief Returns the sampler. */
     const TextureSampler& getSampler() const { return sampler; }
-    /** @brief Declare whether RGB is straight or already multiplied by alpha. */
+    /**
+     * @brief Declare whether RGB is straight or already multiplied by alpha.
+     * @param value Borrowed NUL-terminated spelling (`"premultiplied"` or other); not retained.
+     * @lifetime Valid only for this call.
+     */
     void setAlphaConvention(const char* value);
-    /** @brief Returns the alpha convention. */
+    /**
+     * @brief Returns the alpha convention spelling.
+     * @return Static non-owning `"premultiplied"` or `"straight"`; never null.
+     * @ownership Borrowed static storage; valid for the process lifetime.
+     * @lifetime Stable indefinitely; not invalidated by texture mutation.
+     */
     const char* getAlphaConvention() const;
     /** @brief True when premultiplied alpha. */
     bool hasPremultipliedAlpha() const { return premultipliedAlpha_; }

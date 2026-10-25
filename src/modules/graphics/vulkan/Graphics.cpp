@@ -1171,8 +1171,8 @@ void Graphics::present() {
     flushBatch();
 }
 
-void Graphics::draw(eve::graphics::Graphics*, Mat4Param) const {}
-void Graphics::draw(Canvas*, Mat4Param) const {}
+void Graphics::draw(eve::graphics::Graphics*, const glm::mat4&) const {}
+void Graphics::draw(Canvas*, const glm::mat4&) const {}
 
 // ---- GPU frame timing ------------------------------------------------------
 

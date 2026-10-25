@@ -1015,9 +1015,9 @@ public:
     image::ImageData *newImageData() override;
 
     /** @brief Draws . */
-    void draw(eve::graphics::Graphics* gfx, Mat4Param matrix) const override;
+    void draw(eve::graphics::Graphics* gfx, const glm::mat4& matrix) const override;
     /** @brief Draws . */
-    void draw(Canvas* C, Mat4Param matrix) const override;
+    void draw(Canvas* C, const glm::mat4& matrix) const override;
     /** @brief Clears . */
     void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) override;
     /** @brief Returns the pixel. */

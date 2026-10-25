@@ -57,13 +57,12 @@ void Texture::setAlphaConvention(const char* value) {
 
 const char* Texture::getAlphaConvention() const { return premultipliedAlpha_ ? "premultiplied" : "straight"; }
 
-void Texture::draw(Graphics*, Mat4Param) const {
+void Texture::draw(Graphics*, const glm::mat4&) const {
     // Declarative path uses RenderSystem; immediate draw left for later.
 }
 
-void Texture::drawOcclusion(Graphics* gfx, Mat4Param matrixParam) const {
+void Texture::drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const {
     if (!gfx || !getCastOcclusion()) return;
-    const glm::mat4& matrix = matrixParam.as<glm::mat4>();
     // Treat matrix as 2D affine: translation in column 3, scale from basis lengths.
     const float x = matrix[3][0];
     const float y = matrix[3][1];
