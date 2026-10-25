@@ -1,0 +1,385 @@
+{
+  "schemaId": "evengine.climbing-profile",
+  "schemaVersion": 4,
+  "capsuleRadius": 0.2,
+  "capsuleHeight": 1.8,
+  "skin": 0.03,
+  "maxProbeDistance": 1.45,
+  "maxObstacleHeight": 4,
+  "minTopNormalY": 0.65,
+  "maxWarpResidual": 0.3,
+  "maxPlatformSpeed": 10,
+  "dropInitialSpeed": 2,
+  "inputBufferTicks": 8,
+  "coyoteTicks": 6,
+  "queryFilter": {
+    "categoryBits": 4294967295,
+    "maskBits": 4294967295,
+    "ignoredBodyId": -1,
+    "ignoredShapeId": -1
+  },
+  "actions": [
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:ledge_grab",
+      "kind": "ledge_grab",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1000000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:shimmy",
+      "kind": "shimmy",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1000000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0.5,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 0.5,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0.5,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:ladder_mount",
+      "kind": "ladder_mount",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1000000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:ladder_climb",
+      "kind": "ladder_climb",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1000000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:climb_up",
+      "kind": "climb_up",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1500000000,
+      "landingForward": 0.25,
+      "apexHeight": 0.3,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 0.25,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 0.25,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:corner_outer",
+      "kind": "corner_outer",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1500000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:corner_inner",
+      "kind": "corner_inner",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1500000000,
+      "landingForward": 0.5,
+      "apexHeight": 0,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    },
+    {
+      "schemaId": "evengine.climbing-action",
+      "schemaVersion": 4,
+      "id": "contact:back_jump",
+      "kind": "ledge_jump",
+      "minHeight": 0,
+      "maxHeight": 4,
+      "minSpeed": 0,
+      "durationNs": 1500000000,
+      "landingForward": 0.5,
+      "apexHeight": 0.35,
+      "selectionBias": 0,
+      "hangBodyOffset": 0,
+      "hangFeetBelowLedge": 1.55,
+      "handSpacing": 0.42,
+      "cancelWindowStart": 0,
+      "cancelWindowEnd": 1,
+      "requiredNotifies": [],
+      "contactConstraints": [
+        {
+          "target": 0,
+          "start": 0.85,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 1,
+          "start": 0.85,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 2,
+          "start": 0.95,
+          "end": 1,
+          "maxWeight": 1
+        },
+        {
+          "target": 3,
+          "start": 0.95,
+          "end": 1,
+          "maxWeight": 1
+        }
+      ],
+      "sourceModes": 6
+    }
+  ]
+}
