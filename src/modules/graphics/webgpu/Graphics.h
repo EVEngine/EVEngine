@@ -3,6 +3,7 @@
 #include "common/Export.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/GpuDrivenTypes.h"
 #include "graphics/Graphics.h"
 #include "graphics/GraphicsRgb.h"
 #include "graphics/GraphicsVisibility.h"
