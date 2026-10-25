@@ -156,11 +156,17 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     return raw;
 }
 
-Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) {
+Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshFromAssimp: graphics not initialized");
     if (mesh.mNumVertices == 0 || mesh.mNumFaces == 0)
         throw Exception("newMeshFromAssimp: empty mesh");
+
+    // glm is column-major; Assimp aiMatrix4x4 is row-major.
+    const aiMatrix4x4 world(worldTransform[0][0], worldTransform[1][0], worldTransform[2][0], worldTransform[3][0],
+                            worldTransform[0][1], worldTransform[1][1], worldTransform[2][1], worldTransform[3][1],
+                            worldTransform[0][2], worldTransform[1][2], worldTransform[2][2], worldTransform[3][2],
+                            worldTransform[0][3], worldTransform[1][3], worldTransform[2][3], worldTransform[3][3]);
 
     std::vector<aiVector3D> positions(mesh.mNumVertices);
     std::vector<aiVector3D> normals(mesh.mNumVertices);
@@ -169,7 +175,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     if (mesh.HasTangentsAndBitangents()) {
         tangents.resize(mesh.mNumVertices);
         bitangents.resize(mesh.mNumVertices);
-        const aiMatrix3x3 linear(worldTransform);
+        const aiMatrix3x3 linear(world);
         for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
             tangents[i]   = linear * mesh.mTangents[i];
             bitangents[i] = linear * mesh.mBitangents[i];
@@ -177,14 +183,14 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
             bitangents[i].Normalize();
         }
     }
-    aiMatrix3x3 nmat(worldTransform);
+    aiMatrix3x3 nmat(world);
     const float ndet = nmat.Determinant();
     if (std::fabs(ndet) > 1e-8f) {
         nmat.Inverse();
         nmat.Transpose();
     }
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
-        positions[i] = worldTransform * mesh.mVertices[i];
+        positions[i] = world * mesh.mVertices[i];
         if (mesh.HasNormals()) {
             normals[i] = nmat * mesh.mNormals[i];
             normals[i].Normalize();
@@ -195,7 +201,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
 
     // Negative determinant mirrors the mesh: winding flips while inverse-transpose
     // keeps normals consistent, so back-face cull would hide the visible side.
-    const bool flipWinding = worldTransform.Determinant() < 0.f;
+    const bool            flipWinding = world.Determinant() < 0.f;
     std::vector<aiFace> flippedFaces;
     std::vector<unsigned> flippedIdx;
     if (flipWinding) {

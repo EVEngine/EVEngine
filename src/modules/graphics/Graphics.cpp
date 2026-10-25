@@ -1366,7 +1366,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("renderSprites", &Graphics::renderSprites);
     cls.addFunc("newSprite2D", &Graphics::newSprite2D);
     cls.addFunc("drawTexturedRectRotated", &Graphics::drawTexturedRectRotatedRGBA);
-    cls.addFunc("newFont", &Graphics::newFont);
+    cls.addFunc("newFont", static_cast<Font* (Graphics::*)(font::FontData*, std::string)>(&Graphics::newFont));
     cls.addFunc("setFont", &Graphics::setFont);
     cls.addFunc("getFont", &Graphics::getFont);
     cls.addFunc("drawText", &Graphics::drawTextRGBA);
@@ -1905,6 +1905,8 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
 }
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
+
+Font* Graphics::newFont(font::FontData* data) { return newFont(data, Font::defaultCharset()); }
 
 Font* Graphics::newFont(font::FontData* data, std::string charset) { return new Font(this, data, std::move(charset)); }
 

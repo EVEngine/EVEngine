@@ -2,6 +2,7 @@
 
 #include "card/CardAttributes.h"
 
+#include "graphics/Font.h"
 #include "graphics/Graphics.h"
 
 #include <algorithm>

@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <fstream>
 #include <functional>
+#include <glm/mat4x4.hpp>
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
@@ -36,6 +37,11 @@ namespace eve::housegen {
 namespace {
 
 using eve::json::Value;
+
+/** Assimp row-major → glm column-major for IResourceFactory::newMeshFromAssimp. */
+glm::mat4 aiToGlm(const aiMatrix4x4& m) {
+    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
 
 eve::Result<SocketDirection> parseDirection(std::string_view value) {
     if (value == "north") return eve::Result<SocketDirection>::success(SocketDirection::North);
@@ -906,7 +912,7 @@ eve::Result<std::vector<ecs::EntityHandle>> HouseLayout::instantiate(graphics::G
                         if (mi >= scene->mNumMeshes || !scene->mMeshes[mi]) continue;
                         const aiMesh *source = scene->mMeshes[mi];
                         CachedPart    part;
-                        part.mesh = gfx.newMeshFromAssimp(*source, world);
+                        part.mesh = gfx.newMeshFromAssimp(*source, aiToGlm(world));
                         if (scene->mMaterials && source->mMaterialIndex < scene->mNumMaterials) {
                             const aiMaterial *material = scene->mMaterials[source->mMaterialIndex];
                             aiColor4D         color(1.f, 1.f, 1.f, 1.f);

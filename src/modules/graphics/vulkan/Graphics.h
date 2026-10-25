@@ -728,7 +728,7 @@ public:
     /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
-    Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
+    Mesh* newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) override;
     /** @brief Creates a mesh from arrays. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;

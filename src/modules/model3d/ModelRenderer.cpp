@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <glm/mat4x4.hpp>
 #include "common/Exception.h"
 
 #include <algorithm>
@@ -37,6 +38,11 @@ using eve::graphics::Mesh;
 using eve::graphics::Material;
 using eve::graphics::Renderable3D;
 using eve::graphics::Texture;
+
+/** Assimp row-major → glm column-major for IResourceFactory::newMeshFromAssimp. */
+glm::mat4 aiToGlm(const aiMatrix4x4& m) {
+    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
 
 Texture *textureFromImageData(IResourceFactory *gfx, image::ImageData *img) {
     if (!img) return nullptr;
@@ -309,7 +315,7 @@ Renderable3D *makeRenderable(IResourceFactory *gfx, ModelData *model, int meshIn
     // modular body parts (notably KayKit heads, armour and limbs). Static
     // meshes still use the established baked scene transform.
     const bool bakeWorld = options.bakeWorldTransform && !ai->HasBones();
-    Mesh *mesh = bakeWorld ? gfx->newMeshFromAssimp(*ai, world) : gfx->newMeshFromAssimp(*ai);
+    Mesh*      mesh      = bakeWorld ? gfx->newMeshFromAssimp(*ai, aiToGlm(world)) : gfx->newMeshFromAssimp(*ai);
     if (!mesh) return nullptr;
 
     const int matIndex = model->getMaterialIndex(meshIndex);

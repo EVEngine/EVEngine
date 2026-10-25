@@ -2,11 +2,9 @@
 #include "common/Export.h"
 
 
-#include <assimp/matrix4x4.h>
 #include <cstdint>
-#include <glm/mat4x4.hpp>
+// mat4/vec3 arrive via IGraphics3D; EntityIdDraw + transform helpers need vec2/vec4.
 #include <glm/vec2.hpp>
-#include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <memory>
 #include <optional>
@@ -20,8 +18,7 @@
 #include "graphics/BlendMode.h"
 #include "graphics/Canvas.h"
 #include "graphics/Color.h"
-#include "graphics/Font.h"
-#include "graphics/GpuDrivenTypes.h"
+#include "graphics/GpuDrivenApi.h"
 #include "graphics/GpuParticles.h"
 #include "graphics/ICanvasFactory.h"
 #include "graphics/ICanvasTarget.h"
@@ -38,6 +35,10 @@ struct aiMesh;
 namespace eve {
 class Subscription;
 class FrameCaptureStore;
+}
+
+namespace eve::font {
+class FontData;
 }
 
 namespace eve::graphics {
@@ -90,6 +91,7 @@ struct MeshBackendDescriptor {
     std::uint32_t vertexStride     = 0;
     std::uint32_t indexElementSize = 0;
 };
+class Font;
 class Outline;
 class Quad;
 class RenderControl;
@@ -847,11 +849,12 @@ public:
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
 
     /**
-     * @brief Like newMeshFromAssimp, but bakes an Assimp node world transform into positions
+     * @brief Like newMeshFromAssimp, but bakes a column-major world transform into positions
      * and transforms normals by the inverse-transpose of the upper 3x3.
      * Required for hierarchical glTF/FBX scenes — raw aiMesh verts are in local space.
+     * Callers holding Assimp row-major matrices must convert before calling.
      */
-    virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) = 0;
+    virtual Mesh* newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) = 0;
 
     /**
      * @brief Upload a triangle mesh from packed CPU arrays. Owned by Graphics.
@@ -1695,7 +1698,10 @@ public:
      * Caller owns Font* (not tracked by Graphics — unlike newTexture /
      * newMesh / newShader handles, which Graphics owns).
      */
-    Font *newFont(font::FontData *data, std::string charset = Font::defaultCharset());
+    /** @brief Creates a font with Font::defaultCharset(). @ownership Caller deletes. */
+    Font* newFont(font::FontData* data);
+    /** @brief Creates a font with an explicit charset. @ownership Caller deletes. */
+    Font* newFont(font::FontData* data, std::string charset) override;
 
     /** @brief Optional shared font used by legacy consumers; nullptr = none set. */
     virtual void setFont(Font *font) { currentFont = font; }

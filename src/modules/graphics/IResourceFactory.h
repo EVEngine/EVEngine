@@ -12,7 +12,7 @@
 #include "common/BorrowedRef.h"
 #include "common/Result.h"
 
-#include <assimp/matrix4x4.h>
+#include <glm/mat4x4.hpp>
 
 struct aiMesh;
 
@@ -184,8 +184,11 @@ public:
 
     /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
     virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh) = 0;
-    /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
-    virtual Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) = 0;
+    /**
+     * @brief Creates a mesh from assimp, baking a column-major world transform into positions.
+     * @ownership Caller deletes unless documented otherwise.
+     */
+    virtual Mesh* newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) = 0;
     /** @brief Creates a mesh from arrays. @ownership Caller deletes unless documented otherwise. */
     virtual Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                                     int vertexCount, const uint32_t *indices, int indexCount) = 0;
