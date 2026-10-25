@@ -6,7 +6,8 @@
 #     debug/release/asan/…) keeps a separate namespace per cell — DWARF at
 #     ~75%+ of .o size was exhausting the account quota and forcing cold
 #     compiles. Asserts still use __FILE__/__LINE__; function names remain
-#     in the symbol table. ASan/UBSan keeps its own RelWithDebInfo `-g` lane.
+#     in the symbol table. ASan/UBSan is a separate RelWithDebInfo lane with
+#     `-O1 -g1` (line tables only — see Makefile `build/linux-asan`).
 #   detail:           GCC/Clang -g2 -O1 ; MSVC /Zi /O1
 #     Rich DWARF/PDB and milder opts for interactive debugging / triage.
 #

@@ -581,12 +581,15 @@ build/linux-asan: build/linux-asan/Makefile
 # but omit per-global ASan redzones: the monolithic unit_test has enough globals
 # for those redzones alone to exceed x86-64's PC-relative relocation range.
 # Disabling linker relaxation also avoids GOTPCREL overflows near that limit.
+# Use -g1 (not full -g / not -g0): sanitizer stacks need line tables, but this
+# lane has its own sccache GHA namespace and full DWARF was inflating account
+# cache alongside the rest of the host matrix.
 build/linux-asan/Makefile:
 	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
 		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
 		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
-		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
-		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
+		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g1 -DNDEBUG -fno-optimize-sibling-calls" \
+		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g1 -DNDEBUG -fno-optimize-sibling-calls" \
 		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
 		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
 		-DEVENGINE_ENABLE_ASSERTS=ON \
