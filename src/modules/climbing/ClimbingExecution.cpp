@@ -11,6 +11,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
 
 eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, eve::SimulationStep step,
                                                       const ClimbingMotionInput& motion) {
+    lastDebugQueries_.clear();
     lastQueryCount_           = 0;
     lastCounters_             = {};
     lastCounters_.workload    = ClimbingWorkload::Active;
@@ -56,8 +57,15 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     auto eventCapacity = requireEventCapacity(4, step.tick);
     if (!eventCapacity) return eve::Result<ClimbingAdvance>::failure(eventCapacity.status());
 
+    std::optional<ResolvedClimbingAnchorNode> sourceAnchor;
     const bool graphBound      = execution.anchorGraph.isValid() && !execution.anchorReservation.id.isZero();
     float      graphPointSpeed = -1.f;
+    Vec3       leftFootAnchor;
+    Vec3       rightFootAnchor;
+    Vec3       authoredFeetCenter;
+    bool       hasAuthoredFootAnchors = false;
+    bool       hasLeftFootAnchor      = false;
+    bool       hasRightFootAnchor     = false;
     if (graphBound) {
         auto graph    = Climbing::resolveAnchorGraph(execution.anchorGraph);
         auto resolved    = graph.isBound() ? graph->resolveNodeKinematics(world, execution.anchorNode)
@@ -83,6 +91,11 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
                 eve::DiagnosticCode::StaleHandle, "graph anchor or occupancy reservation is stale", "execution.anchor",
                 {}, "climbing"));
         }
+        if (execution.sourceAnchorNode) {
+            auto source = graph->resolveNodeKinematics(world, *execution.sourceAnchorNode);
+            if (!source) return eve::Result<ClimbingAdvance>::failure(source.status());
+            sourceAnchor = std::move(source).takeValue();
+        }
         execution.candidate.obstacleBody    = resolved.value().body;
         execution.candidate.topPoint        = resolved.value().position;
         execution.candidate.frontPoint      = resolved.value().position;
@@ -98,6 +111,15 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
                 resolved.value().position +
                 resolved.value().normal * (profile_.capsuleRadius + profile_.skin + execution.action.hangBodyOffset);
             execution.candidate.landingFeet.y = resolved.value().position.y - execution.action.hangFeetBelowLedge;
+        }
+        authoredFeetCenter = resolved.value().feetSocket;
+        // A rung supplies an authored support center in body-local space. Resolve
+        // it every tick, just like hand sockets, including moving-platform rotation.
+        if (resolved.value().kind == ClimbingAnchorKind::LadderRung) {
+            const Vec3 halfStance  = resolved.value().tangent * (profile_.capsuleRadius * 0.5f);
+            leftFootAnchor         = resolved.value().feetSocket - halfStance;
+            rightFootAnchor        = resolved.value().feetSocket + halfStance;
+            hasAuthoredFootAnchors = true;
         }
         graphPointSpeed = length(resolved.value().pointVelocity);
     }
@@ -155,6 +177,69 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
             execution.candidate.topPoint + execution.candidate.surfaceTangent * (execution.action.handSpacing * 0.5f);
     }
 
+    const bool holding =
+        phase_ == ClimbingPhase::Hanging || phase_ == ClimbingPhase::Balanced || phase_ == ClimbingPhase::Swinging;
+    eve::Duration nextElapsed = execution.elapsed;
+    if (!holding && phase_ != ClimbingPhase::Dropping) {
+        auto elapsed = execution.elapsed.tryAdd(step.delta);
+        if (!elapsed) return eve::Result<ClimbingAdvance>::failure(elapsed.status());
+        nextElapsed = std::move(elapsed).takeValue();
+    }
+    const float contactTime =
+        holding ? 1.f : static_cast<float>(std::clamp(nextElapsed.seconds() / execution.duration.seconds(), 0.0, 1.0));
+    const bool feetReleased = execution.landContactReleased || phase_ == ClimbingPhase::Dropping;
+    const bool wantsLeftFoot =
+        !feetReleased && activeContactWeight(execution.action, ClimbingContactTarget::LeftFoot, contactTime) > 0.f;
+    const bool wantsRightFoot =
+        !feetReleased && activeContactWeight(execution.action, ClimbingContactTarget::RightFoot, contactTime) > 0.f;
+    if (hasAuthoredFootAnchors) {
+        hasLeftFootAnchor  = wantsLeftFoot;
+        hasRightFootAnchor = wantsRightFoot;
+    } else if (wantsLeftFoot || wantsRightFoot) {
+        // Probe each foot independently. A narrow ledge may support only one side;
+        // an overhead ledge can support the hands while both feet hang freely.
+        Vec3 center = authoredFeetCenter;
+        if (!graphBound) {
+            center = execution.candidate.topPoint;
+            center.y += profile_.capsuleRadius - execution.action.hangFeetBelowLedge;
+        }
+        const Vec3             normal     = execution.candidate.surfaceNormal;
+        const Vec3             halfStance = execution.candidate.surfaceTangent * (profile_.capsuleRadius * 0.5f);
+        physics::QueryFilter3D footFilter = profile_.queryFilter;
+        footFilter.ignoredBodyId          = execution.candidate.ignoredBodyId;
+        for (int side = 0; side < 2; ++side) {
+            if (!(side == 0 ? wantsLeftFoot : wantsRightFoot)) continue;
+            const Vec3 target = center + halfStance * (side == 0 ? -1.f : 1.f);
+            const Vec3 start =
+                target + normal * (profile_.capsuleRadius + profile_.skin + execution.action.hangBodyOffset);
+            const Vec3 end = target - normal * (profile_.capsuleRadius + profile_.skin);
+            auto       hit = world.rayCastOwned(start.x, start.y, start.z, end.x, end.y, end.z, footFilter);
+            ++lastQueryCount_;
+            lastCounters_.queryCount = lastQueryCount_;
+            if (!hit) return eve::Result<ClimbingAdvance>::failure(hit.status());
+            const auto& contact = hit.value();
+            const bool  supported =
+                contact.hit && contact.body == execution.candidate.obstacleBody &&
+                contact.normalX * normal.x + contact.normalY * normal.y + contact.normalZ * normal.z > 0.5f;
+            if (debugCapture_ == ClimbingDebugCapture::Enabled)
+                boundedDebugPush(
+                    lastDebugQueries_,
+                    ClimbingDebugQuery{
+                        execution.candidate.actionId,
+                        side == 0
+                            ? (supported ? "climbing.contact.left_foot.hit" : "climbing.contact.left_foot.miss")
+                            : (supported ? "climbing.contact.right_foot.hit" : "climbing.contact.right_foot.miss"),
+                        start, end, 0.f, 0.f});
+            if (side == 0) {
+                hasLeftFootAnchor = supported;
+                if (supported) leftFootAnchor = {contact.x, contact.y, contact.z};
+            } else {
+                hasRightFootAnchor = supported;
+                if (supported) rightFootAnchor = {contact.x, contact.y, contact.z};
+            }
+        }
+    }
+
     physics::QueryFilter3D filter = profile_.queryFilter;
     filter.ignoredBodyId          = execution.candidate.ignoredBodyId;
     if (motion.obstacleCollision == ClimbingObstacleCollision::IgnoreTraversedShape)
@@ -184,6 +269,10 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
         execution.lastTick = step.tick;
         ClimbingAdvance output{phase_, execution.candidate.actionId, execution.currentFeet, {}, {}, {}, 1.f, false,
                                false,  execution.candidate.support};
+        output.leftFootAnchor         = leftFootAnchor;
+        output.rightFootAnchor        = rightFootAnchor;
+        output.hasLeftFootAnchor      = hasLeftFootAnchor;
+        output.hasRightFootAnchor     = hasRightFootAnchor;
         output.leftHandAnchor         = execution.candidate.leftHandAnchor;
         output.rightHandAnchor        = execution.candidate.rightHandAnchor;
         const bool handHold           = phase_ != ClimbingPhase::Balanced;
@@ -259,14 +348,12 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
         return eve::Result<ClimbingAdvance>::success(std::move(output));
     }
 
-    auto elapsed = execution.elapsed.tryAdd(step.delta);
-    if (!elapsed) return eve::Result<ClimbingAdvance>::failure(elapsed.status());
-    execution.elapsed            = std::move(elapsed).takeValue();
+    execution.elapsed            = nextElapsed;
     execution.lastTick           = step.tick;
     const double durationSeconds = execution.duration.seconds();
     const float  t = static_cast<float>(std::clamp(execution.elapsed.seconds() / durationSeconds, 0.0, 1.0));
-    const Vec3   planned =
-        detail::trajectoryPoint(execution.startFeet, execution.candidate, execution.action, profile_, t);
+    const Vec3   planned = detail::trajectoryPoint(execution.startFeet, execution.candidate, execution.action, profile_,
+                                                   t, sourceAnchor ? sourceAnchor->normal : Vec3{});
     const Vec3 proceduralDelta = planned - execution.currentFeet;
     Vec3       baseDelta       = proceduralDelta;
     if (motion.hasRootMotion && motion.rootMotionPolicy == ClimbingRootMotionPolicy::PreserveSuppliedDelta) {
@@ -381,8 +468,40 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     output.animationClipId      = execution.action.animation.clipId;
     output.animationGraphNodeId = execution.action.animation.graphNodeId;
     output.animationMirrored    = execution.action.animation.mirrored;
+    output.leftFootAnchor       = leftFootAnchor;
+    output.rightFootAnchor      = rightFootAnchor;
+    output.hasLeftFootAnchor    = hasLeftFootAnchor;
+    output.hasRightFootAnchor   = hasRightFootAnchor;
     output.leftHandAnchor       = execution.candidate.leftHandAnchor;
     output.rightHandAnchor      = execution.candidate.rightHandAnchor;
+    if (sourceAnchor) {
+        const auto transfer = [&](ClimbingContactTarget hand, Vec3 source, Vec3 target) {
+            float begin = 0.f;
+            float end   = 1.f;
+            bool  found = false;
+            for (const auto& window : execution.action.contactConstraints) {
+                if (window.target != hand || window.maxWeight <= 0.f) continue;
+                if (!found || window.start < begin) {
+                    begin = window.start;
+                    end   = window.end;
+                    found = true;
+                }
+            }
+            const float linear =
+                end > begin ? std::clamp((t - begin) / (end - begin), 0.f, 1.f) : (t >= end ? 1.f : 0.f);
+            const float blend = linear * linear * (3.f - 2.f * linear);
+            if (execution.action.kind == ClimbingActionKind::CornerInner ||
+                execution.action.kind == ClimbingActionKind::CornerOuter)
+                return detail::cornerPathPoint(source, target, sourceAnchor->normal, execution.candidate.surfaceNormal,
+                                               linear);
+            return source + (target - source) * blend;
+        };
+        output.leftHandAnchor =
+            transfer(ClimbingContactTarget::LeftHand, sourceAnchor->leftHandSocket, output.leftHandAnchor);
+        output.rightHandAnchor =
+            transfer(ClimbingContactTarget::RightHand, sourceAnchor->rightHandSocket, output.rightHandAnchor);
+    }
+
     if (leftContact && !execution.leftContactEmitted) {
         execution.leftContactEmitted = true;
         enqueueEvent({ClimbingEventKind::ContactLeftHand, output.actionId, step.tick, execution.executionId});
@@ -435,6 +554,7 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
         }
         execution_.reset();
     } else if (t >= 1.f - epsilon) {
+        execution.sourceAnchorNode.reset();
         if (graphBound && isAnchorHangEnd(execution.candidate.kind)) {
             if (execution.candidate.kind == ClimbingActionKind::BeamBalance)
                 phase_ = ClimbingPhase::Balanced;

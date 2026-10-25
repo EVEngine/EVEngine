@@ -1,4 +1,5 @@
 #include "Audio.h"
+#include "PcmStream.h"
 #include "Source.h"
 
 #include "AudioCapabilities.h"
@@ -44,6 +45,10 @@ Audio::~Audio() {
     cv.notify_all();
     if (worker.joinable())
         worker.join();
+
+    for (auto &weak : pcmStreams)
+        if (auto state = weak.lock()) PcmStream::closeState(state);
+    pcmStreams.clear();
 
     {
         std::lock_guard<std::mutex> lock(mutex);
@@ -107,6 +112,13 @@ Source *Audio::newSource(sound::SoundData *data) {
     return s;
 }
 
+Result<std::unique_ptr<PcmStream>> Audio::newPcmStream(int sampleRate, int channels) {
+    auto result = PcmStream::create(sampleRate, channels);
+    if (!result.ok()) return Result<std::unique_ptr<PcmStream>>::failure(result.status());
+    pcmStreams.push_back(result.value()->state_);
+    return result;
+}
+
 Source *Audio::newSourceFromDecoder(sound::Decoder *decoder, std::string type) {
     if (type != "static" && type != "stream")
         throw eve::Exception("Invalid source type '%s'", type.c_str());
@@ -157,6 +169,9 @@ void Audio::pause(Source *s) {
         s->pause();
 }
 void Audio::stopAll() {
+    for (auto &weak : pcmStreams) {
+        if (auto state = weak.lock()) PcmStream::closeState(state);
+    }
     // Hold the mutex while stopping: Source::~Source() → unregisterSource()
     // blocks on the same mutex, so a concurrently destroyed source cannot be
     // touched here after it has been removed from allSources.
@@ -187,6 +202,12 @@ void Audio::setOrientation(float fx, float fy, float fz, float ux, float uy, flo
 
 void Audio::pump() {
     EV_PROFILE_MODULE("audio", "Audio::pump");
+    std::erase_if(pcmStreams, [](auto &weak) {
+        auto state = weak.lock();
+        if (!state) return true;
+        PcmStream::pumpState(state);
+        return false;
+    });
     // Same guarantee as workerMain: destruction removes the source under this
     // mutex, so the pointer stays valid for the whole iteration.
     std::lock_guard<std::mutex> lock(mutex);
@@ -199,6 +220,7 @@ void Audio::pump() {
 void Audio::expose(ssq::Table &table) {
     auto cls = table.addClass(name, Audio::create, false);
     expose(cls);
+    exposePcmStream(table, cls);
 
     auto src = table.addClass<Source>(
         "Source", std::function<Source *()>([]() -> Source * { return nullptr; }), true);

@@ -419,10 +419,27 @@ Result<Value> opObserve(const Value::Object& root, IPlayHostRuntime& runtime) {
     if (spec.value()->kind != "script-root")
         return Result<Value>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "P0 play host only observes script-root", "request.observation"));
-    auto state = runtime.observeScriptRoot(spec.value()->path, spec.value()->fields);
+    // Prefer gameState (ai-game contract). Legacy `mode` string roots still work once, with a
+    // deprecated flag so agents migrate (EM4). Owner: play-host; remove after 2026-12-31.
+    std::string observedPath = spec.value()->path;
+    bool        deprecated   = false;
+    auto        state        = runtime.observeScriptRoot(observedPath, spec.value()->fields);
+    if (!state && observedPath == "mode") {
+        auto fallback = runtime.observeScriptRoot("gameState", spec.value()->fields);
+        if (fallback) {
+            state        = std::move(fallback);
+            observedPath = "gameState";
+            deprecated   = true;
+        }
+    } else if (state && observedPath == "mode") {
+        deprecated = true;
+    }
     if (!state) return Result<Value>::failure(state.status());
-    return Result<Value>::success(playResponse("observe", {{"observation", Value(observation.value())},
-                                                           {"state", std::move(state).takeValue()}}));
+    Value::Object payload{{"observation", Value(observation.value())},
+                          {"path", Value(observedPath)},
+                          {"state", std::move(state).takeValue()}};
+    if (deprecated) payload.emplace("deprecated", Value("observation.path=mode; use paths.gameState / gameState"));
+    return Result<Value>::success(playResponse("observe", std::move(payload)));
 }
 
 Result<Value> opCapture(const Value::Object& root, IPlayHostRuntime& runtime) {

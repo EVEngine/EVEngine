@@ -89,7 +89,9 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 capture_output=True,
                 text=True,
                 check=False,
-                timeout=30,
+                # The full repository catalogue takes over 30s on native ARM64
+                # Windows; keep small fixtures fast while allowing its CMake scan.
+                timeout=120 if catalogue is not None else 30,
             )
             generated = registry.read_text(encoding="utf-8") if registry.exists() else None
             return result, generated

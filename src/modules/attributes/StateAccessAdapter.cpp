@@ -1,4 +1,5 @@
 #include "attributes/StateAccessAdapter.h"
+#include "common/ValueRead.h"
 
 #include <cmath>
 #include <string>
@@ -13,15 +14,10 @@ eve::Result<eve::MutationReceipt> failure(eve::DiagnosticCode code, std::string 
 }
 
 bool numeric(const eve::Value& value, double& out) {
-    if (value.isInt64()) {
-        out = static_cast<double>(value.asInt());
-        return true;
-    }
-    if (value.isDouble()) {
-        out = value.asDouble();
-        return std::isfinite(out);
-    }
-    return false;
+    auto parsed = eve::readNumericDoubleValue(value);
+    if (!parsed) return false;
+    out = parsed.value();
+    return std::isfinite(out);
 }
 
 }  // namespace

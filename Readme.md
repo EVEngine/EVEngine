@@ -1,5 +1,16 @@
 # EVEngine
 
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/ember-guard.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/explosion-lab.gif" width="100%" alt=""></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/examples/house-collapse.gif" width="100%" alt=""></td>
+    <td width="50%"><img src="docs/images/examples/ironwarden-retarget.gif" width="100%" alt=""></td>
+  </tr>
+</table>
+
 =======================
 
 Evolutionary Vision Engine
@@ -7,42 +18,6 @@ Evolutionary Vision Engine
 [English](Readme.en.md)
 
 ## 文档导航
-
-### Windows / Linux ARM64 原生构建
-
-在 ARM64 宿主上执行，先运行 `make init/submodules`：
-
-| 平台 | Debug | Release |
-| --- | --- | --- |
-| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
-| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
-
-Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
-Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
-Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
-Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
-这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
-
-third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
-只构建依赖可用 `make deps/win32-arm64[-debug]` 或
-`make deps/linux-arm64[-debug]`（`[-debug]` 表示可选后缀）。
-依赖缓存位于 `build/third-party/<平台>-arm64[-debug]`，安装位于
-`build/third-party-binary/<平台>-arm64[-debug]`，与已有 x64 目录隔离。
-不要通过 `EVENGINE_THIRD_PARTY_BINARY_DIR` 指向 x64 库。
-
-CMake 直接配置仍使用根目录入口：`-DEVENGINE_NATIVE_ARM64=ON`，
-配合 `-DEVENGINE_BUILD_PLATFORM=win32` 或 `linux`，并指定独立的 `-B` 目录。
-Debug 保留严格警告，Release 使用 OBJECT 链接策略。
-定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
-`make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
-匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
-
-CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner，
-复用现有 Windows／Linux 变更范围判断。日常构建 Debug；`build_type=release`
-构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
-第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
-依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
-目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
 
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
@@ -367,6 +342,48 @@ make log/ios
 2. 在仓库根目录直接使用 `make`：Windows 目标走 `cmake.exe`，Linux 目标走 WSL 内的 `cmake`。
 3. 第三方产物按平台分目录存放（如 `build/third-party/win32`、`build/third-party/linux-debug`），互不覆盖。
 4. 若在 WSL 里编译位于 `/mnt/c` 的源码，I/O 可能较慢；追求速度可将仓库 clone 到 WSL 原生文件系统（如 `~/src/EVEngine`），Windows 侧再单独 clone 一份。
+
+
+#### Windows / Linux ARM64 原生构建
+
+在 ARM64 宿主上执行，先运行 `make init/submodules`：
+
+| 平台 | Debug | Release |
+| --- | --- | --- |
+| Windows ARM64 | `make build/win32-arm64-debug JOBS=8` | `make build/win32-arm64 JOBS=8` |
+| Linux ARM64 | `make build/linux-arm64-debug JOBS=4` | `make build/linux-arm64 JOBS=4` |
+
+Linux ARM64 的 OBJECT 单体测试程序还需要 `lld`（`sudo apt-get install lld`），
+以便为大型测试链接生成远距离分支跳板；C/C++ 仍由 GCC/G++ 编译，
+引擎程序和 SHARED/按域测试的链接方式不变。
+
+Windows 需要 Visual Studio ARM64 C++ 工具（含 `vcvarsarm64.bat`）、Windows SDK、
+Ninja、Git Bash，以及 Vulkan 头文件、着色器工具和 ARM64 loader 库。
+Windows 命令通过 `cmake/with-msvc.cmd --arm64` 选择原生 MSVC 环境。
+Linux 使用原生 GCC/G++、Ninja，安装与普通 Linux 构建相同的 aarch64 开发依赖。
+这些入口不使用交叉编译工具链，会检查宿主、目标与编译器是否为 ARM64。
+
+third-party 同样从固定版本源码构建为 ARM64；构建入口会先完成依赖编译与安装。
+只构建依赖可用 `make deps/win32-arm64[-debug]` 或
+`make deps/linux-arm64[-debug]`（`[-debug]` 表示可选后缀）。
+依赖缓存位于 `build/third-party/<平台>-arm64[-debug]`，安装位于
+`build/third-party-binary/<平台>-arm64[-debug]`，与已有 x64 目录隔离。
+不要通过 `EVENGINE_THIRD_PARTY_BINARY_DIR` 指向 x64 库。
+
+CMake 直接配置仍使用根目录入口：`-DEVENGINE_NATIVE_ARM64=ON`，
+配合 `-DEVENGINE_BUILD_PLATFORM=win32` 或 `linux`，并指定独立的 `-B` 目录。
+Debug 保留严格警告，Release 使用 OBJECT 链接策略。
+定向测试使用 `make test/win32-arm64-debug DOMAIN=<域>` 或
+`make test/linux-arm64-debug DOMAIN=<域>`；Linux 图形测试仍需显示服务、
+匹配 aarch64 的 Vulkan ICD 和音频后端。原有 `make debug` 默认入口保持不变。
+
+CI 使用 GitHub 托管的 `windows-11-arm` 和 `ubuntu-24.04-arm` 原生 runner，
+复用现有 Windows／Linux 变更范围判断。日常构建 Debug；`build_type=release`
+构建 Release，`build_type=both` 则构建两种配置。任务编译并链接引擎和测试程序，
+第三方依赖必须使用对应 ARM64 的预编译发布包（`EVENGINE_THIRD_PARTY_MODE=PREBUILT`）。
+依赖源码修复和二进制打包由 third-party 仓库负责；缺少包时明确失败，不在这些 CI 任务中重新编译依赖。
+目前这些任务仅检查构建，不运行 ARM64 图形测试，也不增加 SDK 发布打包。
+
 
 ### 获取源码
 

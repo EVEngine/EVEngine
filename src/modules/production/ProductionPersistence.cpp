@@ -19,23 +19,7 @@ eve::Result<T> persistenceFailure(eve::DiagnosticCode code, std::string message,
 }
 
 std::string quote(std::string_view value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
+    return eve::json::quoteString(value, eve::json::StringEscapeStyle::UnicodeBackspaceFormFeed);
 }
 
 std::string canonicalJson(const eve::json::Value& value) {
@@ -63,13 +47,10 @@ std::string canonicalJson(const eve::json::Value& value) {
 
 bool parseU64(const eve::json::Value& value, uint64_t& result) {
     if (!value.isString()) return false;
-    try {
-        size_t used = 0;
-        result      = std::stoull(value.asString(), &used);
-        return used == value.asString().size();
-    } catch (...) {
-        return false;
-    }
+    auto parsed = eve::json::scanUnsignedInteger(value.asString(), eve::json::UnsignedIntegerSyntax::LegacyStoull);
+    if (!parsed) return false;
+    result = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool parseI64(const eve::json::Value& value, std::int64_t& result) {

@@ -351,6 +351,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     bool foundSdStat           = false;
     bool foundSdInst           = false;
     bool foundWhitebox         = false;
+    bool foundRecipeList       = false;
+    bool foundRecipeApply      = false;
+    bool foundWorkshop         = false;
     bool foundUiTree           = false;
     bool foundUiGet            = false;
     bool foundUiClick          = false;
@@ -400,6 +403,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
         if (name == "eve_scene_director_status") foundSdStat = true;
         if (name == "eve_scene_director_install") foundSdInst = true;
         if (name == "eve_whitebox_playtest") foundWhitebox = true;
+        if (name == "eve_recipe_list") foundRecipeList = true;
+        if (name == "eve_recipe_apply") foundRecipeApply = true;
+        if (name == "eve_workshop") foundWorkshop = true;
         if (name == "eve_ui_tree") foundUiTree = true;
         if (name == "eve_ui_get") foundUiGet = true;
         if (name == "eve_ui_click") foundUiClick = true;
@@ -445,6 +451,9 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(foundSdStat);
     CHECK(foundSdInst);
     CHECK(foundWhitebox);
+    CHECK(foundRecipeList);
+    CHECK(foundRecipeApply);
+    CHECK(foundWorkshop);
     CHECK(foundUiTree);
     CHECK(foundUiGet);
     CHECK(foundUiClick);
@@ -1114,7 +1123,6 @@ TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
 }  // namespace test_mcp
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_agent_export)
-#include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
@@ -1130,6 +1138,7 @@ TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/CrashLog.h"
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
@@ -1785,10 +1794,10 @@ TEST_CASE("devtools.mcp.hostScriptImport") {
 }  // namespace test_mcp_hot_reload
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_scene_literal)
-#include "PrivateTestScope.h"
 #include <Poco/JSON/Parser.h>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "devtools/McpSceneLiteral.hpp"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -1815,7 +1824,6 @@ TEST_CASE("mcp.scene_authoring.parameters_preserve_nested_values_and_precision")
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_soft_restart)
-#include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
 #include <Poco/JSON/Object.h>
@@ -1829,6 +1837,7 @@ TEST_CASE("mcp.scene_authoring.parameters_preserve_nested_values_and_precision")
 #include <sstream>
 #include <string>
 #include <thread>
+#include "PrivateTestScope.h"
 #include "devtools/AiPanel.hpp"
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
@@ -2484,8 +2493,8 @@ TestScript(visibility)
 #undef TestScript
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_script)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
 #include "npc_ai/NpcAiModule.h"
@@ -2567,9 +2576,9 @@ TEST_CASE("npcAiScript.rejectsOutOfRangeFieldsAndHonorsZeroMemory") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_orders)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "orders/CommandQueue.h"
 #include "zeroerr/assert.h"
@@ -2634,7 +2643,6 @@ TEST_CASE("orders.script.ownedQueueReplace") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_biome_controller)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <algorithm>
 #include <cmath>
@@ -2643,6 +2651,7 @@ TEST_CASE("orders.script.ownedQueueReplace") {
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "animation/AnimSkin.h"
 #include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
@@ -2791,9 +2800,9 @@ using namespace eve::procgen;
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_color_preview_sync)
-#include "PrivateTestScope.h"
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
@@ -2855,9 +2864,9 @@ using eve::ui::PcgTooltipManager;
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_terrain_watcher)
-#include "PrivateTestScope.h"
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "procgen/PointSet.h"
 #include "procgen/heightmap/PcgTerrainWatcher.h"
 #include "procgen/heightmap/PcgTreeManager.h"
@@ -2923,12 +2932,12 @@ TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") { REQUI
 }  // namespace test_physics_cloth
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_policyregistry)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "policyregistry/PolicyRegistry.h"
 #include "zeroerr/assert.h"
@@ -2966,9 +2975,9 @@ TEST_CASE("policyregistry.scriptDiscoversButDoesNotStoreCallbacks") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_module_assembly)
-#include "PrivateTestScope.h"
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "procgen/ModuleAssembly.h"
 #include "zeroerr/unittest.h"
@@ -3013,10 +3022,10 @@ TEST_CASE("procgen.moduleAssembly.squirrelBuildsValidatedPlacementTransforms") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_runtime_generation)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "procgen/Procgen.h"
 #include "procgen/RuntimeGeneration.h"
 #include "zeroerr/assert.h"
@@ -3729,10 +3738,10 @@ TEST_CASE("procgen.script.newShapeGrammarIsTheDocumentedEntryPoint") {
 }  // namespace test_procgen_scene_sink
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_production)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "production/Production.h"
 #include "zeroerr/assert.h"
@@ -4194,12 +4203,12 @@ TEST_CASE("reloadScript.nativeResetPolicyBacksUpBeforeReset") {
 #undef UnitReloadScriptTest
 #endif
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_classic_semantic_index)
-#include "PrivateTestScope.h"
 #include <filesystem>
 #include <fstream>
 #include <simplesquirrel/vm.hpp>
 #include <sstream>
 #include "PathBesideSource.h"
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
@@ -4250,9 +4259,9 @@ TEST_CASE("rpg.classic.semanticQuestEventSceneRuntime") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_dnut_script)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "common/ECS.h"
 #include "common/Module.h"
 #include "rpg/RpgDialect.h"
@@ -4479,8 +4488,8 @@ TEST_CASE("rpg.dnut.scriptOwnsAnimationAndVerifiesTheEffect") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_script)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -4510,8 +4519,8 @@ TEST_CASE("rpg.script.beginCastSkillAcceptsNullAndOmittedTarget") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_world_state_script)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "rpg/WorldState.h"
 #include "zeroerr/assert.h"
@@ -4543,9 +4552,9 @@ TEST_CASE("rpg.script.worldStateAcceptsStringIdentifiers") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel)
-#include "PrivateTestScope.h"
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Squirrel internal headers require this dependency order.

@@ -346,6 +346,7 @@ else()
     message(STATUS "Test units: ${_eve_test_target_count} domain executables")
   else()
     eve_add_test_executable(unit_test ${all_test_cpp})
+    eve_configure_monolithic_test_linker(unit_test)
     target_link_libraries(unit_test eve_engine_includes eve_nut_fixtures eve_graphics_window_fixtures)
     set(_eve_test_discovery
       "${CMAKE_CURRENT_BINARY_DIR}/unit_test_zeroerr_tests.cmake")

@@ -1690,6 +1690,59 @@ TEST_CASE("value.getIfInstances.directConstAndMutableBorrows") {
 }  // namespace value_lifecycle
 }  // namespace
 }  // namespace test_common_values
+
+#include "FieldDecodeCompatibility.h"
+#include "FieldReadCompatibility.h"
+#include "JsonReadCompatibility.h"
+#include "NumericDoubleCompatibility.h"
+#include "ScalarReadCompatibility.h"
+namespace test_json_read_compatibility {
+TEST_CASE("common.jsonRead.controlBytesPreserveWireSpelling") {
+    json_read_compatibility::controlBytesPreserveWireSpelling(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.quotePreservesUtf8AndPunctuation") {
+    json_read_compatibility::quotePreservesUtf8AndPunctuation(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.unsignedSyntaxKeepsLegacyAcceptanceAndSuffix") {
+    json_read_compatibility::unsignedSyntaxKeepsLegacyAcceptanceAndSuffix(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.artifactFieldsKeepRequiredStringAndDecimalContract") {
+    json_read_compatibility::artifactFieldsKeepRequiredStringAndDecimalContract(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.requiredStringsKeepEmptyAndOwningSemantics") {
+    field_read_compatibility::requiredStringsKeepEmptyAndOwningSemantics(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.nativeIntsKeepStrictKindsAndBounds") {
+    field_read_compatibility::nativeIntsKeepStrictKindsAndBounds(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.unsignedValueKeepsDecimalPrefixContract") {
+    field_read_compatibility::unsignedValueKeepsDecimalPrefixContract(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.booleansKeepFalsePayload") {
+    scalar_read_compatibility::booleansKeepFalsePayload(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.signedIntegersKeepFullRange") {
+    scalar_read_compatibility::signedIntegersKeepFullRange(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.unsignedIntegersKeepBounds") {
+    scalar_read_compatibility::unsignedIntegersKeepBounds(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.finiteFloatsKeepRoundingAndRange") {
+    scalar_read_compatibility::finiteFloatsKeepRoundingAndRange(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldDecode.jsonFieldsKeepWireKindsAndBytes") {
+    field_decode_compatibility::jsonFieldsKeepWireKindsAndBytes(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldDecode.jsonNumbersKeepFloatBoundariesAndRounding") {
+    field_decode_compatibility::jsonNumbersKeepFloatBoundariesAndRounding(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.numericDouble.preservesNonfiniteValuesAndIntegerRounding") {
+    numeric_double_compatibility::preservesNonfiniteValuesAndIntegerRounding(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.numericDouble.rejectsCoercionWithStructuredStatus") {
+    numeric_double_compatibility::rejectsCoercionWithStructuredStatus(_ZEROERR_TEST_CONTEXT);
+}
+}  // namespace test_json_read_compatibility
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_diagnostics)
@@ -2612,6 +2665,31 @@ TEST_CASE("scriptCompiler.generatedBindingContractsAreSearchable") {
     const auto hits = script::generatedBindingContracts().search("newWorld", {}, {}, 8);
     CHECK(!hits.empty());
     CHECK(hits[0].contract.toJson().find("\"method\":\"") != std::string::npos);
+}
+
+TEST_CASE("scriptCompiler.bindingContractSearchSplitsSlashAndDot") {
+    script::BindingContractRegistry registry;
+    script::BindingContract         reset;
+    reset.module          = "dialogue";
+    reset.method          = "reset";
+    reset.returnType      = "void";
+    reset.documentationId = "dialogue.reset";
+    registry.registerContract(reset);
+
+    script::BindingContract publish;
+    publish.module          = "dialogueFlow";
+    publish.method          = "publishGameplay";
+    publish.returnType      = "table";
+    publish.documentationId = "dialogueFlow.publishGameplay";
+    registry.registerContract(publish);
+
+    const auto dotted = registry.search("dialogue.reset", {}, {}, 4);
+    REQUIRE(!dotted.empty());
+    CHECK_EQ(dotted[0].contract.key(), std::string("dialogue/reset"));
+
+    const auto legacy = registry.search("dialogue publishGameplay", {}, {}, 4);
+    REQUIRE(!legacy.empty());
+    CHECK_EQ(legacy[0].contract.key(), std::string("dialogueFlow/publishGameplay"));
 }
 
 
