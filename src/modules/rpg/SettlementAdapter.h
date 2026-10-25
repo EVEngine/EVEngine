@@ -2,11 +2,12 @@
 
 /**
  * @file SettlementAdapter.h
- * @brief RPG AttributeSet policy adapter for the common settlement pipeline.
+ * @brief RPG vitals and attribute policy adapter for the common settlement pipeline.
  *
  * This adapter is deliberately independent from StatusSystem.  Statuses may
- * produce a SettlementRequest for periodic damage or healing, but health,
- * resistances, armor, shield and source attributes remain in AttributeSet.
+ * produce a SettlementRequest for periodic damage or healing. Current health
+ * lives in Vitals; maximum health, resistances, armor, shield and source
+ * modifiers live in AttributeSet.
  */
 
 #include "rpg/RPGActor.h"
@@ -38,7 +39,7 @@ namespace eve::rpg {
     const StatusTickEvent& tick, SubjectRef source, SubjectRef target, SimulationTick simulationTick);
 
 /**
- * @brief Settles damage/healing against one RPG actor's AttributeSet.
+ * @brief Settles damage/healing against one RPG actor's Vitals and AttributeSet.
  *
  * The target actor and optional source actor are borrowed for the synchronous
  * call.  `targetRef` and `sourceRef` are caller-owned stable identities; they

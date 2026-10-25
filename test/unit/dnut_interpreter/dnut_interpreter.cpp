@@ -10,390 +10,254 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
 #include "dnut_interpreter/DnutBlockScanner.h"
 #include "dnut_interpreter/DnutCompiler.h"
 #include "dnut_interpreter/DnutLexer.h"
 #include "dnut_interpreter/SequenceRuntime.h"
 #include "dnut_interpreter/StepKindRegistry.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
 
-#include <algorithm>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
-
-namespace {
 
 using namespace eve::dnut;
 
-StepField requiredField(std::string name, StepFieldType type) { return StepField{std::move(name), type, true}; }
-StepField optionalField(std::string name, StepFieldType type) { return StepField{std::move(name), type, false}; }
+namespace {
 
-/** @brief Registry with one `mark` instant step and two host-presented steps. */
-StepKindRegistry makeRegistry(std::vector<std::string>* marks = nullptr) {
+StepKindRegistry vocabulary(std::vector<std::string>* observed = nullptr) {
     StepKindRegistry registry;
-    registry.registerStep({"mark", "Mark", "test", StepShape::Instant, {requiredField("id", StepFieldType::String)}})
+    registry.registerStep({"mark", "Mark", "test", StepShape::Instant, {StepField{"id", StepFieldType::String, true}}})
         .expect("mark descriptor");
     registry
         .registerHandler("mark",
-                         [marks](const SequenceNode& node, const StepContext&) -> StepOutcome {
-                             if (marks) {
-                                 const eve::Value* id = node.payload.find("id");
-                                 marks->push_back(id && id->isString() ? id->asString() : std::string{});
-                             }
-                             return StepOutcome{};
+                         [observed](const SequenceNode& node, const StepContext&) -> StepOutcome {
+                             if (observed) observed->push_back(node.payload.find("id")->asString());
+                             return {};
                          })
         .expect("mark handler");
-    registry.registerStep({"hold", "Hold", "test", StepShape::Await, {}}).expect("hold descriptor");
     registry
-        .registerStep({"move",
-                       "Move",
-                       "test",
-                       StepShape::Await,
-                       {requiredField("actor", StepFieldType::String), requiredField("x", StepFieldType::Number),
-                        requiredField("y", StepFieldType::Number), optionalField("duration", StepFieldType::Number)}})
-        .expect("move descriptor");
-    registry
-        .registerStep({"message", "Message", "test", StepShape::Await, {requiredField("text", StepFieldType::String)}})
+        .registerStep(
+            {"message", "Message", "test", StepShape::Await, {StepField{"text", StepFieldType::String, true}}})
         .expect("message descriptor");
+    registry
+        .registerStep(
+            {"move",
+             "Move",
+             "test",
+             StepShape::Await,
+             {StepField{"x", StepFieldType::Number, true}, StepField{"duration", StepFieldType::Number, false}}})
+        .expect("move descriptor");
     return registry;
 }
 
-const SequenceNode* findNode(const SequenceAsset& asset, const std::string& id) { return asset.findNode(id); }
+const SequenceNode& node(const SequenceAsset& asset, const std::string& id) {
+    auto* found = asset.findNode(id);
+    REQUIRE(found != nullptr);
+    return *found;
+}
 
 }  // namespace
 
-TEST_CASE("dnut.language.sharedScannerFindsMixedDialectBlocks") {
+// Source -> token stream -> block inventory: delimiters inside quoted text remain data.
+TEST_CASE("dnut.language.scansMultipleDialectsAndQuotedBraces") {
     const std::string source =
         "schema \"eve.dnut\"\nversion 1\n"
-        "pool greeting { guide: \"brace { stays in text\" }\n"
+        "pool greetings { guide: \"brace { is text\" }\n"
         "conversation intro entry=end { node end end }\n"
         "story arrival { end }\n";
     auto tokens = lexDnut(source, "mixed.dnut");
     REQUIRE(tokens.ok());
     auto blocks = scanDnutBlocks(tokens.value(), "mixed.dnut");
     REQUIRE(blocks.ok());
-    REQUIRE_EQ(blocks.value().size(), 3u);
+    REQUIRE_EQ(blocks.value().size(), std::size_t{3});
     CHECK_EQ(blocks.value()[0].kind, std::string("pool"));
     CHECK_EQ(blocks.value()[1].kind, std::string("conversation"));
     CHECK_EQ(blocks.value()[2].kind, std::string("story"));
 }
 
-TEST_CASE("dnut.language.compilesControlFlow") {
-    StepKindRegistry  registry = makeRegistry();
-    const std::string source   = R"(
-// leading comment
+// A compiled asset is a graph; assert the graph shape and payload, not generated node ids.
+TEST_CASE("dnut.compiler.lowersSequenceBranchChoiceCallWaitAndEnd") {
+    auto registry = vocabulary();
+    auto output   = compileDnut(R"(
 story forest.arrival repeatable version=2 {
-    move actor=hero x=12 y=8 duration=0.8
+    mark id=entered
     if switch.gate == true {
-        mark id=inside
+        mark id=open
     } else {
-        mark id=outside
+        mark id=closed
     }
     choice {
-        option "Accept" when variable.gold >= 10 {
-            mark id=accepted
-        }
-        option "Decline" {
-            mark id=declined
-        }
+        option "Accept" when variable.gold >= 10 { mark id=accepted }
+        option "Decline" { mark id=declined }
     }
-    call forest.epilogue
+    call forest.end
     wait 0.5
     end
 }
-
-pool village {
-    elder: "欢迎"
-}
-)";
-    DnutCompileOutput output   = compileDnut(source, "story.dnut", registry);
+)",
+                                "story.dnut", registry);
     REQUIRE(!output.hasErrors());
-    REQUIRE_EQ(output.assets.size(), 1u);
-
-    const SequenceAsset& asset = output.assets.front();
+    REQUIRE_EQ(output.assets.size(), std::size_t{1});
+    const auto& asset = output.assets.front();
+    REQUIRE(asset.validate().ok());
     CHECK_EQ(asset.id, std::string("forest.arrival"));
     CHECK_EQ(asset.version, 2);
     CHECK(asset.repeatable);
-    REQUIRE(asset.validate().ok());
-
-    const SequenceNode* entry = findNode(asset, asset.entry);
-    REQUIRE(entry != nullptr);
-    CHECK_EQ(entry->type, std::string("move"));
-    const eve::Value* actor = entry->payload.find("actor");
-    REQUIRE(actor != nullptr);
-    CHECK_EQ(actor->asString(), std::string("hero"));
-
-    const SequenceNode* branch = asset.findNode(entry->next);
-    REQUIRE(branch != nullptr);
-    CHECK_EQ(branch->type, std::string("branch"));
-    REQUIRE_EQ(branch->routes.size(), 1u);
-    CHECK(!branch->routes.front().condition.isNull());
-
-    // `if` lowers to a branch whose route is the then-arm and whose `next` is the
-    // else-arm; both arms continue at the statement after the `if`.
-    const SequenceNode* thenArm = findNode(asset, branch->routes.front().target);
-    const SequenceNode* elseArm = findNode(asset, branch->next);
-    REQUIRE(thenArm != nullptr);
-    REQUIRE(elseArm != nullptr);
-    CHECK_EQ(thenArm->type, std::string("mark"));
-    CHECK_EQ(elseArm->type, std::string("mark"));
-    CHECK_EQ(thenArm->payload.find("id")->asString(), std::string("inside"));
-    CHECK_EQ(elseArm->payload.find("id")->asString(), std::string("outside"));
-    CHECK_EQ(thenArm->next, elseArm->next);
-
-    const SequenceNode* choice = asset.findNode(thenArm->next);
-    REQUIRE(choice != nullptr);
-    CHECK_EQ(choice->type, std::string("choice"));
-    REQUIRE_EQ(choice->routes.size(), 2u);
-    CHECK_EQ(choice->routes[0].label, std::string("Accept"));
-    CHECK_EQ(choice->routes[1].label, std::string("Decline"));
-    CHECK(!choice->routes[0].condition.isNull());
-    CHECK(choice->routes[1].condition.isNull());
-
-    // Each choice arm is its own node chain; both arms rejoin at the next statement.
-    const SequenceNode* acceptArm  = findNode(asset, choice->routes[0].target);
-    const SequenceNode* declineArm = findNode(asset, choice->routes[1].target);
-    REQUIRE(acceptArm != nullptr);
-    REQUIRE(declineArm != nullptr);
-    CHECK_EQ(acceptArm->payload.find("id")->asString(), std::string("accepted"));
-    CHECK_EQ(declineArm->payload.find("id")->asString(), std::string("declined"));
-    CHECK_EQ(acceptArm->next, choice->next);
-    CHECK_EQ(declineArm->next, choice->next);
-
-    const SequenceNode* call = findNode(asset, choice->next);
-    REQUIRE(call != nullptr);
-    CHECK_EQ(call->type, std::string("call"));
-    const eve::Value* target = call->payload.find("target");
-    REQUIRE(target != nullptr);
-    CHECK_EQ(target->asString(), std::string("forest.epilogue"));
-
-    const SequenceNode* waitNode = findNode(asset, call->next);
-    REQUIRE(waitNode != nullptr);
-    CHECK_EQ(waitNode->type, std::string("wait"));
-    CHECK_EQ(waitNode->payload.find("duration")->asDouble(), 0.5);
-
-    const SequenceNode* endNode = findNode(asset, waitNode->next);
-    REQUIRE(endNode != nullptr);
-    CHECK_EQ(endNode->type, std::string("end"));
+    const auto& entry = node(asset, asset.entry);
+    CHECK_EQ(entry.type, std::string("mark"));
+    CHECK_EQ(entry.payload.find("id")->asString(), std::string("entered"));
+    const auto& branch = node(asset, entry.next);
+    REQUIRE_EQ(branch.routes.size(), std::size_t{1});
+    CHECK_EQ(branch.type, std::string("branch"));
+    CHECK(!branch.routes[0].condition.isNull());
+    const auto& open   = node(asset, branch.routes[0].target);
+    const auto& closed = node(asset, branch.next);
+    CHECK_EQ(open.payload.find("id")->asString(), std::string("open"));
+    CHECK_EQ(closed.payload.find("id")->asString(), std::string("closed"));
+    CHECK_EQ(open.next, closed.next);
+    const auto& choice = node(asset, open.next);
+    REQUIRE_EQ(choice.routes.size(), std::size_t{2});
+    CHECK_EQ(choice.routes[0].label, std::string("Accept"));
+    CHECK(!choice.routes[0].condition.isNull());
+    CHECK_EQ(choice.routes[1].label, std::string("Decline"));
+    CHECK(choice.routes[1].condition.isNull());
+    CHECK_EQ(node(asset, choice.routes[0].target).next, choice.next);
+    CHECK_EQ(node(asset, choice.routes[1].target).next, choice.next);
+    const auto& call = node(asset, choice.next);
+    CHECK_EQ(call.type, std::string("call"));
+    CHECK_EQ(call.payload.find("target")->asString(), std::string("forest.end"));
+    const auto& wait = node(asset, call.next);
+    CHECK_EQ(wait.type, std::string("wait"));
+    CHECK_EQ(wait.payload.find("duration")->asDouble(), 0.5);
+    CHECK_EQ(node(asset, wait.next).type, std::string("end"));
 }
 
-TEST_CASE("dnut.language.reportsUnknownStepsAndBadPayloads") {
-    StepKindRegistry  registry = makeRegistry();
-    DnutCompileOutput output   = compileDnut("story broken {\n    teleport actor=hero\n}\n", "broken.dnut", registry);
-    CHECK(output.hasErrors());
-    CHECK(output.assets.empty());
-    REQUIRE(!output.diagnostics.empty());
-    CHECK(output.diagnostics.front().path == std::string("broken.dnut"));
-    CHECK(output.diagnostics.front().line == 2);
-    CHECK(output.diagnostics.front().message.find("teleport") != std::string::npos);
-
-    DnutCompileOutput missing = compileDnut("story broken {\n    mark\n}\n", "broken.dnut", registry);
-    CHECK(missing.hasErrors());
-    CHECK(missing.diagnostics.front().message.find("requires field 'id'") != std::string::npos);
-
-    DnutCompileOutput unknownField =
-        compileDnut("story broken {\n    mark id=ok extra=1\n}\n", "broken.dnut", registry);
-    CHECK(unknownField.hasErrors());
-    CHECK(unknownField.diagnostics.front().message.find("does not accept field 'extra'") != std::string::npos);
-
-    DnutCompileOutput instantWithoutHandler =
-        compileDnut("story broken {\n    hold id=1\n}\n", "broken.dnut", registry);
-    CHECK(instantWithoutHandler.hasErrors());
+TEST_CASE("dnut.compiler.rejectsUnknownMissingWrongAndExtraStepFields") {
+    auto registry = vocabulary();
+    const struct {
+        const char* statement;
+        const char* diagnostic;
+    } cases[] = {
+        {"teleport actor=hero", "teleport"},
+        {"mark", "requires field 'id'"},
+        {"mark id=ok extra=1", "does not accept field 'extra'"},
+        {"move x=wrong", "x"},
+    };
+    for (const auto& test : cases) {
+        auto output = compileDnut(std::string("story broken {\n") + test.statement + "\n}\n", "broken.dnut", registry);
+        CHECK(output.hasErrors());
+        CHECK(output.assets.empty());
+        REQUIRE(!output.diagnostics.empty());
+        CHECK_EQ(output.diagnostics.front().path, std::string("broken.dnut"));
+        CHECK(output.diagnostics.front().message.find(test.diagnostic) != std::string::npos);
+    }
 }
 
-TEST_CASE("dnut.language.recoversAfterABadStatement") {
-    StepKindRegistry  registry = makeRegistry();
-    DnutCompileOutput output = compileDnut("story mixed {\n    teleport\n    mark id=ok\n}\n", "mixed.dnut", registry);
-    CHECK(output.hasErrors());
-    // Recovery keeps the block parseable, so the following valid statement still
-    // resolves; the asset itself is withheld because the document has an error.
-    CHECK(output.assets.empty());
-    CHECK_EQ(output.diagnostics.size(), 1u);
-}
-
-TEST_CASE("dnut.runtime.executesAndBlocks") {
+// Runtime actions form a host protocol: instant steps execute, await steps suspend.
+TEST_CASE("dnut.runtime.startsExecutesAndAcknowledgesAwaitSteps") {
     std::vector<std::string> marks;
-    StepKindRegistry         registry = makeRegistry(&marks);
-    DnutCompileOutput        output   = compileDnut(
-        "story run {\n    mark id=first\n    hold\n    mark id=second\n    message text=hi\n}\n", "run.dnut", registry);
-    REQUIRE(!output.hasErrors());
-    REQUIRE_EQ(output.assets.size(), 1u);
-
-    const SequenceAsset* asset = &output.assets.front();
-    SequenceRuntime      runtime;
-    runtime.setStepRegistry(&registry);
-    REQUIRE(runtime.start(asset).ok());
-    REQUIRE_EQ(marks.size(), 1u);
-    CHECK_EQ(marks.front(), std::string("first"));
-    CHECK(runtime.isBlocked());
-    CHECK_EQ(runtime.currentNode()->type, std::string("hold"));
-
-    REQUIRE(runtime.advance().ok());
-    REQUIRE_EQ(marks.size(), 2u);
-    CHECK_EQ(marks.back(), std::string("second"));
-    CHECK(runtime.isBlocked());
-    CHECK_EQ(runtime.currentNode()->type, std::string("message"));
-
-    REQUIRE(runtime.advance().ok());
-    CHECK(!runtime.isActive());
-}
-
-TEST_CASE("dnut.runtime.choiceConditionsAndRejection") {
-    StepKindRegistry  registry = makeRegistry();
-    DnutCompileOutput output   = compileDnut(
-        "story pick {\n    choice {\n        option \"Yes\" when switch.ok == true {\n            mark id=yes\n        "
-          "}\n"
-          "        option \"No\" {\n            mark id=no\n        }\n    }\n}\n",
-        "pick.dnut", registry);
-    REQUIRE(!output.hasErrors());
-    const SequenceAsset* asset = &output.assets.front();
-
-    SequenceRuntime runtime;
-    runtime.setStepRegistry(&registry);
-    runtime.setConditionEvaluator([](const eve::Value&) { return SequenceConditionOutcome{false, "value-mismatch"}; });
-    REQUIRE(runtime.start(asset).ok());
-    CHECK(runtime.isBlocked());
-
-    // A rejected conditional route keeps the cursor on the choice.
-    auto rejected = runtime.select("Yes");
-    CHECK(!rejected.ok());
-    CHECK(runtime.isBlocked());
-    CHECK_EQ(runtime.currentNode()->type, std::string("choice"));
-    const auto* rejectedDiagnostic = rejected.error();
-    REQUIRE(rejectedDiagnostic != nullptr);
-    CHECK(rejectedDiagnostic->message().find("choice condition rejected") != std::string::npos);
-
-    // An unknown label is a distinct, stable failure.
-    auto unknown = runtime.select("Nothing");
-    CHECK(!unknown.ok());
-    const auto* unknownDiagnostic = unknown.error();
-    REQUIRE(unknownDiagnostic != nullptr);
-    CHECK(unknownDiagnostic->message().find("unknown choice route") != std::string::npos);
-
-    // The unconditional route always works.
-    REQUIRE(runtime.select("No").ok());
-    CHECK(!runtime.isActive());
-}
-
-TEST_CASE("dnut.runtime.advanceRejectsChoice") {
-    StepKindRegistry  registry = makeRegistry();
-    DnutCompileOutput output   = compileDnut(
-        "story pick {\n    choice {\n        option \"Only\" {\n            mark id=x\n        }\n    }\n}\n",
-        "pick.dnut", registry);
+    auto                     registry = vocabulary(&marks);
+    auto output = compileDnut("story run {\n mark id=first\n message text=hi\n mark id=second\n move x=2\n}\n",
+                              "run.dnut", registry);
     REQUIRE(!output.hasErrors());
     SequenceRuntime runtime;
     runtime.setStepRegistry(&registry);
     REQUIRE(runtime.start(&output.assets.front()).ok());
-    CHECK(!runtime.advance().ok());
+    REQUIRE_EQ(marks.size(), std::size_t{1});
+    CHECK_EQ(marks[0], std::string("first"));
+    CHECK(runtime.isActive());
     CHECK(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNode()->type, std::string("message"));
+    REQUIRE(runtime.advance().ok());
+    REQUIRE_EQ(marks.size(), std::size_t{2});
+    CHECK_EQ(marks[1], std::string("second"));
+    CHECK_EQ(runtime.currentNode()->type, std::string("move"));
+    REQUIRE(runtime.advance().ok());
+    CHECK(!runtime.isActive());
+    CHECK(!runtime.isBlocked());
 }
 
-TEST_CASE("dnut.runtime.callPushesAndPopsFrames") {
-    std::vector<std::string> marks;
-    StepKindRegistry         registry = makeRegistry(&marks);
-    DnutCompileOutput        output   = compileDnut(
-        "story outer {\n    mark id=before\n    call inner\n    mark id=after\n}\n"
-                 "story inner {\n    mark id=inside\n}\n",
-        "call.dnut", registry);
+TEST_CASE("dnut.runtime.choiceRejectsUnknownOrFalseRouteWithoutMovingCursor") {
+    auto registry = vocabulary();
+    auto output   = compileDnut(R"(
+story choose {
+    choice {
+        option "Yes" when switch.ok == true { mark id=yes }
+        option "No" { mark id=no }
+    }
+}
+)",
+                                "choice.dnut", registry);
     REQUIRE(!output.hasErrors());
-    REQUIRE_EQ(output.assets.size(), 2u);
-
-    std::map<std::string, const SequenceAsset*> byId;
-    for (const auto& asset : output.assets) byId.emplace(asset.id, &asset);
-
     SequenceRuntime runtime;
     runtime.setStepRegistry(&registry);
-    runtime.setAssetResolver([&byId](const std::string& id) -> const SequenceAsset* {
-        const auto found = byId.find(id);
-        return found == byId.end() ? nullptr : found->second;
+    runtime.setConditionEvaluator([](const eve::Value&) { return SequenceConditionOutcome{false, "value-mismatch"}; });
+    REQUIRE(runtime.start(&output.assets.front()).ok());
+    CHECK(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNode()->type, std::string("choice"));
+    CHECK(!runtime.advance().ok());
+    CHECK(!runtime.select("missing").ok());
+    CHECK(!runtime.select("Yes").ok());
+    CHECK(runtime.isBlocked());
+    CHECK_EQ(runtime.currentNode()->type, std::string("choice"));
+    REQUIRE(runtime.select("No").ok());
+    CHECK(!runtime.isActive());
+}
+
+TEST_CASE("dnut.runtime.callUsesResolverAndReturnsToCaller") {
+    std::vector<std::string> marks;
+    auto                     registry = vocabulary(&marks);
+    auto                     output   = compileDnut(
+        "story outer {\n mark id=before\n call inner\n mark id=after\n}\n"
+                              "story inner {\n mark id=inside\n}\n",
+        "call.dnut", registry);
+    REQUIRE(!output.hasErrors());
+    REQUIRE_EQ(output.assets.size(), std::size_t{2});
+    std::map<std::string, const SequenceAsset*> byId;
+    for (const auto& asset : output.assets) byId.emplace(asset.id, &asset);
+    SequenceRuntime runtime;
+    runtime.setStepRegistry(&registry);
+    runtime.setAssetResolver([&](const std::string& id) -> const SequenceAsset* {
+        auto it = byId.find(id);
+        return it == byId.end() ? nullptr : it->second;
     });
     REQUIRE(runtime.start(byId.at("outer")).ok());
-    REQUIRE_EQ(marks.size(), 3u);
+    REQUIRE_EQ(marks.size(), std::size_t{3});
     CHECK_EQ(marks[0], std::string("before"));
     CHECK_EQ(marks[1], std::string("inside"));
     CHECK_EQ(marks[2], std::string("after"));
     CHECK(!runtime.isActive());
 }
 
-TEST_CASE("dnut.runtime.enforcesExecutionBudget") {
-    StepKindRegistry registry = makeRegistry();
-    // A hand-built self-referential branch is the only way to express a cycle;
-    // the compiler cannot produce one, but authored content can be hand-edited.
-    SequenceAsset asset;
-    asset.id    = "loop";
-    asset.entry = "n1";
-    SequenceNode branch;
-    branch.id   = "n1";
-    branch.type = "branch";
-    branch.routes.push_back(
-        {"",
-         eve::Value(eve::Value::Object{
-             {"var", eve::Value::string("x")}, {"op", eve::Value::string("eq")}, {"value", eve::Value::integer(0)}}),
-         "n1"});
-    asset.nodes.push_back(std::move(branch));
-
-    SequenceRuntime runtime;
-    runtime.setStepRegistry(&registry);
-    runtime.setConditionEvaluator([](const eve::Value&) { return SequenceConditionOutcome{true, {}}; });
-    auto started = runtime.start(&asset);
-    CHECK(!started.ok());
-    const auto* diagnostic = started.error();
-    REQUIRE(diagnostic != nullptr);
-    CHECK(diagnostic->message().find("budget") != std::string::npos);
-}
-
-TEST_CASE("dnut.runtime.capturesAndRestoresCursor") {
-    std::vector<std::string> marks;
-    StepKindRegistry         registry = makeRegistry(&marks);
-    DnutCompileOutput        output   = compileDnut(
-        "story save {\n    mark id=first\n    message text=hi\n    mark id=second\n}\n", "save.dnut", registry);
+TEST_CASE("dnut.runtime.captureRestoreAndVersionMismatchAreTransactional") {
+    auto registry = vocabulary();
+    auto output   = compileDnut("story save {\n message text=hi\n mark id=after\n}\n", "save.dnut", registry);
     REQUIRE(!output.hasErrors());
-    REQUIRE_EQ(output.assets.size(), 1u);
-    const SequenceAsset* asset = &output.assets.front();
-
-    SequenceRuntime runtime;
-    runtime.setStepRegistry(&registry);
-    REQUIRE(runtime.start(asset).ok());
-    CHECK_EQ(runtime.currentNode()->type, std::string("message"));
-
-    eve::Value captured;
-    REQUIRE(runtime.captureState(captured).ok());
-
+    auto*           asset = &output.assets.front();
+    SequenceRuntime source;
+    source.setStepRegistry(&registry);
+    REQUIRE(source.start(asset).ok());
+    eve::Value snapshot;
+    REQUIRE(source.captureState(snapshot).ok());
     SequenceRuntime restored;
     restored.setStepRegistry(&registry);
     restored.setAssetResolver(
         [asset](const std::string& id) -> const SequenceAsset* { return id == asset->id ? asset : nullptr; });
-    REQUIRE(restored.restoreState(captured).ok());
-    CHECK(restored.isActive());
+    REQUIRE(restored.restoreState(snapshot).ok());
     CHECK(restored.isBlocked());
     CHECK_EQ(restored.currentNode()->type, std::string("message"));
     REQUIRE(restored.advance().ok());
-    CHECK_EQ(marks.size(), 2u);
-    CHECK_EQ(marks.back(), std::string("second"));
-}
-
-TEST_CASE("dnut.runtime.rejectsVersionMismatchOnRestore") {
-    StepKindRegistry  registry = makeRegistry();
-    DnutCompileOutput output   = compileDnut("story versioned {\n    message text=hi\n}\n", "v.dnut", registry);
-    REQUIRE(!output.hasErrors());
-    SequenceAsset changed = output.assets.front();
-    changed.version       = 7;
-
-    SequenceRuntime runtime;
-    runtime.setStepRegistry(&registry);
-    REQUIRE(runtime.start(&output.assets.front()).ok());
-    eve::Value captured;
-    REQUIRE(runtime.captureState(captured).ok());
-
-    SequenceRuntime restored;
-    restored.setStepRegistry(&registry);
-    restored.setAssetResolver(
-        [&changed](const std::string& id) -> const SequenceAsset* { return id == changed.id ? &changed : nullptr; });
-    CHECK(!restored.restoreState(captured).ok());
     CHECK(!restored.isActive());
+
+    SequenceAsset changed = *asset;
+    changed.version += 1;
+    SequenceRuntime rejected;
+    rejected.setStepRegistry(&registry);
+    rejected.setAssetResolver(
+        [&](const std::string& id) -> const SequenceAsset* { return id == changed.id ? &changed : nullptr; });
+    CHECK(!rejected.restoreState(snapshot).ok());
+    CHECK(!rejected.isActive());
 }

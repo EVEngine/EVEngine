@@ -12,20 +12,22 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld)
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cstddef>
-#include <cstring>
-#include <limits>
-#include <utility>
-#include <vector>
-#include "pixelworld/PixelMaterialCatalogCodec.h"
-#include "pixelworld/PixelWorld.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
+
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+#include <cstring>
+#include <limits>
+#include <string>
+#include <utility>
+#include <vector>
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld)
+#include "pixelworld/PixelMaterialCatalogCodec.h"
+#include "pixelworld/PixelWorld.h"
 // pixelworld.cpp
 namespace test_pixelworld {
 using namespace eve::pixelworld;
@@ -56,777 +58,588 @@ std::vector<std::byte> withoutThermalRemainders(const std::vector<std::byte>& cu
 
 }  // namespace
 
-TEST_CASE("pixelworld.sand_falls_and_stops_on_stone") {
-    PixelWorld world(7);
-    for (int x = -2; x <= 2; ++x) world.setMaterial(x, 4, "stone");
-    world.setMaterial(0, 0, "sand");
-    for (std::uint64_t tick = 1; tick <= 6; ++tick) {
-        auto result = world.advance(eve::SimulationTick(tick));
-        REQUIRE(result.ok());
-    }
-    CHECK_EQ(world.getMaterial(0, 3), int(MaterialId::Sand));
-    CHECK_EQ(world.getMaterial(0, 4), int(MaterialId::Stone));
-}
-
-TEST_CASE("pixelworld.cross_chunk_motion_is_conservative") {
-    PixelWorld world(11);
-    for (int x = 61; x <= 65; ++x) world.setMaterial(x, 65, "stone");
-    world.setMaterial(63, 63, "sand");
-    for (std::uint64_t tick = 1; tick <= 4; ++tick) world.advance(eve::SimulationTick(tick)).expect("cross-chunk step");
-    CHECK_EQ(world.getMaterial(63, 64), int(MaterialId::Sand));
-    CHECK_EQ(world.getMaterial(63, 65), int(MaterialId::Stone));
-    CHECK(world.chunkCount() >= 2);
-}
-
-TEST_CASE("pixelworld.fire_converts_water_to_steam") {
-    PixelWorld world(3);
-    world.setMaterial(10, 10, "fire");
-    world.setMaterial(11, 10, "water");
-    world.setMaterial(10, 11, "stone");
-    world.setMaterial(11, 11, "stone");
-    world.setMaterial(12, 10, "stone");
-    world.setMaterial(12, 11, "stone");
-    const StepStats stats = world.advance(eve::SimulationTick(1)).expect("reaction step");
-    CHECK(stats.reactions > 0);
-    const bool steamPresent =
-        world.getMaterial(11, 10) == int(MaterialId::Steam) || world.getMaterial(11, 9) == int(MaterialId::Steam);
-    CHECK(steamPresent);
-}
-
-TEST_CASE("pixelworld.fixed_seed_and_ticks_are_deterministic") {
-    PixelWorld a(99), b(99);
-    for (int x = -8; x <= 8; ++x) {
-        a.setMaterial(x, 20, "stone");
-        b.setMaterial(x, 20, "stone");
-    }
-    a.paintCircle(0, 2, 6, "sand");
-    b.paintCircle(0, 2, 6, "sand");
-    a.paintCircle(3, 0, 3, "water");
-    b.paintCircle(3, 0, 3, "water");
-    for (std::uint64_t tick = 1; tick <= 30; ++tick) {
-        a.advance(eve::SimulationTick(tick)).expect("determinism a");
-        b.advance(eve::SimulationTick(tick)).expect("determinism b");
-    }
-    auto aBytes = a.saveSnapshot().expect("snapshot a");
-    auto bBytes = b.saveSnapshot().expect("snapshot b");
-    REQUIRE_EQ(aBytes.size(), bBytes.size());
-    CHECK(std::equal(aBytes.begin(), aBytes.end(), bBytes.begin()));
-}
-
-TEST_CASE("pixelworld.snapshot_restore_is_transactional") {
-    PixelWorld source(123);
-    source.paintCircle(65, -2, 4, "oil");
-    source.step();
-    const auto bytes = source.saveSnapshot().expect("save source");
-
-    PixelWorld restored(1);
-    restored.restoreSnapshot(bytes).expect("restore source");
-    CHECK_EQ(restored.seed(), source.seed());
-    CHECK_EQ(restored.tickValue(), source.tickValue());
-    CHECK_EQ(restored.getMaterial(65, -1), source.getMaterial(65, -1));
-
-    std::vector<std::byte> malformed = bytes;
-    malformed.pop_back();
-    auto failed = restored.restoreSnapshot(malformed);
-    CHECK(!failed.ok());
-    CHECK_EQ(restored.seed(), source.seed());
-    CHECK_EQ(restored.tickValue(), source.tickValue());
-}
-
-TEST_CASE("pixelworld.rejects_non_monotonic_tick") {
-    PixelWorld world;
-    world.advance(eve::SimulationTick(2)).expect("first step");
-    auto rejected = world.advance(eve::SimulationTick(2));
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::PreconditionViolation);
-}
-
-TEST_CASE("pixelworld.changed_chunk_snapshots_are_owned_canonical_and_incremental") {
-    PixelWorld world(17);
-    world.setMaterial(70, 2, "sand");
-    world.setMaterial(-2, 2, "water");
-    const std::uint64_t baseline = world.revision();
-
-    auto initial = world.snapshotChangedChunks(0);
-    REQUIRE_EQ(initial.size(), std::size_t(2));
-    CHECK(initial[0].x < initial[1].x);
-    CHECK_EQ(initial[0].cells.size(), std::size_t(kPixelChunkSize * kPixelChunkSize));
-    const PixelCell ownedCell = initial[0].cells[2 * kPixelChunkSize + 62];
-
-    world.setMaterial(70, 3, "stone");
-    auto incremental = world.snapshotChangedChunks(baseline);
-    REQUIRE_EQ(incremental.size(), std::size_t(1));
-    CHECK_EQ(incremental[0].x, 1);
-    CHECK_EQ(initial[0].cells[2 * kPixelChunkSize + 62], ownedCell);
-}
-
-TEST_CASE("pixelworld.revision_tracks_lifetime_only_changes") {
-    PixelWorld world(23);
-    world.setMaterial(0, 0, "fire");
-    const std::uint64_t before = world.revision();
-    const StepStats     stats  = world.advance(eve::SimulationTick(1)).expect("fire lifetime step");
-    CHECK(stats.cellsChanged > 0);
-    CHECK(world.revision() > before);
-    const auto changed = world.snapshotChangedChunks(before);
-    CHECK(!changed.empty());
-    CHECK(std::all_of(changed.begin(), changed.end(),
-                      [before](const PixelChunkSnapshot& chunk) { return chunk.revision > before; }));
-}
-
-TEST_CASE("pixelworld.material_catalog_validates_names_and_drives_custom_reactions") {
-    MaterialCatalog                 builtIn = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    const MaterialId                brine = MaterialId(definitions.size());
-    definitions.push_back({brine, "brine", MaterialState::Liquid, 110, 35, 30, 90, 32767, 32767, 120});
-    std::vector<MaterialReactionRule> reactions{
-        {"brine.stone.hot-only", brine, MaterialId::Stone, MaterialId::Fire, MaterialId::Lava, 1000, 0, 200},
-        {"brine.stone.erode", brine, MaterialId::Stone, MaterialId::Water, MaterialId::Sand, -32768, 5, 100},
+TEST_CASE("pixelworld.spec.simulationCellsAndTime") {
+    SUB_CASE("sand falls until stone; crossing a chunk boundary preserves one particle") {
+        PixelWorld world(11);
+        for (int x = 61; x <= 65; ++x) world.setMaterial(x, 65, "stone");
+        world.setMaterial(63, 63, "sand");
+        for (std::uint64_t tick = 1; tick <= 4; ++tick) REQUIRE(world.advance(eve::SimulationTick(tick)).ok());
+        REQUIRE(world.getMaterial(63, 64) == int(MaterialId::Sand));
+        REQUIRE(world.getMaterial(63, 65) == int(MaterialId::Stone));
+        REQUIRE(world.chunkCount() >= 2);
     };
-    MaterialCatalog catalog =
-        MaterialCatalog::create(std::move(definitions), std::move(reactions)).expect("custom catalog");
-    PixelWorld world(41, catalog);
-
-    world.setMaterialChecked(10, 10, "brine").expect("place brine");
-    world.setMaterial(11, 10, "stone");
-    world.setMaterial(9, 10, "stone");
-    world.setMaterial(10, 11, "stone");
-    world.setMaterial(9, 11, "stone");
-    world.setMaterial(11, 11, "stone");
-    const std::uint64_t beforeUnknown = world.revision();
-    auto                unknown       = world.setMaterialChecked(0, 0, "typo-material");
-    CHECK(!unknown.ok());
-    CHECK_EQ(unknown.error()->code(), eve::DiagnosticCode::NotFound);
-    CHECK_EQ(world.revision(), beforeUnknown);
-
-    const StepStats stats = world.advance(eve::SimulationTick(1)).expect("custom reaction step");
-    CHECK(stats.reactions > 0);
-    const int  center       = world.getMaterial(10, 10);
-    const bool adjacentSand = world.getMaterial(9, 10) == int(MaterialId::Sand) ||
-                              world.getMaterial(11, 10) == int(MaterialId::Sand) ||
-                              world.getMaterial(10, 11) == int(MaterialId::Sand);
-    const bool adjacentWater = world.getMaterial(9, 10) == int(MaterialId::Water) ||
-                               world.getMaterial(11, 10) == int(MaterialId::Water) ||
-                               world.getMaterial(10, 11) == int(MaterialId::Water);
-    const bool productsPresent =
-        (center == int(MaterialId::Water) && adjacentSand) || (center == int(MaterialId::Sand) && adjacentWater);
-    CHECK(productsPresent);
-}
-
-TEST_CASE("pixelworld.material_catalog_owns_color_and_canonical_tags") {
-    MaterialCatalog builtIn = MaterialCatalog::builtIn();
-    CHECK_EQ(builtIn.definition(MaterialId::Water).displayRgba, std::uint32_t(0x1F61F2DBU));
-    PixelWorld world(42, builtIn);
-    CHECK_EQ(world.materialDisplayRgba(MaterialId::Acid), std::uint32_t(0x4DEB3DE0U));
-
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    definitions[std::size_t(MaterialId::Sand)].tags = {"mobile", "granular"};
-    MaterialCatalog canonical = MaterialCatalog::create(std::move(definitions)).expect("sorted tags");
-    const auto&     tags      = canonical.definition(MaterialId::Sand).tags;
-    REQUIRE_EQ(tags.size(), std::size_t(2));
-    CHECK_EQ(tags[0], std::string("granular"));
-    CHECK_EQ(tags[1], std::string("mobile"));
-
-    std::vector<MaterialDefinition> invalid(canonical.definitions().begin(), canonical.definitions().end());
-    invalid[std::size_t(MaterialId::Sand)].tags = {"mobile", "mobile"};
-    CHECK(!MaterialCatalog::create(std::move(invalid)).ok());
-}
-
-TEST_CASE("pixelworld.material_catalog_json_roundtrips_and_rejects_unknown_schema") {
-    const MaterialCatalog builtIn = MaterialCatalog::builtIn();
-    const std::string     json    = encodeMaterialCatalogJson(builtIn).expect("encode Catalog JSON");
-    const MaterialCatalog decoded = decodeMaterialCatalogJson(json).expect("decode Catalog JSON");
-    CHECK_EQ(decoded.fingerprint(), builtIn.fingerprint());
-    CHECK_EQ(decoded.definition(MaterialId::Fire).displayRgba, builtIn.definition(MaterialId::Fire).displayRgba);
-    CHECK_EQ(decoded.reactions().size(), builtIn.reactions().size());
-    CHECK_EQ(decoded.phaseRules().size(), builtIn.phaseRules().size());
-
-    std::string unknownField = json;
-    unknownField.insert(unknownField.find('{') + 1, "\"unknown\":1,");
-    CHECK(!decodeMaterialCatalogJson(unknownField).ok());
-    std::string unknownVersion = json;
-    const auto  version        = unknownVersion.find("\"version\": 1");
-    REQUIRE(version != std::string::npos);
-    unknownVersion.replace(version, std::string("\"version\": 1").size(), "\"version\": 2");
-    CHECK(!decodeMaterialCatalogJson(unknownVersion).ok());
-    CHECK(!decodeMaterialCatalogJson("{broken").ok());
-    CHECK(
-        !decodeMaterialCatalogJson(
-             R"({"schema":"eve.pixelworld.material-catalog","version":1,"materials":{},"reactions":[],"phaseRules":[]})")
-             .ok());
-    CHECK(
-        !decodeMaterialCatalogJson(
-             R"({"schema":"eve.pixelworld.material-catalog","version":1,"materials":[7],"reactions":[],"phaseRules":[]})")
-             .ok());
-    std::string overflowingId = json;
-    const auto  firstId       = overflowingId.find("\"id\": 0");
-    REQUIRE(firstId != std::string::npos);
-    overflowingId.replace(firstId, std::string("\"id\": 0").size(), "\"id\": 70000");
-    CHECK(!decodeMaterialCatalogJson(overflowingId).ok());
-}
-
-TEST_CASE("pixelworld.material_catalog_hot_reload_is_paused_compatible_and_transactional") {
-    PixelWorld world(43);
-    world.setMaterial(1, 1, "water");
-    const auto                      originalLink        = world.worldLink();
-    const std::uint64_t             originalFingerprint = world.materialCatalogFingerprint();
-    MaterialCatalog                 builtIn             = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    definitions[std::size_t(MaterialId::Water)].displayRgba = 0x12345678U;
-    definitions[std::size_t(MaterialId::Water)].viscosity   = 31;
-    definitions[std::size_t(MaterialId::Water)].density     = 60;
-    MaterialCatalog replacement =
-        MaterialCatalog::create(std::move(definitions), {builtIn.reactions().begin(), builtIn.reactions().end()},
-                                {builtIn.phaseRules().begin(), builtIn.phaseRules().end()})
-            .expect("compatible Catalog");
-    const std::string replacementJson = encodeMaterialCatalogJson(replacement).expect("encode replacement Catalog");
-
-    CHECK(!world.reloadMaterialCatalog(replacement, originalFingerprint).ok());
-    CHECK_EQ(world.materialCatalogFingerprint(), originalFingerprint);
-    world.setPaused(true);
-    CHECK(!world.reloadMaterialCatalog(replacement, originalFingerprint + 1).ok());
-    CHECK_EQ(world.materialCatalogFingerprint(), originalFingerprint);
-    const auto receipt =
-        world.reloadMaterialCatalog(std::move(replacement), originalFingerprint).expect("paused Catalog reload");
-    CHECK_EQ(receipt.fingerprintBefore, originalFingerprint);
-    CHECK(receipt.fingerprintAfter != originalFingerprint);
-    CHECK_EQ(receipt.chunksRebuilt, std::uint32_t(1));
-    CHECK(receipt.replayHistoryInvalidated);
-    CHECK(world.worldLink().epoch > originalLink.epoch);
-    CHECK_EQ(world.materialDisplayRgba(MaterialId::Water), std::uint32_t(0x12345678U));
-    CHECK_EQ(world.getMaterial(1, 1), int(MaterialId::Water));
-
-    world.setMaterial(1, 2, "oil");
-    world.setMaterial(0, 1, "stone");
-    world.setMaterial(2, 1, "stone");
-    world.setMaterial(0, 2, "stone");
-    world.setMaterial(2, 2, "stone");
-    world.setPaused(false);
-    world.advance(eve::SimulationTick(1)).expect("advance with rebuilt displacement table");
-    CHECK_EQ(world.getMaterial(1, 1), int(MaterialId::Water));
-    CHECK_EQ(world.getMaterial(1, 2), int(MaterialId::Oil));
-    world.setPaused(true);
-
-    const std::uint64_t revisionBeforeNoOp = world.revision();
-    const auto          noOp =
-        world
-            .reloadMaterialCatalog(decodeMaterialCatalogJson(replacementJson).expect("decode replacement Catalog"),
-                                   world.materialCatalogFingerprint())
-            .expect("same Catalog is a no-op");
-    CHECK_EQ(noOp.revisionBefore, revisionBeforeNoOp);
-    CHECK_EQ(noOp.revisionAfter, revisionBeforeNoOp);
-    CHECK_EQ(noOp.worldEpoch, world.worldLink().epoch);
-    CHECK(!noOp.replayHistoryInvalidated);
-
-    const MaterialCatalog           incompatibleBase = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> incompatible(incompatibleBase.definitions().begin(),
-                                                 incompatibleBase.definitions().end());
-    incompatible[std::size_t(MaterialId::Water)].name = "renamed-water";
-    auto                bad      = MaterialCatalog::create(std::move(incompatible)).expect("valid but incompatible");
-    const std::uint64_t revision = world.revision();
-    CHECK(!world.reloadMaterialCatalog(std::move(bad), world.materialCatalogFingerprint()).ok());
-    CHECK_EQ(world.revision(), revision);
-}
-
-TEST_CASE("pixelworld.snapshot_rejects_material_catalog_mismatch_transactionally") {
-    PixelWorld builtInWorld(5);
-    builtInWorld.setMaterial(0, 0, "sand");
-    const auto bytes = builtInWorld.saveSnapshot().expect("built-in snapshot");
-
-    MaterialCatalog                 builtIn = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    const MaterialId                custom = MaterialId(definitions.size());
-    definitions.push_back({custom, "custom", MaterialState::Powder, 150, 20, 10, 50});
-    PixelWorld customWorld(9, MaterialCatalog::create(std::move(definitions)).expect("catalog with custom material"));
-    customWorld.setMaterialChecked(3, 3, "custom").expect("place custom material");
-    const std::uint64_t revisionBefore = customWorld.revision();
-
-    auto rejected = customWorld.restoreSnapshot(bytes);
-    CHECK(!rejected.ok());
-    CHECK_EQ(customWorld.revision(), revisionBefore);
-    CHECK_EQ(customWorld.getMaterial(3, 3), int(custom));
-}
-
-TEST_CASE("pixelworld.snapshot_v1_migrates_only_with_builtin_catalog") {
-    PixelWorld source(77);
-    source.setMaterial(4, 5, "water");
-    std::vector<std::byte> legacy = withoutThermalRemainders(source.saveSnapshot().expect("v4 source"));
-    REQUIRE(legacy.size() > 14);
-    legacy[4] = std::byte{1};
-    legacy[5] = std::byte{0};
-    legacy.erase(legacy.begin() + 38, legacy.begin() + 46);
-    legacy.erase(legacy.begin() + 6, legacy.begin() + 14);
-
-    PixelWorld restored(1);
-    restored.restoreSnapshot(legacy).expect("v1 migration");
-    CHECK_EQ(restored.seed(), std::uint64_t(77));
-    CHECK_EQ(restored.getMaterial(4, 5), int(MaterialId::Water));
-}
-
-TEST_CASE("pixelworld.snapshot_v2_migrates_with_zero_edit_sequence") {
-    PixelWorld source(78);
-    source.setMaterial(2, 3, "sand");
-    std::vector<std::byte> version2 = withoutThermalRemainders(source.saveSnapshot().expect("v4 source"));
-    REQUIRE(version2.size() > 46);
-    version2[4] = std::byte{2};
-    version2[5] = std::byte{0};
-    version2.erase(version2.begin() + 38, version2.begin() + 46);
-
-    PixelWorld restored(1);
-    restored.restoreSnapshot(version2).expect("v2 migration");
-    CHECK_EQ(restored.getMaterial(2, 3), int(MaterialId::Sand));
-    CHECK_EQ(restored.lastEditSequence(), std::uint64_t(0));
-}
-
-TEST_CASE("pixelworld.snapshot_v3_migrates_with_zero_thermal_remainder") {
-    PixelWorld source(79);
-    source.setCell(2, 3, {MaterialId::Stone, 123, 0, 0});
-    std::vector<std::byte> version3 = withoutThermalRemainders(source.saveSnapshot().expect("v4 source"));
-    version3[4]                     = std::byte{3};
-    version3[5]                     = std::byte{0};
-
-    PixelWorld restored(1);
-    restored.restoreSnapshot(version3).expect("v3 migration");
-    CHECK_EQ(restored.getCell(2, 3).temperature, std::int16_t(123));
-    CHECK_EQ(restored.getCell(2, 3).thermalRemainder, std::uint16_t(0));
-}
-
-TEST_CASE("pixelworld.fixed_point_heat_diffusion_is_directional_and_revisioned") {
-    PixelWorld world(88);
-    world.setCell(0, 0, {MaterialId::Stone, 1000, 0});
-    world.setCell(1, 0, {MaterialId::Stone, 0, 0});
-    const std::uint64_t before = world.revision();
-    const StepStats     stats  = world.advance(eve::SimulationTick(1)).expect("thermal step");
-    CHECK(stats.temperatureTransfers > 0);
-    CHECK(world.getCell(0, 0).temperature < 1000);
-    CHECK(world.getCell(1, 0).temperature > 0);
-    CHECK(world.revision() > before);
-}
-
-TEST_CASE("pixelworld.thermal_remainders_conserve_energy_and_roundtrip_authority") {
-    const MaterialCatalog           builtIn = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    definitions[std::size_t(MaterialId::Stone)].heatCapacity        = 7;
-    definitions[std::size_t(MaterialId::Stone)].thermalConductivity = 13;
-    definitions[std::size_t(MaterialId::Wood)].heatCapacity         = 11;
-    definitions[std::size_t(MaterialId::Wood)].thermalConductivity  = 13;
-    const MaterialCatalog catalog = MaterialCatalog::create(std::move(definitions)).expect("thermal test Catalog");
-    PixelWorld            world(8801, catalog);
-    world.setCell(0, 0, {MaterialId::Stone, 1000, 0, 3});
-    world.setCell(1, 0, {MaterialId::Wood, -200, 0, 5});
-    const auto energy = [&](const PixelWorld& value) {
-        const PixelCell stone = value.getCell(0, 0);
-        const PixelCell wood  = value.getCell(1, 0);
-        return std::int64_t(stone.temperature) * 7 + stone.thermalRemainder + std::int64_t(wood.temperature) * 11 +
-               wood.thermalRemainder;
+    SUB_CASE("adjacent fire and water react into steam") {
+        PixelWorld world(3);
+        world.setMaterial(10, 10, "fire");
+        world.setMaterial(11, 10, "water");
+        world.setMaterial(10, 11, "stone");
+        world.setMaterial(11, 11, "stone");
+        world.setMaterial(12, 10, "stone");
+        world.setMaterial(12, 11, "stone");
+        auto step = world.advance(eve::SimulationTick(1));
+        REQUIRE(step.ok());
+        REQUIRE(step.value().reactions > 0);
+        const bool steam =
+            world.getMaterial(11, 10) == int(MaterialId::Steam) || world.getMaterial(11, 9) == int(MaterialId::Steam);
+        REQUIRE(steam);
     };
-    const std::int64_t initialEnergy = energy(world);
-    std::uint64_t      transferred   = 0;
-    for (std::uint64_t tick = 1; tick <= 200; ++tick) {
-        const auto stats = world.advance(eve::SimulationTick(tick)).expect("conservative heat step");
-        transferred += stats.thermalEnergyTransferred;
-        CHECK_EQ(stats.thermalEnergyClamped, std::uint64_t(0));
-        CHECK_EQ(energy(world), initialEnergy);
-    }
-    CHECK(transferred > 0);
-    CHECK(world.getCell(0, 0).thermalRemainder < 7);
-    CHECK(world.getCell(1, 0).thermalRemainder < 11);
-
-    const auto snapshot = world.saveSnapshot().expect("thermal v4 snapshot");
-    PixelWorld restored(2, catalog);
-    restored.restoreSnapshot(snapshot).expect("restore thermal v4 snapshot");
-    CHECK_EQ(restored.getCell(0, 0), world.getCell(0, 0));
-    CHECK_EQ(restored.getCell(1, 0), world.getCell(1, 0));
-
-    auto malformed = snapshot;
-    REQUIRE(malformed.size() >= 67);
-    const std::uint16_t invalidRemainder = std::numeric_limits<std::uint16_t>::max();
-    std::memcpy(malformed.data() + 63, &invalidRemainder, sizeof(invalidRemainder));
-    const auto beforeRejectedRestore = restored.saveSnapshot().expect("before bad remainder");
-    CHECK(!restored.restoreSnapshot(malformed).ok());
-    const auto afterRejectedRestore = restored.saveSnapshot().expect("after bad remainder");
-    CHECK(std::equal(beforeRejectedRestore.begin(), beforeRejectedRestore.end(), afterRejectedRestore.begin()));
+    SUB_CASE("equal seed and edit history produce equal snapshots; repeated tick fails") {
+        PixelWorld first(99), second(99);
+        for (int x = -8; x <= 8; ++x) {
+            first.setMaterial(x, 20, "stone");
+            second.setMaterial(x, 20, "stone");
+        }
+        first.paintCircle(0, 2, 6, "sand");
+        second.paintCircle(0, 2, 6, "sand");
+        for (std::uint64_t tick = 1; tick <= 12; ++tick) {
+            REQUIRE(first.advance(eve::SimulationTick(tick)).ok());
+            REQUIRE(second.advance(eve::SimulationTick(tick)).ok());
+        }
+        auto a = first.saveSnapshot();
+        auto b = second.saveSnapshot();
+        REQUIRE(a.ok());
+        REQUIRE(b.ok());
+        REQUIRE(a.value() == b.value());
+        auto repeated = first.advance(eve::SimulationTick(12));
+        REQUIRE(!repeated.ok());
+        REQUIRE(repeated.error()->code() == eve::DiagnosticCode::PreconditionViolation);
+    };
 }
 
-TEST_CASE("pixelworld.phase_rules_freeze_boil_and_melt_without_hardcoded_branches") {
-    PixelWorld world(89);
-    world.setCell(10, 10, {MaterialId::Water, -20, 0});
-    world.setCell(20, 10, {MaterialId::Water, 130, 0});
-    world.setCell(30, 10, {MaterialId::Ice, 20, 0});
-    for (const int center : {10, 20}) {
-        world.setMaterial(center - 1, 10, "stone");
-        world.setMaterial(center + 1, 10, "stone");
-        world.setMaterial(center - 1, 11, "stone");
-        world.setMaterial(center, 11, "stone");
-        world.setMaterial(center + 1, 11, "stone");
-    }
-    const StepStats stats = world.advance(eve::SimulationTick(1)).expect("phase step");
-    CHECK(stats.phaseChanges >= 3);
-    CHECK_EQ(world.getMaterial(10, 10), int(MaterialId::Ice));
-    CHECK_EQ(world.getMaterial(20, 10), int(MaterialId::Steam));
-    CHECK_EQ(world.getMaterial(30, 10), int(MaterialId::Water));
+TEST_CASE("pixelworld.spec.snapshotRevisionAndMigration") {
+    SUB_CASE("round trip restores seed, tick, and cells; truncated input leaves target unchanged") {
+        PixelWorld source(123);
+        source.paintCircle(65, -2, 4, "oil");
+        source.step();
+        auto image = source.saveSnapshot();
+        REQUIRE(image.ok());
+        PixelWorld target(1);
+        REQUIRE(target.restoreSnapshot(image.value()).ok());
+        REQUIRE(target.seed() == source.seed());
+        REQUIRE(target.tickValue() == source.tickValue());
+        REQUIRE(target.getMaterial(65, -1) == source.getMaterial(65, -1));
+        auto malformed = image.value();
+        malformed.pop_back();
+        REQUIRE(!target.restoreSnapshot(malformed).ok());
+        REQUIRE(target.seed() == source.seed());
+        REQUIRE(target.tickValue() == source.tickValue());
+    };
+    SUB_CASE("changed chunk snapshots own cells and report only revisions after the cursor") {
+        PixelWorld world(17);
+        world.setMaterial(70, 2, "sand");
+        world.setMaterial(-2, 2, "water");
+        const auto cursor  = world.revision();
+        auto       initial = world.snapshotChangedChunks(0);
+        REQUIRE(initial.size() == 2);
+        REQUIRE(initial[0].x < initial[1].x);
+        const auto owned = initial[0].cells;
+        world.setMaterial(70, 3, "stone");
+        auto delta = world.snapshotChangedChunks(cursor);
+        REQUIRE(delta.size() == 1);
+        REQUIRE(delta[0].x == 1);
+        REQUIRE(initial[0].cells == owned);
+        const auto beforeLife = world.revision();
+        world.setMaterial(0, 0, "fire");
+        auto step = world.advance(eve::SimulationTick(1));
+        REQUIRE(step.ok());
+        REQUIRE(step.value().cellsChanged > 0);
+        REQUIRE(world.revision() > beforeLife);
+    };
+    SUB_CASE("legacy v1, v2, and v3 snapshots migrate with missing state defaulted") {
+        PixelWorld source(79);
+        source.setCell(2, 3, {MaterialId::Stone, 123, 0, 0});
+        auto image = source.saveSnapshot();
+        REQUIRE(image.ok());
+        auto base = withoutThermalRemainders(image.value());
+        auto v3   = base;
+        v3[4]     = std::byte{3};
+        v3[5]     = std::byte{0};
+        PixelWorld old3(1);
+        REQUIRE(old3.restoreSnapshot(v3).ok());
+        REQUIRE(old3.getCell(2, 3).temperature == 123);
+        REQUIRE(old3.getCell(2, 3).thermalRemainder == 0);
+        auto v2 = base;
+        v2[4]   = std::byte{2};
+        v2[5]   = std::byte{0};
+        v2.erase(v2.begin() + 38, v2.begin() + 46);
+        PixelWorld old2(1);
+        REQUIRE(old2.restoreSnapshot(v2).ok());
+        REQUIRE(old2.lastEditSequence() == 0);
+        auto v1 = v2;
+        v1[4]   = std::byte{1};
+        v1.erase(v1.begin() + 6, v1.begin() + 14);
+        PixelWorld old1(1);
+        REQUIRE(old1.restoreSnapshot(v1).ok());
+        REQUIRE(old1.seed() == 79);
+    };
 }
 
-TEST_CASE("pixelworld.explosion_uses_resistance_heat_and_atomic_sequence_receipt") {
-    PixelWorld world(90);
-    world.setMaterial(0, 0, "wood");
-    world.setMaterial(1, 0, "stone");
-    world.setMaterial(-1, 0, "gunpowder");
-    PixelEditCommand command;
-    command.sequence               = 1;
-    command.kind                   = PixelEditKind::Explosion;
-    command.radius                 = 4;
-    command.strength               = 120;
-    command.temperatureDelta       = 400;
-    const PixelEditReceipt receipt = world.applyEdit(command).expect("explosion command");
-
-    CHECK_EQ(receipt.sequence, std::uint64_t(1));
-    CHECK(receipt.cellsRemoved >= 2);
-    CHECK_EQ(world.getMaterial(0, 0), int(MaterialId::Air));
-    CHECK_EQ(world.getMaterial(-1, 0), int(MaterialId::Air));
-    CHECK_EQ(world.getMaterial(1, 0), int(MaterialId::Stone));
-    CHECK(world.getCell(1, 0).temperature > 20);
-    CHECK_EQ(world.lastEditSequence(), std::uint64_t(1));
-    CHECK(receipt.revisionAfter > receipt.revisionBefore);
+TEST_CASE("pixelworld.spec.materialCatalogContract") {
+    SUB_CASE("canonical tags, authored color, and JSON round trip preserve fingerprint") {
+        auto builtIn = MaterialCatalog::builtIn();
+        REQUIRE(builtIn.definition(MaterialId::Water).displayRgba == 0x1F61F2DBU);
+        std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
+        definitions[std::size_t(MaterialId::Sand)].tags = {"mobile", "granular"};
+        auto catalog                                    = MaterialCatalog::create(std::move(definitions));
+        REQUIRE(catalog.ok());
+        REQUIRE(catalog.value().definition(MaterialId::Sand).tags.size() == 2);
+        REQUIRE(catalog.value().definition(MaterialId::Sand).tags[0] == "granular");
+        auto encoded = encodeMaterialCatalogJson(catalog.value());
+        REQUIRE(encoded.ok());
+        auto decoded = decodeMaterialCatalogJson(encoded.value());
+        REQUIRE(decoded.ok());
+        REQUIRE(decoded.value().fingerprint() == catalog.value().fingerprint());
+        REQUIRE(decoded.value().reactions().size() == catalog.value().reactions().size());
+        auto duplicate =
+            std::vector<MaterialDefinition>(catalog.value().definitions().begin(), catalog.value().definitions().end());
+        duplicate[std::size_t(MaterialId::Sand)].tags = {"mobile", "mobile"};
+        REQUIRE(!MaterialCatalog::create(std::move(duplicate)).ok());
+        REQUIRE(!decodeMaterialCatalogJson("{broken").ok());
+        std::string unknown = encoded.value();
+        unknown.insert(unknown.find('{') + 1, "\"unknown\":1,");
+        REQUIRE(!decodeMaterialCatalogJson(unknown).ok());
+    };
+    SUB_CASE("custom material resolves by name and authored reaction produces declared products") {
+        auto                            builtIn = MaterialCatalog::builtIn();
+        std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
+        const auto                      brine = MaterialId(definitions.size());
+        definitions.push_back({brine, "brine", MaterialState::Liquid, 110, 35, 30, 90, 32767, 32767, 120});
+        std::vector<MaterialReactionRule> reactions{
+            {"brine.stone.erode", brine, MaterialId::Stone, MaterialId::Water, MaterialId::Sand, -32768, 5, 100}};
+        auto made = MaterialCatalog::create(std::move(definitions), std::move(reactions));
+        REQUIRE(made.ok());
+        PixelWorld world(41, made.value());
+        REQUIRE(world.setMaterialChecked(10, 10, "brine").ok());
+        world.setMaterial(11, 10, "stone");
+        world.setMaterial(9, 10, "stone");
+        world.setMaterial(10, 11, "stone");
+        world.setMaterial(9, 11, "stone");
+        world.setMaterial(11, 11, "stone");
+        const auto before  = world.revision();
+        auto       unknown = world.setMaterialChecked(0, 0, "typo-material");
+        REQUIRE(!unknown.ok());
+        REQUIRE(unknown.error()->code() == eve::DiagnosticCode::NotFound);
+        REQUIRE(world.revision() == before);
+        auto step = world.advance(eve::SimulationTick(1));
+        REQUIRE(step.ok());
+        REQUIRE(step.value().reactions > 0);
+        const bool water =
+            world.getMaterial(10, 10) == int(MaterialId::Water) || world.getMaterial(9, 10) == int(MaterialId::Water) ||
+            world.getMaterial(11, 10) == int(MaterialId::Water) || world.getMaterial(10, 11) == int(MaterialId::Water);
+        const bool sand =
+            world.getMaterial(10, 10) == int(MaterialId::Sand) || world.getMaterial(9, 10) == int(MaterialId::Sand) ||
+            world.getMaterial(11, 10) == int(MaterialId::Sand) || world.getMaterial(10, 11) == int(MaterialId::Sand);
+        REQUIRE(water);
+        REQUIRE(sand);
+    };
+    SUB_CASE("paused compatible reload rebuilds chunks; stale fingerprint and changed identity fail") {
+        PixelWorld world(43);
+        world.setMaterial(1, 1, "water");
+        const auto                      link        = world.worldLink();
+        const auto                      fingerprint = world.materialCatalogFingerprint();
+        auto                            builtIn     = MaterialCatalog::builtIn();
+        std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
+        definitions[std::size_t(MaterialId::Water)].displayRgba = 0x12345678U;
+        auto replacement =
+            MaterialCatalog::create(std::move(definitions), {builtIn.reactions().begin(), builtIn.reactions().end()},
+                                    {builtIn.phaseRules().begin(), builtIn.phaseRules().end()});
+        REQUIRE(replacement.ok());
+        REQUIRE(!world.reloadMaterialCatalog(replacement.value(), fingerprint).ok());
+        world.setPaused(true);
+        REQUIRE(!world.reloadMaterialCatalog(replacement.value(), fingerprint + 1).ok());
+        auto applied = world.reloadMaterialCatalog(std::move(replacement).takeValue(), fingerprint);
+        REQUIRE(applied.ok());
+        REQUIRE(applied.value().chunksRebuilt == 1);
+        REQUIRE(applied.value().replayHistoryInvalidated);
+        REQUIRE(world.worldLink().epoch > link.epoch);
+        REQUIRE(world.materialDisplayRgba(MaterialId::Water) == 0x12345678U);
+        REQUIRE(world.getMaterial(1, 1) == int(MaterialId::Water));
+        auto incompatible = std::vector<MaterialDefinition>(builtIn.definitions().begin(), builtIn.definitions().end());
+        incompatible[std::size_t(MaterialId::Water)].name = "renamed-water";
+        auto bad                                          = MaterialCatalog::create(std::move(incompatible));
+        REQUIRE(bad.ok());
+        const auto before = world.revision();
+        REQUIRE(!world.reloadMaterialCatalog(std::move(bad).takeValue(), world.materialCatalogFingerprint()).ok());
+        REQUIRE(world.revision() == before);
+    };
+    SUB_CASE("snapshot catalog mismatch rejects without changing custom world") {
+        PixelWorld builtIn(5);
+        builtIn.setMaterial(0, 0, "sand");
+        auto image = builtIn.saveSnapshot();
+        REQUIRE(image.ok());
+        auto                            catalog = MaterialCatalog::builtIn();
+        std::vector<MaterialDefinition> definitions(catalog.definitions().begin(), catalog.definitions().end());
+        const auto                      custom = MaterialId(definitions.size());
+        definitions.push_back({custom, "custom", MaterialState::Powder, 150, 20, 10, 50});
+        auto made = MaterialCatalog::create(std::move(definitions));
+        REQUIRE(made.ok());
+        PixelWorld world(9, made.value());
+        REQUIRE(world.setMaterialChecked(3, 3, "custom").ok());
+        const auto revision = world.revision();
+        REQUIRE(!world.restoreSnapshot(image.value()).ok());
+        REQUIRE(world.revision() == revision);
+        REQUIRE(world.getMaterial(3, 3) == int(custom));
+    };
 }
 
-TEST_CASE("pixelworld.edit_sequence_gap_rejects_without_partial_mutation_and_roundtrips") {
-    PixelWorld world(91);
-    world.setMaterial(5, 5, "wood");
-    world.explode(5, 5, 2, 100, 100);
-    const auto before = world.saveSnapshot().expect("before rejected edit");
-
-    PixelEditCommand gap;
-    gap.sequence         = 3;
-    gap.kind             = PixelEditKind::HeatCircle;
-    gap.centerX          = 5;
-    gap.centerY          = 5;
-    gap.radius           = 2;
-    gap.temperatureDelta = 500;
-    auto rejected        = world.applyEdit(gap);
-    CHECK(!rejected.ok());
-    const auto after = world.saveSnapshot().expect("after rejected edit");
-    REQUIRE_EQ(before.size(), after.size());
-    CHECK(std::equal(before.begin(), before.end(), after.begin()));
-
-    PixelWorld restored(1);
-    restored.restoreSnapshot(before).expect("restore edit sequence");
-    CHECK_EQ(restored.lastEditSequence(), std::uint64_t(1));
+TEST_CASE("pixelworld.spec.heatPhaseAndEdits") {
+    SUB_CASE("heat moves from hot to cold and changes revision") {
+        PixelWorld world(88);
+        world.setCell(0, 0, {MaterialId::Stone, 1000, 0});
+        world.setCell(1, 0, {MaterialId::Stone, 0, 0});
+        const auto before = world.revision();
+        auto       step   = world.advance(eve::SimulationTick(1));
+        REQUIRE(step.ok());
+        REQUIRE(step.value().temperatureTransfers > 0);
+        REQUIRE(world.getCell(0, 0).temperature < 1000);
+        REQUIRE(world.getCell(1, 0).temperature > 0);
+        REQUIRE(world.revision() > before);
+    };
+    SUB_CASE("thermal remainders conserve weighted energy and survive snapshot restore") {
+        auto                            builtIn = MaterialCatalog::builtIn();
+        std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
+        definitions[std::size_t(MaterialId::Stone)].heatCapacity        = 7;
+        definitions[std::size_t(MaterialId::Stone)].thermalConductivity = 13;
+        definitions[std::size_t(MaterialId::Wood)].heatCapacity         = 11;
+        definitions[std::size_t(MaterialId::Wood)].thermalConductivity  = 13;
+        auto made = MaterialCatalog::create(std::move(definitions));
+        REQUIRE(made.ok());
+        PixelWorld world(8801, made.value());
+        world.setCell(0, 0, {MaterialId::Stone, 1000, 0, 3});
+        world.setCell(1, 0, {MaterialId::Wood, -200, 0, 5});
+        const auto energy = [](const PixelWorld& value) {
+            auto stone = value.getCell(0, 0);
+            auto wood  = value.getCell(1, 0);
+            return std::int64_t(stone.temperature) * 7 + stone.thermalRemainder + std::int64_t(wood.temperature) * 11 +
+                   wood.thermalRemainder;
+        };
+        const auto before = energy(world);
+        for (std::uint64_t tick = 1; tick <= 20; ++tick) {
+            auto step = world.advance(eve::SimulationTick(tick));
+            REQUIRE(step.ok());
+            REQUIRE(step.value().thermalEnergyClamped == 0);
+            REQUIRE(energy(world) == before);
+        }
+        auto image = world.saveSnapshot();
+        REQUIRE(image.ok());
+        PixelWorld restored(1, made.value());
+        REQUIRE(restored.restoreSnapshot(image.value()).ok());
+        REQUIRE(restored.getCell(0, 0) == world.getCell(0, 0));
+        REQUIRE(restored.getCell(1, 0) == world.getCell(1, 0));
+    };
+    SUB_CASE("phase rules freeze, boil, and melt three independent cells") {
+        PixelWorld world(89);
+        world.setCell(10, 10, {MaterialId::Water, -20, 0});
+        world.setCell(20, 10, {MaterialId::Water, 130, 0});
+        world.setCell(30, 10, {MaterialId::Ice, 20, 0});
+        for (int x : {10, 20}) {
+            world.setMaterial(x - 1, 10, "stone");
+            world.setMaterial(x + 1, 10, "stone");
+            world.setMaterial(x - 1, 11, "stone");
+            world.setMaterial(x, 11, "stone");
+            world.setMaterial(x + 1, 11, "stone");
+        }
+        auto step = world.advance(eve::SimulationTick(1));
+        REQUIRE(step.ok());
+        REQUIRE(step.value().phaseChanges >= 3);
+        REQUIRE(world.getMaterial(10, 10) == int(MaterialId::Ice));
+        REQUIRE(world.getMaterial(20, 10) == int(MaterialId::Steam));
+        REQUIRE(world.getMaterial(30, 10) == int(MaterialId::Water));
+    };
+    SUB_CASE("explosion applies resistance and heat; edit sequence gap is atomic") {
+        PixelWorld world(90);
+        world.setMaterial(0, 0, "wood");
+        world.setMaterial(1, 0, "stone");
+        world.setMaterial(-1, 0, "gunpowder");
+        PixelEditCommand edit;
+        edit.sequence         = 1;
+        edit.kind             = PixelEditKind::Explosion;
+        edit.radius           = 4;
+        edit.strength         = 120;
+        edit.temperatureDelta = 400;
+        auto receipt          = world.applyEdit(edit);
+        REQUIRE(receipt.ok());
+        REQUIRE(receipt.value().cellsRemoved >= 2);
+        REQUIRE(world.getMaterial(0, 0) == int(MaterialId::Air));
+        REQUIRE(world.getMaterial(1, 0) == int(MaterialId::Stone));
+        REQUIRE(world.getCell(1, 0).temperature > 20);
+        REQUIRE(world.lastEditSequence() == 1);
+        auto before = world.saveSnapshot();
+        REQUIRE(before.ok());
+        edit.sequence = 3;
+        edit.kind     = PixelEditKind::HeatCircle;
+        REQUIRE(!world.applyEdit(edit).ok());
+        auto after = world.saveSnapshot();
+        REQUIRE(after.ok());
+        REQUIRE(after.value() == before.value());
+    };
 }
 
-TEST_CASE("pixelworld.unsupported_solids_detach_canonically_and_rasterize_atomically") {
-    PixelWorld world(92);
-    for (int x = -2; x <= 2; ++x) world.setMaterial(x, 10, "stone");
-    world.setMaterial(-1, 2, "wood");
-    world.setMaterial(0, 2, "wood");
-    world.setMaterial(0, 3, "wood");
-    world.setMaterial(4, 9, "stone");
-    world.setMaterial(4, 10, "stone");
-
-    auto fragments = world.extractUnsupportedFragments({-4, 0, 6, 10}, 10, 2).expect("extract unsupported component");
-    REQUIRE_EQ(fragments.size(), std::size_t(1));
-    const PixelFragment& fragment = fragments.front();
-    CHECK_EQ(fragment.originX, -1);
-    CHECK_EQ(fragment.originY, 2);
-    CHECK_EQ(fragment.width, 2);
-    CHECK_EQ(fragment.height, 2);
-    CHECK_EQ(fragment.solidCellCount, std::uint32_t(3));
-    CHECK_EQ(world.getMaterial(-1, 2), int(MaterialId::Air));
-    CHECK_EQ(world.getMaterial(0, 3), int(MaterialId::Air));
-    CHECK_EQ(world.getMaterial(4, 9), int(MaterialId::Stone));
-
-    world.setMaterial(20, 20, "stone");
-    const auto beforeConflict = world.saveSnapshot().expect("before fragment conflict");
-    auto       conflict       = world.rasterizeFragment(fragment, 20, 20);
-    CHECK(!conflict.ok());
-    const auto afterConflict = world.saveSnapshot().expect("after fragment conflict");
-    CHECK(std::equal(beforeConflict.begin(), beforeConflict.end(), afterConflict.begin()));
-
-    const auto receipt = world.rasterizeFragment(fragment, 30, 30).expect("rasterize fragment");
-    CHECK_EQ(receipt.cellsPlaced, std::uint32_t(3));
-    CHECK_EQ(world.getMaterial(30, 30), int(MaterialId::Wood));
-    CHECK_EQ(world.getMaterial(31, 31), int(MaterialId::Wood));
-}
-
-TEST_CASE("pixelworld.fragment_link_is_stale_after_restore_or_clear") {
-    PixelWorld world(93);
-    world.setMaterial(0, 0, "wood");
-    const auto checkpoint = world.saveSnapshot().expect("fragment checkpoint");
-    auto fragment = world.extractUnsupportedFragments({-1, -1, 1, 1}, 10).expect("extract before restore").front();
-    world.restoreSnapshot(checkpoint).expect("restore invalidates links");
-    CHECK(!world.rasterizeFragment(fragment, 5, 5).ok());
-
-    auto second = world.extractUnsupportedFragments({-1, -1, 1, 1}, 10).expect("extract before clear").front();
-    world.clear();
-    CHECK(!world.rasterizeFragment(second, 5, 5).ok());
-}
-
-TEST_CASE("pixelworld.empty_chunks_sleep_with_hysteresis_and_emit_removal_tombstones") {
-    PixelWorld world(94);
-    world.setMaterial(3, 4, "stone");
-    const auto populatedRevision = world.revision();
-    world.setMaterial(3, 4, "air");
-    CHECK_EQ(world.chunkCount(), 1);
-
-    for (std::uint64_t tick = 1; tick < kPixelSleepHysteresisTicks; ++tick) {
-        const auto stats = world.advance(eve::SimulationTick(tick)).expect("idle hysteresis tick");
-        CHECK_EQ(stats.chunksReclaimed, std::uint32_t(0));
-        CHECK_EQ(world.chunkCount(), 1);
-    }
-    const auto reclaimed = world.advance(eve::SimulationTick(kPixelSleepHysteresisTicks)).expect("chunk reclaim tick");
-    CHECK_EQ(reclaimed.chunksReclaimed, std::uint32_t(1));
-    CHECK_EQ(world.chunkCount(), 0);
-
-    const auto changed = world.snapshotChangedChunks(populatedRevision);
-    REQUIRE_EQ(changed.size(), std::size_t(1));
-    CHECK(changed.front().removed);
-    CHECK(changed.front().cells.empty());
-    CHECK(changed.front().revision > populatedRevision);
-}
-
-TEST_CASE("pixelworld.authoritative_chunk_batch_replaces_and_removes_transactionally") {
-    PixelWorld authority(95);
-    authority.setMaterial(2, 3, "wood");
-    const std::uint64_t populatedRevision = authority.revision();
-    PixelChunkBatch     populated;
-    populated.catalogFingerprint     = authority.materialCatalogFingerprint();
-    populated.sourceSeed             = authority.seed();
-    populated.sourceRevision         = populatedRevision;
-    populated.sourceTick             = eve::SimulationTick(authority.tickValue());
-    populated.sourceLastEditSequence = authority.lastEditSequence();
-    populated.chunks                 = authority.snapshotChangedChunks(0);
-
-    PixelWorld replica(95);
-    const auto applied = replica.applyChunkBatch(populated, 0).expect("apply populated Chunk");
-    CHECK_EQ(applied.chunksReplaced, std::uint32_t(1));
-    CHECK_EQ(replica.getMaterial(2, 3), int(MaterialId::Wood));
-    CHECK_EQ(replica.revision(), authority.revision());
-
-    auto fragment = replica.extractUnsupportedFragments({0, 0, 5, 5}, 20).expect("extract replica fragment").front();
-    authority.setMaterial(2, 3, "air");
-    for (std::uint64_t tick = 1; tick <= kPixelSleepHysteresisTicks; ++tick)
-        authority.advance(eve::SimulationTick(tick)).expect("reclaim authority Chunk");
-    PixelChunkBatch removed;
-    removed.catalogFingerprint     = authority.materialCatalogFingerprint();
-    removed.sourceSeed             = authority.seed();
-    removed.sourceRevision         = authority.revision();
-    removed.sourceTick             = eve::SimulationTick(authority.tickValue());
-    removed.sourceLastEditSequence = authority.lastEditSequence();
-    removed.chunks                 = authority.snapshotChangedChunks(populatedRevision);
-    const auto removedReceipt      = replica.applyChunkBatch(removed, replica.revision()).expect("apply tombstone");
-    CHECK_EQ(removedReceipt.chunksRemoved, std::uint32_t(1));
-    CHECK_EQ(replica.chunkCount(), 0);
-    CHECK(!replica.rasterizeFragment(fragment, 10, 10).ok());
-}
-
-TEST_CASE("pixelworld.authoritative_chunk_batch_rejects_stale_or_malformed_without_mutation") {
-    PixelWorld world(96);
-    world.setMaterial(0, 0, "stone");
-    const auto before = world.saveSnapshot().expect("before bad correction");
-
-    PixelChunkBatch stale;
-    stale.catalogFingerprint = world.materialCatalogFingerprint();
-    stale.sourceSeed         = world.seed();
-    stale.sourceRevision     = world.revision();
-    stale.sourceTick         = eve::SimulationTick(world.tickValue());
-    CHECK(!world.applyChunkBatch(stale, world.revision() - 1).ok());
-
-    PixelChunkSnapshot malformed;
-    malformed.revision = world.revision();
-    malformed.cells.resize(1);
-    stale.chunks.push_back(std::move(malformed));
-    CHECK(!world.applyChunkBatch(stale, world.revision()).ok());
-    const auto after = world.saveSnapshot().expect("after bad correction");
-    REQUIRE_EQ(before.size(), after.size());
-    CHECK(std::equal(before.begin(), before.end(), after.begin()));
+TEST_CASE("pixelworld.spec.fragmentAndAuthoritativeChunks") {
+    SUB_CASE("unsupported component extracts canonically and rasterize rejects conflict atomically") {
+        PixelWorld world(92);
+        for (int x = -2; x <= 2; ++x) world.setMaterial(x, 10, "stone");
+        world.setMaterial(-1, 2, "wood");
+        world.setMaterial(0, 2, "wood");
+        world.setMaterial(0, 3, "wood");
+        auto fragments = world.extractUnsupportedFragments({-4, 0, 6, 10}, 10, 2);
+        REQUIRE(fragments.ok());
+        REQUIRE(fragments.value().size() == 1);
+        const auto fragment = fragments.value().front();
+        REQUIRE(fragment.originX == -1);
+        REQUIRE(fragment.originY == 2);
+        REQUIRE(fragment.solidCellCount == 3);
+        REQUIRE(world.getMaterial(-1, 2) == int(MaterialId::Air));
+        world.setMaterial(20, 20, "stone");
+        auto before = world.saveSnapshot();
+        REQUIRE(before.ok());
+        REQUIRE(!world.rasterizeFragment(fragment, 20, 20).ok());
+        REQUIRE(world.saveSnapshot().value() == before.value());
+        auto placed = world.rasterizeFragment(fragment, 30, 30);
+        REQUIRE(placed.ok());
+        REQUIRE(placed.value().cellsPlaced == 3);
+        REQUIRE(world.getMaterial(30, 30) == int(MaterialId::Wood));
+        auto checkpoint = world.saveSnapshot();
+        REQUIRE(checkpoint.ok());
+        REQUIRE(world.restoreSnapshot(checkpoint.value()).ok());
+        REQUIRE(!world.rasterizeFragment(fragment, 40, 40).ok());
+    };
+    SUB_CASE("empty chunk reclaims after hysteresis and emits a removal tombstone") {
+        PixelWorld world(94);
+        world.setMaterial(3, 4, "stone");
+        const auto populated = world.revision();
+        world.setMaterial(3, 4, "air");
+        for (std::uint64_t tick = 1; tick < kPixelSleepHysteresisTicks; ++tick) {
+            auto step = world.advance(eve::SimulationTick(tick));
+            REQUIRE(step.ok());
+            REQUIRE(step.value().chunksReclaimed == 0);
+            REQUIRE(world.chunkCount() == 1);
+        }
+        auto reclaimed = world.advance(eve::SimulationTick(kPixelSleepHysteresisTicks));
+        REQUIRE(reclaimed.ok());
+        REQUIRE(reclaimed.value().chunksReclaimed == 1);
+        REQUIRE(world.chunkCount() == 0);
+        auto delta = world.snapshotChangedChunks(populated);
+        REQUIRE(delta.size() == 1);
+        REQUIRE(delta.front().removed);
+        REQUIRE(delta.front().cells.empty());
+    };
+    SUB_CASE("authoritative batch applies a populated chunk and rejects stale or malformed corrections") {
+        PixelWorld authority(95);
+        authority.setMaterial(2, 3, "wood");
+        PixelChunkBatch batch;
+        batch.catalogFingerprint     = authority.materialCatalogFingerprint();
+        batch.sourceSeed             = authority.seed();
+        batch.sourceRevision         = authority.revision();
+        batch.sourceTick             = eve::SimulationTick(authority.tickValue());
+        batch.sourceLastEditSequence = authority.lastEditSequence();
+        batch.chunks                 = authority.snapshotChangedChunks(0);
+        PixelWorld replica(95);
+        auto       applied = replica.applyChunkBatch(batch, 0);
+        REQUIRE(applied.ok());
+        REQUIRE(applied.value().chunksReplaced == 1);
+        REQUIRE(replica.getMaterial(2, 3) == int(MaterialId::Wood));
+        auto before = replica.saveSnapshot();
+        REQUIRE(before.ok());
+        REQUIRE(!replica.applyChunkBatch(batch, replica.revision() - 1).ok());
+        PixelChunkSnapshot malformed;
+        malformed.revision = replica.revision();
+        malformed.cells.resize(1);
+        batch.chunks = {malformed};
+        REQUIRE(!replica.applyChunkBatch(batch, replica.revision()).ok());
+        REQUIRE(replica.saveSnapshot().value() == before.value());
+    };
 }
 }  // namespace test_pixelworld
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_control)
-#include "PrivateTestScope.h"
-#include <utility>
 #include "pixelworld/PixelMaterialCatalogCodec.h"
 #include "pixelworld/PixelWorldControl.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pixelworld_control.cpp
 namespace test_pixelworld_control {
 using namespace eve::pixelworld;
 
-TEST_CASE("pixelworld.control_registry_tracks_lifetime_and_move") {
-    auto&         control = pixelWorldControlService();
-    std::uint64_t id      = 0;
-    {
-        PixelWorld original(71);
-        id = original.worldLink().world;
-        REQUIRE(control.world(id).ok());
-        PixelWorld moved(std::move(original));
-        auto       summary = control.world(id).expect("moved world remains registered");
-        CHECK_EQ(summary.seed, std::uint64_t(71));
-        CHECK_EQ(summary.link.world, id);
-    }
-    CHECK(!control.world(id).ok());
+TEST_CASE("pixelworld.control.spec.lifetimePauseAndStep") {
+    SUB_CASE("control registry follows a moved world and removes a destroyed world") {
+        auto&         control = pixelWorldControlService();
+        std::uint64_t id      = 0;
+        {
+            PixelWorld original(71);
+            id = original.worldLink().world;
+            REQUIRE(control.world(id).ok());
+            PixelWorld moved(std::move(original));
+            auto       state = control.world(id);
+            REQUIRE(state.ok());
+            REQUIRE(state.value().seed == 71);
+            REQUIRE(state.value().link.world == id);
+        }
+        REQUIRE(!control.world(id).ok());
+    };
+    SUB_CASE("paused implicit step is inert; explicit step advances a bounded count") {
+        PixelWorld world(72);
+        const auto id      = world.worldLink().world;
+        auto&      control = pixelWorldControlService();
+        REQUIRE(control.setPaused(id, true).ok());
+        REQUIRE(world.step().tick.value() == 0);
+        REQUIRE(world.tickValue() == 0);
+        auto receipt = control.step(id, 3);
+        REQUIRE(receipt.ok());
+        REQUIRE(receipt.value().steps == 3);
+        REQUIRE(receipt.value().firstTick == 1);
+        REQUIRE(receipt.value().lastTick == 3);
+        REQUIRE(world.tickValue() == 3);
+        REQUIRE(world.isPaused());
+        REQUIRE(!control.step(id, 0).ok());
+        REQUIRE(!control.step(id, 1025).ok());
+        auto samples = control.performanceSamples(id, 2);
+        REQUIRE(samples.ok());
+        REQUIRE(samples.value().size() == 2);
+        REQUIRE(samples.value().front().tick == 2);
+        REQUIRE(samples.value().back().tick == 3);
+        REQUIRE(!control.performanceSamples(id, 0).ok());
+    };
 }
 
-TEST_CASE("pixelworld.control_pause_and_explicit_step_have_one_authority") {
-    PixelWorld          world(72);
-    const std::uint64_t id      = world.worldLink().world;
-    auto&               control = pixelWorldControlService();
-    control.setPaused(id, true).expect("pause world");
-    const StepStats paused = world.step();
-    CHECK_EQ(paused.tick.value(), std::uint64_t(0));
-    CHECK_EQ(world.tickValue(), std::uint64_t(0));
-
-    const auto receipt = control.step(id, 3).expect("explicit paused steps");
-    CHECK_EQ(receipt.steps, std::uint32_t(3));
-    CHECK_EQ(receipt.firstTick, std::uint64_t(1));
-    CHECK_EQ(receipt.lastTick, std::uint64_t(3));
-    CHECK_EQ(world.tickValue(), std::uint64_t(3));
-    CHECK(world.isPaused());
-    CHECK(!control.step(id, 0).ok());
-    CHECK(!control.step(id, 1025).ok());
-    const auto samples = control.performanceSamples(id, 2).expect("bounded samples");
-    REQUIRE_EQ(samples.size(), std::size_t(2));
-    CHECK_EQ(samples.front().tick, std::uint64_t(2));
-    CHECK_EQ(samples.back().tick, std::uint64_t(3));
-    CHECK(!control.performanceSamples(id, 0).ok());
-}
-
-TEST_CASE("pixelworld.control_edit_snapshot_and_diagnostics_are_transactional") {
-    PixelWorld          world(73);
-    const std::uint64_t id      = world.worldLink().world;
-    auto&               control = pixelWorldControlService();
-    PixelEditCommand    paint;
-    paint.sequence = 1;
-    paint.kind     = PixelEditKind::PaintCircle;
-    paint.radius   = 1;
-    paint.material = MaterialId::Water;
-    control.applyEdit(id, paint).expect("control paint");
-
-    const auto diagnostics = control.chunkDiagnostics(id, {0, 0, 0, 0}).expect("bounded diagnostics");
-    REQUIRE_EQ(diagnostics.size(), std::size_t(1));
-    CHECK_EQ(diagnostics.front().nonAirCells, std::uint32_t(5));
-    CHECK_EQ(diagnostics.front().mobileCells, std::uint32_t(5));
-    CHECK_EQ(diagnostics.front().minimumTemperature, std::int16_t(20));
-    CHECK(!control.chunkDiagnostics(id, {0, 0, 256, 256}).ok());
-
-    const auto snapshot = control.captureSnapshot(id).expect("control snapshot");
-    world.setMaterial(8, 8, "stone");
-    REQUIRE_EQ(world.getMaterial(8, 8), int(MaterialId::Stone));
-    control.restoreSnapshot(id, snapshot).expect("control restore");
-    CHECK_EQ(world.getMaterial(8, 8), int(MaterialId::Air));
-
-    auto malformed = snapshot;
-    malformed.pop_back();
-    const std::uint64_t revision = world.revision();
-    CHECK(!control.restoreSnapshot(id, malformed).ok());
-    CHECK_EQ(world.revision(), revision);
-}
-
-TEST_CASE("pixelworld.control_catalog_reload_reuses_validated_authority_path") {
-    PixelWorld world(75);
-    auto&      control = pixelWorldControlService();
-    control.setPaused(world.worldLink().world, true).expect("pause authoring world");
-    MaterialCatalog                 builtIn = MaterialCatalog::builtIn();
-    std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
-    definitions[std::size_t(MaterialId::Stone)].displayRgba = 0x010203FFU;
-    auto candidate =
-        MaterialCatalog::create(std::move(definitions), {builtIn.reactions().begin(), builtIn.reactions().end()},
-                                {builtIn.phaseRules().begin(), builtIn.phaseRules().end()})
-            .expect("authoring candidate");
-    const std::string json = encodeMaterialCatalogJson(candidate).expect("authoring JSON");
-    control.reloadMaterialCatalog(world.worldLink().world, json, world.materialCatalogFingerprint())
-        .expect("control Catalog reload");
-    CHECK_EQ(world.materialDisplayRgba(MaterialId::Stone), std::uint32_t(0x010203FFU));
-    CHECK(!control.reloadMaterialCatalog(world.worldLink().world, "{}", world.materialCatalogFingerprint()).ok());
+TEST_CASE("pixelworld.control.spec.editSnapshotAndCatalog") {
+    SUB_CASE("control edit yields diagnostics; failed restore preserves revision") {
+        PixelWorld       world(73);
+        const auto       id      = world.worldLink().world;
+        auto&            control = pixelWorldControlService();
+        PixelEditCommand paint;
+        paint.sequence = 1;
+        paint.kind     = PixelEditKind::PaintCircle;
+        paint.radius   = 1;
+        paint.material = MaterialId::Water;
+        REQUIRE(control.applyEdit(id, paint).ok());
+        auto diagnostics = control.chunkDiagnostics(id, {0, 0, 0, 0});
+        REQUIRE(diagnostics.ok());
+        REQUIRE(diagnostics.value().size() == 1);
+        // The radius-one disk paints five cells. Center (0,0) lies on two
+        // chunk seams: three cells are in chunk (0,0), while the negative X
+        // and negative Y neighbours each belong to a separate chunk.
+        REQUIRE(diagnostics.value().front().nonAirCells == 3);
+        REQUIRE(diagnostics.value().front().mobileCells == 3);
+        auto acrossSeams = control.chunkDiagnostics(id, {-1, -1, 0, 0});
+        REQUIRE(acrossSeams.ok());
+        REQUIRE(acrossSeams.value().size() == 3);
+        std::uint32_t painted = 0;
+        std::uint32_t mobile  = 0;
+        for (const auto& chunk : acrossSeams.value()) {
+            painted += chunk.nonAirCells;
+            mobile += chunk.mobileCells;
+        }
+        REQUIRE(painted == 5);
+        REQUIRE(mobile == 5);
+        REQUIRE(!control.chunkDiagnostics(id, {0, 0, 256, 256}).ok());
+        auto snapshot = control.captureSnapshot(id);
+        REQUIRE(snapshot.ok());
+        world.setMaterial(8, 8, "stone");
+        REQUIRE(control.restoreSnapshot(id, snapshot.value()).ok());
+        REQUIRE(world.getMaterial(8, 8) == int(MaterialId::Air));
+        auto malformed = snapshot.value();
+        malformed.pop_back();
+        const auto revision = world.revision();
+        REQUIRE(!control.restoreSnapshot(id, malformed).ok());
+        REQUIRE(world.revision() == revision);
+    };
+    SUB_CASE("catalog reload travels through the same paused authority contract") {
+        PixelWorld world(75);
+        auto&      control = pixelWorldControlService();
+        const auto id      = world.worldLink().world;
+        REQUIRE(control.setPaused(id, true).ok());
+        auto                            builtIn = MaterialCatalog::builtIn();
+        std::vector<MaterialDefinition> definitions(builtIn.definitions().begin(), builtIn.definitions().end());
+        definitions[std::size_t(MaterialId::Stone)].displayRgba = 0x010203FFU;
+        auto candidate =
+            MaterialCatalog::create(std::move(definitions), {builtIn.reactions().begin(), builtIn.reactions().end()},
+                                    {builtIn.phaseRules().begin(), builtIn.phaseRules().end()});
+        REQUIRE(candidate.ok());
+        auto json = encodeMaterialCatalogJson(candidate.value());
+        REQUIRE(json.ok());
+        REQUIRE(control.reloadMaterialCatalog(id, json.value(), world.materialCatalogFingerprint()).ok());
+        REQUIRE(world.materialDisplayRgba(MaterialId::Stone) == 0x010203FFU);
+        REQUIRE(!control.reloadMaterialCatalog(id, "{}", world.materialCatalogFingerprint()).ok());
+    };
 }
 }  // namespace test_pixelworld_control
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_generation)
-#include "PrivateTestScope.h"
-#include <algorithm>
-#include <limits>
-#include <set>
-#include <string>
 #include "pixelworld/PixelWorldGeneration.h"
 #include "pixelworld/PixelWorldGenerationCodec.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pixelworld_generation.cpp
 namespace test_pixelworld_generation {
 using namespace eve::pixelworld;
 
-TEST_CASE("pixelworld_generation.is_bit_exact_seamless_and_seed_sensitive") {
-    const MaterialCatalog       catalog = MaterialCatalog::builtIn();
-    PixelWorldGenerationRequest request;
-    request.seed             = 0xC0FFEE;
-    request.region           = {-3, -1, 3, 2};
-    request.surfaceY         = 4;
-    request.terrainAmplitude = 20;
-    request.waterLevel       = 48;
-    request.caveThreshold    = 4200;
-
-    const auto first  = generatePixelWorld(request, catalog, 1).expect("first generated world");
-    const auto second = generatePixelWorld(request, catalog, 1).expect("second generated world");
-    CHECK_EQ(first.contentHash, second.contentHash);
-    CHECK_EQ(first.batch, second.batch);
-    CHECK_EQ(first.chunks, second.chunks);
-    CHECK(std::any_of(first.chunks.begin(), first.chunks.end(), [](const auto& chunk) { return chunk.caveCells > 0; }));
-    CHECK(
-        std::any_of(first.chunks.begin(), first.chunks.end(), [](const auto& chunk) { return chunk.solidCells > 0; }));
-
-    PixelWorldGenerationRequest single = request;
-    single.region                      = {0, 0, 0, 0};
-    const auto isolated                = generatePixelWorld(single, catalog, 1).expect("isolated Chunk");
-    const auto wholeChunk              = std::find_if(first.batch.chunks.begin(), first.batch.chunks.end(),
-                                                      [](const auto& chunk) { return chunk.x == 0 && chunk.y == 0; });
-    REQUIRE(wholeChunk != first.batch.chunks.end());
-    REQUIRE_EQ(isolated.batch.chunks.size(), std::size_t(1));
-    CHECK_EQ(wholeChunk->cells, isolated.batch.chunks.front().cells);
-
-    request.seed += 1;
-    const auto different = generatePixelWorld(request, catalog, 1).expect("different seed");
-    CHECK(different.contentHash != first.contentHash);
+TEST_CASE("pixelworld.generation.spec.determinismSeamsAndStamping") {
+    const auto  catalog     = MaterialCatalog::builtIn();
+    const auto* catalogView = &catalog;
+    SUB_CASE("same seed and request are bit exact; isolated chunk agrees with regional generation") {
+        PixelWorldGenerationRequest request;
+        request.seed             = 0xC0FFEE;
+        request.region           = {-3, -1, 3, 2};
+        request.surfaceY         = 4;
+        request.terrainAmplitude = 20;
+        request.waterLevel       = 48;
+        request.caveThreshold    = 4200;
+        auto first               = generatePixelWorld(request, *catalogView, 1);
+        auto repeated            = generatePixelWorld(request, *catalogView, 1);
+        REQUIRE(first.ok());
+        REQUIRE(repeated.ok());
+        REQUIRE(first.value().contentHash == repeated.value().contentHash);
+        REQUIRE(first.value().batch == repeated.value().batch);
+        REQUIRE(std::any_of(first.value().chunks.begin(), first.value().chunks.end(),
+                            [](const auto& chunk) { return chunk.caveCells > 0; }));
+        PixelWorldGenerationRequest single = request;
+        single.region                      = {0, 0, 0, 0};
+        auto isolated                      = generatePixelWorld(single, *catalogView, 1);
+        REQUIRE(isolated.ok());
+        auto shared = std::find_if(first.value().batch.chunks.begin(), first.value().batch.chunks.end(),
+                                   [](const auto& chunk) { return chunk.x == 0 && chunk.y == 0; });
+        REQUIRE(shared != first.value().batch.chunks.end());
+        REQUIRE(isolated.value().batch.chunks.size() == 1);
+        REQUIRE(shared->cells == isolated.value().batch.chunks.front().cells);
+        request.seed += 1;
+        auto different = generatePixelWorld(request, *catalogView, 1);
+        REQUIRE(different.ok());
+        REQUIRE(different.value().contentHash != first.value().contentHash);
+    };
+    SUB_CASE("stamp spanning two chunks is split, applied, and invalid schema is rejected") {
+        PixelWorldGenerationRequest request;
+        request.seed          = 77;
+        request.region        = {0, 0, 1, 0};
+        request.surfaceY      = 0;
+        request.caveThreshold = 0;
+        PixelMaterialStamp stamp;
+        stamp.originX = 62;
+        stamp.originY = 10;
+        stamp.width   = 4;
+        stamp.height  = 2;
+        stamp.cells.assign(8, {MaterialId::Wood, 20, 0, 0});
+        request.stamps.push_back(stamp);
+        auto generated = generatePixelWorld(request, *catalogView, 1);
+        REQUIRE(generated.ok());
+        REQUIRE(generated.value().batch.chunks.size() == 2);
+        REQUIRE(generated.value().chunks[0].stampedCells == 4);
+        REQUIRE(generated.value().chunks[1].stampedCells == 4);
+        PixelWorld world(request.seed, *catalogView);
+        auto       applied = world.applyChunkBatch(generated.value().batch, 0);
+        REQUIRE(applied.ok());
+        REQUIRE(applied.value().chunksReplaced == 2);
+        for (int y = 10; y < 12; ++y)
+            for (int x = 62; x < 66; ++x) REQUIRE(world.getMaterial(x, y) == int(MaterialId::Wood));
+        auto before = world.saveSnapshot();
+        REQUIRE(before.ok());
+        request.schemaVersion = 99;
+        REQUIRE(!generatePixelWorld(request, *catalogView, 2).ok());
+        auto after = world.saveSnapshot();
+        REQUIRE(after.ok());
+        REQUIRE(after.value() == before.value());
+    };
 }
 
-TEST_CASE("pixelworld_generation.stamps_cross_chunk_boundaries_and_apply_transactionally") {
-    const MaterialCatalog       catalog = MaterialCatalog::builtIn();
-    PixelWorldGenerationRequest request;
-    request.seed          = 77;
-    request.region        = {0, 0, 1, 0};
-    request.surfaceY      = 0;
-    request.caveThreshold = 0;
-    PixelMaterialStamp stamp;
-    stamp.originX = 62;
-    stamp.originY = 10;
-    stamp.width   = 4;
-    stamp.height  = 2;
-    stamp.cells.assign(8, {MaterialId::Wood, 20, 0, 0});
-    request.stamps.push_back(stamp);
-
-    const auto generated = generatePixelWorld(request, catalog, 1).expect("stamped generation");
-    REQUIRE_EQ(generated.batch.chunks.size(), std::size_t(2));
-    CHECK_EQ(generated.chunks[0].stampedCells, std::uint32_t(4));
-    CHECK_EQ(generated.chunks[1].stampedCells, std::uint32_t(4));
-
-    PixelWorld world(request.seed, catalog);
-    const auto receipt = world.applyChunkBatch(generated.batch, 0).expect("apply generated batch");
-    CHECK_EQ(receipt.chunksReplaced, std::uint32_t(2));
-    CHECK_EQ(world.revision(), std::uint64_t(1));
-    for (int y = 10; y < 12; ++y)
-        for (int x = 62; x < 66; ++x) CHECK_EQ(world.getMaterial(x, y), int(MaterialId::Wood));
-
-    const auto                  before  = world.saveSnapshot().expect("before invalid generation");
-    PixelWorldGenerationRequest invalid = request;
-    invalid.schemaVersion               = 99;
-    CHECK(!generatePixelWorld(invalid, catalog, 2).ok());
-    const auto after = world.saveSnapshot().expect("after invalid generation");
-    REQUIRE_EQ(after.size(), before.size());
-    CHECK(std::equal(after.begin(), after.end(), before.begin()));
-}
-
-TEST_CASE("pixelworld_generation.codec_round_trips_and_rejects_unknown_data") {
+TEST_CASE("pixelworld.generation.spec.versionedRequestCodec") {
     PixelWorldGenerationRequest request;
     request.seed             = std::numeric_limits<std::uint64_t>::max();
     request.region           = {-2, 3, 4, 5};
@@ -841,35 +654,29 @@ TEST_CASE("pixelworld_generation.codec_round_trips_and_rejects_unknown_data") {
     stamp.height  = 1;
     stamp.cells.push_back({MaterialId::Lava, 777, 9, 4});
     request.stamps.push_back(stamp);
-
-    const std::string encoded = encodePixelWorldGenerationRequestJson(request).expect("encode request");
-    const auto        decoded = decodePixelWorldGenerationRequestJson(encoded).expect("decode request");
-    CHECK_EQ(decoded.schemaVersion, request.schemaVersion);
-    CHECK_EQ(decoded.seed, request.seed);
-    CHECK_EQ(decoded.region.minX, request.region.minX);
-    CHECK_EQ(decoded.region.minY, request.region.minY);
-    CHECK_EQ(decoded.region.maxX, request.region.maxX);
-    CHECK_EQ(decoded.region.maxY, request.region.maxY);
-    CHECK_EQ(decoded.surfaceY, request.surfaceY);
-    CHECK_EQ(decoded.terrainAmplitude, request.terrainAmplitude);
-    CHECK_EQ(decoded.waterLevel, request.waterLevel);
-    CHECK_EQ(decoded.caveThreshold, request.caveThreshold);
-    REQUIRE_EQ(decoded.stamps.size(), std::size_t(1));
-    CHECK_EQ(decoded.stamps.front().cells, request.stamps.front().cells);
-    CHECK_EQ(encodePixelWorldGenerationRequestJson(decoded).expect("re-encode request"), encoded);
-
-    std::string unknownVersion = encoded;
-    const auto  versionAt      = unknownVersion.find("\"version\": 1");
-    REQUIRE(versionAt != std::string::npos);
-    unknownVersion.replace(versionAt, std::string("\"version\": 1").size(), "\"version\": 2");
-    CHECK(!decodePixelWorldGenerationRequestJson(unknownVersion).ok());
-
-    std::string unknownField = encoded;
-    const auto  closingBrace = unknownField.rfind('}');
-    REQUIRE(closingBrace != std::string::npos);
-    unknownField.insert(closingBrace, ",\n  \"future\": true\n");
-    CHECK(!decodePixelWorldGenerationRequestJson(unknownField).ok());
-    CHECK(!decodePixelWorldGenerationRequestJson("{broken").ok());
+    auto encoded = encodePixelWorldGenerationRequestJson(request);
+    REQUIRE(encoded.ok());
+    auto decoded = decodePixelWorldGenerationRequestJson(encoded.value());
+    REQUIRE(decoded.ok());
+    REQUIRE(decoded.value().seed == request.seed);
+    REQUIRE(decoded.value().region.minX == -2);
+    REQUIRE(decoded.value().region.maxY == 5);
+    REQUIRE(decoded.value().surfaceY == -17);
+    REQUIRE(decoded.value().stamps.front().cells == stamp.cells);
+    auto again = encodePixelWorldGenerationRequestJson(decoded.value());
+    REQUIRE(again.ok());
+    REQUIRE(again.value() == encoded.value());
+    std::string future  = encoded.value();
+    const auto  version = future.find("\"version\": 1");
+    REQUIRE(version != std::string::npos);
+    future.replace(version, std::string("\"version\": 1").size(), "\"version\": 2");
+    REQUIRE(!decodePixelWorldGenerationRequestJson(future).ok());
+    std::string unknown = encoded.value();
+    const auto  close   = unknown.rfind('}');
+    REQUIRE(close != std::string::npos);
+    unknown.insert(close, ",\n  \"future\": true\n");
+    REQUIRE(!decodePixelWorldGenerationRequestJson(unknown).ok());
+    REQUIRE(!decodePixelWorldGenerationRequestJson("{broken").ok());
 }
 }  // namespace test_pixelworld_generation
 #endif
