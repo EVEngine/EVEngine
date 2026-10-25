@@ -2656,6 +2656,9 @@ class DelayedResourceExecutor final : public eve::caps::IAsyncWorkExecutor {
 public:
     ~DelayedResourceExecutor() override {
         release();
+        for (auto &worker : workers_) {
+            if (worker.joinable()) worker.join();
+        }
         workers_.clear();
         eve::cap::revoke<eve::caps::IAsyncWorkExecutor>(this);
     }
@@ -2675,7 +2678,7 @@ public:
 private:
     std::mutex                   gate_;
     std::unique_lock<std::mutex> hold_{gate_};
-    std::vector<std::jthread>    workers_;
+    std::vector<std::thread>     workers_;
 };
 
 }  // namespace

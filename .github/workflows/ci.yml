@@ -254,8 +254,77 @@ jobs:
         timeout-minutes: 5
         run: cd tools/vision-prefilter && python3 -m pytest -q test
 
-  # Native ARM64 lanes build and run the same process-isolated test suite.
-  # Installed SDKs also compile a consumer plugin and run a packaged game.
+  # Native architecture lanes compile and link the engine and test binaries.
+  # Runtime GPU/ICD coverage remains in the existing host lanes.
+  macos-x86_64:
+    name: macOS x86_64 (${{ matrix.configuration }}, build)
+    needs: [source-quality, change-scope]
+    if: ${{ needs.source-quality.result == 'success' && needs.change-scope.outputs.macos == 'true' }}
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: ${{ fromJSON(inputs.build_type == 'both' && '["debug","release"]' || inputs.build_type == 'release' && '["release"]' || '["debug"]') }}
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native Intel runner
+        timeout-minutes: 5
+        run: test "$(uname -s)" = Darwin && test "$(uname -m)" = x86_64
+
+      - name: Install build tools
+        timeout-minutes: 10
+        run: brew install ninja
+
+      - name: Install Vulkan SDK (MoltenVK)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve Vulkan SDK paths
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Build macOS x86_64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          mkdir -p build
+          log="build/macosx-x86_64${suffix}.log"
+          if make "build/macosx-x86_64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            tail -n 30 "$log"
+          else
+            awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
+            tail -n 40 "$log"
+            exit 1
+          fi
+
+      - name: Upload Intel macOS build diagnostics
+        if: failure()
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-x86_64-${{ matrix.configuration }}-build-logs
+          path: build/macosx-x86_64*.log
+          if-no-files-found: ignore
+
+  # Native ARM64 lanes also run the process-isolated tests and validate SDKs.
   windows-arm64:
     name: Windows ARM64 (${{ matrix.configuration }}, build + test)
     needs: [source-quality, change-scope]
