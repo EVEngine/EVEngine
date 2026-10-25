@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "physics-backend": [
+      "physics.collision.ccd.sphereStopsAtThinWall",
+      "physics.collision.ccd.dynamicPairMaintainsOrderWithFourSubsteps",
+      "physics.collision.stack.remainsSupportedAfterTenSeconds",
+      "physics.collision.query.primitiveHitsHaveNoSourceTriangle"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
 #include "zeroerr/assert.h"

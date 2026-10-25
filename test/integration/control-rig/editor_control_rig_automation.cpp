@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "module-composition": [
+      "editor.controlRig.automation.sharedDocumentHistoryAndSchema",
+      "editor.controlRig.automation.plansRejectStaleAndInvalidAtomically",
+      "editor.controlRig.automation.lifecycleAndAbsentHost",
+      "editor.controlRig.automation.keysNodesAndGeneration",
+      "editor.controlRig.automation.oldOwnerCannotRemoveReplacement",
+      "editor.controlRig.automation.nestedSchemaUsesSharedProjection"
+    ]
+  },
+  "module": "animation"
+}
+*/
+// clang-format on
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/ControlRig.h"

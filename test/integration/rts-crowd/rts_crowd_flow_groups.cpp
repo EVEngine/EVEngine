@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "rts",
+  "origins": [
+    "rts_crowd_flow_groups.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "RtsCompositionFixtures.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"

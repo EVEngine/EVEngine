@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen"
+  ],
+  "default": "script-binding",
+  "origins": [
+    "terrain_world_origin_vm.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainStampScript.h"

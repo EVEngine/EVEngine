@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "render-window": [
+      "stylize.impasto.realGpuPipeline"
+    ]
+  },
+  "module": "stylize"
+}
+*/
+// clang-format on
+
 #include "graphics/Graphics.h"
 #include "graphics/Shader.h"
 #include "stylize/StyleShaders.h"

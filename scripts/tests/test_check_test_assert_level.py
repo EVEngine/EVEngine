@@ -6,7 +6,6 @@ easy to break silently, so each rule it relies on is pinned here.
 """
 
 import importlib.util
-import json
 import sys
 import tempfile
 import unittest
@@ -189,18 +188,16 @@ class StrictFileTests(unittest.TestCase):
                 'TEST_CASE("evidence") { REQUIRE(true); CHECK(false); }\n#endif\n',
                 encoding="utf-8",
             )
-            catalogue = root / "test_levels.json"
-            catalogue.write_text(json.dumps({"sources": {
-                "merged.cpp": {"origins": ["strict.cpp", "other.cpp"]}
-            }}), encoding="utf-8")
-            with patch.object(checker, "TEST_CATALOGUE", catalogue):
-                self.assertEqual(checker.strict_violations(["test/strict.cpp"]), [
-                    f"{source.as_posix()}|<outside any case>|5",
-                    f"{source.as_posix()}|evidence|6",
+            header = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"origins":["strict.cpp","other.cpp"]}\n'
+            source.write_text(header + source.read_text(encoding="utf-8"), encoding="utf-8")
+            with patch.object(checker, "SOURCE_ROOT", root):
+                self.assertEqual(checker.strict_violations([str(root / "strict.cpp")]), [
+                    f"{source.as_posix()}|<outside any case>|6",
+                    f"{source.as_posix()}|evidence|7",
                 ])
                 self.assertEqual(checker.relocated_baseline([
-                    "test/strict.cpp|evidence|1", "test/strict.cpp|new.case|1"
-                ]), {f"{source.as_posix()}|evidence|1", "test/strict.cpp|new.case|1"})
+                    f"{root}/strict.cpp|evidence|1", f"{root}/strict.cpp|new.case|1"
+                ]), {f"{source.as_posix()}|evidence|1", f"{root}/strict.cpp|new.case|1"})
 
 
 if __name__ == "__main__":

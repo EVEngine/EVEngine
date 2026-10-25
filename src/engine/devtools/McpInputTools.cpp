@@ -1,4 +1,5 @@
 #include "devtools/McpInputTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
@@ -381,4 +382,8 @@ void resetMcpInputBatchesForTest() {
     g_nextId = 1;
 }
 
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Input, mcpInputToolSchemas, callMcpInputTool, ContentEnvelope)
 }  // namespace eve::dev

@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "particles/ParticleSystem.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"

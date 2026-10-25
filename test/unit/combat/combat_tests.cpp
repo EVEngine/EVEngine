@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "combat_camera_framing.cpp",
+    "combat_attributes.cpp",
+    "combat_character.cpp",
+    "combat_locomotion.cpp",
+    "combat_carrier.cpp",
+    "combat_melee_hit.cpp",
+    "combat_motion_warp.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_camera_framing)

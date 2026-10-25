@@ -29,7 +29,7 @@ make run/<platform>-debug GAME=examples/<name>
 2. **`config.nut` 必须赋值 `config` 表**：引擎先给默认 `config`，再 `dofile("config.nut")`。
    自造的 `window_title` / `window_width` 之类全局不会被读取，窗口会静默退回默认 800×600。
 3. **每个示例目录都要有 `README.md`**：说明演示内容、运行命令、操作方式与相关文件。
-4. **每个示例都要登记在本文件的表格中**：不允许出现指向不存在目录的死链接。
+4. **新增示例无需编辑本文件**：示例由目录自动发现；本页列表在文档维护时集中整理，已有链接仍须有效。
 5. **至少运行 2 秒不报错**：`scripts/smoke_examples.sh` 逐个启动可运行示例，`MIN_RUN_SECONDS`
    （默认 2 秒，CI 同为 2 秒；每个示例实际观察 `RUN_SECONDS`，默认 6 秒）之后进程必须
    仍然存活，且日志中不得出现 `frame error`、
@@ -53,6 +53,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | 示例 | 演示能力 |
 |---|---|
 | [building_village](building_village/README.md) | 3D/平面房屋工坊、蓝图、村镇复制、独立改造与存档 |
+| [terrain-navigation-lab](terrain-navigation-lab/README.md) | Real Cesium Man, configurable slope costs, A*/flow-field and capsule terrain traversal; full-map and character cameras. |
 | [advanced-ballistics](advanced-ballistics/README.md) | 12 格高级弹道实验室：预瞄追踪、环绕、随机游走、变速、反弹和组合触发 |
 | [world-sweep-ballistics](world-sweep-ballistics/README.md) | World3D sphere sweeps, optional collision, ricochet, trigger-only contacts and custom-function piercing |
 | [ground-fissure](ground-fissure/README.md) | 参数化地裂：Voronoi 地块、分支传播、碎石扬尘、三种预设、调参与重播 |
@@ -291,6 +292,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 想理解这些示例在证明引擎的哪些设计主张，见根目录 [Readme.md](../Readme.md) 的「设计思路」状态表；
 开发者体验类的设计价值（热重载、快照、暂停调试、AI/MCP）集中在 `devlab` 与 `ai-stage` 中体现。
 
+| [impact-arena](impact-arena/README.md) | 三波动作竞技场：通用战斗结算、轻重攻击、闪避与伤害飘字 |
 | [house-collapse](house-collapse/README.md) | Voronoi 房屋预破碎、分阶段坍塌、保存播放与体积烟尘 |
 
 ## Scenes migrated from screenshot tests

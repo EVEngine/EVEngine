@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "compile-contract",
+  "default": "performance",
+  "module": "crowd"
+}
+*/
+// clang-format on
+
 #include "common/CrashHandler.h"
 #include "crowd/Crowd.h"
 #include "crowd/CrowdWorkScheduler.h"

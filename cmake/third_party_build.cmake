@@ -284,6 +284,17 @@ function(check_third_party_project name repo)
             -DEVENGINE_NATIVE_ARM64=ON
             -DCMAKE_PROJECT_EVEngineDeps_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/native_arm64.cmake)
     endif()
+    if(EVENGINE_NATIVE_MACOS_X86_64)
+        list(APPEND _eve_tp_cmake_args
+            -DEVENGINE_NATIVE_MACOS_X86_64=ON
+            -DEVENGINE_BUILD_PLATFORM=macosx
+            -DCMAKE_PROJECT_EVEngineDeps_INCLUDE=${CMAKE_SOURCE_DIR}/cmake/native_macos_x86_64.cmake)
+    endif()
+    if(BUILD_PLATFORM STREQUAL "macosx" AND CMAKE_OSX_ARCHITECTURES)
+        list(APPEND _eve_tp_cmake_args
+            -DCMAKE_OSX_ARCHITECTURES=${CMAKE_OSX_ARCHITECTURES}
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
+    endif()
 
     # --config is required for multi-config generators (VS); ignored by Ninja.
     set(_eve_tp_build_cmd ${CMAKE_COMMAND} --build ${CMAKE_CURRENT_SOURCE_DIR}/build/${name}/${TP_BUILD_PATH}/ --target install --config ${_eve_tp_build_type} --parallel 8)
@@ -369,6 +380,9 @@ function(load_third_party)
     endif()
     if(EVENGINE_NATIVE_ARM64)
         string(APPEND _eve_tp_platform "-arm64")
+    endif()
+    if(BUILD_PLATFORM STREQUAL "macosx" AND CMAKE_OSX_ARCHITECTURES MATCHES "^(arm64|x86_64)$")
+        string(APPEND _eve_tp_platform "-${CMAKE_OSX_ARCHITECTURES}")
     endif()
     set(TP_BUILD_PATH ${_eve_tp_platform}${DEBUG_APPENDIX})
     message("Third Party Build Path: ${TP_BUILD_PATH}")

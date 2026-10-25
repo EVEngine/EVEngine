@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "module-composition": [
+      "editor.controlRig.limits.sharedHistoryAndAtomicRejection"
+    ]
+  },
+  "module": "animation"
+}
+*/
+// clang-format on
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/ControlRig.h"

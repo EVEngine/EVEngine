@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "fluids_volume_collision_material.cpp",
+    "fluids_volume_coupling.cpp",
+    "fluids_volume_emitter.cpp",
+    "fluids_volume_emitter_part2.cpp",
+    "fluids_volume_mesh_emitter.cpp",
+    "fluids_volume_triggers.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_volume_collision_material)

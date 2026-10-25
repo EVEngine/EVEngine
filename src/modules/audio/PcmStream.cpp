@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "PcmStream.h"
 
 #include "Audio.h"

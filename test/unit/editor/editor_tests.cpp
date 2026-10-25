@@ -1,3 +1,26 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "local-format",
+  "cases": {
+    "local-logic": [
+      "property.validation_presentation_and_editor_share_type_enum_range_and_finite_rules",
+      "property.validation_editor_model_rejects_before_command_sink",
+      "property.validation_dynamic_model_uses_shared_finite_rule",
+      "property.validation_transform_descriptor_preserves_editor_object_semantics"
+    ]
+  },
+  "origins": [
+    "editor_level.cpp",
+    "editor_tilemap_formats.cpp",
+    "property_validation_parity.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_level)

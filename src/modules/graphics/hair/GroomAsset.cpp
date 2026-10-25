@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "graphics/hair/GroomAsset.h"
 #include <algorithm>
 #include <cmath>

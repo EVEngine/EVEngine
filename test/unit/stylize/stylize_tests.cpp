@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "stylize_anime.cpp",
+    "stylize_area_indicator_effect.cpp",
+    "stylize_attack_vfx.cpp",
+    "stylize_attack_vfx_layers.cpp",
+    "stylize_beam_effect.cpp",
+    "stylize_mesh_particles.cpp",
+    "stylize_mesh_vfx_benchmark.cpp",
+    "stylize.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_anime)

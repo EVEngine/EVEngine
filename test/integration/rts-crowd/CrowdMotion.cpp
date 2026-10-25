@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "concurrency",
+  "cases": {
+    "script-binding": [
+      "rts.thread.scriptCrowdExecutionRequiresConfiguredWorldAndScheduler"
+    ]
+  },
+  "module": "rts",
+  "origins": [
+    "CrowdMotion.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include <stdexcept>
 #include "../../RtsCompositionFixtures.h"

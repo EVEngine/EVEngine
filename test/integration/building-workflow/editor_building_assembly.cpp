@@ -1,3 +1,4 @@
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"building_editing"}
 #include "building/BuildingAssembly.h"
 #include "building/BuildingDef.h"
 #include "building/PlacementWorld.h"

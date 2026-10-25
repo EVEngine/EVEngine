@@ -4,6 +4,34 @@
 
 namespace eve::procgen {
 class Heightmap;
+/** @brief Actor traversal policy in world metres; degrees from horizontal. */
+struct TerrainTraversalSettings {
+    float spacingX = 1, spacingZ = 1, heightScale = 1;
+    float maxSlopeDegrees = 45, slopeCost = 0;
+};
+/**
+ * @brief Bake a separate terrain cost raster for one actor policy.
+ * @param target Exclusively borrowed output; matching dimensions, may alias inputs.
+ * @param heights Borrowed finite heights, scaled by heightScale.
+ * @param baseCosts Borrowed finite costs: <=0 blocked, positive values must be >=1.
+ * @param settings Finite positive spacing, nonnegative scale/cost, slope in [0,90].
+ * @return Changed samples or InvalidArgument without mutation, including overflow.
+ * @remarks Zero means blocked; cost=base*(1+slopeCost*rise/run). The largest adjacent
+ * derivative on each axis prevents cancellation at ridges. Tile edges require a halo
+ * and crop. This cell rule does not represent swept volume, jumping or directional drops.
+ * Rebuild from original base costs on policy/terrain changes; use a separate path grid
+ * per policy and apply the same slope limit to the physical controller.
+ * @cost Linear in raster samples with temporary output storage; bake on changes and
+ * reuse across queries rather than per actor per frame.
+ * @thread Synchronous exclusive target, immutable inputs; no callbacks or retained references.
+ * @throws std::bad_alloc Target remains unchanged.
+ */
+[[nodiscard]] EVENGINE_API_DOMAINS Result<int> generateTerrainTraversalCosts(Heightmap&                      target,
+                                                                             const Heightmap&                heights,
+                                                                             const Heightmap&                baseCosts,
+                                                                             const TerrainTraversalSettings& settings);
+
+class Heightmap;
 struct TerrainStampSettings;
 enum class TerrainMaskBlend;
 

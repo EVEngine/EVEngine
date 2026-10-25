@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "physics_cloth.cpp",
+    "physics_layered_cloth.cpp",
+    "physics_layered_cloth_gpu.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <limits>
 #include <type_traits>
 #include "LayeredClothGeometryOracle.h"

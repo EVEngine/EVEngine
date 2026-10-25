@@ -1,4 +1,5 @@
 #include "devtools/McpWorkshopTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "devtools/Debugger.hpp"
 #include "devtools/McpArgs.hpp"
@@ -168,4 +169,8 @@ void resetMcpWorkshopStateForTest() {
     g_mode = "play";
 }
 
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Workshop, mcpWorkshopToolSchemas, callMcpWorkshopTool, ContentEnvelope)
 }  // namespace eve::dev

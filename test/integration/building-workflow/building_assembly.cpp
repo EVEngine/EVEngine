@@ -1,3 +1,4 @@
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"building"}
 #include <memory>
 #include "building/BuildingAssembly.h"
 #include "building/BuildingAssemblyProtocol.h"

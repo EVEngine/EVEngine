@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "performance",
+  "module": "animation",
+  "modules": [
+    "action",
+    "animation"
+  ],
+  "origins": [
+    "action_montage_performance.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "action/Action.h"
 #include "action/ActionTimeline.h"
 #include "animation/AnimClip.h"

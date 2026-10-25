@@ -82,7 +82,7 @@ public:
 
 private:
     friend class AssemblyService;
-    friend Result<Value> executeHouseRequest(PlacementWorld& world, const Value& request);
+    friend EVENGINE_API_WORLD Result<Value> executeHouseRequest(PlacementWorld& world, const Value& request);
     explicit PreparedAssembly(std::unique_ptr<PreparedAssemblyData> data);
     std::unique_ptr<PreparedAssemblyData> data_;
 };

@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "crowd.registry.scriptReferencesAndBatchesHaveCheckedBoundary",
+      "crowd.registry.scriptMovementBindingRejectsCoercionAndPartialUpdates"
+    ]
+  },
+  "module": "crowd",
+  "origins": [
+    "crowd_registry.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "crowd/Crowd.h"
 #include "zeroerr/unittest.h"
