@@ -58,6 +58,9 @@ function(eve_configure_strict_warnings target)
             # makes GCC's -Wmaybe-uninitialized fire on libstdc++ optional /
             # move-assign and similar; those were silent under the old -O0 Debug.
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=maybe-uninitialized>
+            # Box2D's b2Math.h type-puns floats under -O2 -fstrict-aliasing;
+            # the install tree is a plain -I (see note above), so demote here.
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=strict-aliasing>
             # Poco::Data Date/Time implicit-copy deprecations and
             # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
             # but no virtual dtor) fire from third-party headers during template
