@@ -55,12 +55,16 @@ function(eve_configure_strict_warnings target)
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=unused-but-set-parameter>
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=sign-compare>
             # Optimized Debug (EVENGINE_DEBUG_LEVEL normal/detail uses -O2/-O1)
-            # makes GCC's -Wmaybe-uninitialized fire on libstdc++ optional /
-            # move-assign and similar; those were silent under the old -O0 Debug.
+            # turns on GCC flow analyses that were silent under the old -O0
+            # Debug. Demote known noisy families so -Werror stays usable; the
+            # diagnostics remain visible as warnings.
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=maybe-uninitialized>
             # Box2D's b2Math.h type-puns floats under -O2 -fstrict-aliasing;
             # the install tree is a plain -I (see note above), so demote here.
             $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=strict-aliasing>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=array-bounds>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=stringop-overflow>
+            $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wno-error=stringop-overread>
             # Poco::Data Date/Time implicit-copy deprecations and
             # -Wdelete-non-virtual-dtor (the ECS.hpp base Entity has virtuals
             # but no virtual dtor) fire from third-party headers during template
