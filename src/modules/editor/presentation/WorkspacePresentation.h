@@ -46,7 +46,7 @@ public:
  * @thread Owner thread only. No callbacks or retained source pointers.
  * @reentrancy Non-reentrant; host dispatches sequentially and closes at a safe point.
  */
-class EVENGINE_API_EDITORS WorkspacePresentation {
+class EVENGINE_API_ORCHESTRATION WorkspacePresentation {
 public:
     /** @brief Stage an owning draft; repeated updates create no document/history mutation. */
     [[nodiscard]] Result<void> stage(IWorkspacePresentationSource& source, PropertyPath path, EditorValue value);
