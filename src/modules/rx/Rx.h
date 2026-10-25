@@ -182,6 +182,25 @@ private:
     mutable bool stopped_ = false;
 };
 
+namespace detail {
+
+// Operators share these closure types per output T instead of generating new
+// std::function managers/invokers at every lambda expression. Keep separate
+// Observer copies, matching the original error/completion lambda captures.
+template <typename T>
+struct ForwardError {
+    Observer<T> out;
+    void operator()(const std::string& error) const { out.error(error); }
+};
+
+template <typename T>
+struct ForwardCompleted {
+    Observer<T> out;
+    void operator()() const { out.completed(); }
+};
+
+}  // namespace detail
+
 /**
  * @brief Push-based stream source. Operators return a new (caller-owned)
  * Observable; subscribe() returns a Subscription used to cancel.
@@ -259,8 +278,8 @@ Observable<T>* Observable<T>::filter(std::function<bool(const T&)> pred) {
         in.onNext = [out, pred](const T& v) {
             if (pred(v)) out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -273,8 +292,8 @@ Observable<R>* Observable<T>::map(std::function<R(const T&)> fn) {
     return new AnonymousObservable<R>([self, fn](Observer<R> out) {
         Observer<T> in;
         in.onNext = [out, fn](const T& v) { out.next(fn(v)); };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<R>{out};
+        in.onCompleted = detail::ForwardCompleted<R>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -295,8 +314,8 @@ Observable<T>* Observable<T>::take(int n) {
                 // note: upstream keeps running; completed() already stopped `out`
             }
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -315,8 +334,8 @@ Observable<T>* Observable<T>::skip(int n) {
             }
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -334,8 +353,8 @@ Observable<T>* Observable<T>::first() {
             out.next(v);
             out.completed();
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -347,8 +366,8 @@ Observable<T>* Observable<T>::takeUntil(Observable<T>* other) {
     return new AnonymousObservable<T>([self, other](Observer<T> out) {
         Observer<T> in;
         in.onNext = [out](const T& v) { out.next(v); };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         auto src = std::make_shared<Subscription>(self->subscribe(std::move(in)));
 
         Observer<T> stopper;
@@ -384,8 +403,8 @@ Observable<T>* Observable<T>::distinctUntilChanged() {
             *last = v;
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<T>{out};
+        in.onCompleted = detail::ForwardCompleted<T>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -423,19 +442,15 @@ public:
     }
 
     /** @brief Pushes a value to every registered observer. */
-    void onNext(const T& v) { emit([&](Observer<T>& o) { o.next(v); }); }
+    void onNext(const T& v) { emit(Notification::Next, std::addressof(v)); }
     /** @brief Pushes a terminal error and stops the subject. */
     void onError(const std::string& e) {
-        /** @brief Emit. */
-        emit([&](Observer<T>& o) { o.error(e); });
-        /** @brief Mark stopped. */
+        emit(Notification::Error, nullptr, &e);
         markStopped();
     }
     /** @brief Pushes a terminal completion and stops the subject. */
     void onCompleted() {
-        /** @brief Emit. */
-        emit([&](Observer<T>& o) { o.completed(); });
-        /** @brief Mark stopped. */
+        emit(Notification::Completed);
         markStopped();
     }
 
@@ -463,7 +478,12 @@ private:
         bool        removed = false;
     };
 
-    void emit(const std::function<void(Observer<T>&)>& fn) {
+    // The set of notifications is fixed: avoid three std::function closure
+    // managers/invokers per T merely to select the observer method.
+    enum class Notification { Next, Error, Completed };
+
+    void emit(Notification notification, const T* value = nullptr,
+              const std::string* error = nullptr) {
         std::vector<std::shared_ptr<Slot>> copy;
         {
             std::lock_guard<std::mutex> lock(mu_);
@@ -472,7 +492,11 @@ private:
         }
         for (auto& s : copy) {
             Observer<T> snapshot = s->observer;
-            fn(snapshot);
+            switch (notification) {
+                case Notification::Next: snapshot.next(*value); break;
+                case Notification::Error: snapshot.error(*error); break;
+                case Notification::Completed: snapshot.completed(); break;
+            }
         }
     }
 
