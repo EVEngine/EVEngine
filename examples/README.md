@@ -291,6 +291,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 想理解这些示例在证明引擎的哪些设计主张，见根目录 [Readme.md](../Readme.md) 的「设计思路」状态表；
 开发者体验类的设计价值（热重载、快照、暂停调试、AI/MCP）集中在 `devlab` 与 `ai-stage` 中体现。
 
+| [impact-arena](impact-arena/README.md) | 三波动作竞技场：通用战斗结算、轻重攻击、闪避与伤害飘字 |
 | [house-collapse](house-collapse/README.md) | Voronoi 房屋预破碎、分阶段坍塌、保存播放与体积烟尘 |
 
 ## Scenes migrated from screenshot tests

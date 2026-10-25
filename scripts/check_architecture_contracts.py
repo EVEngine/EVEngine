@@ -43,6 +43,9 @@ ROOT = Path(__file__).resolve().parent.parent
 # primitives on changed lines. Migrated once from the retired JSON catalogue;
 # edit this list (not a parallel JSON) when marking a new hot path.
 HOT_PATH_GLOBS: tuple[str, ...] = (
+    "src/modules/combat/Damage.cpp",
+    "src/modules/graphics/DamageNumbers.cpp",
+    "src/modules/graphics/DamageNumbersRender.cpp",
     "src/modules/climbing/ClimbingExecution.cpp",
     "src/modules/climbing/ClimbingInput.cpp",
     "src/modules/climbing/ClimbingECS.cpp",
