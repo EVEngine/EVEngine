@@ -199,6 +199,21 @@ TEST_CASE("daynight.clockLightingAndAtmosphereContract") {
         CHECK(!lighting.isNightLight("unknown"));
         CHECK(lighting.isNightLight("fire"));
     };
+    SUB_CASE("clock immediately refreshes solar elevation intensity and horizon color") {
+        DayNight lighting;
+        lighting.setTimeOfDay(12.f);
+        CHECK_EQ(lighting.getSunElevation(), 70.f);
+        CHECK(lighting.getSunIntensity() > 0.f);
+        const float noonBlueRatio = lighting.getSunB() / lighting.getSunR();
+        lighting.setTimeOfDay(6.5f);
+        CHECK(lighting.getSunB() / lighting.getSunR() < noonBlueRatio);
+        lighting.setTimeOfDay(0.f);
+        CHECK_EQ(lighting.getSunElevation(), -70.f);
+        CHECK_EQ(lighting.getSunIntensity(), 0.f);
+        CHECK_EQ(lighting.getSunR(), 0.f);
+        CHECK_EQ(lighting.getSunG(), 0.f);
+        CHECK_EQ(lighting.getSunB(), 0.f);
+    };
     SUB_CASE("firefly pool is bounded and clear is idempotent") {
         DayNight lighting;
         for (int index = 0; index < 20; ++index) lighting.addFirefly(static_cast<float>(index), 1.f, 0.f);
