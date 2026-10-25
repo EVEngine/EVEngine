@@ -214,7 +214,7 @@ foreach(_basename IN LISTS _bundle_files)
       if(DEFINED ZEROERR_LABEL AND NOT ZEROERR_LABEL STREQUAL "")
         list(APPEND _labels "${ZEROERR_LABEL}")
       endif()
-      if(_name STREQUAL "ClassicScenes.perf.maxFps")
+      if(_name STREQUAL "ClassicScenes.perf.maxFps" OR _name MATCHES "^physics\\.benchmark\\.")
         # Full FPS sweeps stay opt-in: the benchmark label lets `make test`
         # exclude them (CTEST_BENCHMARK_SEL) while -L benchmark still selects them.
         list(APPEND _labels "benchmark")

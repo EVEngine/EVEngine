@@ -796,7 +796,9 @@ TEST_CASE("editor.v2.disk_document_atomic_conflict_and_autosave") {
     auto       stale    = documents.requestSave(id);
     const auto conflict = documents.executeSave(stale.value());
     CHECK(static_cast<int>(conflict.code()) == static_cast<int>(EditorStatus::Conflict));
-    CHECK(static_cast<int>(conflict.value().state) == static_cast<int>(DocumentState::Conflict));
+    const auto conflictedDocument = documents.snapshot(id);
+    REQUIRE(conflictedDocument.ok());
+    CHECK(static_cast<int>(conflictedDocument.value().state) == static_cast<int>(DocumentState::Conflict));
 
     // A failed atomic replace leaves the previously persisted file intact.
     DiskAtomicDocumentStore failureStore(root);

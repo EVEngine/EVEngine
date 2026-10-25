@@ -2453,7 +2453,9 @@ TEST_CASE("editor.v2.document_save_detects_external_revision_conflict") {
               .ok());
     auto conflict = documents.executeSave(staleTicket.value());
     CHECK_EQ(static_cast<int>(conflict.code()), static_cast<int>(EditorStatus::Conflict));
-    CHECK_EQ(static_cast<int>(conflict.value().state), static_cast<int>(DocumentState::Conflict));
+    const auto conflictedDocument = documents.snapshot(id);
+    REQUIRE(conflictedDocument.ok());
+    CHECK_EQ(static_cast<int>(conflictedDocument.value().state), static_cast<int>(DocumentState::Conflict));
 }
 
 TEST_CASE("editor.v2.import_place_save_and_reopen_headless_loop") {

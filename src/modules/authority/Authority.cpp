@@ -45,34 +45,15 @@ ssq::Table makeOwnedProxy(HSQUIRRELVM vm, eve::Result<Ref>&& reference, Release&
 }
 
 std::string quote(const std::string& value) {
-    std::ostringstream out;
-    out << '"';
-    for (unsigned char c : value) {
-        switch (c) {
-            case '"': out << "\\\""; break;
-            case '\\': out << "\\\\"; break;
-            case '\n': out << "\\n"; break;
-            case '\r': out << "\\r"; break;
-            case '\t': out << "\\t"; break;
-            default:
-                if (c < 0x20)
-                    out << "\\u" << std::hex << std::setw(4) << std::setfill('0') << int(c) << std::dec;
-                else
-                    out << static_cast<char>(c);
-        }
-    }
-    return out.str() + '"';
+    return eve::json::quoteString(value, eve::json::StringEscapeStyle::UnicodeBackspaceFormFeed);
 }
 
 bool parseU64(const eve::json::Value& value, uint64_t& output) {
     if (!value.isString()) return false;
-    try {
-        size_t pos = 0;
-        output     = std::stoull(value.asString(), &pos);
-        return pos == value.asString().size();
-    } catch (...) {
-        return false;
-    }
+    auto parsed = eve::json::scanUnsignedInteger(value.asString(), eve::json::UnsignedIntegerSyntax::LegacyStoull);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool parseRuleId(const std::string& id, uint64_t& output) {

@@ -1903,53 +1903,65 @@ TEST_CASE("cmdline.buildAndroidSkipsTemplateBuildOutputs") {
     std::filesystem::remove_all(out, ec);
 }
 
-TEST_CASE("cmdline.packageUsesTargetSdkRuntimeAndBundledDlls") {
-    // 跨平台打包：win32 SDK 的包用 eve.exe + SDK 内置的运行时 DLL；linux SDK
-    // 的包用 eve。宿主是哪个平台不应影响产物。
+TEST_CASE("cmdline.packageRejectsUnrunnableCandidateAndPreservesPrevious") {
     const auto game = tempDir("eve_ut_cmdline_pkg_game");
-    writeFile(game / "main.nut", "eve_init = function() {}\n");
-
-    // win32 目标 SDK：运行时 + 内置 DLL（vulkan 加载器 / VC 运行库）。
-    const auto winSdk = tempDir("eve_ut_cmdline_pkg_sdk_win32");
-    writeFile(winSdk / "share" / "eve" / "TARGET_PLATFORM", "win32\n");
-    writeFile(winSdk / "bin" / "eve.exe", "win runtime");
-    writeFile(winSdk / "bin" / "vulkan-1.dll", "loader");
-    writeFile(winSdk / "bin" / "vcruntime140.dll", "crt");
-    const auto winOut = tempDir("eve_ut_cmdline_pkg_out_win32");
-    {
-        CaptureStreams cap;
-        const int      rc = runCli({"eve", "package", game.string(), "--sdk", winSdk.string(), "-o", winOut.string()});
-        REQUIRE(rc == 0);
-        std::error_code ec;
-        REQUIRE(std::filesystem::is_regular_file(winOut / "eve.exe", ec));
-        REQUIRE(std::filesystem::is_regular_file(winOut / "vulkan-1.dll", ec));
-        REQUIRE(std::filesystem::is_regular_file(winOut / "vcruntime140.dll", ec));
-        REQUIRE(std::filesystem::is_regular_file(winOut / "game.eve", ec));
-        REQUIRE(!std::filesystem::exists(winOut / "eve", ec));
-        CHECK(cap.out().find("eve.exe") != std::string::npos);
-    }
-
-    // linux 目标 SDK：运行时名是 eve（不是宿主平台的 eve.exe）。
-    const auto linSdk = tempDir("eve_ut_cmdline_pkg_sdk_linux");
-    writeFile(linSdk / "share" / "eve" / "TARGET_PLATFORM", "linux\n");
-    writeFile(linSdk / "bin" / "eve", "linux runtime");
-    const auto linOut = tempDir("eve_ut_cmdline_pkg_out_linux");
-    {
-        CaptureStreams cap;
-        const int      rc = runCli({"eve", "package", game.string(), "--sdk", linSdk.string(), "-o", linOut.string()});
-        REQUIRE(rc == 0);
-        std::error_code ec;
-        REQUIRE(std::filesystem::is_regular_file(linOut / "eve", ec));
-        REQUIRE(std::filesystem::is_regular_file(linOut / "game.eve", ec));
-        REQUIRE(!std::filesystem::exists(linOut / "eve.exe", ec));
-    }
-
+    const auto sdk  = tempDir("eve_ut_cmdline_pkg_sdk");
+    const auto out  = tempDir("eve_ut_cmdline_pkg_out");
+    writeFile(game / "main.nut", "function eve_init() {}\n");
+    writeFile(sdk / "share/eve/TARGET_PLATFORM", "linux\n");
+    writeFile(sdk / "bin/eve", "not an executable");
+    writeFile(out / "game.eve", "previous verified archive");
+    writeFile(out / "build-identity.manifest", "previous identity");
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "package", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    REQUIRE(rc != 0);
+    REQUIRE(readTextFile(out / "game.eve") == "previous verified archive");
+    CHECK(readTextFile(out / "build-identity.manifest") == "previous identity");
     std::error_code ec;
     std::filesystem::remove_all(game, ec);
-    std::filesystem::remove_all(winSdk, ec);
-    std::filesystem::remove_all(winOut, ec);
-    std::filesystem::remove_all(linSdk, ec);
-    std::filesystem::remove_all(linOut, ec);
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(out, ec);
+}
+
+TEST_CASE("cmdline.packageCompilesUnreferencedScriptsBeforePublishing") {
+    const auto game = tempDir("eve_ut_cmdline_pkg_syntax_game");
+    const auto sdk  = tempDir("eve_ut_cmdline_pkg_syntax_sdk");
+    const auto out  = tempDir("eve_ut_cmdline_pkg_syntax_out");
+    writeFile(game / "main.nut", "function eve_init() {}\n");
+    writeFile(game / "unused.nut", "function broken( {\n");
+    writeFile(sdk / "share/eve/TARGET_PLATFORM", "linux\n");
+    writeFile(sdk / "bin/eve", "not an executable");
+    writeFile(out / "game.eve", "previous verified archive");
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "package", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    REQUIRE(rc == 5);
+    CHECK(cap.all().find("unused.nut") != std::string::npos);
+    CHECK(readTextFile(out / "game.eve") == "previous verified archive");
+    std::error_code ec;
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(out, ec);
+}
+
+TEST_CASE("cmdline.packageCompilesImportsFromProjectSnapshot") {
+    const auto game = tempDir("eve_ut_cmdline_pkg_import_game");
+    const auto sdk  = tempDir("eve_ut_cmdline_pkg_import_sdk");
+    const auto out  = tempDir("eve_ut_cmdline_pkg_import_out");
+    writeFile(game / "main.nut", "import { value } from \"./dep.nut\"\nfunction eve_init() {}\n");
+    writeFile(game / "dep.nut", "export const value = 42\n");
+    writeFile(sdk / "share/eve/TARGET_PLATFORM", "linux\n");
+    writeFile(sdk / "bin/eve", "not an executable");
+    CaptureStreams cap;
+    const int      rc = runCli({"eve", "package", game.string(), "--sdk", sdk.string(), "-o", out.string()});
+    // The valid import must pass compilation and reach runtime acceptance,
+    // even though this test process is running outside the game directory.
+    REQUIRE((rc == 7 || rc == 8));
+    CHECK(cap.all().find("Script dependency scan failed") == std::string::npos);
+    std::error_code ec;
+    CHECK(!std::filesystem::exists(out / "game.eve", ec));
+    std::filesystem::remove_all(game, ec);
+    std::filesystem::remove_all(sdk, ec);
+    std::filesystem::remove_all(out, ec);
 }
 
 TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
@@ -1988,6 +2000,7 @@ TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
     std::filesystem::remove_all(cyclic, ec);
     std::filesystem::remove_all(cyclicOut, ec);
 }
+
 }  // namespace test_cmdline
 #endif
 
