@@ -4559,6 +4559,16 @@
       },
       "module": "audio"
     },
+    "integration/terrain-navigation/terrain_traversal.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "procgen"
+    },
+    "integration/physics-simulation/physics_terrain_slope.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "physics"
+    },
     "integration/sprite-atlas/animation_atlas_rotation.cpp": {
       "role": "tests",
       "default": "render-window",
