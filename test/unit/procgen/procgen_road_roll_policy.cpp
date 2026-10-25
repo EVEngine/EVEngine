@@ -42,7 +42,7 @@ SplinePath rollSpan(SplineRollInterpolation policy) {
 TEST_CASE("procgen.road.roll.linearProfileContract") {
     // Two endpoints define a linear roll and pivot profile over the entire span.
     auto path = rollSpan(SplineRollInterpolation::Linear);
-    for (const auto [t, roll, pivot] :
+    for (const auto& [t, roll, pivot] :
          {std::tuple{0.f, -10.f, -2.f}, std::tuple{.25f, 0.f, 0.f}, std::tuple{.5f, 10.f, 2.f},
           std::tuple{.75f, 20.f, 4.f}, std::tuple{1.f, 30.f, 6.f}}) {
         auto sample = path.evaluateResult(t);
@@ -55,7 +55,7 @@ TEST_CASE("procgen.road.roll.linearProfileContract") {
 TEST_CASE("procgen.road.roll.smoothStepProfileContract") {
     auto path = rollSpan(SplineRollInterpolation::SmoothStep);
     // smoothstep(.25)=.15625; smoothstep(.75)=.84375.
-    for (const auto [t, roll, pivot] :
+    for (const auto& [t, roll, pivot] :
          {std::tuple{0.f, -10.f, -2.f}, std::tuple{.25f, -3.75f, -.75f}, std::tuple{.5f, 10.f, 2.f},
           std::tuple{.75f, 23.75f, 4.75f}, std::tuple{1.f, 30.f, 6.f}}) {
         auto sample = path.evaluateResult(t);
