@@ -1276,7 +1276,6 @@ TEST_CASE("procgen.road.editing.curvedVisualCrossingUsesBakedSpline") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_simulation)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
@@ -1287,6 +1286,7 @@ TEST_CASE("procgen.road.editing.curvedVisualCrossingUsesBakedSpline") {
 #include <string>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -1318,6 +1318,7 @@ TEST_CASE("procgen.road.editing.curvedVisualCrossingUsesBakedSpline") {
 #include "procgen/Grid2D.h"
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
+#include "procgen/OutputSpec.h"
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "procgen/Semantic.h"

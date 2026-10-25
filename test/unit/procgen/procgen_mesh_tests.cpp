@@ -670,9 +670,9 @@ TEST_CASE("procgen.gtsTerrainVertexColors.matchesPcgSmoothAndSharpBake") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_lsystem)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <set>
+#include "PrivateTestScope.h"
 #include "RenderImageAudit.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
@@ -682,7 +682,9 @@ TEST_CASE("procgen.gtsTerrainVertexColors.matchesPcgSmoothAndSharpBake") {
 #include "image/Image.h"
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/algorithms/LSystem.h"
+#include "procgen/spline/SplinePath.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

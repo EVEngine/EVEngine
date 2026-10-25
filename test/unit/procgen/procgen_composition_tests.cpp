@@ -392,12 +392,15 @@ TEST_CASE("procgen.objectBuild.rejectsInvalidConfigurationWithoutPartialOutput")
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_runtime_generation)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <utility>
+#include "PrivateTestScope.h"
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/RuntimeGeneration.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // procgen_runtime_generation.cpp
@@ -1161,7 +1164,9 @@ TEST_CASE("procgen.runtimeGeneration.persistsAttributedCellCachesAtomically") {
 #include "common/ProcgenSceneSink.h"
 #include "common/ProcgenWorldQuery.h"
 #include "procgen/MeshBuild.h"
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/RuntimeGeneration.h"
 #include "procgen/ShapeGrammar.h"
 #include "procgen/SpatialData.h"
@@ -2391,15 +2396,17 @@ TEST_CASE("procgen.prototype.texture.registryExposesEveryPattern") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_roguelike_generator)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <cmath>
 #include <queue>
 #include <set>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "procgen/GeneratorRegistry.h"
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/RoguelikeGenerator.h"
 #include "zeroerr/assert.h"

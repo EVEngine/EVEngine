@@ -1,7 +1,6 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_TextureSampler)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
@@ -10,6 +9,7 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <vector>
 #include "Fixtures.h"
+#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -37,9 +37,19 @@
 #include "image/ImageData.h"
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/GtsTerrainLodRuntime.h"
+#include "procgen/OutputSpec.h"
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -141,12 +151,20 @@ TEST_CASE("Renderable3D.meshLodSelectsByDistance") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_result_contract)
-#include "PrivateTestScope.h"
 #include <future>
 #include <memory>
+#include "PrivateTestScope.h"
+#include "procgen/OutputSpec.h"
+#include "procgen/PointDelta.h"
 #include "procgen/PointGraph.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/RuntimeGeneration.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
+#include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "zeroerr/unittest.h"
 // procgen_result_contract.cpp
 namespace test_procgen_result_contract_unit {
@@ -372,16 +390,24 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
+#include "procgen/OutputSpec.h"
+#include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
+#include "procgen/SpatialData.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
+#include "procgen/algorithms/LSystem.h"
 #include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainFile.h"
+#include "procgen/heightmap/TerrainMesh.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"

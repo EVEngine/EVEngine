@@ -1418,7 +1418,6 @@ TEST_CASE("procgen.mesh.cave.floodPluckingRequiresFracturesFlowAndSelectedBlocks
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_foliage_clusters)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
@@ -1426,6 +1425,7 @@ TEST_CASE("procgen.mesh.cave.floodPluckingRequiresFracturesFlowAndSelectedBlocks
 #include <memory>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "RenderImageAudit.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
@@ -1436,6 +1436,8 @@ TEST_CASE("procgen.mesh.cave.floodPluckingRequiresFracturesFlowAndSelectedBlocks
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/SpatialData.h"
 #include "procgen/algorithms/FoliageCluster.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "window/Window.h"
@@ -3671,6 +3673,8 @@ TEST_CASE("procgen.pointGraph.spatialSampleAcceptsNamedBinding") {
 #include "PrivateTestScope.h"
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/SpatialData.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -4204,11 +4208,13 @@ TEST_CASE("procgen.system.previousRevisionSupportsHotReloadDiffs") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_poisson)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <utility>
+#include "PrivateTestScope.h"
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/SpatialData.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // procgen_poisson.cpp

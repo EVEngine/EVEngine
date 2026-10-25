@@ -36,6 +36,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "procgen/Procgen.h"
 #include "procgen/RuntimeGeneration.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "procgen/road/RoadNetworkCodec.h"
 #include "procgen/road/RoadRecipes.h"
 #include "scene/Scene.h"

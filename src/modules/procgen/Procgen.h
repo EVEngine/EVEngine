@@ -8,6 +8,7 @@
 #include "common/RuntimeRegistry.h"
 #include "procgen/ArtifactPublish.h"
 #include "procgen/GeneratedArtifact.h"
+#include "procgen/ParamSchema.h"
 
 #include <cstdint>
 #include <memory>
@@ -31,6 +32,10 @@ namespace eve::data {
 class ByteData;
 }  // namespace eve::data
 
+namespace eve::map {
+class TileLayer;
+}  // namespace eve::map
+
 namespace eve::procgen {
 struct PbrTextureSet;
 class GtsTerrainLodSet;
@@ -39,6 +44,7 @@ class Params;
 class OutputSpec;
 class Grid2D;
 class PointSet;
+struct PointDelta;
 class SpatialData;
 class RuntimeGeneration;
 class ProcgenCellRequest;

@@ -17,6 +17,7 @@
 #include "procgen/Procgen.h"
 #include "procgen/animation/PcgSkinnedMesh.h"
 #include "procgen/animation/ProcgenAnimation.h"
+#include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/PcgBiomeController.h"
 #include "procgen/heightmap/PcgRuntimeStamper.h"
 #include "procgen/heightmap/TerrainStampScript.h"

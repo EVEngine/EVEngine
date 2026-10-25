@@ -1,9 +1,25 @@
 #include "procgen/Procgen.h"
 #include "graphics/Shader.h"
+#include "procgen/Biome.h"
+#include "procgen/GridGraph.h"
+#include "procgen/MeshGraph.h"
+#include "procgen/Palette.h"
+#include "procgen/PointGraph.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenOwnership.h"
 #include "procgen/ProcgenScriptSupport.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/ShapeGrammar.h"
+#include "procgen/SpatialData.h"
+#include "procgen/algorithms/LSystem.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "procgen/heightmap/TerrainSampler.h"
+#include "procgen/mesh/MeshModifierGraph.h"
 #include "procgen/road/BridgeGenerator.h"
+#include "procgen/spline/SplinePath.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"
@@ -44,6 +60,8 @@
 #include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainGrassAdapter.h"
 #include "procgen/heightmap/TerrainImageAdapter.h"
+#include "procgen/heightmap/TerrainMesh.h"
+#include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/house/HouseGen.h"
 #include "procgen/shaders/terrain_material_compat_frag_spv.inc"
@@ -393,12 +411,13 @@ uint32_t Procgen::deriveSeed(uint32_t parent, const std::string& scope) const {
 
 eve::Result<ProcgenContextHandleRef> Procgen::beginSystemHandle(const std::string& name, uint32_t seed) {
     Procgen* module = Procgen::create();
-    module->ownership_->lastError.clear();
+    module->ownership_->compatMessage.clear();
 
     if (name.empty()) {
-        module->ownership_->lastError = "beginSystem: name is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->ownership_->lastError, "context", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginSystem: name is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "context",
+                                   {}, "procgen.squirrel"));
     }
     auto       context  = std::make_unique<ProcgenContext>(name, seed);
     const auto previous = module->ownership_->systems.find(name);
@@ -409,16 +428,18 @@ eve::Result<ProcgenContextHandleRef> Procgen::beginSystemHandle(const std::strin
 eve::Result<ProcgenContextHandleRef> Procgen::beginCachedSystemHandle(const std::string& name, uint32_t seed,
                                                                       const std::string& buildKey) {
     Procgen* module = Procgen::create();
-    module->ownership_->lastError.clear();
+    module->ownership_->compatMessage.clear();
     if (name.empty()) {
-        module->ownership_->lastError = "beginCachedSystem: name is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->ownership_->lastError, "context", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginCachedSystem: name is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "context",
+                                   {}, "procgen.squirrel"));
     }
     if (buildKey.empty()) {
-        module->ownership_->lastError = "beginCachedSystem: build key is empty";
-        return eve::Result<ProcgenContextHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::InvalidArgument, module->ownership_->lastError, "buildKey", {}, "procgen.squirrel"));
+        module->ownership_->compatMessage = "beginCachedSystem: build key is empty";
+        return eve::Result<ProcgenContextHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, module->ownership_->compatMessage, "buildKey",
+                                   {}, "procgen.squirrel"));
     }
     const uint32_t normalizedSeed = seed ? seed : 1u;
     const auto     found          = module->ownership_->systems.find(name);
@@ -644,10 +665,10 @@ std::string Procgen::getSystemDebugDiffReport(const std::string& name) const {
 }
 
 bool Procgen::runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     GeneratorRegistry::instance().registerBuiltins();
-    if (!GeneratorRegistry::instance().generate(algorithmId, params, out, ownership_->lastError)) {
-        if (ownership_->lastError.empty()) ownership_->lastError = "generate failed";
+    if (!GeneratorRegistry::instance().generate(algorithmId, params, out, ownership_->compatMessage)) {
+        if (ownership_->compatMessage.empty()) ownership_->compatMessage = "generate failed";
         return false;
     }
     return true;
@@ -661,9 +682,10 @@ eve::Result<ProcgenGridHandleRef> Procgen::generateHandle(const std::string&    
             eve::DiagnosticCode::StaleHandle, "generate parameters handle is stale", "params", {}, "procgen.squirrel"));
     auto grid = std::make_unique<Grid2D>();
     if (!runGenerate(algorithmId, *input, *grid))
-        return eve::Result<ProcgenGridHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, ownership_->lastError.empty() ? "generate failed" : ownership_->lastError,
-            "algorithm", {}, "procgen.squirrel"));
+        return eve::Result<ProcgenGridHandleRef>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   ownership_->compatMessage.empty() ? "generate failed" : ownership_->compatMessage,
+                                   "algorithm", {}, "procgen.squirrel"));
     return ownProcgenObject(ownership_->grids, std::move(grid));
 }
 
@@ -680,9 +702,10 @@ eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenPar
             eve::DiagnosticCode::StaleHandle, "generateTo output handle is stale", "output", {}, "procgen.squirrel"));
     Grid2D grid;
     if (!runGenerate(algorithmId, *paramsView, grid))
-        return eve::Result<void>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, ownership_->lastError.empty() ? "generateTo failed" : ownership_->lastError,
-            "algorithm", {}, "procgen.squirrel"));
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
+                                   ownership_->compatMessage.empty() ? "generateTo failed" : ownership_->compatMessage,
+                                   "algorithm", {}, "procgen.squirrel"));
 
     const std::string target = outputView->getTarget();
     if (target == "grid") {
@@ -696,15 +719,15 @@ eve::Result<void> Procgen::generateTo(const std::string& algorithmId, ProcgenPar
             return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument,
                                                                      "generateTo: tilelayer target has no layer",
                                                                      "output.layer", {}, "procgen.squirrel"));
-        if (!ownership_->palettes.applyToLayer(grid, outputView->getPalette(), layer, &ownership_->lastError))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, ownership_->lastError,
-                                                                     "output", {}, "procgen.squirrel"));
+        if (!ownership_->palettes.applyToLayer(grid, outputView->getPalette(), layer, &ownership_->compatMessage))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, ownership_->compatMessage, "output", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     if (target == "json") {
-        if (!writeGridJson(grid, outputView->getPath(), &ownership_->lastError))
-            return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, ownership_->lastError,
-                                                                     "output.path", {}, "procgen.squirrel"));
+        if (!writeGridJson(grid, outputView->getPath(), &ownership_->compatMessage))
+            return eve::Result<void>::failure(eve::Diagnostic::error(
+                eve::DiagnosticCode::Failed, ownership_->compatMessage, "output.path", {}, "procgen.squirrel"));
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     return eve::Result<void>::failure(eve::Diagnostic::error(
@@ -717,8 +740,8 @@ eve::Result<void> Procgen::applyToLayer(ProcgenGridHandleRef grid, const std::st
     if (!view.isBound())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "applyToLayer grid handle is stale", "grid", {}, "procgen.squirrel"));
-    if (!ownership_->palettes.applyToLayer(*view, palette, &layer, &ownership_->lastError))
-        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, ownership_->lastError,
+    if (!ownership_->palettes.applyToLayer(*view, palette, &layer, &ownership_->compatMessage))
+        return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Failed, ownership_->compatMessage,
                                                                  "palette", {}, "procgen.squirrel"));
     return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
 }
@@ -898,13 +921,14 @@ eve::Result<ProcgenImageHandleRef> Procgen::generateImageHandle(const std::strin
         return eve::Result<ProcgenImageHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generateImage parameters handle is stale",
                                    "params", {}, "procgen.squirrel"));
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     TextureRecipeRegistry::instance().registerBuiltins();
-    auto image = TextureRecipeRegistry::instance().generate(recipeId, *input, ownership_->lastError);
+    auto image = TextureRecipeRegistry::instance().generate(recipeId, *input, ownership_->compatMessage);
     if (!image)
         return eve::Result<ProcgenImageHandleRef>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Failed, ownership_->lastError.empty() ? "generateImage failed" : ownership_->lastError,
-            "recipe", {}, "procgen.squirrel"));
+            eve::DiagnosticCode::Failed,
+            ownership_->compatMessage.empty() ? "generateImage failed" : ownership_->compatMessage, "recipe", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->images, std::move(image));
 }
 
@@ -1131,14 +1155,14 @@ eve::Result<ProcgenPbrMaterialHandleRef> Procgen::generatePbrMaterialHandle(cons
         return eve::Result<ProcgenPbrMaterialHandleRef>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle, "generatePbrMaterial parameters handle is stale",
                                    "params", {}, "procgen.squirrel"));
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     PbrRecipeRegistry::instance().registerPbrBuiltins();
-    auto set = PbrRecipeRegistry::instance().generate(recipeId, *input, ownership_->lastError);
+    auto set = PbrRecipeRegistry::instance().generate(recipeId, *input, ownership_->compatMessage);
     if (!set)
-        return eve::Result<ProcgenPbrMaterialHandleRef>::failure(
-            eve::Diagnostic::error(eve::DiagnosticCode::Failed,
-                                   ownership_->lastError.empty() ? "generatePbrMaterial failed" : ownership_->lastError,
-                                   "recipe", {}, "procgen.squirrel"));
+        return eve::Result<ProcgenPbrMaterialHandleRef>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::Failed,
+            ownership_->compatMessage.empty() ? "generatePbrMaterial failed" : ownership_->compatMessage, "recipe", {},
+            "procgen.squirrel"));
     return ownProcgenObject(ownership_->pbr, std::move(set));
 }
 
@@ -1489,9 +1513,9 @@ eve::Result<ProcgenGridHandleRef> Procgen::heightmapToGrid(ProcgenHeightmapHandl
 }
 
 bool Procgen::erodeTerrainThermal(Heightmap* heightmap, int iterations, float talus, float strength) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 2 || heightmap->getHeight() < 2) {
-        ownership_->lastError = "erodeTerrainThermal: heightmap must be at least 2x2";
+        ownership_->compatMessage = "erodeTerrainThermal: heightmap must be at least 2x2";
         return false;
     }
     TerrainPipeline::erodeThermal(*heightmap, {iterations, talus, strength});
@@ -1500,9 +1524,9 @@ bool Procgen::erodeTerrainThermal(Heightmap* heightmap, int iterations, float ta
 
 bool Procgen::erodeTerrainHydraulic(Heightmap* heightmap, int iterations, float rainfall, float evaporation,
                                     float capacity, float erosion, float deposition) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 2 || heightmap->getHeight() < 2) {
-        ownership_->lastError = "erodeTerrainHydraulic: heightmap must be at least 2x2";
+        ownership_->compatMessage = "erodeTerrainHydraulic: heightmap must be at least 2x2";
         return false;
     }
     TerrainPipeline::erodeHydraulic(*heightmap, {iterations, rainfall, evaporation, capacity, erosion, deposition});
@@ -1523,13 +1547,13 @@ bool Procgen::erodeTerrainFluvialAdvanced(Heightmap* heightmap, int iterations, 
 
 bool Procgen::erodeTerrainFluvialScaled(Heightmap* heightmap, int iterations, float riverThreshold, float incision,
                                         float maxDepth, float bankWidth, float maxBreachDepth, float coordinateScale) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 3 || heightmap->getHeight() < 3) {
-        ownership_->lastError = "erodeTerrainFluvial: heightmap must be at least 3x3";
+        ownership_->compatMessage = "erodeTerrainFluvial: heightmap must be at least 3x3";
         return false;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        ownership_->lastError = "erodeTerrainFluvialScaled: coordinateScale must be positive";
+        ownership_->compatMessage = "erodeTerrainFluvialScaled: coordinateScale must be positive";
         return false;
     }
     TerrainPipeline::erodeFluvial(
@@ -1540,19 +1564,19 @@ bool Procgen::erodeTerrainFluvialScaled(Heightmap* heightmap, int iterations, fl
 TerrainErosionMap* Procgen::erodeTerrainFluvialDetailed(Heightmap* heightmap, int iterations, float riverThreshold,
                                                         float incision, float maxDepth, float bankWidth,
                                                         float maxBreachDepth, float coordinateScale) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() < 3 || heightmap->getHeight() < 3) {
-        ownership_->lastError = "erodeTerrainFluvialDetailed: heightmap must be at least 3x3";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: heightmap must be at least 3x3";
         return nullptr;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        ownership_->lastError = "erodeTerrainFluvialDetailed: coordinateScale must be positive";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: coordinateScale must be positive";
         return nullptr;
     }
     TerrainErosionMap diagnostics = TerrainPipeline::erodeFluvialDetailed(
         *heightmap, {iterations, riverThreshold, incision, maxDepth, bankWidth, maxBreachDepth, coordinateScale});
     if (diagnostics.width <= 0) {
-        ownership_->lastError = "erodeTerrainFluvialDetailed: invalid erosion settings";
+        ownership_->compatMessage = "erodeTerrainFluvialDetailed: invalid erosion settings";
         return nullptr;
     }
     return new TerrainErosionMap(std::move(diagnostics));
@@ -1564,13 +1588,13 @@ TerrainLayers* Procgen::analyzeTerrain(Heightmap* heightmap, float riverThreshol
 
 TerrainLayers* Procgen::analyzeTerrainScaled(Heightmap* heightmap, float riverThreshold, float seaLevel, float latitude,
                                              float coordinateScale) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || heightmap->getWidth() <= 0 || heightmap->getHeight() <= 0) {
-        ownership_->lastError = "analyzeTerrain: heightmap is empty";
+        ownership_->compatMessage = "analyzeTerrain: heightmap is empty";
         return nullptr;
     }
     if (!std::isfinite(coordinateScale) || coordinateScale <= 0.f) {
-        ownership_->lastError = "analyzeTerrainScaled: coordinateScale must be positive";
+        ownership_->compatMessage = "analyzeTerrainScaled: coordinateScale must be positive";
         return nullptr;
     }
     HydrologyMap hydrology = TerrainPipeline::buildHydrology(*heightmap, riverThreshold, seaLevel, coordinateScale);
@@ -1579,14 +1603,14 @@ TerrainLayers* Procgen::analyzeTerrainScaled(Heightmap* heightmap, float riverTh
 }
 
 data::ByteData* Procgen::bakeTerrainAsset(Heightmap* heightmap, TerrainLayers* layers, int chunkSize) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers) {
-        ownership_->lastError = "bakeTerrainAsset: heightmap and layers are required";
+        ownership_->compatMessage = "bakeTerrainAsset: heightmap and layers are required";
         return nullptr;
     }
     std::vector<uint8_t> bytes;
     if (!TerrainAsset::bake(*heightmap, layers->hydrology(), layers->climate(), chunkSize, bytes,
-                            &ownership_->lastError))
+                            &ownership_->compatMessage))
         return nullptr;
     return new data::ByteData(bytes.data(), bytes.size());
 }
@@ -1594,9 +1618,9 @@ data::ByteData* Procgen::bakeTerrainAsset(Heightmap* heightmap, TerrainLayers* l
 TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers* layers, int originX, int originY,
                                              int cellsX, int cellsY, int lod, float cellSize, float heightScale,
                                              float skirtDepth) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap) {
-        ownership_->lastError = "buildTerrainChunk: heightmap is required";
+        ownership_->compatMessage = "buildTerrainChunk: heightmap is required";
         return nullptr;
     }
     TerrainMeshSettings settings;
@@ -1609,7 +1633,7 @@ TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers
     settings.heightScale = heightScale;
     settings.skirtDepth  = skirtDepth;
     auto* chunk          = new TerrainMeshChunk();
-    if (!TerrainMeshBuilder::build(*heightmap, layers, settings, *chunk, &ownership_->lastError)) {
+    if (!TerrainMeshBuilder::build(*heightmap, layers, settings, *chunk, &ownership_->compatMessage)) {
         delete chunk;
         return nullptr;
     }
@@ -1619,9 +1643,9 @@ TerrainMeshChunk* Procgen::buildTerrainChunk(Heightmap* heightmap, TerrainLayers
 int Procgen::selectTerrainLod(Heightmap* heightmap, int originX, int originY, int cellsX, int cellsY, int maxLod,
                               float cellSize, float heightScale, float cameraDistance, float viewportHeight,
                               float verticalFovDegrees, float targetPixelError) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap) {
-        ownership_->lastError = "selectTerrainLod: heightmap is required";
+        ownership_->compatMessage = "selectTerrainLod: heightmap is required";
         return -1;
     }
     TerrainMeshSettings settings;
@@ -1633,14 +1657,14 @@ int Procgen::selectTerrainLod(Heightmap* heightmap, int originX, int originY, in
     settings.heightScale = heightScale;
     const int lod        = TerrainLodSelector::select(*heightmap, settings, maxLod, cameraDistance, viewportHeight,
                                                       verticalFovDegrees, targetPixelError);
-    if (lod < 0) ownership_->lastError = "selectTerrainLod: invalid bounds or projection settings";
+    if (lod < 0) ownership_->compatMessage = "selectTerrainLod: invalid bounds or projection settings";
     return lod;
 }
 
 graphics::Mesh* Procgen::generateTerrainChunkMesh(TerrainMeshChunk* chunk, graphics::Graphics* gfx) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || !gfx || chunk->mesh().empty()) {
-        ownership_->lastError = "generateTerrainChunkMesh: chunk and graphics are required";
+        ownership_->compatMessage = "generateTerrainChunkMesh: chunk and graphics are required";
         return nullptr;
     }
     const MeshBuild& mesh = chunk->mesh();
@@ -1661,9 +1685,9 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
                                                           int cellsY, float cellSize, float heightScale, float minWidth,
                                                           float maxWidth, float heightOffset, float minSurfaceSlope,
                                                           float maxSurfaceSlope) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers || !gfx) {
-        ownership_->lastError = "generateTerrainRiverMesh: heightmap, layers, and graphics are required";
+        ownership_->compatMessage = "generateTerrainRiverMesh: heightmap, layers, and graphics are required";
         return nullptr;
     }
     TerrainRiverMeshSettings settings;
@@ -1679,7 +1703,8 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
     settings.minSurfaceSlope = minSurfaceSlope;
     settings.maxSurfaceSlope = maxSurfaceSlope;
     MeshBuild river;
-    if (!TerrainRiverMeshBuilder::build(*heightmap, *layers, settings, river, &ownership_->lastError) || river.empty())
+    if (!TerrainRiverMeshBuilder::build(*heightmap, *layers, settings, river, &ownership_->compatMessage) ||
+        river.empty())
         return nullptr;
     return gfx->newMeshFromArrays(river.positions().data(), river.normals().data(), river.uvs().data(),
                                   river.getVertexCount(), river.indices().data(), river.getIndexCount());
@@ -1688,9 +1713,9 @@ graphics::Mesh* Procgen::generateTerrainRiverMeshAdvanced(Heightmap* heightmap, 
 graphics::Mesh* Procgen::generateTerrainLakeMesh(Heightmap* heightmap, TerrainLayers* layers, graphics::Graphics* gfx,
                                                  int originX, int originY, int cellsX, int cellsY, float cellSize,
                                                  float heightScale, float minimumDepth, float heightOffset) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!heightmap || !layers || !gfx) {
-        ownership_->lastError = "generateTerrainLakeMesh: heightmap, layers, and graphics are required";
+        ownership_->compatMessage = "generateTerrainLakeMesh: heightmap, layers, and graphics are required";
         return nullptr;
     }
     TerrainLakeMeshSettings settings;
@@ -1703,16 +1728,16 @@ graphics::Mesh* Procgen::generateTerrainLakeMesh(Heightmap* heightmap, TerrainLa
     settings.minimumDepth = minimumDepth;
     settings.heightOffset = heightOffset;
     MeshBuild lake;
-    if (!TerrainLakeMeshBuilder::build(*heightmap, *layers, settings, lake, &ownership_->lastError) || lake.empty())
+    if (!TerrainLakeMeshBuilder::build(*heightmap, *layers, settings, lake, &ownership_->compatMessage) || lake.empty())
         return nullptr;
     return gfx->newMeshFromArrays(lake.positions().data(), lake.normals().data(), lake.uvs().data(),
                                   lake.getVertexCount(), lake.indices().data(), lake.getIndexCount());
 }
 
 image::ImageData* Procgen::generateTerrainSplatMap(TerrainMeshChunk* chunk) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
-        ownership_->lastError = "generateTerrainSplatMap: a built terrain chunk is required";
+        ownership_->compatMessage = "generateTerrainSplatMap: a built terrain chunk is required";
         return nullptr;
     }
     auto* image  = new image::ImageData(chunk->getSplatWidth(), chunk->getSplatHeight(), "RGBA8");
@@ -1740,9 +1765,9 @@ image::ImageData* Procgen::generateTerrainSplatMap(TerrainMeshChunk* chunk) {
 }
 
 image::ImageData* Procgen::generateTerrainAlbedoMap(TerrainMeshChunk* chunk) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!chunk || chunk->getSplatWidth() <= 0 || chunk->getSplatHeight() <= 0) {
-        ownership_->lastError = "generateTerrainAlbedoMap: a built terrain chunk is required";
+        ownership_->compatMessage = "generateTerrainAlbedoMap: a built terrain chunk is required";
         return nullptr;
     }
     static constexpr std::array<std::array<float, 3>, 4> palette{{
@@ -1833,30 +1858,30 @@ image::ImageData* erosionDiagnosticImage(TerrainErosionMap* map, float exposure,
 }  // namespace
 
 image::ImageData* Procgen::generateTerrainErosionMap(TerrainErosionMap* erosion, float exposure) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Combined);
-    if (!result) ownership_->lastError = "generateTerrainErosionMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainErosionMap: valid erosion diagnostics are required";
     return result;
 }
 
 image::ImageData* Procgen::generateTerrainWearMap(TerrainErosionMap* erosion, float exposure) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Wear);
-    if (!result) ownership_->lastError = "generateTerrainWearMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainWearMap: valid erosion diagnostics are required";
     return result;
 }
 
 image::ImageData* Procgen::generateTerrainDepositionMap(TerrainErosionMap* erosion, float exposure) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     image::ImageData* result = erosionDiagnosticImage(erosion, exposure, ErosionImageMode::Deposit);
-    if (!result) ownership_->lastError = "generateTerrainDepositionMap: valid erosion diagnostics are required";
+    if (!result) ownership_->compatMessage = "generateTerrainDepositionMap: valid erosion diagnostics are required";
     return result;
 }
 
 graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!gfx) {
-        ownership_->lastError = "createTerrainMaterialShader: graphics is required";
+        ownership_->compatMessage = "createTerrainMaterialShader: graphics is required";
         return nullptr;
     }
     try {
@@ -1873,15 +1898,15 @@ graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) 
         shader->declareVec4("terrainFeatures");
         return shader;
     } catch (const std::exception &e) {
-        ownership_->lastError = std::string("createTerrainMaterialShader: ") + e.what();
+        ownership_->compatMessage = std::string("createTerrainMaterialShader: ") + e.what();
         return nullptr;
     }
 }
 
 graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
-    ownership_->lastError.clear();
+    ownership_->compatMessage.clear();
     if (!gfx) {
-        ownership_->lastError = "createTerrainWaterShader: graphics is required";
+        ownership_->compatMessage = "createTerrainWaterShader: graphics is required";
         return nullptr;
     }
     try {
@@ -1889,7 +1914,7 @@ graphics::Shader* Procgen::createTerrainWaterShader(graphics::Graphics* gfx) {
                                        terrain_water_compat_frag_spv + terrain_water_compat_frag_spv_count);
         return gfx->newMeshShaderFromSpv({}, fragment);
     } catch (const std::exception& e) {
-        ownership_->lastError = std::string("createTerrainWaterShader: ") + e.what();
+        ownership_->compatMessage = std::string("createTerrainWaterShader: ") + e.what();
         return nullptr;
     }
 }

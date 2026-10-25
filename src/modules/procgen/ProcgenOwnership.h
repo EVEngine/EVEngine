@@ -74,11 +74,12 @@ struct Procgen::OwnershipState {
     std::unordered_map<std::string, ProcgenSystemSnapshot> previousSystems;
     ArtifactStore                                          artifactStore;
     std::uint64_t                                          nextArtifactSequence = 1;
-    mutable std::string                                    lastError;
-    mutable std::vector<std::string>                       algorithmIdsCache;
-    mutable std::vector<std::string>                       textureRecipeIdsCache;
-    mutable std::vector<std::string>                       pbrRecipeIdsCache;
-    mutable std::vector<std::string>                       meshRecipeIdsCache;
+    /** Scratch buffer for legacy generate/palette paths that still take a string* error out-param. */
+    mutable std::string              compatMessage;
+    mutable std::vector<std::string> algorithmIdsCache;
+    mutable std::vector<std::string> textureRecipeIdsCache;
+    mutable std::vector<std::string> pbrRecipeIdsCache;
+    mutable std::vector<std::string> meshRecipeIdsCache;
 };
 
 }  // namespace eve::procgen

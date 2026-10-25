@@ -1375,6 +1375,7 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
