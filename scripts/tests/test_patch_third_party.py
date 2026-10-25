@@ -19,7 +19,6 @@ PATCHES = ROOT / "cmake" / "patches"
 THIRD_PARTY = ROOT / "third-party"
 MEDIALOADER = THIRD_PARTY / "medialoader"
 ECS_SUBMODULE = ROOT / "external" / "ECS.hpp"
-ZEROERR_SUBMODULE = ROOT / "external" / "zeroerr"
 
 
 def run(command: list[str], *, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -105,28 +104,6 @@ def main() -> int:
                      "ecs-view-scope-and-iteration", "ecs-view-live-slots",
                      "ecs-query-and-record-lifetime"):
             apply_twice(PATCHES / f"{name}.patch", clean_ecs, already_applied=True)
-
-        zeroerr_patch = PATCHES / "zeroerr-compiled-diagnostics.patch"
-        for ending in ("lf", "crlf"):
-            zeroerr_checkout = temporary / f"zeroerr-{ending}"
-            checkout_patch_inputs(ZEROERR_SUBMODULE, zeroerr_checkout, [zeroerr_patch])
-            # Emulate WSL reading Windows files without a Git newline setting.
-            run(["git", "-C", str(zeroerr_checkout), "config", "core.autocrlf", "false"])
-            if ending == "crlf":
-                for header in zeroerr_checkout.rglob("*.h"):
-                    header.write_bytes(header.read_bytes().replace(b"\r\n", b"\n").replace(b"\n", b"\r\n"))
-            apply_twice(zeroerr_patch, zeroerr_checkout, normalize_crlf=True)
-
-        zeroerr_drifted = temporary / "zeroerr-drifted"
-        checkout_patch_inputs(ZEROERR_SUBMODULE, zeroerr_drifted, [zeroerr_patch])
-        header = zeroerr_drifted / "include" / "zeroerr" / "assert.h"
-        header.write_text(header.read_text(encoding="utf-8").replace(
-            "    std::string cond;", "  std::string cond;", 1), encoding="utf-8", newline="\n")
-        result = run(["cmake", f"-DPATCH={zeroerr_patch}", f"-DPATCH_DIR={zeroerr_drifted}",
-                      "-DPATCH_NORMALIZE_CRLF=ON", "-P", str(PATCH_SCRIPT)], check=False)
-        assert result.returncode != 0
-        assert "no longer applies cleanly" in result.stdout + result.stderr
-
 
     return 0
 

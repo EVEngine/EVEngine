@@ -454,9 +454,7 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
-    include(cmake/zeroerr_compiled_diagnostics.cmake)
     add_subdirectory(external/zeroerr)
-    eve_enable_zeroerr_compiled_diagnostics()
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
     # NDEBUG is commented out), unless assertions were explicitly enabled with
