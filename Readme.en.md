@@ -19,6 +19,46 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+### Native Intel macOS x86_64 builds
+
+On an Intel Mac, initialize submodules (`make init/submodules`) and install Xcode
+command-line tools, CMake, Ninja, and an x86_64 Vulkan SDK with MoltenVK. Build
+the configurations separately:
+
+```sh
+make build/macosx-x86_64-debug JOBS=4
+make build/macosx-x86_64 JOBS=4
+```
+
+These targets explicitly select `CMAKE_OSX_ARCHITECTURES=x86_64` and macOS 13.3 as
+the deployment target for floating-point `std::format` support in libc++. They reject
+other hosts, targets and compilers. Engine builds use
+`build/macosx-x86_64[-debug]`; source dependencies build into
+`build/third-party/macosx-x86_64[-debug]` and install into
+`build/third-party-binary/macosx-x86_64[-debug]`. Prebuilt dependencies select
+`macosx-x86_64-Release`, including for Debug engines. Use
+`make deps/macosx-x86_64[-debug]` for dependencies only and
+`make test/macosx-x86_64[-debug]` for host tests. The existing `make debug`
+default stays unchanged.
+
+CI uses native `macos-15-intel` runners and follows `build_type` for Debug,
+Release, or both. Like Windows ARM64, it compiles and links the engine and test
+binaries using the matching prebuilt dependencies. These lanes do not run
+graphics tests. SDK release jobs additionally validate native plugins and packaged
+games on runners matching both architectures.
+
+Build SDKs separately:
+
+```sh
+make sdk/macosx-arm64 JOBS=4
+make sdk/macosx-x86_64 JOBS=4
+```
+
+Debug SDK targets are `sdk/macosx-arm64-debug` and `sdk/macosx-x86_64-debug`.
+Release archives are `eve-sdk-macosx-arm64-<version>.zip` and
+`eve-sdk-macosx-x86_64-<version>.zip`. Choose the target Mac's CPU architecture.
+`TARGET_PLATFORM` remains `macosx`; `TARGET_ARCHITECTURE` records the CPU.
+
 ### Native ARM64 builds (Windows and Linux)
 
 Run these commands on an ARM64 host; these configurations reject cross compilation
@@ -129,7 +169,8 @@ Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases)
 |-----------------|----------|-------|
 | Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
-| macOS | `eve-sdk-macosx-<version>.zip` | macOS 12+ (Apple Silicon / Intel) |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<version>.zip` | macOS 13.3+, Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<version>.zip` | macOS 13.3+, Intel |
 | Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
 | iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |
 
@@ -284,10 +325,10 @@ sudo apt install -y \
 
 | Component | Recommended |
 |-----------|-------------|
-| OS | macOS 12+ (Apple Silicon / Intel) |
+| OS | macOS 13.3+ (Apple Silicon / Intel, matching SDK architecture) |
 | Toolchain | **Xcode Command Line Tools** (`xcode-select --install`) |
 | CMake | Homebrew: `brew install cmake` (≥ 3.21) |
-| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |
+| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx-<arm64|x86_64>` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |
 
 Set up the environment (run in each new terminal, or add to `~/.zshrc`):
 
@@ -515,6 +556,26 @@ project headers, and template-bearing headers. It is an explicit target rather
 than part of every incremental build, so collecting diagnostics does not slow
 normal development builds.
 
+To see *which* `.h` / `.cpp` files include each project header (and which
+headers pull the largest include sets into other headers — the usual place to
+forward-declare or move includes into a `.cpp`):
+
+```sh
+make stats/headers
+make stats/headers HEADER_STATS_ARGS='--header graphics/Graphics.h'
+python3 scripts/analyze_header_includes.py --json /tmp/headers.json --limit 0
+```
+
+`priority` is `header_users * outgoing_project`: headers that both include many
+project headers *and* are themselves included by many other headers are the
+cheapest wins for shrinking object size and compile time. The summary also
+reports `expL` / `incL` / `projL` / `sysL` — unique lines in the transitive
+`#include` closure (project **and** resolved system/third-party headers), that
+total minus the header itself, and the project/system split. Include roots come
+from the host C++ driver, vendored `third-party/` / prebuilt include trees, and
+`compile_commands.json` `-I`/`-isystem` when `make stats/headers` finds one.
+Sort with `HEADER_STATS_ARGS='--sort expand'` or `--sort impact`.
+
 Output layout:
 
 | Target | Build dir | Notes |
@@ -657,7 +718,7 @@ Inside the container, configure and build with the Linux flow. You still need to
    The Makefile defaults to `-j 32`. On machines with fewer cores, use `-j$(nproc)` (Linux) / `-j$(sysctl -n hw.ncpu)` (macOS) or a smaller number to avoid OOM.
 
 6. **macOS window / rendering fails**  
-   If the error is `Installed Vulkan doesn't implement the VK_KHR_surface extension` (SDL's wording), the runnable Vulkan lacks surface support — on macOS that means MoltenVK was not loaded. For **distributed builds**, ship the `lib/` folder from `dist/eve-sdk/macosx` (it contains `libvulkan.1.dylib`, `libMoltenVK.dylib` and `MoltenVK_icd.json`); eve points SDL and the loader at these bundled files at startup (`bootstrapBundledVulkan` in `platform/macosx`), so players do not need the SDK. For **dev builds**, confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
+   If the error is `Installed Vulkan doesn't implement the VK_KHR_surface extension` (SDL's wording), the runnable Vulkan lacks surface support — on macOS that means MoltenVK was not loaded. For **distributed builds**, ship the `lib/` folder from `dist/eve-sdk/macosx-<arm64|x86_64>` (it contains `libvulkan.1.dylib`, `libMoltenVK.dylib` and `MoltenVK_icd.json`); eve points SDL and the loader at these bundled files at startup (`bootstrapBundledVulkan` in `platform/macosx`), so players do not need the SDK. For **dev builds**, confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
 
 7. **Android APK / device**  
    Match the NDK version to the Makefile; ensure `local.properties` `sdk.dir` is correct; enable USB debugging and check `adb devices`. v1 expects a Vulkan device; without one, at least verify `make build/android-debug` produces an APK.

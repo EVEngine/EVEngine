@@ -126,7 +126,7 @@ GAME ?=
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
-	wsl/linux wsl/linux-debug show-targets stats/build \
+	wsl/linux wsl/linux-debug show-targets stats/build stats/headers \
 	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
@@ -323,6 +323,18 @@ debug: build/$(PLATFORM)-debug
 BUILD_STATS_DIR ?= build/$(PLATFORM)-debug
 stats/build:
 	python3 scripts/analyze_build.py --source-dir . --build-dir "$(BUILD_STATS_DIR)"
+
+# Reverse-include report: which .h/.cpp files include each project header, ranked
+# by how much moving heavy #includes into a .cpp would shrink the compile cascade.
+# Expands system/third-party headers via compiler defaults, vendored roots, and
+# compile_commands.json -I/-isystem when present.
+# HEADER_STATS_ARGS forwards extra flags, e.g. HEADER_STATS_ARGS='--header graphics/Graphics.h'
+HEADER_STATS_ARGS ?=
+COMPILE_COMMANDS ?= build/$(PLATFORM)-debug/compile_commands.json
+stats/headers:
+	python3 scripts/analyze_header_includes.py --source-dir . \
+		$(if $(wildcard $(COMPILE_COMMANDS)),--compile-commands "$(COMPILE_COMMANDS)",) \
+		$(HEADER_STATS_ARGS)
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).
@@ -747,4 +759,11 @@ rpg-classic/skill:
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
 
+# CPU-only popup contracts: no graphics backend, font, combat or settlement linkage.
+.PHONY: check/damage-numbers
+check/damage-numbers:
+	cmake -S test/damage_numbers -B build/damage-number-core -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build/damage-number-core -j $(JOBS)
+	ctest --test-dir build/damage-number-core --output-on-failure
 include cmake/native_arm64.mk
+include cmake/native_macos.mk
