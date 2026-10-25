@@ -45,7 +45,6 @@ import test_levels
 
 BASELINE = Path("scripts/test_assert_level_baseline.json")
 SOURCE_ROOT = Path("test")
-TEST_CATALOGUE = SOURCE_ROOT / "test_levels.json"
 
 # Files whose cases are the *evidence* for a contract, so every one of them must be able to
 # fail. Add a file here only when all of its cases are evidence; a module's general coverage
@@ -248,17 +247,15 @@ def strict_sources(name: str) -> list[tuple[Path, str]]:
     path = Path(name)
     if path.is_file():
         return [(path, path.read_text(encoding="utf-8"))]
-    if not TEST_CATALOGUE.is_file() or path.parent != SOURCE_ROOT:
+    if path.parent != SOURCE_ROOT:
         return []
-    sources = json.loads(TEST_CATALOGUE.read_text(encoding="utf-8"))["sources"]
     resolved = []
-    for source, policy in sources.items():
+    for target in sorted(SOURCE_ROOT.rglob("*.cpp")):
+        text = target.read_text(encoding="utf-8")
+        policy = test_levels.source_header_policy(text)
         if path.name not in policy.get("origins", []):
             continue
-        target = TEST_CATALOGUE.parent / source
-        if not target.is_file():
-            return []
-        sections = test_levels.origin_source_sections(target.read_text(encoding="utf-8"), policy)
+        sections = test_levels.origin_source_sections(text, policy)
         resolved.append((target, sections[path.name]))
     return resolved
 

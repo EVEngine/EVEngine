@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "gameplay_control_rts.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include "rts/RTSTerrainTraceInternal.h"
 #include "zeroerr/assert.h"

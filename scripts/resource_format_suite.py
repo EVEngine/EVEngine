@@ -54,7 +54,8 @@ def source_sections(root, name, catalogue):
 
 def inventory(root=ROOT):
     result = {}
-    catalogue = json.loads((root / "test/test_levels.json").read_text(encoding="utf-8"))
+    catalogue = test_levels.source_catalogue()
+    catalogue = test_levels.expanded_catalogue(catalogue, test_levels.source_inventory(root / "test"))
     for family, files in FAMILIES.items():
         if family == "asset":
             files = sorted({origin for source, policy in catalogue["sources"].items()

@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import re
-import json
 import shlex
 import shutil
 import subprocess
@@ -15,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 DISCOVERY = ROOT / "cmake" / "ZeroErrDiscoverTestsImpl.cmake"
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
-from test_levels import CATALOGUE, CLASSIFICATIONS, classified_cases, emit_cmake, expanded_catalogue, source_inventory  # noqa: E402
+from test_levels import TEST_DIR, source_catalogue, CLASSIFICATIONS, classified_cases, emit_cmake, expanded_catalogue, source_inventory  # noqa: E402
 
 
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required for discovery tests")
@@ -199,8 +198,8 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
         self.assertIsNone(re.fullmatch(file_pattern, "metadata.cpp"))
 
     def test_complete_catalogue_and_generator_policies_are_accepted_by_runtime_discovery(self):
-        catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
-        catalogue = expanded_catalogue(catalogue, source_inventory(CATALOGUE.parent))
+        catalogue = source_catalogue()
+        catalogue = expanded_catalogue(catalogue, source_inventory(TEST_DIR))
         entries, expected = [], {}
         for source, policy in catalogue["sources"].items():
             for name, category in classified_cases(policy).items():

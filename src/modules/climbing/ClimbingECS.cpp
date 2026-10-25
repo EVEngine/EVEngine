@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "climbing/ClimbingECS.h"
 
 #include <algorithm>

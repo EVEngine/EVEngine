@@ -1,5 +1,6 @@
 import sys
 import unittest
+import tempfile
 from pathlib import Path
 
 # check_test_manifest imports its sibling utf8_stdio by flat name, so scripts/ has
@@ -15,6 +16,7 @@ from check_test_manifest import (  # noqa: E402
     SHARED_SOURCES,
     TEST_DIR,
     classify,
+    composed_makefile,
     discovery_contract_errors,
     domain_wiring_errors,
     parse_domain_table,
@@ -67,6 +69,16 @@ set(EVE_TEST_PREFIX_DOMAIN
 
 
 class CheckTestManifestTest(unittest.TestCase):
+    def test_platform_recipe_composition_retains_discovery_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cmake").mkdir()
+            (root / "Makefile").write_text("include cmake/windows.mk\n", encoding="utf-8")
+            (root / "cmake/windows.mk").write_text(VALID_MAKEFILE + "\ninclude cmake/windows.mk\n", encoding="utf-8")
+            self.assertEqual(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")), [])
+            (root / "cmake/windows.mk").write_text("# accidentally removed ensure-built source discovery\n", encoding="utf-8")
+            self.assertTrue(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")))
+
     def test_accepts_src_list_discovery(self):
         self.assertEqual(discovery_contract_errors(VALID_CMAKE, VALID_MAKEFILE), [])
 

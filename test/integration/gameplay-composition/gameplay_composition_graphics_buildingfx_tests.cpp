@@ -1,3 +1,61 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "platform-file": [
+      "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips"
+    ],
+    "script-binding": [
+      "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary"
+    ],
+    "physics-backend": [
+      "climbing.vault.runningJumpUsesLowVaultAndProducesStableConstrainedLanding",
+      "climbing.vault.destroyedTargetCancelsWithStaleEvidence",
+      "container.zoneUsesStrongCoordinateSpacesAndValidatesShapes"
+    ]
+  },
+  "module": "buildingfx",
+  "modules": [
+    "buildingfx",
+    "card",
+    "climbing",
+    "combat",
+    "combat_navigation",
+    "common",
+    "definitions",
+    "dialogue",
+    "inventory",
+    "rpg"
+  ],
+  "origins": [
+    "buildingfx.cpp",
+    "card_payment_composition.cpp",
+    "climbing_animation.cpp",
+    "combat_action_damage.cpp",
+    "combat_action_windows.cpp",
+    "combat_arena_foundation.cpp",
+    "combat_cancel_resolver.cpp",
+    "combat_damage.cpp",
+    "combat_feel_cancel_guard.cpp",
+    "combat_framework_composition.cpp",
+    "combat_loop.cpp",
+    "combat_navigation.cpp",
+    "combat_target_enemy_ai.cpp",
+    "common_result_header.cpp",
+    "container_transfer.cpp",
+    "definition_runtime.cpp",
+    "definition_runtime_skill_vehicle.cpp",
+    "definition_runtime_weapon.cpp",
+    "dialogue_localization.cpp",
+    "dialogue_payment.cpp",
+    "dialogue_proc.cpp"
+  ]
+}
+*/
+// clang-format on
+
 // Check header isolation before any test assertion headers are loaded.
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_result_header)
 #include "PrivateTestScope.h"

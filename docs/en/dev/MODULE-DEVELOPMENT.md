@@ -17,7 +17,7 @@ External exchanges belong to six faces:
 
 Declarations must be falsifiable against source/build/tests (`R-FACE-1..5`). Domains own their interfaces/state; common owns mechanisms and domain-neutral values/envelopes.
 
-Architecture CI (`make check/architecture-contracts`) lints changed C++ lines only — api-shape, ownership/lifetime Doxygen on raw pointers, runtime lookup bans, hot-path primitives, `@cost`. There is **no** hand-maintained JSON catalogue. Mark hot paths in `HOT_PATH_GLOBS` inside `scripts/check_architecture_contracts.py`. Design notes: [`docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`](../../dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md).
+Architecture CI (`make check/architecture-contracts`) lints changed C++ lines only — api-shape, ownership/lifetime Doxygen on raw pointers, runtime lookup bans, hot-path primitives, `@cost`. There is **no** hand-maintained JSON catalogue. Mark hot paths with a leading `// eve-hot-path` comment, or a directory-local `.eve-hot-path` policy containing `eve.hot-path-directory/v1:*.cpp`. Design notes: [`docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`](../../dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md).
 
 ## Include dependencies and trimming
 

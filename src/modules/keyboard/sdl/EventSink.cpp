@@ -1,3 +1,4 @@
+// eve-hot-path
 // Translates SDL key and text events into engine messages.
 //
 // This lived in the SDL event pump, which had to consult the keyboard module

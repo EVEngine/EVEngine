@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_bundled_circular.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <array>
 #include <cmath>
 #include "procgen/road/RoadNetworkCodec.h"

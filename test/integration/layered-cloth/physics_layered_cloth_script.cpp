@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "physics_cloth",
+  "origins": [
+    "physics_layered_cloth.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "ScriptTest.h"
 #include "physics/cloth/LayeredCloth3D.h"
 

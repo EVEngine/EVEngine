@@ -1,3 +1,5 @@
+// eve-test-policy:
+// {"schema":"evengine.test-policy","version":1,"role":"tests","default":"test-framework","module":"common"}
 #include <algorithm>
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

@@ -1,4 +1,5 @@
 #include "devtools/McpScriptTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "common/EditorMcpAttach.h"
 #include "common/ScriptError.h"
@@ -159,6 +160,10 @@ bool registerTool(HSQUIRRELVM vm, const std::string& name, HSQOBJECT spec) {
         reportRejection(name,
                         "name must match [a-z][a-z0-9_]{2,63} and must not use a built-in prefix "
                         "(eve_ / inspect_ / set_ / capture_ / get_)");
+        return false;
+    }
+    if (compiledMcpToolCatalog().find(name)) {
+        reportRejection(name, "name belongs to a compiled tool provider");
         return false;
     }
     if (spec._type != OT_TABLE) {

@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "cases": {
+    "performance": [
+      "procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess"
+    ]
+  },
+  "module": "procgen",
+  "modules": [
+    "procgen",
+    "timer",
+    "transaction",
+    "ui",
+    "vehicle",
+    "weapon",
+    "weather"
+  ],
+  "origins": [
+    "terrain_curve_texture.cpp",
+    "terrain_detail.cpp",
+    "terrain_erosion.cpp",
+    "terrain_generation_session.cpp",
+    "terrain_legacy_hydraulic.cpp",
+    "terrain_multitile.cpp",
+    "terrain_probe.cpp",
+    "terrain_sediment.cpp",
+    "terrain_smooth_stamp_script.cpp",
+    "terrain_stamp_script.cpp",
+    "terrain_tree.cpp",
+    "terrain_water.cpp",
+    "thunder_strike.cpp",
+    "timer.cpp",
+    "transaction.cpp",
+    "ui_tween_script.cpp",
+    "vehicle.cpp",
+    "weapon.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_curve_texture)

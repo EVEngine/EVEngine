@@ -1,3 +1,4 @@
+// eve-hot-path
 #pragma once
 
 #include "common/Assert.h"

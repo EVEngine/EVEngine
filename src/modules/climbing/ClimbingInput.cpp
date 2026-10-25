@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "climbing/ClimbingInput.h"
 #include <algorithm>
 #include <charconv>

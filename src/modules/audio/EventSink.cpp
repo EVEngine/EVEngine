@@ -1,3 +1,4 @@
+// eve-hot-path
 // Drives streaming-source refills once per event pump.
 //
 // Audio::pump has nothing to do with platform events, but it does need a

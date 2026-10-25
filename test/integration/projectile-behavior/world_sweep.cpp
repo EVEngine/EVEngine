@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include <memory>

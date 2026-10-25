@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "helper",
+  "default": "platform-file",
+  "module": "image"
+}
+*/
+// clang-format on
+
 // Shared test helper translation unit.
 //
 // `saveImagePng` is declared in RenderImageAudit.h but consumed by more than one

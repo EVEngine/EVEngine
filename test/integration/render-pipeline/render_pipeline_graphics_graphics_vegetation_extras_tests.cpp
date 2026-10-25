@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-offscreen",
+  "cases": {
+    "platform-file": [
+      "graphics.Grass.fileSwayAtlasPacksFourGrassAndTwoLeaf"
+    ],
+    "render-window": [
+      "graphics.Grass.gpuRenderScreenshot"
+    ],
+    "runtime-lifecycle": [
+      "virtualgeometry.module.create"
+    ]
+  },
+  "module": "graphics",
+  "modules": [
+    "graphics",
+    "image",
+    "model3d",
+    "procgen_editing",
+    "stylize",
+    "tensor",
+    "virtualgeometry"
+  ],
+  "origins": [
+    "graphics_vegetation_extras.cpp",
+    "graphics_webgpu_pbr_variant.cpp",
+    "grass.cpp",
+    "model3d_gltf_uv.cpp",
+    "procgen_mesh_vertex_axis_gizmo.cpp",
+    "procgen_spline_gizmo_render.cpp",
+    "stylize_mesh_vertex.cpp",
+    "tensor.cpp",
+    "tensor_gpu.cpp",
+    "tensor_gpu_contract.cpp",
+    "tensor_onnx_gpu.cpp",
+    "virtualgeometry_builder.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_extras)

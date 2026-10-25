@@ -9,6 +9,44 @@
 namespace eve::procgen {
 using namespace raster_detail;
 
+Result<int> generateTerrainTraversalCosts(Heightmap& target, const Heightmap& heights, const Heightmap& baseCosts,
+                                          const TerrainTraversalSettings& settings) {
+    if (!validRaster(target) || !validRaster(heights) || !validRaster(baseCosts) ||
+        target.getWidth() != heights.getWidth() || target.getHeight() != heights.getHeight() ||
+        target.getWidth() != baseCosts.getWidth() || target.getHeight() != baseCosts.getHeight() ||
+        !std::isfinite(settings.spacingX) || settings.spacingX <= 0 || !std::isfinite(settings.spacingZ) ||
+        settings.spacingZ <= 0 || !std::isfinite(settings.heightScale) || settings.heightScale < 0 ||
+        !std::isfinite(settings.maxSlopeDegrees) || settings.maxSlopeDegrees < 0 || settings.maxSlopeDegrees > 90 ||
+        !std::isfinite(settings.slopeCost) || settings.slopeCost < 0)
+        return invalid("terrain.traversalCosts: matching finite rasters and valid world-space policy required");
+    std::vector<float> candidate(target.data().size());
+    for (int z = 0; z < heights.getHeight(); ++z) {
+        for (int x = 0; x < heights.getWidth(); ++x) {
+            const double base = baseCosts.height(x, z);
+            if (base > 0 && base < 1)
+                return invalid("terrain.traversalCosts: positive base costs must be at least one");
+            double       gx = 0, gz = 0;
+            const double h = heights.height(x, z);
+            for (int d : {-1, 1}) {
+                if (x + d >= 0 && x + d < heights.getWidth())
+                    gx = std::max(
+                        gx, std::abs(double(heights.height(x + d, z)) - h) * settings.heightScale / settings.spacingX);
+                if (z + d >= 0 && z + d < heights.getHeight())
+                    gz = std::max(
+                        gz, std::abs(double(heights.height(x, z + d)) - h) * settings.heightScale / settings.spacingZ);
+            }
+            const double gradient = std::hypot(gx, gz);
+            const double slope    = std::atan(gradient) * 180 / std::numbers::pi;
+            double       cost     = 0;
+            if (base > 0 && slope <= settings.maxSlopeDegrees)
+                cost = base * (1 + double(settings.slopeCost) * gradient);
+            if (!isRepresentable(cost)) return invalid("terrain.traversalCosts: cost overflow");
+            candidate[size_t(z) * heights.getWidth() + x] = float(cost);
+        }
+    }
+    return publish(target, std::move(candidate));
+}
+
 Result<int> smoothTerrainMask(Heightmap& target, const Heightmap& input, float verticality, float blurRadius) {
     if (!validRaster(target) || !validRaster(input) || target.getWidth() != input.getWidth() ||
         target.getHeight() != input.getHeight() || !std::isfinite(verticality) || std::abs(verticality) > 1 ||

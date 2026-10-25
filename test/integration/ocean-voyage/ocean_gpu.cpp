@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "fluids"
+}
+*/
+// clang-format on
+
 #include "fluids/OceanGpuSpectrum.h"
 #include "fluids/OceanSeaTransition.h"
 #include "gpgpu/Gpgpu.h"

@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "rts",
+  "origins": [
+    "rts_terrain_combat.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "RtsCompositionFixtures.h"
 
 TEST_CASE("rts.terrainRidgeStopsFireAndTerrainEditsReopenFireLine") {
