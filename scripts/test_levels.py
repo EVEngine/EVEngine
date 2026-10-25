@@ -465,6 +465,8 @@ def emit_cmake(data: dict, output: Path) -> None:
             key = f"{basename}|{name}"
             level, resources = CLASSIFICATIONS[category]
             labels = [level, "reason:" + category]
+            if source.startswith("benchmark/"):
+                labels.append("benchmark")
             labels.extend("requires:" + resource for resource in resources)
             if "graphics" not in resources and "window" not in resources:
                 labels.append("no-render")

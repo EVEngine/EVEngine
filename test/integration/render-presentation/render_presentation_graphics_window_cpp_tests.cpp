@@ -6,19 +6,7 @@
 
 #include <cstdlib>
 #include <vector>
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
 #include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
 #include "zeroerr/unittest.h"
@@ -28,7 +16,8 @@ namespace {
 
 using WindowSettings = eve::window::WindowSettings;
 
-void openWindow(eve::window::Window*& win, eve::graphics::Graphics*& gfx, int w = 320, int h = 240) {
+void openWindow(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::Window*& win, eve::graphics::Graphics*& gfx,
+                int w = 320, int h = 240) {
     win = eve::window::Window::create();
     gfx = eve::graphics::Graphics::create();
     REQUIRE(win != nullptr);
@@ -57,7 +46,8 @@ WindowSettings makeSettings(int w, int h) {
     return s;
 }
 
-void checkCoreSettings(const WindowSettings& expected, const WindowSettings& actual) {
+void checkCoreSettings(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const WindowSettings& expected,
+                       const WindowSettings& actual) {
     CHECK_EQ(actual.width, expected.width);
     CHECK_EQ(actual.height, expected.height);
     CHECK_EQ(actual.centered, expected.centered);
@@ -75,11 +65,11 @@ void checkCoreSettings(const WindowSettings& expected, const WindowSettings& act
 TEST_CASE("window.setWindowSettingsRoundTrip") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     WindowSettings s = makeSettings(320, 240);
     REQUIRE(win->setWindowSettings(s));
-    checkCoreSettings(s, win->getWindowSettings());
+    checkCoreSettings(_ZEROERR_TEST_CONTEXT, s, win->getWindowSettings());
     CHECK(win->getHandle() != nullptr);
 
     win->close();
@@ -88,7 +78,7 @@ TEST_CASE("window.setWindowSettingsRoundTrip") {
 TEST_CASE("window.setSizeGetDimensions") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     win->setSize(400, 300);
     CHECK_EQ(win->getWidth(), 400);
@@ -106,7 +96,7 @@ TEST_CASE("window.setSizeGetDimensions") {
 TEST_CASE("window.setFullscreenDesktopRoundTrip") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     CHECK(!win->getWindowSettings().fullscreen);
 
@@ -132,7 +122,7 @@ TEST_CASE("window.setFullscreenDesktopRoundTrip") {
 TEST_CASE("window.setFullscreenDesktopRoundTripUsesSettings") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     WindowSettings s = win->getWindowSettings();
     s.desktop_mode   = true;
@@ -155,7 +145,7 @@ TEST_CASE("window.setFullscreenDesktopRoundTripUsesSettings") {
 TEST_CASE("window.closeClearsHandleAndBlocksFullscreen") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
     REQUIRE(win->getHandle() != nullptr);
 
     win->close();
@@ -167,7 +157,7 @@ TEST_CASE("window.closeClearsHandleAndBlocksFullscreen") {
 TEST_CASE("window.setWindowSettingsRecreatesAfterClose") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     win->close();
     CHECK(win->getHandle() == nullptr);
@@ -175,7 +165,7 @@ TEST_CASE("window.setWindowSettingsRecreatesAfterClose") {
     WindowSettings s = makeSettings(320, 240);
     REQUIRE(win->setWindowSettings(s));
     CHECK(win->getHandle() != nullptr);
-    checkCoreSettings(s, win->getWindowSettings());
+    checkCoreSettings(_ZEROERR_TEST_CONTEXT, s, win->getWindowSettings());
     CHECK_EQ(win->getWidth(), 320);
     CHECK_EQ(win->getHeight(), 240);
 
@@ -203,7 +193,7 @@ TEST_CASE("window.zeroSizeUsesDesktopDimensions") {
 TEST_CASE("window.isOpenAfterCreateAndClose") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
     CHECK(win->isOpen());
     win->close();
     CHECK(!win->isOpen());
@@ -212,7 +202,7 @@ TEST_CASE("window.isOpenAfterCreateAndClose") {
 TEST_CASE("window.titleAndPositionAndVSync") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     win->setWindowTitle("eve-window-test");
     CHECK_EQ(win->getWindowTitle(), std::string("eve-window-test"));
@@ -280,7 +270,7 @@ TEST_CASE("window.displayQueries") {
 TEST_CASE("window.pixelSizeAndDpiRoundTrip") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     CHECK_GT(win->getPixelWidth(), 0);
     CHECK_GT(win->getPixelHeight(), 0);
@@ -308,7 +298,7 @@ TEST_CASE("window.pixelSizeAndDpiRoundTrip") {
 TEST_CASE("window.requestAttentionNoCrash") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
     win->requestAttention(false);
     win->requestAttention(true);
     win->close();
@@ -318,7 +308,7 @@ TEST_CASE("window.requestAttentionNoCrash") {
 TEST_CASE("window.setIconRGBA") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
 
     static std::vector<uint8_t> pixels(32 * 32 * 4, 0);
     for (size_t i = 0; i < pixels.size(); i += 4) {
@@ -348,7 +338,7 @@ TEST_CASE("window.showMessageBoxOptional") {
     }
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx, 320, 240);
+    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
     CHECK(win->showMessageBox("t", "m", "info", true));
     eve::window::Window::MessageBoxData data;
     data.type              = "warning";
@@ -368,213 +358,142 @@ TEST_CASE("window.showMessageBoxOptional") {
 #include "PrivateTestScope.h"
 
 #include <SDL2/SDL.h>
+#include <chrono>
+#include <memory>
 #include <optional>
 #include "graphics/Color.h"
 #include "platform_event/PlatformEvent.h"
-// window_lifecycle.cpp
+
 namespace test_window_lifecycle {
-// Window minimize / restore and app background / foreground resume.
-//
-// Desktop: minimize → restore must pause then resume presenting without crash.
-// Mobile (and portable simulation): SDL_APP_* events must deactivate graphics,
-// request surface recreate on resume, and allow present again.
-//
-// Focus-only alt-tab is intentionally not paused: the window may still be
-// visible. Coverage for hasFocus is a soft observation (WM-dependent).
-
-
 namespace {
+struct CloseWindow {
+    eve::window::Window* window;
+    ~CloseWindow() {
+        if (window) window->close();
+    }
+};
 
-using WindowSettings = eve::window::WindowSettings;
-
-void openWindow(eve::window::Window*& win, eve::graphics::Graphics*& gfx, int w = 320, int h = 240) {
-    win = eve::window::Window::create();
-    gfx = eve::graphics::Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    WindowSettings s;
-    s.width      = static_cast<uint16_t>(w);
-    s.height     = static_cast<uint16_t>(h);
-    s.centered   = true;
-    s.fullscreen = false;
-    s.resizable  = true;
-    REQUIRE(win->setWindowSettings(s));
-}
-
-/** Install the window event watch (deferred to the first pump). */
-void installLifecycleWatch() {
+void initialize(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::Window*& window,
+                eve::graphics::Graphics*& graphics) {
+    REQUIRE(std::getenv("EVENGINE_TEST_NO_RENDER") == nullptr);
+    window   = eve::window::Window::create();
+    graphics = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(graphics != nullptr);
+    eve::window::WindowSettings settings;
+    settings.width = settings.height = 64;
+    settings.high_dpi                = false;
+    settings.vsync                   = 0;
+    REQUIRE(window->setWindowSettings(settings));
     auto* events = eve::platform_event::PlatformEvent::create();
     REQUIRE(events != nullptr);
     events->pump();
+    REQUIRE(graphics->isActive());
 }
 
-void presentClearFrames(eve::graphics::Graphics* gfx, int frames = 3) {
-    for (int i = 0; i < frames; ++i) {
-        gfx->clear(eve::graphics::Color(0.1f, 0.2f, 0.3f, 1.f), std::nullopt, std::nullopt);
-        gfx->present();
-    }
+void pushWindowEvent(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::Window* window, Uint8 type) {
+    SDL_Event event{};
+    event.type            = SDL_WINDOWEVENT;
+    event.window.windowID = SDL_GetWindowID(static_cast<SDL_Window*>(window->getHandle()));
+    event.window.event    = type;
+    REQUIRE_EQ(SDL_PushEvent(&event), 1);
 }
 
-/** Fire a WINDOWEVENT through the same EventWatch the engine installs. */
-void pushWindowEvent(Uint8 windowEvent) {
-    SDL_Event e{};
-    e.type         = SDL_WINDOWEVENT;
-    e.window.event = windowEvent;
-    REQUIRE(SDL_PushEvent(&e) == 1);
+void verifyResumedFrame(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::graphics::Graphics* graphics) {
+    REQUIRE(graphics->isActive());
+    graphics->setScreenReadbackEnabled(true);
+    graphics->clear(eve::graphics::Color(0.1f, 0.2f, 0.3f, 1.f), std::nullopt, std::nullopt);
+    graphics->present();
+    std::unique_ptr<eve::image::ImageData> image(graphics->newImageData());
+    REQUIRE(image != nullptr);
+    REQUIRE_GT(graphics->getWidth(), 0);
+    REQUIRE_GT(graphics->getHeight(), 0);
+    REQUIRE_EQ(image->getSize(), size_t(graphics->getWidth() * graphics->getHeight() * 4));
+    const auto* pixels = static_cast<const uint8_t*>(image->getData());
+    REQUIRE(pixels != nullptr);
+    const size_t center = size_t((graphics->getHeight() / 2 * graphics->getWidth() + graphics->getWidth() / 2) * 4);
+    REQUIRE_GT(pixels[center + 2], pixels[center + 1]);
+    REQUIRE_GT(pixels[center + 1], pixels[center]);
 }
-
 }  // namespace
 
-TEST_CASE("window.minimizeRestoreRoundTrip") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx);
-    installLifecycleWatch();
-
-    CHECK(win->isVisible());
-    CHECK(!win->isMinimized());
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx);
-
-    // Portable path: synthesize the desktop minimize/restore events the
-    // EventSink watches. Real SDL_MinimizeWindow is WM-dependent (Xvfb often
-    // ignores iconify), so the synthetic events are the CI-stable contract.
-    pushWindowEvent(SDL_WINDOWEVENT_MINIMIZED);
-    CHECK(!gfx->isActive());
-    presentClearFrames(gfx, 2);
-
-    pushWindowEvent(SDL_WINDOWEVENT_RESTORED);
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx);
-
-    // Best-effort real iconify when the host supports it.
-    win->minimize();
-    SDL_Delay(50);
-    SDL_PumpEvents();
-    if (win->isMinimized()) {
-        CHECK(!win->isVisible());
-        CHECK(!gfx->isActive());
-        presentClearFrames(gfx, 1);
-        win->restore();
-        SDL_Delay(50);
-        SDL_PumpEvents();
-        CHECK(!win->isMinimized());
-        CHECK(win->isVisible());
-        CHECK(gfx->isActive());
-        presentClearFrames(gfx);
-    } else {
-        win->restore();
-    }
-
-    win->close();
-}
-
-TEST_CASE("window.maximizeRestoreRoundTrip") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx);
-    installLifecycleWatch();
-
-    CHECK(!win->isMaximized());
-    win->maximize();
-    SDL_Delay(50);
-    SDL_PumpEvents();
-
-    if (!win->isMaximized()) {
-        // Fullscreen-desktop WMs / some Xvfb configs ignore maximize.
-        win->restore();
-        win->close();
-        return;
-    }
-
-    CHECK(win->isMaximized());
-    win->restore();
-    SDL_Delay(50);
-    SDL_PumpEvents();
-    CHECK(!win->isMaximized());
-    presentClearFrames(gfx);
-
-    win->close();
-}
-
-TEST_CASE("window.focusObservationSoft") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx);
-    installLifecycleWatch();
-
-    // Focus queries must be callable; exact focus ownership is WM-dependent
-    // under Xvfb, so we only require that present stays active while visible.
-    (void)win->hasFocus();
-    (void)win->hasMouseFocus();
-
-    // Losing focus alone must NOT pause presenting (alt-tab while visible).
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx, 1);
-
-    win->close();
+TEST_CASE("window.lifecycle.desktopEventContract") {
+    eve::window::Window*     window   = nullptr;
+    eve::graphics::Graphics* graphics = nullptr;
+    CloseWindow              cleanup{nullptr};
+    initialize(_ZEROERR_TEST_CONTEXT, window, graphics);
+    cleanup.window = window;
+    SUB_CASE("window.minimizeRestoreRoundTrip") {
+        REQUIRE(window->isVisible());
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_MINIMIZED);
+        REQUIRE(!graphics->isActive());
+        graphics->present();
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_RESTORED);
+        verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
+        REQUIRE_GT(window->getPixelWidth(), 0);
+        REQUIRE_GT(window->getPixelHeight(), 0);
+    };
+    SUB_CASE("graphics.lifecycle.minimizeRestoreStillPresents") {
+        // The minimize/restore pair is checked above; this row owns the distinct hidden/shown pair.
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_HIDDEN);
+        REQUIRE(!graphics->isActive());
+        graphics->present();
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_SHOWN);
+        verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
+    };
+    SUB_CASE("window.focusObservationSoft") {
+        (void)window->hasFocus();
+        (void)window->hasMouseFocus();
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_FOCUS_LOST);
+        REQUIRE(graphics->isActive());
+        pushWindowEvent(_ZEROERR_TEST_CONTEXT, window, SDL_WINDOWEVENT_FOCUS_GAINED);
+        verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
+    };
 }
 
 TEST_CASE("graphics.lifecycle.appBackgroundForegroundResume") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx);
-    installLifecycleWatch();
-    presentClearFrames(gfx);
-
-    REQUIRE(gfx->isActive());
-
-    // Simulate mobile background: surface teardown path pauses presenting.
-    SDL_Event bg{};
-    bg.type = SDL_APP_DIDENTERBACKGROUND;
-    REQUIRE(SDL_PushEvent(&bg) == 1);
-    CHECK(!gfx->isActive());
-    presentClearFrames(gfx, 2);  // no-op while inactive
-
-    // Simulate resume: rebuild surface + swapchain, then present again.
-    SDL_Event fg{};
-    fg.type = SDL_APP_DIDENTERFOREGROUND;
-    REQUIRE(SDL_PushEvent(&fg) == 1);
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx);
-
-    // A second background/foreground cycle must also survive (hot resume).
-    REQUIRE(SDL_PushEvent(&bg) == 1);
-    CHECK(!gfx->isActive());
-    REQUIRE(SDL_PushEvent(&fg) == 1);
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx);
-
-    win->close();
+    eve::window::Window*     window   = nullptr;
+    eve::graphics::Graphics* graphics = nullptr;
+    CloseWindow              cleanup{nullptr};
+    initialize(_ZEROERR_TEST_CONTEXT, window, graphics);
+    cleanup.window = window;
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        SDL_Event event{};
+        event.type = SDL_APP_DIDENTERBACKGROUND;
+        REQUIRE_EQ(SDL_PushEvent(&event), 1);
+        REQUIRE(!graphics->isActive());
+        graphics->present();
+        event.type = SDL_APP_DIDENTERFOREGROUND;
+        REQUIRE_EQ(SDL_PushEvent(&event), 1);
+        verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
+    }
 }
 
-TEST_CASE("graphics.lifecycle.minimizeRestoreStillPresents") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(win, gfx);
-    installLifecycleWatch();
-    presentClearFrames(gfx);
-
-    // Desktop EventSink path: MINIMIZED pauses, RESTORED resumes + marks the
-    // swapchain dirty. Synthetic events keep this deterministic on headless CI.
-    pushWindowEvent(SDL_WINDOWEVENT_MINIMIZED);
-    CHECK(!gfx->isActive());
-    presentClearFrames(gfx, 2);
-
-    pushWindowEvent(SDL_WINDOWEVENT_RESTORED);
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx, 5);
-    CHECK_GT(win->getPixelWidth(), 0);
-    CHECK_GT(win->getPixelHeight(), 0);
-
-    // HIDDEN / SHOWN is the other desktop pair some WMs emit instead of
-    // MINIMIZED / RESTORED.
-    pushWindowEvent(SDL_WINDOWEVENT_HIDDEN);
-    CHECK(!gfx->isActive());
-    pushWindowEvent(SDL_WINDOWEVENT_SHOWN);
-    CHECK(gfx->isActive());
-    presentClearFrames(gfx, 2);
-
-    win->close();
+TEST_CASE("window.maximizeRestoreRoundTrip") {
+    eve::window::Window*     window   = nullptr;
+    eve::graphics::Graphics* graphics = nullptr;
+    CloseWindow              cleanup{nullptr};
+    initialize(_ZEROERR_TEST_CONTEXT, window, graphics);
+    cleanup.window = window;
+    REQUIRE(!window->isMaximized());
+    window->maximize();
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+    while (!window->isMaximized() && std::chrono::steady_clock::now() < deadline) {
+        SDL_PumpEvents();
+        SDL_Delay(1);
+    }
+    // Preserve the existing WM-dependent native observation: some headless WMs ignore maximize.
+    if (!window->isMaximized()) {
+        window->restore();
+        return;
+    }
+    window->restore();
+    const auto restored = std::chrono::steady_clock::now() + std::chrono::milliseconds(200);
+    while (window->isMaximized() && std::chrono::steady_clock::now() < restored) {
+        SDL_PumpEvents();
+        SDL_Delay(1);
+    }
+    REQUIRE(!window->isMaximized());
+    verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
 }
 }  // namespace test_window_lifecycle

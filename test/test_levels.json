@@ -584,7 +584,8 @@
       "module": "physics_cloth",
       "origins": [
         "physics_layered_cloth_gpu.cpp"
-      ]
+      ],
+      "cases": {}
     },
     "integration/layered-cloth/physics_layered_cloth_script.cpp": {
       "role": "tests",
@@ -2394,7 +2395,7 @@
           "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
           "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
           "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff",
-          "card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills"
+          "card.rtsScriptShortCollectionConstructionAndAtomicPlayContract"
         ]
       }
     },
@@ -3384,6 +3385,9 @@
           "decal.gpuHeadlessProjectionReadback",
           "decal.proceduralFacadeUploadsAllRuntimeChannels",
           "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
+        ],
+        "render-window": [
+          "graphics.lighting.frameSlotResourceReuse"
         ]
       }
     },
@@ -3633,7 +3637,12 @@
       "origins": [
         "window_cpp.cpp",
         "window_lifecycle.cpp"
-      ]
+      ],
+      "cases": {
+        "render-window": [
+          "window.lifecycle.desktopEventContract"
+        ]
+      }
     },
     "integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp": {
       "role": "tests",
@@ -4242,6 +4251,21 @@
           "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource"
         ]
       }
+    },
+    "benchmark/physics/physics_layered_cloth_benchmark.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "physics_cloth"
+    },
+    "benchmark/graphics/graphics_lighting_resource_stability.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "graphics"
+    },
+    "benchmark/card-rts/card_rts_script_scenario_benchmark.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "module": "card"
     }
   }
 }

@@ -15,6 +15,52 @@ import test_levels as levels  # noqa: E402
 
 
 class TestLevelCatalogueTests(unittest.TestCase):
+    def test_default_ctest_selection_excludes_physical_gpu_benchmarks_and_their_bundles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            metadata = base / "levels.cmake"
+            levels.emit_cmake({"sources": {
+                "integration/native.cpp": {"role": "tests", "default": "module-composition",
+                                           "cases": {"module-composition": ["native.contract"]}},
+                "benchmark/graphics/gpu.cpp": {"role": "tests", "default": "render-window",
+                                               "cases": {"render-window": ["resources.reuse"]}},
+            }}, metadata)
+            project = (
+                'cmake_minimum_required(VERSION 3.21)\nproject(selection NONE)\nenable_testing()\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'include("{metadata.as_posix()}")\n'
+                'if("${EVE_TEST_DESKTOP_ORIGINS}" MATCHES "/benchmark/")\n'
+                'message(FATAL_ERROR "benchmark entered default source discovery")\nendif()\n'
+                'add_test(NAME native.contract COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME resources.reuse COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME bundle/gpu.cpp COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'set(native_key "EVE_TEST_LEVEL_native.cpp|native.contract")\n'
+                'set_tests_properties(native.contract PROPERTIES LABELS "${${native_key}}")\n'
+                'set(key "EVE_TEST_LEVEL_gpu.cpp|resources.reuse")\n'
+                'set_tests_properties(resources.reuse PROPERTIES LABELS "${${key}}")\n'
+                'eve_merge_test_metadata(bundle_labels ${${key}})\n'
+                'set_tests_properties(bundle/gpu.cpp PROPERTIES LABELS "bundle;${bundle_labels}")\n'
+            )
+            (base / "CMakeLists.txt").write_text(project, encoding="utf-8")
+            configured = subprocess.run(["cmake", "-S", str(base), "-B", str(base / "build")],
+                                        capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+
+            def selected(*arguments):
+                result = subprocess.run(["ctest", "--test-dir", str(base / "build"),
+                                         "-C", "Debug", "--show-only=json-v1", *arguments], capture_output=True,
+                                        text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                return {test["name"]: test for test in json.loads(result.stdout)["tests"]}
+
+            self.assertEqual(set(selected("-E", "^bundle/", "-LE", "benchmark")), {"native.contract"})
+            self.assertEqual(set(selected("-E", "^bundle/")), {"native.contract", "resources.reuse"})
+            bundles = selected("-L", "bundle")
+            self.assertEqual(set(bundles), {"bundle/gpu.cpp"})
+            labels = next(prop["value"] for prop in bundles["bundle/gpu.cpp"]["properties"]
+                          if prop["name"] == "LABELS")
+            self.assertTrue({"benchmark", "requires:graphics", "requires:window"}.issubset(labels))
+
     def fixture(self, text='TEST_CASE("local.case") { CHECK(1 == 1); }'):
         inventory = {"fixture.cpp": {"text": text, "cases": levels.cases_in(text),
                                      "generated": levels.generated_prefixes_in(text)}}

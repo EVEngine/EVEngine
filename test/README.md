@@ -91,12 +91,24 @@ case, its current location, named subcase or explicit retirement reason. The
 boundary decisions, fixture sharing, mocks and verification limits. Regenerate
 the audit with `python -X utf8 scripts/audit_integration_tests.py`.
 
-Timing-only workloads under `benchmark/` are excluded from the normal build.
+Timing and long-running stability workloads under `benchmark/` are excluded from
+the normal build. Routine integration cases use short, bounded simulations with
+small time steps; long matches, endurance loops and frame-count exhaustion
+regressions remain explicit benchmark workloads.
 To build and run them explicitly:
 
 ```sh
 make test/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_BUILD_TEST_BENCHMARKS=ON INCLUDE_BENCHMARKS=1 LABEL_FILTER='^benchmark$'
 ```
+
+On Windows, `make test/win32-debug` and `make test/win32` run CTest on a private
+background desktop by default. SDL windows remain shown and rendering normally on
+that desktop, including visibility and presentation assertions; the user's active
+desktop is never switched. The launcher verifies child desktop placement before
+starting tests and fails explicitly if isolation is unavailable. Use
+`TEST_WINDOWS=visible` for interactive debugging. Direct `ctest` calls bypass this
+default; wrap them with `python3 scripts/run_ctest.py -- ctest ...` to isolate them.
+Closing the launcher also terminates its remaining test process tree.
 
 Human preview holds require `EVENGINE_TEST_MANUAL_PREVIEW=1`. Automatic tests
 still render the frames needed by their assertions; no preview is required by

@@ -273,6 +273,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "=climbing_contact_presentation;climbing"
     "crowd_script;npc_ai"
     "dialogue_proc_script;dialogue"
+    "card_;card"
     "rts_;tactics_rts"
     "tactics_script;tactics_rts"
 
