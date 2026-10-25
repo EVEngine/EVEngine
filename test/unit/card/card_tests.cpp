@@ -21,7 +21,7 @@
 using namespace eve::card;
 
 namespace {
-constexpr auto definitions        = R"([{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
+constexpr auto definitions = R"([{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
                                   {"id":"bolt","name":"Bolt","kind":"spell","cost":3}])";
 constexpr auto controlDefinitions = R"([{"id":"free","name":"Free","kind":"spell","cost":0},
                                          {"id":"bolt","name":"Bolt","kind":"spell","cost":3}])";

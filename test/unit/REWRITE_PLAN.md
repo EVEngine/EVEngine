@@ -8,9 +8,9 @@ Include and origin audit: remove imports unused by the rewritten tests. `EVE_TES
 
 Final origin audit: 41 C++ files retain guards; all 41 map to multiple original sources in `test/test_levels.json`, and every surviving origin macro matches a catalogue origin. The single-origin guard in `gpgpu_tests.cpp` was removed; the recipe/workshop cases in devtools share the catalogue's `mcp_whitebox` origin. Includes were reviewed during each file rewrite.
 
-Final structure: 132 baseline files (3525 `TEST_CASE` registrations) map to 119 current unit sources (1373 registrations) after cohesive merges; 67 sources use `SUB_CASE` (1114 subcases total) to document cheap input/output variants within one process. This reduces process-level unit registrations by 61% while retaining separately registered expensive GPU and window cases for process isolation. The test catalogue records 1374 unit identities overall (including one source outside `test/unit`) and 3797 integration identities across 319 C++ test sources.
+Final structure on current `dev`: 133 source files (3528 `TEST_CASE` registrations) map to 119 unit sources (1376 registrations) after cohesive merges; 67 sources use `SUB_CASE` (1120 subcases total) to document cheap input/output variants within one process. This reduces process-level unit registrations by 61% while retaining separately registered expensive GPU and window cases for process isolation. The test catalogue records 1377 unit identities overall (including one source outside `test/unit`) and 3830 integration identities across 326 C++ test sources. The 133rd file, `graphics_damage_numbers.cpp`, arrived on `dev` after the initial 132-file inventory and was rewritten into the consolidated graphics contract source during PR preparation.
 
-Verification status (2026-10-25): all 132 baseline entries have source/API review and static `test_levels.py` validation. The Windows debug build linked all 28 domain test executables. `make check` passed, including 494 script tests (3 skipped), the source catalogue, and the assertion-level gate. In eight targeted domains, 1059 of 1061 independent cases passed after the corrected vehicle script call was rerun; the two remaining red cases reproduce the melee event and RPG current-HP defects in `BUGS_FOUND.md`. This is targeted Windows verification, not a claim that the full several-thousand-case suite was run locally.
+Verification status (2026-10-25): all 132 original entries have source/API review and static `test_levels.py` validation; the newly merged damage-number file was also reviewed and rewritten. Before rebasing, the Windows debug build linked all 28 domain test executables. `make check` passed, including 494 script tests (3 skipped), the source catalogue, and the assertion-level gate. In eight targeted domains, 1059 of 1061 independent cases passed after the corrected vehicle script call was rerun; the two remaining red cases reproduce the melee event and RPG current-HP defects in `BUGS_FOUND.md`. Rebased `dev` checks are run separately before this PR is pushed. This is targeted Windows verification, not a claim that the full several-thousand-case suite was run locally.
 
 | Worker | Files | Baseline lines |
 | --- | ---: | ---: |
@@ -19,6 +19,10 @@ Verification status (2026-10-25): all 132 baseline entries have source/API revie
 | 3 | 27 | 22553 |
 | 4 | 26 | 22546 |
 | 5 | 26 | 22544 |
+
+## Added on dev during PR preparation
+
+- [x] `test/unit/graphics/graphics_damage_numbers.cpp` (merged into `test/unit/graphics/graphics_pipeline_state_tests.cpp`; three interface contracts reorganized into six input/output subcases)
 
 ## Worker 1
 

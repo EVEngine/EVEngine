@@ -31,11 +31,6 @@
       "role": "tests",
       "default": "module-composition"
     },
-    "unit/graphics/graphics_damage_numbers.cpp": {
-      "module": "graphics",
-      "role": "tests",
-      "default": "local-logic"
-    },
     "integration/combat-presentation/graphics_damage_numbers_script.cpp": {
       "task": "combat-presentation",
       "module": "graphics",
@@ -3188,7 +3183,8 @@
         "virtual_texture_blend.cpp",
         "RenderImageAudit.cpp",
         "graphics_shader_parameters.cpp",
-        "virtual_texture_streaming.cpp"
+        "virtual_texture_streaming.cpp",
+        "graphics_damage_numbers.cpp"
       ]
     },
     "unit/graphics_fog/graphics_fog_unit.cpp": {

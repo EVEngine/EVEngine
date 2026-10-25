@@ -3646,3 +3646,112 @@ TEST_CASE("Virtual texture streaming publication eviction and invalidation contr
     };
 }
 #endif
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_damage_numbers)
+#include "graphics/DamageNumbers.h"
+#include "zeroerr/unittest.h"
+
+#include <cmath>
+#include <limits>
+#include <string>
+
+namespace test_graphics_damage_numbers {
+using namespace eve::graphics;
+
+TEST_CASE("graphics.DamageNumbers.spawn documents merge isolation and bounded admission") {
+    SUB_CASE("same nonempty group and kind within the window produce one summed label") {
+        DamageNumbers numbers;
+        const auto    first = numbers.spawn({10, 100, 200, DamageNumberKind::Damage, "enemy"});
+        REQUIRE(first.ok());
+        REQUIRE_EQ(first.value(), DamageNumberAdmission::Spawned);
+        const auto second = numbers.spawn({20, 100, 200, DamageNumberKind::Damage, "enemy"});
+        REQUIRE(second.ok());
+        REQUIRE_EQ(second.value(), DamageNumberAdmission::Merged);
+        REQUIRE_EQ(numbers.count(), 1u);
+        REQUIRE_EQ(numbers.snapshot().front().text, std::string("-30"));
+    };
+
+    SUB_CASE("kind, group and distance each prevent an otherwise eligible merge") {
+        DamageNumbers numbers;
+        REQUIRE(numbers.spawn({10, 100, 200, DamageNumberKind::Damage, "enemy"}).ok());
+        REQUIRE(numbers.spawn({20, 100, 200, DamageNumberKind::Critical, "enemy"}).ok());
+        REQUIRE(numbers.spawn({30, 100, 200, DamageNumberKind::Damage, "other"}).ok());
+        REQUIRE(numbers.spawn({40, 900, 200, DamageNumberKind::Damage, "enemy"}).ok());
+        REQUIRE_EQ(numbers.count(), 4u);
+        REQUIRE(numbers.update(0.2).ok());
+        const auto afterWindow = numbers.spawn({50, 100, 200, DamageNumberKind::Damage, "enemy"});
+        REQUIRE(afterWindow.ok());
+        REQUIRE_EQ(afterWindow.value(), DamageNumberAdmission::Spawned);
+    };
+
+    SUB_CASE("a full pool replaces its oldest entry without growing") {
+        DamageNumbers numbers;
+        for (std::size_t i = 0; i < numbers.capacity(); ++i)
+            REQUIRE(numbers.spawn({static_cast<double>(i), 10, 20}).ok());
+        const auto overflow = numbers.spawn({999, 10, 20});
+        REQUIRE(overflow.ok());
+        REQUIRE_EQ(overflow.value(), DamageNumberAdmission::ReplacedOldest);
+        REQUIRE_EQ(numbers.count(), numbers.capacity());
+        const auto samples = numbers.snapshot();
+        REQUIRE_EQ(samples.front().text, std::string("-1"));
+        REQUIRE_EQ(samples.back().text, std::string("-999"));
+    };
+}
+
+TEST_CASE("graphics.DamageNumbers rejects invalid inputs without changing live samples") {
+    SUB_CASE("negative and nonfinite elapsed time") {
+        DamageNumbers numbers;
+        REQUIRE(numbers.spawn({1, 10, 20}).ok());
+        const auto before = numbers.snapshot();
+        REQUIRE(!numbers.update(-0.01).ok());
+        REQUIRE(!numbers.update(std::numeric_limits<double>::quiet_NaN()).ok());
+        REQUIRE_EQ(numbers.count(), 1u);
+        REQUIRE_EQ(numbers.snapshot().front().y, before.front().y);
+    };
+    SUB_CASE("negative and nonfinite requested amounts") {
+        DamageNumbers numbers;
+        REQUIRE(numbers.spawn({1, 10, 20}).ok());
+        const auto before = numbers.snapshot();
+        REQUIRE(!numbers.spawn({-1, 10, 20}).ok());
+        REQUIRE(!numbers.spawn({std::numeric_limits<double>::infinity(), 10, 20}).ok());
+        REQUIRE_EQ(numbers.count(), 1u);
+        REQUIRE_EQ(numbers.snapshot().front().text, before.front().text);
+    };
+    SUB_CASE("nonpositive style lifetime") {
+        DamageNumbers numbers;
+        REQUIRE(numbers.spawn({1, 10, 20}).ok());
+        const auto        before = numbers.snapshot();
+        DamageNumberStyle invalid;
+        invalid.lifetime = 0;
+        REQUIRE(!numbers.setStyle(DamageNumberKind::Damage, invalid).ok());
+        REQUIRE_EQ(numbers.count(), 1u);
+        REQUIRE_EQ(numbers.snapshot().front().y, before.front().y);
+    };
+}
+
+TEST_CASE("graphics.DamageNumbers uses injected time and copies style at spawn") {
+    DamageNumbers a, b;
+    REQUIRE(a.spawn({12, 100, 200, DamageNumberKind::Critical}).ok());
+    REQUIRE(b.spawn({12, 100, 200, DamageNumberKind::Critical}).ok());
+    REQUIRE(a.update(0.25).ok());
+    REQUIRE(b.update(0.125).ok());
+    REQUIRE(b.update(0.125).ok());
+    REQUIRE(std::fabs(a.snapshot().front().y - b.snapshot().front().y) < 1e-4f);
+
+    auto style = a.style(DamageNumberKind::Critical);
+    REQUIRE(style.ok());
+    style.value().scale = 2.0f;
+    REQUIRE(a.setStyle(DamageNumberKind::Critical, style.value()).ok());
+    REQUIRE_EQ(a.snapshot().front().scale, b.snapshot().front().scale);
+    REQUIRE(a.spawn({13, 100, 200, DamageNumberKind::Critical}).ok());
+    REQUIRE(a.snapshot().back().scale > a.snapshot().front().scale);
+
+    REQUIRE(a.update(1.0).ok());
+    REQUIRE(a.snapshot().front().alpha < 0.5f);
+    REQUIRE(a.update(0.5).ok());
+    REQUIRE_EQ(a.count(), 0u);
+    a.clear();
+    REQUIRE_EQ(a.count(), 0u);
+}
+
+}  // namespace test_graphics_damage_numbers
+#endif
