@@ -10,138 +10,112 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "physics/Body.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/PhysicsLink.h"
-#include "physics/Shape3D.h"
-#include "physics/World.h"
-#include "physics/World3D.h"
 #include "physics/backend/SimulationBackend.h"
 
-#include "common/Capability.h"
-
-#include <Box2D/Box2D.h>
-#include <box3d/box3d.h>
-
-#include <cmath>
 #include <cstdint>
-#include <memory>
-#include <stdexcept>
+#include <exception>
 
 using namespace eve::physics;
 
 namespace {
 
-class CapabilityReset {
-public:
-    CapabilityReset() { eve::cap::detail::clearAllRaw(); }
-    ~CapabilityReset() { eve::cap::detail::clearAllRaw(); }
-};
+eve::SimulationStep at(std::uint64_t tick, std::int64_t nanoseconds = 16666667) {
+    return {eve::SimulationTick{tick}, eve::Duration::fromNanoseconds(nanoseconds)};
+}
 
-class MockAcceleratorProvider final : public IAcceleratorBackendProvider {
-public:
-    [[nodiscard]] bool supports(SimulationBackendDomain domain) const noexcept override {
-        return domain == SimulationBackendDomain::World2D;
-    }
-
-    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain domain,
-                                                                          void* /*state*/) override {
-        if (!supports(domain)) {
-            return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Unsupported, "Mock accelerator does not implement this domain"));
-        }
-        return eve::Result<std::unique_ptr<ISimulationBackend>>::success(detail::makeMockAcceleratorBackend());
-    }
-};
-
-class FailingProvider final : public IAcceleratorBackendProvider {
-public:
-    explicit FailingProvider(bool throws) : throws_(throws) {}
-
-    [[nodiscard]] bool supports(SimulationBackendDomain) const noexcept override { return true; }
-
-    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain, void*) override {
-        if (throws_) throw std::runtime_error("accelerator setup exploded");
-        return eve::Result<std::unique_ptr<ISimulationBackend>>::failure(eve::Diagnostic::error(
-            eve::DiagnosticCode::Conflict, "accelerator rejected shared state", "provider.state"));
-    }
-
-private:
-    bool throws_ = false;
-};
-
-class FailSecondStepBackend final : public ISimulationBackend {
-public:
-    explicit FailSecondStepBackend(b3WorldId* world)
-        : delegate_(detail::makeCallbackSimulationBackend(world, &stepBox3D, SimulationBackendKind::MockAccelerator,
-                                                          SimulationDeterminism::ToleranceBounded)) {}
-
-    [[nodiscard]] eve::Result<void> step(const eve::SimulationStep& step, const SimulationSettings& settings) override {
-        if (delegate_->observation().stepCount != 0) {
-            return eve::Result<void>::failure(eve::Diagnostic::error(
-                eve::DiagnosticCode::Failed, "injected second-step failure", "physics.test.step"));
-        }
-        return delegate_->step(step, settings);
-    }
-    [[nodiscard]] SimulationObservation observation() const noexcept override { return delegate_->observation(); }
-    [[nodiscard]] SimulationBackendKind kind() const noexcept override { return delegate_->kind(); }
-    [[nodiscard]] SimulationDeterminism determinism() const noexcept override { return delegate_->determinism(); }
-    [[nodiscard]] eve::Result<void>     restoreObservation(const SimulationObservation& value) override {
-        return delegate_->restoreObservation(value);
-    }
-
-private:
-    static void stepBox3D(void* context, const eve::SimulationStep& step, const SimulationSettings& settings) noexcept {
-        b3World_Step(*static_cast<b3WorldId*>(context), static_cast<float>(step.delta.seconds()),
-                     settings.subStepCount);
-    }
-
-    std::unique_ptr<ISimulationBackend> delegate_;
-};
-
-class FailSecondStepProvider final : public IAcceleratorBackendProvider {
-public:
-    [[nodiscard]] bool supports(SimulationBackendDomain domain) const noexcept override {
-        return domain == SimulationBackendDomain::World3D;
-    }
-    [[nodiscard]] eve::Result<std::unique_ptr<ISimulationBackend>> create(SimulationBackendDomain,
-                                                                          void* state) override {
-        return eve::Result<std::unique_ptr<ISimulationBackend>>::success(
-            std::make_unique<FailSecondStepBackend>(static_cast<b3WorldId*>(state)));
-    }
-};
-
-[[maybe_unused]] void checkObservableContract(ISimulationBackend& backend) {
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromNanoseconds(16666667)};
-    auto                      applied   = backend.step(step, SimulationSettings{});
-    const bool                appliedOk = applied.ok();
-    CHECK(appliedOk);
-    const SimulationObservation observation = backend.observation();
-    CHECK_EQ(observation.stepCount, std::uint64_t(1));
-    CHECK(observation.lastTick == step.tick);
-    CHECK_EQ(observation.simulatedDuration, step.delta);
-
-    auto       duplicate   = backend.step(step, SimulationSettings{});
-    const bool duplicateOk = duplicate.ok();
-    CHECK(!duplicateOk);
-    CHECK_EQ(duplicate.code(), eve::StatusCode::Rejected);
+void expectUnchanged(const SimulationObservation& before, const SimulationObservation& after) {
+    CHECK_EQ(after.stepCount, before.stepCount);
+    CHECK(after.lastTick == before.lastTick);
+    CHECK(after.simulatedDuration == before.simulatedDuration);
+    CHECK_EQ(after.simulatedSeconds, before.simulatedSeconds);
+    CHECK_EQ(after.lastDeltaSeconds, before.lastDeltaSeconds);
 }
 
 }  // namespace
 
-
-TEST_CASE("physics.core.backendContract.rejectsNullWorld") {
-    bool threw = false;
+TEST_CASE("physics.backend.factory rejects missing solver state and callback") {
+    bool rejectedWorld = false;
     try {
         [[maybe_unused]] auto backend = detail::makeBox2DSimulationBackend(nullptr);
-    } catch (...) {
-        threw = true;
+    } catch (const std::exception&) {
+        rejectedWorld = true;
     }
-    CHECK(threw);
+    REQUIRE(rejectedWorld);
+
+    bool rejectedCallback = false;
+    try {
+        [[maybe_unused]] auto backend = detail::makeCallbackSimulationBackend(
+            nullptr, nullptr, SimulationBackendKind::Cpu, SimulationDeterminism::ToleranceBounded);
+    } catch (const std::exception&) {
+        rejectedCallback = true;
+    }
+    CHECK(rejectedCallback);
+}
+
+TEST_CASE("physics.backend.step records only completed logical steps") {
+    auto backend = detail::makeMockAcceleratorBackend();
+    CHECK(backend->kind() == SimulationBackendKind::MockAccelerator);
+    CHECK(backend->determinism() == SimulationDeterminism::ToleranceBounded);
+    expectUnchanged({}, backend->observation());
+
+    const auto first = at(1);
+    REQUIRE(backend->step(first, SimulationSettings{}).ok());
+    const auto firstObservation = backend->observation();
+    CHECK_EQ(firstObservation.stepCount, std::uint64_t{1});
+    CHECK(firstObservation.lastTick == first.tick);
+    CHECK(firstObservation.simulatedDuration == first.delta);
+    CHECK_EQ(firstObservation.simulatedSeconds, first.delta.seconds());
+
+    const auto second = at(3, 10000000);
+    CHECK(backend->step(second, SimulationSettings{}).ok());
+    const auto secondObservation = backend->observation();
+    CHECK_EQ(secondObservation.stepCount, std::uint64_t{2});
+    CHECK(secondObservation.lastTick == second.tick);
+    CHECK(secondObservation.simulatedDuration == eve::Duration::fromNanoseconds(26666667));
+    CHECK_EQ(secondObservation.lastDeltaSeconds, 0.01f);
+    CHECK_EQ(firstObservation.stepCount, std::uint64_t{1});  // Earlier snapshot remains unchanged.
+    CHECK(firstObservation.lastTick == first.tick);
+}
+
+TEST_CASE("physics.backend.step rejects repeated ticks and invalid settings without advancing") {
+    auto backend = detail::makeMockAcceleratorBackend();
+    CHECK(backend->step(at(2), SimulationSettings{}).ok());
+    const auto accepted = backend->observation();
+
+    REQUIRE(!backend->step(at(2), SimulationSettings{}).ok());
+    expectUnchanged(accepted, backend->observation());
+    CHECK(!backend->step(at(1), SimulationSettings{}).ok());
+    expectUnchanged(accepted, backend->observation());
+    CHECK(!backend->step(at(3, -1), SimulationSettings{}).ok());
+    expectUnchanged(accepted, backend->observation());
+    CHECK(!backend->step(at(3, 50000001), SimulationSettings{}).ok());
+    expectUnchanged(accepted, backend->observation());
+
+    SimulationSettings settings;
+    settings.subStepCount = 0;
+    CHECK(!backend->step(at(3), settings).ok());
+    expectUnchanged(accepted, backend->observation());
+    settings.subStepCount = 1025;
+    CHECK(!backend->step(at(3), settings).ok());
+    expectUnchanged(accepted, backend->observation());
+}
+
+TEST_CASE("physics.backend.restore installs valid metadata and preserves state on rejection") {
+    auto source = detail::makeMockAcceleratorBackend();
+    CHECK(source->step(at(4), SimulationSettings{}).ok());
+    const auto saved = source->observation();
+
+    auto restored = detail::makeMockAcceleratorBackend();
+    REQUIRE(restored->restoreObservation(saved).ok());
+    expectUnchanged(saved, restored->observation());
+    CHECK(!restored->step(at(4), SimulationSettings{}).ok());
+    CHECK(restored->step(at(5), SimulationSettings{}).ok());
+
+    const auto beforeFailure = restored->observation();
+    auto       invalid       = beforeFailure;
+    invalid.simulatedSeconds += 1.0;
+    CHECK(!restored->restoreObservation(invalid).ok());
+    expectUnchanged(beforeFailure, restored->observation());
 }
