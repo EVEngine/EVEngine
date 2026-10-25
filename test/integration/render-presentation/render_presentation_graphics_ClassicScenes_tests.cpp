@@ -2757,82 +2757,81 @@ TEST_CASE("IBL.envIntensityNegativeClampsToZero") {
     win->close();
 }
 
-TEST_CASE("IBL.envIntensityScalesMetalBrightness") {
+TEST_CASE("IBL.environmentIntensityAndRemovalContracts") {
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
-    resetScene3D();
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{win};
+    SUB_CASE("IBL.envIntensityScalesMetalBrightness") {
+        resetScene3D();
 
-    Mesh *mesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(mesh != nullptr);
+        Mesh *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
 
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 3.f;
-    cam->setAmbient(0.03f, 0.03f, 0.03f);
-    cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+        cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
 
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
-    ent->setMetallic(1.0f);
-    ent->setRoughness(0.08f);
-    addHud(gfx);
-    RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+        auto *ent                    = Renderable3D::create();
+        ent->meshRenderer()->mesh    = mesh;
+        ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+        ent->setMetallic(1.0f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
 
-    gfx->setScreenReadbackEnabled(true);
-    cam->setEnvIntensity(0.4f);
-    warmPresent(gfx);
-    const float L_low = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        gfx->setScreenReadbackEnabled(true);
+        cam->setEnvIntensity(0.4f);
+        warmPresent(gfx);
+        const float L_low = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
-    cam->setEnvIntensity(2.0f);
-    warmPresent(gfx);
-    const float L_high = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        cam->setEnvIntensity(2.0f);
+        warmPresent(gfx);
+        const float L_high = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
-    REQUIRE(L_high > L_low + 0.04f);
+        REQUIRE(L_high > L_low + 0.04f);
+    };
+    SUB_CASE("IBL.clearEnvMapDisablesReflection") {
+        resetScene3D();
 
-    win->close();
+        Mesh *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
+
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+
+        auto *ent                    = Renderable3D::create();
+        ent->meshRenderer()->mesh    = mesh;
+        ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+        ent->setMetallic(1.0f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+
+        gfx->setScreenReadbackEnabled(true);
+        warmPresent(gfx);
+        const Color c0 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+
+        cam->setEnvMap(makeSolidCubemap(gfx, 40, 200, 40));
+        cam->setEnvIntensity(1.5f);
+        warmPresent(gfx);
+        const Color c1 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(c1.g > c0.g + 0.04f);
+
+        cam->setEnvMap(nullptr);
+        warmPresent(gfx);
+        const Color c2 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(std::abs(c2.r - c0.r) < 0.05f);
+        REQUIRE(std::abs(c2.g - c0.g) < 0.05f);
+        REQUIRE(std::abs(c2.b - c0.b) < 0.05f);
+    };
 }
 
-TEST_CASE("IBL.clearEnvMapDisablesReflection") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    resetScene3D();
-
-    Mesh *mesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(mesh != nullptr);
-
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 3.f;
-    cam->setAmbient(0.03f, 0.03f, 0.03f);
-
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
-    ent->setMetallic(1.0f);
-    ent->setRoughness(0.08f);
-    addHud(gfx);
-    RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
-
-    gfx->setScreenReadbackEnabled(true);
-    warmPresent(gfx);
-    const Color c0 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-
-    cam->setEnvMap(makeSolidCubemap(gfx, 40, 200, 40));
-    cam->setEnvIntensity(1.5f);
-    warmPresent(gfx);
-    const Color c1 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    REQUIRE(c1.g > c0.g + 0.04f);
-
-    cam->setEnvMap(nullptr);
-    warmPresent(gfx);
-    const Color c2 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    REQUIRE(std::abs(c2.r - c0.r) < 0.05f);
-    REQUIRE(std::abs(c2.g - c0.g) < 0.05f);
-    REQUIRE(std::abs(c2.b - c0.b) < 0.05f);
-
-    win->close();
-}
 
 TEST_CASE("IBL.dielectricEnvWeakerThanMetal") {
     eve::window::Window *win = nullptr;
@@ -3781,7 +3780,6 @@ void warmPresent(Graphics *gfx, int frames = 2) {
     for (int i = 0; i < frames; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 }
 

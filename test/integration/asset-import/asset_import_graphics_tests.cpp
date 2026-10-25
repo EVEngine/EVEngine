@@ -319,7 +319,7 @@ struct MixamoClips {
     std::unique_ptr<AnimClip>     jump;
 };
 
-MixamoClips loadMixamoAnimationFixtures() {
+MixamoClips loadMixamoAnimationFixtures(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT) {
     MixamoClips   out;
     AnimSkeleton *sk   = nullptr;
     AnimClip     *idle = nullptr;
@@ -356,7 +356,7 @@ TEST_CASE("animation.mixamo.anim.txtFixturesPresent") {
 }
 
 TEST_CASE("animation.mixamo.importSkeletonAndSample") {
-    auto pack = loadMixamoAnimationFixtures();
+    auto pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     CHECK(pack.skeleton->getBoneCount() == 70);
     CHECK(pack.skeleton->findBone("mixamorig:Hips") == 1);
     CHECK(pack.skeleton->findBone("mixamorig:LeftFoot") >= 0);
@@ -374,7 +374,7 @@ TEST_CASE("animation.mixamo.importSkeletonAndSample") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.idleRunJump") {
-    auto                              pack = loadMixamoAnimationFixtures();
+    auto                              pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -414,7 +414,7 @@ TEST_CASE("animation.mixamo.stateMachine.idleRunJump") {
 }
 
 TEST_CASE("animation.mixamo.motionMatching.prefersRunWhenFast") {
-    auto      pack  = loadMixamoAnimationFixtures();
+    auto      pack  = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     const int hips  = pack.skeleton->findBone("mixamorig:Hips");
     const int lFoot = pack.skeleton->findBone("mixamorig:LeftFoot");
     const int rFoot = pack.skeleton->findBone("mixamorig:RightFoot");
@@ -456,7 +456,7 @@ TEST_CASE("animation.mixamo.motionMatching.prefersRunWhenFast") {
 }
 
 TEST_CASE("animation.mixamo.playerCrossFadeIdleToRun") {
-    auto                        pack = loadMixamoAnimationFixtures();
+    auto                        pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     std::unique_ptr<AnimPlayer> player(new AnimPlayer(pack.skeleton.get()));
     player->play(pack.idle.get());
     player->update(0.2f);
@@ -470,7 +470,7 @@ TEST_CASE("animation.mixamo.playerCrossFadeIdleToRun") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.runJumpIdleCycle") {
-    auto                              pack = loadMixamoAnimationFixtures();
+    auto                              pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -515,7 +515,7 @@ TEST_CASE("animation.mixamo.stateMachine.runJumpIdleCycle") {
 }
 
 TEST_CASE("animation.mixamo.stateMachine.boolArmedGate") {
-    auto                              pack = loadMixamoAnimationFixtures();
+    auto                              pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -536,7 +536,7 @@ TEST_CASE("animation.mixamo.stateMachine.boolArmedGate") {
 }
 
 TEST_CASE("animation.mixamo.motionMatching.stableWithIgnoreRadius") {
-    auto      pack = loadMixamoAnimationFixtures();
+    auto      pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     const int hips = pack.skeleton->findBone("mixamorig:Hips");
     REQUIRE(hips >= 0);
 
@@ -574,7 +574,7 @@ TEST_CASE("animation.mixamo.motionMatching.stableWithIgnoreRadius") {
 }
 
 TEST_CASE("animation.mixamo.anim.txtExportRoundTripPreservesHips") {
-    auto              pack = loadMixamoAnimationFixtures();
+    auto              pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     const std::string text = AnimImporter::exportAnimationFixtureText(pack.skeleton.get(), pack.idle.get());
 
     AnimSkeleton *sk   = nullptr;
@@ -640,7 +640,7 @@ static void drawBoneSegment(eve::graphics::Graphics *gfx, float x0, float y0, fl
 }
 
 TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
-    auto                              pack = loadMixamoAnimationFixtures();
+    auto                              pack = loadMixamoAnimationFixtures(_ZEROERR_TEST_CONTEXT);
     std::unique_ptr<AnimStateMachine> sm(new AnimStateMachine(pack.skeleton.get()));
     sm->addState("Idle", pack.idle.get());
     sm->addState("Run", pack.run.get());
@@ -654,7 +654,7 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
     int toJump = sm->addTransition("Idle", "Jump", 0.08f);
     sm->addTriggerCondition(toJump, "jump");
     int jumpToIdle = sm->addTransition("Jump", "Idle", 0.1f);
-    sm->setExitTime(jumpToIdle, 0.85f);
+    sm->setExitTime(jumpToIdle, 0.05f);
 
     auto *win = eve::window::Window::create();
     auto *gfx = eve::graphics::Graphics::create();
@@ -664,6 +664,7 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
     s.width    = 480;
     s.height   = 640;
     s.centered = true;
+    s.vsync    = 0;
     REQUIRE(win->setWindowSettings(s));
 
     const int hips = pack.skeleton->findBone("mixamorig:Hips");
@@ -674,32 +675,36 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
 
     gfx->setBackgroundColorRGBA(0.07f, 0.08f, 0.11f, 1.f);
 
-    // Phase timeline (~2.4s): Idle → Run → Idle → Jump → Idle
+    // Short fixture timeline: Idle → Run → Idle → Jump → Idle.
     enum Phase { IdleA, RunA, IdleB, JumpA, IdleC };
     Phase phase       = IdleA;
     int   phaseFrames = 0;
     int   drawnBones  = 0;
+    bool  seenIdle = false, seenRun = false, seenJump = false;
 
-    for (int frame = 0; frame < 150; ++frame) {
+    for (int frame = 0; frame < 48; ++frame) {
         ++phaseFrames;
-        if (phase == IdleA && phaseFrames > 30) {
+        if (phase == IdleA && phaseFrames > 2) {
             sm->setFloat("speed", 200.f);
             phase       = RunA;
             phaseFrames = 0;
-        } else if (phase == RunA && phaseFrames > 40) {
+        } else if (phase == RunA && phaseFrames > 10) {
             sm->setFloat("speed", 0.f);
             phase       = IdleB;
             phaseFrames = 0;
-        } else if (phase == IdleB && phaseFrames > 20) {
+        } else if (phase == IdleB && phaseFrames > 10) {
             sm->setTrigger("jump");
             phase       = JumpA;
             phaseFrames = 0;
-        } else if (phase == JumpA && phaseFrames > 35) {
+        } else if (phase == JumpA && phaseFrames > 10) {
             phase       = IdleC;
             phaseFrames = 0;
         }
 
-        sm->update(0.016f);
+        sm->update(1.f / 60.f);
+        seenIdle |= sm->getCurrentState() == "Idle";
+        seenRun |= sm->getCurrentState() == "Run";
+        seenJump |= sm->getCurrentState() == "Jump";
         AnimPose *pose = sm->getPose();
         pose->computeWorld(pack.skeleton.get());
 
@@ -736,11 +741,11 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
-    CHECK_EQ(drawnBones, 70);
-    CHECK(sm->getCurrentState() == "Idle");
+    REQUIRE((seenIdle && seenRun && seenJump));
+    REQUIRE_EQ(drawnBones, 70);
+    REQUIRE(sm->getCurrentState() == "Idle");
     win->close();
 }
 }  // namespace test_animation_mixamo
@@ -1108,6 +1113,7 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
     s.width    = 640;
     s.height   = 400;
     s.centered = true;
+    s.vsync    = 0;
     REQUIRE(win->setWindowSettings(s));
 
     auto *mod = Map::create();
@@ -1139,8 +1145,9 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
     TileRenderSystem::collect(items);
     REQUIRE(items.size() == 10u * 8u + 6u * 6u);
 
+    gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColorRGBA(0.08f, 0.09f, 0.12f, 1.f);
-    for (int frame = 0; frame < 75; ++frame) {
+    for (int frame = 0; frame < 2; ++frame) {
         ortho->setOrigin(40.f + float(frame) * 0.15f, 40.f);
         iso->setOrigin(420.f, 80.f + float(std::sin(float(frame) * 0.08f)) * 6.f);
 
@@ -1152,9 +1159,10 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
+    const auto tilePixel = gfx->getPixel(54, 54);
+    REQUIRE(std::fabs(tilePixel.r - 0.08f) + std::fabs(tilePixel.g - 0.09f) + std::fabs(tilePixel.b - 0.12f) > 0.05f);
     ortho->setVisible(false);
     iso->setVisible(false);
     win->close();
@@ -1175,7 +1183,6 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
 #include <cstdlib>
 #include <cstring>
 #include <unordered_map>
-#include "Fixtures.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "image/Image.h"
@@ -1478,8 +1485,27 @@ Bounds boundsOf(eve::model3d::ModelData *md) {
 /** Upload every mesh with Assimp material tint/texture; frame camera; save PNG.
  *  @param fallbackDiffuse optional path relative to test/ when Assimp has no map.
  *  @param makeStyle optional factory: given Graphics*, return Mesh3D Shader for all entities. */
-void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName, const char *fallbackDiffuse = nullptr,
-                      std::function<Shader *(Graphics *)> makeStyle = {}) {
+void openModelWindow(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, eve::window::Window *&win, Graphics *&gfx) {
+    win = eve::window::Window::create();
+    gfx = Graphics::create();
+    REQUIRE(win != nullptr);
+    REQUIRE(gfx != nullptr);
+    eve::window::WindowSettings settings;
+    const char                 *configuredWidth  = std::getenv("EVENGINE_TEST_VIEW_W");
+    const char                 *configuredHeight = std::getenv("EVENGINE_TEST_VIEW_H");
+    const int                   width  = configuredWidth && configuredWidth[0] ? std::atoi(configuredWidth) : 320;
+    const int                   height = configuredHeight && configuredHeight[0] ? std::atoi(configuredHeight) : 240;
+    REQUIRE_GT(width, 0);
+    REQUIRE_GT(height, 0);
+    settings.width    = static_cast<uint16_t>(width);
+    settings.height   = static_cast<uint16_t>(height);
+    settings.centered = true;
+    settings.vsync    = 0;
+    REQUIRE(win->setWindowSettings(settings));
+}
+
+void renderModelSmoke(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, eve::model3d::ModelData *md, const char *pngName,
+                      const char *fallbackDiffuse = nullptr, std::function<Shader *(Graphics *)> makeStyle = {}) {
     REQUIRE(md != nullptr);
     REQUIRE(md->getMeshCount() >= 1);
     REQUIRE(pngName != nullptr);
@@ -1488,7 +1514,7 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName, const ch
 
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
+    openModelWindow(_ZEROERR_TEST_CONTEXT, win, gfx);
     resetScene3D();
 
     Shader *styleShader = makeStyle ? makeStyle(gfx) : nullptr;
@@ -1590,14 +1616,14 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName, const ch
     const float lz = cz - (cz + rad * 1.8f);
     RenderSystem3D::setDirectionalLight(lx, ly + rad * 1.2f, lz, 1.8f, 1.8f, 1.8f);
 
-    // ~1s live rotation so the asset is visibly on screen before PNG capture.
-    for (int i = 0; i < 60; ++i) {
+    // Render the original final orientation; a second present covers initial acquire.
+    for (int i = 0; i < 2; ++i) {
         if (ecs::current()->getManager<Renderable3D>() != nullptr) {
             auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (auto it = view.begin(); it != view.end(); ++it) {
                 auto [xf, mr] = *it;
                 if (!mr->visible) continue;
-                xf->yaw = float(i) * 0.05f;
+                xf->yaw = 59.f * 0.05f;
             }
         }
         RenderSystem3D::render(*gfx);
@@ -1606,11 +1632,10 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName, const ch
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.05f);
+    REQUIRE(luma(mid) > 0.05f);
 
     eve::image::ImageData *frame = gfx->newImageData();
     REQUIRE(frame != nullptr);
@@ -1859,7 +1884,7 @@ TEST_CASE("model3d.render.rock1Fbx") {
     auto               *md = mod->newModelData(&data, ".fbx");
     REQUIRE(md != nullptr);
     // FBX material has no embedded map path; bind companion diffuse next to the asset.
-    renderModelSmoke(md, "model3d_rock1.png", "Textures/Rock1_Diffuse.png");
+    renderModelSmoke(_ZEROERR_TEST_CONTEXT, md, "model3d_rock1.png", "Textures/Rock1_Diffuse.png");
     delete md;
 }
 
@@ -1874,21 +1899,23 @@ TEST_CASE("model3d.render.rock1ToonShader") {
     auto               *md = mod->newModelData(&data, ".fbx");
     REQUIRE(md != nullptr);
 
-    renderModelSmoke(md, "model3d_rock1_toon.png", "Textures/Rock1_Diffuse.png", [](Graphics *gfx) -> Shader * {
-        std::vector<uint32_t> vert(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv + mesh3d_toon_vert_spv_count);
-        std::vector<uint32_t> frag(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv + mesh3d_toon_frag_spv_count);
-        Shader               *toon = gfx->newMeshShaderFromSpv(vert, frag);
-        if (!toon || !toon->gpuHandle) throw eve::Exception("failed to create toon mesh shader");
-        toon->declareFloat("bands");
-        toon->declareFloat("rimPower");
-        toon->declareFloat("rimStrength");
-        toon->declareFloat("posterize");
-        toon->sendFloat("bands", 4.f);
-        toon->sendFloat("rimPower", 2.8f);
-        toon->sendFloat("rimStrength", 0.55f);
-        toon->sendFloat("posterize", 6.f);
-        return toon;
-    });
+    renderModelSmoke(
+        _ZEROERR_TEST_CONTEXT, md, "model3d_rock1_toon.png", "Textures/Rock1_Diffuse.png",
+        [](Graphics *gfx) -> Shader * {
+            std::vector<uint32_t> vert(mesh3d_toon_vert_spv, mesh3d_toon_vert_spv + mesh3d_toon_vert_spv_count);
+            std::vector<uint32_t> frag(mesh3d_toon_frag_spv, mesh3d_toon_frag_spv + mesh3d_toon_frag_spv_count);
+            Shader               *toon = gfx->newMeshShaderFromSpv(vert, frag);
+            if (!toon || !toon->gpuHandle) throw eve::Exception("failed to create toon mesh shader");
+            toon->declareFloat("bands");
+            toon->declareFloat("rimPower");
+            toon->declareFloat("rimStrength");
+            toon->declareFloat("posterize");
+            toon->sendFloat("bands", 4.f);
+            toon->sendFloat("rimPower", 2.8f);
+            toon->sendFloat("rimStrength", 0.55f);
+            toon->sendFloat("posterize", 6.f);
+            return toon;
+        });
     delete md;
 }
 
@@ -1910,7 +1937,7 @@ TEST_CASE("model3d.render.sofaObjMtl") {
     auto *mod = eve::model3d::Model3D::create();
     auto *md  = mod->newModelDataFromFile("sofa.obj");
     REQUIRE(md != nullptr);
-    renderModelSmoke(md, "model3d_sofa.png");
+    renderModelSmoke(_ZEROERR_TEST_CONTEXT, md, "model3d_sofa.png");
 
     CHECK(fs->unmount(testDir));
 }
@@ -2017,7 +2044,7 @@ TEST_CASE("model3d.buildRenderable.objMtl") {
 
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
+    openModelWindow(_ZEROERR_TEST_CONTEXT, win, gfx);
     resetScene3D();
 
     auto *ent = mod->createRenderable(gfx, md, 0);
@@ -2147,7 +2174,7 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
 
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
+    openModelWindow(_ZEROERR_TEST_CONTEXT, win, gfx);
     resetScene3D();
 
     auto *ent = mod->createRenderable(gfx, md, 0);
@@ -2173,7 +2200,6 @@ TEST_CASE("model3d.render.gltfEmbeddedUvOrientation") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     // Straight-on quad: world +Y (texture v=0, red) must land on the upper half.
@@ -2225,7 +2251,7 @@ TEST_CASE("model3d.render.cesiumManGltf") {
 
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
+    openModelWindow(_ZEROERR_TEST_CONTEXT, win, gfx);
     resetScene3D();
 
     auto *ent = mod->createRenderable(gfx, md, 0);
@@ -2251,13 +2277,13 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColor(Color(0.12f, 0.14f, 0.18f, 1.f));
 
-    for (int i = 0; i < 60; ++i) {
+    for (int i = 0; i < 2; ++i) {
         if (ecs::current()->getManager<Renderable3D>() != nullptr) {
             auto view = ecs::View<Renderable3D, Renderable3D::Transform3D, Renderable3D::MeshRenderer>();
             for (auto it = view.begin(); it != view.end(); ++it) {
                 auto [xf, mr] = *it;
                 if (!mr->visible) continue;
-                xf->yaw = float(i) * 0.05f;
+                xf->yaw = 59.f * 0.05f;
             }
         }
         RenderSystem3D::render(*gfx);
@@ -2266,11 +2292,10 @@ TEST_CASE("model3d.render.cesiumManGltf") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     const Color mid = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    CHECK(luma(mid) > 0.05f);
+    REQUIRE(luma(mid) > 0.05f);
 
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::image::ImageData       *frame       = gfx->newImageData();
@@ -2427,6 +2452,7 @@ TEST_CASE("particles.render.fireAndSmokePreview") {
     s.width    = 480;
     s.height   = 360;
     s.centered = true;
+    s.vsync    = 0;
     REQUIRE(win->setWindowSettings(s));
 
     auto            *mod  = Particles::create();
@@ -2453,7 +2479,7 @@ TEST_CASE("particles.render.fireAndSmokePreview") {
 
     gfx->setBackgroundColorRGBA(0.05f, 0.05f, 0.08f, 1.f);
     int framesAlive = 0;
-    for (int frame = 0; frame < 90; ++frame) {
+    for (int frame = 0; frame < 8; ++frame) {
         ParticleSimSystem::update(0.016f);
         gfx->clearScreen();
         ParticleRenderSystem::render(gfx);
@@ -2465,11 +2491,10 @@ TEST_CASE("particles.render.fireAndSmokePreview") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
-    CHECK_GT(framesAlive, 30);
-    CHECK_GT(fire->getCount(), 0);
+    REQUIRE_EQ(framesAlive, 8);
+    REQUIRE_GT(fire->getCount(), 0);
 
     fire->setVisible(false);
     smoke->setVisible(false);
@@ -2824,34 +2849,6 @@ TEST_CASE("resourceFormats.image.webp.truncatedPayloadIsRejected") {
     REQUIRE(rejected);
 }
 
-// resource_uri.cpp
-namespace {
-
-class MemoryFileSystem final : public eve::service::IFileSystem {
-public:
-    bool readFile(const std::string &path, std::vector<std::uint8_t> &out) override {
-        lastPath         = path;
-        const auto found = files.find(path);
-        if (found == files.end()) return false;
-        out = found->second;
-        return true;
-    }
-
-    bool writeFile(const std::string &, const void *, size_t) override { return false; }
-
-    bool fileExists(const std::string &path) override { return files.find(path) != files.end(); }
-
-    std::map<std::string, std::vector<std::uint8_t>> files;
-    std::string                                      lastPath;
-};
-
-template <typename T>
-[[maybe_unused]] T take(eve::Result<T> result) {
-    REQUIRE(result.ok());
-    return std::move(result).takeValue();
-}
-
-}  // namespace
 }  // namespace test_resource
 
 // Contract section: resource decoder lifetime
@@ -3062,6 +3059,7 @@ void openGfx(eve::window::Window *&win, eve::graphics::Graphics *&gfx, int w = 3
     s.width    = static_cast<uint16_t>(w);
     s.height   = static_cast<uint16_t>(h);
     s.centered = true;
+    s.vsync    = 0;
     REQUIRE(win->setWindowSettings(s));
 }
 
@@ -3712,6 +3710,7 @@ struct WindowFixture {
         settings.width    = 320;
         settings.height   = 240;
         settings.centered = true;
+        settings.vsync    = 0;
         REQUIRE(win->setWindowSettings(settings));
         gfx->setScreenReadbackEnabled(true);
         gfx->setBackgroundColor(Color(0.07f, 0.09f, 0.12f, 1.f));

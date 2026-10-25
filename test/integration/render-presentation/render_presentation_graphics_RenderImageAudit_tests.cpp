@@ -140,26 +140,6 @@ namespace {
     return img;
 }
 
-[[maybe_unused]] void fillRect(ImageData *img, int x0, int y0, int rw, int rh, uint8_t r, uint8_t g, uint8_t b) {
-    const int w = img->getWidth();
-    const int h = img->getHeight();
-    auto     *p = static_cast<uint8_t *>(img->getData());
-    for (int y = y0; y < y0 + rh && y < h; ++y) {
-        for (int x = x0; x < x0 + rw && x < w; ++x) {
-            uint8_t *q = p + (y * w + x) * 4;
-            q[0]       = r;
-            q[1]       = g;
-            q[2]       = b;
-            q[3]       = 255;
-        }
-    }
-}
-
-[[maybe_unused]] bool hasKind(const RenderAuditResult &r, RenderDefect::Kind k) {
-    for (const auto &d : r.defects)
-        if (d.kind == k) return true;
-    return false;
-}
 
 [[maybe_unused]] std::string auditOutDir() { return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes"; }
 
@@ -1993,7 +1973,7 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "isometric", bg);
 }
 
-TEST_CASE("graphics.imageAudit.skinnedStill") {
+TEST_CASE("graphics.imageAudit.skinnedPoseContracts") {
     auto *win = eve::window::Window::create();
     auto *gfx = Graphics::create();
     REQUIRE(win != nullptr);
@@ -2010,83 +1990,66 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     auto          studio = makeStudio3D(gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
 
-    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_still"));
-    REQUIRE(model.get() != nullptr);
-    const int mi = findFirstSkinnedMesh(model.get());
+    auto  pinnedModel = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_contract"));
+    auto *model       = pinnedModel.get();
+    REQUIRE(model != nullptr);
+    const int mi = findFirstSkinnedMesh(model);
     REQUIRE(mi >= 0);
-    const aiMesh *src = model->getMesh(mi);
-    REQUIRE(src != nullptr);
-    Mesh *gpu = gfx->newMeshFromAssimp(*src);
-    REQUIRE(gpu != nullptr);
-    studio.subject->setMesh(gpu);
-    studio.subject->setTexture(makeSolid(gfx, 200, 170, 120));
-    studio.subject->setScale(1.15f, 1.15f, 1.15f);
-    studio.subject->setPosition(0.f, 0.f, 0.f);
-    studio.subject->setYaw(1.2f);
-    studio.cam->setEye(0.f, 1.3f, 3.2f);
-    studio.cam->setTarget(0.f, 0.7f, 0.f);
-    studio.ground->setPosition(0.f, 0.f, 0.f);
-    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "bind_pose", bg);
-}
-
-TEST_CASE("graphics.imageAudit.skinnedPose") {
-    auto *win = eve::window::Window::create();
-    auto *gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width    = 400;
-    s.height   = 300;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-    CloseWin closer{win};
-    resetScene3D();
-
-    RenderAuditBg bg{0.08f, 0.09f, 0.11f};
-    auto          studio = makeStudio3D(gfx);
-    makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
-
-    auto model = eve::test::pinResource(loadCesiumMan("ev_ut_image_audit_skin_pose"));
-    REQUIRE(model.get() != nullptr);
-    const int mi = findFirstSkinnedMesh(model.get());
-    REQUIRE(mi >= 0);
-    const aiMesh *src = model->getMesh(mi);
-    REQUIRE(src != nullptr);
-
-    using eve::animation::AnimClip;
-    using eve::animation::AnimImporter;
-    using eve::animation::AnimPose;
-    using eve::animation::AnimSkeleton;
-    using eve::animation::AnimSkin;
-    std::unique_ptr<AnimSkeleton> sk(AnimImporter::loadSkeletonFromModel(model.get()));
-    REQUIRE(sk.get() != nullptr);
-    std::unique_ptr<AnimClip> clip(AnimImporter::loadClipFromModel(model.get(), sk.get(), 0));
-    REQUIRE(clip.get() != nullptr);
-    std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), mi, sk.get()));
-    REQUIRE(skin.get() != nullptr);
-
-    auto uploadAt = [&](float t) {
-        AnimPose pose;
-        clip->sample(t, &pose, sk.get());
-        pose.computeWorld(sk.get());
-        std::vector<float> pos;
-        REQUIRE(skin->skinPositionsTo(&pose, pos));
-        return uploadSkinnedAiMesh(gfx, src, pos);
+    SUB_CASE("graphics.imageAudit.skinnedStill") {
+        const aiMesh *src = model->getMesh(mi);
+        REQUIRE(src != nullptr);
+        Mesh *gpu = gfx->newMeshFromAssimp(*src);
+        REQUIRE(gpu != nullptr);
+        studio.subject->setMesh(gpu);
+        studio.subject->setTexture(makeSolid(gfx, 200, 170, 120));
+        studio.subject->setScale(1.15f, 1.15f, 1.15f);
+        studio.subject->setPosition(0.f, 0.f, 0.f);
+        studio.subject->setYaw(1.2f);
+        studio.cam->setEye(0.f, 1.3f, 3.2f);
+        studio.cam->setTarget(0.f, 0.7f, 0.f);
+        studio.ground->setPosition(0.f, 0.f, 0.f);
+        auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "bind_pose", bg);
     };
+    SUB_CASE("graphics.imageAudit.skinnedPose") {
+        const aiMesh *src = model->getMesh(mi);
+        REQUIRE(src != nullptr);
 
-    studio.subject->setMesh(uploadAt(0.f));
-    studio.subject->setTexture(makeSolid(gfx, 200, 170, 120));
-    studio.subject->setScale(1.15f, 1.15f, 1.15f);
-    studio.subject->setPosition(0.f, 0.f, 0.f);
-    studio.subject->setYaw(1.2f);
-    studio.cam->setEye(0.f, 1.3f, 3.2f);
-    studio.cam->setTarget(0.f, 0.7f, 0.f);
-    studio.ground->setPosition(0.f, 0.f, 0.f);
-    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_t0", bg);
+        using eve::animation::AnimClip;
+        using eve::animation::AnimImporter;
+        using eve::animation::AnimPose;
+        using eve::animation::AnimSkeleton;
+        using eve::animation::AnimSkin;
+        std::unique_ptr<AnimSkeleton> sk(AnimImporter::loadSkeletonFromModel(model));
+        REQUIRE(sk.get() != nullptr);
+        std::unique_ptr<AnimClip> clip(AnimImporter::loadClipFromModel(model, sk.get(), 0));
+        REQUIRE(clip.get() != nullptr);
+        std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model, mi, sk.get()));
+        REQUIRE(skin.get() != nullptr);
 
-    studio.subject->setMesh(uploadAt(clip->getDuration() * 0.5f));
-    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_tmid", bg);
+        auto uploadAt = [&](float t) {
+            AnimPose pose;
+            clip->sample(t, &pose, sk.get());
+            pose.computeWorld(sk.get());
+            std::vector<float> pos;
+            REQUIRE(skin->skinPositionsTo(&pose, pos));
+            return uploadSkinnedAiMesh(gfx, src, pos);
+        };
+
+        studio.subject->setMesh(uploadAt(0.f));
+        studio.subject->setTexture(makeSolid(gfx, 200, 170, 120));
+        studio.subject->setScale(1.15f, 1.15f, 1.15f);
+        studio.subject->setPosition(0.f, 0.f, 0.f);
+        studio.subject->setYaw(1.2f);
+        studio.cam->setEye(0.f, 1.3f, 3.2f);
+        studio.cam->setTarget(0.f, 0.7f, 0.f);
+        studio.ground->setPosition(0.f, 0.f, 0.f);
+        auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_t0", bg);
+
+        studio.subject->setMesh(uploadAt(clip->getDuration() * 0.5f));
+        auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_tmid", bg);
+    };
 }
+
 
 TEST_CASE("graphics.imageAudit.reloadTex") {
     auto *win = eve::window::Window::create();

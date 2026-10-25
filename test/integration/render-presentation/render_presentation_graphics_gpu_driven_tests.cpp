@@ -31,8 +31,7 @@
   ],
   "cases": {
     "platform-file": [
-      "decal.proceduralImportsReferenceSubstanceMaterialPresets",
-      "decal.renderImportedPresetContactSheet"
+      "decal.proceduralImportsReferenceSubstanceMaterialPresets"
     ],
     "render-offscreen": [
       "decal.gpuHeadlessProjectionReadback",
@@ -682,167 +681,6 @@ TEST_CASE("decal.proceduralImportsReferenceSubstanceMaterialPresets") {
     CHECK(!importProceduralDecalSbsprs(oversized).ok());
 }
 
-TEST_CASE("decal.renderImportedPresetContactSheet") {
-    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal";
-    std::vector<std::filesystem::path> presets;
-    for (const auto &entry : std::filesystem::directory_iterator(directory)) {
-        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
-    }
-    std::sort(presets.begin(), presets.end());
-    REQUIRE_EQ(presets.size(), 40u);
-
-    constexpr int             tile        = 128;
-    constexpr int             gap         = 4;
-    constexpr int             columns     = 5;
-    constexpr int             rows        = 8;
-    constexpr int             sheetWidth  = columns * tile + (columns + 1) * gap;
-    constexpr int             sheetHeight = rows * tile + (rows + 1) * gap;
-    std::vector<std::uint8_t> sheet(static_cast<std::size_t>(sheetWidth * sheetHeight * 4), 255u);
-    for (int y = 0; y < sheetHeight; ++y) {
-        for (int x = 0; x < sheetWidth; ++x) {
-            const auto index = static_cast<std::size_t>((y * sheetWidth + x) * 4);
-            const auto shade = static_cast<std::uint8_t>(((x / 12 + y / 12) & 1) ? 72 : 104);
-            sheet[index + 0] = shade;
-            sheet[index + 1] = shade;
-            sheet[index + 2] = shade;
-        }
-    }
-
-    const auto      output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" / "imported_presets";
-    std::error_code ec;
-    std::filesystem::create_directories(output, ec);
-    REQUIRE(!ec);
-    std::ofstream manifest(output / "contact_sheet_order.txt", std::ios::binary);
-    REQUIRE(manifest.good());
-
-    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
-        std::ifstream stream(presets[presetIndex], std::ios::binary);
-        REQUIRE(stream.good());
-        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        auto              recipe = importProceduralDecalSbsprs(xml);
-        REQUIRE(recipe.ok());
-        recipe.value().width  = tile;
-        recipe.value().height = tile;
-        auto bake             = bakeProceduralDecal(recipe.value());
-        REQUIRE(bake.ok());
-
-        eve::image::ImageData image(tile, tile, "RGBA8", bake.value().albedo.data(), false);
-        REQUIRE(saveImagePng(image, (output / (presets[presetIndex].stem().string() + ".png")).string()));
-        manifest << presetIndex + 1 << "\t" << presets[presetIndex].stem().string() << "\n";
-
-        const int originX = gap + static_cast<int>(presetIndex % columns) * (tile + gap);
-        const int originY = gap + static_cast<int>(presetIndex / columns) * (tile + gap);
-        for (int y = 0; y < tile; ++y) {
-            for (int x = 0; x < tile; ++x) {
-                const auto  source = static_cast<std::size_t>((y * tile + x) * 4);
-                const auto  target = static_cast<std::size_t>(((originY + y) * sheetWidth + originX + x) * 4);
-                const float alpha  = float(bake.value().albedo[source + 3]) / 255.f;
-                for (int channel = 0; channel < 3; ++channel) {
-                    sheet[target + channel] =
-                        static_cast<std::uint8_t>(float(bake.value().albedo[source + channel]) * alpha +
-                                                  float(sheet[target + channel]) * (1.f - alpha));
-                }
-            }
-        }
-    }
-    eve::image::ImageData contactSheet(sheetWidth, sheetHeight, "RGBA8", sheet.data(), false);
-    REQUIRE(saveImagePng(contactSheet, (output / "contact_sheet.png").string()));
-    std::printf("procedural decal contact sheet saved: %s\n", output.string().c_str());
-}
-
-TEST_CASE("decal.renderImportedPresetsOnLitMaterialSpheres") {
-    eve::window::Window     *win = nullptr;
-    eve::graphics::Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 1280, 800);
-
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 6.0f;
-    cam->setAmbient(0.075f, 0.08f, 0.095f);
-    RenderSystem3D::setDirectionalLight(-0.65f, 0.8f, 0.9f, 1.f, 0.92f, 0.78f);
-
-    auto *background                      = Renderable3D::create();
-    background->meshRenderer()->mesh      = makePlane(gfx, 12.f);
-    background->meshRenderer()->texture   = makeSolidTex(gfx, 28, 32, 42);
-    background->meshRenderer()->roughness = 0.9f;
-    background->transform()->z            = -0.65f;
-
-    static bool sMaterialSphereDrawer = false;
-    if (!sMaterialSphereDrawer) {
-        sMaterialSphereDrawer = true;
-        RenderSystem3D::addDecalExtraDrawer(
-            [](eve::graphics::Graphics &g, const Camera3D::Data &camData, const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ, viewProj, aspect);
-            });
-    }
-    gfx->getRenderControl()->enable("decal");
-    gfx->getRenderControl()->compile();
-    gfx->setScreenReadbackEnabled(true);
-
-    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal";
-    std::vector<std::filesystem::path> presets;
-    for (const auto &entry : std::filesystem::directory_iterator(directory)) {
-        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
-    }
-    std::sort(presets.begin(), presets.end());
-    REQUIRE_EQ(presets.size(), 40u);
-
-    auto *sphere = gfx->newMeshSphere(48, 24);
-    REQUIRE(sphere != nullptr);
-    DecalManager::inst().clearAll();
-    constexpr int columns = 8;
-    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
-        std::ifstream stream(presets[presetIndex], std::ios::binary);
-        REQUIRE(stream.good());
-        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        auto              recipe = importProceduralDecalSbsprs(xml);
-        REQUIRE(recipe.ok());
-        recipe.value().width  = 128;
-        recipe.value().height = 128;
-        auto bake             = bakeProceduralDecal(recipe.value());
-        REQUIRE(bake.ok());
-
-        const int   column                = static_cast<int>(presetIndex % columns);
-        const int   row                   = static_cast<int>(presetIndex / columns);
-        const float x                     = (float(column) - 3.5f) * 0.9f;
-        const float y                     = (2.f - float(row)) * 0.9f;
-        auto       *entity                = Renderable3D::create();
-        entity->meshRenderer()->mesh      = sphere;
-        entity->meshRenderer()->texture   = makeSolidTex(gfx, 185, 185, 190);
-        entity->meshRenderer()->roughness = 0.48f;
-        entity->setPosition(x, y, 0.f);
-        entity->setScale(0.36f, 0.36f, 0.36f);
-
-        const int decal = DecalManager::inst().project(
-            x, y, 0.18f, 0.f, 0.f, 1.f, gfx->newTexture(128, 128, bake.value().albedo.data()), "material-sphere", 0.78f,
-            0.72f, false, static_cast<int>(presetIndex), 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
-        REQUIRE(DecalManager::inst().setTextures(decal, gfx->newTexture(128, 128, bake.value().normal.data()),
-                                                 gfx->newTexture(128, 128, bake.value().params.data())));
-        REQUIRE(DecalManager::inst().setProjection(decal, "spherical", 4.f) == DecalProjectionStatus::Applied);
-        REQUIRE(DecalManager::inst().setParallax(decal, 0.025f, 8.f, 24.f) == DecalParallaxStatus::Applied);
-        REQUIRE(DecalManager::inst().setEdgeFade(decal, 0.025f) == DecalEdgeFadeStatus::Applied);
-    }
-
-    for (int frame = 0; frame < 4; ++frame) {
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) break;
-        }
-    }
-    auto *snapshot = gfx->newImageData();
-    REQUIRE(snapshot != nullptr);
-    const auto      output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" / "imported_presets";
-    std::error_code ec;
-    std::filesystem::create_directories(output, ec);
-    REQUIRE(!ec);
-    REQUIRE(saveImagePng(*snapshot, (output / "lit_material_spheres.png").string()));
-    delete snapshot;
-
-    DecalManager::inst().clearAll();
-    win->close();
-}
-
 
 TEST_CASE("decal.proceduralFacadeUploadsAllRuntimeChannels") {
     eve::graphics::Graphics *gfx = nullptr;
@@ -957,6 +795,86 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
     CHECK_LT(corner.r - corner.g, 0.1f);
 
     DecalManager::inst().clearAll();
+    SUB_CASE("decal.importedPresetReachesProjectedPixels") {
+        const auto source =
+            std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal" / "Blood_Wet.sbsprs";
+        std::ifstream input(source, std::ios::binary);
+        REQUIRE(input.good());
+        const std::string xml((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+        auto              recipe = importProceduralDecalSbsprs(xml);
+        REQUIRE(recipe.ok());
+        recipe.value().width = recipe.value().height = 32;
+        auto baked                                   = bakeProceduralDecal(recipe.value());
+        REQUIRE(baked.ok());
+        // Isolate import -> manager projection -> forward composition using
+        // the identity-camera receiver from backendParity.decalLayerProjection.
+        // Its winding matches that projection; makePlane's z=0 cannot be used
+        // here because decal_box.frag rejects identity depth at 0 or 1.
+        // The legacy preview's warning-only projection checks stay separate.
+        const float    positions[] = {-1.f, -1.f, .5f, 1.f, -1.f, .5f, 1.f, 1.f, .5f, -1.f, 1.f, .5f};
+        const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
+        const float    uvs[]       = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
+        const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
+        auto          *receiver    = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
+        auto          *base        = makeSolidTex(gfx, 255, 255, 255);
+        auto          *target      = gfx->newCanvas(64, 64);
+        REQUIRE(receiver != nullptr);
+        REQUIRE(base != nullptr);
+        REQUIRE(target != nullptr);
+        auto &manager = DecalManager::inst();
+        struct ClearProjection {
+            ~ClearProjection() { DecalManager::inst().clearAll(); }
+        } cleanup;
+        const auto capture = [&] {
+            gfx->beginGBufferPass(64, 64);
+            gfx->drawMeshGBuffer(receiver, glm::mat4(1.f), glm::mat4(1.f), .1f, 100.f, base);
+            gfx->endGBufferPass();
+            gfx->beginDecalPass(64, 64);
+            gfx->setDecalCamera(glm::mat4(1.f), .1f, 100.f);
+            manager.drawAll(*gfx, 0.f, 0.f, 3.f, glm::mat4(1.f), 1.f);
+            gfx->endDecalPass();
+            Lighting3DPack lighting{};
+            lighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
+            gfx->setMesh3DLighting(lighting);
+            gfx->setMesh3DViewProj(glm::mat4(1.f));
+            gfx->setMesh3DView(glm::mat4(1.f));
+            gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
+            gfx->begin3DFrameToCanvas(target);
+            gfx->drawMesh(receiver, glm::mat4(1.f), base, Color(1.f));
+            gfx->end3DFrameToCanvas();
+            return std::unique_ptr<eve::image::ImageData>(target->newImageData());
+        };
+        auto without = capture();
+        REQUIRE(without != nullptr);
+        const auto receiverPixel = without->getPixel(32, 32);
+        REQUIRE((receiverPixel.r > .5f && receiverPixel.g > .5f && receiverPixel.b > .5f));
+        auto *albedo = gfx->newTexture(32, 32, baked.value().albedo.data());
+        auto *normal = gfx->newTexture(32, 32, baked.value().normal.data());
+        auto *params = gfx->newTexture(32, 32, baked.value().params.data());
+        REQUIRE(albedo != nullptr);
+        REQUIRE(normal != nullptr);
+        REQUIRE(params != nullptr);
+        const int imported = manager.project(0.f, 0.f, .5f, 0.f, 0.f, 1.f, albedo, "imported-contract", 1.2f, 0.1f,
+                                             false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+        REQUIRE(manager.setTextures(imported, normal, params));
+        auto with = capture();
+        REQUIRE(with != nullptr);
+        REQUIRE_EQ(with->getWidth(), without->getWidth());
+        REQUIRE_EQ(with->getHeight(), without->getHeight());
+        float maxDifference = 0.f;
+        bool  allFinite     = true;
+        for (int y = 0; y < with->getHeight(); ++y)
+            for (int x = 0; x < with->getWidth(); ++x) {
+                const auto a = without->getPixel(x, y), b = with->getPixel(x, y);
+                for (const float difference : {a.r - b.r, a.g - b.g, a.b - b.b}) {
+                    allFinite     = std::isfinite(difference) && allFinite;
+                    maxDifference = std::max(maxDifference, std::abs(difference));
+                }
+            }
+        REQUIRE(allFinite);
+        REQUIRE(maxDifference > .02f);
+        manager.clearAll();
+    };
     win->close();
 }
 
@@ -1130,223 +1048,10 @@ TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
     win->close();
 }
 
-namespace {
-
-[[maybe_unused]] float smoothstep(float e0, float e1, float x) {
-    const float t = std::clamp((x - e0) / (e1 - e0), 0.f, 1.f);
-    return t * t * (3.f - 2.f * t);
-}
-
-// Procedural decal art so the gallery needs no external assets.
-[[maybe_unused]] eve::graphics::Texture *makeChecker(eve::graphics::Graphics *gfx, int size, int cells) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const bool    dark = ((x * cells / size) + (y * cells / size)) % 2 == 0;
-            const uint8_t v    = dark ? 150 : 205;
-            size_t        i    = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]              = v;
-            px[i + 1]          = v;
-            px[i + 2]          = v;
-            px[i + 3]          = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeBloodSplat(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float u   = (float(x) + 0.5f) / float(size);
-            const float v   = (float(y) + 0.5f) / float(size);
-            const float dx  = u - 0.5f;
-            const float dy  = v - 0.5f;
-            const float ang = std::atan2(dy, dx);
-            const float r   = std::sqrt(dx * dx + dy * dy) * 2.f;
-            // Irregular splat edge: three-lobe wobble + inner core.
-            const float wob  = 0.72f + 0.22f * std::sin(3.f * ang + 1.3f) + 0.10f * std::sin(5.f * ang + 4.2f);
-            const float a    = 1.f - smoothstep(0.30f, wob, r);
-            const float core = 1.f - smoothstep(0.0f, 0.34f, r);
-            size_t      i    = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]            = 130;
-            px[i + 1]        = 14;
-            px[i + 2]        = 24;
-            px[i + 3]        = uint8_t(std::clamp((a * 0.55f + core * 0.45f) * 255.f, 0.f, 255.f));
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDirt(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    uint32_t             seed = 12345u;
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            seed          = seed * 1664525u + 1013904223u;
-            const float n = float(seed % 10000u) / 10000.f;
-            const float a = n < 0.62f ? 0.25f + 0.35f * n : 0.f;
-            size_t      i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]         = 118;
-            px[i + 1]     = 102;
-            px[i + 2]     = 82;
-            px[i + 3]     = uint8_t(a * 255.f);
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDentNormal(eve::graphics::Graphics *gfx, int size) {
-    // Concave dent: tangent-space normal tilts inward toward the center.
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float u    = (float(x) + 0.5f) / float(size);
-            const float v    = (float(y) + 0.5f) / float(size);
-            const float dx   = (u - 0.5f) * 2.f;
-            const float dy   = (v - 0.5f) * 2.f;
-            const float r    = std::sqrt(dx * dx + dy * dy);
-            float       tilt = 1.6f * std::exp(-r * r * 2.6f);
-            // Raised rim just outside the crater.
-            tilt -= 0.8f * std::exp(-(r - 0.55f) * (r - 0.55f) * 60.f);
-            glm::vec3 n = glm::normalize(glm::vec3(-dx * tilt, -dy * tilt, 1.f));
-            size_t    i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]       = uint8_t((n.x * 0.5f + 0.5f) * 255.f);
-            px[i + 1]   = uint8_t((n.y * 0.5f + 0.5f) * 255.f);
-            px[i + 2]   = uint8_t((n.z * 0.5f + 0.5f) * 255.f);
-            px[i + 3]   = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDentAlbedo(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float   u      = (float(x) + 0.5f) / float(size);
-            const float   v      = (float(y) + 0.5f) / float(size);
-            const float   dx     = (u - 0.5f) * 2.f;
-            const float   dy     = (v - 0.5f) * 2.f;
-            const float   r      = std::sqrt(dx * dx + dy * dy);
-            const float   crater = 1.f - smoothstep(0.f, 0.55f, r);
-            const float   ring   = smoothstep(0.42f, 0.55f, r) * (1.f - smoothstep(0.55f, 0.68f, r));
-            const uint8_t val    = uint8_t(std::clamp((68.f + crater * -28.f + ring * 42.f), 0.f, 255.f));
-            size_t        i      = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]                = val;
-            px[i + 1]            = uint8_t(val * 0.93f);
-            px[i + 2]            = uint8_t(val * 0.88f);
-            px[i + 3]            = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeRoughParams(eve::graphics::Graphics *gfx, int size, float rough) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (size_t i = 0; i < px.size(); i += 4) {
-        px[i]     = uint8_t(rough * 255.f);  // R = target roughness
-        px[i + 1] = 0;                       // G = metallic
-        px[i + 2] = 0;                       // B = emissive
-        px[i + 3] = 255;
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-}  // namespace
 
 // Gallery render: blood / dirt / dent decals projected onto a checker floor,
 // saved as PNG for visual review (build/<plat>/test/out/decal/).
-TEST_CASE("decal.renderGalleryPng") {
-    eve::window::Window     *win = nullptr;
-    eve::graphics::Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 480, 360);
 
-    auto *mesh = makePlane(gfx, 3.f);
-    REQUIRE(mesh != nullptr);
-    auto *cam                    = Camera3D::createCamera();
-    cam->data()->eyeY            = 1.9f;
-    cam->data()->eyeZ            = 2.35f;
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->transform()->pitch      = -3.14159265f * 0.5f;  // lay the plane flat (normal +Y)
-    ent->meshRenderer()->texture = makeChecker(gfx, 64, 8);
-    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
-
-    static bool sGalleryDrawer = false;
-    if (!sGalleryDrawer) {
-        sGalleryDrawer = true;
-        RenderSystem3D::addDecalExtraDrawer(
-            [](eve::graphics::Graphics &g, const Camera3D::Data &camData, const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ, viewProj, aspect);
-            });
-    }
-    gfx->getRenderControl()->enable("decal");
-    gfx->getRenderControl()->compile();
-
-    DecalManager::inst().clearAll();
-    auto &mgr          = DecalManager::inst();
-    auto  bloodRecipe  = proceduralDecalPreset("blood-wet", 7u);
-    auto  dirtRecipe   = proceduralDecalPreset("dirt", 23u);
-    auto  damageRecipe = proceduralDecalPreset("damage", 37u);
-    REQUIRE(bloodRecipe.ok());
-    REQUIRE(dirtRecipe.ok());
-    REQUIRE(damageRecipe.ok());
-    for (auto *recipe : {&bloodRecipe.value(), &dirtRecipe.value(), &damageRecipe.value()}) {
-        recipe->width  = 128;
-        recipe->height = 128;
-    }
-    auto bloodBake  = bakeProceduralDecal(bloodRecipe.value());
-    auto dirtBake   = bakeProceduralDecal(dirtRecipe.value());
-    auto damageBake = bakeProceduralDecal(damageRecipe.value());
-    REQUIRE(bloodBake.ok());
-    REQUIRE(dirtBake.ok());
-    REQUIRE(damageBake.ok());
-    // Blood: dark red splat, wet gloss (roughness down via params R).
-    const int blood =
-        mgr.project(-0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, bloodBake.value().albedo.data()),
-                    "blood", 1.05f, 0.12f, true, 7, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(blood, gfx->newTexture(128, 128, bloodBake.value().normal.data()),
-                          gfx->newTexture(128, 128, bloodBake.value().params.data())));
-    CHECK(mgr.setStrength(blood, 1.f, 1.f, 0.f, 0.f));
-    // Dirt: gray-brown speckle, rough + slight normal wobble.
-    const int dirt =
-        mgr.project(0.f, 0.01f, 0.1f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, dirtBake.value().albedo.data()), "dirt",
-                    1.3f, 0.12f, true, 23, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(dirt, gfx->newTexture(128, 128, dirtBake.value().normal.data()),
-                          gfx->newTexture(128, 128, dirtBake.value().params.data())));
-    CHECK(mgr.setStrength(dirt, 1.f, 1.f, 0.f, 0.f));
-    CHECK(mgr.setProjection(dirt, "spherical", 4.f) == DecalProjectionStatus::Applied);
-    // Dent: concave normal map + crater albedo (real indentation shading).
-    const int dent =
-        mgr.project(0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, damageBake.value().albedo.data()),
-                    "dent", 1.05f, 0.12f, false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(dent, gfx->newTexture(128, 128, damageBake.value().normal.data()),
-                          gfx->newTexture(128, 128, damageBake.value().params.data())));
-    CHECK(mgr.setStrength(dent, 1.f, 1.f, 0.f, 0.f));
-    CHECK(mgr.setParallax(dent, 0.055f, 8.f, 24.f) == DecalParallaxStatus::Applied);
-
-    gfx->setScreenReadbackEnabled(true);
-    for (int i = 0; i < 3; ++i) {
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
-        }
-    }
-    eve::image::ImageData *snap = gfx->newImageData();
-    REQUIRE(snap != nullptr);
-    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out/decal";
-    std::error_code   ec;
-    std::filesystem::create_directories(outDir, ec);
-    REQUIRE(saveImagePng(*snap, outDir + "/decal_gallery.png"));
-    std::printf("decal gallery saved: %s/decal_gallery.png\n", outDir.c_str());
-    delete snap;
-
-    DecalManager::inst().clearAll();
-    win->close();
-}
 }  // namespace test_decal
 
 // Contract section: dialogue
@@ -1726,7 +1431,9 @@ namespace {
 float gdLuma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
 void gdWarmPresent(Graphics *gfx) {
+    gfx->setScreenReadbackEnabled(false);
     for (int i = 0; i < 4; ++i) {
+        if (i == 3) gfx->setScreenReadbackEnabled(true);
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
     }

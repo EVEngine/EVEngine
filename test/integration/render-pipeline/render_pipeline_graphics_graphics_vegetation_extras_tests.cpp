@@ -762,6 +762,7 @@ TEST_CASE("graphics.webgpu.pbrVariantSpecializationRemovesUnreachableBindings") 
 #include <fstream>
 #include <string>
 #include <vector>
+#include "ManualPreview.h"
 #include "PathBesideSource.h"
 #include "filesystem/FileData.h"
 #include "graphics/AmbientOcclusion.h"
@@ -808,7 +809,6 @@ using eve::graphics::Shader;
 using eve::graphics::Texture;
 using eve::graphics::grass::BillboardMesh;
 using eve::graphics::grass::PackedAtlasInfo;
-using eve::graphics::grass::Point;
 using eve::graphics::grass::SampleParams;
 
 namespace {
@@ -816,20 +816,6 @@ namespace {
 
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
-[[maybe_unused]] void makeTestPlane(std::vector<float> &pos, std::vector<float> &nrm, std::vector<uint32_t> &idx) {
-    eve::graphics::grass::makePlane(4.f, 4.f, 4, 4, pos, nrm, idx);
-}
-
-[[maybe_unused]] float minPairDist(const std::vector<Point> &pts) {
-    float best = 1e9f;
-    for (size_t i = 0; i < pts.size(); ++i) {
-        for (size_t j = i + 1; j < pts.size(); ++j) {
-            const glm::vec3 d = pts[i].position - pts[j].position;
-            best              = std::min(best, glm::length(d));
-        }
-    }
-    return best;
-}
 
 }  // namespace
 
@@ -954,7 +940,8 @@ namespace {
     return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(), int(idx.size()));
 }
 
-[[maybe_unused]] void savePng(eve::image::ImageData *frame, const std::string &path) {
+[[maybe_unused]] void savePng(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, eve::image::ImageData *frame,
+                              const std::string &path) {
     REQUIRE(frame != nullptr);
     [[maybe_unused]] auto *const imageModule = eve::image::Image::create();
     eve::filesystem::FileData   *png = frame->encode(medialoader::FormatHandler::ENCODED_PNG, "grass.png", false);
@@ -1089,10 +1076,11 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     hud->sprite()->a       = 0.f;
     hud->sprite()->visible = true;
 
-    gfx->setScreenReadbackEnabled(true);
+    gfx->setScreenReadbackEnabled(false);
     gfx->setBackgroundColor(eve::graphics::Color(0.52f, 0.72f, 0.92f, 1.f));
 
     for (int i = 0; i < 4; ++i) {
+        gfx->setScreenReadbackEnabled(i == 3);
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
     }
@@ -1125,17 +1113,19 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     CHECK(darkGreen > 100);
     CHECK(litGreen > 50000);
 
-    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
-    savePng(frame, outDir + "/grass_field.png");
-    savePng(frame, "/opt/cursor/artifacts/grass_field.png");
+    if (eve::test::manualPreviewEnabled()) {
+        const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
+        savePng(_ZEROERR_TEST_CONTEXT, frame, outDir + "/grass_field.png");
+        savePng(_ZEROERR_TEST_CONTEXT, frame, "/opt/cursor/artifacts/grass_field.png");
 
-    std::vector<uint8_t> atlasRgba;
-    PackedAtlasInfo      atlasInfo;
-    eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba, atlasInfo);
-    auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8", atlasRgba.data(), false);
-    savePng(atlasImg, outDir + "/grass_atlas.png");
-    savePng(atlasImg, "/opt/cursor/artifacts/grass_atlas.png");
-    delete atlasImg;
+        std::vector<uint8_t> atlasRgba;
+        PackedAtlasInfo      atlasInfo;
+        eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba, atlasInfo);
+        auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8", atlasRgba.data(), false);
+        savePng(_ZEROERR_TEST_CONTEXT, atlasImg, outDir + "/grass_atlas.png");
+        savePng(_ZEROERR_TEST_CONTEXT, atlasImg, "/opt/cursor/artifacts/grass_atlas.png");
+        delete atlasImg;
+    }
 
     win->close();
 }
@@ -1681,25 +1671,6 @@ TEST_CASE("tensor.gpu.reduceLargeTensor") {
 // --- AITemplate-style refactor: new op coverage ---------------------------
 
 
-namespace {
-
-[[maybe_unused]] float conv2dRef(const float *x, int N, int C, int H, int W, const float *w, int F, int KH, int KW,
-                                 int stride, int pad, int oh, int ow) {
-    float acc = 0.f;
-    for (int c = 0; c < C; ++c)
-        for (int kh = 0; kh < KH; ++kh)
-            for (int kw = 0; kw < KW; ++kw) {
-                const int ih = oh * stride + kh - pad;
-                const int iw = ow * stride + kw - pad;
-                if (ih < 0 || ih >= H || iw < 0 || iw >= W) continue;
-                acc += x[((0 * C + c) * H + ih) * W + iw] * w[((0 * F + c) * KH + kh) * KW + kw];
-            }
-    return acc;
-}
-
-}  // namespace
-
-
 // --- new-op GPU paths (only run with a live Vulkan device; headless) -------
 }  // namespace test_tensor
 
@@ -1721,139 +1692,136 @@ void initHeadlessGfx(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT) {
 
 }  // namespace
 
-TEST_CASE("tensor.gpu.fusedElementwiseChain") {
+TEST_CASE("tensor.gpu.compiledKernelExecutionContracts") {
     initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
-    auto                 *tf = TF::create();
-    std::unique_ptr<Func> fn(tf->func());
-    Tensor               *x = fn->input2(4, 4);
-    Tensor               *y = tf->mulScalar(x, 2.f);
-    y                       = tf->addScalar(y, 1.f);
-    y                       = tf->relu(y);
-    y                       = tf->mulScalar(y, 0.5f);
-    fn->setOutput(y);
-    std::unique_ptr<CompiledFunction> compiled(fn->compile());
-    REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
+    SUB_CASE("tensor.gpu.fusedElementwiseChain") {
+        auto                 *tf = TF::create();
+        std::unique_ptr<Func> fn(tf->func());
+        Tensor               *x = fn->input2(4, 4);
+        Tensor               *y = tf->mulScalar(x, 2.f);
+        y                       = tf->addScalar(y, 1.f);
+        y                       = tf->relu(y);
+        y                       = tf->mulScalar(y, 0.5f);
+        fn->setOutput(y);
+        std::unique_ptr<CompiledFunction> compiled(fn->compile());
+        REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
 
-    std::unique_ptr<Tensor> xd(tf->randomNormal2(4, 4));
-    std::unique_ptr<Tensor> out(compiled->run1(xd.get()));
-    std::unique_ptr<Tensor> ref(xd->mulScalar(2.f));
-    ref.reset(ref->addScalar(1.f));
-    ref.reset(ref->relu());
-    ref.reset(ref->mulScalar(0.5f));
-    for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-4f);
-}
-
-TEST_CASE("tensor.gpu.softmaxLayernormConv") {
-    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
-    auto                   *tf = TF::create();
-    std::unique_ptr<Tensor> w(tf->fill4(2, 1, 3, 3, 0.1f));
-
-    std::unique_ptr<Func> fn(tf->func());
-    Tensor               *in = fn->input4(1, 1, 6, 6);
-    Tensor               *y  = tf->conv2d(in, w.get(), 1, 0);
-    y                        = tf->relu(y);
-    y                        = tf->flatten(y);
-    y                        = tf->layernorm(y, 1e-5f);
-    fn->setOutput(y);
-    std::unique_ptr<CompiledFunction> compiled(fn->compile());
-    REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
-
-    std::unique_ptr<Tensor> xd(tf->zeros4(1, 1, 6, 6));
-    for (int i = 0; i < xd->getSize(); ++i) xd->set(i, float((i % 7) - 3));
-    std::unique_ptr<Tensor> out(compiled->run1(xd.get()));
-
-    std::unique_ptr<Tensor> ref(tf->conv2d(xd.get(), w.get(), 1, 0));
-    ref.reset(ref->relu());
-    ref.reset(ref->flatten());
-    ref.reset(tf->layernorm(ref.get(), 1e-5f));
-    REQUIRE_EQ(out->getSize(), ref->getSize());
-    for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-3f);
-}
-
-TEST_CASE("tensor.gpu.transformerBlockInference") {
-    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
-    auto       *tf = TF::create();
-    const int   B = 1, T = 4, D = 8, C = 3;
-    const float scale = 1.f / std::sqrt(float(D));
-    const float eps   = 1e-5f;
-
-    auto rand = [&](int d0, int d1, float s) {
-        std::unique_ptr<Tensor> w(tf->randomNormal2(d0, d1));
-        w.reset(w->mulScalar(s));
-        return w;
+        std::unique_ptr<Tensor> xd(tf->randomNormal2(4, 4));
+        std::unique_ptr<Tensor> out(compiled->run1(xd.get()));
+        std::unique_ptr<Tensor> ref(xd->mulScalar(2.f));
+        ref.reset(ref->addScalar(1.f));
+        ref.reset(ref->relu());
+        ref.reset(ref->mulScalar(0.5f));
+        for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-4f);
     };
-    std::unique_ptr<Tensor> Wq(rand(D, D, 0.15f));
-    std::unique_ptr<Tensor> Wk(rand(D, D, 0.15f));
-    std::unique_ptr<Tensor> Wv(rand(D, D, 0.15f));
-    std::unique_ptr<Tensor> W1(rand(D, 2 * D, 0.15f));
-    std::unique_ptr<Tensor> W2(rand(2 * D, D, 0.15f));
-    std::unique_ptr<Tensor> Wc(rand(D, C, 0.15f));
+    SUB_CASE("tensor.gpu.softmaxLayernormConv") {
+        auto                   *tf = TF::create();
+        std::unique_ptr<Tensor> w(tf->fill4(2, 1, 3, 3, 0.1f));
 
-    std::unique_ptr<Tensor> xEager(tf->randomNormal3(B, T, D));
+        std::unique_ptr<Func> fn(tf->func());
+        Tensor               *in = fn->input4(1, 1, 6, 6);
+        Tensor               *y  = tf->conv2d(in, w.get(), 1, 0);
+        y                        = tf->relu(y);
+        y                        = tf->flatten(y);
+        y                        = tf->layernorm(y, 1e-5f);
+        fn->setOutput(y);
+        std::unique_ptr<CompiledFunction> compiled(fn->compile());
+        REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
 
-    std::unique_ptr<Func> fn(tf->func());
-    Tensor               *x   = fn->input3(B, T, D);
-    Tensor               *l1  = tf->layernorm(x, eps);
-    Tensor               *l1m = tf->reshape2(l1, B * T, D);
-    Tensor               *qq  = tf->reshape4(tf->matmul(l1m, Wq.get()), 1, 1, T, D);
-    Tensor               *kk  = tf->reshape4(tf->matmul(l1m, Wk.get()), 1, 1, T, D);
-    Tensor               *vv  = tf->reshape4(tf->matmul(l1m, Wv.get()), 1, 1, T, D);
-    Tensor               *a1  = tf->reshape3(tf->sdpa(qq, kk, vv, scale), B, T, D);
-    Tensor               *x1s = tf->add(x, a1);
-    Tensor               *l2  = tf->layernorm(x1s, eps);
-    Tensor               *l2m = tf->reshape2(l2, B * T, D);
-    Tensor               *hh  = tf->matmul(l2m, W1.get());
-    hh                        = tf->gelu(hh);
-    hh                        = tf->matmul(hh, W2.get());
-    Tensor *x2s               = tf->add(x1s, tf->reshape3(hh, B, T, D));
-    Tensor *lg                = tf->matmul(tf->reshape2(x2s, B * T, D), Wc.get());
-    fn->setOutput(tf->softmax(lg, 1));
-    std::unique_ptr<CompiledFunction> compiled(fn->compile());
-    REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
+        std::unique_ptr<Tensor> xd(tf->zeros4(1, 1, 6, 6));
+        for (int i = 0; i < xd->getSize(); ++i) xd->set(i, float((i % 7) - 3));
+        std::unique_ptr<Tensor> out(compiled->run1(xd.get()));
 
-    std::unique_ptr<Tensor> out(compiled->run1(xEager.get()));
-    REQUIRE(std::fabs(out->reduceSum() - float(B * T)) < 1e-3f);
-    std::unique_ptr<Tensor> action(tf->argmax(out.get(), 1, 0));
-    REQUIRE_EQ(action->getSize(), B * T);
+        std::unique_ptr<Tensor> ref(tf->conv2d(xd.get(), w.get(), 1, 0));
+        ref.reset(ref->relu());
+        ref.reset(ref->flatten());
+        ref.reset(tf->layernorm(ref.get(), 1e-5f));
+        REQUIRE_EQ(out->getSize(), ref->getSize());
+        for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-3f);
+    };
+    SUB_CASE("tensor.gpu.transformerBlockInference") {
+        auto       *tf = TF::create();
+        const int   B = 1, T = 4, D = 8, C = 3;
+        const float scale = 1.f / std::sqrt(float(D));
+        const float eps   = 1e-5f;
 
-    // cross-check the generated GPU kernels against the eager CPU reference
-    std::unique_ptr<Tensor> ln1(tf->layernorm(xEager.get(), eps));
-    std::unique_ptr<Tensor> ln1m(tf->reshape2(ln1.get(), B * T, D));
-    std::unique_ptr<Tensor> q(tf->reshape4(tf->matmul(ln1m.get(), Wq.get()), 1, 1, T, D));
-    std::unique_ptr<Tensor> k(tf->reshape4(tf->matmul(ln1m.get(), Wk.get()), 1, 1, T, D));
-    std::unique_ptr<Tensor> v(tf->reshape4(tf->matmul(ln1m.get(), Wv.get()), 1, 1, T, D));
-    std::unique_ptr<Tensor> att(tf->reshape3(tf->sdpa(q.get(), k.get(), v.get(), scale), B, T, D));
-    std::unique_ptr<Tensor> x1(tf->add(xEager.get(), att.get()));
-    std::unique_ptr<Tensor> ln2(tf->layernorm(x1.get(), eps));
-    std::unique_ptr<Tensor> ln2m(tf->reshape2(ln2.get(), B * T, D));
-    std::unique_ptr<Tensor> h(tf->matmul(ln2m.get(), W1.get()));
-    h.reset(tf->gelu(h.get()));
-    h.reset(tf->matmul(h.get(), W2.get()));
-    std::unique_ptr<Tensor> x2(tf->add(x1.get(), tf->reshape3(h.get(), B, T, D)));
-    std::unique_ptr<Tensor> logits(tf->matmul(tf->reshape2(x2.get(), B * T, D), Wc.get()));
-    std::unique_ptr<Tensor> ref(tf->softmax(logits.get(), 1));
-    for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-2f);
+        auto rand = [&](int d0, int d1, float s) {
+            std::unique_ptr<Tensor> w(tf->randomNormal2(d0, d1));
+            w.reset(w->mulScalar(s));
+            return w;
+        };
+        std::unique_ptr<Tensor> Wq(rand(D, D, 0.15f));
+        std::unique_ptr<Tensor> Wk(rand(D, D, 0.15f));
+        std::unique_ptr<Tensor> Wv(rand(D, D, 0.15f));
+        std::unique_ptr<Tensor> W1(rand(D, 2 * D, 0.15f));
+        std::unique_ptr<Tensor> W2(rand(2 * D, D, 0.15f));
+        std::unique_ptr<Tensor> Wc(rand(D, C, 0.15f));
+
+        std::unique_ptr<Tensor> xEager(tf->randomNormal3(B, T, D));
+
+        std::unique_ptr<Func> fn(tf->func());
+        Tensor               *x   = fn->input3(B, T, D);
+        Tensor               *l1  = tf->layernorm(x, eps);
+        Tensor               *l1m = tf->reshape2(l1, B * T, D);
+        Tensor               *qq  = tf->reshape4(tf->matmul(l1m, Wq.get()), 1, 1, T, D);
+        Tensor               *kk  = tf->reshape4(tf->matmul(l1m, Wk.get()), 1, 1, T, D);
+        Tensor               *vv  = tf->reshape4(tf->matmul(l1m, Wv.get()), 1, 1, T, D);
+        Tensor               *a1  = tf->reshape3(tf->sdpa(qq, kk, vv, scale), B, T, D);
+        Tensor               *x1s = tf->add(x, a1);
+        Tensor               *l2  = tf->layernorm(x1s, eps);
+        Tensor               *l2m = tf->reshape2(l2, B * T, D);
+        Tensor               *hh  = tf->matmul(l2m, W1.get());
+        hh                        = tf->gelu(hh);
+        hh                        = tf->matmul(hh, W2.get());
+        Tensor *x2s               = tf->add(x1s, tf->reshape3(hh, B, T, D));
+        Tensor *lg                = tf->matmul(tf->reshape2(x2s, B * T, D), Wc.get());
+        fn->setOutput(tf->softmax(lg, 1));
+        std::unique_ptr<CompiledFunction> compiled(fn->compile());
+        REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
+
+        std::unique_ptr<Tensor> out(compiled->run1(xEager.get()));
+        REQUIRE(std::fabs(out->reduceSum() - float(B * T)) < 1e-3f);
+        std::unique_ptr<Tensor> action(tf->argmax(out.get(), 1, 0));
+        REQUIRE_EQ(action->getSize(), B * T);
+
+        // cross-check the generated GPU kernels against the eager CPU reference
+        std::unique_ptr<Tensor> ln1(tf->layernorm(xEager.get(), eps));
+        std::unique_ptr<Tensor> ln1m(tf->reshape2(ln1.get(), B * T, D));
+        std::unique_ptr<Tensor> q(tf->reshape4(tf->matmul(ln1m.get(), Wq.get()), 1, 1, T, D));
+        std::unique_ptr<Tensor> k(tf->reshape4(tf->matmul(ln1m.get(), Wk.get()), 1, 1, T, D));
+        std::unique_ptr<Tensor> v(tf->reshape4(tf->matmul(ln1m.get(), Wv.get()), 1, 1, T, D));
+        std::unique_ptr<Tensor> att(tf->reshape3(tf->sdpa(q.get(), k.get(), v.get(), scale), B, T, D));
+        std::unique_ptr<Tensor> x1(tf->add(xEager.get(), att.get()));
+        std::unique_ptr<Tensor> ln2(tf->layernorm(x1.get(), eps));
+        std::unique_ptr<Tensor> ln2m(tf->reshape2(ln2.get(), B * T, D));
+        std::unique_ptr<Tensor> h(tf->matmul(ln2m.get(), W1.get()));
+        h.reset(tf->gelu(h.get()));
+        h.reset(tf->matmul(h.get(), W2.get()));
+        std::unique_ptr<Tensor> x2(tf->add(x1.get(), tf->reshape3(h.get(), B, T, D)));
+        std::unique_ptr<Tensor> logits(tf->matmul(tf->reshape2(x2.get(), B * T, D), Wc.get()));
+        std::unique_ptr<Tensor> ref(tf->softmax(logits.get(), 1));
+        for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-2f);
+    };
+    SUB_CASE("tensor.gpu.sdpaMatchesCpu") {
+        auto                   *tf = TF::create();
+        const int               B = 1, H = 1, T = 4, S = 4, D = 8;
+        std::unique_ptr<Tensor> q(tf->randomNormal4(B, H, T, D));
+        std::unique_ptr<Tensor> k(tf->randomNormal4(B, H, S, D));
+        std::unique_ptr<Tensor> v(tf->randomNormal4(B, H, S, D));
+        std::unique_ptr<Tensor> ref(tf->sdpa(q.get(), k.get(), v.get(), 0.353553f));
+
+        std::unique_ptr<Func> fn(tf->func());
+        Tensor               *qq = fn->input4(B, H, T, D);
+        Tensor               *kk = fn->input4(B, H, S, D);
+        Tensor               *vv = fn->input4(B, H, S, D);
+        fn->setOutput(tf->sdpa(qq, kk, vv, 0.353553f));
+        std::unique_ptr<CompiledFunction> compiled(fn->compile());
+        REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
+        std::unique_ptr<Tensor> out(compiled->run3(q.get(), k.get(), v.get()));
+        for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-4f);
+    };
 }
 
-TEST_CASE("tensor.gpu.sdpaMatchesCpu") {
-    initHeadlessGfx(_ZEROERR_TEST_CONTEXT);
-    auto                   *tf = TF::create();
-    const int               B = 1, H = 1, T = 4, S = 4, D = 8;
-    std::unique_ptr<Tensor> q(tf->randomNormal4(B, H, T, D));
-    std::unique_ptr<Tensor> k(tf->randomNormal4(B, H, S, D));
-    std::unique_ptr<Tensor> v(tf->randomNormal4(B, H, S, D));
-    std::unique_ptr<Tensor> ref(tf->sdpa(q.get(), k.get(), v.get(), 0.353553f));
-
-    std::unique_ptr<Func> fn(tf->func());
-    Tensor               *qq = fn->input4(B, H, T, D);
-    Tensor               *kk = fn->input4(B, H, S, D);
-    Tensor               *vv = fn->input4(B, H, S, D);
-    fn->setOutput(tf->sdpa(qq, kk, vv, 0.353553f));
-    std::unique_ptr<CompiledFunction> compiled(fn->compile());
-    REQUIRE_EQ(compiled->getDevice(), std::string("gpu"));
-    std::unique_ptr<Tensor> out(compiled->run3(q.get(), k.get(), v.get()));
-    for (int i = 0; i < out->getSize(); ++i) REQUIRE(std::fabs(out->get(i) - ref->get(i)) < 1e-4f);
-}
 
 namespace {
 
@@ -2406,12 +2374,14 @@ TEST_CASE("tensor.onnx.gpu.parallelCompilation") {
     for (uint32_t workers : {1u, 4u}) {
         auto provider = eve::tensor::createOnnxGpuCompute(workers);
         REQUIRE(provider.ok());
-        auto model = eve::tensor::OnnxModel::load(chain(4096, 2, false, true, 80));
+        // Four distinct kernels, repeated four times, still exercise parallel
+        // compilation and the second-run cache without an 80-dispatch workload.
+        auto model = eve::tensor::OnnxModel::load(chain(4096, 2, false, true, 16));
         REQUIRE(model.ok());
         for (int repeat = 0; repeat < 2; ++repeat) {
             auto r = model.value()->runGpu({}, *provider.value());
             REQUIRE(r.ok());
-            CHECK(r.value().dispatches == 80);
+            CHECK(r.value().dispatches == 16);
             CHECK(r.value().transfers.shaderCompilations == (repeat ? 0 : 4));
             CHECK(r.value().transfers.compilerPeakWorkers <= workers);
             if (!repeat)
@@ -2422,7 +2392,7 @@ TEST_CASE("tensor.onnx.gpu.parallelCompilation") {
             for (size_t i = 0; i < 4096; ++i) {
                 float actual;
                 std::memcpy(&actual, raw.data() + i * 4, 4);
-                REQUIRE(actual == float(i + 20));
+                REQUIRE(actual == float(i + 4));
             }
             if (serial.empty())
                 serial = raw;
@@ -2465,129 +2435,6 @@ TEST_CASE("tensor.onnx.gpu.parallelCompilation") {
 namespace test_virtualgeometry_builder {
 // virtualgeometry_builder.cpp
 using namespace eve::virtualgeometry;
-
-namespace {
-
-// Build a unit icosphere with `subdiv` levels (3 => 1280 tris, 4 => 5120).
-struct IcoMesh {
-    std::vector<float>         positions;
-    std::vector<std::uint32_t> indices;
-
-    int addVtx(float x, float y, float z) {
-        float l = std::sqrt(x * x + y * y + z * z);
-        positions.push_back(x / l);
-        positions.push_back(y / l);
-        positions.push_back(z / l);
-        return static_cast<int>(positions.size() / 3) - 1;
-    }
-    void tri(int a, int b, int c) {
-        indices.push_back(static_cast<std::uint32_t>(a));
-        indices.push_back(static_cast<std::uint32_t>(b));
-        indices.push_back(static_cast<std::uint32_t>(c));
-    }
-    int mid(int i0, int i1) {
-        float x = (positions[3 * i0] + positions[3 * i1]) * 0.5f;
-        float y = (positions[3 * i0 + 1] + positions[3 * i1 + 1]) * 0.5f;
-        float z = (positions[3 * i0 + 2] + positions[3 * i1 + 2]) * 0.5f;
-        return addVtx(x, y, z);
-    }
-    void build(int subdiv) {
-        const float                       t    = (1.f + std::sqrt(5.f)) * 0.5f;
-        std::vector<std::array<float, 3>> base = {{{-1, t, 0},
-                                                   {1, t, 0},
-                                                   {-1, -t, 0},
-                                                   {1, -t, 0},
-                                                   {0, -1, t},
-                                                   {0, 1, t},
-                                                   {0, -1, -t},
-                                                   {0, 1, -t},
-                                                   {t, 0, -1},
-                                                   {t, 0, 1},
-                                                   {-t, 0, -1},
-                                                   {-t, 0, 1}}};
-        int                               idx[12];
-        for (int i = 0; i < 12; ++i) idx[i] = addVtx(base[i][0], base[i][1], base[i][2]);
-        int faces[20][3] = {{0, 11, 5},  {0, 5, 1},  {0, 1, 7},  {0, 7, 10}, {0, 10, 11}, {1, 5, 9}, {5, 11, 4},
-                            {11, 10, 2}, {10, 7, 6}, {7, 1, 8},  {3, 9, 4},  {3, 4, 2},   {3, 2, 6}, {3, 6, 8},
-                            {3, 8, 9},   {4, 9, 5},  {2, 4, 11}, {6, 2, 10}, {8, 6, 7},   {9, 8, 1}};
-        struct FT {
-            int a, b, c;
-        };
-        std::vector<FT> cur;
-        for (auto &f : faces) cur.push_back({idx[f[0]], idx[f[1]], idx[f[2]]});
-        for (int d = 0; d < subdiv; ++d) {
-            std::vector<FT> nf;
-            for (auto &x : cur) {
-                int ab = mid(x.a, x.b), ac = mid(x.a, x.c), bc = mid(x.b, x.c);
-                nf.push_back({x.a, ab, ac});
-                nf.push_back({ab, x.b, bc});
-                nf.push_back({ac, bc, x.c});
-                nf.push_back({ab, bc, ac});
-            }
-            cur.swap(nf);
-        }
-        indices.clear();
-        for (auto &x : cur) tri(x.a, x.b, x.c);
-    }
-};
-
-[[maybe_unused]] VirtualGeometryAsset buildIco(int subdiv) {
-    IcoMesh m;
-    m.build(subdiv);
-    VirtualGeometryBuilder            b;
-    VirtualGeometryBuilder::MeshInput in;
-    in.vertexCount = static_cast<int>(m.positions.size() / 3);
-    in.positions   = m.positions.data();
-    in.indices     = m.indices.data();
-    in.indexCount  = static_cast<int>(m.indices.size());
-    VirtualGeometryBuilder::Options opt;
-    opt.minLodLevels           = 5;
-    opt.mergeFactor            = 4;
-    opt.maxTrianglesPerCluster = 124;
-    opt.maxVerticesPerCluster  = 64;
-    VirtualGeometryAsset a;
-    REQUIRE(b.build(in, opt, a));
-    return a;
-}
-
-}  // namespace
-
-
-// ---------------------------------------------------------------------------
-// LOD transition tests. Sweep camera distance and drive the CPU reference of
-// the GPU cull accept-rule (LodSelection::selectClusters) to verify that the
-// visible LOD changes continuously: fine LOD0 near, coarse LOD far, with a
-// gradual mix in between and no gaps/overlaps (a full, hole-free cover).
-// ---------------------------------------------------------------------------
-
-namespace {
-
-constexpr float kProjScale = 540.f;  // e.g. 1080px / (2*tan(30deg))
-constexpr float kErrorPx   = 1.0f;
-
-struct SelectionStats {
-    int              selected = 0;
-    std::vector<int> hist;  // per-LOD counts
-};
-
-[[maybe_unused]] SelectionStats selectAt(const VirtualGeometryAsset &a, float dist) {
-    std::vector<std::uint32_t> sel;
-    selectClusters(a, dist, kProjScale, kErrorPx, sel);
-    SelectionStats s;
-    s.selected = static_cast<int>(sel.size());
-    lodHistogram(a, sel, s.hist);
-    return s;
-}
-
-// Highest LOD level that has any selected cluster (0..maxLod); -1 if none.
-[[maybe_unused]] int maxSelectedLod(const SelectionStats &s) {
-    for (int l = static_cast<int>(s.hist.size()) - 1; l >= 0; --l)
-        if (s.hist[l] > 0) return l;
-    return -1;
-}
-
-}  // namespace
-
 
 // virtualgeometry_gpu.cpp
 using namespace eve::virtualgeometry;

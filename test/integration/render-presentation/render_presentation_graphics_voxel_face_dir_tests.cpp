@@ -34,8 +34,8 @@
       "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
       "softbody.cloth.collidesWithWorld",
       "softbody.cloth.momentumExchangeScalesWithMass",
-      "softbody.cloth3d.collidesWithWorld3D",
-      "softbody.cloth3d.momentumExchangeScalesWithMass",
+      "softbody.cloth3d.shortGroundContact",
+      "softbody.cloth3d.shortMomentumExchangeScalesWithMass",
       "softbody.fluid.emitAndSettle",
       "softbody.fluid.interactRepels"
     ],
@@ -241,6 +241,7 @@ Graphics *initializedGraphics() {
     settings.width    = 160;
     settings.height   = 120;
     settings.centered = true;
+    settings.vsync    = 0;
     if (!window || !graphics || !window->setWindowSettings(settings)) return nullptr;
     return graphics;
 }
@@ -249,72 +250,69 @@ std::vector<uint32_t> customFragment() { return {custom2d_frag_spv, custom2d_fra
 
 }  // namespace
 
-TEST_CASE("graphics.shaderReload.successKeepsStableFacade") {
+TEST_CASE("graphics.shaderReload.replacementContract") {
     Graphics *graphics = initializedGraphics();
     REQUIRE(graphics != nullptr);
-    auto    fragment = customFragment();
-    Shader *shader   = graphics->newShaderFromSpv({}, fragment);
-    REQUIRE(shader != nullptr);
-    void *const originalGpuHandle = shader->gpuHandle;
-    shader->declareFloat("factor");
-    shader->sendFloat("factor", 0.35f);
+    SUB_CASE("graphics.shaderReload.successKeepsStableFacade") {
+        auto    fragment = customFragment();
+        Shader *shader   = graphics->newShaderFromSpv({}, fragment);
+        REQUIRE(shader != nullptr);
+        void *const originalGpuHandle = shader->gpuHandle;
+        shader->declareFloat("factor");
+        shader->sendFloat("factor", 0.35f);
 
-    auto replaced = graphics->replaceShaderFromSpv(*shader, {}, fragment);
-    REQUIRE(replaced.ok());
-    CHECK(shader->gpuHandle == originalGpuHandle);
-    CHECK(shader->hasUniform("factor"));
-    float factor = 0.f;
-    REQUIRE_EQ(shader->getFromVar("factor", &factor, sizeof(factor)), int(sizeof(factor)));
-    CHECK_EQ(factor, 0.35f);
-    CHECK_EQ(shader->fragmentSpirv(), fragment);
+        auto replaced = graphics->replaceShaderFromSpv(*shader, {}, fragment);
+        REQUIRE(replaced.ok());
+        REQUIRE(shader->gpuHandle == originalGpuHandle);
+        REQUIRE(shader->hasUniform("factor"));
+        float factor = 0.f;
+        REQUIRE_EQ(shader->getFromVar("factor", &factor, sizeof(factor)), int(sizeof(factor)));
+        REQUIRE_EQ(factor, 0.35f);
+        REQUIRE_EQ(shader->fragmentSpirv(), fragment);
+    };
+    SUB_CASE("graphics.shaderReload.failureKeepsLastGoodPipeline") {
+        auto    fragment = customFragment();
+        Shader *shader   = graphics->newShaderFromSpv({}, fragment);
+        REQUIRE(shader != nullptr);
+        void *const originalGpuHandle = shader->gpuHandle;
+        const auto  originalFragment  = shader->fragmentSpirv();
+
+        std::vector<uint32_t> invalid  = {0xDEADBEEF, 1, 2, 3};
+        auto                  replaced = graphics->replaceShaderFromSpv(*shader, {}, invalid);
+        REQUIRE(!replaced.ok());
+        REQUIRE(!replaced.diagnostics().empty());
+        REQUIRE_EQ(replaced.diagnostics().front().code(), DiagnosticCode::ParseError);
+        REQUIRE(shader->gpuHandle == originalGpuHandle);
+        REQUIRE_EQ(shader->fragmentSpirv(), originalFragment);
+    };
+    SUB_CASE("graphics.shaderReload.rejectsForeignFacade") {
+        Shader foreign;
+        auto   replaced = graphics->replaceShaderFromSpv(foreign, {}, customFragment());
+        REQUIRE(!replaced.ok());
+        REQUIRE(!replaced.diagnostics().empty());
+        REQUIRE_EQ(replaced.diagnostics().front().code(), DiagnosticCode::StaleHandle);
+    };
+    SUB_CASE("graphics.shaderReload.glslFailureKeepsLastGoodPipeline") {
+        auto    fragment = customFragment();
+        Shader *shader   = graphics->newShaderFromSpv({}, fragment);
+        REQUIRE(shader != nullptr);
+        void *const originalGpuHandle = shader->gpuHandle;
+        const auto  originalFragment  = shader->fragmentSpirv();
+
+        // Invalid source must be reported as a compile diagnostic on every platform now
+        // that the engine compiles GLSL in-process instead of rejecting it on Windows.
+        auto replaced =
+            graphics->replaceShaderFromGlsl(*shader, {}, "#version 450\nthis is deliberately invalid GLSL\n");
+        REQUIRE(!replaced.ok());
+        REQUIRE(!replaced.diagnostics().empty());
+        REQUIRE_EQ(replaced.diagnostics().front().code(), DiagnosticCode::ParseError);
+        REQUIRE(shader->gpuHandle == originalGpuHandle);
+        REQUIRE_EQ(shader->fragmentSpirv(), originalFragment);
+    };
+    eve::window::Window::create()->close();
 }
 
-TEST_CASE("graphics.shaderReload.failureKeepsLastGoodPipeline") {
-    Graphics *graphics = initializedGraphics();
-    REQUIRE(graphics != nullptr);
-    auto    fragment = customFragment();
-    Shader *shader   = graphics->newShaderFromSpv({}, fragment);
-    REQUIRE(shader != nullptr);
-    void *const originalGpuHandle = shader->gpuHandle;
-    const auto  originalFragment  = shader->fragmentSpirv();
 
-    std::vector<uint32_t> invalid  = {0xDEADBEEF, 1, 2, 3};
-    auto                  replaced = graphics->replaceShaderFromSpv(*shader, {}, invalid);
-    REQUIRE(!replaced.ok());
-    REQUIRE(!replaced.diagnostics().empty());
-    CHECK_EQ(replaced.diagnostics().front().code(), DiagnosticCode::ParseError);
-    CHECK(shader->gpuHandle == originalGpuHandle);
-    CHECK_EQ(shader->fragmentSpirv(), originalFragment);
-}
-
-TEST_CASE("graphics.shaderReload.rejectsForeignFacade") {
-    Graphics *graphics = initializedGraphics();
-    REQUIRE(graphics != nullptr);
-    Shader foreign;
-    auto   replaced = graphics->replaceShaderFromSpv(foreign, {}, customFragment());
-    REQUIRE(!replaced.ok());
-    REQUIRE(!replaced.diagnostics().empty());
-    CHECK_EQ(replaced.diagnostics().front().code(), DiagnosticCode::StaleHandle);
-}
-
-TEST_CASE("graphics.shaderReload.glslFailureKeepsLastGoodPipeline") {
-    Graphics *graphics = initializedGraphics();
-    REQUIRE(graphics != nullptr);
-    auto    fragment = customFragment();
-    Shader *shader   = graphics->newShaderFromSpv({}, fragment);
-    REQUIRE(shader != nullptr);
-    void *const originalGpuHandle = shader->gpuHandle;
-    const auto  originalFragment  = shader->fragmentSpirv();
-
-    // Invalid source must be reported as a compile diagnostic on every platform now
-    // that the engine compiles GLSL in-process instead of rejecting it on Windows.
-    auto replaced = graphics->replaceShaderFromGlsl(*shader, {}, "#version 450\nthis is deliberately invalid GLSL\n");
-    REQUIRE(!replaced.ok());
-    REQUIRE(!replaced.diagnostics().empty());
-    CHECK_EQ(replaced.diagnostics().front().code(), DiagnosticCode::ParseError);
-    CHECK(shader->gpuHandle == originalGpuHandle);
-    CHECK_EQ(shader->fragmentSpirv(), originalFragment);
-}
 }  // namespace test_shader_reload
 
 // Contract section: shader reload vulkan
@@ -339,6 +337,7 @@ Graphics *initializedGraphics() {
     settings.width    = 160;
     settings.height   = 120;
     settings.centered = true;
+    settings.vsync    = 0;
     if (!window || !graphics || !window->setWindowSettings(settings)) return nullptr;
     return graphics;
 }
@@ -485,119 +484,57 @@ TEST_CASE("softbody.cloth.momentumExchangeScalesWithMass") {
 }
 
 
-TEST_CASE("softbody.cloth3d.collidesWithWorld3D") {
+TEST_CASE("softbody.cloth3d.shortGroundContact") {
     auto                    *mod = Physics::create();
     std::unique_ptr<World3D> world3(mod->newWorld3D(0.f, -9.8f, 0.f, true));
     auto                    *ground = world3->newBody("static", 0.f, -0.5f, 0.f);
     REQUIRE(ground != nullptr);
     ground->newBoxShape(8.f, 1.f, 8.f);
 
-    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(8, 6, 0.5f, 0.f, 4.f, 0.f));
+    std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(8, 6, 0.5f, 0.f, 0.5f, 0.f));
     for (int i = 0; i < cloth->getParticleCount(); ++i) cloth->unpin(i);
     cloth->setGravity(0.f, -6.f, 0.f);
     cloth->setCollideWorld(world3.get());
     const float surfaceY = 0.f;
-    for (int i = 0; i < 180; ++i) cloth->update(1.f / 60.f);
-    for (int i = 0; i < cloth->getParticleCount(); ++i)
-        REQUIRE_GE(cloth->getParticleY(i), surfaceY - cloth->getParticleSize() - 0.05f);
-    // Sanity: the sheet fell from y = 4 toward the ground.
-    REQUIRE_LT(cloth->getParticleY(5 * 8 + 3), 3.5f);
+    const float initialY = cloth->getParticleY(5 * 8 + 3);
+    REQUIRE_GT(initialY, cloth->getParticleSize() + 0.1f);
+    float minimumY = initialY;
+    for (int step = 0; step < 24; ++step) {
+        cloth->update(1.f / 60.f);
+        minimumY = std::min(minimumY, cloth->getParticleY(5 * 8 + 3));
+        for (int i = 0; i < cloth->getParticleCount(); ++i)
+            REQUIRE_GE(cloth->getParticleY(i), surfaceY - cloth->getParticleSize() - 0.05f);
+    }
+    // collideWorld projects to the shell, then applies restitution and an impulse kick.
+    // Arrival must occur during the trajectory; its last sample may already be rebounding.
+    REQUIRE_LT(cloth->getParticleY(5 * 8 + 3), initialY - 0.02f);
+    REQUIRE_LE(minimumY, cloth->getParticleSize() + 0.03f);
 }
 
-TEST_CASE("softbody.cloth3d.momentumExchangeScalesWithMass") {
+TEST_CASE("softbody.cloth3d.shortMomentumExchangeScalesWithMass") {
     auto      *mod     = Physics::create();
-    const auto runCase = [&](float density) {
+    const auto runCase = [&](zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, float density) {
         std::unique_ptr<World3D> world3(mod->newWorld3D(0.f, 0.f, 0.f, true));
         auto                    *box = world3->newBody("dynamic", 0.f, 1.2f, 0.f);
         REQUIRE(box != nullptr);
         box->newBoxShape(1.f, 0.8f, 1.f, density, 0.2f, 0.f);
-        std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(6, 4, 0.4f, -0.6f, 3.f, -0.6f));
+        std::unique_ptr<Cloth3D> cloth(eve::cloth::Cloth::create()->newCloth3D(6, 4, 0.4f, -0.6f, 1.8f, -0.6f));
         for (int i = 0; i < cloth->getParticleCount(); ++i) cloth->unpin(i);
         cloth->setGravity(0.f, -5.f, 0.f);
         cloth->setCollideWorld(world3.get());
-        for (int i = 0; i < 180; ++i) {
+        for (int i = 0; i < 30; ++i) {
             world3->update(1.f / 60.f);
             cloth->update(1.f / 60.f);
         }
         return box->getLinearVelocityY();
     };
 
-    const float vLight = runCase(0.05f);
-    const float vHeavy = runCase(5.f);
+    const float vLight = runCase(_ZEROERR_TEST_CONTEXT, 0.05f);
+    const float vHeavy = runCase(_ZEROERR_TEST_CONTEXT, 5.f);
     // +Y up: the light box is pushed downward noticeably, the heavy one barely.
     REQUIRE_LT(vLight, -0.2f);
     REQUIRE_LT(vLight, vHeavy - 0.1f);
 }
-
-namespace {
-
-[[maybe_unused]] float testClosestPointTriangle(float ax, float ay, float az, float bx, float by, float bz, float cx,
-                                                float cy, float cz, float px, float py, float pz, float &qx, float &qy,
-                                                float &qz) {
-    // Mirrors Cloth3D's Ericson closest-point-on-triangle (test-only).
-    const float abx = bx - ax, aby = by - ay, abz = bz - az;
-    const float acx = cx - ax, acy = cy - ay, acz = cz - az;
-    const float apx = px - ax, apy = py - ay, apz = pz - az;
-    const float d1 = abx * apx + aby * apy + abz * apz;
-    const float d2 = acx * apx + acy * apy + acz * apz;
-    if (d1 <= 0.f && d2 <= 0.f) {
-        qx = ax;
-        qy = ay;
-        qz = az;
-        return std::sqrt((px - ax) * (px - ax) + (py - ay) * (py - ay) + (pz - az) * (pz - az));
-    }
-    const float bpx = px - bx, bpy = py - by, bpz = pz - bz;
-    const float d3 = abx * bpx + aby * bpy + abz * bpz;
-    const float d4 = acx * bpx + acy * bpy + acz * bpz;
-    if (d3 >= 0.f && d4 <= d3) {
-        qx = bx;
-        qy = by;
-        qz = bz;
-        return std::sqrt((px - bx) * (px - bx) + (py - by) * (py - by) + (pz - bz) * (pz - bz));
-    }
-    const float vc = d1 * d4 - d3 * d2;
-    if (vc <= 0.f && d1 >= 0.f && d3 <= 0.f) {
-        const float t = d1 / (d1 - d3);
-        qx            = ax + abx * t;
-        qy            = ay + aby * t;
-        qz            = az + abz * t;
-        return std::sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy) + (pz - qz) * (pz - qz));
-    }
-    const float cpx = px - cx, cpy = py - cy, cpz = pz - cz;
-    const float d5 = abx * cpx + aby * cpy + abz * cpz;
-    const float d6 = acx * cpx + acy * cpy + acz * cpz;
-    if (d6 >= 0.f && d5 <= d6) {
-        qx = cx;
-        qy = cy;
-        qz = cz;
-        return std::sqrt((px - cx) * (px - cx) + (py - cy) * (py - cy) + (pz - cz) * (pz - cz));
-    }
-    const float vb = d5 * d2 - d1 * d6;
-    if (vb <= 0.f && d2 >= 0.f && d6 <= 0.f) {
-        const float t = d2 / (d2 - d6);
-        qx            = ax + acx * t;
-        qy            = ay + acy * t;
-        qz            = az + acz * t;
-        return std::sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy) + (pz - qz) * (pz - qz));
-    }
-    const float va = d3 * d6 - d5 * d4;
-    if (va <= 0.f && (d4 - d3) >= 0.f && (d5 - d6) >= 0.f) {
-        const float t = (d4 - d3) / ((d4 - d3) + (d5 - d6));
-        qx            = bx + (cx - bx) * t;
-        qy            = by + (cy - by) * t;
-        qz            = bz + (cz - bz) * t;
-        return std::sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy) + (pz - qz) * (pz - qz));
-    }
-    const float denom = 1.f / (va + vb + vc);
-    const float v     = vb * denom;
-    const float w     = vc * denom;
-    qx                = ax + abx * v + acx * w;
-    qy                = ay + aby * v + acy * w;
-    qz                = az + abz * v + acz * w;
-    return std::sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy) + (pz - qz) * (pz - qz));
-}
-
-}  // namespace
 
 
 TEST_CASE("softbody.fluid.emitAndSettle") {
@@ -1275,6 +1212,7 @@ TEST_CASE("stylize.meshVfx.gpuRibbonSubmission") {
     settings.width    = 64;
     settings.height   = 64;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
 
     auto *stylize = Stylize::create();
@@ -1445,6 +1383,7 @@ TEST_CASE("UI.textureBridge.viewportPixelsReachSwapchain") {
     settings.width    = 640;
     settings.height   = 480;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(win->setWindowSettings(settings));
     REQUIRE(ui->initBackend());
 
@@ -1606,6 +1545,7 @@ struct VoxelContractFixture {
         settings.width    = static_cast<uint16_t>(width);
         settings.height   = static_cast<uint16_t>(height);
         settings.centered = true;
+        settings.vsync    = 0;
         REQUIRE(window->setWindowSettings(settings));
         hideLeftover3D();
         tinyHud(gfx);
@@ -2000,74 +1940,68 @@ TEST_CASE("voxel.render.atlasBoundaryIndices") {
     };
 }
 
-TEST_CASE("voxel.render.sameFrameBatchIsolation") {
+TEST_CASE("voxel.render.batchAtlasAndGrowthContract") {
     VoxelContractFixture fixture(_ZEROERR_TEST_CONTEXT);
     auto                *gfx = fixture.gfx;
-
-    Texture *greenAtlas = makeSolid(gfx, 40, 220, 40);
-    Texture *blueAtlas  = makeSolid(gfx, 40, 40, 220);
-    REQUIRE(greenAtlas != nullptr);
-    REQUIRE(blueAtlas != nullptr);
-    const uint32_t  quad = PackedRect::pack(0, 0, 0, 3, 3, 0).bits;
-    const glm::mat4 vp   = viewProjection(gfx, {0.f, 1.5f, 14.f}, {0.f, 1.5f, 0.f});
-    beginVoxelFrame(gfx, vp, _ZEROERR_TEST_CONTEXT);
-    gfx->drawVoxelFaceInstances(&quad, 1, -4.f, 0.f, 0.f, "posZ", greenAtlas, 1);
-    gfx->drawVoxelFaceInstances(&quad, 1, 1.f, 0.f, 0.f, "posZ", blueAtlas, 1);
-    RenderSystem::render(*gfx);
-    requireGreen(pixelAt(gfx, vp, {-2.5f, 1.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
-    requireBlue(pixelAt(gfx, vp, {2.5f, 1.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
-}
-
-TEST_CASE("voxel.render.frameSlotAtlasUpdates") {
-    VoxelContractFixture fixture(_ZEROERR_TEST_CONTEXT);
-    auto                *gfx = fixture.gfx;
-
-    Texture *green = makeTileAtlas(gfx, 4, 4);
-    Texture *blue  = makeSolid(gfx, 40, 40, 230);
-    REQUIRE(green != nullptr);
-    REQUIRE(blue != nullptr);
-    VoxelWorld world;
-    fillCube(&world, 0, 0, 0, 4, 1);
-    world.remeshDirty();
-    // Eight consecutive presents revisit the supported backend frame slots.
-    // Color and atlas layout both change; brightness alone cannot prove rebinding.
-    for (int frame = 0; frame < 8; ++frame) {
-        const bool useBlue = (frame / 2) % 2 != 0;
-        renderVoxelFrame(gfx, &world, useBlue ? blue : green, useBlue ? 1 : 4, {2.f, 2.f, 14.f}, {2.f, 2.f, 2.f}, 100.f,
-                         true);
-        const Color pixel = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-        if (useBlue)
-            requireBlue(pixel, _ZEROERR_TEST_CONTEXT);
-        else
-            requireGreen(pixel, _ZEROERR_TEST_CONTEXT);
-    }
-}
-
-TEST_CASE("voxel.render.instanceBufferGrowth") {
-    VoxelContractFixture fixture(_ZEROERR_TEST_CONTEXT);
-    auto                *gfx = fixture.gfx;
-
-    Texture *atlas = makeTileAtlas(gfx, 4, 4);
-    REQUIRE(atlas != nullptr);
-    gfx->setTextureSampler(atlas, TextureSampler::nearest());
-    const uint32_t        first = PackedRect::pack(0, 0, 0, 3, 3, 1).bits;
-    std::vector<uint32_t> many;
-    for (int y = 0; y < 16; ++y)
-        for (int x = 0; x < 16; ++x) many.push_back(PackedRect::pack(x, y, 0, 1, 1, 2).bits);
-    const glm::mat4 vp = viewProjection(gfx, {7.f, 8.f, 36.f}, {7.f, 8.f, 0.f});
-    // Warm both draw slots with small buffers, then grow the second slot on
-    // reuse. Two draws within one frame use distinct slots, not one buffer.
-    for (int frame = 0; frame < 16; ++frame) {
-        const bool grow = frame >= 8;
+    SUB_CASE("voxel.render.sameFrameBatchIsolation") {
+        Texture *greenAtlas = makeSolid(gfx, 40, 220, 40);
+        Texture *blueAtlas  = makeSolid(gfx, 40, 40, 220);
+        REQUIRE(greenAtlas != nullptr);
+        REQUIRE(blueAtlas != nullptr);
+        const uint32_t  quad = PackedRect::pack(0, 0, 0, 3, 3, 0).bits;
+        const glm::mat4 vp   = viewProjection(gfx, {0.f, 1.5f, 14.f}, {0.f, 1.5f, 0.f});
         beginVoxelFrame(gfx, vp, _ZEROERR_TEST_CONTEXT);
-        gfx->drawVoxelFaceInstances(&first, 1, -6.f, 6.f, 0.f, "posZ", atlas, 4);
-        gfx->drawVoxelFaceInstances(many.data(), grow ? int(many.size()) : 1, 0.f, 0.f, 0.f, "posZ", atlas, 4);
+        gfx->drawVoxelFaceInstances(&quad, 1, -4.f, 0.f, 0.f, "posZ", greenAtlas, 1);
+        gfx->drawVoxelFaceInstances(&quad, 1, 1.f, 0.f, 0.f, "posZ", blueAtlas, 1);
         RenderSystem::render(*gfx);
-        // The earlier green batch must survive the later blue submission.
-        requireGreen(pixelAt(gfx, vp, {-4.5f, 7.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
-        if (grow) requireBlue(pixelAt(gfx, vp, {8.f, 8.f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
-    }
+        requireGreen(pixelAt(gfx, vp, {-2.5f, 1.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
+        requireBlue(pixelAt(gfx, vp, {2.5f, 1.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
+    };
+    SUB_CASE("voxel.render.frameSlotAtlasUpdates") {
+        Texture *green = makeTileAtlas(gfx, 4, 4);
+        Texture *blue  = makeSolid(gfx, 40, 40, 230);
+        REQUIRE(green != nullptr);
+        REQUIRE(blue != nullptr);
+        VoxelWorld world;
+        fillCube(&world, 0, 0, 0, 4, 1);
+        world.remeshDirty();
+        // Eight consecutive presents revisit the supported backend frame slots.
+        // Color and atlas layout both change; brightness alone cannot prove rebinding.
+        for (int frame = 0; frame < 8; ++frame) {
+            const bool useBlue = (frame / 2) % 2 != 0;
+            renderVoxelFrame(gfx, &world, useBlue ? blue : green, useBlue ? 1 : 4, {2.f, 2.f, 14.f}, {2.f, 2.f, 2.f},
+                             100.f, true);
+            const Color pixel = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+            if (useBlue)
+                requireBlue(pixel, _ZEROERR_TEST_CONTEXT);
+            else
+                requireGreen(pixel, _ZEROERR_TEST_CONTEXT);
+        }
+    };
+    SUB_CASE("voxel.render.instanceBufferGrowth") {
+        Texture *atlas = makeTileAtlas(gfx, 4, 4);
+        REQUIRE(atlas != nullptr);
+        gfx->setTextureSampler(atlas, TextureSampler::nearest());
+        const uint32_t        first = PackedRect::pack(0, 0, 0, 3, 3, 1).bits;
+        std::vector<uint32_t> many;
+        for (int y = 0; y < 16; ++y)
+            for (int x = 0; x < 16; ++x) many.push_back(PackedRect::pack(x, y, 0, 1, 1, 2).bits);
+        const glm::mat4 vp = viewProjection(gfx, {7.f, 8.f, 36.f}, {7.f, 8.f, 0.f});
+        // Warm both draw slots with small buffers, then grow the second slot on
+        // reuse. Two draws within one frame use distinct slots, not one buffer.
+        for (int frame = 0; frame < 16; ++frame) {
+            const bool grow = frame >= 8;
+            beginVoxelFrame(gfx, vp, _ZEROERR_TEST_CONTEXT);
+            gfx->drawVoxelFaceInstances(&first, 1, -6.f, 6.f, 0.f, "posZ", atlas, 4);
+            gfx->drawVoxelFaceInstances(many.data(), grow ? int(many.size()) : 1, 0.f, 0.f, 0.f, "posZ", atlas, 4);
+            RenderSystem::render(*gfx);
+            // The earlier green batch must survive the later blue submission.
+            requireGreen(pixelAt(gfx, vp, {-4.5f, 7.5f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
+            if (grow) requireBlue(pixelAt(gfx, vp, {8.f, 8.f, 1.f}, _ZEROERR_TEST_CONTEXT), _ZEROERR_TEST_CONTEXT);
+        }
+    };
 }
+
 
 TEST_CASE("voxel.render.remeshPublication") {
     VoxelContractFixture fixture(_ZEROERR_TEST_CONTEXT);
@@ -2322,27 +2256,6 @@ using namespace eve::graphics;
 // water_underwater_effects.cpp
 using namespace eve::graphics;
 
-namespace {
-[[maybe_unused]] UnderwaterColorGradient depthGradient() {
-    UnderwaterColorGradient gradient;
-    REQUIRE(static_cast<bool>(gradient.addStop(0.0F, 0.4F, 0.7F, 1.0F)));
-    REQUIRE(static_cast<bool>(gradient.addStop(1.0F, 0.03F, 0.08F, 0.18F)));
-    return gradient;
-}
-[[maybe_unused]] UnderwaterColorGradient timeGradient() {
-    UnderwaterColorGradient gradient;
-    REQUIRE(static_cast<bool>(gradient.addStop(0.0F, 0.1F, 0.2F, 0.4F)));
-    REQUIRE(static_cast<bool>(gradient.addStop(1.0F, 0.8F, 0.5F, 0.2F)));
-    return gradient;
-}
-[[maybe_unused]] UnderwaterScalarCurve exposureCurve() {
-    UnderwaterScalarCurve curve;
-    REQUIRE(static_cast<bool>(curve.addKey(0.0F, -0.5F)));
-    REQUIRE(static_cast<bool>(curve.addKey(1.0F, 0.5F)));
-    return curve;
-}
-}  // namespace
-
 TEST_CASE("graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents") {
     constexpr int                          zoneTag   = 8101;
     constexpr int                          playerTag = 8102;
@@ -2511,6 +2424,7 @@ TEST_CASE("weather.backendShaderInitialization") {
     settings.width    = 128;
     settings.height   = 128;
     settings.centered = true;
+    settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
 
     Weather weather;

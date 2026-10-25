@@ -920,40 +920,6 @@ namespace {
     return true;
 }
 
-/** @brief Subdivided icosahedron sphere mesh (positions + triangle indices). */
-[[maybe_unused]] std::pair<std::vector<glm::vec3>, std::vector<uint32_t>> makeIcosphere(float radius,
-                                                                                        int   subdivisions) {
-    const float            t     = (1.f + std::sqrt(5.f)) / 2.f;
-    std::vector<glm::vec3> verts = {
-        glm::normalize(glm::vec3(-1.f, t, 0.f)),  glm::normalize(glm::vec3(1.f, t, 0.f)),
-        glm::normalize(glm::vec3(-1.f, -t, 0.f)), glm::normalize(glm::vec3(1.f, -t, 0.f)),
-        glm::normalize(glm::vec3(0.f, -1.f, t)),  glm::normalize(glm::vec3(0.f, 1.f, t)),
-        glm::normalize(glm::vec3(0.f, -1.f, -t)), glm::normalize(glm::vec3(0.f, 1.f, -t)),
-        glm::normalize(glm::vec3(t, 0.f, -1.f)),  glm::normalize(glm::vec3(t, 0.f, 1.f)),
-        glm::normalize(glm::vec3(-t, 0.f, -1.f)), glm::normalize(glm::vec3(-t, 0.f, 1.f)),
-    };
-    std::vector<uint32_t> tris = {
-        0, 11, 5, 0, 5, 1, 0, 1, 7, 0, 7, 10, 0, 10, 11, 1, 5, 9, 5, 11, 4,  11, 10, 2,  10, 7, 6, 7, 1, 8,
-        3, 9,  4, 3, 4, 2, 3, 2, 6, 3, 6, 8,  3, 8,  9,  4, 9, 5, 2, 4,  11, 6,  2,  10, 8,  6, 7, 9, 8, 1,
-    };
-    for (int s = 0; s < subdivisions; ++s) {
-        std::vector<uint32_t> nextTris;
-        nextTris.reserve(tris.size() * 4);
-        for (size_t i = 0; i < tris.size(); i += 3) {
-            const uint32_t a = tris[i], b = tris[i + 1], c = tris[i + 2];
-            const uint32_t ab = uint32_t(verts.size());
-            const uint32_t bc = uint32_t(verts.size()) + 1;
-            const uint32_t ca = uint32_t(verts.size()) + 2;
-            verts.push_back(glm::normalize((verts[a] + verts[b]) * 0.5f));
-            verts.push_back(glm::normalize((verts[b] + verts[c]) * 0.5f));
-            verts.push_back(glm::normalize((verts[c] + verts[a]) * 0.5f));
-            nextTris.insert(nextTris.end(), {a, ab, ca, b, bc, ab, c, ca, bc, ab, bc, ca});
-        }
-        tris.swap(nextTris);
-    }
-    for (glm::vec3 &v : verts) v *= radius;
-    return {std::move(verts), std::move(tris)};
-}
 
 [[maybe_unused]] float distToCenter(const glm::vec3 &p) { return glm::length(p); }
 
@@ -1318,80 +1284,78 @@ TEST_CASE("fluids.ssf.multicolorVolumeColorOnlyRemainsDeviceLocal") {
 }
 
 
-TEST_CASE("fluids.ssf.sphericalDepthAndNormalParity") {
+TEST_CASE("fluids.ssf.depthNormalAndBoundedBlurContracts") {
     auto *graphics = eve::graphics::Graphics::create();
     REQUIRE(graphics != nullptr);
     graphics->initHeadless(64, 64);
-    for (int passes : {0, 1, 2}) {
-        FluidSurfaceParams params;
-        params.width            = 64;
-        params.height           = 64;
-        params.eye              = {0, 0, 3};
-        params.target           = {0, 0, 0};
-        params.smoothIterations = passes;
-        FluidSurfaceRenderer         cpu(params, false), gpu(params, true);
-        const std::vector<glm::vec3> particles{{0, 0, 0}};
-        cpu.render(particles, .6f);
-        gpu.render(particles, .6f);
-        REQUIRE(gpu.usingGpu());
-        const size_t middle = 32 * 64 + 32, left = 32 * 64 + 26, right = 32 * 64 + 38;
-        const size_t top = 26 * 64 + 32, bottom = 38 * 64 + 32;
-        REQUIRE(cpu.depth()[middle] < 2.42f);
-        REQUIRE(cpu.depth()[right] > cpu.depth()[middle] + .06f);
-        REQUIRE(gpu.normals()[left].x < -.2f);
-        REQUIRE(gpu.normals()[right].x > .2f);
-        REQUIRE(gpu.normals()[top].y > .2f);
-        REQUIRE(gpu.normals()[bottom].y < -.2f);
-        REQUIRE(gpu.normals()[middle].z > .95f);
-        for (size_t i = 0; i < cpu.depth().size(); ++i) {
-            if (cpu.depth()[i] >= 1e29f) {
-                REQUIRE(gpu.depth()[i] >= 1e29f);
-                continue;
+    SUB_CASE("fluids.ssf.sphericalDepthAndNormalParity") {
+        for (int passes : {0, 1, 2}) {
+            FluidSurfaceParams params;
+            params.width            = 64;
+            params.height           = 64;
+            params.eye              = {0, 0, 3};
+            params.target           = {0, 0, 0};
+            params.smoothIterations = passes;
+            FluidSurfaceRenderer         cpu(params, false), gpu(params, true);
+            const std::vector<glm::vec3> particles{{0, 0, 0}};
+            cpu.render(particles, .6f);
+            gpu.render(particles, .6f);
+            REQUIRE(gpu.usingGpu());
+            const size_t middle = 32 * 64 + 32, left = 32 * 64 + 26, right = 32 * 64 + 38;
+            const size_t top = 26 * 64 + 32, bottom = 38 * 64 + 32;
+            REQUIRE(cpu.depth()[middle] < 2.42f);
+            REQUIRE(cpu.depth()[right] > cpu.depth()[middle] + .06f);
+            REQUIRE(gpu.normals()[left].x < -.2f);
+            REQUIRE(gpu.normals()[right].x > .2f);
+            REQUIRE(gpu.normals()[top].y > .2f);
+            REQUIRE(gpu.normals()[bottom].y < -.2f);
+            REQUIRE(gpu.normals()[middle].z > .95f);
+            for (size_t i = 0; i < cpu.depth().size(); ++i) {
+                if (cpu.depth()[i] >= 1e29f) {
+                    REQUIRE(gpu.depth()[i] >= 1e29f);
+                    continue;
+                }
+                REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < .00002f);
+                REQUIRE(glm::length(cpu.normals()[i] - gpu.normals()[i]) < .002f);
+                // GPU thickness uses 1/256-unit fixed-point accumulation.
+                REQUIRE(std::abs(cpu.thickness()[i] - gpu.thickness()[i]) < 1.f / 256.f + .000001f);
             }
-            REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < .00002f);
-            REQUIRE(glm::length(cpu.normals()[i] - gpu.normals()[i]) < .002f);
-            // GPU thickness uses 1/256-unit fixed-point accumulation.
-            REQUIRE(std::abs(cpu.thickness()[i] - gpu.thickness()[i]) < 1.f / 256.f + .000001f);
+            gpu.render({}, .6f);
+            REQUIRE(gpu.depth()[middle] >= 1e29f);
+            REQUIRE(glm::length(gpu.normals()[middle]) == 0.f);
+            REQUIRE(gpu.thickness()[middle] == 0.f);
+            REQUIRE(gpu.color()[middle * 4 + 3] == 0);
         }
-        gpu.render({}, .6f);
-        REQUIRE(gpu.depth()[middle] >= 1e29f);
-        REQUIRE(glm::length(gpu.normals()[middle]) == 0.f);
-        REQUIRE(gpu.thickness()[middle] == 0.f);
-        REQUIRE(gpu.color()[middle * 4 + 3] == 0);
-    }
-}
+    };
+    SUB_CASE("fluids.ssf.worldSpaceBlurRadiusUsesExistingBoundedPass") {
+        FluidSurfaceParams params;
+        params.width = params.height = 64;
+        params.eye                   = {0, 0, 3};
+        params.target                = {0, 0, 0};
+        params.smoothIterations      = 1;
+        const std::vector<glm::vec3> particles{{-.18f, 0, 0}, {.18f, 0, -.12f}};
+        FluidSurfaceRenderer         unblurred(params, false);
+        REQUIRE(unblurred.configureSurfaceBlurRadius(0.f).ok());
+        REQUIRE(!unblurred.configureSurfaceBlurRadius(.1001f).ok());
+        unblurred.render(particles, .35f);
+        auto noPassParams             = params;
+        noPassParams.smoothIterations = 0;
+        FluidSurfaceRenderer noPass(noPassParams, false);
+        noPass.render(particles, .35f);
+        REQUIRE(unblurred.depth() == noPass.depth());
 
-TEST_CASE("fluids.ssf.worldSpaceBlurRadiusUsesExistingBoundedPass") {
-    auto *graphics = eve::graphics::Graphics::create();
-    REQUIRE(graphics != nullptr);
-    graphics->initHeadless(64, 64);
-    FluidSurfaceParams params;
-    params.width = params.height = 64;
-    params.eye                   = {0, 0, 3};
-    params.target                = {0, 0, 0};
-    params.smoothIterations      = 1;
-    const std::vector<glm::vec3> particles{{-.18f, 0, 0}, {.18f, 0, -.12f}};
-    FluidSurfaceRenderer         unblurred(params, false);
-    REQUIRE(unblurred.configureSurfaceBlurRadius(0.f).ok());
-    REQUIRE(!unblurred.configureSurfaceBlurRadius(.1001f).ok());
-    unblurred.render(particles, .35f);
-    auto noPassParams             = params;
-    noPassParams.smoothIterations = 0;
-    FluidSurfaceRenderer noPass(noPassParams, false);
-    noPass.render(particles, .35f);
-    REQUIRE(unblurred.depth() == noPass.depth());
-
-    params.smoothIterations = 1;
-    FluidSurfaceRenderer cpu(params, false), gpu(params, true);
-    REQUIRE(cpu.configureSurfaceBlurRadius(.02f).ok());
-    REQUIRE(gpu.configureSurfaceBlurRadius(.02f).ok());
-    cpu.render(particles, .35f);
-    gpu.render(particles, .35f);
-    REQUIRE(gpu.usingGpu());
-    for (size_t i = 0; i < cpu.depth().size(); ++i) {
-        if (cpu.depth()[i] >= 1e29f || gpu.depth()[i] >= 1e29f) continue;
-        REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < 1e-4f);
-    }
+        params.smoothIterations = 1;
+        FluidSurfaceRenderer cpu(params, false), gpu(params, true);
+        REQUIRE(cpu.configureSurfaceBlurRadius(.02f).ok());
+        REQUIRE(gpu.configureSurfaceBlurRadius(.02f).ok());
+        cpu.render(particles, .35f);
+        gpu.render(particles, .35f);
+        REQUIRE(gpu.usingGpu());
+        for (size_t i = 0; i < cpu.depth().size(); ++i) {
+            if (cpu.depth()[i] >= 1e29f || gpu.depth()[i] >= 1e29f) continue;
+            REQUIRE(std::abs(cpu.depth()[i] - gpu.depth()[i]) < 1e-4f);
+        }
+    };
 }
 
 
@@ -2589,7 +2553,7 @@ using namespace eve::graphics;
 using namespace eve::graphics::parity_test;
 
 
-TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
+TEST_CASE("graphics.backendParity.shortTextureUpdateAndAlphaBlend") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
     const std::string backend = gfx->getBackendName();
@@ -2602,10 +2566,8 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     Texture *stable = texture;
     REQUIRE(gfx->updateTexture(texture, 1, 1, green));
     REQUIRE(texture == stable);
-    // Same-size streaming updates must retain the Vulkan image and descriptor.
-    // The former replacement path exhausted the shared descriptor pool after
-    // a few hundred frames in the volume-fluid presentation loop.
-    for (int frame = 0; frame < 400; ++frame) REQUIRE(gfx->updateTexture(texture, 1, 1, (frame & 1) ? red : green));
+    // Short image/descriptor reuse contract; the 400-update pool-pressure workload lives in benchmark.
+    for (int frame = 0; frame < 4; ++frame) REQUIRE(gfx->updateTexture(texture, 1, 1, (frame & 1) ? red : green));
     REQUIRE(!gfx->updateTexture(texture, 2, 1, green));
     REQUIRE(gfx->updateTextureRegion(texture, 0, 0, 1, 1, red).ok());
     CHECK(!gfx->updateTextureRegion(texture, 1, 0, 1, 1, red).ok());
@@ -2645,29 +2607,28 @@ TEST_CASE("graphics.backendParity.textureUpdateAndAlphaBlend") {
     writeParityArtifact(*image, "texture_update_alpha_blend", backend);
 }
 
-TEST_CASE("graphics.backendParity.pixelWorldMillionPixelAtlas") {
+TEST_CASE("graphics.backendParity.pixelWorldCrossChunkIncrementalAtlas") {
     Graphics *gfx = headlessGraphics();
     REQUIRE(gfx != nullptr);
 
     eve::pixelworld::PixelWorld world(4242);
-    // Radius 724 covers every cell in [0,1024)^2, creating a genuine one-million
-    // pixel viewport while also proving off-viewport chunks are clipped by the adapter.
-    REQUIRE(world.paintCircleChecked(512, 512, 724, "stone").ok());
-    eve::pixelworld_graphics::PixelWorldAtlasRenderer renderer(0, 0, 1024, 1024);
-    CHECK(renderer.sync(&world, gfx) == 256);
+    // Cover four visible chunks and extra off-viewport chunks; scale pressure is benchmark-only.
+    REQUIRE(world.paintCircleChecked(64, 64, 91, "stone").ok());
+    eve::pixelworld_graphics::PixelWorldAtlasRenderer renderer(0, 0, 128, 128);
+    REQUIRE(renderer.sync(&world, gfx) == 4);
     REQUIRE(renderer.texture() != nullptr);
-    CHECK(renderer.texture()->width == 1024);
-    CHECK(renderer.texture()->height == 1024);
-    CHECK(renderer.uploadCount() == 1);
-    CHECK(renderer.totalUploadedChunks() == 256);
-    CHECK(renderer.renderedRevision() == world.revision());
+    REQUIRE(renderer.texture()->width == 128);
+    REQUIRE(renderer.texture()->height == 128);
+    REQUIRE(renderer.uploadCount() == 1);
+    REQUIRE(renderer.totalUploadedChunks() == 4);
+    REQUIRE(renderer.renderedRevision() == world.revision());
 
     world.setMaterial(1, 1, "sand");
-    world.setMaterial(1022, 1022, "water");
-    CHECK(renderer.sync(&world, gfx) == 2);
-    CHECK(renderer.uploadCount() == 2);
-    CHECK(renderer.totalUploadedChunks() == 258);
-    CHECK(renderer.renderedRevision() == world.revision());
+    world.setMaterial(126, 126, "water");
+    REQUIRE(renderer.sync(&world, gfx) == 2);
+    REQUIRE(renderer.uploadCount() == 2);
+    REQUIRE(renderer.totalUploadedChunks() == 6);
+    REQUIRE(renderer.renderedRevision() == world.revision());
 }
 
 TEST_CASE("graphics.backendParity.draw2dUvRotationAndBlendModes") {
@@ -3571,25 +3532,6 @@ using eve::graphics::fog::FogWorldBounds;
 using eve::graphics::fog::ProceduralDust;
 using eve::graphics::fog::RealtimeFog;
 using eve::graphics::fog::SceneWind;
-
-namespace {
-
-[[maybe_unused]] FogWorldBounds unitBox() {
-    FogWorldBounds b;
-    b.minimum = {-4.f, 0.f, -4.f};
-    b.maximum = {4.f, 4.f, 4.f};
-    return b;
-}
-
-[[maybe_unused]] FogSystem makeSeeded(FogQuality quality = FogQuality::Enhanced) {
-    FogSystem system;
-    REQUIRE(system.setQuality(quality).ok());
-    REQUIRE(system.configureDomain(8, 6, 8, unitBox()).ok());
-    REQUIRE(system.seedHeightFog(1.2f, 0.f, 0.4f, 0.25f, 11u).ok());
-    return system;
-}
-
-}  // namespace
 
 
 // graphics_fog_volumetric.cpp

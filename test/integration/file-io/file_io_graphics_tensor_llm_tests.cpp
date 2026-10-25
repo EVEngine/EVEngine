@@ -90,225 +90,257 @@ bool hasLabel(const std::vector<eve::script::ScriptCompletion> &items, std::stri
 
 }  // namespace
 
-TEST_CASE("devtools.languageServer.diagnosticsCompletionHoverAndSymbols") {
-    const auto root = tempProject("eve_ut_language_server_api");
-    writeFile(root / "config.nut", "config = { width = 640 height = 360 title = \"lsp\" modules = [\"gfx\"] }\n");
-    writeFile(root / "scripts" / "lib.nut", "export function greet(name: string) -> string { return name }\n");
-    writeFile(root / "main.nut",
-              "import { greet } from \"./scripts/lib.nut\"\n"
-              "local playerSpeed: float = 2.0\n"
-              "function boom() { return await 1 }\n"
-              "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n"
-              "local message = greet(\"Ada\")\n");
+TEST_CASE("devtools.languageServer.documentAndNativeBindingContracts") {
+    struct ProjectFixture {
+        std::filesystem::path root = tempProject("eve_ut_language_server_contract");
+        ~ProjectFixture() {
+            std::error_code error;
+            std::filesystem::remove_all(root, error);
+        }
+    } fixture;
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "config.nut", "config = { width = 640 height = 360 title = \"lsp\" modules = [\"gfx\"] }\n");
+        writeFile(root / "scripts" / "lib.nut", "export function greet(name: string) -> string { return name }\n");
+        writeFile(root / "diagnosticsCompletionHoverAndSymbols.nut",
+                  "import { greet } from \"./scripts/lib.nut\"\n"
+                  "local playerSpeed: float = 2.0\n"
+                  "function boom() { return await 1 }\n"
+                  "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n"
+                  "local message = greet(\"Ada\")\n");
+    }
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "memberCompletionAndSignatureHelp.nut", "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n");
+    }
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "completesChainedAndConstructedNativeTypes.nut",
+                  "physics.newWorld(0, 900).\n"
+                  "eve.Physics().\n"
+                  "local world = physics.newWorld(0, 900, true)\n"
+                  "world.\n"
+                  "particles.newEmitter(256).\n");
+    }
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "formatFoldAndIncrementalEdit.nut", "function foo() {\nlocal x = 1\n}\n");
+    }
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "semanticTokensClassFunctionAndSlot.nut",
+                  "class Hero {}\ngfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\nlocal hero = Hero()\n");
+    }
+    {
+        const auto &root = fixture.root;
+        std::filesystem::create_directories(root);
+        writeFile(root / "jsonRpcInitializeAndDiagnostics.nut", "function boom() { return await 1 }\n");
+    }
+    // One project/provider root; scenario documents have distinct canonical game:/ URIs.
+    LanguageServer server(fixture.root.string());
+    auto *const    sharedServer = &server;
+    const auto    *projectRoot  = &fixture.root;
 
-    LanguageServer    server(root.string());
-    const std::string mainUri = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    const std::string source  = readFile(root / "main.nut");
-    server.openDocument(mainUri, source);
+    SUB_CASE("devtools.languageServer.diagnosticsCompletionHoverAndSymbols") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string mainUri =
+            LanguageServer::fileUriFromPath((root / "diagnosticsCompletionHoverAndSymbols.nut").string());
+        const std::string source = readFile(root / "diagnosticsCompletionHoverAndSymbols.nut");
+        server.openDocument(mainUri, source);
 
-    const auto diagnostics = server.diagnosticsFor(mainUri);
-    REQUIRE(!diagnostics.empty());
-    CHECK_EQ(diagnostics.front().code, std::string("EVE2601"));
+        const auto diagnostics = server.diagnosticsFor(mainUri);
+        REQUIRE(!diagnostics.empty());
+        REQUIRE_EQ(diagnostics.front().code, std::string("EVE2601"));
 
-    const auto keywords = server.complete(mainUri, Position{1, 0});
-    CHECK(hasLabel(keywords, "local"));
-    CHECK(hasLabel(keywords, "playerSpeed"));
+        const auto keywords = server.complete(mainUri, Position{1, 0});
+        REQUIRE(hasLabel(keywords, "local"));
+        REQUIRE(hasLabel(keywords, "playerSpeed"));
 
-    const auto hover = server.hover(mainUri, Position{1, 8});
-    REQUIRE(hover.has_value());
-    CHECK(hover->markdown.find("playerSpeed") != std::string::npos);
+        const auto hover = server.hover(mainUri, Position{1, 8});
+        REQUIRE(hover.has_value());
+        REQUIRE(hover->markdown.find("playerSpeed") != std::string::npos);
 
-    const auto symbols = server.documentSymbols(mainUri);
-    REQUIRE(!symbols.empty());
-    bool foundSpeed = false;
-    for (const auto &symbol : symbols)
-        if (symbol.name == "playerSpeed") foundSpeed = true;
-    CHECK(foundSpeed);
+        const auto symbols = server.documentSymbols(mainUri);
+        REQUIRE(!symbols.empty());
+        bool foundSpeed = false;
+        for (const auto &symbol : symbols)
+            if (symbol.name == "playerSpeed") foundSpeed = true;
+        REQUIRE(foundSpeed);
 
-    const auto definition = server.definition(mainUri, Position{4, 17});
-    REQUIRE(definition.has_value());
-    CHECK(definition->uri.find("lib.nut") != std::string::npos);
-
-    std::error_code error;
-    std::filesystem::remove_all(root, error);
-}
-
-TEST_CASE("devtools.languageServer.memberCompletionAndSignatureHelp") {
-    const auto root = tempProject("eve_ut_language_server_members");
-    writeFile(root / "config.nut", "config = { width = 320 height = 180 title = \"lsp\" }\n");
-    writeFile(root / "main.nut", "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n");
-
-    LanguageServer    server(root.string());
-    const std::string uri = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    server.openDocument(uri, "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n");
-
-    const auto members = server.complete(uri, Position{0, 4});
-    CHECK(hasLabel(members, "setBackgroundColor"));
-
-    const auto help = server.signatureHelp(uri, Position{0, 24});
-    REQUIRE(help.has_value());
-    CHECK(help->label.find("setBackgroundColor") != std::string::npos);
-    CHECK(help->activeParameter >= 0);
-
-    std::error_code error;
-    std::filesystem::remove_all(root, error);
-}
-
-TEST_CASE("devtools.languageServer.completesChainedAndConstructedNativeTypes") {
-    const auto root = tempProject("eve_ut_language_server_chain");
-    writeFile(root / "config.nut", "config = { width = 320 height = 180 title = \"lsp\" }\n");
-    writeFile(root / "main.nut",
-              "physics.newWorld(0, 900).\n"
-              "eve.Physics().\n"
-              "local world = physics.newWorld(0, 900, true)\n"
-              "world.\n"
-              "particles.newEmitter(256).\n");
-
-    LanguageServer    server(root.string());
-    const std::string uri    = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    const std::string source = readFile(root / "main.nut");
-    server.openDocument(uri, source);
-
-    const auto chained = server.complete(uri, Position{0, 27});
-    CHECK(hasLabel(chained, "setGravity"));
-
-    const auto constructed = server.complete(uri, Position{1, 15});
-    CHECK(hasLabel(constructed, "newWorld"));
-
-    const auto fromLocal = server.complete(uri, Position{3, 6});
-    CHECK(hasLabel(fromLocal, "setGravity"));
-
-    const auto emitter = server.complete(uri, Position{4, 27});
-    CHECK(hasLabel(emitter, "applyPreset"));
-
-    const auto eveClasses = server.complete(uri, Position{1, 4});
-    CHECK(hasLabel(eveClasses, "Physics"));
-
-    std::error_code error;
-    std::filesystem::remove_all(root, error);
-}
-
-TEST_CASE("devtools.languageServer.jsonRpcInitializeAndDiagnostics") {
-    const auto root = tempProject("eve_ut_language_server_jsonrpc");
-    writeFile(root / "config.nut", "config = { width = 320 height = 180 title = \"lsp\" }\n");
-    writeFile(root / "main.nut", "function boom() { return await 1 }\n");
-
-    LanguageServer     server(root.string());
-    const std::string  uri = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    std::ostringstream output;
-    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}})", output) ==
-          LspDispatch::Continue);
-    CHECK(output.str().find("documentSymbolProvider") != std::string::npos);
-    CHECK(output.str().find("signatureHelpProvider") != std::string::npos);
-    CHECK(output.str().find("\"change\":2") != std::string::npos);
-    CHECK(output.str().find("documentFormattingProvider") != std::string::npos);
-    CHECK(output.str().find("foldingRangeProvider") != std::string::npos);
-    CHECK(output.str().find("semanticTokensProvider") != std::string::npos);
-    const bool incrementalSync = output.str().find("\"change\":2") != std::string::npos ||
-                                 output.str().find("\"change\": 2") != std::string::npos;
-    CHECK(incrementalSync);
-
-    output.str("");
-    output.clear();
-    const std::string open =
-        std::string(R"({"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":")") + uri +
-        R"(","languageId":"nut","version":1,"text":"function boom() { return await 1 }\n"}}})";
-    CHECK(server.handleMessage(open, output) == LspDispatch::Continue);
-    CHECK(output.str().find("publishDiagnostics") != std::string::npos);
-    CHECK(output.str().find("EVE2601") != std::string::npos);
-
-    output.str("");
-    output.clear();
-    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","id":2,"method":"shutdown"})", output) == LspDispatch::Continue);
-    CHECK(server.handleMessage(R"({"jsonrpc":"2.0","method":"exit"})", output) == LspDispatch::Exit);
-
-    std::error_code error;
-    std::filesystem::remove_all(root, error);
-}
-
-TEST_CASE("devtools.languageServer.formatFoldAndIncrementalEdit") {
-    const auto root = tempProject("eve_ut_language_server_format");
-    writeFile(root / "config.nut", "config = { width = 320 height = 180 title = \"lsp\" }\n");
-    writeFile(root / "main.nut", "function foo() {\nlocal x = 1\n}\n");
-
-    LanguageServer    server(root.string());
-    const std::string uri = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    server.openDocument(uri, "function foo() {\nlocal x = 1\n}\n");
-
-    const auto edits = server.formatDocument(uri);
-    REQUIRE(edits.size() == 1);
-    CHECK_EQ(edits.front().newText, std::string("function foo() {\n    local x = 1\n}\n"));
-
-    eve::dev::lsp::Range range{{1, 0}, {2, 0}};
-    const auto           ranged = server.formatDocument(uri, {}, &range);
-    REQUIRE(ranged.size() == 1);
-    CHECK_EQ(ranged.front().newText, std::string("    local x = 1\n"));
-
-    const auto folds = server.foldingRanges(uri);
-    REQUIRE(!folds.empty());
-    CHECK_EQ(folds.front().kind, std::string("region"));
-    CHECK_EQ(folds.front().startLine, size_t(0));
-    CHECK_EQ(folds.front().endLine, size_t(2));
-
-    server.changeDocument(uri, eve::dev::lsp::Range{{1, 6}, {1, 7}}, "value");
-    const auto hover = server.hover(uri, Position{1, 8});
-    REQUIRE(hover.has_value());
-    CHECK(hover->markdown.find("value") != std::string::npos);
-
-    std::ostringstream output;
-    const std::string  change =
-        std::string(R"({"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":")") + uri +
-        R"(","version":2},"contentChanges":[{"range":{"start":{"line":1,"character":6},"end":{"line":1,"character":11}},"text":"n"}]}})";
-    CHECK(server.handleMessage(change, output) == LspDispatch::Continue);
-    const auto afterIncremental = server.hover(uri, Position{1, 6});
-    REQUIRE(afterIncremental.has_value());
-    CHECK(afterIncremental->markdown.find("n") != std::string::npos);
-
-    output.str("");
-    output.clear();
-    CHECK(server.handleMessage(
-              std::string(
-                  R"({"jsonrpc":"2.0","id":3,"method":"textDocument/formatting","params":{"textDocument":{"uri":")") +
-                  uri + R"(},"options":{"tabSize":4,"insertSpaces":true}}})",
-              output) == LspDispatch::Continue);
-    CHECK(output.str().find("local n = 1") != std::string::npos);
-
-    output.str("");
-    output.clear();
-    CHECK(server.handleMessage(
-              std::string(
-                  R"({"jsonrpc":"2.0","id":4,"method":"textDocument/foldingRange","params":{"textDocument":{"uri":")") +
-                  uri + R"("}}})",
-              output) == LspDispatch::Continue);
-    CHECK(output.str().find("startLine") != std::string::npos);
-
-    std::error_code cleanup;
-    std::filesystem::remove_all(root, cleanup);
-}
-
-TEST_CASE("devtools.languageServer.semanticTokensClassFunctionAndSlot") {
-    const auto root = tempProject("eve_ut_language_server_tokens");
-    writeFile(root / "config.nut", "config = { width = 320 height = 180 title = \"lsp\" }\n");
-    writeFile(root / "main.nut", "class Hero {}\ngfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\nlocal hero = Hero()\n");
-
-    LanguageServer    server(root.string());
-    const std::string uri = LanguageServer::fileUriFromPath((root / "main.nut").string());
-    server.openDocument(uri, "class Hero {}\ngfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\nlocal hero = Hero()\n");
-
-    const auto tokens = server.semanticTokens(uri);
-    const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
-        for (const auto &token : tokens)
-            if (token.name == name && token.start.line == line) return token.type;
-        return 99;
+        const auto definition = server.definition(mainUri, Position{4, 17});
+        REQUIRE(definition.has_value());
+        REQUIRE(definition->uri.find("lib.nut") != std::string::npos);
+        server.closeDocument(
+            LanguageServer::fileUriFromPath((root / "diagnosticsCompletionHoverAndSymbols.nut").string()));
     };
-    CHECK_EQ(typeAt("Hero", 0), eve::dev::lsp::SemanticTypes::Class);
-    CHECK_EQ(typeAt("gfx", 1), eve::dev::lsp::SemanticTypes::Namespace);
-    CHECK_EQ(typeAt("setBackgroundColor", 1), eve::dev::lsp::SemanticTypes::Method);
-    CHECK_EQ(typeAt("hero", 2), eve::dev::lsp::SemanticTypes::Variable);
-    CHECK_EQ(typeAt("Hero", 2), eve::dev::lsp::SemanticTypes::Class);
 
-    std::error_code error;
-    std::filesystem::remove_all(root, error);
+    SUB_CASE("devtools.languageServer.memberCompletionAndSignatureHelp") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string uri =
+            LanguageServer::fileUriFromPath((root / "memberCompletionAndSignatureHelp.nut").string());
+        server.openDocument(uri, "gfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\n");
+
+        const auto members = server.complete(uri, Position{0, 4});
+        REQUIRE(hasLabel(members, "setBackgroundColor"));
+
+        const auto help = server.signatureHelp(uri, Position{0, 24});
+        REQUIRE(help.has_value());
+        REQUIRE(help->label.find("setBackgroundColor") != std::string::npos);
+        REQUIRE(help->activeParameter >= 0);
+        server.closeDocument(LanguageServer::fileUriFromPath((root / "memberCompletionAndSignatureHelp.nut").string()));
+    };
+
+    SUB_CASE("devtools.languageServer.completesChainedAndConstructedNativeTypes") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string uri =
+            LanguageServer::fileUriFromPath((root / "completesChainedAndConstructedNativeTypes.nut").string());
+        const std::string source = readFile(root / "completesChainedAndConstructedNativeTypes.nut");
+        server.openDocument(uri, source);
+
+        const auto chained = server.complete(uri, Position{0, 27});
+        REQUIRE(hasLabel(chained, "setGravity"));
+
+        const auto constructed = server.complete(uri, Position{1, 15});
+        REQUIRE(hasLabel(constructed, "newWorld"));
+
+        const auto fromLocal = server.complete(uri, Position{3, 6});
+        REQUIRE(hasLabel(fromLocal, "setGravity"));
+
+        const auto emitter = server.complete(uri, Position{4, 27});
+        REQUIRE(hasLabel(emitter, "applyPreset"));
+
+        const auto eveClasses = server.complete(uri, Position{1, 4});
+        REQUIRE(hasLabel(eveClasses, "Physics"));
+        server.closeDocument(
+            LanguageServer::fileUriFromPath((root / "completesChainedAndConstructedNativeTypes.nut").string()));
+    };
+
+    SUB_CASE("devtools.languageServer.formatFoldAndIncrementalEdit") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string uri = LanguageServer::fileUriFromPath((root / "formatFoldAndIncrementalEdit.nut").string());
+        server.openDocument(uri, "function foo() {\nlocal x = 1\n}\n");
+
+        const auto edits = server.formatDocument(uri);
+        REQUIRE(edits.size() == 1);
+        REQUIRE_EQ(edits.front().newText, std::string("function foo() {\n    local x = 1\n}\n"));
+
+        eve::dev::lsp::Range range{{1, 0}, {2, 0}};
+        const auto           ranged = server.formatDocument(uri, {}, &range);
+        REQUIRE(ranged.size() == 1);
+        REQUIRE_EQ(ranged.front().newText, std::string("    local x = 1\n"));
+
+        const auto folds = server.foldingRanges(uri);
+        REQUIRE(!folds.empty());
+        REQUIRE_EQ(folds.front().kind, std::string("region"));
+        REQUIRE_EQ(folds.front().startLine, size_t(0));
+        REQUIRE_EQ(folds.front().endLine, size_t(2));
+
+        server.changeDocument(uri, eve::dev::lsp::Range{{1, 6}, {1, 7}}, "value");
+        const auto hover = server.hover(uri, Position{1, 8});
+        REQUIRE(hover.has_value());
+        REQUIRE(hover->markdown.find("value") != std::string::npos);
+
+        std::ostringstream output;
+        const std::string  change =
+            std::string(R"({"jsonrpc":"2.0","method":"textDocument/didChange","params":{"textDocument":{"uri":")") +
+            uri +
+            R"(","version":2},"contentChanges":[{"range":{"start":{"line":1,"character":6},"end":{"line":1,"character":11}},"text":"n"}]}})";
+        const auto dispatch1 = server.handleMessage(change, output);
+        REQUIRE(dispatch1 == LspDispatch::Continue);
+        const auto afterIncremental = server.hover(uri, Position{1, 6});
+        REQUIRE(afterIncremental.has_value());
+        REQUIRE(afterIncremental->markdown.find("n") != std::string::npos);
+
+        output.str("");
+        output.clear();
+        const auto dispatch2 = server.handleMessage(
+            std::string(
+                R"({"jsonrpc":"2.0","id":3,"method":"textDocument/formatting","params":{"textDocument":{"uri":")") +
+                uri + R"("},"options":{"tabSize":4,"insertSpaces":true}}})",
+            output);
+        REQUIRE(dispatch2 == LspDispatch::Continue);
+        REQUIRE(output.str().find("local n = 1") != std::string::npos);
+
+        output.str("");
+        output.clear();
+        const auto dispatch3 = server.handleMessage(
+            std::string(
+                R"({"jsonrpc":"2.0","id":4,"method":"textDocument/foldingRange","params":{"textDocument":{"uri":")") +
+                uri + R"("}}})",
+            output);
+        REQUIRE(dispatch3 == LspDispatch::Continue);
+        REQUIRE(output.str().find("startLine") != std::string::npos);
+        server.closeDocument(LanguageServer::fileUriFromPath((root / "formatFoldAndIncrementalEdit.nut").string()));
+    };
+
+    SUB_CASE("devtools.languageServer.semanticTokensClassFunctionAndSlot") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string uri =
+            LanguageServer::fileUriFromPath((root / "semanticTokensClassFunctionAndSlot.nut").string());
+        server.openDocument(uri, "class Hero {}\ngfx.setBackgroundColor(0.1, 0.2, 0.3, 1.0)\nlocal hero = Hero()\n");
+
+        const auto tokens = server.semanticTokens(uri);
+        const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
+            for (const auto &token : tokens)
+                if (token.name == name && token.start.line == line) return token.type;
+            return 99;
+        };
+        REQUIRE_EQ(typeAt("Hero", 0), eve::dev::lsp::SemanticTypes::Class);
+        REQUIRE_EQ(typeAt("gfx", 1), eve::dev::lsp::SemanticTypes::Namespace);
+        REQUIRE_EQ(typeAt("setBackgroundColor", 1), eve::dev::lsp::SemanticTypes::Method);
+        REQUIRE_EQ(typeAt("hero", 2), eve::dev::lsp::SemanticTypes::Variable);
+        REQUIRE_EQ(typeAt("Hero", 2), eve::dev::lsp::SemanticTypes::Class);
+        server.closeDocument(
+            LanguageServer::fileUriFromPath((root / "semanticTokensClassFunctionAndSlot.nut").string()));
+    };
+
+    SUB_CASE("devtools.languageServer.jsonRpcInitializeAndDiagnostics") {
+        auto             &server = *sharedServer;
+        const auto       &root   = *projectRoot;
+        const std::string uri =
+            LanguageServer::fileUriFromPath((root / "jsonRpcInitializeAndDiagnostics.nut").string());
+        std::ostringstream output;
+        const auto         dispatch4 =
+            server.handleMessage(R"({"jsonrpc":"2.0","id":1,"method":"initialize","params":{}})", output);
+        REQUIRE(dispatch4 == LspDispatch::Continue);
+        REQUIRE(output.str().find("documentSymbolProvider") != std::string::npos);
+        REQUIRE(output.str().find("signatureHelpProvider") != std::string::npos);
+        REQUIRE(output.str().find("\"change\":2") != std::string::npos);
+        REQUIRE(output.str().find("documentFormattingProvider") != std::string::npos);
+        REQUIRE(output.str().find("foldingRangeProvider") != std::string::npos);
+        REQUIRE(output.str().find("semanticTokensProvider") != std::string::npos);
+        const bool incrementalSync = output.str().find("\"change\":2") != std::string::npos ||
+                                     output.str().find("\"change\": 2") != std::string::npos;
+        REQUIRE(incrementalSync);
+
+        output.str("");
+        output.clear();
+        const std::string open =
+            std::string(R"({"jsonrpc":"2.0","method":"textDocument/didOpen","params":{"textDocument":{"uri":")") + uri +
+            R"(","languageId":"nut","version":1,"text":"function boom() { return await 1 }\n"}}})";
+        const auto dispatch5 = server.handleMessage(open, output);
+        REQUIRE(dispatch5 == LspDispatch::Continue);
+        REQUIRE(output.str().find("publishDiagnostics") != std::string::npos);
+        REQUIRE(output.str().find("EVE2601") != std::string::npos);
+
+        output.str("");
+        output.clear();
+        const auto dispatch6 = server.handleMessage(R"({"jsonrpc":"2.0","id":2,"method":"shutdown"})", output);
+        REQUIRE(dispatch6 == LspDispatch::Continue);
+        const auto dispatch7 = server.handleMessage(R"({"jsonrpc":"2.0","method":"exit"})", output);
+        REQUIRE(dispatch7 == LspDispatch::Exit);
+        server.closeDocument(LanguageServer::fileUriFromPath((root / "jsonRpcInitializeAndDiagnostics.nut").string()));
+    };
 }
 }  // namespace test_language_server
 
@@ -317,7 +349,6 @@ TEST_CASE("devtools.languageServer.semanticTokensClassFunctionAndSlot") {
 
 #include <zeroerr/unittest.h>
 #include <algorithm>
-#include <array>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -630,105 +661,107 @@ TEST_CASE("devtools.projectIndex.stdioDiscoveryAndTaskContext") {
     }
     CHECK(checked);
 }
-TEST_CASE("devtools.projectIndex.automaticWithoutManifestReflectsDomainChainAndFields") {
-    Fixture fixture(false, false);
-    write(
-        fixture.root / "quests.json",
-        R"JSON([{"id":"quest.new","objectives":[{"id":"kill","topic":"kill","target":"slime","count":1}],"completePolicy":"claim"}])JSON");
-    const std::string script = R"SQ(
-        throw "Indexing must not execute this script";
-        class Actor { health: int = 100; label: string = "hero"; }
-        marker <- null;
-        log <- eve.GameEvent().newLog();
-        function initialize() {
-            local scene = eve.Scene();
-            marker = scene.getNodeRefAt("demo", "node");
-        }
-        function afterEvent(envelope) {
-            if (envelope.getType() != "event.finished" || envelope.getSubject() != "quest.new") return false;
-            return marker.setVisible(true);
-        }
-        function process() {
-            local result = log.append("00000000-0000-4000-8000-000000000001", "event.finished", "demo", "quest.new", "", "", 0, 0, "{}");
-            return afterEvent(log.at(0));
-        }
-    )SQ";
-    write(fixture.root / "world.nut", script);
-    std::filesystem::create_directories(fixture.root / "tests");
-    write(fixture.root / "tests/check.nut", "function runProbe() { return process(); }");
-    auto first = refresh(fixture.root);
-    REQUIRE(first->getValue<bool>("ok"));
-    CHECK_EQ(first->getValue<int>("schemaVersion"), 2);
-    auto input = args(fixture.root);
-    input->set("seed", "quest:quest.new");
-    input->set("task", "Inspect inferred chain");
-    auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
-    REQUIRE(context->getValue<bool>("ok"));
-    CHECK(findNode(context, "event:event.finished"));
-    CHECK(findNode(context, "script:afterEvent"));
-    CHECK(findNode(context, "entity:demo/node"));
-    CHECK(findNode(context, "api:scene/SceneNodeRef.setVisible"));
-    CHECK(findNode(context, "test:runProbe"));
-    input = args(fixture.root);
-    input->set("kind", "script_class");
-    auto classes = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
-    auto actor   = findNode(classes, "class:Actor");
-    REQUIRE(actor);
-    CHECK_EQ(actor->getArray("fields")->getObject(0)->getValue<std::string>("type"), std::string("int"));
-    CHECK_EQ(refresh(fixture.root)->getObject("stats")->getValue<int>("parsed"), 0);
-    std::filesystem::rename(fixture.root / "world.nut", fixture.root / "renamed.nut");
-    auto renamed = refresh(fixture.root);
-    CHECK_EQ(renamed->getObject("stats")->getArray("renames")->size(), size_t(1));
-    CHECK_EQ(renamed->getObject("stats")->getValue<int>("parsed"), 0);
-    input = args(fixture.root);
-    input->set("seed", "script:afterEvent");
-    auto relocated = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
-    CHECK_EQ(findNode(relocated, "script:afterEvent")->getObject("source")->getValue<std::string>("file"),
-             std::string("renamed.nut"));
-    auto changed = script;
-    changed.replace(changed.find("\"node\""), 6, "\"new-node\"");
-    write(fixture.root / "renamed.nut", changed);
-    input->set("expectedRevision", first->getValue<std::string>("revision"));
-    CHECK_EQ(
-        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
-        std::string("stale_project_revision"));
-    input = args(fixture.root);
-    input->set("seed", "entity:demo/node");
-    CHECK_EQ(
-        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
-        std::string("unknown_seed"));
-    std::filesystem::remove(fixture.root / "renamed.nut");
-    input->set("seed", "script:afterEvent");
-    CHECK_EQ(
-        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
-        std::string("unknown_seed"));
-}
-TEST_CASE("devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookalikes") {
-    Fixture fixture(false, false);
-    write(fixture.root / "world.nut", R"SQ(
-        marker <- null;
-        function initialize() { local scene = eve.Scene(); marker = scene.getNodeRefAt("demo", "node"); }
-        function writeMarker() { return marker.setVisible(true); }
-        function shadow() { local marker = unknown(); return marker.setVisible(true); }
-        function fake() { local eve = lookalike; local scene = eve.Scene(); return scene.getNodeRefAt("wrong", "fake"); }
-    )SQ");
-    auto input = args(fixture.root);
-    input->set("seed", "script:shadow");
-    auto shadow = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
-    REQUIRE(shadow->getValue<bool>("ok"));
-    CHECK(!findNode(shadow, "api:scene/SceneNodeRef.setVisible"));
-    CHECK(findNode(shadow, "script:shadow")->getArray("unknownCalls")->size() > 0);
-    input->set("seed", "entity:wrong/fake");
-    CHECK_EQ(
-        payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))->getValue<std::string>("error"),
-        std::string("unknown_seed"));
-    auto script = read(fixture.root / "world.nut");
-    write(fixture.root / "world.nut", script + "\nfunction retarget() { marker = unresolved(); }\n");
-    input->set("seed", "script:writeMarker");
-    auto dynamic = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
-    REQUIRE(dynamic->getValue<bool>("ok"));
-    CHECK(!findNode(dynamic, "api:scene/SceneNodeRef.setVisible"));
-    CHECK(findNode(dynamic, "script:writeMarker")->getArray("unknownCalls")->size() > 0);
+TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
+    SUB_CASE("devtools.projectIndex.automaticWithoutManifestReflectsDomainChainAndFields") {
+        Fixture fixture(false, false);
+        write(
+            fixture.root / "quests.json",
+            R"JSON([{"id":"quest.new","objectives":[{"id":"kill","topic":"kill","target":"slime","count":1}],"completePolicy":"claim"}])JSON");
+        const std::string script = R"SQ(
+            throw "Indexing must not execute this script";
+            class Actor { health: int = 100; label: string = "hero"; }
+            marker <- null;
+            log <- eve.GameEvent().newLog();
+            function initialize() {
+                local scene = eve.Scene();
+                marker = scene.getNodeRefAt("demo", "node");
+            }
+            function afterEvent(envelope) {
+                if (envelope.getType() != "event.finished" || envelope.getSubject() != "quest.new") return false;
+                return marker.setVisible(true);
+            }
+            function process() {
+                local result = log.append("00000000-0000-4000-8000-000000000001", "event.finished", "demo", "quest.new", "", "", 0, 0, "{}");
+                return afterEvent(log.at(0));
+            }
+        )SQ";
+        write(fixture.root / "world.nut", script);
+        std::filesystem::create_directories(fixture.root / "tests");
+        write(fixture.root / "tests/check.nut", "function runProbe() { return process(); }");
+        auto first = refresh(fixture.root);
+        REQUIRE(first->getValue<bool>("ok"));
+        CHECK_EQ(first->getValue<int>("schemaVersion"), 2);
+        auto input = args(fixture.root);
+        input->set("seed", "quest:quest.new");
+        input->set("task", "Inspect inferred chain");
+        auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", input));
+        REQUIRE(context->getValue<bool>("ok"));
+        CHECK(findNode(context, "event:event.finished"));
+        CHECK(findNode(context, "script:afterEvent"));
+        CHECK(findNode(context, "entity:demo/node"));
+        CHECK(findNode(context, "api:scene/SceneNodeRef.setVisible"));
+        CHECK(findNode(context, "test:runProbe"));
+        input = args(fixture.root);
+        input->set("kind", "script_class");
+        auto classes = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        auto actor   = findNode(classes, "class:Actor");
+        REQUIRE(actor);
+        CHECK_EQ(actor->getArray("fields")->getObject(0)->getValue<std::string>("type"), std::string("int"));
+        CHECK_EQ(refresh(fixture.root)->getObject("stats")->getValue<int>("parsed"), 0);
+        std::filesystem::rename(fixture.root / "world.nut", fixture.root / "renamed.nut");
+        auto renamed = refresh(fixture.root);
+        CHECK_EQ(renamed->getObject("stats")->getArray("renames")->size(), size_t(1));
+        CHECK_EQ(renamed->getObject("stats")->getValue<int>("parsed"), 0);
+        input = args(fixture.root);
+        input->set("seed", "script:afterEvent");
+        auto relocated = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        CHECK_EQ(findNode(relocated, "script:afterEvent")->getObject("source")->getValue<std::string>("file"),
+                 std::string("renamed.nut"));
+        auto changed = script;
+        changed.replace(changed.find("\"node\""), 6, "\"new-node\"");
+        write(fixture.root / "renamed.nut", changed);
+        input->set("expectedRevision", first->getValue<std::string>("revision"));
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("stale_project_revision"));
+        input = args(fixture.root);
+        input->set("seed", "entity:demo/node");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+        std::filesystem::remove(fixture.root / "renamed.nut");
+        input->set("seed", "script:afterEvent");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+    };
+    SUB_CASE("devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookalikes") {
+        Fixture fixture(false, false);
+        write(fixture.root / "world.nut", R"SQ(
+            marker <- null;
+            function initialize() { local scene = eve.Scene(); marker = scene.getNodeRefAt("demo", "node"); }
+            function writeMarker() { return marker.setVisible(true); }
+            function shadow() { local marker = unknown(); return marker.setVisible(true); }
+            function fake() { local eve = lookalike; local scene = eve.Scene(); return scene.getNodeRefAt("wrong", "fake"); }
+        )SQ");
+        auto input = args(fixture.root);
+        input->set("seed", "script:shadow");
+        auto shadow = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        REQUIRE(shadow->getValue<bool>("ok"));
+        CHECK(!findNode(shadow, "api:scene/SceneNodeRef.setVisible"));
+        CHECK(findNode(shadow, "script:shadow")->getArray("unknownCalls")->size() > 0);
+        input->set("seed", "entity:wrong/fake");
+        CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input))
+                     ->getValue<std::string>("error"),
+                 std::string("unknown_seed"));
+        auto script = read(fixture.root / "world.nut");
+        write(fixture.root / "world.nut", script + "\nfunction retarget() { marker = unresolved(); }\n");
+        input->set("seed", "script:writeMarker");
+        auto dynamic = payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", input));
+        REQUIRE(dynamic->getValue<bool>("ok"));
+        CHECK(!findNode(dynamic, "api:scene/SceneNodeRef.setVisible"));
+        CHECK(findNode(dynamic, "script:writeMarker")->getArray("unknownCalls")->size() > 0);
+    };
 }
 }  // namespace test_mcp_project_index
 
@@ -736,30 +769,14 @@ TEST_CASE("devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookali
 #include "PrivateTestScope.h"
 
 #include <limits>
-#include "ui/PcgPhotoModeSession.h"
 #include "ui/PcgPhotoModeValues.h"
 // pcg_photo_mode_session.cpp
 namespace test_pcg_photo_mode_session {
 // pcg_photo_mode_session.cpp
 using namespace eve::ui;
 namespace {
-[[maybe_unused]] std::string profile(const char *scene, int64_t light, float fov) {
-    PcgPhotoModeValues v;
-    v.setString("m_lastSceneName", scene).value();
-    v.setBool("m_isUsingPcgLighting", light >= 0).value();
-    v.setInt("m_selectedPcgLightingProfile", light).value();
-    v.setFloat("m_fieldOfView", fov).value();
-    auto j = v.snapshotJson();
-    j.value();
-    return std::move(j).takeValue();
-}
-[[maybe_unused]] float fov(const std::string &j) {
-    PcgPhotoModeValues v;
-    v.restoreJson(j).value();
-    auto x = v.getFloat("m_fieldOfView");
-    x.value();
-    return std::move(x).takeValue();
-}
+
+
 }  // namespace
 
 
@@ -774,15 +791,10 @@ TEST_CASE("ui.pcgPhotoModeValues.roundTripsAllFieldsAndRejectsUnknownSchema") {
     REQUIRE(source.setFloat("m_pcgWindSpeed", 0.875f).ok());
     REQUIRE(source.setString("m_lastSceneName", "Alpine World").ok());
     REQUIRE(source.setColor("m_sunColor", 1.25f, .5f, .25f, 2.0f).ok());
-    std::ofstream(".local-debug/pvstage.txt", std::ios::app) << "1\\n";
     auto encoded = source.snapshotJson();
-    std::ofstream(".local-debug/pvstage.txt", std::ios::app) << "2\\n";
     REQUIRE(encoded.ok());
     PcgPhotoModeValues restored;
-    std::ofstream(".local-debug/pvstage.txt", std::ios::app) << "3\\n";
     REQUIRE(restored.restoreJson(encoded.value()).ok());
-    std::ofstream(".local-debug/pvstage.txt", std::ios::app) << "4\\n";
-    std::ofstream(".local-debug/pvstage.txt", std::ios::app) << "5\\n";
     auto again = restored.snapshotJson();
     REQUIRE(again.ok());
     CHECK_EQ(again.value(), encoded.value());
@@ -837,32 +849,6 @@ constexpr float kPi = 3.14159265358979323846f;
     return float(bits) * 2.3283064365386963e-10f;
 }
 
-[[maybe_unused]] glm::vec3 faceDirection(int face, float u, float v) {
-    switch (face) {
-        case 0: return glm::normalize(glm::vec3(1.f, -v, -u));
-        case 1: return glm::normalize(glm::vec3(-1.f, -v, u));
-        case 2: return glm::normalize(glm::vec3(u, 1.f, v));
-        case 3: return glm::normalize(glm::vec3(u, -1.f, -v));
-        case 4: return glm::normalize(glm::vec3(u, -v, 1.f));
-        default: return glm::normalize(glm::vec3(-u, -v, -1.f));
-    }
-}
-
-[[maybe_unused]] std::array<glm::vec3, 24 * 33> allFaceEdges() {
-    std::array<glm::vec3, 24 * 33> result{};
-    size_t                         out = 0;
-    for (int face = 0; face < 6; ++face) {
-        for (int edge = 0; edge < 4; ++edge) {
-            for (int sample = 0; sample < 33; ++sample) {
-                const float t = float(sample) / 16.f - 1.f;
-                const float u = edge < 2 ? (edge == 0 ? -1.f : 1.f) : t;
-                const float v = edge >= 2 ? (edge == 2 ? -1.f : 1.f) : t;
-                result[out++] = faceDirection(face, u, v);
-            }
-        }
-    }
-    return result;
-}
 
 }  // namespace
 
@@ -958,6 +944,8 @@ public:
 
     uint16_t port() const { return port_; }
 
+    void rejectConnections(bool reject) { rejectConnections_.store(reject); }
+
 private:
     void loop() {
         while (running_.load()) {
@@ -966,6 +954,13 @@ private:
                 sock = server_->acceptConnection();
             } catch (...) {
                 if (!running_.load()) break;
+                continue;
+            }
+            if (rejectConnections_.load()) {
+                try {
+                    sock.close();
+                } catch (...) {
+                }
                 continue;
             }
             // Swallow any per-connection error (e.g. receiveBytes timeout on a
@@ -1062,6 +1057,7 @@ private:
     std::unique_ptr<Poco::Net::ServerSocket> server_;
     std::thread                              thread_;
     std::atomic<bool>                        running_{false};
+    std::atomic<bool>                        rejectConnections_{false};
     uint16_t                                 port_ = 0;
 };
 
@@ -1167,7 +1163,6 @@ TEST_CASE("hotreload.remoteSyncDownload") {
     // Touch main.nut on the server → a new change event after the next poll.
     // Use a different length so the manifest (size + second-granularity mtime)
     // reliably reports a change even when both edits land in the same second.
-    std::this_thread::sleep_for(std::chrono::milliseconds(80));
     writeFile(root / "main.nut", "print('main v2 -- longer edit')\n");
     REQUIRE(waitFor([&]() {
         while (true) {
@@ -1193,17 +1188,38 @@ TEST_CASE("hotreload.remoteSyncDownload") {
 TEST_CASE("hotreload.remoteSyncUnreachableRecovers") {
     useIdentity("ev_ut_hot_remote_unreach");
     const auto overlay = tempDir("eve_ut_hot_remote_unreach_hot");
+    const auto root    = tempDir("eve_ut_hot_remote_recovery_server");
+    writeFile(root / "main.nut", "print('recovered after transport disconnect')\n");
+    TestHttpServer server;
+    server.rejectConnections(true);
+    REQUIRE(server.start(root.string()));
 
     auto *hot = eve::filesystem::HotReload::create();
+    REQUIRE(hot != nullptr);
+    struct StopSync {
+        eve::filesystem::HotReload *hot;
+        ~StopSync() { hot->stopRemoteSync(); }
+    } stopSync{hot};
     hot->setRemoteHotDir(overlay.string());
-    // Nothing listening on this port → sync should start but stay not-synced.
-    REQUIRE(hot->startRemoteSync("http://127.0.0.1:1", 50));
-    std::this_thread::sleep_for(std::chrono::milliseconds(250));
-    CHECK(hot->remoteSyncStatus() != "synced");
+    const auto url = std::string("http://127.0.0.1:") + std::to_string(server.port());
+    REQUIRE(hot->startRemoteSync(url, 50));
+    // Accept then close real loopback requests until the production failure state is observed.
+    REQUIRE(waitFor([&]() { return hot->remoteSyncStatus() == "error:unreachable"; }, 2000));
+    server.rejectConnections(false);
+    REQUIRE(waitFor([&]() { return hot->remoteSyncStatus() == "synced"; }, 2000));
+    REQUIRE(std::filesystem::is_regular_file(overlay / "main.nut"));
+    std::ifstream     restored(overlay / "main.nut", std::ios::binary);
+    const std::string contents((std::istreambuf_iterator<char>(restored)), {});
+    restored.close();
+    REQUIRE(contents.find("recovered after transport disconnect") != std::string::npos);
     hot->stopRemoteSync();
+    REQUIRE(!hot->isRemoteSyncing());
+    REQUIRE_EQ(hot->remoteSyncStatus(), std::string("idle"));
+    server.stop();
 
     std::error_code ec;
     std::filesystem::remove_all(overlay, ec);
+    std::filesystem::remove_all(root, ec);
 }
 }  // namespace test_remotesync
 
@@ -2555,38 +2571,13 @@ using namespace eve::tensor;
 
 namespace {
 
-[[maybe_unused]] std::vector<float> randData(int n, unsigned seed) {
-    std::vector<float> v(static_cast<size_t>(n));
-    unsigned           s = seed;
-    for (int i = 0; i < n; ++i) {
-        s                         = s * 1664525u + 1013904223u;
-        v[static_cast<size_t>(i)] = float(int(s % 2001) - 1000) / 1000.f;  // [-1, 1]
-    }
-    return v;
-}
 
-[[maybe_unused]] Tensor *fromData(const std::vector<float> &d, int d0, int d1) {
-    auto *t = new Tensor(d0, d1);
-    for (size_t i = 0; i < d.size(); ++i) t->set(int(i), d[static_cast<size_t>(i)]);
-    return t;
-}
 
-[[maybe_unused]] float maxAbsDiff(const Tensor *a, const Tensor *b) {
-    float m = 0.f;
-    for (int i = 0; i < a->getSize(); ++i) m = std::max(m, std::fabs(a->get(i) - b->get(i)));
-    return m;
-}
 
-[[maybe_unused]] const char *dtypeTag(DType dt) {
-    switch (dt) {
-        case DType::Fp16: return "fp16";
-        case DType::Fp8E4M3: return "fp8";
-        case DType::Fp4E2M1: return "fp4";
-        case DType::Int8: return "int8";
-        case DType::Int4: return "int4";
-        default: return "?";
-    }
-}
+
+
+
+
 
 }  // namespace
 }  // namespace test_tensor_llm

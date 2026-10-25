@@ -95,15 +95,13 @@
       "volumetric.drawOccluders2DUsesCastFlag",
       "volumetric.drawOcclusionRespectsFlag",
       "volumetric.fogDenserAtDistance",
-      "volumetric.fogModeAndQuality",
-      "volumetric.fogParamsRoundTrip",
+      "volumetric.sharedParameterContracts",
       "volumetric.froxelAtlasCompositesIntegratedMedia",
       "volumetric.froxelIntegratesEmissiveProxyAndSceneLights",
       "volumetric.froxelSceneLightsValidateBoundsAndRankProxies",
       "volumetric.modeAndRayMarchQuality",
       "volumetric.occlusionFromSceneLights2D",
       "volumetric.occlusionMapAndScatter",
-      "volumetric.paramRoundTripShared",
       "volumetric.qualityPresets",
       "volumetric.rayMarchProducesScatter",
       "volumetric.rayMarchShadowDarkensBehindOccluder",
@@ -2510,11 +2508,14 @@ TEST_CASE("daynight.sky injected cloud time changes authored wisps and closes th
     auto moved = capture();
     REQUIRE(moved != nullptr);
     int changed = 0;
+    bool movedFinite = true;
     for (int y = 0; y < 90; ++y)
         for (int x = 0; x < 160; ++x) {
             const auto a = first->getPixel(x, y), b = moved->getPixel(x, y);
+            movedFinite = (std::isfinite(b.r) && std::isfinite(b.g) && std::isfinite(b.b)) && movedFinite;
             if (std::abs(a.b - b.b) > .0001f) ++changed;
         }
+    REQUIRE(movedFinite);
     REQUIRE(changed > 100);
     REQUIRE(sky->frame().simulation.elapsedSeconds == 10);
     REQUIRE(!sky->advance(eve::Duration::fromNanoseconds(-1)).ok());
@@ -2525,13 +2526,18 @@ TEST_CASE("daynight.sky injected cloud time changes authored wisps and closes th
     REQUIRE(sky->frame().wispsMorphPhase == 0);
     auto cycle = capture();
     REQUIRE(cycle != nullptr);
+    bool  cycleFinite   = true;
+    float cycleMaxError = 0.f;
     for (int y = 0; y < 90; ++y)
         for (int x = 0; x < 160; ++x) {
             const auto a = first->getPixel(x, y), b = cycle->getPixel(x, y);
-            REQUIRE(std::abs(a.r - b.r) < .00001f);
-            REQUIRE(std::abs(a.g - b.g) < .00001f);
-            REQUIRE(std::abs(a.b - b.b) < .00001f);
+            for (const float error : {a.r - b.r, a.g - b.g, a.b - b.b}) {
+                cycleFinite   = std::isfinite(error) && cycleFinite;
+                cycleMaxError = std::max(cycleMaxError, std::abs(error));
+            }
         }
+    REQUIRE(cycleFinite);
+    REQUIRE(cycleMaxError < .00001f);
     sky.reset();
     REQUIRE(fs->unmountRealDirectory(source));
 }
@@ -2564,31 +2570,34 @@ TEST_CASE("daynight.sky optical cycle survives midnight and restores the same re
     REQUIRE(canvas != nullptr);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> before(canvas->newHDRImageData());
+    REQUIRE(before != nullptr);
     REQUIRE(sky->advance(eve::Duration::fromNanoseconds(2000000000)).ok());
     REQUIRE(sky->frame().simulation.hour == 1);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> after(canvas->newHDRImageData());
+    REQUIRE(after != nullptr);
     bool                                   changed = false;
+    bool                                   opticalFinite = true;
     for (int y = 0; y < 32; ++y)
         for (int x = 0; x < 32; ++x) {
             const auto a = before->getPixel(x, y), b = after->getPixel(x, y);
-            REQUIRE(std::isfinite(b.r));
-            REQUIRE(std::isfinite(b.g));
-            REQUIRE(std::isfinite(b.b));
+            opticalFinite = (std::isfinite(b.r) && std::isfinite(b.g) && std::isfinite(b.b)) && opticalFinite;
             changed = changed || a.r != b.r || a.g != b.g || a.b != b.b;
         }
+    REQUIRE(opticalFinite);
     REQUIRE(changed);
     REQUIRE(sky->advance(eve::Duration::fromNanoseconds(22000000000)).ok());
     REQUIRE(sky->frame().simulation.hour == 23);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> restored(canvas->newHDRImageData());
+    REQUIRE(restored != nullptr);
+    bool restoredEqual = true;
     for (int y = 0; y < 32; ++y)
         for (int x = 0; x < 32; ++x) {
             const auto a = before->getPixel(x, y), b = restored->getPixel(x, y);
-            REQUIRE(a.r == b.r);
-            REQUIRE(a.g == b.g);
-            REQUIRE(a.b == b.b);
+            restoredEqual = (a.r == b.r && a.g == b.g && a.b == b.b) && restoredEqual;
         }
+    REQUIRE(restoredEqual);
     sky->detach();
     REQUIRE(fs->unmountRealDirectory(source));
 #endif
@@ -4277,56 +4286,56 @@ TEST_CASE("volumetric.drawOccluders2DUsesCastFlag") {
     CHECK(occ->getPixel(85, 30).r > 0.5f);
 }
 
-TEST_CASE("volumetric.paramRoundTripShared") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    vol->setDensity(0.42f);
-    CHECK(std::fabs(vol->getFloat("density") - 0.42f) < 1e-5f);
-    vol->setMode("raymarch");
-    vol->setDensity(0.33f);
-    CHECK(std::fabs(vol->getFloat("density") - 0.33f) < 1e-5f);
-    CHECK(vol->hasParam("invViewProj") == true);
-    CHECK(vol->hasParam("exposure") == true);
+TEST_CASE("volumetric.sharedParameterContracts") {
+    GfxFixture fixture;
+    REQUIRE(fixture.win != nullptr);
+    REQUIRE(fixture.win->isOpen());
+    auto *gfx = fixture.gfx;
+    REQUIRE(gfx != nullptr);
+    SUB_CASE("volumetric.paramRoundTripShared") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        vol->setDensity(0.42f);
+        REQUIRE(std::fabs(vol->getFloat("density") - 0.42f) < 1e-5f);
+        vol->setMode("raymarch");
+        vol->setDensity(0.33f);
+        REQUIRE(std::fabs(vol->getFloat("density") - 0.33f) < 1e-5f);
+        REQUIRE(vol->hasParam("invViewProj") == true);
+        REQUIRE(vol->hasParam("exposure") == true);
+    };
+    SUB_CASE("volumetric.fogModeAndQuality") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        REQUIRE(vol->getFogShader() != nullptr);
+
+        vol->setMode("fog");
+        REQUIRE(vol->getMode() == "fog");
+        vol->setQuality("low");
+        REQUIRE(vol->getSampleCount() == 8);
+        vol->setQuality("high");
+        REQUIRE(vol->getSampleCount() == 48);
+        vol->setQuality("medium");
+        REQUIRE(vol->getSampleCount() == 24);
+    };
+    SUB_CASE("volumetric.fogParamsRoundTrip") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        vol->setMode("fog");
+        vol->setFogHeight(-1.5f);
+        vol->setFogHeightFalloff(0.22f);
+        vol->setFogStart(3.f);
+        vol->setFogEnd(25.f);
+        vol->setFogNoise(0.5f);
+        vol->setFogColor(0.4f, 0.5f, 0.7f);
+        REQUIRE(std::fabs(vol->getFloat("fogHeight") + 1.5f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("heightFalloff") - 0.22f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogStart") - 3.f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogEnd") - 25.f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("noiseAmount") - 0.5f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogR") - 0.4f) < 1e-5f);
+    };
 }
 
-TEST_CASE("volumetric.fogModeAndQuality") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    REQUIRE(vol->getFogShader() != nullptr);
-
-    vol->setMode("fog");
-    CHECK(vol->getMode() == "fog");
-    vol->setQuality("low");
-    CHECK(vol->getSampleCount() == 8);
-    vol->setQuality("high");
-    CHECK(vol->getSampleCount() == 48);
-    vol->setQuality("medium");
-    CHECK(vol->getSampleCount() == 24);
-}
-
-TEST_CASE("volumetric.fogParamsRoundTrip") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    vol->setMode("fog");
-    vol->setFogHeight(-1.5f);
-    vol->setFogHeightFalloff(0.22f);
-    vol->setFogStart(3.f);
-    vol->setFogEnd(25.f);
-    vol->setFogNoise(0.5f);
-    vol->setFogColor(0.4f, 0.5f, 0.7f);
-    CHECK(std::fabs(vol->getFloat("fogHeight") + 1.5f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("heightFalloff") - 0.22f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogStart") - 3.f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogEnd") - 25.f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("noiseAmount") - 0.5f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogR") - 0.4f) < 1e-5f);
-}
 
 TEST_CASE("volumetric.applyFogProducesOpacity") {
     eve::window::Window *win = nullptr;
