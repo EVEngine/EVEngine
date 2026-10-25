@@ -3,6 +3,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shader.h"
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 #include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 

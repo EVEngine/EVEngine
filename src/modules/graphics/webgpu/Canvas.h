@@ -5,7 +5,8 @@
 
 #include <optional>
 
-#include <glm/glm.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics::webgpu {
 

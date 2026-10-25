@@ -9,6 +9,7 @@
 #include "graphics/GBuffer.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
+#include "graphics/Shader.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"

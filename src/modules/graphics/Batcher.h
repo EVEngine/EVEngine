@@ -1,8 +1,6 @@
 #pragma once
 #include "common/Export.h"
 
-
-#include "graphics/Canvas.h"
 #include <vector>
 #include <glm/glm.hpp>
 
