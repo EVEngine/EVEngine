@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -54,7 +55,7 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
 
         static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int resultCount, void *context) {
             auto *self = static_cast<PlaneCollector *>(context);
-            if (self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
+            if (b3Shape_IsSensor(shapeId) || self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
             for (int i = 0; i < resultCount && self->count < planeCapacity; ++i) {
                 const b3Plane &plane = results[i].plane;
                 self->planes[self->count++] =
@@ -94,7 +95,7 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
             WorldBackend *world = nullptr;
             static bool   callback(b3ShapeId shapeId, void *context) {
                 auto *self = static_cast<MoverFilter *>(context);
-                return !self->world->do_shouldIgnoreQueryShape(shapeId);
+                return !b3Shape_IsSensor(shapeId) && !self->world->do_shouldIgnoreQueryShape(shapeId);
             }
         } moverFilter{this};
         const float fraction =
@@ -108,14 +109,36 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
         if (b3LengthSquared(target - current) <= toleranceSquared) break;
     }
 
-    const b3Vec3 total      = current - start;
+    const b3Vec3 total = current - start;
+    // Grounding describes support at the destination, not planes left behind.
+    struct SupportCollector {
+        WorldBackend *world  = nullptr;
+        b3Vec3        up     = b3Vec3_axisY;
+        b3Vec3        normal = b3Vec3_zero;
+        float         upDot  = -1.f;
+
+        static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int count, void *context) {
+            auto *self = static_cast<SupportCollector *>(context);
+            if (b3Shape_IsSensor(shapeId) || self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
+            for (int i = 0; i < count; ++i) {
+                const float upDot = b3Dot(results[i].plane.normal, self->up);
+                if (upDot > self->upDot) {
+                    self->upDot  = upDot;
+                    self->normal = results[i].plane.normal;
+                }
+            }
+            return true;
+        }
+    } support{this, moverUp_};
+    b3World_CollideMover(worldId_, current, &mover, filter, &SupportCollector::callback, &support);
+    if (b3LengthSquared(collector.bestNormal) <= toleranceSquared) collector.bestNormal = support.normal;
     owner_->moverDeltaX_    = total.x;
     owner_->moverDeltaY_    = total.y;
     owner_->moverDeltaZ_    = total.z;
     owner_->moverNormalX_   = collector.bestNormal.x;
     owner_->moverNormalY_   = collector.bestNormal.y;
     owner_->moverNormalZ_   = collector.bestNormal.z;
-    owner_->moverGroundDot_ = collector.maxUpDot;
+    owner_->moverGroundDot_ = support.upDot;
     owner_->moverGrounded_  = owner_->moverGroundDot_ >= owner_->moverSlopeCos_;
     return collided;
 }

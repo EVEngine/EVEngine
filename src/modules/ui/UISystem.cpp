@@ -2,10 +2,11 @@
 #include "ui/UISystem.h"
 #include "ui/Component.h"
 
-#include "ui/Layout.h"
-#include "ui/Icons.h"
-#include "ui/Theme.h"
 #include "ui/ControlPrimitives.h"
+#include "ui/HudGeometry.h"
+#include "ui/Icons.h"
+#include "ui/Layout.h"
+#include "ui/Theme.h"
 #include "ui/UIBackend.h"
 #include "ui/WorldAnchorProjection.h"
 
@@ -19,6 +20,7 @@
 #include <imgui_internal.h>
 
 #include <algorithm>
+#include <cfloat>
 #include <chrono>
 #include <cmath>
 #include <cstdio>
@@ -38,6 +40,7 @@ std::vector<UIDrop> g_drops;
 std::vector<std::string> g_pendingFileDrops;
 UIBackend *g_backend = nullptr;
 UIStats g_stats;
+float                                g_hudScale = 1.f;
 std::map<std::string, ViewportState> g_viewports;
 
 struct HostThemeScope {
@@ -64,6 +67,83 @@ struct HostThemeScope {
 
     HostThemeScope(const HostThemeScope &) = delete;
     HostThemeScope &operator=(const HostThemeScope &) = delete;
+};
+
+// UI-thread-only scratch reused by sequential measure/walk passes. No callbacks run in these passes.
+constexpr auto hudMetrics = std::to_array<float UINode::*>(
+    {&UINode::sizeX,    &UINode::sizeY,        &UINode::marginL,   &UINode::marginT,   &UINode::marginR,
+     &UINode::marginB,  &UINode::paddingL,     &UINode::paddingT,  &UINode::paddingR,  &UINode::paddingB,
+     &UINode::minSizeX, &UINode::minSizeY,     &UINode::maxSizeX,  &UINode::maxSizeY,  &UINode::posX,
+     &UINode::posY,     &UINode::cornerRadius, &UINode::fontSize,  &UINode::wrapWidth, &UINode::itemHeight,
+     &UINode::gap,      &UINode::flexBasis,    &UINode::columnGap, &UINode::rowGap});
+std::vector<std::array<float, hudMetrics.size()>> g_hudMetricScratch;
+
+struct HudCanvasScope {
+    UIHost              &host;
+    bool                 active = false;
+    std::array<float, 6> savedMeta{};
+    ImGuiStyle           savedStyle;
+    float                savedFontScale = 1.f;
+    float                savedHudScale  = 1.f;
+
+    bool savedWriteAccessed = false;
+
+    explicit HudCanvasScope(UIHost &target) : host(target) {
+        auto meta = host.meta();
+        if (!meta->canvas.enabled || host.worldAnchor()->enabled) return;
+        const ImVec2 display   = ImGui::GetIO().DisplaySize;
+        const auto   transform = resolveHudCanvas(meta->canvas, display.x, display.y);
+        active                 = true;
+        savedHudScale          = g_hudScale;
+        g_hudScale             = transform.scale;
+        savedMeta              = {meta->posX, meta->posY, meta->sizeX, meta->sizeY, meta->percentW, meta->percentH};
+        savedStyle             = ImGui::GetStyle();
+        savedFontScale         = ImGui::GetCurrentWindowRead()->FontWindowScale;
+        savedWriteAccessed     = ImGui::GetCurrentWindowRead()->WriteAccessed;
+        ImGui::GetStyle().ScaleAllSizes(transform.scale);
+        ImGui::SetWindowFontScale(savedFontScale * transform.scale);
+        ImGui::GetCurrentWindowRead()->WriteAccessed = savedWriteAccessed;
+        meta->posX = transform.x + meta->anchorX * (transform.width - display.x) + meta->posX * transform.scale;
+        meta->posY = transform.y + meta->anchorY * (transform.height - display.y) + meta->posY * transform.scale;
+        meta->sizeX *= transform.scale;
+        meta->sizeY *= transform.scale;
+        if (display.x > 0.f) meta->percentW *= transform.width / display.x;
+        if (display.y > 0.f) meta->percentH *= transform.height / display.y;
+        auto tree = host.tree();
+        g_hudMetricScratch.resize(tree->nodes.size());
+        for (std::size_t i = 0; i < tree->nodes.size(); ++i) {
+            auto &node = tree->nodes[i];
+            for (std::size_t m = 0; m < hudMetrics.size(); ++m) {
+                auto &value              = node.*hudMetrics[m];
+                g_hudMetricScratch[i][m] = value;
+                if (value >= 0.f || (hudMetrics[m] != &UINode::gap && hudMetrics[m] != &UINode::flexBasis &&
+                                     hudMetrics[m] != &UINode::columnGap && hudMetrics[m] != &UINode::rowGap))
+                    value *= transform.scale;  // negative metrics mean automatic/inherit
+            }
+        }
+    }
+
+    HudCanvasScope(const HudCanvasScope &)            = delete;
+    HudCanvasScope &operator=(const HudCanvasScope &) = delete;
+
+    ~HudCanvasScope() {
+        if (!active) return;
+        auto tree = host.tree();
+        for (std::size_t i = 0; i < tree->nodes.size(); ++i)
+            for (std::size_t m = 0; m < hudMetrics.size(); ++m)
+                tree->nodes[i].*hudMetrics[m] = g_hudMetricScratch[i][m];
+        auto meta         = host.meta();
+        meta->posX        = savedMeta[0];
+        meta->posY        = savedMeta[1];
+        meta->sizeX       = savedMeta[2];
+        meta->sizeY       = savedMeta[3];
+        meta->percentW    = savedMeta[4];
+        meta->percentH    = savedMeta[5];
+        ImGui::GetStyle() = savedStyle;
+        ImGui::SetWindowFontScale(savedFontScale);
+        ImGui::GetCurrentWindowRead()->WriteAccessed = savedWriteAccessed;
+        g_hudScale                                   = savedHudScale;
+    }
 };
 
 struct ActiveDragPayload {
@@ -431,16 +511,10 @@ void drawNinePatch(void *handle, const ImVec2 &pos, const ImVec2 &size, const Im
         draw(0.f, 0.f, size.x, size.y, uv0.x, uv0.y, uv1.x, uv1.y);
         return;
     }
-    const float uPerPx = (uv1.x - uv0.x) / float(texW);
-    const float vPerPx = (uv1.y - uv0.y) / float(texH);
-    const float uL = uv0.x + std::min(bL, size.x * 0.5f) * uPerPx;
-    const float uR = uv1.x - std::min(bR, size.x * 0.5f) * uPerPx;
-    const float vT = uv0.y + std::min(bT, size.y * 0.5f) * vPerPx;
-    const float vB = uv1.y - std::min(bB, size.y * 0.5f) * vPerPx;
-    const float bl = std::min(bL, size.x * 0.5f);
-    const float br = std::min(bR, size.x * 0.5f);
-    const float bt = std::min(bT, size.y * 0.5f);
-    const float bb = std::min(bB, size.y * 0.5f);
+    const auto  x  = ninePatchAxis(size.x, bL, bR, uv0.x, uv1.x, float(texW), g_hudScale);
+    const auto  y  = ninePatchAxis(size.y, bT, bB, uv0.y, uv1.y, float(texH), g_hudScale);
+    const float bl = x.nearSize, br = x.farSize, bt = y.nearSize, bb = y.farSize;
+    const float uL = x.nearUv, uR = x.farUv, vT = y.nearUv, vB = y.farUv;
     // Corners
     draw(0.f, 0.f, bl, bt, uv0.x, uv0.y, uL, vT);
     draw(size.x - br, 0.f, size.x, bt, uR, uv0.y, uv1.x, vT);
@@ -471,16 +545,10 @@ void queueNinePatch(uint64_t textureId, const ImVec2 &pos, const ImVec2 &size,
         draw(0.f, 0.f, size.x, size.y, uv0.x, uv0.y, uv1.x, uv1.y);
         return;
     }
-    const float bl = std::min(bL, size.x * 0.5f);
-    const float br = std::min(bR, size.x * 0.5f);
-    const float bt = std::min(bT, size.y * 0.5f);
-    const float bb = std::min(bB, size.y * 0.5f);
-    const float uPerPx = (uv1.x - uv0.x) / float(texW);
-    const float vPerPx = (uv1.y - uv0.y) / float(texH);
-    const float uL = uv0.x + bl * uPerPx;
-    const float uR = uv1.x - br * uPerPx;
-    const float vT = uv0.y + bt * vPerPx;
-    const float vB = uv1.y - bb * vPerPx;
+    const auto  x  = ninePatchAxis(size.x, bL, bR, uv0.x, uv1.x, float(texW), g_hudScale);
+    const auto  y  = ninePatchAxis(size.y, bT, bB, uv0.y, uv1.y, float(texH), g_hudScale);
+    const float bl = x.nearSize, br = x.farSize, bt = y.nearSize, bb = y.farSize;
+    const float uL = x.nearUv, uR = x.farUv, vT = y.nearUv, vB = y.farUv;
     draw(0.f, 0.f, bl, bt, uv0.x, uv0.y, uL, vT);
     draw(size.x - br, 0.f, size.x, bt, uR, uv0.y, uv1.x, vT);
     draw(0.f, size.y - bb, bl, size.y, uv0.x, vB, uL, uv1.y);
@@ -744,6 +812,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         previousFontScale = ImGui::GetIO().FontGlobalScale;
         previousConfigFlags = ImGui::GetIO().ConfigFlags;
         applyThemeToImGui(n.themePreset == ThemePreset::Dark ? Theme::dark() : Theme::light());
+        if (g_hudScale != 1.f) ImGui::GetStyle().ScaleAllSizes(g_hudScale);
     }
 
     int styleColorCount = 0;
@@ -771,7 +840,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             pushColor(ImGuiCol_SliderGrab, style.accentColor);
             pushColor(ImGuiCol_SliderGrabActive, style.accentColor);
         }
-        const float scale = themeUiScale();
+        const float scale = themeUiScale() * g_hudScale;
         if (style.hasPadding) {
             ImGui::PushStyleVar(ImGuiStyleVar_FramePadding,
                                 ImVec2(style.paddingX * scale, style.paddingY * scale));
@@ -859,6 +928,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             // Real measured size → stable auto-resize instead of ImGui's guess.
             ImGui::SetNextWindowContentSize(ImVec2(n.measuredW, n.measuredH));
         }
+        if (host && host->meta()->inputTransparent) flags |= ImGuiWindowFlags_NoInputs;
         if (host && host->meta()->overlay) {
             flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize |
                      ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse;
@@ -884,6 +954,11 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             }
         } else {
             ImGui::Begin(title.c_str(), nullptr, flags);
+            ImGui::SetWindowFontScale(1.f);
+            if (host && host->meta()->canvas.enabled && !worldAnchor->enabled) {
+                const ImVec2 display = ImGui::GetIO().DisplaySize;
+                ImGui::SetWindowFontScale(resolveHudCanvas(host->meta()->canvas, display.x, display.y).scale);
+            }
             if (worldAnchor->enabled)
                 ImGui::SetWindowFontScale(worldAnchor->scale);
             if (n.firstChild >= 0) walkSiblings(host, tree, n.firstChild);
@@ -894,7 +969,18 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         break;
     }
     case NodeType::Text:
-        if (n.wrapWidth > 0.f) {
+        if (n.fontSize > 0.f) {
+            const ImVec2 pos      = ImGui::GetCursorScreenPos();
+            const ImVec2 measured = ImGui::GetFont()->CalcTextSizeA(n.fontSize, FLT_MAX, n.wrapWidth, n.text.c_str());
+            const ImVec2 size(n.sizeX > 0.f ? n.sizeX : measured.x, n.sizeY > 0.f ? n.sizeY : measured.y);
+            const ImVec2 at(pos.x + std::max(0.f, size.x - measured.x) * n.textAlignX,
+                            pos.y + std::max(0.f, size.y - measured.y) * n.textAlignY);
+            const ImVec4 clip(pos.x, pos.y, pos.x + size.x, pos.y + size.y);
+            ImGui::GetWindowDrawList()->AddText(ImGui::GetFont(), n.fontSize, at,
+                                                ImGui::GetColorU32(ImVec4(n.textR, n.textG, n.textB, n.textA)),
+                                                n.text.c_str(), nullptr, n.wrapWidth, &clip);
+            ImGui::Dummy(size);
+        } else if (n.wrapWidth > 0.f) {
             ImGui::PushTextWrapPos(ImGui::GetCursorPosX() + n.wrapWidth);
             ImGui::TextUnformatted(n.text.c_str());
             ImGui::PopTextWrapPos();
@@ -1028,34 +1114,74 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
         ImGui::ProgressBar(n.value, ImVec2(n.sizeX > 0.f ? n.sizeX : -1.f, n.sizeY > 0.f ? n.sizeY : 0.f), overlay);
         break;
     }
+    case NodeType::RadialFill: {
+        const ImVec2 pos = ImGui::GetCursorScreenPos();
+        const ImVec2 size(n.sizeX > 0.f ? n.sizeX : 32.f, n.sizeY > 0.f ? n.sizeY : 32.f);
+        const auto   mesh       = radialFillMesh(n.value, n.fillStartDegrees, n.fillClockwise, n.fillInnerRadius);
+        const ImU32  color      = ImGui::GetColorU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+        auto         point      = [&](float x, float y) { return ImVec2(pos.x + x * size.x, pos.y + y * size.y); };
+        auto        *list       = ImGui::GetWindowDrawList();
+        const auto   savedFlags = list->Flags;
+        // No alpha fringes along the internal edges of a translucent sector.
+        list->Flags &= ~ImDrawListFlags_AntiAliasedFill;
+        const auto triangle = [&](ImVec2 a, ImVec2 b, ImVec2 c) {
+            // ImGui anti-aliased convex paths require clockwise winding in screen coordinates.
+            if (!n.fillClockwise) std::swap(b, c);
+            list->AddTriangleFilled(a, b, c, color);
+        };
+        for (int i = 0; i < mesh.count; ++i) {
+            const auto &q = mesh.quads[std::size_t(i)];
+            triangle(point(q.innerX0, q.innerY0), point(q.outerX0, q.outerY0), point(q.outerX1, q.outerY1));
+            if (n.fillInnerRadius > 0.f)
+                triangle(point(q.innerX0, q.innerY0), point(q.outerX1, q.outerY1), point(q.innerX1, q.innerY1));
+        }
+        list->Flags = savedFlags;
+        ImGui::Dummy(size);
+        break;
+    }
+    case NodeType::FilledImage:
     case NodeType::Image: {
         const float w = n.sizeX > 0.f ? n.sizeX : 32.f;
         const float h = n.sizeY > 0.f ? n.sizeY : 32.f;
         const ImVec2 pos = ImGui::GetCursorScreenPos();
         const ImVec2 size(w, h);
-        const ImU32 tint =
-            ImGui::ColorConvertFloat4ToU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+        const ImU32  tint = ImGui::GetColorU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+        const auto   fill = n.type == NodeType::FilledImage ? linearFillRect(n.value, n.fillDirection, n.fillStretch)
+                                                            : linearFillRect(1.f, FillDirection::Right, false);
+        const ImVec2 drawPos(pos.x + fill.x * w, pos.y + fill.y * h);
+        const ImVec2 drawSize(fill.w * w, fill.h * h);
+        const ImVec2 drawUv0(n.uv0x + (n.uv1x - n.uv0x) * fill.u0, n.uv0y + (n.uv1y - n.uv0y) * fill.v0);
+        const ImVec2 drawUv1(n.uv0x + (n.uv1x - n.uv0x) * fill.u1, n.uv0y + (n.uv1y - n.uv0y) * fill.v1);
+        if (fill.w <= 0.f || fill.h <= 0.f) {
+            ImGui::Dummy(size);
+            break;
+        }
         if (n.textureId != 0 && g_backend) {
             int tw = 0, th = 0;
             g_backend->textureSize(n.textureId, &tw, &th);
             if (g_backend->usesQueuedTextureDraws()) {
-                queueNinePatch(n.textureId, pos, size, ImVec2(n.uv0x, n.uv0y),
-                               ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT, n.borderR,
-                               n.borderB, tw, th, n.tintR, n.tintG, n.tintB, n.tintA);
+                queueNinePatch(n.textureId, drawPos, drawSize, drawUv0, drawUv1,
+                               n.type == NodeType::FilledImage ? 0.f : n.borderL,
+                               n.type == NodeType::FilledImage ? 0.f : n.borderT,
+                               n.type == NodeType::FilledImage ? 0.f : n.borderR,
+                               n.type == NodeType::FilledImage ? 0.f : n.borderB, tw, th, n.tintR, n.tintG, n.tintB,
+                               n.tintA * ImGui::GetStyle().Alpha);
             } else {
                 void *handle = g_backend->textureHandle(n.textureId);
                 if (handle) {
-                    drawNinePatch(handle, pos, size, ImVec2(n.uv0x, n.uv0y),
-                                  ImVec2(n.uv1x, n.uv1y), n.borderL, n.borderT,
-                                  n.borderR, n.borderB, tw, th, tint);
+                    drawNinePatch(handle, drawPos, drawSize, drawUv0, drawUv1,
+                                  n.type == NodeType::FilledImage ? 0.f : n.borderL,
+                                  n.type == NodeType::FilledImage ? 0.f : n.borderT,
+                                  n.type == NodeType::FilledImage ? 0.f : n.borderR,
+                                  n.type == NodeType::FilledImage ? 0.f : n.borderB, tw, th, tint);
                 } else {
                     ImGui::GetWindowDrawList()->AddRectFilled(
-                        pos, ImVec2(pos.x + w, pos.y + h), tint, n.cornerRadius);
+                        drawPos, ImVec2(drawPos.x + drawSize.x, drawPos.y + drawSize.y), tint, n.cornerRadius);
                 }
             }
         } else {
-            ImGui::GetWindowDrawList()->AddRectFilled(pos, ImVec2(pos.x + w, pos.y + h), tint,
-                                                      n.cornerRadius);
+            ImGui::GetWindowDrawList()->AddRectFilled(drawPos, ImVec2(drawPos.x + drawSize.x, drawPos.y + drawSize.y),
+                                                      tint, n.cornerRadius);
         }
         ImGui::Dummy(size);
         break;
@@ -1094,8 +1220,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
             clicked = ImGui::InvisibleButton(sid.c_str(), size);
             const ImVec2 pmin = ImGui::GetItemRectMin();
             const ImVec2 pmax = ImGui::GetItemRectMax();
-            ImU32 col =
-                ImGui::ColorConvertFloat4ToU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
+            ImU32        col  = ImGui::GetColorU32(ImVec4(n.tintR, n.tintG, n.tintB, n.tintA));
             if (ImGui::IsItemHovered()) col = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
             ImGui::GetWindowDrawList()->AddRectFilled(pmin, pmax, col, n.cornerRadius);
         }
@@ -1338,7 +1463,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     case NodeType::StatusBar: {
         const bool status = n.type == NodeType::StatusBar;
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
+        const float        scale  = themeUiScale() * g_hudScale;
         const float defaultHeight =
             (status ? layout.statusBarHeight : layout.toolbarHeight) * scale;
         const float height = n.sizeY > 0.f ? n.sizeY : defaultHeight;
@@ -1361,7 +1486,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::Toolbox: {
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
+        const float        scale  = themeUiScale() * g_hudScale;
         const float cell = n.itemHeight > 0.f ? n.itemHeight : layout.toolboxCellSize * scale;
         const ImVec2 padding(layout.panelPaddingX * scale, layout.panelPaddingY * scale);
         const float outerWidth = n.sizeX > 0.f ? n.sizeX : ImGui::GetContentRegionAvail().x;
@@ -1407,7 +1532,7 @@ void walkNode(UIHost *host, UIHost::Tree *tree, int index) {
     }
     case NodeType::Sidebar: {
         const ThemeLayout &layout = globalTheme().layout;
-        const float scale = themeUiScale();
+        const float        scale  = themeUiScale() * g_hudScale;
         const ImVec2 size(n.sizeX > 0.f ? n.sizeX : layout.sidebarWidth * scale,
                           n.sizeY > 0.f ? n.sizeY : 0.f);
         const std::string id = n.id.empty() ? "sidebar" : n.id;
@@ -1923,6 +2048,7 @@ void UISystem::render() {
     for (auto &item : items) {
         item.tree->dirty = false;
         HostThemeScope theme(item.host);
+        HudCanvasScope canvas(*item.host);
         const auto m0 = std::chrono::steady_clock::now();
         measureTree(*item.tree);
         const auto m1 = std::chrono::steady_clock::now();
@@ -1980,6 +2106,7 @@ void UISystem::render() {
     for (auto &item : items) {
         if (!item.render) continue;
         HostThemeScope theme(item.host);
+        HudCanvasScope canvas(*item.host);
         const auto w0 = std::chrono::steady_clock::now();
         if (item.tree->root >= 0) walk(item.host, item.tree, item.tree->root);
         const auto w1 = std::chrono::steady_clock::now();

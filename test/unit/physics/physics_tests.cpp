@@ -254,12 +254,14 @@ TEST_CASE("box3d.sdf.moverRecoversInitialPenetration") {
 }
 
 TEST_CASE("box3d.sdf.moverStopsAtTwoPlaneCorner") {
-    DistanceField3D field(9, 7, 9, 0.5f, -2.f, -1.5f, -2.f, 100.f);
-    for (int z = 0; z < 9; ++z) {
-        for (int y = 0; y < 7; ++y) {
-            for (int x = 0; x < 9; ++x) {
-                const float worldX = -2.f + 0.5f * static_cast<float>(x);
-                const float worldZ = -2.f + 0.5f * static_cast<float>(z);
+    // Resolve the corner below the 1cm positional tolerance. A 0.5m grid
+    // interpolates min(x,z-0.5) into a rounded corner wider than this capsule.
+    DistanceField3D field(201, 61, 201, 0.02f, -2.f, -0.6f, -2.f, 100.f);
+    for (int z = 0; z < 201; ++z) {
+        for (int y = 0; y < 61; ++y) {
+            for (int x = 0; x < 201; ++x) {
+                const float worldX = -2.f + 0.02f * static_cast<float>(x);
+                const float worldZ = -2.f + 0.02f * static_cast<float>(z);
                 // Union of x<=0 and z<=0.5 half spaces.
                 field.setDistance(x, y, z, std::min(worldX, worldZ - 0.5f));
             }
@@ -331,12 +333,13 @@ TEST_CASE("box3d.sdf.moverGroundSnapAndLedge") {
 }
 
 TEST_CASE("box3d.sdf.moverStepOffsetClimbsOnlyLowLedges") {
-    DistanceField3D field(41, 31, 5, 0.1f, -2.f, -1.f, -0.2f, 100.f);
+    // The grid must resolve the 1cm skin and 2cm no-climb tolerance.
+    DistanceField3D field(201, 151, 5, 0.02f, -2.f, -1.f, -0.04f, 100.f);
     for (int z = 0; z < 5; ++z) {
-        for (int y = 0; y < 31; ++y) {
-            for (int x = 0; x < 41; ++x) {
-                const float worldX = -2.f + 0.1f * static_cast<float>(x);
-                const float worldY = -1.f + 0.1f * static_cast<float>(y);
+        for (int y = 0; y < 151; ++y) {
+            for (int x = 0; x < 201; ++x) {
+                const float worldX = -2.f + 0.02f * static_cast<float>(x);
+                const float worldY = -1.f + 0.02f * static_cast<float>(y);
                 // Ground union a 0.4m-high semi-infinite step at x>=0.
                 const float step = std::max(-worldX, worldY - 0.4f);
                 field.setDistance(x, y, z, std::min(worldY, step));

@@ -164,12 +164,7 @@ void UiTweenDriver::applyHost(UiHostTween &t, float k) {
 }
 
 void UiTweenDriver::applyItem(UiItemTween &t, float k) {
-    auto host = UIHost::resolve(t.host);
-    if (!host) {
-        t.host = {};
-        return;
-    }
-    auto node = host->get().findById(t.nodeId);
+    auto node = UIHost::resolveNode(t.node);
     if (!node) {
         t.host = {};
         return;
@@ -177,6 +172,7 @@ void UiTweenDriver::applyItem(UiItemTween &t, float k) {
     auto       &n    = node->get();
     const float ease = evaluateUiEase(k, t.ease.c_str());
     switch (t.target) {
+        case UiItemTweenTarget::Value: n.value = hudFraction(t.fromX + (t.toX - t.fromX) * ease); break;
         case UiItemTweenTarget::Opacity: n.opacity = std::clamp(t.fromX + (t.toX - t.fromX) * ease, 0.f, 1.f); break;
         case UiItemTweenTarget::Pos:
             n.absolute = true;
@@ -279,6 +275,7 @@ eve::Result<void> UiTweenDriver::animateItemOpacity(UIHostHandle host, const std
     UiItemTween t;
     t.host       = host;
     t.nodeId     = id;
+    t.node       = *resolved->get().nodeHandle(id);
     t.target     = UiItemTweenTarget::Opacity;
     t.fromX      = node->get().opacity;
     t.toX        = std::clamp(opacity, 0.f, 1.f);
@@ -288,6 +285,42 @@ eve::Result<void> UiTweenDriver::animateItemOpacity(UIHostHandle host, const std
     t.ease       = normalizeEase(ease);
     if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
         node->get().opacity = t.toX;
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+    itemTweens_.push_back(std::move(t));
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
+eve::Result<void> UiTweenDriver::animateItemValue(UIHostHandle host, const std::string &id, float value,
+                                                  float durationMs, const std::string &ease, float delayMs,
+                                                  double nowMs) {
+    if (!std::isfinite(value) || !std::isfinite(durationMs) || !std::isfinite(delayMs) || !std::isfinite(nowMs))
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::InvalidArgument, "UiTweenDriver.animateItemValue: inputs must be finite"));
+    auto resolved = UIHost::resolve(host);
+    if (!resolved) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::StaleHandle, "UiTweenDriver.animateItemValue: host handle is stale"));
+    }
+    auto node = resolved->get().findById(id);
+    if (!node) {
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "UiTweenDriver.animateItemValue: node '" + id + "' not found"));
+    }
+    replaceItem(host, id, UiItemTweenTarget::Value);
+    UiItemTween t;
+    t.host       = host;
+    t.nodeId     = id;
+    t.node       = *resolved->get().nodeHandle(id);
+    t.target     = UiItemTweenTarget::Value;
+    t.fromX      = node->get().value;
+    t.toX        = hudFraction(value);
+    t.startMs    = nowMs;
+    t.durationMs = std::max(0.0, double(durationMs));
+    t.delayMs    = std::max(0.0, double(delayMs));
+    t.ease       = normalizeEase(ease);
+    if (t.durationMs <= 0.0 && t.delayMs <= 0.0) {
+        node->get().value = t.toX;
         return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
     }
     itemTweens_.push_back(std::move(t));
@@ -312,6 +345,7 @@ eve::Result<void> UiTweenDriver::animateItemPos(UIHostHandle host, const std::st
     UiItemTween t;
     t.host       = host;
     t.nodeId     = id;
+    t.node       = *resolved->get().nodeHandle(id);
     t.target     = UiItemTweenTarget::Pos;
     t.fromX      = n.posX;
     t.fromY      = n.posY;
@@ -369,7 +403,7 @@ void UiTweenDriver::tick(double nowMs) {
                       hostTweens_.end());
 
     for (auto &t : itemTweens_) {
-        if (!UIHost::resolve(t.host)) {
+        if (!UIHost::resolveNode(t.node)) {
             t.host = {};
             continue;
         }

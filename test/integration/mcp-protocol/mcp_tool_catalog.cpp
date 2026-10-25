@@ -25,7 +25,7 @@ TEST_CASE("devtools.mcp.compiledCatalogueHasExactlyOneRoutePerListedTool") {
         REQUIRE(names.insert(name).second);
         const auto route = catalog.find(name);
         REQUIRE(route.has_value());
-        REQUIRE(route->call != nullptr);
+        REQUIRE(static_cast<bool>(route->call));
     }
     REQUIRE(names.count("eve_status") == 1);
     REQUIRE(names.count("eve_api_search") == 1);

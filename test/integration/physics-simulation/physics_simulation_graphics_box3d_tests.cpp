@@ -751,7 +751,7 @@ TEST_CASE("box3d.body.dampingGravitySleepMassAndCenters") {
     CHECK(std::fabs(body->getSleepThreshold() - 0.25f) < 0.001f);
 
     body->setLinearVelocity(6.f, 0.f, 0.f);
-    world->updateFull(0.25f, 4);
+    for (int i = 0; i < 15; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK_LT(body->getLinearVelocityX(), 6.f);
     CHECK_GT(body->getLinearVelocityY(), 0.f);
 
@@ -867,7 +867,7 @@ TEST_CASE("box3d.body.perAxisLocksAndAdvancedForces") {
     body->setLinearVelocity(5.f, 2.f, 4.f);
     body->applyLinearImpulseAt(0.f, 1.f, 0.f, 0.5f, 0.f, 0.f);
     body->applyTorque(0.f, 0.f, 4.f);
-    world->updateFull(0.25f, 4);
+    for (int i = 0; i < 15; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK(std::fabs(body->getX()) < 0.001f);
     CHECK_GT(body->getY(), 0.1f);
     CHECK(std::fabs(body->getZ()) < 0.001f);
@@ -888,7 +888,7 @@ TEST_CASE("box3d.body.kinematicTargetTransform") {
     Body3D                  *body = world->newBody("kinematic", 0.f, 0.f, 0.f);
     body->newBoxShape(1.f, 1.f, 1.f);
     body->setTargetTransform(2.f, 1.f, -1.f, 0.f, 0.f, 0.f, 2.f, 0.5f);
-    world->updateFull(0.5f, 4);
+    for (int i = 0; i < 30; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK(std::fabs(body->getX() - 2.f) < 0.05f);
     CHECK(std::fabs(body->getY() - 1.f) < 0.05f);
     CHECK(std::fabs(body->getZ() + 1.f) < 0.05f);
@@ -1055,9 +1055,11 @@ TEST_CASE("box3d.joint.wheelCombinesSuspensionSpinAndSteering") {
     wheel->setWheelSpinMotor(true, 5.f, 100.f);
     wheel->setWheelSteering(true, 0.3f, 5.f, 0.8f, 100.f);
     wheel->setWheelSteeringLimits(true, -0.4f, 0.4f);
+    // Torque reports the last substep: sample the initial acceleration directly.
+    world->updateFull(1.f / 60.f, 1);
+    CHECK_GT(std::fabs(wheel->getWheelSpinTorque()), 0.001f);
     for (int i = 0; i < 120; ++i) world->updateFull(1.f / 60.f, 4);
     CHECK_GT(wheel->getWheelSpinSpeed(), 4.f);
-    CHECK_GT(std::fabs(wheel->getWheelSpinTorque()), 0.001f);
     CHECK_GT(wheel->getWheelSteeringAngle(), 0.2f);
     CHECK_LT(wheel->getWheelSteeringAngle(), 0.4f);
     CHECK(std::isfinite(wheel->getWheelSteeringTorque()));
@@ -1241,7 +1243,8 @@ TEST_CASE("box3d.world.explosionUsesGeometryFalloffMaskAndReportsVelocityDelta")
     Body3D *staticBody = world->newBody("static", 1.f, 0.f, -2.f);
     staticBody->newSphereShape(0.25f)->setCategoryBits(1);
 
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 10.f, 1), 2);
+    const int repelled = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 10.f, 1);
+    CHECK_EQ(repelled, 2);
     CHECK_EQ(world->getExplosionResultCount(), 2);
     CHECK_EQ(world->getExplosionResultBodyId(0), nearBody->getId());
     CHECK_EQ(world->getExplosionResultBodyId(1), farBody->getId());
@@ -1253,9 +1256,11 @@ TEST_CASE("box3d.world.explosionUsesGeometryFalloffMaskAndReportsVelocityDelta")
 
     nearBody->setLinearVelocity(0.f, 0.f, 0.f);
     farBody->setLinearVelocity(0.f, 0.f, 0.f);
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, -10.f, 1), 2);
+    const int attracted = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, -10.f, 1);
+    CHECK_EQ(attracted, 2);
     CHECK_LT(nearBody->getLinearVelocityX(), 0.f);
-    CHECK_EQ(world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 0.f, 1), 0);
+    const int untouched = world->explode(0.f, 0.f, 0.f, 1.f, 4.f, 0.f, 1);
+    CHECK_EQ(untouched, 0);
     CHECK_EQ(world->getExplosionResultCount(), 0);
     CHECK_THROWS((world->explode(0.f, 0.f, 0.f, -1.f, 0.f, 1.f), false));
     CHECK_THROWS((world->explode(0.f, 0.f, 0.f, 1.f, -1.f, 1.f), false));
@@ -1575,8 +1580,12 @@ TEST_CASE("box3d.shape.convexHullSupportsLocalTransformAndRigidCollision") {
 
     Body3D *ball = world->newBody("dynamic", 1.f, 3.f, -1.5f);
     ball->newSphereShape(0.25f);
+    // Isolate vertical support; an unconstrained sphere rolls off this wedge.
+    ball->setMotionLocks(true, false, true, true, true, true);
     for (int i = 0; i < 120; ++i) world->update(1.f / 60.f);
-    CHECK_GT(ball->getY(), 0.65f);
+    const float supportedY = 0.375f + 0.25f * std::sqrt(1.f + 0.25f * 0.25f);
+    CHECK(std::fabs(ball->getY() - supportedY) < 0.02f);
+    CHECK(std::fabs(ball->getZ() + 1.5f) < 0.001f);
 }
 
 TEST_CASE("box3d.shape.triangleMeshValidatesRebuildsAndStaysStatic") {
@@ -2811,6 +2820,9 @@ TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     CHECK_EQ(static_cast<int>(begun.value().kind), static_cast<int>(eve::climbing::ClimbingActionKind::LedgeGrab));
     CHECK_NE(static_cast<int>(begun.value().support), static_cast<int>(eve::climbing::HangSupport::None));
 
+    const auto probeDebug = runtime.inspect();
+    CHECK(probeDebug.queryCount >= 4);
+
     for (std::uint64_t tick = 11; tick <= 16; ++tick) {
         auto advanced = runtime.advance(*fixture.world, {eve::SimulationTick(tick), seconds(0.1)});
         REQUIRE(advanced.ok());
@@ -2824,7 +2836,8 @@ TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     CHECK(sawHangingEvent);
     auto debug = runtime.inspect();
     CHECK_EQ(debug.candidates.size(), std::size_t{1});
-    CHECK(debug.queryCount >= 4);
+    CHECK_EQ(debug.queryCount, std::uint64_t{1});
+    CHECK_EQ(debug.queryCount, runtime.counters().queryCount);
     CHECK(!debug.queries.empty());
     CHECK(!debug.evidence.empty());
     CHECK(!debug.motion.empty());

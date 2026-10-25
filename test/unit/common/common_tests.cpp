@@ -1746,6 +1746,59 @@ TEST_CASE("value.getIfInstances.directConstAndMutableBorrows") {
 }  // namespace value_lifecycle
 }  // namespace
 }  // namespace test_common_values
+
+#include "FieldDecodeCompatibility.h"
+#include "FieldReadCompatibility.h"
+#include "JsonReadCompatibility.h"
+#include "NumericDoubleCompatibility.h"
+#include "ScalarReadCompatibility.h"
+namespace test_json_read_compatibility {
+TEST_CASE("common.jsonRead.controlBytesPreserveWireSpelling") {
+    json_read_compatibility::controlBytesPreserveWireSpelling(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.quotePreservesUtf8AndPunctuation") {
+    json_read_compatibility::quotePreservesUtf8AndPunctuation(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.unsignedSyntaxKeepsLegacyAcceptanceAndSuffix") {
+    json_read_compatibility::unsignedSyntaxKeepsLegacyAcceptanceAndSuffix(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.jsonRead.artifactFieldsKeepRequiredStringAndDecimalContract") {
+    json_read_compatibility::artifactFieldsKeepRequiredStringAndDecimalContract(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.requiredStringsKeepEmptyAndOwningSemantics") {
+    field_read_compatibility::requiredStringsKeepEmptyAndOwningSemantics(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.nativeIntsKeepStrictKindsAndBounds") {
+    field_read_compatibility::nativeIntsKeepStrictKindsAndBounds(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldRead.unsignedValueKeepsDecimalPrefixContract") {
+    field_read_compatibility::unsignedValueKeepsDecimalPrefixContract(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.booleansKeepFalsePayload") {
+    scalar_read_compatibility::booleansKeepFalsePayload(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.signedIntegersKeepFullRange") {
+    scalar_read_compatibility::signedIntegersKeepFullRange(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.unsignedIntegersKeepBounds") {
+    scalar_read_compatibility::unsignedIntegersKeepBounds(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.scalarRead.finiteFloatsKeepRoundingAndRange") {
+    scalar_read_compatibility::finiteFloatsKeepRoundingAndRange(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldDecode.jsonFieldsKeepWireKindsAndBytes") {
+    field_decode_compatibility::jsonFieldsKeepWireKindsAndBytes(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.fieldDecode.jsonNumbersKeepFloatBoundariesAndRounding") {
+    field_decode_compatibility::jsonNumbersKeepFloatBoundariesAndRounding(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.numericDouble.preservesNonfiniteValuesAndIntegerRounding") {
+    numeric_double_compatibility::preservesNonfiniteValuesAndIntegerRounding(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("common.numericDouble.rejectsCoercionWithStructuredStatus") {
+    numeric_double_compatibility::rejectsCoercionWithStructuredStatus(_ZEROERR_TEST_CONTEXT);
+}
+}  // namespace test_json_read_compatibility
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_diagnostics)

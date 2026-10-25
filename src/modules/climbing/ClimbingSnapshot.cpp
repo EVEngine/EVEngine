@@ -1,4 +1,5 @@
 #include "climbing/Climbing.h"
+#include "common/ValueRead.h"
 
 #include "climbing/ClimbingCodec.h"
 #include "climbing/ClimbingEventValue.h"
@@ -19,38 +20,38 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const eve::Value* value = field(object, name);
-    const auto*       text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
 bool readInt64(const eve::Value::Object& object, std::string_view name, std::int64_t& output) {
-    const eve::Value* value  = field(object, name);
-    const auto*       number = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!number) return false;
-    output = *number;
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readInt64Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& output, bool defaultValue, bool required) {
-    const eve::Value* value = field(object, name);
+    const auto* value = field(object, name);
     if (!value) {
         output = defaultValue;
         return !required;
     }
-    const auto* boolean = value->getIf<bool>();
-    if (!boolean) return false;
-    output = *boolean;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readUint64String(const eve::Value::Object& object, std::string_view name, std::uint64_t& output) {
-    std::string text;
-    if (!readString(object, name, text) || text.empty()) return false;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), output);
-    return error == std::errc{} && end == text.data() + text.size();
+    auto parsed = eve::scanUnsignedStringMember(object, name);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 eve::Value vecValue(Vec3 value) {
@@ -58,17 +59,9 @@ eve::Value vecValue(Vec3 value) {
 }
 
 bool numericFloat(const eve::Value& value, float& output) {
-    double number = 0.0;
-    if (const auto* integer = value.getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else if (const auto* real = value.getIf<double>())
-        number = *real;
-    else
-        return false;
-    if (!std::isfinite(number) || number < -static_cast<double>(std::numeric_limits<float>::max()) ||
-        number > static_cast<double>(std::numeric_limits<float>::max()))
-        return false;
-    output = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
@@ -371,6 +364,13 @@ eve::Result<eve::Value> ClimbingRuntime::snapshot() const {
         {"anchor", anchorValue(execution_->anchorGraph, execution_->anchorNode,
                                 execution_->anchorReservation)},
     };
+    state.emplace(
+        "sourceAnchor",
+        execution_->sourceAnchorNode
+            ? eve::Value::object({{"graphId", execution_->sourceAnchorNode->graphId},
+                                  {"nodeId", execution_->sourceAnchorNode->nodeId},
+                                  {"generation", std::to_string(execution_->sourceAnchorNode->graphGeneration)}})
+            : eve::Value());
     root.emplace("execution", eve::Value(std::move(state)));
     return eve::Result<eve::Value>::success(eve::Value(std::move(root)));
 }
@@ -526,6 +526,24 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
                                                                          "runtime anchor identities are inconsistent",
                                                                          "execution.anchor", {}, "climbing.snapshot"));
         }
+        const eve::Value* sourceField = field(*state, "sourceAnchor");
+        if (version >= 5 && !sourceField)
+            return eve::Result<void>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::ParseError, "transition source field is required",
+                                       "execution.sourceAnchor", {}, "climbing.snapshot"));
+        if (sourceField && !sourceField->isNull()) {
+            ClimbingAnchorNodeRef source;
+            const auto*           object = sourceField->getIf<eve::Value::Object>();
+            if (version < 5 || !object || !parsed.anchorGraph.isValid() ||
+                !readString(*object, "graphId", source.graphId) || !readString(*object, "nodeId", source.nodeId) ||
+                source.nodeId.empty() || !readUint64String(*object, "generation", source.graphGeneration) ||
+                source.graphId != parsed.anchorNode.graphId ||
+                source.graphGeneration != parsed.anchorNode.graphGeneration)
+                return eve::Result<void>::failure(eve::Diagnostic::error(
+                    eve::DiagnosticCode::ParseError, "transition source must belong to the target graph generation",
+                    "execution.sourceAnchor", {}, "climbing.snapshot"));
+            parsed.sourceAnchorNode = std::move(source);
+        }
         parsed.elapsed  = eve::Duration::fromNanoseconds(elapsedNs);
         parsed.duration = eve::Duration::fromNanoseconds(durationNs);
         parsed.lastTick = eve::SimulationTick(lastTick);
@@ -548,6 +566,10 @@ eve::Result<void> ClimbingRuntime::restore(const eve::Value& value, physics::Wor
             auto resolved = graph->resolveNode(world, parsed.anchorNode);
             if (!resolved)
                 return eve::Result<void>::failure(resolved.status());
+            if (parsed.sourceAnchorNode) {
+                auto source = graph->resolveNode(world, *parsed.sourceAnchorNode);
+                if (!source) return eve::Result<void>::failure(source.status());
+            }
             auto reservation = graph->validateReservation(parsed.anchorReservation);
             if (!reservation && (!reservation.error() || reservation.error()->code() != eve::DiagnosticCode::NotFound))
                 return eve::Result<void>::failure(reservation.status());

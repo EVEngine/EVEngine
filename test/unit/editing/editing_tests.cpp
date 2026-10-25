@@ -4,6 +4,12 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "local-format",
+  "cases": {
+    "local-logic": [
+      "editing.numericRead.preservesNumbersWithoutAddingValidation",
+      "editing.numericRead.rejectsNonNumericKinds"
+    ]
+  },
   "origins": [
     "editing_property_schema_json.cpp"
   ]
@@ -59,4 +65,14 @@ TEST_CASE("editing.property_schema_json.rejects_empty_schema_id") {
     CHECK(!failed.ok());
 }
 }  // namespace test_editing_property_schema_json
+
+#include "EditingNumericCompatibility.h"
+namespace test_editing_numeric_compatibility {
+TEST_CASE("editing.numericRead.preservesNumbersWithoutAddingValidation") {
+    editing_numeric_compatibility::preservesNumbersWithoutAddingValidation(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("editing.numericRead.rejectsNonNumericKinds") {
+    editing_numeric_compatibility::rejectsNonNumericKinds(_ZEROERR_TEST_CONTEXT);
+}
+}  // namespace test_editing_numeric_compatibility
 #endif
