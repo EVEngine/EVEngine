@@ -1,14 +1,10 @@
 #pragma once
 #include "common/Export.h"
 
-#include "common/Identity.h"
 #include "common/Module.h"
 #include "common/Result.h"
+#include "common/RuntimeBorrow.h"
 #include "common/RuntimeHandle.h"
-#include "common/RuntimeRegistry.h"
-#include "procgen/ArtifactPublish.h"
-#include "procgen/GeneratedArtifact.h"
-#include "procgen/ParamSchema.h"
 
 #include <cstdint>
 #include <memory>
@@ -146,14 +142,24 @@ using ProcgenBiomeRulesHandleRef        = eve::script::RuntimeHandleRef<ProcgenB
 using ProcgenShapeGrammarHandleRef      = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
 using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenLSystemHandleTag>;
 
+struct ProcgenArtifactOps;
+struct ProcgenRecipeOps;
+
 /**
  * @brief Procedural generation module.
  * Phase A: runtime maps (semantic Grid2D → TileLayer).
  * Phase B: runtime textures (ImageData / Texture).
  * Phase C (partial): mesh recipes (Marching Cubes → MeshBuild / Mesh).
  * Script: `procgen <- eve.Procgen();`
+ *
+ * Artifact build/publish and owning recipe-schema copies live in
+ * `ProcgenArtifacts.h` / `ProcgenRecipes.h` so handle-only includers avoid
+ * GeneratedArtifact / ParamSchema / Identity.
  */
 class EVENGINE_API_DOMAINS Procgen : public Module {
+    friend struct ProcgenArtifactOps;
+    friend struct ProcgenRecipeOps;
+
 public:
     Module_REG(Procgen);
     /** @brief Procgen. */
@@ -609,8 +615,6 @@ public:
     std::string getAlgorithmId(int index) const;
     /** @brief True when algorithm. */
     bool        hasAlgorithm(const std::string& algorithmId) const;
-    /** @brief Returns an owning copy of an algorithm schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getAlgorithmSchema(const std::string& algorithmId) const;
     /** @brief Human-readable algorithm label from its schema.
      * @param algorithmId Algorithm id. @return Display name or empty text. */
     std::string getAlgorithmDisplayName(const std::string& algorithmId) const;
@@ -764,8 +768,6 @@ public:
     std::string getTextureRecipeId(int index) const;
     /** @brief True when texture recipe. */
     bool        hasTextureRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a texture schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getTextureRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing texture parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyTextureRecipeDefaults(const std::string&     recipeId,
                                                                ProcgenParamsHandleRef params) const;
@@ -813,8 +815,6 @@ public:
     std::string getPbrRecipeId(int index) const;
     /** @brief True when pbr recipe. */
     bool        hasPbrRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a PBR schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getPbrRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing PBR parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyPbrRecipeDefaults(const std::string&     recipeId,
                                                            ProcgenParamsHandleRef params) const;
@@ -833,29 +833,6 @@ public:
     [[nodiscard]] eve::Result<void>                      releaseMeshBuild(ProcgenMeshBuildHandleRef);
     /** @brief True when mesh build stale. */
     [[nodiscard]] bool                                   isMeshBuildStale(ProcgenMeshBuildHandleRef) const noexcept;
-    /**
-     * @brief Build an owning backend-neutral CPU artifact for a mesh recipe.
-     * @param recipeId Registered mesh recipe id.
-     * @param params Deterministic generation parameters; must not be null.
-     * @param id Non-nil identity for this artifact instance.
-     * @return Generated CPU artifact or a structured diagnostic.
-     */
-    [[nodiscard]] eve::Result<GeneratedArtifact> buildArtifact(const std::string&     recipeId,
-                                                               ProcgenParamsHandleRef params, ArtifactId id);
-    /**
-     * @brief Build then transactionally publish through requested optional adapters.
-     * @param recipeId Registered mesh recipe id.
-     * @param params Deterministic generation parameters; must not be null.
-     * @param id Non-nil identity for this artifact instance.
-     * @param options Scene, graphics and physics adapters required by this call.
-     * @return Publication receipt or an Unsupported/validation/adapter diagnostic.
-     * @remarks Must run on the main/simulation thread. A failure leaves the store unchanged.
-     */
-    [[nodiscard]] eve::Result<ArtifactPublishReceipt> publishArtifact(const std::string&     recipeId,
-                                                                      ProcgenParamsHandleRef params, ArtifactId id,
-                                                                      ArtifactPublishOptions options = {});
-    /** @brief Borrow the compatibility facade's published CPU artifact store. */
-    [[nodiscard]] const ArtifactStore& artifactStore() const noexcept;
     /** @brief Upload an existing/composed CPU mesh to Graphics. */
     /** @brief Upload a CPU mesh and return a Graphics-owned borrowed mesh. */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> uploadMeshBorrowed(const MeshBuild    &mesh,
@@ -905,8 +882,6 @@ public:
     std::string getMeshRecipeId(int index) const;
     /** @brief True when mesh recipe. */
     bool        hasMeshRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a mesh schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getMeshRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing mesh parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyMeshRecipeDefaults(const std::string&     recipeId,
                                                             ProcgenParamsHandleRef params) const;
@@ -1003,8 +978,7 @@ public:
     const PaletteTable& palettes() const;
 
 private:
-    bool       runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out);
-    ArtifactId nextCompatibilityArtifactId() noexcept;
+    bool runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out);
 
     struct OwnershipState;
     std::unique_ptr<OwnershipState> ownership_;

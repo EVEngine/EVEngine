@@ -5,8 +5,10 @@
 #include "procgen/MeshGraph.h"
 #include "procgen/Palette.h"
 #include "procgen/PointGraph.h"
+#include "procgen/ProcgenArtifacts.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenOwnership.h"
+#include "procgen/ProcgenRecipes.h"
 #include "procgen/ProcgenScriptSupport.h"
 #include "procgen/ProcgenSystem.h"
 #include "procgen/RuntimeGeneration.h"
@@ -779,7 +781,8 @@ bool Procgen::hasAlgorithm(const std::string& algorithmId) const {
     return GeneratorRegistry::instance().has(algorithmId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getAlgorithmSchema(const std::string& algorithmId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getAlgorithmSchema(const Procgen& /*module*/,
+                                                                   const std::string& algorithmId) {
     const RecipeDescriptor* schema = GeneratorRegistry::instance().descriptor(algorithmId);
     if (!schema)
         return eve::Result<RecipeDescriptor>::failure(eve::Diagnostic::error(
@@ -1049,7 +1052,8 @@ bool Procgen::hasTextureRecipe(const std::string& recipeId) const {
     return TextureRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getTextureRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getTextureRecipeSchema(const Procgen& /*module*/,
+                                                                       const std::string& recipeId) {
     TextureRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = TextureRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1198,7 +1202,8 @@ bool Procgen::hasPbrRecipe(const std::string& recipeId) const {
     return PbrRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getPbrRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getPbrRecipeSchema(const Procgen& /*module*/,
+                                                                   const std::string& recipeId) {
     PbrRecipeRegistry::instance().registerPbrBuiltins();
     const RecipeDescriptor* schema = PbrRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1222,7 +1227,8 @@ eve::Result<void> Procgen::applyPbrRecipeDefaults(const std::string& recipeId, P
 
 eve::Result<ProcgenMeshBuildHandleRef> Procgen::buildMeshHandle(const std::string&     recipeId,
                                                                 ProcgenParamsHandleRef params) {
-    auto built = buildArtifact(recipeId, params, nextCompatibilityArtifactId());
+    auto built = ProcgenArtifactOps::buildArtifact(*this, recipeId, params,
+                                                   ProcgenArtifactOps::nextCompatibilityArtifactId(*this));
     if (!built)
         return eve::Result<ProcgenMeshBuildHandleRef>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::Failed, built.status().describe(), "recipe", {}, "procgen.squirrel"));
@@ -1259,8 +1265,8 @@ bool Procgen::isMeshBuildStale(ProcgenMeshBuildHandleRef reference) const noexce
     return reference.isValid() && ownership_->meshes.isStale(reference);
 }
 
-eve::Result<GeneratedArtifact> Procgen::buildArtifact(const std::string& recipeId, ProcgenParamsHandleRef params,
-                                                      ArtifactId id) {
+eve::Result<GeneratedArtifact> ProcgenArtifactOps::buildArtifact(Procgen& /*module*/, const std::string& recipeId,
+                                                                 ProcgenParamsHandleRef params, ArtifactId id) {
     auto view = Procgen::resolve(params);
     if (!view.isBound())
         return eve::Result<GeneratedArtifact>::failure(
@@ -1269,20 +1275,21 @@ eve::Result<GeneratedArtifact> Procgen::buildArtifact(const std::string& recipeI
     return generateMeshArtifact(recipeId, *view, id);
 }
 
-eve::Result<ArtifactPublishReceipt> Procgen::publishArtifact(const std::string& recipeId, ProcgenParamsHandleRef params,
-                                                             ArtifactId id, ArtifactPublishOptions options) {
-    auto artifact = buildArtifact(recipeId, params, id);
+eve::Result<ArtifactPublishReceipt> ProcgenArtifactOps::publishArtifact(Procgen& module, const std::string& recipeId,
+                                                                        ProcgenParamsHandleRef params, ArtifactId id,
+                                                                        ArtifactPublishOptions options) {
+    auto artifact = buildArtifact(module, recipeId, params, id);
     if (!artifact.ok()) return eve::Result<ArtifactPublishReceipt>::failure(artifact.status());
-    ArtifactPublisher publisher(ownership_->artifactStore);
+    ArtifactPublisher publisher(module.ownership_->artifactStore);
     return publisher.publish(std::move(artifact).takeValue(), options);
 }
 
-ArtifactId Procgen::nextCompatibilityArtifactId() noexcept {
+ArtifactId ProcgenArtifactOps::nextCompatibilityArtifactId(Procgen& module) noexcept {
     static const ArtifactId root = [] {
         const auto parsed = ArtifactId::parse("6bdf48e2-fca4-4f62-8a66-d952bd6af046");
         return parsed ? *parsed : ArtifactId::nil();
     }();
-    return root.child("legacy-facade-" + std::to_string(ownership_->nextArtifactSequence++));
+    return root.child("legacy-facade-" + std::to_string(module.ownership_->nextArtifactSequence++));
 }
 
 eve::script::Borrowed<graphics::Mesh> Procgen::generateMeshBorrowed(const std::string&     recipeId,
@@ -1407,7 +1414,8 @@ bool Procgen::hasMeshRecipe(const std::string& recipeId) const {
     return MeshRecipeRegistry::instance().has(recipeId);
 }
 
-eve::Result<RecipeDescriptor> Procgen::getMeshRecipeSchema(const std::string& recipeId) const {
+eve::Result<RecipeDescriptor> ProcgenRecipeOps::getMeshRecipeSchema(const Procgen& /*module*/,
+                                                                    const std::string& recipeId) {
     MeshRecipeRegistry::instance().registerBuiltins();
     const RecipeDescriptor* schema = MeshRecipeRegistry::instance().descriptor(recipeId);
     if (!schema)
@@ -1467,7 +1475,9 @@ PaletteTable& Procgen::palettes() { return ownership_->palettes; }
 
 const PaletteTable& Procgen::palettes() const { return ownership_->palettes; }
 
-const ArtifactStore& Procgen::artifactStore() const noexcept { return ownership_->artifactStore; }
+const ArtifactStore& ProcgenArtifactOps::artifactStore(const Procgen& module) noexcept {
+    return module.ownership_->artifactStore;
+}
 
 eve::script::Borrowed<Heightmap> Procgen::resolveHeightmap(ProcgenHeightmapHandleRef reference) noexcept {
     return ownership_->heightmaps.resolve(reference);

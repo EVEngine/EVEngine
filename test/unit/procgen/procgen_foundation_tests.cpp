@@ -393,6 +393,7 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #include "procgen/OutputSpec.h"
 #include "procgen/PointDelta.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenRecipes.h"
 #include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
 #include "procgen/SpatialData.h"
@@ -3491,7 +3492,7 @@ TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
 TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     Procgen *mod = Procgen::create();
     CHECK(mod->hasMeshRecipe("mesh.castle"));
-    auto schemaResult = mod->getMeshRecipeSchema("mesh.castle");
+    auto schemaResult = ProcgenRecipeOps::getMeshRecipeSchema(*mod, "mesh.castle");
     REQUIRE(schemaResult.ok());
     auto schema = std::move(schemaResult).takeValue();
     CHECK_EQ(schema.getParamCount(), 25);
@@ -3503,7 +3504,7 @@ TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
     CHECK_EQ(rings->minimum, 1.0);
     CHECK_EQ(rings->maximum, 4.0);
     CHECK(!rings->description.empty());
-    auto missingSchema = mod->getMeshRecipeSchema("mesh.missing");
+    auto missingSchema = ProcgenRecipeOps::getMeshRecipeSchema(*mod, "mesh.missing");
     CHECK(!missingSchema.ok());
     const eve::Diagnostic *schemaDiagnostic = missingSchema.error();
     REQUIRE(schemaDiagnostic != nullptr);
