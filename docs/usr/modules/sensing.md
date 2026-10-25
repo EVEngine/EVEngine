@@ -260,3 +260,82 @@ eve.provider.publishFor("eve.sensing.ISensingCandidateProvider", "game.candidate
 - 失败不静默：脚本没实现该方法 → `Unsupported`；脚本抛错 → 查询失败（`Failed`）；答案形状不对
   （不是数组、主体不是规范 uuid、坐标不是数）→ `Rejected`。发布脚本 sink 会顶掉原生提供方，并在
   `eve.log` 里留一行 `warn`。
+
+## 二维投影索引与三维感知
+
+`SensingWorld` 保存实际 XYZ 坐标；空间索引只是可重建的派生数据。游戏层负责把
+权威位置写入 `upsertPosition(id, x, y, z, faction, tagsCsv, visibleToCsv)`。
+旧 `upsert` 是兼容入口，委托同一实现并把 Z 设为零。
+
+`rebuildIndex(kind, cellSize)` 的 kind 为 `none`、`xy`、`xz`、`yz`、`xyz`；C++ 使用
+`SpatialIndexKind`。二维索引不会删除高度。C++ `QuerySpec.axes` 独立选择距离度量：
+XY / XZ / YZ 平面距离，或 XYZ 三维距离。`QueryCircle`、`QueryBox`、`QueryCone`
+的两轴坐标跟随 axes；`QuerySphere` 始终使用真实 XYZ。XYZ 查询接受球体或无形状的距离范围。
+
+索引与查询平面不兼容、查询没有有限范围或覆盖格子过多时，查询执行完整事实扫描，
+保留同一精确过滤规则，`debugLastQueryJson().spatial.used` 为 false；不会漏掉候选。
+三维球体可使用任何二维投影索引粗筛，再做三维精确判定。
+
+三维调用使用 `QueryOrigin{x,y,subjectId,z,CoordinateSpace::World3D}`，结果保留坐标空间。
+`query(origin, spec, lineOfSight)` 的 LOS provider 仅在同步调用期间借用；要求 LOS 却未提供时
+返回 `Unsupported`。LOS 在截断前执行；provider 失败不发布部分结果。环境查询
+`environmentInput` 和 `SensingWorldCandidateProvider` 均保留三维位置。
+
+脚本入口 `world.query(json)` 返回 canonical `eve.sensing.environmentResult`，`ranked`
+的每一项包含 `subject`、`location`（space/x/y/z）和 score。LOS 在脚本组合边界解析
+现有 `ILineOfSightQuery` capability；可直接使用物理注册的 World3D backend。
+
+```squirrel
+local world = eve.Sensing().newWorld().value;
+local written = world.upsertPosition("enemy", 4.0, 12.0, 3.0, "red", "enemy", "");
+if (!written.ok) throw "cannot mirror position";
+local indexed = world.rebuildIndex("xz", 8.0);
+if (!indexed.ok) throw "cannot build index";
+local found = world.query(@"{
+  ""schema"":""eve.sensing.query"", ""version"":1,
+  ""origin"":{""space"":""world3d"",""x"":0,""y"":1.6,""z"":0},
+  ""axes"":""xz"", ""maxRange"":20, ""maxCount"":8,
+  ""requiredTags"":[""enemy""], ""lineOfSight"":true
+}");
+if (!found.ok) throw "query failed; inspect diagnostics";
+```
+
+查询 JSON v1 支持 `subjectId`（排除自己）、`minRange/maxRange`、`minCount/maxCount`、
+`requiredTags/excludedTags/includeFactions/excludeFactions`、`visibleTo`、`lineOfSight`、
+`countPolicy: truncate|fail`、`sort: distance|none` 和 `shape`。
+shape.kind 为 circle（x/y/radius）、box（minX/minY/maxX/maxY）、cone
+（x/y/dirX/dirY/halfAngle/range）或 sphere（x/y/z/radius）。缺省 axes 为 world2d 的 xy
+或 world3d 的 xyz；world2d 不接受三维轴或球体。
+
+### 脚本环境查询计划
+
+`eve.compileEnvironmentQuery(definitionJson)` 返回 GC 拥有的 `EnvironmentQueryPlan`。
+`plan.run(requestJson)` 为每次执行创建独立实例；计划可重复使用。两个 JSON 信封分别是
+`eve.sensing.environmentDefinition` v1 和 `eve.sensing.environmentRequest` v1。
+未知字段忽略，未知 schema/version 或已知字段类型错误拒绝；不保留 JSON 内存引用。
+
+definition 字段直接对应 C++ 定义：id、revision、space、contexts（名称数组）、options、
+mode（all/best）、maxResults、optimize、trace（none/summary/detailed）、maxTraceItems。
+每个 option 含 id、generator 和 tests；generator.kind 为 input/ring/grid，其他字段为
+context/radius/spacing/samples/maxItems。每个 test 含 id/context/metric（distance/los）、
+purpose（filter/score/filterAndScore）、filterOp（all/any）、aggregate（average/minimum/maximum）、
+normalization（fixed/population）、curve（linear/square/sqrt）、preference（lower/higher/reference），
+以及 minimum/maximum/scoreMinimum/scoreMaximum/referenceValue/weight。
+自定义 native metric 继续使用 C++ `IEnvironmentMetric` 扩展点。
+
+request 包含 contexts（`{name,locations:[{space,x,y,z}]}` 数组）和 input
+（`{id,subjectKey,location:{space,x,y,z}}` 数组）。空间可为 world2d/world3d/grid2d/grid3d，
+格子坐标必须为整数。位置、距离度量和遮挡 provider 的空间必须一致，不做隐式维度转换。
+
+### 状态与生命周期
+
+世界快照 `eve.sensing.world` 写入 v2，保存 Z；v1 恢复时 Z=0。未知新版本拒绝，未知字段忽略。
+恢复先验证并重建索引，再整体替换事实；失败保留原世界和原索引。索引配置属于进程策略，
+恢复保留接收世界的配置。结果和 NPC 感知事实为拥有型值；复制后可跨后续查询保留。
+所有世界访问均在所属模拟线程；LOS 回调不得修改或重入该世界。
+
+本次接口边界遵循 R-BOUND-1..4、R-FACE-1..6、R-MECH-1/2/4、R-COST-1..5：
+spatial 是现有硬链接依赖，physics 仍通过消费方 LOS 接口注入；没有新的 ECS 根、Link、事件或
+能力注册表。查询频繁且提供方已知，C++ 按调用借用 provider；脚本在组合边界解析。
+测试位于 `test/integration/sensing/sensing_dimensions.cpp`，覆盖索引共用契约、provider 缺席与失败、
+快照迁移、脚本计划及 NPC 任务接入。源代码是接口登记真源，不另设 JSON catalogue。
