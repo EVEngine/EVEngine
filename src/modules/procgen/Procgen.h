@@ -1,41 +1,18 @@
 #pragma once
 #include "common/Export.h"
 
-
+#include "common/Identity.h"
 #include "common/Module.h"
-#include "common/SquirrelOwnership.h"
-#include "procgen/Biome.h"
-#include "procgen/Grid2D.h"
-#include "procgen/GridGraph.h"
-#include "procgen/MeshBuild.h"
-#include "procgen/MeshGraph.h"
-#include "procgen/OutputSpec.h"
-#include "procgen/Palette.h"
-#include "procgen/ParamSchema.h"
-#include "procgen/Params.h"
-#include "procgen/PointGraph.h"
-#include "procgen/PointSet.h"
-#include "procgen/ProcgenSystem.h"
-#include "procgen/RuntimeGeneration.h"
-#include "procgen/ShapeGrammar.h"
-#include "procgen/SpatialData.h"
-#include "procgen/algorithms/LSystem.h"
-#include "procgen/core/ProcgenCore.h"
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainMesh.h"
-#include "procgen/mesh/MeshModifierGraph.h"
-#include "procgen/mesh/MeshDeformationSession.h"
-#include "procgen/mesh/DynamicMeshUvPaintSession.h"
-#include "procgen/spline/SplinePath.h"
-#include "procgen/heightmap/TerrainPipeline.h"
-#include "procgen/heightmap/TerrainSampler.h"
-#include "procgen/texture/CloudField.h"
-#include "procgen/texture/CloudShadow.h"
+#include "common/Result.h"
+#include "common/RuntimeHandle.h"
+#include "common/RuntimeRegistry.h"
+#include "procgen/ArtifactPublish.h"
+#include "procgen/GeneratedArtifact.h"
 
+#include <cstdint>
 #include <memory>
 #include <span>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -58,6 +35,33 @@ namespace eve::procgen {
 struct PbrTextureSet;
 class GtsTerrainLodSet;
 class PcgMeshLodSet;
+class Params;
+class OutputSpec;
+class Grid2D;
+class PointSet;
+class SpatialData;
+class RuntimeGeneration;
+class ProcgenCellRequest;
+class PointGraph;
+class MeshModifierGraph;
+class MeshDeformationSession;
+class DynamicMeshUvPaintSession;
+class SplinePath;
+class GridGraph;
+class MeshGraph;
+class BiomeRules;
+class ShapeGrammar;
+class LSystem;
+class ProcgenContext;
+class TerrainSampler;
+class Heightmap;
+class CloudField;
+class CloudShadow;
+class MeshBuild;
+class PaletteTable;
+struct TerrainErosionMap;
+class TerrainLayers;
+class TerrainMeshChunk;
 
 /** @brief Handle domain for module-owned procedural parameter objects. */
 struct ProcgenParamsHandleTag {};
@@ -845,7 +849,7 @@ public:
                                                                       ProcgenParamsHandleRef params, ArtifactId id,
                                                                       ArtifactPublishOptions options = {});
     /** @brief Borrow the compatibility facade's published CPU artifact store. */
-    [[nodiscard]] const ArtifactStore& artifactStore() const noexcept { return artifactStore_; }
+    [[nodiscard]] const ArtifactStore& artifactStore() const noexcept;
     /** @brief Upload an existing/composed CPU mesh to Graphics. */
     /** @brief Upload a CPU mesh and return a Graphics-owned borrowed mesh. */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> uploadMeshBorrowed(const MeshBuild    &mesh,
@@ -912,7 +916,7 @@ public:
     /** @brief Take ownership of a decoded height field so script can sample it.
      *  @param heightmap Decoded grid, moved into the module-owned registry.
      *  @return Owning handle, or a failure when the module is shutting down. */
-    [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> adoptHeightmap(Heightmap heightmap);
+    [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> adoptHeightmap(std::unique_ptr<Heightmap> heightmap);
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;
@@ -988,7 +992,9 @@ public:
                                                                     ProcgenParamsHandleRef    params);
 
     /** @brief Palettes. */
-    PaletteTable& palettes() { return palettes_; }
+    PaletteTable& palettes();
+    /** @brief Const palettes. */
+    const PaletteTable& palettes() const;
 
 private:
     bool       runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out);
@@ -996,34 +1002,6 @@ private:
 
     struct OwnershipState;
     std::unique_ptr<OwnershipState> ownership_;
-
-    PaletteTable                                                                             palettes_;
-    mutable std::string              lastError_;
-    mutable std::vector<std::string>                                                         algorithmIdsCache_;
-    mutable std::vector<std::string>                                                         textureRecipeIdsCache_;
-    mutable std::vector<std::string>                                                         pbrRecipeIdsCache_;
-    mutable std::vector<std::string>                                                         meshRecipeIdsCache_;
-    std::unordered_map<std::string, ProcgenSystemSnapshot>                                   systems_;
-    std::unordered_map<std::string, ProcgenSystemSnapshot>                                   previousSystems_;
-    ArtifactStore                                                                            artifactStore_;
-    std::uint64_t                                                                            nextArtifactSequence_ = 1;
-    eve::script::RuntimeObjectRegistry<Params, ProcgenParamsHandleTag>                       params_;
-    eve::script::RuntimeObjectRegistry<Grid2D, ProcgenGridHandleTag>                         grids_;
-    eve::script::RuntimeObjectRegistry<ProcgenContext, ProcgenContextHandleTag>              contexts_;
-    eve::script::RuntimeObjectRegistry<SpatialData, ProcgenSpatialDataHandleTag>             spatialData_;
-    eve::script::RuntimeObjectRegistry<RuntimeGeneration, ProcgenRuntimeGenerationHandleTag> runtimeGenerations_;
-    eve::script::RuntimeObjectRegistry<PointGraph, ProcgenPointGraphHandleTag>               pointGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshModifierGraph, ProcgenMeshModifierGraphHandleTag> meshModifierGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag>
-        meshDeformationSessions_;
-    eve::script::RuntimeObjectRegistry<DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag>
-        dynamicMeshUvPaintSessions_;
-    eve::script::RuntimeObjectRegistry<SplinePath, ProcgenSplinePathHandleTag>                     splinePaths_;
-    eve::script::RuntimeObjectRegistry<GridGraph, ProcgenGridGraphHandleTag>                 gridGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshGraph, ProcgenMeshGraphHandleTag>                 meshGraphs_;
-    eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag>               biomeRules_;
-    eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag>           shapeGrammars_;
-    eve::script::RuntimeObjectRegistry<LSystem, ProcgenLSystemHandleTag>                     lsystems_;
 };
 
 }  // namespace eve::procgen
