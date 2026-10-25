@@ -6,6 +6,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <random>
 #include <stdexcept>
 
@@ -36,7 +37,14 @@ public:
         std::filesystem::copy_file(source, path_, std::filesystem::copy_options::overwrite_existing);
     }
 
-    void run(const char* source) { machine_.run(machine_.compileSource(source, "plugin-reload-check")); }
+    void run(const char* source) {
+        try {
+            machine_.run(machine_.compileSource(source, "plugin-reload-check"));
+        } catch (const std::exception& error) {
+            std::cerr << "plugin-reload-check failed: " << error.what() << "\n" << source << std::endl;
+            throw;
+        }
+    }
 
     void corrupt() { std::ofstream(path_, std::ios::binary | std::ios::trunc) << "not a shared library"; }
 
@@ -80,19 +88,24 @@ inline void replacement(ssq::VM& machine) {
         assert(plugins.loadPlugin(pluginAlias).code == "no_op");
         assert(plugins.isLoaded(pluginAlias));
         assert(eve.ReloadTestPlugin().version() == 1);
+        print("plugin reload: checked original generation\n");
         local result = plugins.reload(pluginPath);
         assert(result.ok && result.code == "applied");
         currentPlugin <- eve.ReloadTestPlugin();
         assert(currentPlugin.version() == 2);
         assert(currentPlugin.count() == 0);
         assert(currentPlugin.increment() == 1);
+        print("plugin reload: checked new generation\n");
         assert(oldPlugin.version() == 1 && oldPlugin.count() == 1);
         assert(oldPlugin.self().version() == 1 && oldPlugin.self().count() == 1);
         assert(currentPlugin.self().version() == 2);
+        print("plugin reload: checked generation self pointers\n");
         local rejected = false;
         try { currentPlugin.increment.call(oldPlugin); } catch (error) { rejected = true; }
         assert(rejected);
+        print("plugin reload: checked cross-generation call\n");
         assert(cachedMethod.call(oldPlugin) == 1);
+        print("plugin reload: checked captured method\n");
         assert(oldClass().version() == 1 && oldClass().count() == 1);
         // This old factory had no instance before reload; it must still create v1.
         assert(removedClass().version() == 1);

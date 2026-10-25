@@ -1,17 +1,10 @@
+diff --git a/simplesquirrel/include/simplesquirrel/args.hpp b/simplesquirrel/include/simplesquirrel/args.hpp
+index 763623a..4fb94d2 100644
 --- a/simplesquirrel/include/simplesquirrel/args.hpp
 +++ b/simplesquirrel/include/simplesquirrel/args.hpp
-@@ -8,6 +8,7 @@
- #include <iostream>
- #include <string>
- #include <typeinfo>
+@@ -10,0 +11 @@
 +#include <type_traits>
- #include <vector>
-
- namespace ssq {
-@@ -18,10 +19,22 @@
-
- #ifndef DOXYGEN_SHOULD_SKIP_THIS
-     namespace detail {
+@@ -20,0 +22,12 @@ namespace ssq {
 +        // Module factories identify resident generations without coupling the
 +        // binding library to engine headers. Ordinary value types keep name tags.
 +        template <typename T>
@@ -24,19 +17,12 @@
 +            return 0;
 +        }
 +
-         template <typename T>
-         inline size_t stableTypeHash() {
+@@ -23,2 +36,2 @@ namespace ssq {
 -            static const size_t value = std::hash<std::string>{}(typeid(T).name());
 -            return value;
 +            static const size_t name = std::hash<std::string>{}(typeid(T).name());
 +            return name ^ moduleFactoryIdentity<typename std::remove_pointer<T>::type>(0);
-         }
-
-         SSQ_API void addClassObj(HSQUIRRELVM vm, size_t hashCode, const HSQOBJECT& obj);
-@@ -94,11 +107,9 @@
-             else {
-                 if (type != OT_INSTANCE) throw TypeException("bad cast", typeToStr(Type(OT_INSTANCE)), typeToStr(Type(type)));
-                 SQUserPointer val;
+@@ -97,5 +110,3 @@ namespace ssq {
 -                /*sq_gettypetag(vm, index, &val);
 -                if (reinterpret_cast<size_t>(val) != typeid(T).hash_code()) {
 -                    throw TypeException("bad cast", typeid(T).name(), "UNKNOWN");
@@ -45,44 +31,19 @@
 +                const auto factory = moduleFactoryIdentity<typename std::remove_pointer<T>::type>(0);
 +                const auto expected = factory ? reinterpret_cast<SQUserPointer>(stableTypeHash<T>()) : nullptr;
 +                if (SQ_FAILED(sq_getinstanceup(vm, index, &val, expected))) {
-                     throw TypeException("Could not get instance from squirrel stack");
-                 }
-                 return reinterpret_cast<T>(val);
-@@ -273,7 +284,7 @@
-
-         template<typename T>
-         inline void pushByCopy(HSQUIRRELVM vm, const T& value) {
+@@ -276 +287 @@ namespace ssq {
 -            static const auto hashCode = stableTypeHash<T*>();
 +            const auto hashCode = stableTypeHash<T*>();
-             try {
-                 sq_pushobject(vm, getClassObj(vm, hashCode));
-                 sq_createinstance(vm, -1);
-@@ -444,7 +455,7 @@
-
-         template<typename T>
-         inline void pushByPtr(HSQUIRRELVM vm, T* value) {
+@@ -447 +458 @@ namespace ssq {
 -            static const auto hashCode = stableTypeHash<T*>();
 +            const auto hashCode = stableTypeHash<T*>();
-             if (value == nullptr) {
-                 sq_pushnull(vm);
-             }
+diff --git a/simplesquirrel/include/simplesquirrel/binding.hpp b/simplesquirrel/include/simplesquirrel/binding.hpp
+index 141ef25..ade914e 100644
 --- a/simplesquirrel/include/simplesquirrel/binding.hpp
 +++ b/simplesquirrel/include/simplesquirrel/binding.hpp
-@@ -92,7 +92,7 @@
-
-         template<typename T, typename... Args>
-         static Object addClass(HSQUIRRELVM vm, const char* name, const std::function<T*(Args...)>& allocator, bool release = true) {
+@@ -95 +95 @@ namespace ssq {
 -            static const auto hashCode = stableTypeHash<T*>();
 +            const auto hashCode = stableTypeHash<T*>();
-             static const std::size_t nparams = sizeof...(Args);
-
-             Object clsObj(vm);
-@@ -130,7 +130,7 @@
-
-         template<typename T>
-         static Object addAbstractClass(HSQUIRRELVM vm, const char* name) {
+@@ -133 +133 @@ namespace ssq {
 -            static const auto hashCode = stableTypeHash<T*>();
 +            const auto hashCode = stableTypeHash<T*>();
-             Object clsObj(vm);
-
-             sq_pushstring(vm, name, strlen(name));

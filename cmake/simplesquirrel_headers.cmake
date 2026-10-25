@@ -35,6 +35,7 @@ function(eve_prepare_simplesquirrel_headers)
             COMMAND "${CMAKE_COMMAND}"
                 "-DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/${_patch}.patch"
                 "-DPATCH_DIR=${_snapshot}"
+                -DPATCH_NORMALIZE_CRLF=ON
                 -P "${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake"
             RESULT_VARIABLE _patch_result)
         if(NOT _patch_result EQUAL 0)
