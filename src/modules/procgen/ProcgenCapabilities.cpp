@@ -1,5 +1,7 @@
 #include "common/Capability.h"
 #include "common/ProcgenQuery.h"
+#include "procgen/MeshBuild.h"
+#include "procgen/Params.h"
 #include "procgen/Procgen.h"
 
 #include <cstdint>
