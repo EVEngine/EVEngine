@@ -117,5 +117,7 @@ TVE / Unity 植被与天空导入的源语义契约仍散落在根目录（`vege
   - Release 等非 Debug 构建默认通过 `ZEROERR_NO_ASSERT` 编译剔除，零运行时开销；
   - 需要手动开启时：`make build/linux CMAKE_EXTRA_ARGS=-DEVENGINE_ENABLE_ASSERTS=ON`
     （或 CMake 配置时加 `-DEVENGINE_ENABLE_ASSERTS=ON`）。
+  - Debug 编译档位（`EVENGINE_DEBUG_LEVEL` / `make … DEBUG_LEVEL=`）：默认 `normal`
+   （`-g1 -O2`）供日常与 CI；排障用 `detail`（`-g2 -O1`）。断言在两种 Debug 档位下都开启。
 
 如果你是使用 EVEngine 制作游戏，而不是修改引擎，请从[用户指南](../usr/README.md)开始。

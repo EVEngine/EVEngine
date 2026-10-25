@@ -33,6 +33,10 @@ compiler override.
 ### Building
 - `make debug` configures + builds `build/linux-debug` (equivalently: cmake configure,
   then `--target deps`, then the engine).
+- Debug has two compiler profiles (`EVENGINE_DEBUG_LEVEL` / Makefile `DEBUG_LEVEL`):
+  **`normal`** (default, CI) = GCC/Clang `-g1 -O2` (MSVC `/Zi /O2`); **`detail`** =
+  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. Example:
+  `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for `CONFIG:Debug` either way.
 - The first configure downloads the `third-party/` sources from GitHub and the `deps`
   target compiles them (SDL2, Poco, OpenAL, Box2D/box3d, FreeType, …). This is slow the
   first time and cached afterward. `build/` is git-ignored and tied to its source tree.

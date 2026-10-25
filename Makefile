@@ -171,7 +171,7 @@ show-targets:
 	@echo "ANDROID_SDK=$(ANDROID_SDK)"
 	@echo "ANDROID_NDK=$(ANDROID_NDK)"
 	@echo "all -> $(ALL_DEBUG_TARGETS)"
-	@echo "debug -> build/$(PLATFORM)-debug"
+	@echo "debug -> build/$(PLATFORM)-debug (DEBUG_LEVEL=$(DEBUG_LEVEL); normal|detail)"
 	@echo "release -> build/$(PLATFORM)"
 	@echo "sdk -> sdk/$(PLATFORM) (Release) or sdk/$(PLATFORM)-debug"
 	@echo "run -> run/$(PLATFORM)-debug (GAME=$(GAME), empty = embedded demo)"
@@ -362,6 +362,12 @@ CMAKE_EXTRA_ARGS ?=
 # `sdk/win32-debug` / `sdk/linux-debug` package the same debug trees, so they
 # inherit the gate; `sdk/win32` / `sdk/linux` (Release) do not.
 DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
+# Debug compiler profile (see cmake/debug_profile.cmake):
+#   normal (default) = -g1 -O2 / MSVC /O2 — CI and day-to-day
+#   detail           = -g2 -O1 / MSVC /O1 — richer DWARF for triage
+# Override: make debug DEBUG_LEVEL=detail
+DEBUG_LEVEL ?= normal
+DEBUG_LEVEL_FLAG = -DEVENGINE_DEBUG_LEVEL=$(DEBUG_LEVEL)
 JOBS ?= 32
 ANDROID_JOBS ?= 8
 CTEST_JOBS ?= 4
@@ -393,13 +399,14 @@ MSVC_COMPILER_WRAPPER   := $(abspath cmake/msvc-cl.cmd)
 # `CMAKE_EXTRA_ARGS="-DEVENGINE_MODULE_LINKAGE=SHARED"` (tracked by
 # reconfigure-if-args-changed, so switching it reconfigures).
 WIN32_CMAKE_ARGS        = -G Ninja -DCMAKE_BUILD_TYPE=Release -DEVENGINE_MODULE_LINKAGE=OBJECT -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(CMAKE_EXTRA_ARGS) -B build/win32 -S .
-WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
+WIN32_DEBUG_CMAKE_ARGS  = -G Ninja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_C_COMPILER=$(MSVC_COMPILER_WRAPPER) -DCMAKE_CXX_COMPILER=$(MSVC_COMPILER_WRAPPER) $(DEBUG_STRICT_WARNINGS_FLAG) $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS) -B build/win32-debug -S .
 LINUX_CMAKE_ARGS        = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=linux -DEVENGINE_MODULE_LINKAGE=OBJECT $(CMAKE_EXTRA_ARGS) -B build/linux -S .
-LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
+LINUX_DEBUG_CMAKE_ARGS  = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux $(DEBUG_STRICT_WARNINGS_FLAG) $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS) -B build/linux-debug -S .
 MACOSX_CMAKE_ARGS       = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Release -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx -S .
-MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
-WIN32_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
-LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(CMAKE_EXTRA_ARGS))
+MACOSX_DEBUG_CMAKE_ARGS = -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=macosx $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS) -B build/macosx-debug -S .
+WIN32_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS))
+LINUX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_STRICT_WARNINGS_FLAG) $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS))
+MACOSX_DEBUG_CONFIG_STAMP = $(strip $(DEBUG_LEVEL_FLAG) $(CMAKE_EXTRA_ARGS))
 
 # $(call reconfigure-if-args-changed,<build-dir>,<cmake-command>[,<stamp>])
 # Re-runs cmake when the recorded stamp differs from the current make-level
@@ -611,7 +618,7 @@ fuzz/linux: build/linux-fuzz
 	cd build/linux-fuzz && ./evengine_json_fuzz --fuzz --testcase='^fuzz.json.document$$'
 
 build/macosx-debug: build/macosx-debug/Makefile
-	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS))
+	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS),$(MACOSX_DEBUG_CONFIG_STAMP))
 	cmake --build $@ --target deps -j $(JOBS)
 	cmake --build $@ -j $(JOBS)
 
@@ -636,6 +643,7 @@ build/android-debug/build.ninja:
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DBUILD_PLATFORM=android \
 		-DBUILD_TESTING=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/android-debug -S .
 
@@ -703,6 +711,7 @@ build/ios-debug/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug -S .
 
@@ -728,6 +737,7 @@ build/ios-sim-debug/EVEngine.xcodeproj:
 		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
 		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
 		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-sim-debug -S .
 
@@ -769,6 +779,7 @@ build/ios-debug-test/EVEngine.xcodeproj:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-debug-test -S .
 
@@ -797,6 +808,7 @@ build/ios-sim-debug-test/EVEngine.xcodeproj:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/ios-sim-debug-test -S .
 
@@ -915,6 +927,7 @@ build/android-debug-test/build.ninja:
 		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
 		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
 		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/android-debug-test -S .
 

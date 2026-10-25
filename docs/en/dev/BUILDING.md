@@ -100,3 +100,7 @@ For iOS, use macOS/Xcode. `make build/ios-debug` builds a device application; `m
 Run [source checks and affected tests](TESTING.md) before submitting changes. `make devlab` exercises hot reload/debugging. Missing headers, unavailable SDKs or changed generators need environment/configuration repairs before engine behavior changes.
 
 Assertions use `EV_PARAM_CHECK` / `EV_ASSERT` in `src/engine/common/Assert.h`. Debug enables them; non-Debug builds remove them by default. Explicitly retain them with `-DEVENGINE_ENABLE_ASSERTS=ON`.
+
+Debug builds use a two-tier compiler profile (`EVENGINE_DEBUG_LEVEL`, Makefile `DEBUG_LEVEL`):
+`normal` (default) is `-g1 -O2` / MSVC `/O2`; `detail` is `-g2 -O1` / MSVC `/O1` for richer
+DWARF when debugging. Switch with `make debug DEBUG_LEVEL=detail`.
