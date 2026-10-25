@@ -1,4 +1,3 @@
-#include "graphics/Texture.h"
 #include "procgen/house/HouseComponentLibrary.h"
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>
@@ -23,6 +22,7 @@
 #include "data/ByteData.h"
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"

@@ -1,10 +1,10 @@
-#include "graphics/Texture.h"
 #include "hd2d/Hd2d.h"
 
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "map/TileLayer.h"
 
 #include <algorithm>
