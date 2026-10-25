@@ -40,6 +40,7 @@ enum class UiHostTweenTarget : std::uint8_t {
 enum class UiItemTweenTarget : std::uint8_t {
     Opacity = 0,  ///< UINode.opacity (transient)
     Pos     = 1,  ///< UINode.posX / posY (absolute placement)
+    Value   = 2,  ///< UINode.value (normalized HUD fill)
 };
 
 /** @brief One host-level tween slot. */
@@ -60,6 +61,7 @@ struct UiHostTween {
 struct UiItemTween {
     UIHostHandle      host{};
     std::string       nodeId;
+    UINodeHandle      node{};
     UiItemTweenTarget target     = UiItemTweenTarget::Opacity;
     float             fromX      = 0.f;
     float             fromY      = 0.f;
@@ -146,6 +148,15 @@ public:
     [[nodiscard]] eve::Result<void> animateItemPos(UIHostHandle host, const std::string &id, float x, float y,
                                                    float durationMs, const std::string &ease, float delayMs,
                                                    double nowMs);
+
+    /** @brief Animate a normalized HUD value, replacing the previous value tween from its current sample.
+     * @return Applied, StaleHandle, NotFound, or InvalidArgument for nonfinite inputs.
+     * @note Target and samples clamp to [0,1]; zero duration applies after any delay.
+     * @thread UI thread only. @reentrancy No callbacks; owns only a non-owning node token.
+     */
+    [[nodiscard]] eve::Result<void> animateItemValue(UIHostHandle host, const std::string &id, float value,
+                                                     float durationMs, const std::string &ease, float delayMs,
+                                                     double nowMs);
 
     /** @brief Cancel every pending host tween for `host`. */
     void cancelHost(UIHostHandle host);

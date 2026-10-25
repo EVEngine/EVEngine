@@ -5,6 +5,7 @@
 #include <limits>
 #include <utility>
 #include "common/Value.h"
+#include "common/ValueRead.h"
 #include "effects/EffectTypes.h"
 
 // EffectDefinitionRuntime.cpp
@@ -23,43 +24,37 @@ const eve::Value* field(const eve::Value::Object& object, const char* name) {
 }
 
 bool readString(const eve::Value::Object& object, const char* name, std::string& output) {
-    const auto* value = field(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
+    auto text = eve::readStringMember(object, name);
     if (!text) return false;
-    output = *text;
+    output = std::move(text.value());
     return true;
 }
 
 bool readInt(const eve::Value::Object& object, const char* name, int& output) {
     const auto* value = field(object, name);
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max()) return false;
-        output = static_cast<int>(*integer);
-        return true;
-    }
-    return false;
+    if (!value) return false;
+    auto parsed = eve::readIntValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
+    return true;
 }
 
 bool readUInt(const eve::Value::Object& object, const char* name, std::uint32_t& output) {
-    const auto* value   = field(object, name);
-    const auto* integer = value ? value->getIf<std::int64_t>() : nullptr;
-    if (!integer || *integer < 0 || static_cast<std::uint64_t>(*integer) > std::numeric_limits<std::uint32_t>::max())
-        return false;
-    output = static_cast<std::uint32_t>(*integer);
+    const auto* value = field(object, name);
+    if (!value) return false;
+    auto parsed = eve::readUInt32Value(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readDouble(const eve::Value::Object& object, const char* name, double& output) {
     const auto* value = field(object, name);
-    if (const auto* number = value ? value->getIf<double>() : nullptr) {
-        output = *number;
-        return std::isfinite(output);
-    }
-    if (const auto* integer = value ? value->getIf<std::int64_t>() : nullptr) {
-        output = static_cast<double>(*integer);
-        return std::isfinite(output);
-    }
-    return false;
+    if (!value) return false;
+    auto parsed = eve::readNumericDoubleValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
+    return std::isfinite(output);
 }
 
 template <class Enum>

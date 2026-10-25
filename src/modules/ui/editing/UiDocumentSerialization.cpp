@@ -105,11 +105,23 @@ Result<UiStyleValue> UiDocumentTarget::parseStyle(const EditorValue& value) {
 }
 
 EditorValue UiDocumentTarget::contentValue(const UiContentValue& content) {
-    return EditorValue::Object{{"fontAsset", content.fontAsset}, {"fontSize", content.fontSize},
-        {"textR", content.textR}, {"textG", content.textG}, {"textB", content.textB},
-        {"textA", content.textA}, {"horizontalAlign", content.horizontalAlign},
-        {"verticalAlign", content.verticalAlign}, {"textureAsset", content.textureAsset},
-        {"imageFit", content.imageFit}, {"clip", content.clip}};
+    return EditorValue::Object{{"fontAsset", content.fontAsset},
+                               {"fontSize", content.fontSize},
+                               {"textR", content.textR},
+                               {"textG", content.textG},
+                               {"textB", content.textB},
+                               {"textA", content.textA},
+                               {"horizontalAlign", content.horizontalAlign},
+                               {"verticalAlign", content.verticalAlign},
+                               {"textureAsset", content.textureAsset},
+                               {"imageFit", content.imageFit},
+                               {"clip", content.clip},
+                               {"value", content.value},
+                               {"fillDirection", content.fillDirection},
+                               {"fillStretch", content.fillStretch},
+                               {"fillStartDegrees", content.fillStartDegrees},
+                               {"fillClockwise", content.fillClockwise},
+                               {"fillInnerRadius", content.fillInnerRadius}};
 }
 
 Result<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& value) {
@@ -137,6 +149,45 @@ Result<UiContentValue> UiDocumentTarget::parseContent(const EditorValue& value) 
                                                     "UI content fields are missing");
     content = {*fontAsset, *fontSize, *textR, *textG, *textB, *textA, *horizontal, *vertical,
                *textureAsset, *fit, *clip};
+    // Versions 1/2 omit fill properties and migrate to the default empty fill.
+    if (const auto* entry = field(value, "value")) {
+        const auto* number = entry->getIf<double>();
+        if (!number || !std::isfinite(*number) || *number < 0.0 || *number > 1.0)
+            return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-fill"),
+                                                        "Fill value must be in [0,1]");
+        content.value = *number;
+    }
+    if (const auto* entry = field(value, "fillDirection")) {
+        const auto* direction = entry->getIf<std::string>();
+        if (!direction || (*direction != "right" && *direction != "left" && *direction != "down" && *direction != "up"))
+            return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-fill"),
+                                                        "Invalid fill direction");
+        content.fillDirection = *direction;
+    }
+    for (auto [key, output] :
+         {std::pair{"fillStretch", &content.fillStretch}, std::pair{"fillClockwise", &content.fillClockwise}}) {
+        if (const auto* entry = field(value, key)) {
+            const auto* flag = entry->getIf<bool>();
+            if (!flag)
+                return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-fill"),
+                                                            "Invalid fill flag");
+            *output = *flag;
+        }
+    }
+    if (const auto* entry = field(value, "fillStartDegrees")) {
+        const auto* number = entry->getIf<double>();
+        if (!number || !std::isfinite(*number) || std::abs(*number) > 360000.0)
+            return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-fill"),
+                                                        "Invalid fill angle");
+        content.fillStartDegrees = *number;
+    }
+    if (const auto* entry = field(value, "fillInnerRadius")) {
+        const auto* number = entry->getIf<double>();
+        if (!number || !std::isfinite(*number) || *number < 0.0 || *number > 1.0)
+            return eve::editing::failed<UiContentValue>(EditorStatus::Rejected, RuleId("editor.ui.invalid-fill"),
+                                                        "Invalid inner radius");
+        content.fillInnerRadius = *number;
+    }
     const std::set<std::string> aligns{"start", "center", "end"};
     const std::set<std::string> fits{"stretch", "contain", "cover"};
     if (!std::isfinite(content.fontSize) || content.fontSize <= 0.0 || content.fontSize > 512.0 ||
@@ -222,7 +273,7 @@ EditorValue UiDocumentTarget::snapshotValue() const {
         widgets.push_back(widgetValue(widget));
     }
     EditorValue::Object root;
-    root["schemaVersion"] = 2;
+    root["schemaVersion"] = 3;
     root["widgets"] = EditorValue(std::move(widgets));
     return EditorValue(std::move(root));
 }
@@ -232,9 +283,9 @@ Result<void> UiDocumentTarget::loadSnapshot(const EditorValue& snapshot) {
     const EditorValue* widgetsValue = field(snapshot, "widgets");
     const auto* version = versionValue ? versionValue->getIf<int64_t>() : nullptr;
     const auto* widgets = widgetsValue ? widgetsValue->getIf<EditorValue::Array>() : nullptr;
-    if (!version || (*version != 1 && *version != 2) || !widgets)
+    if (!version || (*version != 1 && *version != 2 && *version != 3) || !widgets)
         return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("editor.ui.snapshot-format"),
-                                          "UI snapshot requires schemaVersion 1 or 2 and a widget array");
+                                          "UI snapshot requires schemaVersion 1, 2 or 3 and a widget array");
     std::map<ObjectId, UiWidgetSnapshot> candidate;
     for (const EditorValue& value : *widgets) {
         auto parsed = parseWidget(value);

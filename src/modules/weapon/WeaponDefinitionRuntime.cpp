@@ -1,4 +1,5 @@
 #include "weapon/WeaponDefinitionRuntime.h"
+#include "common/ValueRead.h"
 
 #include "common/Value.h"
 #include "weapon/Weapon.h"
@@ -21,11 +22,10 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readText(const eve::Value::Object& object, std::string_view name, std::string& output) {
-    const auto* value = field(object, name);
-    if (value == nullptr) return true;
-    const auto* text = value->getIf<std::string>();
-    if (text == nullptr) return false;
-    output = *text;
+    if (!field(object, name)) return true;
+    auto parsed = eve::readStringMember(object, name);
+    if (!parsed) return false;
+    output = std::move(parsed.value());
     return true;
 }
 
@@ -46,20 +46,19 @@ bool readNumber(const eve::Value::Object& object, std::string_view name, float& 
 
 bool readInteger(const eve::Value::Object& object, std::string_view name, int& output) {
     const auto* value = field(object, name);
-    if (value == nullptr) return true;
-    const auto* integer = value->getIf<std::int64_t>();
-    if (integer == nullptr || *integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
-        return false;
-    output = static_cast<int>(*integer);
+    if (!value) return true;
+    auto parsed = eve::readIntValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool readBoolean(const eve::Value::Object& object, std::string_view name, bool& output) {
     const auto* value = field(object, name);
-    if (value == nullptr) return true;
-    const auto* boolean = value->getIf<bool>();
-    if (boolean == nullptr) return false;
-    output = *boolean;
+    if (!value) return true;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 

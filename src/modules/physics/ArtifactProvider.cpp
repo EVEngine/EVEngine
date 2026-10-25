@@ -1,4 +1,5 @@
 #include "physics/ArtifactProvider.h"
+#include "common/ValueRead.h"
 
 #include "common/Capability.h"
 #include "physics/Body3D.h"
@@ -48,18 +49,17 @@ const eve::Value* member(const eve::Value::Object& object, const char* name) noe
 }
 
 bool readString(const eve::Value::Object& object, const char* name, std::string& output) {
-    const auto* value = member(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
-    if (!text || text->empty()) return false;
-    output = *text;
+    auto text = eve::readNonEmptyStringMember(object, name);
+    if (!text) return false;
+    output = std::move(text.value());
     return true;
 }
 
 bool readU64(const eve::Value::Object& object, const char* name, std::uint64_t& output) {
-    std::string text;
-    if (!readString(object, name, text)) return false;
-    const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), output);
-    return error == std::errc{} && end == text.data() + text.size();
+    auto parsed = eve::scanUnsignedStringMember(object, name);
+    if (!parsed) return false;
+    output = parsed.value().value;
+    return parsed.value().consumed == parsed.value().size;
 }
 
 bool readFloat(const eve::Value::Object& object, const char* name, float& output) {

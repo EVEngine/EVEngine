@@ -477,15 +477,16 @@ std::unordered_map<std::string, int> Value::getIntMap(const char* key) const {
 
 namespace {
 
-void appendEscapedString(std::string_view value, std::string& output) {
+void appendEscapedString(std::string_view value, std::string& output,
+                         StringEscapeStyle style = StringEscapeStyle::Canonical) {
     constexpr char hex[] = "0123456789abcdef";
     output.push_back('"');
     for (const unsigned char byte : value) {
         switch (byte) {
             case '"': output += "\\\""; break;
             case '\\': output += "\\\\"; break;
-            case '\b': output += "\\b"; break;
-            case '\f': output += "\\f"; break;
+            case '\b': output += style == StringEscapeStyle::Canonical ? "\\b" : "\\u0008"; break;
+            case '\f': output += style == StringEscapeStyle::Canonical ? "\\f" : "\\u000c"; break;
             case '\n': output += "\\n"; break;
             case '\r': output += "\\r"; break;
             case '\t': output += "\\t"; break;
@@ -571,6 +572,35 @@ bool appendCanonicalJson(const eve::Value& value, std::string& output) {
 }
 
 }  // namespace
+
+std::string quoteString(std::string_view value, StringEscapeStyle style) {
+    std::string output;
+    output.reserve(value.size() + 2);
+    appendEscapedString(value, output, style);
+    return output;
+}
+
+Result<UnsignedIntegerScan> scanUnsignedInteger(std::string_view text, UnsignedIntegerSyntax syntax) {
+    if (!text.empty()) {
+        if (syntax == UnsignedIntegerSyntax::LegacyStoull) {
+            try {
+                std::size_t consumed = 0;
+                const auto  value    = std::stoull(std::string(text), &consumed);
+                return Result<UnsignedIntegerScan>::success({value, consumed, text.size()});
+            } catch (...) {
+                // Compatibility with the existing persistence readers' exception boundary.
+            }
+        } else {
+            std::uint64_t value     = 0;
+            const auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), value);
+            if (error == std::errc{})
+                return Result<UnsignedIntegerScan>::success(
+                    {value, static_cast<std::size_t>(end - text.data()), text.size()});
+        }
+    }
+    return Result<UnsignedIntegerScan>::failure(
+        Diagnostic::error(DiagnosticCode::ParseError, "unsigned integer has no valid in-range prefix"));
+}
 
 Result<std::string> stringify(const eve::Value& value) {
     std::string output;
