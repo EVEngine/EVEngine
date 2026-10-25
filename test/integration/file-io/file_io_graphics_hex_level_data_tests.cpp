@@ -3500,8 +3500,18 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         if (auto light = lv->getObject("light")) {
             std::string lightType = "point";
             if (light->has("type")) lightType = light->getValue<std::string>("type");
+            const bool knownProfile =
+                lightType == "point" || lightType == "spot" || lightType == "dir" || lightType == "multi";
+            REQUIRE(knownProfile);
+            // The example keeps its point torch for the multi-light profile;
+            // multi is a catalog profile, not a Light2D primitive type.
+            const std::string primitiveType = lightType == "multi" ? "point" : lightType;
             auto *lamp = eve::graphics::Light2D::createLight(lightType);
-            CHECK_EQ(lamp->getType(), lightType);
+            CHECK_EQ(lamp->getType(), primitiveType);
+            if (lightType == "multi") {
+                REQUIRE(light->has("count"));
+                CHECK(light->getValue<int>("count") > 1);
+            }
             const float radius = light->has("radius") ? float(light->getValue<double>("radius")) : 120.f;
             lamp->setRadius(radius);
             CHECK(std::fabs(lamp->getRadius() - radius) < 1e-3f);
