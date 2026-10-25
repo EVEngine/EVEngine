@@ -2477,7 +2477,16 @@ TEST_CASE("procgen.mesh.marchingcubes.fillDensityAndErrors") {
     CHECK_EQ(nz, 8);
     CHECK_EQ(int(density.size()), 8 * 8 * 8);
 
+    Params rectangular;
+    rectangular.setSize(6, 7);
+    rectangular.setString("field", "sphere");
+    CHECK(fillDensityField(rectangular, density, nx, ny, nz, err));
+    CHECK_EQ(nx, 6);
+    CHECK_EQ(ny, 7);
+    CHECK_EQ(nz, 6);
+
     Params axis;
+    axis.setInt("resolution", 8);
     axis.setInt("nx", 6);
     axis.setInt("ny", 7);
     axis.setInt("nz", 5);

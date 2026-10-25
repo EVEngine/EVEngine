@@ -171,6 +171,7 @@ using namespace eve::daynight;
 
 TEST_CASE("daynight.clockRoundTrip") {
     DayNight d;
+    CHECK(d.getSunElevation() > 0.f);
     d.setTimeOfDay(6.0f);
     CHECK(d.getTimeOfDay() == 6.0f);
     d.setTimeOfDay(23.5f);
@@ -178,6 +179,8 @@ TEST_CASE("daynight.clockRoundTrip") {
     d.setTimeOfDay(-1.0f);  // wraps into the valid 0..24 range
     CHECK(d.getTimeOfDay() >= 0.0f);
     CHECK(d.getTimeOfDay() < 24.0f);
+    CHECK(d.isNight());
+    CHECK_EQ(d.getSunIntensity(), 0.f);
 }
 
 TEST_CASE("daynight.clockSpeedAndPause") {
@@ -230,6 +233,26 @@ TEST_CASE("daynight.sunColorWarmsNearHorizon") {
     CHECK(d.getSunR() == 0.0f);
     CHECK(d.getSunG() == 0.0f);
     CHECK(d.getSunB() == 0.0f);
+
+    // Manual overrides also refresh immediately, and disabling one restores
+    // the clock-derived sun without requiring a graphics frame.
+    auto manual            = d.getPcgManualSun();
+    manual.enabled         = true;
+    manual.pitchDegrees    = 30.f;
+    manual.rotationDegrees = 90.f;
+    manual.intensity       = 2.f;
+    REQUIRE(d.setPcgManualSun(manual).ok());
+    CHECK(std::abs(d.getSunElevation() - 30.f) < 0.0001f);
+    CHECK(std::abs(d.getSunDirY() - 0.5f) < 0.0001f);
+    CHECK_EQ(d.getSunIntensity(), 2.f);
+    d.setTimeOfDay(0.f);
+    CHECK(std::abs(d.getSunElevation() - 30.f) < 0.0001f);
+    CHECK_EQ(d.getSunIntensity(), 2.f);
+    manual.enabled = false;
+    REQUIRE(d.setPcgManualSun(manual).ok());
+    CHECK_EQ(d.getSunElevation(), -70.f);
+    CHECK_EQ(d.getSunIntensity(), 0.f);
+    CHECK(d.isNight());
 }
 
 TEST_CASE("daynight.ambientBounded") {

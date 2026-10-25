@@ -2440,7 +2440,8 @@ TEST_CASE("graphics.displayOutput.encodeHdr10PaperWhiteNearMidCode") {
     CHECK(r < 0.7f);
     CHECK(std::abs(r - g) < 1e-4f);
     CHECK(std::abs(g - b) < 1e-4f);
-    CHECK(linearToPq(0.f) == 0.f);
+    // The PQ black offset is nonzero in float, but encodes as zero in HDR10.
+    CHECK_EQ(std::lround(linearToPq(0.f) * 1023.f), 0L);
     CHECK(linearToPq(1.f) > 0.9f);
 }
 

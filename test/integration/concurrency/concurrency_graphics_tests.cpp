@@ -704,13 +704,30 @@ TEST_CASE("devtools.mcp.consoleToolsRoundTripScriptPrint") {
     CHECK(responseContentText(responses[3]).find("unknown level") != std::string::npos);
     CHECK(responseContentText(responses[4]).find("unknown level") != std::string::npos);
 
-    // Cursor-based incremental read: nothing new after clear().
+    // A tail read after clear reports the discarded history as a gap.
     auto cleared = parseObject(responseContentText(responses[5]));
     REQUIRE(cleared);
     CHECK(cleared->getValue<std::int64_t>("droppedThrough") == nextSeq - 1);
-    const std::string afterClear = responseContentText(responses[6]);
-    CHECK(afterClear.find("\"count\":0") != std::string::npos);
-    CHECK(afterClear.find("\"truncated\":false") != std::string::npos);
+    auto afterClear = parseObject(responseContentText(responses[6]));
+    REQUIRE(afterClear);
+    CHECK_EQ(afterClear->getValue<int>("count"), 0);
+    CHECK(afterClear->getValue<bool>("truncated"));
+    CHECK_EQ(afterClear->getValue<std::int64_t>("droppedThrough"), nextSeq - 1);
+
+    // Resuming from the last covered sequence has no gap or repeated lines.
+    const auto resumed = runStdioSession(
+        joinRequests({initializeRequest(1, "2025-06-18"),
+                      callRequest(2, "eve_console_read", "{\"sinceSeq\":" + std::to_string(nextSeq - 1) + "}")}),
+        2);
+    REQUIRE_EQ(resumed.size(), std::size_t(2));
+    auto incremental = parseObject(responseContentText(resumed[1]));
+    REQUIRE(incremental);
+    CHECK(!incremental->getValue<bool>("truncated"));
+    auto resumedLines = incremental->getArray("lines");
+    REQUIRE(resumedLines);
+    CHECK_EQ(incremental->getValue<std::size_t>("count"), resumedLines->size());
+    for (std::size_t index = 0; index < resumedLines->size(); ++index)
+        CHECK(resumedLines->getObject(static_cast<unsigned>(index))->getValue<Poco::Int64>("seq") > nextSeq - 1);
 
     dt.detach();
     CHECK(!console.isAttached());
@@ -763,7 +780,9 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
     auto supported = parseObject(responses[0])->getObject("result");
     REQUIRE(supported);
     CHECK(supported->getValue<std::string>("protocolVersion") == "2025-06-18");
-    CHECK(!supported->getValue<std::string>("serverInfo.name").empty());
+    auto serverInfo = supported->getObject("serverInfo");
+    REQUIRE(serverInfo);
+    CHECK(!serverInfo->getValue<std::string>("name").empty());
 
     // An unknown revision must not be echoed back as if it were implemented.
     auto unknown = parseObject(responses[1])->getObject("result");
