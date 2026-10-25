@@ -3046,6 +3046,12 @@
     "unit/editing/editing_tests.cpp": {
       "role": "tests",
       "default": "local-format",
+      "cases": {
+        "local-logic": [
+          "editing.numericRead.preservesNumbersWithoutAddingValidation",
+          "editing.numericRead.rejectsNonNumericKinds"
+        ]
+      },
       "origins": [
         "editing_property_schema_json.cpp"
       ]
@@ -4399,6 +4405,60 @@
         "avatar_appearance.cpp"
       ]
     },
+    "integration/physics-simulation/physics_collision_regression.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.collision.ccd.sphereStopsAtThinWall",
+          "physics.collision.ccd.dynamicPairMaintainsOrderWithFourSubsteps",
+          "physics.collision.stack.remainsSupportedAfterTenSeconds",
+          "physics.collision.query.primitiveHitsHaveNoSourceTriangle"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_collision_benchmark.cpp": {
+      "role": "tests",
+      "default": "performance",
+      "cases": {
+        "performance": [
+          "physics.benchmark.collision.grid1000"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/physics_mover_grounding.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "cases": {
+        "physics-backend": [
+          "physics.mover.grounding.leavingLedgeClearsSupportAtDestination",
+          "physics.mover.grounding.horizontalMotionHasUsableSupportNormal",
+          "physics.mover.grounding.jumpingClearsStartingFloorContact",
+          "physics.mover.grounding.kinematicSupportRemovalIsObservedImmediately",
+          "physics.mover.grounding.destinationProbeHonorsSensorAndBodyExclusions",
+          "physics.mover.grounding.sensorWallDoesNotBlockCapsuleTravel"
+        ]
+      },
+      "module": "physics",
+      "task": "physics-simulation"
+    },
+    "integration/physics-simulation/climbing_grounding.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "cases": {
+        "module-composition": [
+          "climbing.grounding.lowStepUsesProductionMotor",
+          "climbing.grounding.tallStepRemainsBlocked",
+          "climbing.grounding.lowCeilingRejectsStepWithoutPublishingRaisedPose"
+        ]
+      },
+      "module": "climbing",
+      "task": "physics-simulation"
+    },
     "integration/projectile-behavior/continuous_solver.cpp": {
       "role": "tests",
       "default": "module-composition",
@@ -4418,6 +4478,21 @@
       "role": "tests",
       "default": "render-window",
       "module": "weather"
+    },
+    "integration/gameplay-composition/climbing_contact_presentation.cpp": {
+      "role": "tests",
+      "default": "script-binding",
+      "module": "climbing"
+    },
+    "integration/gameplay-composition/climbing_pose_contacts.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "climbing"
+    },
+    "integration/physics-simulation/climbing_foot_contacts.cpp": {
+      "role": "tests",
+      "default": "physics-backend",
+      "module": "climbing"
     },
     "integration/control-rig/editor_control_rig.cpp": {
       "role": "tests",
@@ -4487,6 +4562,17 @@
         "sensing_environment.cpp"
       ]
     },
+    "integration/ui-hud/hud_tests.cpp": {
+      "role": "tests",
+      "default": "module-composition",
+      "module": "ui_editing",
+      "cases": {
+        "ui-render": [
+          "UI.hud.renderScalesHitRectAndRestoresDesignMetrics",
+          "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry"
+        ]
+      }
+    },
     "integration/audio-playback/PcmStream.cpp": {
       "role": "tests",
       "default": "platform-audio",
@@ -4501,6 +4587,11 @@
         ]
       },
       "module": "audio"
+    },
+    "integration/sprite-atlas/animation_atlas_rotation.cpp": {
+      "role": "tests",
+      "default": "render-window",
+      "module": "animation"
     }
   }
 }

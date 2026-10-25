@@ -1,0 +1,90 @@
+{
+  "schemaId": "evengine.climbing-anchor-graph",
+  "schemaVersion": 2,
+  "id": "contact:corner_inner",
+  "sourceGeometryContentId": "contact:corner_inner:v1",
+  "buildSettingsHash": "contact-lab:v1",
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "ledge",
+      "localPosition": [
+        0.5,
+        1.5,
+        -1
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        0.29,
+        1.5,
+        -1
+      ],
+      "rightHandSocket": [
+        0.71,
+        1.5,
+        -1
+      ],
+      "feetSocket": [
+        0.5,
+        0.3,
+        -1
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    },
+    {
+      "id": "next",
+      "kind": "corner_inner",
+      "localPosition": [
+        1,
+        1.5,
+        -1.5
+      ],
+      "localNormal": [
+        -1,
+        0,
+        0
+      ],
+      "localTangent": [
+        0,
+        0,
+        -1
+      ],
+      "leftHandSocket": [
+        1,
+        1.5,
+        -1.29
+      ],
+      "rightHandSocket": [
+        1,
+        1.5,
+        -1.71
+      ],
+      "feetSocket": [
+        1,
+        0.3,
+        -1.5
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "next",
+      "kind": "corner",
+      "bidirectional": false,
+      "requiredTags": []
+    }
+  ]
+}

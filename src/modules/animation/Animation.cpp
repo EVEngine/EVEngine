@@ -243,23 +243,85 @@ SpriteSheet *Animation::newSpriteSheetFromAtlasJson(graphics::Graphics *gfx,
     if (!root->has("frames")) throw Exception("Atlas JSON: missing frames");
     auto frames = root->getObject("frames");
     if (!frames) throw Exception("Atlas JSON: frames must be an object");
+    // TexturePacker JSON Hash stores logical (unrotated) frame.w/h even for
+    // clockwise-packed frames. Normalize pixels once at import, keeping the
+    // ordinary Quad/Sprite2D UV and trimmed-layout contract unchanged.
+    bool       normalize = false;
+    int        cellW = 0, cellH = 0;
+    const auto names = frames->getNames();
+    for (const auto &name : names) {
+        auto      item = frames->getObject(name);
+        auto      rect = item->getObject("frame");
+        const int w = rect->getValue<int>("w"), h = rect->getValue<int>("h");
+        if (w <= 0 || h <= 0)
+            throw Exception("Atlas JSON '%s', frame '%s': invalid frame dimensions", jsonPath.c_str(), name.c_str());
+        normalize |= item->optValue<bool>("rotated", false);
+        cellW = std::max(cellW, w);
+        cellH = std::max(cellH, h);
+    }
+    // Image::newImageDataFromFile borrows from ResourceManager's cache.
+    image::ImageData                 *source = nullptr;
+    std::unique_ptr<image::ImageData> atlas;
+    int                               columns = 1;
+    if (normalize) {
+        if (cellW > 16382 || cellH > 16382)
+            throw Exception("Atlas JSON '%s': normalized frame exceeds 16384 pixels including padding",
+                            jsonPath.c_str());
+        cellW += 2;
+        cellH += 2;
+        auto *images      = image::Image::create();
+        source            = images->newImageDataFromFile(texturePath);
+        columns           = static_cast<int>(std::ceil(std::sqrt(double(names.size()))));
+        const size_t rows = (names.size() + size_t(columns) - 1) / size_t(columns);
+        if (size_t(cellW) * size_t(columns) > 16384 || size_t(cellH) * rows > 16384)
+            throw Exception("Atlas JSON '%s': normalized atlas exceeds 16384 pixels; split the atlas",
+                            jsonPath.c_str());
+        atlas.reset(images->newImageData(cellW * columns, cellH * int(rows), "RGBA8"));
+    }
     auto *sheet = new SpriteSheet();
     try {
-        for (const auto &name : frames->getNames()) {
-            auto item = frames->getObject(name);
-            if (item->optValue<bool>("rotated", false))
-                throw Exception("Atlas JSON: rotated frames are not supported");
+        int index = 0;
+        for (const auto &name : names) {
+            auto      item = frames->getObject(name);
             auto rect = item->getObject("frame");
             auto src = item->getObject("spriteSourceSize");
             auto size = item->getObject("sourceSize");
             const int w = rect->getValue<int>("w"), h = rect->getValue<int>("h");
-            sheet->addFrameTrimmed(name, rect->getValue<int>("x"), rect->getValue<int>("y"), w, h,
-                                   size ? size->getValue<int>("w") : w,
-                                   size ? size->getValue<int>("h") : h,
-                                   src ? src->getValue<int>("x") : 0,
-                                   src ? src->getValue<int>("y") : 0);
+            int       x = rect->getValue<int>("x"), y = rect->getValue<int>("y");
+            const int sourceW = size ? size->getValue<int>("w") : w;
+            const int sourceH = size ? size->getValue<int>("h") : h;
+            const int offsetX = src ? src->getValue<int>("x") : 0;
+            const int offsetY = src ? src->getValue<int>("y") : 0;
+            if (sourceW < w || sourceH < h || offsetX < 0 || offsetY < 0 || offsetX > sourceW - w ||
+                offsetY > sourceH - h || (src && (src->getValue<int>("w") != w || src->getValue<int>("h") != h)))
+                throw Exception("Atlas JSON '%s', frame '%s': inconsistent trimmed layout", jsonPath.c_str(),
+                                name.c_str());
+            if (normalize) {
+                const bool rotated = item->optValue<bool>("rotated", false);
+                const int  packedW = rotated ? h : w, packedH = rotated ? w : h;
+                if (x < 0 || y < 0 || packedW > source->getWidth() || packedH > source->getHeight() ||
+                    x > source->getWidth() - packedW || y > source->getHeight() - packedH)
+                    throw Exception("Atlas JSON '%s', frame '%s': packed rectangle outside texture", jsonPath.c_str(),
+                                    name.c_str());
+                const int dx = (index % columns) * cellW + 1;
+                const int dy = (index / columns) * cellH + 1;
+                // Include one extruded border pixel to prevent linear-filter bleed.
+                for (int py = -1; py <= h; ++py) {
+                    for (int px = -1; px <= w; ++px) {
+                        const int u  = std::clamp(px, 0, w - 1);
+                        const int v  = std::clamp(py, 0, h - 1);
+                        const int sx = x + (rotated ? h - 1 - v : u);
+                        const int sy = y + (rotated ? u : v);
+                        atlas->setPixel(dx + px, dy + py, source->getPixel(sx, sy));
+                    }
+                }
+                x = dx;
+                y = dy;
+            }
+            sheet->addFrameTrimmed(name, x, y, w, h, sourceW, sourceH, offsetX, offsetY);
+            ++index;
         }
-        sheet->setTexture(gfx->newTextureFromFile(texturePath));
+        sheet->setTexture(normalize ? gfx->newTextureFromImageData(atlas.get()) : gfx->newTextureFromFile(texturePath));
     } catch (...) { delete sheet; throw; }
     return sheet;
 }

@@ -1,4 +1,6 @@
 #include "weapon/SpellFragmentCompiler.h"
+#include "common/ValueRead.h"
+#include "weapon/detail/NumericRead.h"
 
 #include "common/Diagnostic.h"
 #include "common/Time.h"
@@ -21,54 +23,18 @@ const Value* field(const Value::Object& object, const char* name) {
 }
 
 bool readString(const Value::Object& object, const char* name, std::string& output) {
-    const auto* value = field(object, name);
-    const auto* text  = value ? value->getIf<std::string>() : nullptr;
-    if (!text) return false;
-    output = *text;
+    auto parsed = eve::readStringMember(object, name);
+    if (!parsed) return false;
+    output = std::move(parsed.value());
     return true;
 }
 
 Result<std::optional<double>> optionalDouble(const Value::Object& object, const char* name, std::string_view path) {
-    const auto* value = field(object, name);
-    if (!value) return Result<std::optional<double>>::success(std::nullopt);
-    if (const auto* number = value->getIf<double>()) {
-        if (!std::isfinite(*number))
-            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
-                                                "weapon.spell.fragments"));
-        return Result<std::optional<double>>::success(*number);
-    }
-    if (const auto* integer = value->getIf<std::int64_t>()) {
-        const double converted = static_cast<double>(*integer);
-        if (!std::isfinite(converted))
-            return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected finite number"), std::string(path), {},
-                                                "weapon.spell.fragments"));
-        return Result<std::optional<double>>::success(converted);
-    }
-    return Result<std::optional<double>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected number"), std::string(path), {},
-                                                "weapon.spell.fragments"));
+    return detail::readOptionalDouble(object, name, path, "weapon.spell.fragments");
 }
 
 Result<std::optional<int>> optionalInt(const Value::Object& object, const char* name, std::string_view path) {
-    const auto* value = field(object, name);
-    if (!value) return Result<std::optional<int>>::success(std::nullopt);
-    if (const auto* integer = value->getIf<std::int64_t>()) {
-        if (*integer < std::numeric_limits<int>::min() || *integer > std::numeric_limits<int>::max())
-            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
-                                                "weapon.spell.fragments"));
-        return Result<std::optional<int>>::success(static_cast<int>(*integer));
-    }
-    if (const auto* number = value->getIf<double>()) {
-        if (!std::isfinite(*number) || *number != std::floor(*number))
-            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
-                                                "weapon.spell.fragments"));
-        if (*number < static_cast<double>(std::numeric_limits<int>::min()) ||
-            *number > static_cast<double>(std::numeric_limits<int>::max()))
-            return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Integer out of range"), std::string(path), {},
-                                                "weapon.spell.fragments"));
-        return Result<std::optional<int>>::success(static_cast<int>(*number));
-    }
-    return Result<std::optional<int>>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, std::string("Expected integer"), std::string(path), {},
-                                                "weapon.spell.fragments"));
+    return detail::readOptionalInt(object, name, path, "weapon.spell.fragments");
 }
 
 enum class ArithKind : std::uint8_t { Add, Multiply };

@@ -141,6 +141,11 @@ for name in "${EXAMPLES[@]}"; do
         /bin/kill -f -s KILL "$pid" 2>/dev/null || true
       else
         kill "$pid" 2>/dev/null || true
+        # macOS ships without GNU timeout; bound shutdown just like timeout -k.
+        sleep 3
+        if kill -0 "$pid" 2>/dev/null; then
+          kill -KILL "$pid" 2>/dev/null || true
+        fi
       fi
     fi
     wait "$pid" 2>/dev/null

@@ -1342,7 +1342,7 @@ std::string callTool(McpServer& mcp, const std::string& name, Poco::JSON::Object
     if (name == "eve_error_slice") {
         const std::string& last = mcpLastReport();
         if (!last.empty()) return last;
-        return mcpFormatError("no prior error; callgraph slice at latest site");
+        return "no prior error";
     }
 
     if (name == "eve_run_script") {
@@ -1605,7 +1605,7 @@ std::string handleInitialize(McpServer& mcp, const std::string& idJson, Poco::JS
     const std::string resultJson =
         std::string("{\"protocolVersion\":\"") + mcpJsonEscape(protocol) +
         "\",\"capabilities\":{\"tools\":{},\"resources\":{},\"prompts\":{}},"
-        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.0\"},"
+        "\"serverInfo\":{\"name\":\"evengine\",\"title\":\"EVEngine MCP\",\"version\":\"0.6.1\"},"
         "\"instructions\":\"EVEngine MCP for AI-assisted game development. Call eve_api_search/eve_api_get to look up "
         "this build's EveScript bindings before writing .nut (do not invent Unity C# names); prefer eve_play and "
         "editor commands over eve_eval for gameplay. Diagnose through the game's own channels: "
@@ -1836,7 +1836,9 @@ std::string handleToolsList(const std::string& idJson) {
         "{\"name\":\"eve_error_slice\",\"description\":\"Return last error report / backward slice (script + "
         "render).\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{}}},"
-        "{\"name\":\"eve_run_script\",\"description\":\"Compile and run a short Squirrel snippet in the live VM.\","
+        "{\"name\":\"eve_run_script\",\"description\":\"Compile and run a short Squirrel snippet in the live VM. No "
+        "in-VM interruption; the native eve mcp stdio supervisor enforces a configurable worker response "
+        "budget (--timeout-ms). TCP live VMs require external process supervision.\","
         "\"inputSchema\":{\"type\":\"object\",\"properties\":{\"source\":{\"type\":\"string\"}},\"required\":["
         "\"source\"]}},"
         "{\"name\":\"eve_ai_note\",\"description\":\"Append a note to the DevTools AI session log.\","
