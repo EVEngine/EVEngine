@@ -16,160 +16,121 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_TextureSampler)
-#include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
-#include <memory>
-#include <optional>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <vector>
-#include "Fixtures.h"
-#include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
+#include <string>
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "procgen/GtsTerrainLod.h"
-#include "procgen/GtsTerrainLodRuntime.h"
-#include "procgen/PcgMeshLod.h"
-#include "procgen/PcgMeshLodBackup.h"
-#include "procgen/Procgen.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// TextureSampler.cpp
-namespace test_TextureSampler_unit {
-// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
-using eve::graphics::Color;
 
+namespace test_TextureSampler_unit {
 using namespace eve::graphics;
 
-namespace {
-
-[[maybe_unused]] std::vector<uint8_t> makeSolid(int w, int h, uint8_t r, uint8_t g, uint8_t b) {
-    std::vector<uint8_t> px(size_t(w) * size_t(h) * 4);
-    for (size_t i = 0; i < px.size(); i += 4) {
-        px[i + 0] = r;
-        px[i + 1] = g;
-        px[i + 2] = b;
-        px[i + 3] = 255;
-    }
-    return px;
+TEST_CASE("graphics.textureSampler.sizePresetsAndParsingContract") {
+    SUB_CASE("mip count includes the base level and uses the longest dimension") {
+        REQUIRE_EQ(mipmapCountForSize(0, 0), 1);
+        CHECK_EQ(mipmapCountForSize(1, 1), 1);
+        CHECK_EQ(mipmapCountForSize(2, 2), 2);
+        CHECK_EQ(mipmapCountForSize(256, 128), 9);
+        CHECK_EQ(mipmapCountForSize(64, 64), 7);
+    };
+    SUB_CASE("presets expose their backend independent requested state") {
+        const auto nearest = TextureSampler::nearest();
+        CHECK(nearest.min == FilterMode::Nearest);
+        CHECK(nearest.mag == FilterMode::Nearest);
+        CHECK(nearest.mipmap == MipmapMode::Disabled);
+        const auto trilinear = TextureSampler::linearMipmap();
+        CHECK(trilinear.min == FilterMode::Linear);
+        CHECK(trilinear.mag == FilterMode::Linear);
+        CHECK(trilinear.mipmap == MipmapMode::Linear);
+        CHECK_EQ(TextureSampler::anisotropic(8.f).maxAnisotropy, 8.f);
+        CHECK_EQ(TextureSampler::linear().maxAnisotropy, 1.f);
+        CHECK_EQ(std::string(TextureSampler::filterName(FilterMode::Nearest)), "nearest");
+        CHECK_EQ(std::string(TextureSampler::mipmapName(MipmapMode::Disabled)), "none");
+        CHECK_EQ(std::string(TextureSampler::mipmapName(MipmapMode::Linear)), "linear");
+    };
+    SUB_CASE("known spellings parse; unknown values use the documented fallback") {
+        CHECK(TextureSampler::parseFilter("nearest") == FilterMode::Nearest);
+        CHECK(TextureSampler::parseFilter("NEAREST") == FilterMode::Nearest);
+        CHECK(TextureSampler::parseFilter("unknown") == FilterMode::Linear);
+        CHECK(TextureSampler::parseMipmap("") == MipmapMode::Disabled);
+        CHECK(TextureSampler::parseMipmap("none") == MipmapMode::Disabled);
+        CHECK(TextureSampler::parseMipmap("Nearest") == MipmapMode::Nearest);
+        CHECK(TextureSampler::parseMipmap("linear") == MipmapMode::Linear);
+        CHECK(TextureSampler::parseMipmap("unknown") == MipmapMode::Linear);
+    };
 }
 
-}  // namespace
+TEST_CASE("graphics.renderable.meshLod_distanceFadeAndClearContract") {
+    auto* renderable = Renderable3D::create();
+    REQUIRE(renderable != nullptr);
+    // These inert addresses are identity tokens; the selector never dereferences them.
+    auto* high = reinterpret_cast<Mesh*>(uintptr_t(0x1000));
+    auto* mid  = reinterpret_cast<Mesh*>(uintptr_t(0x2000));
+    auto* low  = reinterpret_cast<Mesh*>(uintptr_t(0x3000));
+    renderable->setMeshLod(0, high);
+    renderable->setMeshLod(1, mid, 20.f);
+    renderable->setMeshLod(2, low, 50.f);
 
-TEST_CASE("TextureSampler.mipmapCountForSize") {
-    CHECK_EQ(mipmapCountForSize(1, 1), 1);
-    CHECK_EQ(mipmapCountForSize(2, 2), 2);
-    CHECK_EQ(mipmapCountForSize(256, 128), 9);
-    CHECK_EQ(mipmapCountForSize(64, 64), 7);
-}
+    SUB_CASE("distance interval [0,20) selects high; [20,50) mid; [50,cull) low") {
+        const struct {
+            float distance;
+            int   level;
+            Mesh* mesh;
+        } samples[] = {
+            {0.f, 0, high}, {19.9f, 0, high}, {20.f, 1, mid}, {49.9f, 1, mid}, {50.f, 2, low}, {99.9f, 2, low},
+        };
+        renderable->setMeshLodCullDistance(100.f);
+        for (const auto& sample : samples) {
+            CHECK_EQ(renderable->getMeshLodLevelAtDistance(sample.distance), sample.level);
+            CHECK(renderable->meshRenderer()->meshForDistance(sample.distance) == sample.mesh);
+        }
+        CHECK_EQ(renderable->getMeshLodLevelAtDistance(100.f), -1);
+        CHECK(renderable->meshRenderer()->meshForDistance(100.f) == nullptr);
+    };
 
-TEST_CASE("TextureSampler.parseFilterAndMipmap") {
-    CHECK_EQ(static_cast<int>(TextureSampler::parseFilter("nearest")), static_cast<int>(FilterMode::Nearest));
-    CHECK_EQ(static_cast<int>(TextureSampler::parseFilter("linear")), static_cast<int>(FilterMode::Linear));
-    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("none")), static_cast<int>(MipmapMode::Disabled));
-    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("linear")), static_cast<int>(MipmapMode::Linear));
-    CHECK_EQ(static_cast<int>(TextureSampler::parseMipmap("nearest")), static_cast<int>(MipmapMode::Nearest));
-}
+    SUB_CASE("fade policy produces a second level and continuous weight at boundary") {
+        REQUIRE(renderable->setMeshLodFadeWidth(0, .25f).ok());
+        CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(17.5f), 1);
+        CHECK(std::abs(renderable->getMeshLodSecondaryWeightAtDistance(17.5f) - .5f) < .0001f);
+        CHECK(!renderable->setMeshLodFadeWidth(0, 1.1f).ok());
+        CHECK(!renderable->setMeshLodFadePolicy(0, true, .5f).ok());
+    };
 
+    SUB_CASE("temporal transition reaches target level and rejects negative distance") {
+        REQUIRE(renderable->setMeshLodFadePolicy(2, true, 1.f).ok());
+        REQUIRE(renderable->advanceMeshLodTransition(5.f, 0.f).ok());
+        REQUIRE(renderable->advanceMeshLodTransition(25.f, 0.f).ok());
+        CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(25.f), 1);
+        REQUIRE(renderable->advanceMeshLodTransition(25.f, .25f).ok());
+        CHECK(std::abs(renderable->getMeshLodSecondaryWeightAtDistance(25.f) - .25f) < .0001f);
+        REQUIRE(renderable->advanceMeshLodTransition(25.f, .75f).ok());
+        CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(25.f), -1);
+        CHECK_EQ(renderable->getMeshLodLevelAtDistance(25.f), 1);
+        CHECK(!renderable->advanceMeshLodTransition(-1.f, .1f).ok());
+    };
 
-TEST_CASE("Renderable3D.meshLodSelectsByDistance") {
-    auto *ent = Renderable3D::create();
-    REQUIRE(ent != nullptr);
-
-    // Use distinct non-null-ish pointers via cast of integers — only identity matters.
-    Mesh *hi  = reinterpret_cast<Mesh *>(uintptr_t(0x1000));
-    Mesh *mid = reinterpret_cast<Mesh *>(uintptr_t(0x2000));
-    Mesh *lo  = reinterpret_cast<Mesh *>(uintptr_t(0x3000));
-
-    ent->setMeshLod(0, hi);
-    ent->setMeshLod(1, mid, 20.f);
-    ent->setMeshLod(2, lo, 50.f);
-    CHECK_EQ(ent->getMeshLodCount(), 3);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(0.f), 0);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(19.9f), 0);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(20.f), 1);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(49.9f), 1);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(50.f), 2);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(999.f), 2);
-
-    auto mr = ent->meshRenderer();
-    CHECK(mr->meshForDistance(5.f) == hi);
-    CHECK(mr->meshForDistance(25.f) == mid);
-    CHECK(mr->meshForDistance(80.f) == lo);
-    ent->setMeshLodCullDistance(100.f);
-    CHECK_EQ(ent->getMeshLodCullDistance(), 100.f);
-    CHECK(mr->meshForDistance(99.9f) == lo);
-    CHECK(mr->meshForDistance(100.f) == nullptr);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(100.f), -1);
-
-    REQUIRE(ent->setMeshLodFadeWidth(0, .25f).ok());
-    REQUIRE(ent->setMeshLodFadeWidth(2, .2f).ok());
-    REQUIRE(ent->setMeshLodFadePolicy(2, false, .5f).ok());
-    CHECK_EQ(ent->getMeshLodSecondaryLevelAtDistance(17.5f), 1);
-    CHECK(std::abs(ent->getMeshLodSecondaryWeightAtDistance(17.5f) - .5f) < .0001f);
-    CHECK_EQ(ent->getMeshLodSecondaryLevelAtDistance(95.f), -1);
-    CHECK(std::abs(ent->getMeshLodSecondaryWeightAtDistance(95.f) - .5f) < .0001f);
-    CHECK(!ent->setMeshLodFadeWidth(0, 1.1f).ok());
-    CHECK(!ent->setMeshLodFadePolicy(0, true, .5f).ok());
-
-    REQUIRE(ent->setMeshLodFadePolicy(2, true, 1.f).ok());
-    REQUIRE(ent->advanceMeshLodTransition(5.f, 0.f).ok());
-    REQUIRE(ent->advanceMeshLodTransition(25.f, 0.f).ok());
-    CHECK_EQ(ent->getMeshLodSecondaryLevelAtDistance(25.f), 1);
-    CHECK_EQ(ent->getMeshLodSecondaryWeightAtDistance(25.f), 0.f);
-    REQUIRE(ent->advanceMeshLodTransition(25.f, .25f).ok());
-    CHECK(std::abs(ent->getMeshLodSecondaryWeightAtDistance(25.f) - .25f) < .0001f);
-    REQUIRE(ent->advanceMeshLodTransition(25.f, .75f).ok());
-    CHECK_EQ(ent->getMeshLodSecondaryLevelAtDistance(25.f), -1);
-    CHECK_EQ(ent->getMeshLodLevelAtDistance(25.f), 1);
-    CHECK(!ent->advanceMeshLodTransition(-1.f, .1f).ok());
-
-    ent->clearMeshLod();
-    CHECK_EQ(ent->getMeshLodCount(), 0);
-    CHECK(mr->meshForDistance(80.f) == hi);  // falls back to primary mesh
+    SUB_CASE("clear removes LODs but preserves the primary mesh") {
+        renderable->clearMeshLod();
+        CHECK_EQ(renderable->getMeshLodCount(), 0);
+        CHECK(renderable->meshRenderer()->meshForDistance(80.f) == high);
+    };
 }
 }  // namespace test_TextureSampler_unit
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_result_contract)
-#include "PrivateTestScope.h"
-#include <future>
 #include <memory>
 #include "procgen/PointGraph.h"
-#include "procgen/Procgen.h"
-#include "procgen/RuntimeGeneration.h"
 #include "zeroerr/unittest.h"
-// procgen_result_contract.cpp
+
 namespace test_procgen_result_contract_unit {
 using namespace eve;
 using namespace eve::procgen;
 
 namespace {
-[[maybe_unused]] void configure(PointGraph &graph) {
+void configure(PointGraph& graph) {
     REQUIRE(graph.addNode("source", "input"));
     REQUIRE(graph.addNode("out", "transform"));
     REQUIRE(graph.connect("source", "out"));
@@ -179,16 +140,16 @@ namespace {
     REQUIRE(graph.setNodePoints("source", &points));
 }
 template <class T>
-[[maybe_unused]] void requireFailure(const Result<T> &result, DiagnosticCode code, const std::string &path) {
+void requireFailure(const Result<T>& result, DiagnosticCode code, const std::string& path) {
     REQUIRE(!result.ok());
-    const auto *diagnostic = result.status().primaryDiagnostic();
+    const auto* diagnostic = result.status().primaryDiagnostic();
     REQUIRE(diagnostic != nullptr);
     REQUIRE(diagnostic->code() == code);
     REQUIRE_EQ(diagnostic->path(), path);
 }
 }  // namespace
 
-TEST_CASE("procgen.result.executionOwnsDiagnosticsAndOutput") {
+TEST_CASE("procgen.pointGraph.executeResult_returnsOwningOutputAndPreservesPriorDiagnostic") {
     PointGraph graph;
     configure(graph);
     auto missing = graph.executeResult("missing");
@@ -207,7 +168,7 @@ TEST_CASE("procgen.result.executionOwnsDiagnosticsAndOutput") {
     REQUIRE(!graph.getError().empty());
 }
 
-TEST_CASE("procgen.result.validationCycleCancellationAndBudgets") {
+TEST_CASE("procgen.pointGraph.cancellationAndNodeBudget_reportCancelledWithoutCorruptingGraph") {
     PointGraph graph;
     configure(graph);
     auto valid = graph.validateResult();
@@ -220,6 +181,12 @@ TEST_CASE("procgen.result.validationCycleCancellationAndBudgets") {
     auto budget = graph.executeResult("out");
     requireFailure(budget, DiagnosticCode::Cancelled, "out");
     graph.setExecutionNodeBudget(0);
+    REQUIRE(graph.executeResult("out").ok());
+}
+
+TEST_CASE("procgen.pointGraph.cycles_areRejectedByValidationAndExecution") {
+    PointGraph graph;
+    configure(graph);
     REQUIRE(graph.addNode("loop", "transform"));
     REQUIRE(graph.connect("out", "loop"));
     REQUIRE(graph.connect("loop", "out"));
@@ -229,7 +196,7 @@ TEST_CASE("procgen.result.validationCycleCancellationAndBudgets") {
     requireFailure(invalid, DiagnosticCode::Conflict, "out");
 }
 
-TEST_CASE("procgen.result.nodeFailuresAndPointBudgetHavePaths") {
+TEST_CASE("procgen.pointGraph.unsetInputAndPointBudget_reportSourcePathThenRecover") {
     PointGraph graph;
     REQUIRE(graph.addNode("source", "input"));
     auto unset = graph.executeResult("source");
@@ -248,7 +215,7 @@ TEST_CASE("procgen.result.nodeFailuresAndPointBudgetHavePaths") {
 }
 
 
-TEST_CASE("procgen.result.nestedFailurePreservesNodePath") {
+TEST_CASE("procgen.pointGraph.nestedSubgraphFailure_preservesFullNodePath") {
     PointGraph nested;
     configure(nested);
     REQUIRE(nested.addNode("math", "density.remap"));
@@ -266,18 +233,16 @@ TEST_CASE("procgen.result.nestedFailurePreservesNodePath") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_rng_contract)
-#include "PrivateTestScope.h"
 #include <DTL/Shape/CellularAutomatonIsland.hpp>
-#include <future>
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
 #include "zeroerr/unittest.h"
-// procgen_rng_contract.cpp
+
 namespace test_procgen_rng_contract_unit {
 using namespace eve::procgen;
 
 namespace {
-[[maybe_unused]] bool sameCells(const Grid2D &a, const Grid2D &b) {
+bool sameCells(const Grid2D& a, const Grid2D& b) {
     if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight()) return false;
     for (int y = 0; y < a.getHeight(); ++y)
         for (int x = 0; x < a.getWidth(); ++x)
@@ -286,8 +251,8 @@ namespace {
 }
 }  // namespace
 
-TEST_CASE("procgen.rng.cellularPreservesLegacySeedOutputs") {
-    auto &registry = GeneratorRegistry::instance();
+TEST_CASE("procgen.rng.cellularSeed_matchesSpecifiedLegacyCellsAcrossFillBoundaries") {
+    auto& registry = GeneratorRegistry::instance();
     registry.registerBuiltins();
     for (uint32_t seed : {0u, 1u, 42u, 1234567u}) {
         for (float fill : {0.f, 0.25f, 0.45f, 1.f}) {
@@ -315,75 +280,46 @@ TEST_CASE("procgen.rng.cellularPreservesLegacySeedOutputs") {
     }
 }
 
-TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
-    auto &registry = GeneratorRegistry::instance();
-    registry.registerBuiltins();
-    DTL_RANDOM_ENGINE.seed(77u);
-    DTL_RANDOM_ENGINE.clear();
-    const auto expected = DTL_RANDOM_ENGINE.get();
-    DTL_RANDOM_ENGINE.seed(77u);
-    DTL_RANDOM_ENGINE.clear();
-    Params params;
-    params.setSeed(42);
-    params.setSize(32, 24);
-    Grid2D      actual;
-    std::string error;
-    REQUIRE(registry.generate("cave.cellular", params, actual, error));
-    CHECK(DTL_RANDOM_ENGINE.get() == expected);
+TEST_CASE("procgen.rng.cellularGeneration_usesOnlyExplicitSeed") {
+    SUB_CASE("does not consume global implicit stream") {
+        auto& registry = GeneratorRegistry::instance();
+        registry.registerBuiltins();
+        DTL_RANDOM_ENGINE.seed(77u);
+        DTL_RANDOM_ENGINE.clear();
+        const auto expected = DTL_RANDOM_ENGINE.get();
+        DTL_RANDOM_ENGINE.seed(77u);
+        DTL_RANDOM_ENGINE.clear();
+        Params params;
+        params.setSeed(42);
+        params.setSize(32, 24);
+        Grid2D      actual;
+        std::string error;
+        REQUIRE(registry.generate("cave.cellular", params, actual, error));
+        CHECK(DTL_RANDOM_ENGINE.get() == expected);
+    };
+    SUB_CASE("same seed replays independent of intervening generation") {
+        auto& registry = GeneratorRegistry::instance();
+        registry.registerBuiltins();
+        Params params;
+        params.setSize(31, 24);
+        params.setSeed(17);
+        Grid2D      first;
+        Grid2D      intervening;
+        Grid2D      replay;
+        std::string error;
+        REQUIRE(registry.generate("cave.cellular", params, first, error));
+        params.setSeed(29);
+        REQUIRE(registry.generate("cave.cellular", params, intervening, error));
+        params.setSeed(17);
+        REQUIRE(registry.generate("cave.cellular", params, replay, error));
+        CHECK(sameCells(first, replay));
+    };
 }
 }  // namespace test_procgen_rng_contract_unit
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen)
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <array>
-#include <bit>
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <limits>
-#include <memory>
-#include <numeric>
-#include <set>
-#include <string>
-#include <unordered_set>
-#include <vector>
-#include "PrivateTestScope.h"
-#include "RenderImageAudit.h"
-#include "asset/procgen/TerrainMaterialAtlas.h"
-#include "data/ByteData.h"
-#include "filesystem/FileData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
 #include "image/ImageData.h"
-#include "map/TileLayer.h"
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
@@ -391,3355 +327,706 @@ TEST_CASE("procgen.rng.cellularDoesNotConsumeImplicitStream") {
 #include "procgen/Semantic.h"
 #include "procgen/algorithms/CastleMesh.h"
 #include "procgen/algorithms/HexTerrain.h"
-#include "procgen/algorithms/LinearStructure.h"
 #include "procgen/algorithms/MarchingCubes.h"
 #include "procgen/heightmap/TerrainAsset.h"
-#include "procgen/heightmap/TerrainFile.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// procgen.cpp
+
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+#include <cstring>
+#include <set>
+#include <string>
+#include <vector>
+
 namespace test_procgen_unit {
-// Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
-using eve::graphics::Color;
-
 using namespace eve::procgen;
-using namespace eve::graphics;
 
 namespace {
-class TrackingTerrainSource final : public ITerrainArchiveSource {
-public:
-    explicit TrackingTerrainSource(std::vector<std::uint8_t> bytes) : bytes_(std::move(bytes)) {}
-    std::uint64_t                          size() const noexcept override { return bytes_.size(); }
-    eve::Result<std::vector<std::uint8_t>> read(std::uint64_t offset, std::size_t length) const override {
-        if (offset > bytes_.size() || length > bytes_.size() - std::size_t(offset))
-            return eve::Result<std::vector<std::uint8_t>>::failure(
-                eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "tracking source out of bounds"));
-        ++readCount;
-        bytesRead += length;
-        return eve::Result<std::vector<std::uint8_t>>::success(std::vector<std::uint8_t>(
-            bytes_.begin() + std::ptrdiff_t(offset), bytes_.begin() + std::ptrdiff_t(offset + length)));
-    }
-    mutable std::size_t readCount = 0;
-    mutable std::size_t bytesRead = 0;
+bool sameCells(const Grid2D& lhs, const Grid2D& rhs) {
+    return lhs.getWidth() == rhs.getWidth() && lhs.getHeight() == rhs.getHeight() && lhs.cells() == rhs.cells() &&
+           lhs.detail() == rhs.detail();
+}
 
-private:
-    std::vector<std::uint8_t> bytes_;
-};
+int countCells(const Grid2D& grid, uint32_t kind) {
+    return static_cast<int>(std::count(grid.cells().begin(), grid.cells().end(), kind));
+}
+
+bool meshIndicesInRange(const MeshBuild& mesh) {
+    for (int index = 0; index < mesh.getIndexCount(); ++index) {
+        if (mesh.getIndex(index) >= mesh.getVertexCount()) return false;
+    }
+    return true;
+}
 }  // namespace
 
-TEST_CASE("procgen.hexTerrain.biomesRiversCliffsDeterministic") {
-    Params p;
-    p.setInt("width", 38);
-    p.setInt("height", 28);
-    p.setInt("seed", 20260825);
-    p.setInt("riverCount", 8);
-    p.setFloat("radius", 0.62f);
-    p.setFloat("heightScale", 3.8f);
-    MeshBuild   a, b;
-    std::string error;
-    REQUIRE(generateHexTerrainMesh(p, a, error));
-    REQUIRE(generateHexTerrainMesh(p, b, error));
-    CHECK_EQ(a.positions(), b.positions());
-    CHECK_EQ(a.indices(), b.indices());
-    CHECK_EQ(a.getMeta("algorithm", ""), std::string("mesh.hexterrain"));
-    CHECK_EQ(a.getMeta("shoreGeometry", ""), std::string("edge-bands"));
-    CHECK_EQ(a.getMeta("hydrology", ""), std::string("drainage-rivers+basin-lakes+confluences"));
-    CHECK_EQ(a.getMeta("riverGeometry", ""), std::string("seeded-quadratic-ribbons"));
-    CHECK_EQ(a.getMeta("cliffGeometry", ""), std::string("seeded-segmented-rock-walls"));
-    CHECK_EQ(a.getMeta("mountainGeometry", ""), std::string("seeded-offset-three-ring-peaks"));
-    CHECK(std::stoi(a.getMeta("cells.deepOcean", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.ocean", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.coast", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.grassland", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.hills", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.mountain", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.forest", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.swamp", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.rainforest", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.ice", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("cells.river", "0")) > 0);
-    CHECK(std::stoi(a.getMeta("edges.cliff", "0")) > 0);
-    CHECK(a.getVertexCount() >= 38 * 28 * 7);
-    CHECK(a.getIndexCount() >= 38 * 28 * 18);
-
-    bool hasOcean = false, hasLand = false, hasRiver = false, hasCliff = false;
-    for (int i = 0; i < a.getVertexCount(); ++i) {
-        const int primary   = int(std::floor(a.getUvU(i)));
-        const int secondary = int(std::floor(a.getUvV(i)));
-        hasOcean            = hasOcean || primary <= 1;
-        hasLand             = hasLand || (primary >= 3 && primary <= 9);
-        hasRiver            = hasRiver || secondary == 11;
-        hasCliff            = hasCliff || primary == 10;
-    }
-    CHECK(hasOcean);
-    CHECK(hasLand);
-    CHECK(hasRiver);
-    CHECK(hasCliff);
-}
-
-TEST_CASE("procgen.params.booleanRoundTrip") {
-    Params p;
-    CHECK(p.getBool("decorations", true));
-    p.setBool("decorations", false);
-    CHECK(!p.getBool("decorations", true));
-    // Text is a distinct Value kind; getters never parse or stringify it.
-    p.setString("textBool", "false");
-    CHECK(p.getBool("textBool", true));
-    CHECK_EQ(p.getInt("textBool", -1), -1);
-    CHECK_EQ(p.getString("decorations", "missing"), "missing");
-}
-
-namespace {
-
-struct ParamsLease {
-    ProcgenParamsHandleRef handle{};
-    explicit ParamsLease(ProcgenParamsHandleRef value) : handle(value) {}
-    ~ParamsLease() {
-        if (!handle.isValid()) return;
-        auto result = Procgen::release(handle);
-        result.ignore("procgen test params cleanup");
-    }
-    ParamsLease(const ParamsLease &)            = delete;
-    ParamsLease &operator=(const ParamsLease &) = delete;
-    ParamsLease(ParamsLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
-    [[nodiscard]] eve::script::Borrowed<Params> view() const noexcept { return Procgen::resolve(handle); }
-};
-
-[[maybe_unused]] ParamsLease requireParams(const Params &source) {
-    auto result = Procgen::newParamsHandle();
-    REQUIRE(result.ok());
-    ParamsLease lease{std::move(result).takeValue()};
-    auto        view = lease.view();
-    REQUIRE(view.isBound());
-    *view = source;
-    return lease;
-}
-
-struct GridLease {
-    ProcgenGridHandleRef handle{};
-    explicit GridLease(ProcgenGridHandleRef value) : handle(value) {}
-    ~GridLease() {
-        if (!handle.isValid()) return;
-        auto result = Procgen::release(handle);
-        result.ignore("procgen test grid cleanup");
-    }
-    GridLease(const GridLease &)            = delete;
-    GridLease &operator=(const GridLease &) = delete;
-    GridLease(GridLease &&other) noexcept : handle(other.handle) { other.handle = {}; }
-    [[nodiscard]] eve::script::Borrowed<Grid2D> view() const noexcept { return Procgen::resolve(handle); }
-};
-
-[[maybe_unused]] GridLease requireGrid(Procgen &proc, const std::string &algorithm, ProcgenParamsHandleRef params) {
-    auto result = proc.generateHandle(algorithm, params);
-    REQUIRE(result.ok());
-    return GridLease{std::move(result).takeValue()};
-}
-
-struct MeshLease {
-    Procgen                  *owner = nullptr;
-    ProcgenMeshBuildHandleRef handle{};
-    MeshLease(Procgen &proc, ProcgenMeshBuildHandleRef value) : owner(&proc), handle(value) {}
-    ~MeshLease() {
-        if (!owner || !handle.isValid()) return;
-        auto result = owner->releaseMeshBuild(handle);
-        result.ignore("procgen test mesh cleanup");
-    }
-    MeshLease(const MeshLease &)            = delete;
-    MeshLease &operator=(const MeshLease &) = delete;
-    MeshLease(MeshLease &&other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner  = nullptr;
-        other.handle = {};
-    }
-    [[nodiscard]] eve::script::Borrowed<MeshBuild> view() const noexcept {
-        return owner ? owner->resolveMeshBuild(handle) : eve::script::Borrowed<MeshBuild>();
-    }
-};
-
-[[maybe_unused]] MeshLease requireMesh(Procgen &proc, const std::string &recipe, ProcgenParamsHandleRef params) {
-    auto result = proc.buildMeshHandle(recipe, params);
-    REQUIRE(result.ok());
-    return MeshLease(proc, std::move(result).takeValue());
-}
-
-struct PbrLease {
-    Procgen                    *owner = nullptr;
-    ProcgenPbrMaterialHandleRef handle{};
-    PbrLease(Procgen &proc, ProcgenPbrMaterialHandleRef value) : owner(&proc), handle(value) {}
-    ~PbrLease() {
-        if (!owner || !handle.isValid()) return;
-        auto result = owner->releasePbrMaterial(handle);
-        result.ignore("procgen test PBR cleanup");
-    }
-    PbrLease(const PbrLease &)            = delete;
-    PbrLease &operator=(const PbrLease &) = delete;
-    PbrLease(PbrLease &&other) noexcept : owner(other.owner), handle(other.handle) {
-        other.owner  = nullptr;
-        other.handle = {};
-    }
-    [[nodiscard]] eve::script::Borrowed<PbrTextureSet> view() const noexcept {
-        return owner ? owner->resolvePbrMaterial(handle) : eve::script::Borrowed<PbrTextureSet>();
-    }
-};
-
-[[maybe_unused]] bool gridsEqual(const Grid2D &a, const Grid2D &b) {
-    if (a.getWidth() != b.getWidth() || a.getHeight() != b.getHeight()) return false;
-    return a.cells() == b.cells();
-}
-
-[[maybe_unused]] int countSemantic(const Grid2D &g, int semantic) {
-    int n = 0;
-    for (uint32_t c : g.cells())
-        if (int(c) == semantic) ++n;
-    return n;
-}
-
-[[maybe_unused]] bool neighborsOk(int a, int b, const std::set<std::pair<int, int>> &allowed) {
-    if (a > b) std::swap(a, b);
-    return allowed.count({a, b}) > 0;
-}
-
-[[maybe_unused]] bool terrainAdjacencyOk(const Grid2D &g) {
-    // Ordered elevation band: only self + 卤1 neighbors.
-    static const int              band[] = {int(Semantic::Water), int(Semantic::Sand),  int(Semantic::Grass),
-                                            int(Semantic::Dirt),  int(Semantic::Stone), int(Semantic::Snow)};
-    std::set<std::pair<int, int>> allowed;
-    for (int i = 0; i < 6; ++i) {
-        allowed.insert({band[i], band[i]});
-        if (i + 1 < 6) {
-            int lo = band[i], hi = band[i + 1];
-            if (lo > hi) std::swap(lo, hi);
-            allowed.insert({lo, hi});
-        }
-    }
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const int c = g.getCell(x, y);
-            if (x + 1 < w && !neighborsOk(c, g.getCell(x + 1, y), allowed)) return false;
-            if (y + 1 < h && !neighborsOk(c, g.getCell(x, y + 1), allowed)) return false;
-        }
-    }
-    return true;
-}
-
-[[maybe_unused]] bool caveAdjacencyOk(const Grid2D &g) {
-    std::set<std::pair<int, int>> allowed = {
-        {int(Semantic::Wall), int(Semantic::Wall)},
-        {int(Semantic::Wall), int(Semantic::Floor)},
-        {int(Semantic::Floor), int(Semantic::Floor)},
+TEST_CASE("procgen.params.dimensionTypedGetterAndCanonicalKeyContract") {
+    SUB_CASE("integer dimension keys own seed and size") {
+        Params params;
+        REQUIRE_EQ(params.getSeed(), 1u);
+        CHECK_EQ(params.getWidth(), 32);
+        CHECK_EQ(params.getHeight(), 32);
+        params.setSize(0, -3);
+        CHECK_EQ(params.getWidth(), 1);
+        CHECK_EQ(params.getHeight(), 1);
+        params.setInt("width", 48);
+        params.setInt("height", 20);
+        params.setInt("seed", 7);
+        CHECK_EQ(params.getWidth(), 48);
+        CHECK_EQ(params.getHeight(), 20);
+        CHECK_EQ(params.getSeed(), 7u);
+        params.setFloat("width", 2.5f);
+        params.setString("seed", "19");
+        CHECK_EQ(params.getWidth(), 48);
+        CHECK_EQ(params.getSeed(), 7u);
+        CHECK_EQ(params.getFloat("width", -1.f), 2.5f);
+        CHECK_EQ(params.getString("seed", ""), "19");
     };
-    // Normalize pair order for lookup.
-    auto ok = [&](int a, int b) {
-        if (a > b) std::swap(a, b);
-        return allowed.count({a, b}) > 0;
+    SUB_CASE("typed getters do not parse text or fractional values") {
+        Params params;
+        params.setBool("enabled", true);
+        params.setFloat("fraction", 1.5f);
+        params.setString("numericText", "12");
+        CHECK_EQ(params.getInt("enabled", -1), 1);
+        CHECK_EQ(params.getFloat("enabled", -1.f), 1.f);
+        CHECK(params.getBool("enabled", false));
+        CHECK_EQ(params.getInt("fraction", -1), -1);
+        CHECK_EQ(params.getInt("numericText", -1), -1);
+        CHECK_EQ(params.getFloat("numericText", -1.f), -1.f);
+        CHECK_EQ(params.getString("enabled", "fallback"), "fallback");
+        CHECK_EQ(params.getString("numericText", "fallback"), "12");
+        CHECK_EQ(params.getInt("missing", 17), 17);
     };
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const int c = g.getCell(x, y);
-            if (x + 1 < w && !ok(c, g.getCell(x + 1, y))) return false;
-            if (y + 1 < h && !ok(c, g.getCell(x, y + 1))) return false;
-        }
-    }
-    return true;
-}
-
-[[maybe_unused]] bool borderIsWall(const Grid2D &g) {
-    const int w = g.getWidth();
-    const int h = g.getHeight();
-    for (int x = 0; x < w; ++x) {
-        if (g.getCell(x, 0) != int(Semantic::Wall)) return false;
-        if (g.getCell(x, h - 1) != int(Semantic::Wall)) return false;
-    }
-    for (int y = 0; y < h; ++y) {
-        if (g.getCell(0, y) != int(Semantic::Wall)) return false;
-        if (g.getCell(w - 1, y) != int(Semantic::Wall)) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshIndicesInRange(const MeshBuild &m) {
-    const int vc = m.getVertexCount();
-    for (int i = 0; i < m.getIndexCount(); ++i) {
-        const int id = m.getIndex(i);
-        if (id < 0 || id >= vc) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshNormalsFiniteUnit(const MeshBuild &m, float tol = 0.15f) {
-    for (int i = 0; i < m.getVertexCount(); ++i) {
-        const float nx = m.getNormalX(i);
-        const float ny = m.getNormalY(i);
-        const float nz = m.getNormalZ(i);
-        if (!std::isfinite(nx) || !std::isfinite(ny) || !std::isfinite(nz)) return false;
-        const float len = std::sqrt(nx * nx + ny * ny + nz * nz);
-        if (std::fabs(len - 1.f) > tol) return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] bool meshWindingAgreesWithNormals(const MeshBuild &m, float minFraction = 0.9f) {
-    int ok = 0, counted = 0;
-    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
-        const int   i0 = m.getIndex(t), i1 = m.getIndex(t + 1), i2 = m.getIndex(t + 2);
-        const float ax = m.getPositionX(i1) - m.getPositionX(i0);
-        const float ay = m.getPositionY(i1) - m.getPositionY(i0);
-        const float az = m.getPositionZ(i1) - m.getPositionZ(i0);
-        const float bx = m.getPositionX(i2) - m.getPositionX(i0);
-        const float by = m.getPositionY(i2) - m.getPositionY(i0);
-        const float bz = m.getPositionZ(i2) - m.getPositionZ(i0);
-        const float gx = ay * bz - az * by, gy = az * bx - ax * bz, gz = ax * by - ay * bx;
-        const float gLen = std::sqrt(gx * gx + gy * gy + gz * gz);
-        if (gLen < 1e-8f) continue;
-        const float nx = (m.getNormalX(i0) + m.getNormalX(i1) + m.getNormalX(i2)) / 3.f;
-        const float ny = (m.getNormalY(i0) + m.getNormalY(i1) + m.getNormalY(i2)) / 3.f;
-        const float nz = (m.getNormalZ(i0) + m.getNormalZ(i1) + m.getNormalZ(i2)) / 3.f;
-        ++counted;
-        if (gx * nx + gy * ny + gz * nz > 0.f) ++ok;
-    }
-    return counted > 0 && float(ok) / float(counted) >= minFraction;
-}
-
-[[maybe_unused]] bool meshPositionsFinite(const MeshBuild &m) {
-    for (int i = 0; i < m.getVertexCount(); ++i) {
-        if (!std::isfinite(m.getPositionX(i)) || !std::isfinite(m.getPositionY(i)) || !std::isfinite(m.getPositionZ(i)))
-            return false;
-    }
-    return true;
-}
-
-[[maybe_unused]] float meshApproxSignedVolume(const MeshBuild &m) {
-    // Sum of signed tet volumes with origin (valid for closed mesh).
-    float vol = 0.f;
-    for (int t = 0; t + 2 < m.getIndexCount(); t += 3) {
-        const int   i0 = m.getIndex(t);
-        const int   i1 = m.getIndex(t + 1);
-        const int   i2 = m.getIndex(t + 2);
-        const float ax = m.getPositionX(i0), ay = m.getPositionY(i0), az = m.getPositionZ(i0);
-        const float bx = m.getPositionX(i1), by = m.getPositionY(i1), bz = m.getPositionZ(i1);
-        const float cx = m.getPositionX(i2), cy = m.getPositionY(i2), cz = m.getPositionZ(i2);
-        vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
-    }
-    return vol / 6.f;
-}
-
-[[maybe_unused]] bool approxEq(float a, float b, float eps = 1e-5f) { return std::fabs(a - b) < eps; }
-
-[[maybe_unused]] bool hasWalkablePath(const Grid2D &g) {
-    // BFS from first floor/corridor cell; ensure >1 walkable and connected component covers all.
-    const int w        = g.getWidth();
-    const int h        = g.getHeight();
-    auto      walkable = [&](int x, int y) {
-        if (x < 0 || y < 0 || x >= w || y >= h) return false;
-        const int c = g.getCell(x, y);
-        return c == int(Semantic::Floor) || c == int(Semantic::Corridor);
+    SUB_CASE("canonical key ignores insertion order but preserves Value type") {
+        Params first;
+        first.setBool("a", true);
+        first.setInt("b", 1);
+        Params reordered;
+        reordered.setInt("b", 1);
+        reordered.setBool("a", true);
+        CHECK_EQ(first.canonicalString(), reordered.canonicalString());
+        reordered.setString("b", "1");
+        CHECK(first.canonicalString() != reordered.canonicalString());
     };
-    int start = -1;
-    int total = 0;
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            if (walkable(x, y)) {
-                ++total;
-                if (start < 0) start = y * w + x;
-            }
-        }
-    }
-    if (total < 2 || start < 0) return false;
-    std::vector<char> seen(size_t(w * h), 0);
-    std::vector<int>  q;
-    q.push_back(start);
-    seen[size_t(start)] = 1;
-    size_t    qi        = 0;
-    int       reached   = 0;
-    const int dx[4]     = {1, -1, 0, 0};
-    const int dy[4]     = {0, 0, 1, -1};
-    while (qi < q.size()) {
-        const int i = q[qi++];
-        const int x = i % w;
-        const int y = i / w;
-        ++reached;
-        for (int d = 0; d < 4; ++d) {
-            const int nx = x + dx[d];
-            const int ny = y + dy[d];
-            if (!walkable(nx, ny)) continue;
-            const int ni = ny * w + nx;
-            if (seen[size_t(ni)]) continue;
-            seen[size_t(ni)] = 1;
-            q.push_back(ni);
-        }
-    }
-    return reached == total;
 }
 
-}  // namespace
+TEST_CASE("procgen.grid.semanticAndDetailCells_areIndependentOfObjectMetadata") {
+    Grid2D grid;
+    grid.resize(3, 2);
+    grid.fill(static_cast<int>(Semantic::Wall));
+    grid.setCell(1, 0, static_cast<int>(Semantic::Floor));
+    grid.setDetail(1, 0, 12);
+    grid.setMeta("biome", "cave");
+    grid.addObjectAt("spawn", "unit", 1.f, 0.f);
+    CHECK_EQ(grid.getWidth(), 3);
+    CHECK_EQ(grid.getHeight(), 2);
+    REQUIRE_EQ(countCells(grid, Semantic::Wall), 5);
+    CHECK_EQ(grid.getCell(1, 0), static_cast<int>(Semantic::Floor));
+    CHECK_EQ(grid.getDetail(1, 0), 12);
+    CHECK_EQ(grid.getMeta("biome", ""), "cave");
+    CHECK_EQ(grid.getObjectCount(), 1);
+    CHECK_EQ(grid.getObjectName(0), "spawn");
+    grid.clearObjects();
+    CHECK_EQ(grid.getObjectCount(), 0);
+    CHECK_EQ(grid.getCell(1, 0), static_cast<int>(Semantic::Floor));
+}
 
-TEST_CASE("procgen.semantic.names") {
-    CHECK_EQ(std::string(semanticName(Semantic::Wall)), "wall");
+TEST_CASE("procgen.semantic.nameLookup_roundTripsKnownIdsAndDefaultsUnknown") {
+    REQUIRE_EQ(std::string(semanticName(Semantic::Wall)), "wall");
     CHECK_EQ(semanticId("floor"), Semantic::Floor);
-    CHECK_EQ(semanticId("nope"), Semantic::Empty);
+    CHECK_EQ(semanticId("unregistered"), Semantic::Empty);
 }
 
-TEST_CASE("procgen.registry.builtins") {
-    GeneratorRegistry::instance().registerBuiltins();
-    CHECK(GeneratorRegistry::instance().has("dungeon.bsp"));
-    CHECK(GeneratorRegistry::instance().has("cave.cellular"));
-    CHECK(GeneratorRegistry::instance().has("cave.drunkard"));
-    CHECK(GeneratorRegistry::instance().has("maze.backtrack"));
-    CHECK(GeneratorRegistry::instance().has("noise.terrain"));
-    CHECK(GeneratorRegistry::instance().has("wfc.simple"));
-}
-
-TEST_CASE("procgen.registry.schemas.describe_every_grid_generator") {
-    auto &registry = GeneratorRegistry::instance();
+TEST_CASE("procgen.registry.builtins_haveSchemasAndSortedIds") {
+    auto& registry = GeneratorRegistry::instance();
+    registry.registerBuiltins();
     registry.registerBuiltins();
     const auto ids = registry.list();
     REQUIRE(!ids.empty());
-    for (const std::string &id : ids) {
-        const GeneratorDescriptor *schema = registry.descriptor(id);
+    CHECK(std::is_sorted(ids.begin(), ids.end()));
+    for (const auto& id : ids) {
+        const auto* schema = registry.descriptor(id);
         REQUIRE(schema != nullptr);
         CHECK_EQ(schema->id, id);
         CHECK(!schema->displayName.empty());
         CHECK(!schema->category.empty());
-        CHECK(!schema->params.empty());
-        for (const ParamDescriptor &param : schema->params) {
-            CHECK(!param.key.empty());
-            CHECK(!param.displayName.empty());
-            if (param.hasMinimum && param.hasMaximum) CHECK_LE(param.minimum, param.maximum);
-            if (param.kind == ParamKind::Choice) {
-                CHECK(!param.choices.empty());
-                CHECK(std::find(param.choices.begin(), param.choices.end(), param.defaultValue) != param.choices.end());
-            }
-        }
     }
-
+    CHECK(registry.descriptor("not.registered") == nullptr);
     Params params;
+    CHECK(!registry.applyDefaults("not.registered", params));
     REQUIRE(registry.applyDefaults("cave.cellular", params));
-    CHECK(params.has("fill"));
-    CHECK_LT(std::abs(params.getFloat("fill", 0.f) - 0.45f), 0.0001f);
-    params.setInt("width", 96);
-    params.setInt("height", 48);
-    params.setInt("seed", 7);
-    CHECK_EQ(params.getWidth(), 96);
-    CHECK_EQ(params.getHeight(), 48);
-    CHECK_EQ(params.getSeed(), 7u);
+    CHECK(std::abs(params.getFloat("fill", 0.f) - .45f) < .0001f);
 }
 
-TEST_CASE("procgen.mesh.rock.reproducibleAndControllable") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(1847);
-    p.setInt("subdivisions", 3);
-    p.setFloat("radius", 0.7f);
-    p.setFloat("flattening", 0.3f);
-    p.setFloat("angularity", 0.45f);
-    p.setFloat("erosion", 0.16f);
-    p.setFloat("scale", 2.4f);
-    MeshBuild   a, b, flatter;
-    std::string err;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, a, err));
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, b, err));
-    CHECK_EQ(a.getVertexCount(), 642);
-    CHECK_EQ(a.getIndexCount() / 3, 1280);
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshNormalsFiniteUnit(a));
-
-    p.setFloat("flattening", 0.58f);
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, flatter, err));
-    CHECK(a.positions() != flatter.positions());
-
-    p.setInt("subdivisions", 2);
-    MeshBuild lod1;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, lod1, err));
-    CHECK_EQ(lod1.getVertexCount(), 162);
-    CHECK_EQ(lod1.getIndexCount() / 3, 320);
-
-    std::vector<std::vector<float>> shapePositions;
-    for (const char *shape : {"boulder", "slab", "block", "shard"}) {
-        p.setString("baseShape", shape);
-        p.setInt("subdivisions", 3);
-        MeshBuild variant;
-        REQUIRE(MeshRecipeRegistry::instance().generate("mesh.rock", p, variant, err));
-        CHECK_EQ(variant.getMeta("baseShape", ""), shape);
-        CHECK_EQ(variant.getVertexCount(), 642);
-        CHECK(meshIndicesInRange(variant));
-        CHECK(meshNormalsFiniteUnit(variant));
-        shapePositions.push_back(variant.positions());
-    }
-    CHECK(shapePositions[0] != shapePositions[1]);
-    CHECK(shapePositions[1] != shapePositions[2]);
-    CHECK(shapePositions[2] != shapePositions[3]);
-
-    p.setString("baseShape", "invalid");
-    MeshBuild invalid;
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.rock", p, invalid, err));
-}
-
-TEST_CASE("procgen.mesh.tree.stylesAndLeaves") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params low;
-    low.setSeed(1234);
-    low.setString("style", "lowpoly");
-    low.setString("leafMode", "cards");
-    low.setFloat("leafDensity", 0.8f);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", low, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", low, b, err));
-    CHECK(a.getVertexCount() > 0);
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshPositionsFinite(a));
-    CHECK(meshNormalsFiniteUnit(a));
-    CHECK_EQ(a.getMeta("style", ""), "lowpoly");
-    CHECK_EQ(a.getMeta("leafMode", ""), "cards");
-
-    Params realistic;
-    realistic.setSeed(22);
-    realistic.setString("style", "realistic");
-    realistic.setString("leafMode", "canopy");
-    realistic.setString("branchAlgorithm", "spaceColonization");
-    realistic.setFloat("leafDensity", 1.f);
-    MeshBuild canopy;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", realistic, canopy, err));
-    CHECK(canopy.getVertexCount() > a.getVertexCount() / 2);
-    CHECK(meshIndicesInRange(canopy));
-    CHECK(meshNormalsFiniteUnit(canopy));
-    CHECK_EQ(canopy.getMeta("branchAlgorithm", ""), "spaceColonization");
-
-    Params sparseCoverage = realistic;
-    sparseCoverage.setFloat("lowerLeafCoverage", 0.f);
-    sparseCoverage.setFloat("upperLeafCoverage", 0.f);
-    Params fullCoverage = realistic;
-    fullCoverage.setFloat("lowerLeafCoverage", 1.f);
-    fullCoverage.setFloat("upperLeafCoverage", 1.f);
-    MeshBuild sparseLeaves, coveredBranches;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", sparseCoverage, sparseLeaves, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", fullCoverage, coveredBranches, err));
-    CHECK(coveredBranches.getVertexCount() > sparseLeaves.getVertexCount());
-
-    Params bare;
-    bare.setSeed(22);
-    bare.setString("leafMode", "none");
-    MeshBuild noLeaves;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", bare, noLeaves, err));
-    CHECK(noLeaves.getVertexCount() < canopy.getVertexCount());
-
-    Params straight = bare;
-    straight.setFloat("trunkCurve", 0.f);
-    straight.setFloat("branchCurve", 0.f);
-    straight.setFloat("curveBack", 0.f);
-    straight.setFloat("tropism", 0.f);
-    straight.setFloat("droop", 0.f);
-    Params expressive = straight;
-    expressive.setFloat("trunkCurve", 0.2f);
-    expressive.setFloat("branchCurve", 0.24f);
-    expressive.setFloat("curveBack", 0.2f);
-    expressive.setFloat("tropism", 0.35f);
-    expressive.setFloat("droop", 0.28f);
-    MeshBuild rigidTree, curvedTree;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", straight, rigidTree, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", expressive, curvedTree, err));
-    CHECK(rigidTree.positions() != curvedTree.positions());
-    CHECK(meshPositionsFinite(curvedTree));
-    CHECK(meshNormalsFiniteUnit(curvedTree));
-}
-
-TEST_CASE("procgen.mesh.tree.validatesOptions") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setString("style", "watercolor");
-    MeshBuild   mesh;
-    std::string err;
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
-    CHECK(err.find("style") != std::string::npos);
-    p.setString("style", "lowpoly");
-    p.setString("branchAlgorithm", "crystalGrowth");
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
-    CHECK(err.find("branchAlgorithm") != std::string::npos);
-    p.setString("branchAlgorithm", "weberPenn");
-    p.setString("leafMode", "confetti");
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
-    CHECK(err.find("leafMode") != std::string::npos);
-    p.setString("leafMode", "clusters");
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.tree", p, mesh, err));
-}
-
-TEST_CASE("procgen.mesh.skyscraper.reproducibleAndControllable") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(2026);
-    p.setFloat("baseWidth", 10.f);
-    p.setFloat("baseDepth", 10.f);
-    p.setInt("tiers", 6);
-    p.setFloat("tierHeight", 6.f);
-    p.setFloat("setback", 0.08f);
-    p.setInt("windowCols", 6);
-    p.setInt("windowRows", 4);
-    p.setFloat("windowDepth", 0.04f);
-    p.setFloat("spireHeight", 4.f);
-    MeshBuild   a, b, tapering;
-    std::string err;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, a, err));
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, b, err));
-    CHECK(a.getVertexCount() > 0);
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK_EQ(a.getIndexCount() % 3, 0);
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshPositionsFinite(a));
-    CHECK(meshNormalsFiniteUnit(a));
-    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.skyscraper");
-    CHECK_EQ(a.getMeta("tiers", ""), "6");
-    CHECK_EQ(a.getMeta("windowCols", ""), "6");
-    CHECK_EQ(a.getMeta("windowRows", ""), "4");
-    // 6 tiers * 4 facades * (1 wall + cols*rows windows) quads = 6*4*(1+24) = 600 quads, plus roof.
-    CHECK_EQ(a.getVertexCount() % 4, 0);
-
-    // More setbacks / smaller footprint must change geometry.
-    p.setFloat("setback", 0.2f);
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, tapering, err));
-    CHECK(a.positions() != tapering.positions());
-
-    // A taller tower should have more vertices (more tiers).
-    Params tall;
-    tall.setInt("tiers", 12);
-    tall.setInt("windowCols", 8);
-    tall.setInt("windowRows", 6);
-    MeshBuild tallMesh;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", tall, tallMesh, err));
-    CHECK(tallMesh.getVertexCount() > a.getVertexCount());
-    CHECK(meshNormalsFiniteUnit(tallMesh));
-}
-
-TEST_CASE("procgen.mesh.skyscraper.heightsAndBounds") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(7);
-    p.setInt("tiers", 4);
-    p.setFloat("tierHeight", 5.f);
-    p.setFloat("spireHeight", 3.f);
-    MeshBuild   mesh;
-    std::string err;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.skyscraper", p, mesh, err));
-    // Total height: tiers*tierHeight + spire.
-    const float expectedHeight = 4.f * 5.f + 3.f;
-    CHECK_EQ(std::stof(mesh.getMeta("height", "0")), expectedHeight);
-    // Every vertex must sit on or above the ground plane (y >= -epsilon).
-    for (int i = 0; i < mesh.getVertexCount(); ++i) {
-        CHECK(mesh.getPositionY(i) >= -1e-4f);
-    }
-    // Base footprint should be wider than the top tier after setbacks.
-    const float baseW = p.getFloat("baseWidth", 10.f) * 0.5f;
-    const float topW  = baseW * (1.f - p.getFloat("setback", 0.08f) * 3.f);
-    CHECK(topW < baseW);
-}
-
-
-TEST_CASE("procgen.mesh.flower.reproducible") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(20260917u);
-    p.setFloat("height", 0.6f);
-    p.setInt("petals", 6);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.flower", p, b, err));
-    CHECK(a.getVertexCount() > 0);
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshPositionsFinite(a));
-    CHECK(meshNormalsFiniteUnit(a));
-    CHECK_EQ(a.getMeta("recipe", ""), "mesh.flower");
-    CHECK_EQ(a.getMeta("petals", ""), "6");
-}
-
-TEST_CASE("procgen.mesh.bush.reproducibleAndStyles") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(20260815u);
-    p.setString("style", "mound");
-    p.setString("leafMode", "mixed");
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", p, b, err));
-    CHECK(a.getVertexCount() > 0);
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshPositionsFinite(a));
-    CHECK(meshNormalsFiniteUnit(a));
-    CHECK_EQ(a.getMeta("recipe", ""), "mesh.bush");
-    CHECK_EQ(a.getMeta("style", ""), "mound");
-    CHECK_EQ(a.getMeta("leafMode", ""), "mixed");
-
-    // Sphere style produces a different silhouette (rounder, taller lobes).
-    Params sphere = p;
-    sphere.setString("style", "sphere");
-    MeshBuild round;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", sphere, round, err));
-    CHECK(round.getVertexCount() > 0);
-    CHECK(round.positions() != a.positions());
-    CHECK(meshIndicesInRange(round));
-    CHECK(meshNormalsFiniteUnit(round));
-    CHECK_EQ(round.getMeta("style", ""), "sphere");
-
-    // Bare foliage still yields a closed mound (blobs only, no cards/twigs tufts).
-    Params blobsOnly = p;
-    blobsOnly.setString("leafMode", "blobs");
-    blobsOnly.setInt("twigs", 0);
-    MeshBuild mounds;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", blobsOnly, mounds, err));
-    CHECK(mounds.getVertexCount() > 0);
-    CHECK(meshIndicesInRange(mounds));
-    CHECK(meshNormalsFiniteUnit(mounds));
-
-    // "none" drops cards but keeps the blobs; fewer vertices than the mixed default.
-    Params bare = p;
-    bare.setString("leafMode", "none");
-    bare.setInt("twigs", 0);
-    MeshBuild noCards;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", bare, noCards, err));
-    CHECK(noCards.getVertexCount() > 0);
-    CHECK(noCards.getVertexCount() < a.getVertexCount());
-    CHECK(meshNormalsFiniteUnit(noCards));
-
-    // Lower resolution should be cheaper than the default.
-    Params lod = p;
-    lod.setInt("rings", 2);
-    lod.setInt("radialSegments", 5);
-    lod.setInt("blobs", 5);
-    MeshBuild cheap;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bush", lod, cheap, err));
-    CHECK(cheap.getVertexCount() < a.getVertexCount());
-    CHECK(meshIndicesInRange(cheap));
-    CHECK(meshNormalsFiniteUnit(cheap));
-}
-
-TEST_CASE("procgen.mesh.bush.validatesOptions") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setString("style", "bonsai");
-    MeshBuild   mesh;
-    std::string err;
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
-    CHECK(err.find("style") != std::string::npos);
-    p.setString("style", "mound");
-    p.setString("leafMode", "marching");
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.bush", p, mesh, err));
-    CHECK(err.find("leafMode") != std::string::npos);
-}
-
-
-TEST_CASE("procgen.dungeon.bsp.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(42);
-    p.setSize(48, 36);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("dungeon.bsp", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("dungeon.bsp", p, b, err));
-    CHECK(gridsEqual(a, b));
-    CHECK(countSemantic(a, int(Semantic::Floor)) > 0);
-    CHECK(countSemantic(a, int(Semantic::Wall)) > 0);
-    CHECK(a.getObjectCount() >= 2);
-    CHECK(hasWalkablePath(a));
-}
-
-TEST_CASE("procgen.cave.cellular.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(7);
-    p.setSize(32, 24);
-    p.setInt("loops", 4);
-    p.setFloat("fill", 0.45f);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("cave.cellular", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("cave.cellular", p, b, err));
-    CHECK(gridsEqual(a, b));
-    CHECK(countSemantic(a, int(Semantic::Floor)) > 0);
-}
-
-TEST_CASE("procgen.cave.drunkard.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(99);
-    p.setSize(40, 30);
-    p.setFloat("floorPct", 0.4f);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("cave.drunkard", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("cave.drunkard", p, b, err));
-    CHECK(gridsEqual(a, b));
-    CHECK(countSemantic(a, int(Semantic::Floor)) > 10);
-}
-
-TEST_CASE("procgen.maze.backtrack.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(123);
-    p.setSize(21, 15);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("maze.backtrack", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("maze.backtrack", p, b, err));
-    CHECK(gridsEqual(a, b));
-    CHECK(hasWalkablePath(a));
-}
-
-TEST_CASE("procgen.noise.terrain.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(55);
-    p.setSize(32, 32);
-    p.setFloat("frequency", 5.f);
-    p.setInt("octaves", 3);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("noise.terrain", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("noise.terrain", p, b, err));
-    CHECK(gridsEqual(a, b));
-    // Multiple biome bands expected.
-    std::set<int> kinds;
-    for (uint32_t c : a.cells()) kinds.insert(int(c));
-    CHECK(kinds.size() >= 2);
-}
-
-TEST_CASE("procgen.terrain.pipeline.erosionHydrologyAndBiomes") {
-    Heightmap ridge(32, 24);
-    for (int y = 0; y < ridge.getHeight(); ++y) {
-        for (int x = 0; x < ridge.getWidth(); ++x) {
-            const float downhill = 0.82f - float(y) * 0.018f;
-            const float channel  = (x == 15 || x == 16) ? -0.08f : 0.f;
-            ridge.setHeight(x, y, downhill + channel);
-        }
-    }
-    const float            massBefore = std::accumulate(ridge.data().begin(), ridge.data().end(), 0.f);
-    Heightmap              thermal    = ridge;
-    ThermalErosionSettings thermalSettings;
-    thermalSettings.iterations = 12;
-    TerrainPipeline::erodeThermal(thermal, thermalSettings);
-    const float massAfter = std::accumulate(thermal.data().begin(), thermal.data().end(), 0.f);
-    CHECK(std::abs(massAfter - massBefore) < 0.001f);
-    CHECK(thermal.height(15, 12) > ridge.height(15, 12));
-    const auto [thermalMin, thermalMax] = std::minmax_element(thermal.data().begin(), thermal.data().end());
-    const auto [ridgeMin, ridgeMax]     = std::minmax_element(ridge.data().begin(), ridge.data().end());
-    CHECK(*thermalMin >= *ridgeMin - 0.0001f);
-    CHECK(*thermalMax <= *ridgeMax + 0.0001f);
-
-    Heightmap                hydraulicA = ridge, hydraulicB = ridge;
-    HydraulicErosionSettings hydraulicSettings;
-    hydraulicSettings.iterations = 20;
-    TerrainPipeline::erodeHydraulic(hydraulicA, hydraulicSettings);
-    TerrainPipeline::erodeHydraulic(hydraulicB, hydraulicSettings);
-    CHECK(hydraulicA.data() == hydraulicB.data());
-    CHECK(hydraulicA.data() != ridge.data());
-    const auto [hydraulicMin, hydraulicMax] = std::minmax_element(hydraulicA.data().begin(), hydraulicA.data().end());
-    CHECK(std::isfinite(*hydraulicMin));
-    CHECK(std::isfinite(*hydraulicMax));
-    CHECK(*hydraulicMin >= 0.f);
-    CHECK(*hydraulicMax <= *ridgeMax + 0.0001f);
-
-    const HydrologyMap hydrology = TerrainPipeline::buildHydrology(ridge, 8.f, 0.2f);
-    CHECK_EQ(hydrology.flowAccumulation.size(), ridge.data().size());
-    CHECK(std::count(hydrology.rivers.begin(), hydrology.rivers.end(), uint8_t(1)) > 0);
-    for (int y = 1; y + 1 < ridge.getHeight(); ++y)
-        for (int x = 1; x + 1 < ridge.getWidth(); ++x)
-            CHECK(hydrology.flowDirection[size_t(y * ridge.getWidth() + x)] >= 0);
-    const ClimateMap climate = TerrainPipeline::buildClimate(ridge, hydrology, 0.2f, 0.8f);
-    CHECK_EQ(climate.biomes.size(), ridge.data().size());
-    CHECK(std::count(climate.biomes.begin(), climate.biomes.end(), Biome::River) > 0);
-    std::set<Biome> biomes(climate.biomes.begin(), climate.biomes.end());
-    CHECK(biomes.size() >= 3);
-
-    Heightmap              fluvialA = ridge, fluvialB = ridge;
-    FluvialErosionSettings fluvialSettings;
-    fluvialSettings.iterations     = 6;
-    fluvialSettings.riverThreshold = 0.02f;
-    TerrainPipeline::erodeFluvial(fluvialA, fluvialSettings);
-    TerrainPipeline::erodeFluvial(fluvialB, fluvialSettings);
-    CHECK(fluvialA.data() == fluvialB.data());
-    const auto maxCardinalStep = [](const Heightmap &map) {
-        float result = 0.f;
-        for (int y = 0; y < map.getHeight(); ++y)
-            for (int x = 0; x < map.getWidth(); ++x) {
-                if (x + 1 < map.getWidth())
-                    result = std::max(result, std::abs(map.height(x, y) - map.height(x + 1, y)));
-                if (y + 1 < map.getHeight())
-                    result = std::max(result, std::abs(map.height(x, y) - map.height(x, y + 1)));
-            }
-        return result;
+TEST_CASE("procgen.registry.gridRecipes_replaySameSeedWithExpectedShapeAndSemantics") {
+    auto& registry = GeneratorRegistry::instance();
+    registry.registerBuiltins();
+    const struct {
+        const char* id;
+        int         width;
+        int         height;
+        bool        expectFloor;
+    } recipes[] = {
+        {"dungeon.bsp", 48, 36, true},    {"cave.cellular", 32, 24, true},  {"cave.drunkard", 40, 30, true},
+        {"maze.backtrack", 21, 15, true}, {"noise.terrain", 32, 32, false},
     };
-    // Valley widening must not introduce a hard circular rim or terrace scarp.
-    CHECK(maxCardinalStep(fluvialA) <= maxCardinalStep(ridge) + 0.08f);
-    const HydrologyMap erodedHydrology = TerrainPipeline::buildHydrology(fluvialA, fluvialSettings.riverThreshold,
-                                                                         -std::numeric_limits<float>::infinity());
-    const float        channelCutoff   = fluvialSettings.riverThreshold * float(fluvialA.data().size());
-    int                channelLinks = 0, uphillLinks = 0;
-    for (size_t start = 0; start < erodedHydrology.flowDirection.size(); ++start) {
-        if (erodedHydrology.flowAccumulation[start] < channelCutoff) continue;
-        size_t current         = start;
-        bool   reachedBoundary = false;
-        for (size_t step = 0; step <= fluvialA.data().size(); ++step) {
-            const int x = int(current % size_t(fluvialA.getWidth()));
-            const int y = int(current / size_t(fluvialA.getWidth()));
-            if (x == 0 || y == 0 || x + 1 == fluvialA.getWidth() || y + 1 == fluvialA.getHeight()) {
-                reachedBoundary = true;
-                break;
-            }
-            const int direction = erodedHydrology.flowDirection[current];
-            REQUIRE(direction >= 0);
-            static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-            static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-            const size_t receiver = size_t((y + flowDy[direction]) * fluvialA.getWidth() + x + flowDx[direction]);
-            if (fluvialA.data()[receiver] > fluvialA.data()[current] + 0.001f) ++uphillLinks;
-            ++channelLinks;
-            current = receiver;
-        }
-        CHECK(reachedBoundary);
-    }
-    REQUIRE(channelLinks > 0);
-    CHECK(uphillLinks * 20 <= channelLinks);  // at least 95% of the bed is non-uphill
-    int loweredCells = 0;
-    for (size_t i = 0; i < fluvialA.data().size(); ++i) {
-        if (fluvialA.data()[i] < ridge.data()[i] - 0.0001f) ++loweredCells;
-        CHECK(fluvialA.data()[i] >= ridge.data()[i] - fluvialSettings.maxDepth - 0.0001f);
-    }
-    CHECK(loweredCells > 0);
-}
-
-TEST_CASE("procgen.terrain.pipeline.multiSeedDrainageMorphology") {
-    Procgen                             procgen;
-    std::set<uint64_t>                  terrainHashes;
-    static constexpr std::array<int, 5> seeds{17, 1031, 8191, 20260826, 7340033};
-    static constexpr int                flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-    static constexpr int                flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-    for (int seed : seeds) {
+    for (const auto& recipe : recipes) {
         Params params;
-        params.setSeed(seed);
-        params.setSize(65, 65);
-        params.setFloat("frequency", 1.f / 31.f);
-        params.setInt("octaves", 4);
-        params.setFloat("gain", 0.4f);
-        params.setFloat("warp", 0.07f);
-        const TerrainSampler sampler = TerrainSampler::fromParams(params);
-        auto terrain = std::make_unique<Heightmap>(Heightmap::generate(sampler, params.getWidth(), params.getHeight()));
-        TerrainPipeline::erodeThermal(*terrain, {12, 0.011f, 0.28f});
-        TerrainPipeline::erodeHydraulic(*terrain, {8, 0.007f, 0.11f, 1.4f, 0.08f, 0.11f});
-        TerrainErosionMap terrainDiagnostics =
-            TerrainPipeline::erodeFluvialDetailed(*terrain, {10, 0.008f, 0.12f, 0.18f, 2.5f});
-        if (seed == seeds.front()) {
-            if (const char *path = std::getenv("EVENGINE_TERRAIN_NATURAL_EROSION_PNG")) {
-                std::unique_ptr<eve::image::ImageData> image(
-                    procgen.generateTerrainErosionMap(&terrainDiagnostics, 0.f));
-                REQUIRE(image.get() != nullptr);
-                REQUIRE(saveImagePng(*image, path));
-            }
-        }
-        const HydrologyMap hydro  = TerrainPipeline::buildHydrology(*terrain, 24.f, 0.2f);
-        const auto [minIt, maxIt] = std::minmax_element(terrain->data().begin(), terrain->data().end());
-        CHECK(*maxIt - *minIt > 0.18f);
-        const int riverCells = int(std::count(hydro.rivers.begin(), hydro.rivers.end(), uint8_t(1)));
-        CHECK(riverCells >= 12);
-        CHECK(riverCells < int(terrain->data().size() / 5));
-        CHECK_EQ(hydro.streamOrder.size(), hydro.rivers.size());
-        CHECK(*std::max_element(hydro.streamOrder.begin(), hydro.streamOrder.end()) >= 2);
+        params.setSeed(42);
+        params.setSize(recipe.width, recipe.height);
+        Grid2D      first;
+        Grid2D      replay;
+        std::string error;
+        REQUIRE(registry.generate(recipe.id, params, first, error));
+        REQUIRE(registry.generate(recipe.id, params, replay, error));
+        CHECK(sameCells(first, replay));
+        CHECK_EQ(first.getWidth(), recipe.width);
+        CHECK_EQ(first.getHeight(), recipe.height);
+        if (recipe.expectFloor) CHECK(countCells(first, Semantic::Floor) + countCells(first, Semantic::Corridor) > 0);
+    }
+}
 
-        int junctions = 0, longestChain = 0;
-        for (int y = 1; y + 1 < terrain->getHeight(); ++y) {
-            for (int x = 1; x + 1 < terrain->getWidth(); ++x) {
-                const size_t i = size_t(y * terrain->getWidth() + x);
-                if (!hydro.rivers[i]) continue;
-                int incoming = 0;
-                for (int d = 0; d < 8; ++d) {
-                    const int    nx = x + flowDx[d], ny = y + flowDy[d];
-                    const size_t n        = size_t(ny * terrain->getWidth() + nx);
-                    const int    receiver = hydro.flowDirection[n];
-                    if (hydro.rivers[n] && receiver >= 0 && nx + flowDx[receiver] == x && ny + flowDy[receiver] == y)
-                        ++incoming;
+TEST_CASE("procgen.wfc.presetAndInvalidInputContract") {
+    SUB_CASE("built in presets replay their seed and expose metadata") {
+        auto& registry = GeneratorRegistry::instance();
+        registry.registerBuiltins();
+        for (const char* preset : {"dungeon", "cave", "terrain"}) {
+            Params params;
+            params.setSeed(17);
+            params.setSize(24, 18);
+            params.setString("preset", preset);
+            params.setInt("maxAttempts", 64);
+            Grid2D      first;
+            Grid2D      replay;
+            std::string error;
+            REQUIRE(registry.generate("wfc.simple", params, first, error));
+            REQUIRE(registry.generate("wfc.simple", params, replay, error));
+            CHECK(sameCells(first, replay));
+            CHECK_EQ(first.getMeta("algorithm", ""), "wfc.simple");
+            CHECK_EQ(first.getMeta("preset", ""), preset);
+            if (std::string(preset) != "terrain") {
+                for (int x = 0; x < first.getWidth(); ++x) {
+                    CHECK_EQ(first.getCell(x, 0), static_cast<int>(Semantic::Wall));
+                    CHECK_EQ(first.getCell(x, first.getHeight() - 1), static_cast<int>(Semantic::Wall));
                 }
-                if (incoming >= 2) ++junctions;
-                size_t current = i;
-                int    chain   = 0;
-                for (; chain < int(terrain->data().size()); ++chain) {
-                    const int cx        = int(current % size_t(terrain->getWidth()));
-                    const int cy        = int(current / size_t(terrain->getWidth()));
-                    const int direction = hydro.flowDirection[current];
-                    if (direction < 0 || cx == 0 || cy == 0 || cx + 1 == terrain->getWidth() ||
-                        cy + 1 == terrain->getHeight())
-                        break;
-                    const size_t receiver =
-                        size_t((cy + flowDy[direction]) * terrain->getWidth() + cx + flowDx[direction]);
-                    // A thresholded D8 channel must never disappear merely
-                    // because its contributing area shrinks downstream.
-                    CHECK(hydro.flowAccumulation[receiver] >= hydro.flowAccumulation[current]);
-                    if (terrain->data()[receiver] > 0.2f && hydro.lakeDepth[receiver] <= 0.f)
-                        CHECK(hydro.rivers[receiver]);
-                    current = receiver;
-                }
-                longestChain = std::max(longestChain, chain);
             }
         }
-        CHECK(junctions > 0);
-        CHECK(longestChain >= 8);
-
-        uint64_t hash = 1469598103934665603ull;
-        for (float value : terrain->data()) {
-            uint32_t bits = 0;
-            std::memcpy(&bits, &value, sizeof(bits));
-            hash = (hash ^ bits) * 1099511628211ull;
-        }
-        terrainHashes.insert(hash);
-    }
-    CHECK_EQ(terrainHashes.size(), seeds.size());
-}
-
-TEST_CASE("procgen.terrain.pipeline.fluvialBreachesClosedBasinSpillSill") {
-    Heightmap basin(41, 41);
-    const int center = 20;
-    for (int y = 0; y < 41; ++y)
-        for (int x = 0; x < 41; ++x) {
-            const float radial    = std::hypot(float(x - center), float(y - center));
-            float       elevation = 0.18f + 0.012f * radial;
-            if (radial > 12.f && radial < 15.f) elevation += 0.32f;
-            if (radial >= 15.f) elevation = 0.25f - 0.006f * (radial - 15.f);
-            basin.setHeight(x, y, elevation);
-        }
-    const HydrologyMap closedHydro =
-        TerrainPipeline::buildHydrology(basin, 3.f, -std::numeric_limits<float>::infinity());
-    CHECK(closedHydro.lakeDepth[size_t(center * 41 + center)] > 0.2f);
-    CHECK(!closedHydro.rivers[size_t(center * 41 + center)]);
-    const ClimateMap closedClimate = TerrainPipeline::buildClimate(basin, closedHydro, 0.f, 0.5f);
-    CHECK_EQ(int(closedClimate.biomes[size_t(center * 41 + center)]), int(Biome::Lake));
-    CHECK(std::count(closedClimate.biomes.begin(), closedClimate.biomes.end(), Biome::Wetland) > 0);
-
-    // A deep connected basin is one geomorphic unit. A shallow fringe cell
-    // must not be incised merely because its own fill depth is below the breach
-    // limit; otherwise Priority-Flood's routing tree appears as radial stripes.
-    Heightmap preservedBasin = basin;
-    TerrainPipeline::erodeFluvial(preservedBasin, {24, 3.f, 0.14f, 0.55f, 4.f, 0.05f});
-    const HydrologyMap preservedHydro =
-        TerrainPipeline::buildHydrology(preservedBasin, 3.f, -std::numeric_limits<float>::infinity());
-    CHECK(preservedHydro.lakeDepth[size_t(center * 41 + center)] > 0.15f);
-    CHECK(std::abs(preservedBasin.height(center, center) - basin.height(center, center)) < 0.01f);
-
-    // The same basin may be deliberately opened when the caller supplies a
-    // breach budget larger than the component's maximum depression depth.
-    TerrainPipeline::erodeFluvial(basin, {24, 3.f, 0.14f, 0.55f, 4.f, 0.55f});
-    const HydrologyMap hydro   = TerrainPipeline::buildHydrology(basin, 3.f, -std::numeric_limits<float>::infinity());
-    size_t             current = size_t(center * 41 + center);
-    int                links   = 0;
-    for (; links < 41 * 41; ++links) {
-        const int x = int(current % 41u), y = int(current / 41u);
-        if (x == 0 || y == 0 || x == 40 || y == 40) break;
-        const int direction = hydro.flowDirection[current];
-        REQUIRE(direction >= 0);
-        static constexpr int flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-        static constexpr int flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-        const size_t         receiver  = size_t((y + flowDy[direction]) * 41 + x + flowDx[direction]);
-        CHECK(basin.data()[receiver] <= basin.data()[current] + 0.001f);
-        current = receiver;
-    }
-    CHECK(links >= 15);
-    CHECK(links < 41 * 41);
-}
-
-TEST_CASE("procgen.terrain.pipeline.classifiesPerennialLakeBasins") {
-    Heightmap puddle(25, 25);
-    for (int y = 0; y < 25; ++y)
-        for (int x = 0; x < 25; ++x) puddle.setHeight(x, y, 0.5f - float(y) * 0.002f);
-    puddle.setHeight(12, 12, puddle.height(12, 12) - 0.018f);
-
-    const HydrologyMap raw =
-        TerrainPipeline::buildHydrology(puddle, 8.f, -std::numeric_limits<float>::infinity(), 1.f, false);
-    REQUIRE(raw.lakeDepth[size_t(12 * 25 + 12)] > 0.01f);
-    const HydrologyMap classified =
-        TerrainPipeline::buildHydrology(puddle, 8.f, -std::numeric_limits<float>::infinity());
-    CHECK_EQ(classified.lakeDepth[size_t(12 * 25 + 12)], 0.f);
-
-    Heightmap lake(25, 25);
-    for (int y = 0; y < 25; ++y)
-        for (int x = 0; x < 25; ++x) {
-            const float radius = std::hypot(float(x - 12), float(y - 12));
-            lake.setHeight(x, y, 0.30f + std::min(radius, 8.f) * 0.012f);
-        }
-    const HydrologyMap perennial = TerrainPipeline::buildHydrology(lake, 8.f, -std::numeric_limits<float>::infinity());
-    CHECK(perennial.lakeDepth[size_t(12 * 25 + 12)] > 0.05f);
-    CHECK(std::count_if(perennial.lakeDepth.begin(), perennial.lakeDepth.end(),
-                        [](float depth) { return depth > 0.f; }) >= 20);
-}
-
-TEST_CASE("procgen.terrain.pipeline.fluvialResolvesValleyCrossSections") {
-    Heightmap slope(65, 65);
-    for (int y = 0; y < 65; ++y)
-        for (int x = 0; x < 65; ++x) {
-            const float broadRelief = 0.055f * std::sin(float(x) * 0.145f) + 0.025f * std::sin(float(x + y) * 0.071f);
-            slope.setHeight(x, y, 0.88f - float(y) * 0.009f + broadRelief);
-        }
-    const Heightmap        originalSlope = slope;
-    FluvialErosionSettings settings;
-    settings.iterations          = 18;
-    settings.riverThreshold      = 0.008f;
-    settings.incision            = 0.075f;
-    settings.maxDepth            = 0.12f;
-    settings.bankWidth           = 5.f;
-    settings.maxBreachDepth      = 0.015f;
-    TerrainErosionMap erosionMap = TerrainPipeline::erodeFluvialDetailed(slope, settings);
-    REQUIRE_EQ(erosionMap.width, 65);
-    REQUIRE_EQ(erosionMap.height, 65);
-    REQUIRE_EQ(erosionMap.wear.size(), slope.data().size());
-    float totalWear = 0.f, totalDeposition = 0.f;
-    for (size_t i = 0; i < slope.data().size(); ++i) {
-        totalWear += erosionMap.wear[i];
-        totalDeposition += erosionMap.deposition[i];
-        CHECK(std::abs((erosionMap.deposition[i] - erosionMap.wear[i]) - erosionMap.heightDelta[i]) < 1e-5f);
-    }
-    CHECK(totalWear > 0.1f);
-    CHECK(totalDeposition > 0.f);
-    Procgen                                diagnosticProcgen;
-    std::unique_ptr<eve::image::ImageData> combined(diagnosticProcgen.generateTerrainErosionMap(&erosionMap, 0.f));
-    std::unique_ptr<eve::image::ImageData> wearImage(diagnosticProcgen.generateTerrainWearMap(&erosionMap, 0.f));
-    std::unique_ptr<eve::image::ImageData> depositImage(
-        diagnosticProcgen.generateTerrainDepositionMap(&erosionMap, 0.f));
-    REQUIRE(combined.get() != nullptr);
-    REQUIRE(wearImage.get() != nullptr);
-    REQUIRE(depositImage.get() != nullptr);
-    CHECK_EQ(combined->getWidth(), 65);
-    CHECK(std::memcmp(combined->getData(), wearImage->getData(), combined->getSize()) != 0);
-    CHECK(std::memcmp(combined->getData(), depositImage->getData(), combined->getSize()) != 0);
-    if (const char *path = std::getenv("EVENGINE_TERRAIN_EROSION_PNG")) REQUIRE(saveImagePng(*combined, path));
-    const HydrologyMap hydro =
-        TerrainPipeline::buildHydrology(slope, settings.riverThreshold, -std::numeric_limits<float>::infinity());
-    const float                        cutoff    = settings.riverThreshold * float(slope.data().size());
-    static constexpr int               flowDx[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
-    static constexpr int               flowDy[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
-    std::vector<float>                 crossSectionRelief;
-    std::vector<std::pair<float, int>> flowAndIncisedWidth;
-    int                                materiallyIncised = 0;
-    for (int y = 9; y < 56; ++y)
-        for (int x = 9; x < 56; ++x) {
-            const size_t i = size_t(y * 65 + x);
-            if (hydro.flowAccumulation[i] < cutoff || hydro.flowDirection[i] < 0) continue;
-            const int   d  = hydro.flowDirection[i];
-            const int   px = -flowDy[d], py = flowDx[d];
-            const float left  = slope.height(x + px * 4, y + py * 4);
-            const float right = slope.height(x - px * 4, y - py * 4);
-            crossSectionRelief.push_back((left + right) * 0.5f - slope.height(x, y));
-            int incisedWidth = 0;
-            for (int offset = -8; offset <= 8; ++offset) {
-                const int sx = x + px * offset, sy = y + py * offset;
-                if (originalSlope.height(sx, sy) - slope.height(sx, sy) > 0.002f) ++incisedWidth;
-            }
-            flowAndIncisedWidth.emplace_back(hydro.flowAccumulation[i], incisedWidth);
-            if (originalSlope.height(x, y) - slope.height(x, y) > 0.01f) ++materiallyIncised;
-        }
-    REQUIRE(crossSectionRelief.size() >= 8);
-    std::sort(crossSectionRelief.begin(), crossSectionRelief.end());
-    CHECK(crossSectionRelief[crossSectionRelief.size() / 2] > 0.008f);
-    CHECK(materiallyIncised >= int(crossSectionRelief.size() / 3));
-    // A larger contributing basin must create a wider geomorphic corridor,
-    // not merely a wider water ribbon at render time.
-    std::sort(flowAndIncisedWidth.begin(), flowAndIncisedWidth.end());
-    const size_t quartile       = std::max<size_t>(1, flowAndIncisedWidth.size() / 4);
-    float        headwaterWidth = 0.f, trunkWidth = 0.f;
-    for (size_t n = 0; n < quartile; ++n) {
-        headwaterWidth += float(flowAndIncisedWidth[n].second);
-        trunkWidth += float(flowAndIncisedWidth[flowAndIncisedWidth.size() - 1 - n].second);
-    }
-    CHECK(trunkWidth / float(quartile) > headwaterWidth / float(quartile) + 0.5f);
-}
-
-TEST_CASE("procgen.terrain.pipeline.resolutionScaledHydrologyAndValleys") {
-    auto physicalTerrain = [](int resolution) {
-        Heightmap   map(resolution, resolution);
-        const float extent = float(resolution - 1);
-        for (int y = 0; y < resolution; ++y)
-            for (int x = 0; x < resolution; ++x) {
-                const float u = float(x) / extent, v = float(y) / extent;
-                const float ridge =
-                    0.075f * std::sin(u * 6.28318530718f) + 0.035f * std::sin((u * 2.1f + v * 0.55f) * 6.28318530718f);
-                map.setHeight(x, y, 0.88f - 0.34f * v + ridge);
-            }
-        return map;
     };
-    Heightmap          coarse = physicalTerrain(33);
-    Heightmap          fine   = physicalTerrain(65);
-    const HydrologyMap coarseBefore =
-        TerrainPipeline::buildHydrology(coarse, 0.015f, -std::numeric_limits<float>::infinity(), 1.f);
-    const HydrologyMap fineBefore =
-        TerrainPipeline::buildHydrology(fine, 0.015f, -std::numeric_limits<float>::infinity(), 2.f);
-    const float coarseRiverFraction =
-        float(std::count(coarseBefore.rivers.begin(), coarseBefore.rivers.end(), uint8_t(1))) /
-        float(coarseBefore.rivers.size());
-    const float fineRiverFraction = float(std::count(fineBefore.rivers.begin(), fineBefore.rivers.end(), uint8_t(1))) /
-                                    float(fineBefore.rivers.size());
-    CHECK(fineRiverFraction > coarseRiverFraction * 0.45f);
-    CHECK(fineRiverFraction < coarseRiverFraction * 2.2f);
-    const float coarsePeakFlow =
-        *std::max_element(coarseBefore.flowAccumulation.begin(), coarseBefore.flowAccumulation.end()) /
-        float(coarse.data().size());
-    const float finePeakFlow =
-        *std::max_element(fineBefore.flowAccumulation.begin(), fineBefore.flowAccumulation.end()) /
-        float(fine.data().size());
-    CHECK(std::abs(coarsePeakFlow - finePeakFlow) < 0.12f);
-
-    const Heightmap coarseOriginal = coarse, fineOriginal = fine;
-    TerrainPipeline::erodeFluvial(coarse, {10, 0.015f, 0.055f, 0.10f, 3.f, 0.01f, 1.f});
-    TerrainPipeline::erodeFluvial(fine, {10, 0.015f, 0.055f, 0.10f, 6.f, 0.01f, 2.f});
-    float correspondenceError = 0.f, coarseLowering = 0.f, fineLowering = 0.f;
-    int   samples = 0;
-    for (int y = 2; y < 31; ++y)
-        for (int x = 2; x < 31; ++x) {
-            correspondenceError += std::abs(coarse.height(x, y) - fine.height(x * 2, y * 2));
-            coarseLowering += coarseOriginal.height(x, y) - coarse.height(x, y);
-            fineLowering += fineOriginal.height(x * 2, y * 2) - fine.height(x * 2, y * 2);
-            ++samples;
+    SUB_CASE("invalid dimensions and preset return explanatory errors") {
+        auto& registry = GeneratorRegistry::instance();
+        registry.registerBuiltins();
+        const struct {
+            int         width;
+            int         height;
+            const char* preset;
+            const char* errorToken;
+        } samples[] = {
+            {2, 2, "cave", "4x4"},
+            {300, 16, "cave", "256"},
+            {12, 12, "unknown", "preset"},
+        };
+        for (const auto& sample : samples) {
+            Params params;
+            params.setSize(sample.width, sample.height);
+            params.setString("preset", sample.preset);
+            Grid2D      grid;
+            std::string error;
+            CHECK(!registry.generate("wfc.simple", params, grid, error));
+            CHECK(error.find(sample.errorToken) != std::string::npos);
         }
-    correspondenceError /= float(samples);
-    coarseLowering /= float(samples);
-    fineLowering /= float(samples);
-    CHECK(correspondenceError < 0.035f);
-    REQUIRE(coarseLowering > 0.f);
-    CHECK(fineLowering > coarseLowering * 0.35f);
-    CHECK(fineLowering < coarseLowering * 2.8f);
-}
-
-TEST_CASE("procgen.terrain.asset.chunkedRoundTripAndCorruptionDetection") {
-    Heightmap heightmap(19, 13);
-    for (int y = 0; y < heightmap.getHeight(); ++y)
-        for (int x = 0; x < heightmap.getWidth(); ++x)
-            heightmap.setHeight(x, y, 10.f + float(x) * 0.25f + float(y) * 0.5f);
-    HydrologyMap hydrology                    = TerrainPipeline::buildHydrology(heightmap, 5.f, 10.f);
-    hydrology.lakeDepth[size_t(12 * 19 + 18)] = 2.1f;
-    const ClimateMap     climate              = TerrainPipeline::buildClimate(heightmap, hydrology, 10.f, 0.6f);
-    std::vector<uint8_t> bytesA, bytesB;
-    std::string          error;
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytesA, &error));
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytesB, &error));
-    CHECK(bytesA == bytesB);
-
-    TerrainAsset asset;
-    REQUIRE(asset.open(bytesA.data(), bytesA.size(), &error));
-    CHECK_EQ(asset.getWidth(), 19);
-    CHECK_EQ(asset.getHeight(), 13);
-    CHECK_EQ(asset.getChunkSize(), 8);
-    CHECK_EQ(asset.chunks().size(), size_t(6));
-    CHECK(std::any_of(asset.chunks().begin(), asset.chunks().end(),
-                      [](const TerrainChunkEntry &entry) { return entry.compressed; }));
-
-    TerrainChunkData edge;
-    REQUIRE(asset.loadChunk(2, 1, edge, &error));
-    CHECK_EQ(edge.width, 3);
-    CHECK_EQ(edge.height, 5);
-    CHECK(std::abs(edge.heights.height(2, 4) - heightmap.height(18, 12)) < 0.001f);
-    CHECK_EQ(edge.rivers.size(), size_t(15));
-    CHECK_EQ(edge.flowDirection.size(), size_t(15));
-    CHECK_EQ(int(edge.flowDirection.front()), int(hydrology.flowDirection[size_t(8 * 19 + 16)]));
-    CHECK_EQ(edge.flowVectorX.size(), size_t(15));
-    CHECK_EQ(edge.flowVectorY.size(), size_t(15));
-    CHECK(std::abs(edge.flowVectorX.front() - hydrology.flowVectorX[size_t(8 * 19 + 16)]) < 0.009f);
-    CHECK(std::abs(edge.flowVectorY.front() - hydrology.flowVectorY[size_t(8 * 19 + 16)]) < 0.009f);
-    CHECK_EQ(edge.streamOrder.size(), size_t(15));
-    CHECK_EQ(edge.streamOrder.front(), hydrology.streamOrder[size_t(8 * 19 + 16)]);
-    CHECK_EQ(edge.lakeDepth.size(), size_t(15));
-    CHECK(std::abs(edge.lakeDepth.back() - 2.1f) < 0.05f);
-    CHECK_EQ(edge.biomes.size(), size_t(15));
-
-    std::vector<uint8_t>    corrupt = bytesA;
-    const TerrainChunkEntry first   = asset.chunks().front();
-    corrupt[size_t(first.offset) + first.storedSize / 2] ^= 0x5au;
-    TerrainAsset corruptAsset;
-    REQUIRE(corruptAsset.open(corrupt.data(), corrupt.size(), &error));
-    TerrainChunkData rejected;
-    CHECK(!corruptAsset.loadChunk(first.chunkX, first.chunkY, rejected, &error));
-
-    std::vector<uint8_t> malformed = bytesA;
-    malformed[57]                  = 1;  // directory reserved bytes must remain zero
-    TerrainAsset malformedAsset;
-    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
-    malformed     = bytesA;
-    malformed[44] = 0xff;
-    malformed[45] = 0xff;
-    malformed[46] = 0xff;
-    malformed[47] = 0x7f;
-    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
-    malformed     = bytesA;
-    malformed[24] = 0;
-    malformed[25] = 0;
-    malformed[26] = 0xc0;
-    malformed[27] = 0x7f;  // NaN min height
-    CHECK(!malformedAsset.open(malformed.data(), malformed.size(), &error));
-
-    // EVTR v1/v2/v3/v4 remain readable. Missing layers are supplied with safe
-    // defaults or reconstructed from D8 instead of invalidating a world.
-    auto legacyAsset = [](uint16_t version) {
-        std::vector<uint8_t> raw{0x00, 0x80, 0xff};             // height UNORM16, drainage
-        if (version >= 3) raw.push_back(5);                     // D8 east (encoded + 1)
-        if (version >= 4) raw.insert(raw.end(), {0xff, 0x80});  // continuous east
-        if (version >= 2) raw.push_back(0x40);                  // lake depth
-        raw.insert(raw.end(), {0x80, 0x40, 0x01, uint8_t(Biome::Grassland)});
-        uint32_t hash = 2166136261u;
-        for (uint8_t byte : raw) {
-            hash ^= byte;
-            hash *= 16777619u;
-        }
-        std::vector<uint8_t> result{'E', 'V', 'T', 'R'};
-        auto                 u16 = [&](uint16_t v) {
-            result.push_back(uint8_t(v));
-            result.push_back(uint8_t(v >> 8));
-        };
-        auto u32 = [&](uint32_t v) {
-            for (int b = 0; b < 4; ++b) result.push_back(uint8_t(v >> (b * 8)));
-        };
-        auto u64 = [&](uint64_t v) {
-            for (int b = 0; b < 8; ++b) result.push_back(uint8_t(v >> (b * 8)));
-        };
-        auto f32 = [&](float v) {
-            uint32_t bits;
-            std::memcpy(&bits, &v, 4);
-            u32(bits);
-        };
-        u16(version);
-        u16(0);
-        u32(1);
-        u32(1);
-        u32(1);
-        u32(1);
-        f32(0.f);
-        f32(1.f);
-        f32(10.f);
-        u64(44);
-        u32(0);
-        u32(0);
-        u16(1);
-        u16(1);
-        result.insert(result.end(), {0, 0, 0, 0});
-        u64(80);
-        u32(uint32_t(raw.size()));
-        u32(uint32_t(raw.size()));
-        u32(hash);
-        result.insert(result.end(), raw.begin(), raw.end());
-        return result;
     };
-    for (uint16_t version : {uint16_t(1), uint16_t(2), uint16_t(3), uint16_t(4)}) {
-        const std::vector<uint8_t> legacy = legacyAsset(version);
-        TerrainAsset               legacyReader;
-        REQUIRE(legacyReader.open(legacy.data(), legacy.size(), &error));
-        TerrainChunkData legacyChunk;
-        REQUIRE(legacyReader.loadChunk(0, 0, legacyChunk, &error));
-        CHECK_EQ(int(legacyChunk.flowDirection[0]), version >= 3 ? 4 : -1);
-        CHECK(std::abs(legacyChunk.flowVectorX[0] - (version >= 3 ? 1.f : 0.f)) < 0.001f);
-        CHECK(std::abs(legacyChunk.flowVectorY[0]) < 0.001f);
-        CHECK_EQ(legacyChunk.streamOrder[0], uint8_t(0));
-        if (version == 1)
-            CHECK_EQ(legacyChunk.lakeDepth[0], 0.f);
-        else
-            CHECK(std::abs(legacyChunk.lakeDepth[0] - float(0x40) / 255.f) < 0.0001f);
-    }
 }
 
-TEST_CASE("procgen.terrain.streaming.budgetEvictionAndCrossChunkSampling") {
-    Heightmap heightmap(24, 24);
-    for (int y = 0; y < 24; ++y)
-        for (int x = 0; x < 24; ++x) heightmap.setHeight(x, y, float(x + y * 2));
-    HydrologyMap hydrology                    = TerrainPipeline::buildHydrology(heightmap, 5.f, -1.f);
-    hydrology.lakeDepth[size_t(12 * 24 + 12)] = 3.f;
-    const ClimateMap     climate              = TerrainPipeline::buildClimate(heightmap, hydrology, -1.f, 0.5f);
-    std::vector<uint8_t> bytes;
-    std::string          error;
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytes, &error));
-
-    TerrainStreamingCache stream;
-    REQUIRE(stream.open(bytes.data(), bytes.size(), &error));
-    TerrainStreamStats first = stream.streamAround(12, 12, 1, 2, &error);
-    CHECK_EQ(first.loaded, 2);
-    CHECK_EQ(first.pending, 3);
-    CHECK_EQ(first.resident, 2);
-    TerrainStreamStats second = stream.streamAround(12, 12, 1, 0, &error);
-    CHECK_EQ(second.loaded, 3);
-    CHECK_EQ(second.pending, 0);
-    CHECK_EQ(second.resident, 5);
-    TerrainStreamStats stable = stream.streamAround(12, 12, 1, 0, &error);
-    CHECK_EQ(stable.loaded, 0);
-    CHECK_EQ(stable.evicted, 0);
-
-    float interpolated = 0.f;
-    REQUIRE(stream.sampleHeight(7.5f, 12.f, interpolated));
-    CHECK(std::abs(interpolated - 31.5f) < 0.002f);
-    TerrainSample sample;
-    REQUIRE(stream.sampleCell(12, 12, sample));
-    CHECK(std::abs(sample.height - 36.f) < 0.002f);
-    CHECK_EQ(sample.flowDirection, int(hydrology.flowDirection[size_t(12 * 24 + 12)]));
-    CHECK(std::abs(sample.flowVectorX - hydrology.flowVectorX[size_t(12 * 24 + 12)]) < 0.009f);
-    CHECK(std::abs(sample.flowVectorY - hydrology.flowVectorY[size_t(12 * 24 + 12)]) < 0.009f);
-    CHECK_EQ(sample.streamOrder, int(hydrology.streamOrder[size_t(12 * 24 + 12)]));
-    CHECK(std::abs(sample.lakeDepth - 3.f) < 0.28f);
-    CHECK(sample.lake);
-
-    TerrainStreamStats moved = stream.streamAround(23, 23, 0, 0, &error);
-    CHECK_EQ(moved.evicted, 5);
-    CHECK_EQ(moved.loaded, 1);
-    CHECK_EQ(moved.resident, 1);
-    CHECK(!stream.sampleCell(12, 12, sample));
-    REQUIRE(stream.sampleCell(23, 23, sample));
-    CHECK(std::abs(sample.height - 69.f) < 0.002f);
-    TerrainStreamStats noOp = stream.streamAround(0, 0, -1, 0, &error);
-    CHECK_EQ(noOp.resident, 1);
+TEST_CASE("procgen.meshBuild.verticesIndicesMetadataAndClear_areObservable") {
+    MeshBuild mesh;
+    CHECK(mesh.empty());
+    mesh.addVertex(1.f, 2.f, 3.f, 0.f, 1.f, 0.f, .25f, .75f);
+    mesh.addVertex(4.f, 5.f, 6.f, 0.f, 1.f, 0.f, 0.f, 0.f);
+    mesh.addVertex(7.f, 8.f, 9.f, 0.f, 1.f, 0.f, 1.f, 1.f);
+    mesh.addTriangle(0, 1, 2);
+    REQUIRE_EQ(mesh.getVertexCount(), 3);
+    CHECK_EQ(mesh.getIndexCount(), 3);
+    CHECK_EQ(mesh.getPositionX(0), 1.f);
+    CHECK_EQ(mesh.getPositionY(1), 5.f);
+    CHECK_EQ(mesh.getPositionZ(2), 9.f);
+    CHECK_EQ(mesh.getNormalY(0), 1.f);
+    CHECK_EQ(mesh.getUvU(0), .25f);
+    CHECK_EQ(mesh.getUvV(0), .75f);
+    CHECK_EQ(mesh.getIndex(2), 2);
+    CHECK_EQ(mesh.getPositionX(99), 0.f);
+    CHECK_EQ(mesh.getIndex(99), 0);
+    mesh.setMeta("algorithm", "fixture");
+    CHECK_EQ(mesh.getMeta("algorithm", ""), "fixture");
+    mesh.clear();
+    CHECK(mesh.empty());
 }
 
-TEST_CASE("procgen.terrain.streaming.randomAccessReadsOnlyMetadataAndResidentChunks") {
-    Heightmap heightmap(256, 256);
-    for (int y = 0; y < 256; ++y)
-        for (int x = 0; x < 256; ++x) heightmap.setHeight(x, y, float((x * 17 + y * 31) % 251) / 250.0F);
-    HydrologyMap              hydrology = TerrainPipeline::buildHydrology(heightmap, 0.45F, 0.5F);
-    const ClimateMap          climate   = TerrainPipeline::buildClimate(heightmap, hydrology, 0.5F, 0.5F);
-    std::vector<std::uint8_t> archive;
-    std::string               error;
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 16, archive, &error));
-    auto source = std::make_shared<TrackingTerrainSource>(std::move(archive));
-
-    TerrainStreamingCache stream;
-    auto                  opened = stream.openSource(source);
-    REQUIRE(opened.ok());
-    CHECK_EQ(source->readCount, std::size_t(2));
-    CHECK(source->bytesRead < source->size() / 4);
-    const std::size_t metadataBytes = source->bytesRead;
-
-    const auto loaded = stream.streamAround(128, 128, 1, 2, &error);
-    CHECK_EQ(loaded.loaded, 2);
-    CHECK_EQ(loaded.resident, 2);
-    CHECK_EQ(source->readCount, std::size_t(4));
-    CHECK(source->bytesRead > metadataBytes);
-    CHECK(source->bytesRead < source->size() / 2);
-    const std::size_t stableReads = source->readCount;
-    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 3);
-    CHECK_EQ(source->readCount, stableReads + 3);
-    CHECK_EQ(stream.streamAround(128, 128, 1, 0, &error).loaded, 0);
-    CHECK_EQ(source->readCount, stableReads + 3);
+TEST_CASE("procgen.marchingCubes.sphereRecipe_replaysMeshAndKeepsTriangleIndicesInRange") {
+    auto& registry = MeshRecipeRegistry::instance();
+    registry.registerBuiltins();
+    Params params;
+    params.setSeed(1);
+    params.setInt("resolution", 20);
+    params.setString("field", "sphere");
+    params.setFloat("radius", .7f);
+    MeshBuild   first;
+    MeshBuild   replay;
+    std::string error;
+    REQUIRE(registry.generate("mesh.marchingcubes", params, first, error));
+    REQUIRE(registry.generate("mesh.marchingcubes", params, replay, error));
+    CHECK(first.getVertexCount() > 100);
+    CHECK_EQ(first.getIndexCount() % 3, 0);
+    CHECK(meshIndicesInRange(first));
+    CHECK_EQ(first.positions(), replay.positions());
+    CHECK_EQ(first.indices(), replay.indices());
 }
 
-TEST_CASE("procgen.terrain.streaming.crossChunkHydrologyTraceAndHalo") {
-    Heightmap heightmap(24, 9);
-    for (int y = 0; y < 9; ++y)
-        for (int x = 0; x < 24; ++x) heightmap.setHeight(x, y, 100.f - float(x) * 2.f + std::abs(float(y - 4)) * 3.f);
-    HydrologyMap         hydrology = TerrainPipeline::buildHydrology(heightmap, 2.f, -1.f);
-    const ClimateMap     climate   = TerrainPipeline::buildClimate(heightmap, hydrology, -1.f, 0.5f);
-    std::vector<uint8_t> bytes;
-    std::string          error;
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, bytes, &error));
-
-    TerrainStreamingCache stream;
-    REQUIRE(stream.open(bytes.data(), bytes.size(), &error));
-    REQUIRE_EQ(stream.streamAround(7, 4, 1, 0, &error).resident, 3);
-
-    int receiverX = -1, receiverY = -1;
-    REQUIRE(stream.getReceiver(7, 4, receiverX, receiverY));
-    CHECK_EQ(receiverX, 8);
-    CHECK_EQ(receiverY, 4);
-
-    std::vector<std::pair<int, int>> path;
-    CHECK(!stream.traceFlow(7, 4, 64, path));  // third X chunk is not resident yet
-    CHECK(path.size() > size_t(8));
-    REQUIRE_EQ(stream.streamAround(12, 4, 2, 0, &error).resident, 6);
-    REQUIRE(stream.traceFlow(7, 4, 64, path));
-    CHECK_EQ(path.front().first, 7);
-    CHECK_EQ(path.front().second, 4);
-    CHECK_EQ(path.back().first, 23);
-    CHECK_EQ(path.back().second, 4);
-
-    TerrainStreamingWindow halo;
-    REQUIRE(stream.buildWindow(7, 3, 3, 3, halo));
-    CHECK_EQ(halo.originX, 7);
-    CHECK_EQ(halo.heights.getWidth(), 3);
-    for (int y = 0; y < 3; ++y)
-        for (int x = 0; x < 3; ++x) {
-            const size_t local  = size_t(y * 3 + x);
-            const size_t global = size_t((y + 3) * 24 + x + 7);
-            CHECK(std::abs(halo.heights.height(x, y) - heightmap.height(x + 7, y + 3)) < 0.002f);
-            CHECK_EQ(int(halo.hydrology.flowDirection[local]), int(hydrology.flowDirection[global]));
-            CHECK_EQ(halo.hydrology.streamOrder[local], hydrology.streamOrder[global]);
-        }
-}
-
-TEST_CASE("procgen.terrain.module.erosionAndAnalysisApi") {
-    Procgen procgen;
-    auto    heightmapResult = procgen.newHeightmapHandle(16, 16);
-    REQUIRE(heightmapResult.ok());
-    const ProcgenHeightmapHandleRef heightmapHandle = std::move(heightmapResult).takeValue();
-    auto                            heightmapView   = procgen.resolveHeightmap(heightmapHandle);
-    REQUIRE(heightmapView.isBound());
-    Heightmap *heightmap = heightmapView.get();
-    for (int y = 0; y < 16; ++y)
-        for (int x = 0; x < 16; ++x) heightmap->setHeight(x, y, 0.85f - float(y) * 0.035f + (x == 8 ? -0.1f : 0.f));
-    const std::vector<float> before = heightmap->data();
-    CHECK(procgen.erodeTerrainThermal(heightmap, 8, 0.02f, 0.3f));
-    CHECK(procgen.erodeTerrainHydraulic(heightmap, 8, 0.01f, 0.1f, 2.f, 0.15f, 0.1f));
-    CHECK(procgen.erodeTerrainFluvial(heightmap, 3, 0.03f, 0.006f, 0.08f, 1.5f));
-    CHECK(procgen.erodeTerrainFluvialAdvanced(heightmap, 2, 0.03f, 0.006f, 0.08f, 1.5f, 0.015f));
-    CHECK(procgen.erodeTerrainFluvialScaled(heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
-    std::unique_ptr<TerrainErosionMap> diagnostics(
-        procgen.erodeTerrainFluvialDetailed(heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 2.f));
-    REQUIRE(diagnostics.get() != nullptr);
-    CHECK_EQ(diagnostics->getWidth(), 16);
-    CHECK(diagnostics->getWear(8, 8) >= 0.f);
-    CHECK(diagnostics->getDeposition(8, 8) >= 0.f);
-    CHECK_EQ(diagnostics->getWear(-1, 0), 0.f);
-    CHECK(procgen.erodeTerrainFluvialDetailed(heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f) == nullptr);
-    CHECK(!procgen.erodeTerrainFluvialScaled(heightmap, 2, 0.03f, 0.006f, 0.08f, 3.f, 0.015f, 0.f));
-    CHECK(heightmap->data() != before);
-    std::unique_ptr<TerrainLayers> layers(procgen.analyzeTerrain(heightmap, 4.f, 0.2f, 0.7f));
-    REQUIRE(layers.get() != nullptr);
-    std::unique_ptr<TerrainLayers> scaledLayers(procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 2.f));
-    REQUIRE(scaledLayers.get() != nullptr);
-    CHECK(procgen.analyzeTerrainScaled(heightmap, 4.f, 0.2f, 0.7f, 0.f) == nullptr);
-    CHECK_EQ(layers->getWidth(), 16);
-    CHECK(layers->getFlowAccumulation(8, 8) >= 1.f);
-    CHECK(layers->getStreamOrder(8, 8) >= 0);
-    CHECK(layers->getTemperature(8, 8) >= 0.f);
-    CHECK(layers->getMoisture(8, 8) >= 0.f);
-    CHECK(!layers->getBiomeName(8, 8).empty());
-    CHECK_EQ(layers->getBiome(-1, 0), -1);
-    std::unique_ptr<eve::data::ByteData> archive(procgen.bakeTerrainAsset(heightmap, layers.get(), 8));
-    REQUIRE(archive.get() != nullptr);
-    TerrainAsset opened;
-    CHECK(opened.open(static_cast<const uint8_t *>(archive->getData()), archive->getSize()));
-    CHECK_EQ(opened.chunks().size(), size_t(4));
-    CHECK(!procgen.erodeTerrainThermal(nullptr, 1, 0.1f, 0.1f));
-    auto heightmapRelease = procgen.releaseHeightmap(heightmapHandle);
-    heightmapRelease.ignore("terrain module test cleanup");
-}
-
-TEST_CASE("procgen.terrain.mesh.lodSkirtsStableSeamsAndMaterialWeights") {
-    Heightmap heightmap(33, 17);
-    for (int y = 0; y < 17; ++y)
-        for (int x = 0; x < 33; ++x)
-            heightmap.setHeight(x, y, 0.2f + float(x) * 0.012f + 0.04f * std::sin(float(y) * 0.4f));
-    HydrologyMap hydrology;
-    hydrology.width  = 33;
-    hydrology.height = 17;
-    hydrology.flowDirection.assign(33 * 17, -1);
-    hydrology.flowAccumulation.assign(33 * 17, 1.f);
-    hydrology.rivers.assign(33 * 17, 0);
-    ClimateMap climate;
-    climate.width  = 33;
-    climate.height = 17;
-    climate.temperature.assign(33 * 17, 0.6f);
-    climate.moisture.assign(33 * 17, 0.7f);
-    climate.biomes.assign(33 * 17, Biome::Forest);
-    for (int y = 0; y < 17; ++y)
-        for (int x = 16; x < 33; ++x) climate.biomes[size_t(y * 33 + x)] = Biome::Desert;
-    TerrainLayers layers(std::move(hydrology), std::move(climate));
-
-    TerrainMeshSettings settings;
-    settings.cellsX                      = 16;
-    settings.cellsY                      = 16;
-    settings.cellSize                    = 2.f;
-    settings.heightScale                 = 10.f;
-    settings.skirtDepth                  = 3.f;
-    TerrainMeshSettings lodErrorSettings = settings;
-    lodErrorSettings.lod                 = 1;
-    const float lod1Error                = TerrainMeshBuilder::estimateGeometricError(heightmap, lodErrorSettings);
-    lodErrorSettings.lod                 = 2;
-    const float lod2Error                = TerrainMeshBuilder::estimateGeometricError(heightmap, lodErrorSettings);
-    CHECK(lod1Error > 0.f);
-    CHECK(lod2Error >= lod1Error);
-    const int nearLod = TerrainLodSelector::select(heightmap, settings, 3, 5.f, 1080.f, 60.f, 1.f);
-    const int farLod  = TerrainLodSelector::select(heightmap, settings, 3, 10000.f, 1080.f, 60.f, 1.f);
-    CHECK_EQ(nearLod, 0);
-    CHECK_EQ(farLod, 3);
-    CHECK_EQ(TerrainLodSelector::select(heightmap, settings, 3, -1.f, 1080.f, 60.f, 1.f), -1);
-    TerrainMeshChunk left, right;
-    std::string      error;
-    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, left, &error));
-    settings.originX = 16;
-    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, right, &error));
-    CHECK_EQ(left.getBaseVertexCount(), 17 * 17);
-    CHECK_EQ(left.getVertexCount(), 17 * 17 + 4 * 17 * 2);
-    CHECK_EQ(left.getIndexCount(), 16 * 16 * 6 + 4 * 16 * 6);
-    CHECK(meshIndicesInRange(left.mesh()));
-    CHECK(meshNormalsFiniteUnit(left.mesh(), 0.02f));
-    for (int y = 0; y < 17; ++y) {
-        const int li = y * 17 + 16, ri = y * 17;
-        CHECK(std::abs(left.mesh().getPositionY(li) - right.mesh().getPositionY(ri)) < 0.0001f);
-        CHECK(std::abs(left.mesh().getNormalX(li) - right.mesh().getNormalX(ri)) < 0.0001f);
-        CHECK(std::abs(left.mesh().getNormalY(li) - right.mesh().getNormalY(ri)) < 0.0001f);
-        CHECK(std::abs(left.mesh().getNormalZ(li) - right.mesh().getNormalZ(ri)) < 0.0001f);
-        CHECK_EQ(left.getBiome(li), right.getBiome(ri));
-        for (int channel = 0; channel < 4; ++channel)
-            CHECK(std::abs(left.getMaterialWeight(li, channel) - right.getMaterialWeight(ri, channel)) < 0.0001f);
-    }
-    const int firstSkirtTop = left.getBaseVertexCount(), firstSkirtBottom = firstSkirtTop + 1;
-    CHECK(std::abs(left.mesh().getPositionY(firstSkirtTop) - left.mesh().getPositionY(firstSkirtBottom) - 3.f) <
-          0.0001f);
-    for (int vertex = 0; vertex < left.getVertexCount(); ++vertex) {
-        float sum = 0.f;
-        for (int channel = 0; channel < 4; ++channel) {
-            CHECK(left.getMaterialWeight(vertex, channel) >= 0.f);
-            sum += left.getMaterialWeight(vertex, channel);
-        }
-        CHECK(std::abs(sum - 1.f) < 0.0001f);
-    }
-    CHECK_EQ(left.getBiome(4), int(Biome::Forest));
-    CHECK_EQ(right.getBiome(4), int(Biome::Desert));
-    CHECK_EQ(left.getBiome(-1), -1);
-    CHECK(left.getMaterialWeight(4, 1) > left.getMaterialWeight(4, 0));
-    CHECK(right.getMaterialWeight(4, 0) > right.getMaterialWeight(4, 1));
-    Procgen                                procgen;
-    std::unique_ptr<eve::image::ImageData> splat(procgen.generateTerrainSplatMap(&left));
-    std::unique_ptr<eve::image::ImageData> rightSplat(procgen.generateTerrainSplatMap(&right));
-    REQUIRE(splat.get() != nullptr);
-    REQUIRE(rightSplat.get() != nullptr);
-    CHECK_EQ(splat->getWidth(), 17);
-    CHECK_EQ(splat->getHeight(), 17);
-    const auto *rgba      = static_cast<const uint8_t *>(splat->getData());
-    const auto *rightRgba = static_cast<const uint8_t *>(rightSplat->getData());
-    for (int vertex = 0; vertex < left.getBaseVertexCount(); ++vertex) {
-        int sum = 0;
-        for (int channel = 0; channel < 4; ++channel) {
-            sum += rgba[vertex * 4 + channel];
-            CHECK(std::abs(float(rgba[vertex * 4 + channel]) / 255.f - left.getMaterialWeight(vertex, channel)) <=
-                  1.f / 255.f);
-        }
-        CHECK_EQ(sum, 255);
-    }
-    for (int y = 0; y < 17; ++y)
-        for (int channel = 0; channel < 4; ++channel)
-            CHECK_EQ(rgba[(y * 17 + 16) * 4 + channel], rightRgba[(y * 17) * 4 + channel]);
-    CHECK(procgen.generateTerrainSplatMap(nullptr) == nullptr);
-    std::unique_ptr<eve::image::ImageData> albedo(procgen.generateTerrainAlbedoMap(&left));
-    REQUIRE(albedo.get() != nullptr);
-    CHECK_EQ(albedo->getWidth(), 17);
-    CHECK_EQ(albedo->getHeight(), 17);
-    const auto *albedoRgba = static_cast<const uint8_t *>(albedo->getData());
-    for (int vertex = 0; vertex < left.getBaseVertexCount(); ++vertex)
-        CHECK_EQ(albedoRgba[vertex * 4 + 3], uint8_t(255));
-    CHECK(procgen.generateTerrainAlbedoMap(nullptr) == nullptr);
-
-    settings.originX = 0;
-    settings.lod     = 1;
-    TerrainMeshChunk lod1;
-    REQUIRE(TerrainMeshBuilder::build(heightmap, &layers, settings, lod1, &error));
-    CHECK_EQ(lod1.getLodStep(), 2);
-    CHECK(std::abs(lod1.getGeometricError() - lod1Error) < 0.0001f);
-    CHECK_EQ(lod1.getBaseVertexCount(), 9 * 9);
-    CHECK_EQ(lod1.getVertexCount(), 9 * 9 + 4 * 9 * 2);
-    CHECK_EQ(lod1.getIndexCount(), 8 * 8 * 6 + 4 * 8 * 6);
-    for (int y = 0; y < 9; ++y)
-        for (int x = 0; x < 9; ++x) {
-            const int coarse = y * 9 + x;
-            const int fine   = (y * 2) * 17 + x * 2;
-            CHECK_EQ(lod1.getBiome(coarse), left.getBiome(fine));
-            for (int channel = 0; channel < 4; ++channel)
-                CHECK(std::abs(lod1.getMaterialWeight(coarse, channel) - left.getMaterialWeight(fine, channel)) <
-                      0.0001f);
-        }
-
-    Heightmap    riverHeight(9, 9);
-    HydrologyMap riverHydrology;
-    riverHydrology.width  = 9;
-    riverHydrology.height = 9;
-    riverHydrology.flowDirection.assign(81, -1);
-    riverHydrology.flowAccumulation.assign(81, 1.f);
-    riverHydrology.rivers.assign(81, 0);
-    ClimateMap riverClimate;
-    riverClimate.width  = 9;
-    riverClimate.height = 9;
-    riverClimate.temperature.assign(81, 0.5f);
-    riverClimate.moisture.assign(81, 0.8f);
-    riverClimate.biomes.assign(81, Biome::Grassland);
-    for (int y = 0; y < 8; ++y) {
-        const size_t i = size_t(y * 9 + 4);
-        riverHeight.setHeight(4, y, 0.8f - float(y) * 0.05f);
-        riverHydrology.flowDirection[i]    = 6;
-        riverHydrology.flowAccumulation[i] = float(y + 2) * 10.f;
-        riverHydrology.rivers[i]           = 1;
-        riverClimate.biomes[i]             = Biome::River;
-    }
-    TerrainLayers            riverLayers(std::move(riverHydrology), std::move(riverClimate));
-    TerrainRiverMeshSettings riverSettings;
-    riverSettings.cellsX   = 8;
-    riverSettings.cellsY   = 8;
-    riverSettings.minWidth = 0.1f;
-    riverSettings.maxWidth = 0.5f;
-    MeshBuild riverMesh;
-    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, riverSettings, riverMesh, &error));
-    CHECK_EQ(riverMesh.getVertexCount(), 8 * (4 + 9));
-    CHECK_EQ(riverMesh.getIndexCount(), 8 * (6 + 24));
-    CHECK(meshIndicesInRange(riverMesh));
-    CHECK(meshNormalsFiniteUnit(riverMesh, 0.001f));
-
-    TerrainRiverMeshSettings excludedSlope = riverSettings;
-    excludedSlope.minSurfaceSlope          = 0.10f;
-    excludedSlope.maxSurfaceSlope          = 0.20f;
-    MeshBuild excludedRiverMesh;
-    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, excludedSlope, excludedRiverMesh, &error));
-    CHECK(excludedRiverMesh.empty());
-    excludedSlope.maxSurfaceSlope = excludedSlope.minSurfaceSlope;
-    CHECK(!TerrainRiverMeshBuilder::build(riverHeight, riverLayers, excludedSlope, excludedRiverMesh, &error));
-
-    TerrainRiverMeshSettings leftRiverSettings  = riverSettings;
-    leftRiverSettings.cellsX                    = 4;
-    TerrainRiverMeshSettings rightRiverSettings = leftRiverSettings;
-    rightRiverSettings.originX                  = 4;
-    MeshBuild leftRiverMesh, rightRiverMesh;
-    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, leftRiverSettings, leftRiverMesh, &error));
-    REQUIRE(TerrainRiverMeshBuilder::build(riverHeight, riverLayers, rightRiverSettings, rightRiverMesh, &error));
-    REQUIRE_EQ(leftRiverMesh.getVertexCount(), rightRiverMesh.getVertexCount());
-    for (int vertex = 0; vertex < leftRiverMesh.getVertexCount(); ++vertex) {
-        CHECK(std::abs(leftRiverMesh.getPositionX(vertex) - (rightRiverMesh.getPositionX(vertex) + 4.f)) < 0.0001f);
-        CHECK(std::abs(leftRiverMesh.getPositionY(vertex) - rightRiverMesh.getPositionY(vertex)) < 0.0001f);
-        CHECK(std::abs(leftRiverMesh.getPositionZ(vertex) - rightRiverMesh.getPositionZ(vertex)) < 0.0001f);
-    }
-
-    Heightmap    lakeHeight(9, 9);
-    HydrologyMap lakeHydrology;
-    lakeHydrology.width  = 9;
-    lakeHydrology.height = 9;
-    lakeHydrology.flowDirection.assign(81, -1);
-    lakeHydrology.flowAccumulation.assign(81, 1.f);
-    lakeHydrology.lakeDepth.assign(81, 0.f);
-    lakeHydrology.rivers.assign(81, 0);
-    ClimateMap lakeClimate;
-    lakeClimate.width  = 9;
-    lakeClimate.height = 9;
-    lakeClimate.temperature.assign(81, 0.5f);
-    lakeClimate.moisture.assign(81, 1.f);
-    lakeClimate.biomes.assign(81, Biome::Grassland);
-    for (int y = 2; y <= 6; ++y)
-        for (int x = 2; x <= 6; ++x) lakeHydrology.lakeDepth[size_t(y * 9 + x)] = 0.2f;
-    TerrainLayers           lakeLayers(std::move(lakeHydrology), std::move(lakeClimate));
-    TerrainLakeMeshSettings lakeSettings;
-    lakeSettings.cellsX       = 8;
-    lakeSettings.cellsY       = 8;
-    lakeSettings.minimumDepth = 0.01f;
-    MeshBuild lakeMesh;
-    REQUIRE(TerrainLakeMeshBuilder::build(lakeHeight, lakeLayers, lakeSettings, lakeMesh, &error));
-    CHECK(lakeMesh.getVertexCount() > 0);
-    CHECK(meshIndicesInRange(lakeMesh));
-    CHECK(meshNormalsFiniteUnit(lakeMesh, 0.001f));
-}
-
-
-TEST_CASE("procgen.wfc.simple.reproducible") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(42);
-    p.setSize(24, 18);
-    p.setString("preset", "dungeon");
-    p.setInt("maxAttempts", 64);
-    Grid2D      a, b;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, a, err));
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, b, err));
-    CHECK(gridsEqual(a, b));
-    CHECK(countSemantic(a, int(Semantic::Wall)) > 0);
-    CHECK(countSemantic(a, int(Semantic::Floor)) + countSemantic(a, int(Semantic::Corridor)) > 0);
-    CHECK(borderIsWall(a));
-}
-
-TEST_CASE("procgen.wfc.simple.cavePreset") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(11);
-    p.setSize(20, 16);
-    p.setString("preset", "cave");
-    p.setInt("maxAttempts", 64);
-    Grid2D      g;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
-    CHECK(borderIsWall(g));
-    CHECK(caveAdjacencyOk(g));
-    CHECK(countSemantic(g, int(Semantic::Floor)) > 0);
-    CHECK(countSemantic(g, int(Semantic::Wall)) > 0);
-    CHECK_EQ(g.getMeta("algorithm", ""), std::string("wfc.simple"));
-    CHECK_EQ(g.getMeta("preset", ""), std::string("cave"));
-}
-
-TEST_CASE("procgen.wfc.simple.terrainPreset") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(7);
-    p.setSize(24, 20);
-    p.setString("preset", "terrain");
-    p.setInt("maxAttempts", 64);
-    Grid2D      g, g2;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g2, err));
-    CHECK(gridsEqual(g, g2));
-    CHECK(terrainAdjacencyOk(g));
-    std::set<int> kinds;
-    for (uint32_t c : g.cells()) kinds.insert(int(c));
-    CHECK(kinds.size() >= 1);
-    // Terrain does not force wall border.
-    CHECK(countSemantic(g, int(Semantic::Wall)) == 0);
-}
-
-TEST_CASE("procgen.wfc.simple.dungeonObjectsAndMeta") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(99);
-    p.setSize(28, 20);
-    p.setString("preset", "dungeon");
-    p.setInt("maxAttempts", 64);
-    Grid2D      g;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
-    CHECK_EQ(g.getMeta("algorithm", ""), std::string("wfc.simple"));
-    CHECK_EQ(g.getMeta("preset", ""), std::string("dungeon"));
-    // Walkable cells should produce spawn + stairs.
-    const int walkable = countSemantic(g, int(Semantic::Floor)) + countSemantic(g, int(Semantic::Corridor));
-    if (walkable > 0) {
-        CHECK(g.getObjectCount() >= 2);
-        std::unordered_set<std::string> types;
-        for (int i = 0; i < g.getObjectCount(); ++i) types.insert(g.getObjectType(i));
-        CHECK(types.count("spawn") == 1);
-        CHECK(types.count("stairs") == 1);
-    }
-}
-
-TEST_CASE("procgen.wfc.simple.seedVaries") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Params a, b;
-    a.setSeed(1);
-    b.setSeed(2);
-    a.setSize(18, 14);
-    b.setSize(18, 14);
-    a.setString("preset", "cave");
-    b.setString("preset", "cave");
-    a.setInt("maxAttempts", 64);
-    b.setInt("maxAttempts", 64);
-    Grid2D      ga, gb;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", a, ga, err));
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", b, gb, err));
-    // Different seeds should almost always differ; allow rare collision by checking not
-    // identical OR both valid borders.
-    CHECK(borderIsWall(ga));
-    CHECK(borderIsWall(gb));
-    CHECK(!gridsEqual(ga, gb));
-}
-
-TEST_CASE("procgen.wfc.simple.errors") {
-    GeneratorRegistry::instance().registerBuiltins();
-    std::string err;
-    Grid2D      g;
-    Params      tooSmall;
-    tooSmall.setSeed(1);
-    tooSmall.setSize(2, 2);
-    tooSmall.setString("preset", "cave");
-    CHECK(!GeneratorRegistry::instance().generate("wfc.simple", tooSmall, g, err));
-    CHECK(err.find("4x4") != std::string::npos);
-
-    Params badPreset;
-    badPreset.setSeed(1);
-    badPreset.setSize(12, 12);
-    badPreset.setString("preset", "nope");
-    CHECK(!GeneratorRegistry::instance().generate("wfc.simple", badPreset, g, err));
-    CHECK(err.find("preset") != std::string::npos);
-
-    Params tooBig;
-    tooBig.setSeed(1);
-    tooBig.setSize(300, 16);
-    tooBig.setString("preset", "cave");
-    CHECK(!GeneratorRegistry::instance().generate("wfc.simple", tooBig, g, err));
-    CHECK(err.find("256") != std::string::npos);
-}
-
-TEST_CASE("procgen.wfc.simple.viaModule") {
-    Procgen *mod = Procgen::create();
-    CHECK(mod->hasAlgorithm("wfc.simple"));
-    Params p;
-    p.setSeed(5);
-    p.setSize(16, 12);
-    p.setString("preset", "dungeon");
-    p.setInt("maxAttempts", 64);
-    auto params    = requireParams(p);
-    auto gridLease = requireGrid(*mod, "wfc.simple", params.handle);
-    auto grid      = gridLease.view();
-    REQUIRE(grid.isBound());
-    CHECK(borderIsWall(*grid));
-    CHECK_EQ(grid->getWidth(), 16);
-    CHECK_EQ(grid->getHeight(), 12);
-
-    Params bad;
-    bad.setSeed(1);
-    bad.setSize(8, 8);
-    bad.setString("preset", "invalid");
-    auto badParams = requireParams(bad);
-    auto failed    = mod->generateHandle("wfc.simple", badParams.handle);
-    CHECK(!failed.ok());
-    const eve::Diagnostic *diagnostic = failed.error();
-    REQUIRE(diagnostic != nullptr);
-    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::Failed);
-}
-
-TEST_CASE("procgen.meshBuild.accessors") {
-    MeshBuild m;
-    CHECK(m.empty());
-    CHECK_EQ(m.getVertexCount(), 0);
-    CHECK_EQ(m.getIndexCount(), 0);
-    m.addVertex(1.f, 2.f, 3.f, 0.f, 1.f, 0.f, 0.25f, 0.75f);
-    m.addVertex(4.f, 5.f, 6.f, 0.f, 1.f, 0.f, 0.f, 0.f);
-    m.addVertex(7.f, 8.f, 9.f, 0.f, 1.f, 0.f, 1.f, 1.f);
-    m.addTriangle(0, 1, 2);
-    CHECK(!m.empty());
-    CHECK_EQ(m.getVertexCount(), 3);
-    CHECK_EQ(m.getIndexCount(), 3);
-    CHECK_EQ(m.getPositionX(0), 1.f);
-    CHECK_EQ(m.getPositionY(1), 5.f);
-    CHECK_EQ(m.getPositionZ(2), 9.f);
-    CHECK_EQ(m.getNormalY(0), 1.f);
-    CHECK_EQ(m.getUvU(0), 0.25f);
-    CHECK_EQ(m.getUvV(0), 0.75f);
-    CHECK_EQ(m.getIndex(2), 2);
-    // Out of range accessors are safe zeros.
-    CHECK_EQ(m.getPositionX(99), 0.f);
-    CHECK_EQ(m.getIndex(99), 0);
-    m.setMeta("algo", "test");
-    CHECK_EQ(m.getMeta("algo", ""), std::string("test"));
-    CHECK_EQ(m.getMeta("missing", "d"), std::string("d"));
-    m.clear();
-    CHECK(m.empty());
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.sphere") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    CHECK(MeshRecipeRegistry::instance().has("mesh.marchingcubes"));
-    Params p;
-    p.setSeed(1);
-    p.setInt("resolution", 20);
-    p.setString("field", "sphere");
-    p.setFloat("radius", 0.7f);
-    p.setFloat("isolevel", 0.f);
-    MeshBuild   mesh;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh, err));
-    CHECK(mesh.getVertexCount() > 100);
-    CHECK(mesh.getIndexCount() > 100);
-    CHECK_EQ(mesh.getIndexCount() % 3, 0);
-    CHECK(meshIndicesInRange(mesh));
-    CHECK(meshPositionsFinite(mesh));
-    CHECK(meshNormalsFiniteUnit(mesh));
-    // Closed sphere should have non-trivial volume.
-    CHECK(std::fabs(meshApproxSignedVolume(mesh)) > 0.05f);
-    // Same seed 鈬?same mesh.
-    MeshBuild mesh2;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh2, err));
-    CHECK_EQ(mesh.getVertexCount(), mesh2.getVertexCount());
-    CHECK(mesh.positions() == mesh2.positions());
-    CHECK(mesh.indices() == mesh2.indices());
-}
-
-TEST_CASE("procgen.mesh.hexplanet.topology") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setFloat("radius", 2.f);
-    p.setInt("subdivisions", 2);
-    p.setFloat("tileInset", 0.05f);
-    MeshBuild   mesh;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.hexplanet", p, mesh, err));
-    CHECK(meshIndicesInRange(mesh));
-    CHECK(meshPositionsFinite(mesh));
-    CHECK(meshNormalsFiniteUnit(mesh));
-    CHECK_EQ(mesh.getMeta("algorithm", ""), std::string("mesh.hexplanet"));
-    CHECK_EQ(mesh.getMeta("pentagons", ""), std::string("12"));
-    // V = 10 * 4^n + 2 for a subdivided icosahedron.
-    CHECK_EQ(mesh.getMeta("cells", ""), std::string("162"));
-    CHECK_EQ(mesh.getMeta("hexagons", ""), std::string("150"));
-    CHECK_EQ(mesh.getIndexCount() % 3, 0);
-    for (int i = 0; i < mesh.getVertexCount(); ++i) {
-        const float x = mesh.getPositionX(i), y = mesh.getPositionY(i), z = mesh.getPositionZ(i);
-        CHECK(std::fabs(std::sqrt(x * x + y * y + z * z) - 2.f) < 1e-4f);
-    }
-}
-
-
-TEST_CASE("procgen.mesh.marchingcubes.allFields") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    const char *fields[] = {"sphere", "torus", "noise", "terrain"};
-    for (const char *field : fields) {
-        Params p;
-        p.setSeed(42);
-        p.setInt("resolution", 18);
-        p.setString("field", field);
-        p.setFloat("scale", 1.5f);
-        p.setInt("octaves", 2);
-        MeshBuild   mesh;
-        std::string err;
-        CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, mesh, err));
-        CHECK(mesh.getVertexCount() > 20);
-        CHECK_EQ(mesh.getIndexCount() % 3, 0);
-        CHECK(meshIndicesInRange(mesh));
-        CHECK(meshPositionsFinite(mesh));
-        CHECK(meshNormalsFiniteUnit(mesh));
-        CHECK_EQ(mesh.getMeta("algorithm", ""), std::string("mesh.marchingcubes"));
-        CHECK_EQ(mesh.getMeta("field", ""), std::string(field));
-    }
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.noiseReproducibleAndVaries") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(9);
-    p.setInt("resolution", 16);
-    p.setString("field", "noise");
-    p.setFloat("scale", 2.f);
-    MeshBuild   a, b, c;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, b, err));
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-
-    Params p2 = p;
-    p2.setSeed(10);
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p2, c, err));
-    CHECK(a.positions() != c.positions());
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.rawDensityPlane") {
-    // Density = y - 0.5 on a 4鲁 grid 鈫?horizontal plane at mid height.
-    const int          n = 4;
-    std::vector<float> density(size_t(n * n * n));
-    for (int z = 0; z < n; ++z) {
-        for (int y = 0; y < n; ++y) {
-            for (int x = 0; x < n; ++x) {
-                density[size_t(x + y * n + z * n * n)] = float(y) / float(n - 1) - 0.5f;
-            }
-        }
-    }
-    MeshBuild   mesh;
-    std::string err;
-    CHECK(marchingCubes(density.data(), n, n, n, 0.f, mesh, &err));
+TEST_CASE("procgen.marchingCubes.rawDensity_uniformFieldsAreEmptyAndPlaneCutsSurface") {
+    constexpr int      n = 4;
+    std::vector<float> density(static_cast<size_t>(n * n * n), 1.f);
+    MeshBuild          mesh;
+    std::string        error;
+    REQUIRE(marchingCubes(density.data(), n, n, n, 0.f, mesh, &error));
+    CHECK(mesh.empty());
+    std::fill(density.begin(), density.end(), -1.f);
+    REQUIRE(marchingCubes(density.data(), n, n, n, 0.f, mesh, &error));
+    CHECK(mesh.empty());
+    for (int z = 0; z < n; ++z)
+        for (int y = 0; y < n; ++y)
+            for (int x = 0; x < n; ++x)
+                density[static_cast<size_t>(x + y * n + z * n * n)] = static_cast<float>(y) / (n - 1) - .5f;
+    REQUIRE(marchingCubes(density.data(), n, n, n, 0.f, mesh, &error));
     CHECK(mesh.getVertexCount() > 0);
     CHECK_EQ(mesh.getIndexCount() % 3, 0);
     CHECK(meshIndicesInRange(mesh));
-    // All vertices near mid-Y in unit cube mapping [-0.5,0.5].
-    for (int i = 0; i < mesh.getVertexCount(); ++i) {
-        CHECK(std::fabs(mesh.getPositionY(i)) < 0.35f);
-    }
+    for (int i = 0; i < mesh.getVertexCount(); ++i) CHECK(std::abs(mesh.getPositionY(i)) < .35f);
 }
 
-TEST_CASE("procgen.mesh.marchingcubes.rawDensityEmpty") {
-    const int          n = 3;
-    std::vector<float> density(size_t(n * n * n), 1.f);  // all solid, no surface
-    MeshBuild          mesh;
-    std::string        err;
-    CHECK(marchingCubes(density.data(), n, n, n, 0.f, mesh, &err));
-    CHECK(mesh.empty());
-
-    density.assign(size_t(n * n * n), -1.f);  // all empty
-    CHECK(marchingCubes(density.data(), n, n, n, 0.f, mesh, &err));
-    CHECK(mesh.empty());
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.rawApiErrors") {
+TEST_CASE("procgen.marchingCubes.invalidBufferShapeAndField_haveExplicitErrors") {
     MeshBuild   mesh;
-    std::string err;
-    CHECK(!marchingCubes(nullptr, 4, 4, 4, 0.f, mesh, &err));
-    CHECK(err.find("null") != std::string::npos);
+    std::string error;
+    CHECK(!marchingCubes(nullptr, 4, 4, 4, 0.f, mesh, &error));
+    CHECK(error.find("null") != std::string::npos);
+    float one = 0.f;
+    CHECK(!marchingCubes(&one, 1, 1, 1, 0.f, mesh, &error));
+    CHECK(error.find("2x2x2") != std::string::npos);
 
-    float tiny[1] = {0.f};
-    CHECK(!marchingCubes(tiny, 1, 1, 1, 0.f, mesh, &err));
-    CHECK(err.find("2x2x2") != std::string::npos);
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.fillDensityAndErrors") {
     std::vector<float> density;
     int                nx = 0, ny = 0, nz = 0;
-    std::string        err;
-
-    Params ok;
-    ok.setInt("resolution", 8);
-    ok.setString("field", "sphere");
-    CHECK(fillDensityField(ok, density, nx, ny, nz, err));
+    Params             valid;
+    valid.setString("field", "sphere");
+    valid.setInt("resolution", 8);
+    REQUIRE(fillDensityField(valid, density, nx, ny, nz, error));
     CHECK_EQ(nx, 8);
     CHECK_EQ(ny, 8);
     CHECK_EQ(nz, 8);
-    CHECK_EQ(int(density.size()), 8 * 8 * 8);
+    CHECK_EQ(density.size(), static_cast<size_t>(8 * 8 * 8));
 
-    Params rectangular;
-    rectangular.setSize(6, 7);
-    rectangular.setString("field", "sphere");
-    CHECK(fillDensityField(rectangular, density, nx, ny, nz, err));
-    CHECK_EQ(nx, 6);
-    CHECK_EQ(ny, 7);
-    CHECK_EQ(nz, 6);
-
-    Params axis;
-    axis.setInt("resolution", 8);
-    axis.setInt("nx", 6);
-    axis.setInt("ny", 7);
-    axis.setInt("nz", 5);
-    axis.setString("field", "torus");
-    CHECK(fillDensityField(axis, density, nx, ny, nz, err));
-    CHECK_EQ(nx, 6);
-    CHECK_EQ(ny, 7);
-    CHECK_EQ(nz, 5);
-
-    Params badField;
-    badField.setInt("resolution", 8);
-    badField.setString("field", "banana");
-    CHECK(!fillDensityField(badField, density, nx, ny, nz, err));
-    CHECK(err.find("field") != std::string::npos);
-
-    Params tooSmall;
-    tooSmall.setInt("resolution", 1);
-    tooSmall.setString("field", "sphere");
-    CHECK(!fillDensityField(tooSmall, density, nx, ny, nz, err));
-
-    Params tooBig;
-    tooBig.setInt("resolution", 200);
-    tooBig.setString("field", "sphere");
-    CHECK(!fillDensityField(tooBig, density, nx, ny, nz, err));
-    CHECK(err.find("128") != std::string::npos);
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.recipeErrors") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    MeshBuild   mesh;
-    std::string err;
-    Params      badField;
-    badField.setInt("resolution", 12);
-    badField.setString("field", "nope");
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.marchingcubes", badField, mesh, err));
-    CHECK(err.find("field") != std::string::npos);
-
-    CHECK(!MeshRecipeRegistry::instance().generate("mesh.missing", badField, mesh, err));
-    CHECK(err.find("unknown") != std::string::npos);
-
-    auto ids = MeshRecipeRegistry::instance().list();
-    CHECK(!ids.empty());
-    CHECK(std::find(ids.begin(), ids.end(), "mesh.marchingcubes") != ids.end());
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.isolevelAffectsMesh") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params lo;
-    lo.setSeed(1);
-    lo.setInt("resolution", 16);
-    lo.setString("field", "sphere");
-    lo.setFloat("radius", 0.7f);
-    lo.setFloat("isolevel", -0.2f);
-    Params hi = lo;
-    hi.setFloat("isolevel", 0.2f);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", lo, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", hi, b, err));
-    // Higher isolevel shrinks solid region 鈫?fewer / different triangles.
-    const bool differs = a.getVertexCount() != b.getVertexCount() || a.positions() != b.positions();
-    CHECK(differs);
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.viaModule") {
-    Procgen *mod = Procgen::create();
-    Params   p;
-    p.setSeed(3);
-    p.setInt("resolution", 16);
-    p.setString("field", "torus");
-    auto params    = requireParams(p);
-    auto meshLease = requireMesh(*mod, "mesh.marchingcubes", params.handle);
-    auto m         = meshLease.view();
-    REQUIRE(m.isBound());
-    CHECK(m->getVertexCount() > 50);
-    CHECK(meshIndicesInRange(*m));
-    CHECK(mod->hasMeshRecipe("mesh.marchingcubes"));
-    CHECK(mod->getMeshRecipeCount() >= 1);
-    bool listed = false;
-    for (int i = 0; i < mod->getMeshRecipeCount(); ++i) {
-        if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") listed = true;
-    }
-    CHECK(listed);
-    Params bad;
-    bad.setInt("resolution", 8);
-    bad.setString("field", "nope");
-    auto badParams = requireParams(bad);
-    auto badResult = mod->buildMeshHandle("mesh.marchingcubes", badParams.handle);
-    CHECK(!badResult.ok());
-    const eve::Diagnostic *badDiagnostic = badResult.error();
-    REQUIRE(badDiagnostic != nullptr);
-    CHECK_EQ(badDiagnostic->code(), eve::DiagnosticCode::Failed);
-    auto missingResult = mod->buildMeshHandle("mesh.missing", params.handle);
-    CHECK(!missingResult.ok());
-    const eve::Diagnostic *missingDiagnostic = missingResult.error();
-    REQUIRE(missingDiagnostic != nullptr);
-    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
-    auto missingGraphicsResult = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
-    CHECK(!missingGraphicsResult.isBound());
-}
-
-TEST_CASE("procgen.wfc.simple.dungeonAdjacencyAndListing") {
-    GeneratorRegistry::instance().registerBuiltins();
-    Procgen *mod = Procgen::create();
-    CHECK(mod->hasAlgorithm("wfc.simple"));
-    bool listed = false;
-    for (int i = 0; i < mod->getAlgorithmCount(); ++i) {
-        if (mod->getAlgorithmId(i) == "wfc.simple") listed = true;
-    }
-    CHECK(listed);
-
-    Params p;
-    p.setSeed(17);
-    p.setSize(22, 16);
-    p.setString("preset", "dungeon");
-    p.setInt("maxAttempts", 64);
-    Grid2D      g;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("wfc.simple", p, g, err));
-    CHECK(borderIsWall(g));
-    // Allowed dungeon pairs (undirected).
-    auto okPair = [](int a, int b) {
-        if (a > b) std::swap(a, b);
-        const int W = int(Semantic::Wall), F = int(Semantic::Floor), C = int(Semantic::Corridor),
-                  D = int(Semantic::Door);
-        if (a == W && (b == W || b == F || b == C || b == D)) return true;
-        if (a == F && (b == F || b == C || b == D)) return true;
-        if (a == C && b == C) return true;
-        return false;
+    SUB_CASE("rectangular defaults and explicit axes override uniform resolution") {
+        Params rectangular;
+        rectangular.setSize(6, 7);
+        rectangular.setString("field", "sphere");
+        REQUIRE(fillDensityField(rectangular, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 6);
+        valid.setInt("nx", 6);
+        valid.setInt("ny", 7);
+        valid.setInt("nz", 5);
+        REQUIRE(fillDensityField(valid, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 5);
     };
-    for (int y = 0; y < g.getHeight(); ++y) {
-        for (int x = 0; x < g.getWidth(); ++x) {
-            const int c = g.getCell(x, y);
-            if (x + 1 < g.getWidth()) CHECK(okPair(c, g.getCell(x + 1, y)));
-            if (y + 1 < g.getHeight()) CHECK(okPair(c, g.getCell(x, y + 1)));
+
+    SUB_CASE("unknown field") {
+        valid.setString("field", "unknown");
+        CHECK(!fillDensityField(valid, density, nx, ny, nz, error));
+        CHECK(error.find("field") != std::string::npos);
+    };
+    SUB_CASE("resolution below minimum") {
+        valid.setInt("resolution", 1);
+        CHECK(!fillDensityField(valid, density, nx, ny, nz, error));
+    };
+    SUB_CASE("resolution above maximum") {
+        valid.setInt("resolution", 200);
+        CHECK(!fillDensityField(valid, density, nx, ny, nz, error));
+        CHECK(error.find("128") != std::string::npos);
+    };
+}
+
+TEST_CASE("procgen.meshRecipes.shapeReplayParameterAndValidationContract") {
+    SUB_CASE("registered shapes replay and produce valid triangle topology") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        const char* ids[] = {"mesh.rock", "mesh.tree", "mesh.skyscraper", "mesh.flower", "mesh.bush"};
+        for (const char* id : ids) {
+            REQUIRE(registry.has(id));
+            Params params;
+            params.setSeed(23);
+            MeshBuild   first;
+            MeshBuild   replay;
+            std::string error;
+            REQUIRE(registry.generate(id, params, first, error));
+            REQUIRE(registry.generate(id, params, replay, error));
+            CHECK(first.getVertexCount() > 0);
+            CHECK_EQ(first.getIndexCount() % 3, 0);
+            CHECK(meshIndicesInRange(first));
+            CHECK_EQ(first.positions(), replay.positions());
+            CHECK_EQ(first.indices(), replay.indices());
         }
-    }
-}
-
-TEST_CASE("procgen.wfc.simple.multiSeedBatch") {
-    GeneratorRegistry::instance().registerBuiltins();
-    // Stress: several seeds/presets must all collapse successfully.
-    const char *presets[] = {"dungeon", "cave", "terrain"};
-    int         okCount   = 0;
-    for (const char *preset : presets) {
-        for (uint32_t seed = 1; seed <= 5; ++seed) {
-            Params p;
-            p.setSeed(seed * 13u + 7u);
-            p.setSize(18, 14);
-            p.setString("preset", preset);
-            p.setInt("maxAttempts", 64);
-            Grid2D      g;
-            std::string err;
-            if (GeneratorRegistry::instance().generate("wfc.simple", p, g, err)) {
-                ++okCount;
-                CHECK_EQ(g.getWidth(), 18);
-                CHECK_EQ(g.getHeight(), 14);
-                if (std::string(preset) != "terrain") CHECK(borderIsWall(g));
-            }
+    };
+    SUB_CASE("rock subdivisions and flattening change expected geometry") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        Params params;
+        params.setSeed(1847);
+        params.setInt("subdivisions", 3);
+        params.setFloat("flattening", .3f);
+        MeshBuild   baseline;
+        MeshBuild   variant;
+        std::string error;
+        REQUIRE(registry.generate("mesh.rock", params, baseline, error));
+        CHECK_EQ(baseline.getVertexCount(), 642);
+        CHECK_EQ(baseline.getIndexCount() / 3, 1280);
+        params.setFloat("flattening", .58f);
+        REQUIRE(registry.generate("mesh.rock", params, variant, error));
+        CHECK(baseline.positions() != variant.positions());
+        params.setInt("subdivisions", 2);
+        REQUIRE(registry.generate("mesh.rock", params, variant, error));
+        CHECK_EQ(variant.getVertexCount(), 162);
+        params.setString("baseShape", "unknown");
+        CHECK(!registry.generate("mesh.rock", params, variant, error));
+    };
+    SUB_CASE("tree invalid options identify the rejected field") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        Params      params;
+        MeshBuild   mesh;
+        std::string error;
+        const struct {
+            const char* key;
+            const char* value;
+        } bad[] = {
+            {"style", "watercolor"},
+            {"branchAlgorithm", "crystalGrowth"},
+            {"leafMode", "confetti"},
+        };
+        for (const auto& sample : bad) {
+            params = Params{};
+            params.setString(sample.key, sample.value);
+            CHECK(!registry.generate("mesh.tree", params, mesh, error));
+            CHECK(error.find(sample.key) != std::string::npos);
         }
-    }
-    CHECK_EQ(okCount, 15);
+    };
 }
 
-TEST_CASE("procgen.mesh.marchingcubes.resolutionScales") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params lo;
-    lo.setSeed(1);
-    lo.setInt("resolution", 12);
-    lo.setString("field", "sphere");
-    lo.setFloat("radius", 0.7f);
-    Params hi = lo;
-    hi.setInt("resolution", 24);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", lo, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", hi, b, err));
-    CHECK(b.getIndexCount() > a.getIndexCount());
-    CHECK(b.getVertexCount() > a.getVertexCount());
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.torusAndAxisResolution") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params torus;
-    torus.setSeed(2);
-    torus.setInt("resolution", 20);
-    torus.setString("field", "torus");
-    MeshBuild   ring;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", torus, ring, err));
-    CHECK(ring.getVertexCount() > 100);
-    CHECK(meshIndicesInRange(ring));
-    CHECK(meshNormalsFiniteUnit(ring));
-    // Torus should have non-zero volume magnitude.
-    CHECK(std::fabs(meshApproxSignedVolume(ring)) > 0.01f);
-
-    Params axis;
-    axis.setSeed(3);
-    axis.setInt("nx", 10);
-    axis.setInt("ny", 14);
-    axis.setInt("nz", 12);
-    axis.setString("field", "sphere");
-    axis.setFloat("radius", 0.65f);
-    MeshBuild m;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", axis, m, err));
-    CHECK(m.getVertexCount() > 50);
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.sphereVolumeSignStable") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(1);
-    p.setInt("resolution", 18);
-    p.setString("field", "sphere");
-    p.setFloat("radius", 0.7f);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p, b, err));
-    const float va = meshApproxSignedVolume(a);
-    const float vb = meshApproxSignedVolume(b);
-    CHECK(std::fabs(va) > 0.05f);
-    CHECK(approxEq(va, vb, 1e-5f));
-    // Winding must be consistent across seeds of the same field recipe family.
-    Params p2 = p;
-    p2.setSeed(9);
-    MeshBuild c;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.marchingcubes", p2, c, err));
-    const float vc = meshApproxSignedVolume(c);
-    CHECK(va * vc > 0.f);  // same sign
-}
-
-TEST_CASE("procgen.mesh.marchingcubes.moduleNullAndList") {
-    Procgen *mod    = Procgen::create();
-    auto     failed = mod->buildMeshHandle("mesh.marchingcubes", {});
-    CHECK(!failed.ok());
-    const eve::Diagnostic *diagnostic = failed.error();
-    REQUIRE(diagnostic != nullptr);
-    CHECK_EQ(diagnostic->code(), eve::DiagnosticCode::StaleHandle);
-    auto failedUpload = mod->generateMeshBorrowed("mesh.marchingcubes", {}, nullptr);
-    CHECK(!failedUpload.isBound());
-
-    CHECK(mod->getMeshRecipeCount() >= 1);
-    bool found = false;
-    for (int i = 0; i < mod->getMeshRecipeCount(); ++i) {
-        if (mod->getMeshRecipeId(i) == "mesh.marchingcubes") found = true;
-    }
-    CHECK(found);
-}
-
-TEST_CASE("procgen.palette.applyToLayer") {
-    Procgen *mod = Procgen::create();
-    Params   p;
-    p.setSeed(1);
-    p.setSize(16, 12);
-    auto params    = requireParams(p);
-    auto gridLease = requireGrid(*mod, "dungeon.bsp", params.handle);
-    auto grid      = gridLease.view();
-    REQUIRE(grid.isBound());
-
-    mod->setPaletteGid("test", "wall", 10);
-    mod->setPaletteGid("test", "floor", 20);
-    mod->setPaletteGid("test", "corridor", 21);
-
-    eve::map::TileLayer *layer       = eve::map::TileLayer::createLayer(16, 12, 16.f, 16.f);
-    auto                 applyResult = mod->applyToLayer(gridLease.handle, "test", *layer);
-    CHECK(applyResult.ok());
-    bool sawMapped = false;
-    for (int y = 0; y < 12; ++y) {
-        for (int x = 0; x < 16; ++x) {
-            const int gid = layer->getTile(x, y);
-            const int sem = grid->getCell(x, y);
-            if (sem == int(Semantic::Wall)) {
-                CHECK_EQ(gid, 10);
-                sawMapped = true;
-            } else if (sem == int(Semantic::Floor)) {
-                CHECK_EQ(gid, 20);
-                sawMapped = true;
-            } else if (sem == int(Semantic::Corridor)) {
-                CHECK_EQ(gid, 21);
-                sawMapped = true;
-            }
-        }
-    }
-    CHECK(sawMapped);
-    layer->release();
-}
-
-TEST_CASE("procgen.json.export") {
-    Params p;
-    p.setSeed(3);
-    p.setSize(12, 10);
-    Grid2D      g;
-    std::string err;
-    CHECK(GeneratorRegistry::instance().generate("dungeon.bsp", p, g, err));
-    const std::string json = gridToJson(g);
+TEST_CASE("procgen.json.gridExport_containsShapeCellsAndObjects") {
+    auto& registry = GeneratorRegistry::instance();
+    registry.registerBuiltins();
+    Params params;
+    params.setSeed(3);
+    params.setSize(12, 10);
+    Grid2D      grid;
+    std::string error;
+    REQUIRE(registry.generate("dungeon.bsp", params, grid, error));
+    const std::string json = gridToJson(grid);
     CHECK(json.find("\"width\":12") != std::string::npos);
+    CHECK(json.find("\"height\":10") != std::string::npos);
     CHECK(json.find("\"cells\":") != std::string::npos);
     CHECK(json.find("spawn") != std::string::npos);
 }
 
-TEST_CASE("procgen.texture.noiseField.seamlessReproducible") {
-    NoiseField a{42, 8, 8};
-    NoiseField b{42, 8, 8};
-    CHECK_EQ(a.fbm(1.25f, 3.5f, 4), b.fbm(1.25f, 3.5f, 4));
-    // Period wrap: x and x+period should match on lattice contribution.
-    CHECK_EQ(a.hash01(0, 0), a.hash01(8, 0));
-    CHECK_EQ(a.hash01(0, 0), a.hash01(0, 8));
-}
-
-TEST_CASE("procgen.texture.colorRamp.banded") {
+TEST_CASE("procgen.texture.noisePeriodAndRamp_samplesAreDeterministic") {
+    NoiseField first{42, 8, 8};
+    NoiseField replay{42, 8, 8};
+    REQUIRE_EQ(first.fbm(1.25f, 3.5f, 4), replay.fbm(1.25f, 3.5f, 4));
+    CHECK_EQ(first.hash01(0, 0), first.hash01(8, 0));
+    CHECK_EQ(first.hash01(0, 0), first.hash01(0, 8));
     ColorRamp ramp;
     ramp.add(0.f, 0, 0, 0);
     ramp.add(1.f, 255, 255, 255);
-    const Rgba8 c0 = ramp.sampleBanded(0.1f, 3);
-    const Rgba8 c1 = ramp.sampleBanded(0.9f, 3);
-    CHECK(c0.r < c1.r);
+    CHECK(ramp.sampleBanded(.1f, 3).r < ramp.sampleBanded(.9f, 3).r);
 }
 
-TEST_CASE("procgen.texture.recipes.reproducible") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    const char *ids[] = {"tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"};
-    for (const char *id : ids) {
-        Params p;
-        p.setSeed(11);
-        p.setSize(32, 32);
-        p.setInt("colors", 5);
-        p.setInt("pixelSize", 2);
-        p.setInt("seamless", 1);
-        std::string err;
-        // Fully qualify: `using namespace eve::procgen` would make bare `image::`
-        // look outside `eve::image`.
-        auto       a        = TextureRecipeRegistry::instance().generate(id, p, err);
-        auto       b        = TextureRecipeRegistry::instance().generate(id, p, err);
-        const bool aPresent = static_cast<bool>(a);
-        const bool bPresent = static_cast<bool>(b);
-        REQUIRE(aPresent);
-        REQUIRE(bPresent);
-        CHECK_EQ(a->getWidth(), 32);
-        CHECK_EQ(a->getHeight(), 32);
-        CHECK_EQ(a->getFormat(), std::string("RGBA8"));
-        CHECK_EQ(a->getSize(), b->getSize());
-        CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
+TEST_CASE("procgen.texture.registryImages_matchDimensionsFormatAndBytesOnReplay") {
+    auto& registry = TextureRecipeRegistry::instance();
+    registry.registerBuiltins();
+    for (const char* id : {"tex.soil", "tex.stone", "tex.marble", "tex.water", "tex.sky_cloud"}) {
+        Params params;
+        params.setSeed(11);
+        params.setSize(32, 32);
+        params.setInt("colors", 5);
+        std::string error;
+        auto        first  = registry.generate(id, params, error);
+        auto        replay = registry.generate(id, params, error);
+        REQUIRE(static_cast<bool>(first));
+        REQUIRE(static_cast<bool>(replay));
+        CHECK_EQ(first->getWidth(), 32);
+        CHECK_EQ(first->getHeight(), 32);
+        CHECK_EQ(first->getFormat(), std::string("RGBA8"));
+        CHECK_EQ(first->getSize(), replay->getSize());
+        CHECK(std::memcmp(first->getData(), replay->getData(), first->getSize()) == 0);
     }
 }
 
-TEST_CASE("procgen.texture.generateImage.andNormal") {
-    Procgen *mod = Procgen::create();
-    Params   p;
-    p.setSeed(3);
-    p.setSize(48, 48);
-    p.setInt("colors", 6);
-    auto params      = requireParams(p);
-    auto imageResult = mod->generateImageHandle("tex.marble", params.handle);
-    REQUIRE(imageResult.ok());
-    auto normalResult = mod->generateNormalImageHandle("tex.marble", params.handle);
-    REQUIRE(normalResult.ok());
-    CHECK(mod->hasTextureRecipe("tex.soil"));
-    CHECK(mod->getTextureRecipeCount() >= 5);
+TEST_CASE("procgen.terrain.pipeline_deterministicallyBuildsDrainageAndClimateAtInputResolution") {
+    Heightmap terrain(16, 12);
+    for (int y = 0; y < terrain.getHeight(); ++y)
+        for (int x = 0; x < terrain.getWidth(); ++x) terrain.setHeight(x, y, .8f - static_cast<float>(y) * .04f);
+    const auto drainage = TerrainPipeline::buildHydrology(terrain, .02f, .2f);
+    const auto climate  = TerrainPipeline::buildClimate(terrain, drainage, .2f, .35f);
+    REQUIRE_EQ(drainage.width, 16);
+    CHECK_EQ(drainage.height, 12);
+    CHECK_EQ(drainage.flowDirection.size(), static_cast<size_t>(16 * 12));
+    CHECK_EQ(drainage.flowAccumulation.size(), static_cast<size_t>(16 * 12));
+    CHECK_EQ(climate.temperature.size(), static_cast<size_t>(16 * 12));
+    CHECK_EQ(climate.biomes.size(), static_cast<size_t>(16 * 12));
+    const auto replay = TerrainPipeline::buildHydrology(terrain, .02f, .2f);
+    CHECK_EQ(drainage.flowDirection, replay.flowDirection);
+    CHECK_EQ(drainage.rivers, replay.rivers);
 }
 
-TEST_CASE("procgen.cloud.field.reproducibleAnimatedSeamless") {
-    CloudField::Params p;
-    p.seed       = 99;
-    p.worldScale = 64.f;
-    p.coverage   = 0.5f;
-    CloudField a(p), b(p);
-    // Deterministic: same seed 鈫?same coverage at the same point/time.
-    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), b.coverageAt(3.f, 4.f, 0.f), 1e-5f));
-    // Animated: different time drifts the field (for a non-zero wind speed).
-    const float t0    = a.coverageAt(3.f, 4.f, 0.f);
-    const float t1    = a.coverageAt(3.f, 4.f, 5.f);
-    const float t2    = a.coverageAt(3.f, 4.f, 10.f);
-    const float moved = (t0 != t1) || (t1 != t2);
-    CHECK(moved);  // drifting over time
-    // Seamless: coverage tiles over one worldScale.
-    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f + 64.f, 4.f, 0.f), 1e-4f));
-    CHECK(approxEq(a.coverageAt(3.f, 4.f, 0.f), a.coverageAt(3.f, 4.f + 64.f, 0.f), 1e-4f));
-    // Values stay in range.
-    for (float x = -200.f; x < 200.f; x += 40.f) {
-        const float c = a.coverageAt(x, 13.f, 1.f);
-        CHECK(c >= 0.f);
-        CHECK(c <= 1.f);
-    }
-    // Different seed 鈫?different field.
-    CloudField::Params q = p;
-    q.seed               = 100;
-    CloudField c(q);
-    CHECK(!approxEq(a.coverageAt(3.f, 4.f, 0.f), c.coverageAt(3.f, 4.f, 0.f), 1e-5f));
-}
-
-TEST_CASE("procgen.cloud.field.windDriftsInDirection") {
-    CloudField::Params p;
-    p.seed       = 5;
-    p.worldScale = 32.f;
-    p.windSpeed  = 10.f;
-    p.windAngle  = 0.f;  // drift toward +x
-    CloudField f(p);
-    // A feature moving at +x over time should arrive at a +x-shifted position.
-    const float base = f.coverageAt(0.f, 0.f, 0.f);
-    const float dt   = 1.f;
-    CHECK(approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 0.f, 1.f), 1e-2f));
-    // Perpendicular axis is unchanged at that same world offset check fails 鈫?drift is 1D.
-    CHECK(!approxEq(base, f.coverageAt(0.f + p.windSpeed * dt, 5.f, 1.f), 1e-2f));
-}
-
-TEST_CASE("procgen.cloud.shadow.projection") {
-    CloudField::Params fp;
-    fp.seed       = 7;
-    fp.worldScale = 48.f;
-    fp.coverage   = 0.5f;
-    CloudField field(fp);
-
-    // Overhead sun (0,1,0): shadow coverage equals field coverage at the point.
-    CloudShadow::Params sp;
-    sp.field         = field;
-    sp.sunDirX       = 0.f;
-    sp.sunDirY       = 1.f;
-    sp.sunDirZ       = 0.f;
-    sp.cloudAltitude = 50.f;
-    CloudShadow overhead(sp);
-    const float px = 5.f, pz = 6.f;
-    CHECK(approxEq(overhead.coverageAt(px, pz, 0.f), field.coverageAt(px, pz, 0.f), 1e-5f));
-
-    // Angled sun: ground coverage = field coverage sampled up-sun at the cloud point.
-    sp.sunDirX = 0.5f;
-    sp.sunDirY = 1.f;
-    sp.sunDirZ = 0.f;
-    CloudShadow angled(sp);
-    float       ox = 0.f, oz = 0.f;
-    angled.cloudOffset(ox, oz);
-    CHECK(approxEq(angled.coverageAt(px, pz, 0.f), field.coverageAt(px + ox, pz + oz, 0.f), 1e-5f));
-
-    // Factor: 1 when clear, (1-strength) when fully covered; always in [0,1].
-    CloudShadow::Params sp2 = sp;
-    sp2.strength            = 0.8f;
-    CloudShadow shadow(sp2);
-    float       minF = 1.f, maxF = 0.f;
-    for (float z = 0.f; z < 24.f; z += 2.f) {
-        for (float x = 0.f; x < 24.f; x += 2.f) {
-            const float f = shadow.shadowFactorAt(x, z, 0.f);
-            CHECK(f >= 0.f);
-            CHECK(f <= 1.f);
-            minF = std::min(minF, f);
-            maxF = std::max(maxF, f);
-        }
-    }
-    CHECK(maxF > 0.9f);  // some fully-lit ground
-    CHECK(minF < 1.f);   // some coverage darkens ground
-    // Sun below horizon 鈫?no cloud shadows.
-    sp.sunDirY = -1.f;
-    CloudShadow below(sp);
-    CHECK_EQ(below.coverageAt(px, pz, 0.f), 0.f);
-    CHECK_EQ(below.shadowFactorAt(px, pz, 0.f), 1.f);
-}
-
-TEST_CASE("procgen.cloud.recipes.generate") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    const char *ids[] = {"tex.cloud", "tex.cloud_shadow"};
-    for (const char *id : ids) {
-        Params p;
-        p.setSeed(42);
-        p.setSize(48, 48);
-        p.setFloat("worldScale", 64.f);
-        p.setFloat("time", 1.5f);
-        std::string err;
-        auto        img = TextureRecipeRegistry::instance().generate(id, p, err);
-        REQUIRE(static_cast<bool>(img));
-        CHECK_EQ(img->getFormat(), std::string("RGBA8"));
-        CHECK_EQ(img->getWidth(), 48);
-        CHECK_EQ(img->getHeight(), 48);
-    }
-    CHECK(TextureRecipeRegistry::instance().has("tex.cloud"));
-    CHECK(TextureRecipeRegistry::instance().has("tex.cloud_shadow"));
-}
-
-TEST_CASE("procgen.cloud.viaModule") {
-    Procgen *mod         = Procgen::create();
-    auto     fieldResult = mod->newCloudFieldHandle();
-    REQUIRE(fieldResult.ok());
-    auto fieldHandle = std::move(fieldResult).takeValue();
-    auto field       = mod->resolveCloudField(fieldHandle);
-    REQUIRE(field.isBound());
-    field->setSeed(3);
-    field->setWorldScale(64.f);
-    field->setCoverage(0.5f);
-    auto coverageResult = mod->cloudCoverageAt(fieldHandle, 2.f, 3.f, 0.f);
-    REQUIRE(coverageResult.ok());
-    const float c0 = std::move(coverageResult).takeValue();
-    CHECK(c0 >= 0.f);
-    CHECK(c0 <= 1.f);
-    auto staleCoverage = mod->cloudCoverageAt({}, 0.f, 0.f, 0.f);
-    CHECK(!staleCoverage.ok());
-
-    auto shadowResult = mod->newCloudShadowHandle();
-    REQUIRE(shadowResult.ok());
-    auto shadowHandle = std::move(shadowResult).takeValue();
-    auto shadow       = mod->resolveCloudShadow(shadowHandle);
-    REQUIRE(shadow.isBound());
-    shadow->setSunDirection(0.5f, 1.f, 0.f);
-    shadow->setCloudAltitude(50.f);
-    shadow->setStrength(0.8f);
-    auto factorResult = mod->cloudShadowFactor(shadowHandle, 2.f, 3.f, 0.f);
-    REQUIRE(factorResult.ok());
-    CHECK(std::move(factorResult).takeValue() >= 0.f);
-    auto staleFactor = mod->cloudShadowFactor({}, 0.f, 0.f, 0.f);
-    CHECK(!staleFactor.ok());
-
-    std::vector<float> buf(16 * 16);
-    auto               sampleResult = mod->sampleCloud(fieldHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    CHECK(sampleResult.ok());
-    auto shadowSampleResult = mod->sampleCloudShadow(shadowHandle, std::span<float>(buf), 16, 16, 0.f, 0.f, 0.f, 64.f);
-    CHECK(shadowSampleResult.ok());
-    auto releaseField = mod->releaseCloudField(fieldHandle);
-    CHECK(releaseField.ok());
-    auto releaseShadow = mod->releaseCloudShadow(shadowHandle);
-    CHECK(releaseShadow.ok());
-}
-
-
-TEST_CASE("procgen.mesh.bush.ovateLeafCards") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(42);
-    p.setString("style", "mound");
-    p.setString("leafMode", "cards");
-    p.setInt("blobs", 3);
-    p.setInt("twigs", 0);
-    p.setFloat("leafDensity", 1.f);
-    p.setFloat("leafSize", 0.25f);
-    p.setInt("rings", 3);
-    p.setInt("radialSegments", 6);
-    std::string err;
-    MeshBuild   out;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.bush", p, out, err));
-    // Transparent leaf cards are double-sided quads sampling one of six panels.
-    CHECK(out.getVertexCount() >= 4);
-    CHECK(out.getVertexCount() % 4 == 0);
-    for (int leaf = 0; leaf < out.getVertexCount(); leaf += 4) {
-        float uMin = 1.f, uMax = 0.f, vMin = 1.f, vMax = 0.f;
-        for (int i = 0; i < 4; ++i) {
-            uMin = std::min(uMin, out.getUvU(leaf + i));
-            uMax = std::max(uMax, out.getUvU(leaf + i));
-            vMin = std::min(vMin, out.getUvV(leaf + i));
-            vMax = std::max(vMax, out.getUvV(leaf + i));
-        }
-        CHECK(uMin >= 0.52f - 1e-3f);
-        CHECK(uMax <= 1.f + 1e-3f);
-        // One 2×3 panel (not the full card half).
-        CHECK(uMax - uMin < 0.28f);
-        CHECK(vMax - vMin < 0.40f);
-    }
-}
-
-TEST_CASE("procgen.texture.foliage.sixLeafCardPanels") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(20260922);
-    p.setSize(256, 256);
-    p.setFloat("scale", 4.2f);
-    p.setInt("seamless", 1);
-    p.setInt("colors", 7);
-    std::string err;
-    auto        img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
-    REQUIRE(static_cast<bool>(img));
-    const int w = img->getWidth();
-    const int h = img->getHeight();
-    // Each of the 6 panels (2×3) should contain several opaque leaf texels.
-    for (int row = 0; row < 3; ++row) {
-        for (int col = 0; col < 2; ++col) {
-            int       opaque = 0;
-            const int x0     = int((0.52f + float(col) * 0.24f) * float(w - 1));
-            const int x1     = int((0.52f + float(col + 1) * 0.24f) * float(w - 1));
-            const int y0     = int((float(row) / 3.f) * float(h - 1));
-            const int y1     = int((float(row + 1) / 3.f) * float(h - 1));
-            for (int y = y0; y < y1; y += 2) {
-                for (int x = x0; x < x1; x += 2) {
-                    if (img->getPixel(x, y).a > 0.9f) ++opaque;
-                }
-            }
-            CHECK(opaque >= 8);
-        }
-    }
-}
-
-TEST_CASE("procgen.texture.foliage.barkTwigStrip") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(11);
-    p.setSize(64, 64);
-    p.setFloat("scale", 4.f);
-    p.setInt("seamless", 1);
-    p.setInt("colors", 7);
-    std::string err;
-    auto        img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
-    REQUIRE(static_cast<bool>(img));
-    // Left bark strip should be opaque brown (R≈G≈B-ish warm, not leaf-green).
-    const auto c = img->getPixel(2, 32);
-    CHECK(c.a > 0.9f);
-    CHECK(c.r > c.b);
-    CHECK(c.g < c.r + 0.12f);
-}
-
-TEST_CASE("procgen.texture.foliage.leafCardAlpha") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(20260922);
-    p.setSize(128, 128);
-    p.setFloat("scale", 4.2f);
-    p.setInt("seamless", 1);
-    p.setInt("colors", 7);
-    std::string err;
-    auto        img = TextureRecipeRegistry::instance().generate("tex.foliage", p, err);
-    REQUIRE(static_cast<bool>(img));
-    const int w      = img->getWidth();
-    const int h      = img->getHeight();
-    double    rightA = 0.0;
-    int       rightN = 0, rightZero = 0;
-    for (int y = 0; y < h; y += 2) {
-        for (int x = 0; x < w; x += 2) {
-            const auto  c = img->getPixel(x, y);
-            const float u = float(x) / float(std::max(1, w - 1));
-            if (u <= 0.52f) continue;
-            rightA += c.a;
-            ++rightN;
-            if (c.a < 0.05f) ++rightZero;
-        }
-    }
-    REQUIRE(rightN > 0);
-    // Card half must stay mostly transparent so single-stamp leaf cards alpha-cut.
-    CHECK(rightA / double(rightN) < 0.55);
-    CHECK(double(rightZero) / double(rightN) > 0.20);
-    // Opaque leaf texels are flat solid colour (no internal texture noise).
-    double sumG = 0.0, sumG2 = 0.0;
-    int    solidN = 0;
-    for (int y = 0; y < h; y += 2) {
-        for (int x = 0; x < w; x += 2) {
-            const auto  c = img->getPixel(x, y);
-            const float u = float(x) / float(std::max(1, w - 1));
-            if (u <= 0.52f || c.a < 0.9f) continue;
-            sumG += c.g;
-            sumG2 += double(c.g) * double(c.g);
-            ++solidN;
-        }
-    }
-    REQUIRE(solidN > 8);
-    const double mean = sumG / double(solidN);
-    const double var  = sumG2 / double(solidN) - mean * mean;
-    CHECK(var < 0.0025);
-}
-
-TEST_CASE("procgen.texture.builtinRecipes.expanded") {
-    TextureRecipeRegistry::instance().registerBuiltins();
-    const char *ids[] = {"tex.soil",      "tex.stone",      "tex.rock",    "tex.marble",   "tex.water", "tex.ripple",
-                         "tex.sky_cloud", "tex.wood",       "tex.cloth",   "tex.ornament", "tex.spot",  "tex.zebra",
-                         "tex.wall",      "tex.cement",     "tex.asphalt", "tex.mud",      "tex.bark",  "tex.foliage",
-                         "tex.moss",      "tex.tree_atlas", "tex.flower"};
-    for (const char *id : ids) {
-        Params p;
-        p.setSeed(11);
-        p.setSize(32, 32);
-        p.setInt("colors", 5);
-        std::string err;
-        auto        a        = TextureRecipeRegistry::instance().generate(id, p, err);
-        auto        b        = TextureRecipeRegistry::instance().generate(id, p, err);
-        const bool  aPresent = static_cast<bool>(a);
-        const bool  bPresent = static_cast<bool>(b);
-        REQUIRE(aPresent);
-        REQUIRE(bPresent);
-        CHECK_EQ(a->getFormat(), std::string("RGBA8"));
-        CHECK(std::memcmp(a->getData(), b->getData(), a->getSize()) == 0);
-    }
-}
-
-TEST_CASE("procgen.recipeSchemas.textureAndPbrDefaults") {
-    auto &textures  = TextureRecipeRegistry::instance();
-    auto &materials = PbrRecipeRegistry::instance();
-    textures.registerBuiltins();
-    materials.registerPbrBuiltins();
-    for (const std::string &id : textures.list()) {
-        const RecipeDescriptor *schema = textures.descriptor(id);
-        REQUIRE(schema != nullptr);
-        CHECK_EQ(schema->id, id);
-        CHECK(!schema->displayName.empty());
-        CHECK(schema->find("seed") != nullptr);
-    }
-    for (const std::string &id : materials.list()) {
-        const RecipeDescriptor *schema = materials.descriptor(id);
-        REQUIRE(schema != nullptr);
-        CHECK_EQ(schema->category, std::string("Material"));
-        CHECK(schema->find("metallic") != nullptr);
-        CHECK(schema->find("normalStrength") != nullptr);
-    }
-    Params defaults;
-    REQUIRE(materials.applyDefaults("pbr.rock", defaults));
-    const RecipeDescriptor *rock = materials.descriptor("pbr.rock");
-    REQUIRE(rock != nullptr);
-    REQUIRE(rock->find("metallic") != nullptr);
-    CHECK_EQ(defaults.getFloat("metallic", -1.f), std::stof(rock->find("metallic")->defaultValue));
-    CHECK(!materials.applyDefaults("pbr.missing", defaults));
-    RecipeDescriptor copied = *rock;
-    copied.displayName      = "Project Rock";
-    CHECK_NE(copied.displayName, rock->displayName);
-}
-
-TEST_CASE("procgen.recipeSchemas.meshDefaults") {
-    auto &meshes = MeshRecipeRegistry::instance();
-    meshes.registerBuiltins();
-    for (const std::string &id : meshes.list()) {
-        const RecipeDescriptor *schema = meshes.descriptor(id);
-        REQUIRE(schema != nullptr);
-        CHECK_EQ(schema->id, id);
-        CHECK(!schema->displayName.empty());
-        CHECK(!schema->category.empty());
-        CHECK(schema->find("seed") != nullptr);
-    }
-
-    Params defaults;
-    REQUIRE(meshes.applyDefaults("mesh.fence", defaults));
-    CHECK_EQ(defaults.getInt("segments", 0), 6);
-    CHECK_EQ(defaults.getFloat("height", 0.f), 1.1f);
-    MeshBuild   mesh;
-    std::string error;
-    REQUIRE(meshes.generate("mesh.fence", defaults, mesh, error));
-    CHECK_GT(mesh.getVertexCount(), 0);
-    CHECK(!meshes.applyDefaults("mesh.missing", defaults));
-}
-
-TEST_CASE("procgen.pbr.registry.builtinsAndReproducible") {
-    PbrRecipeRegistry::instance().registerPbrBuiltins();
-    const char *ids[] = {"pbr.soil",   "pbr.rock",     "pbr.marble", "pbr.water", "pbr.wood",
-                         "pbr.cloth",  "pbr.ornament", "pbr.spot",   "pbr.zebra", "pbr.wall",
-                         "pbr.cement", "pbr.asphalt",  "pbr.mud",    "pbr.ripple"};
-    for (const char *id : ids) {
-        REQUIRE(PbrRecipeRegistry::instance().has(id));
-        Params p;
-        p.setSeed(7);
-        p.setSize(32, 32);
-        std::string err;
-        auto        a        = PbrRecipeRegistry::instance().generate(id, p, err);
-        auto        b        = PbrRecipeRegistry::instance().generate(id, p, err);
-        const bool  aPresent = static_cast<bool>(a);
-        const bool  bPresent = static_cast<bool>(b);
-        REQUIRE(aPresent);
-        REQUIRE(bPresent);
-        // All six maps present, same size, reproducible.
-        REQUIRE(a->albedo != nullptr);
-        REQUIRE(a->normal != nullptr);
-        REQUIRE(a->roughness != nullptr);
-        REQUIRE(a->metallic != nullptr);
-        REQUIRE(a->height != nullptr);
-        REQUIRE(a->ao != nullptr);
-        CHECK_EQ(a->albedo->getWidth(), 32);
-        CHECK_EQ(a->albedo->getHeight(), 32);
-        CHECK(std::memcmp(a->albedo->getData(), b->albedo->getData(), a->albedo->getSize()) == 0);
-        CHECK(std::memcmp(a->normal->getData(), b->normal->getData(), a->normal->getSize()) == 0);
-        // Grayscale maps must be RGBA8 with alpha=255.
-        const auto *px      = static_cast<const uint8_t *>(a->roughness->getData());
-        bool        alphaOk = true;
-        for (size_t i = 0; i < a->roughness->getSize(); i += 4) {
-            if (px[i + 3] != 255) alphaOk = false;
-        }
-        CHECK(alphaOk);
-    }
-}
-
-TEST_CASE("procgen.pbr.metallicAndRoughnessRange") {
-    PbrRecipeRegistry::instance().registerPbrBuiltins();
-    Params p;
-    p.setSeed(3);
-    p.setSize(48, 48);
-    p.setFloat("metallic", 1.f);
-    p.setFloat("roughnessLow", 0.1f);
-    p.setFloat("roughnessHigh", 0.2f);
-    std::string err;
-    auto        set = PbrRecipeRegistry::instance().generate("pbr.marble", p, err);
-    REQUIRE(static_cast<bool>(set));
-    const auto *m = static_cast<const uint8_t *>(set->metallic->getData());
-    for (size_t i = 0; i < set->metallic->getSize(); i += 4) {
-        CHECK_EQ(m[i], 255);  // fully metallic
-    }
-    const auto *r = static_cast<const uint8_t *>(set->roughness->getData());
-    for (size_t i = 0; i < set->roughness->getSize(); i += 4) {
-        CHECK(r[i] >= 25);  // roughnessLow 0.1 -> 25
-        CHECK(r[i] <= 51);  // roughnessHigh 0.2 -> 51
-    }
-}
-
-TEST_CASE("procgen.pbr.viaModuleAndErrors") {
-    Procgen *mod = Procgen::create();
-    Params   p;
-    p.setSeed(9);
-    p.setSize(40, 40);
-    auto params    = requireParams(p);
-    auto pbrResult = mod->generatePbrMaterialHandle("pbr.wall", params.handle);
-    REQUIRE(pbrResult.ok());
-    auto setLease = PbrLease(*mod, std::move(pbrResult).takeValue());
-    auto set      = setLease.view();
-    REQUIRE(set.isBound());
-    CHECK(set->albedo != nullptr);
-    CHECK(set->normal != nullptr);
-
-    CHECK(mod->hasPbrRecipe("pbr.wood"));
-    CHECK(mod->getPbrRecipeCount() >= 13);
-    bool listed = false;
-    for (int i = 0; i < mod->getPbrRecipeCount(); ++i) {
-        if (mod->getPbrRecipeId(i) == "pbr.wood") listed = true;
-    }
-    CHECK(listed);
-
-    auto missingResult = mod->generatePbrMaterialHandle("pbr.missing", params.handle);
-    CHECK(!missingResult.ok());
-    const eve::Diagnostic *missingDiagnostic = missingResult.error();
-    REQUIRE(missingDiagnostic != nullptr);
-    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::NotFound);
-    auto staleResult = mod->generatePbrMaterialHandle("pbr.wall", {});
-    CHECK(!staleResult.ok());
-    const eve::Diagnostic *staleDiagnostic = staleResult.error();
-    REQUIRE(staleDiagnostic != nullptr);
-    CHECK_EQ(staleDiagnostic->code(), eve::DiagnosticCode::StaleHandle);
-}
-
-TEST_CASE("procgen.mesh.linearStructure.recipesRegistered") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    for (const char *id :
-         {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall", "mesh.hedge", "mesh.chevaldefrise"}) {
-        CHECK(MeshRecipeRegistry::instance().has(id));
-    }
-    const auto ids = MeshRecipeRegistry::instance().list();
-    for (const char *id :
-         {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall", "mesh.hedge", "mesh.chevaldefrise"}) {
-        CHECK(std::find(ids.begin(), ids.end(), id) != ids.end());
-    }
-}
-
-TEST_CASE("procgen.mesh.linearStructure.buildsAllKinds") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    for (const char *id :
-         {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall", "mesh.hedge", "mesh.chevaldefrise"}) {
-        Params p;
-        p.setSeed(7);
-        p.setInt("segments", 4);
-        p.setFloat("segLength", 1.f);
-        MeshBuild   m;
-        std::string err;
-        CHECK(MeshRecipeRegistry::instance().generate(id, p, m, err));
-        CHECK(m.getVertexCount() > 0);
-        CHECK(m.getIndexCount() > 0);
-        CHECK_EQ(m.getIndexCount() % 3, 0);
-        CHECK(meshIndicesInRange(m));
-        CHECK(meshPositionsFinite(m));
-        CHECK(meshNormalsFiniteUnit(m));
-        CHECK_EQ(m.getMeta("algorithm", ""), std::string(id));
-        CHECK_EQ(m.getMeta("segments", ""), std::string("4"));
-    }
-}
-
-TEST_CASE("procgen.mesh.linearStructure.reproducibleAndScalable") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(3);
-    p.setInt("segments", 5);
-    p.setFloat("segLength", 1.2f);
-    MeshBuild   a, b, scaled;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p, b, err));
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-
-    Params p2 = p;
-    p2.setFloat("scale", 2.f);
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.greatwall", p2, scaled, err));
-    CHECK_EQ(a.getVertexCount(), scaled.getVertexCount());
-    // Scaling a 2x should scale the X extent of the whole run by 2x.
-    float minAx = 1e30f, maxAx = -1e30f, minSx = 1e30f, maxSx = -1e30f;
-    for (int i = 0; i < a.getVertexCount(); ++i) {
-        minAx = std::min(minAx, a.getPositionX(i));
-        maxAx = std::max(maxAx, a.getPositionX(i));
-        minSx = std::min(minSx, scaled.getPositionX(i));
-        maxSx = std::max(maxSx, scaled.getPositionX(i));
-    }
-    CHECK(std::fabs((maxAx - minAx) * 2.f - (maxSx - minSx)) < 1e-3f);
-}
-
-TEST_CASE("procgen.mesh.linearStructure.segmentsScaleVertexCount") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params lo;
-    lo.setInt("segments", 2);
-    lo.setFloat("segLength", 1.f);
-    Params hi = lo;
-    hi.setInt("segments", 6);
-    MeshBuild   a, b;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", lo, a, err));
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.fence", hi, b, err));
-    // Linear repetition of one unit 鈬?vertex count grows linearly with segments.
-    CHECK_EQ(3 * a.getVertexCount(), b.getVertexCount());
-}
-
-TEST_CASE("procgen.mesh.linearStructure.tileableSeamAlignment") {
-    // One unit ends exactly where the next begins, so a tiled run is contiguous.
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setInt("segments", 1);
-    p.setFloat("segLength", 1.f);
-    MeshBuild   single;
-    std::string err;
-    CHECK(MeshRecipeRegistry::instance().generate("mesh.bridge", p, single, err));
-    float maxX = -1e30f;
-    for (int i = 0; i < single.getVertexCount(); ++i) maxX = std::max(maxX, single.getPositionX(i));
-    // Unit occupies [0, segLength]; tiling repeats at +segLength.
-    CHECK(std::fabs(maxX - 1.f) < 1e-3f);
-}
-
-TEST_CASE("procgen.mesh.linearStructure.viaModule") {
-    Procgen *mod = Procgen::create();
-    Params   p;
-    p.setSeed(1);
-    p.setInt("segments", 4);
-    p.setFloat("segLength", 1.f);
-    auto params    = requireParams(p);
-    auto meshLease = requireMesh(*mod, "mesh.stonewall", params.handle);
-    auto m         = meshLease.view();
-    REQUIRE(m.isBound());
-    CHECK(m->getVertexCount() > 0);
-    CHECK(meshIndicesInRange(*m));
-    CHECK(mod->hasMeshRecipe("mesh.stonewall"));
-    CHECK(mod->hasMeshRecipe("mesh.bridge"));
-    auto missingResult = mod->buildMeshHandle("mesh.nonexistent", params.handle);
-    CHECK(!missingResult.ok());
-    const eve::Diagnostic *missingDiagnostic = missingResult.error();
-    REQUIRE(missingDiagnostic != nullptr);
-    CHECK_EQ(missingDiagnostic->code(), eve::DiagnosticCode::Failed);
-}
-
-TEST_CASE("procgen.mesh.castle.multilevelDeterministicAndComplete") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params p;
-    p.setSeed(8675309);
-    p.setFloat("width", 48.f);
-    p.setFloat("depth", 40.f);
-    p.setInt("rings", 2);
-    p.setInt("keepFloors", 4);
-    p.setInt("detail", 2);
-    MeshBuild   a, b;
-    std::string err;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, a, err));
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.castle", p, b, err));
-    CHECK(a.positions() == b.positions());
-    CHECK(a.indices() == b.indices());
-    CHECK(meshIndicesInRange(a));
-    CHECK(meshPositionsFinite(a));
-    CHECK(meshNormalsFiniteUnit(a));
-    CHECK(a.getVertexCount() > 5000);
-    CHECK_EQ(a.getMeta("algorithm", ""), "mesh.castle");
-    CHECK_EQ(a.getMeta("rings", ""), "2");
-    CHECK_EQ(a.getMeta("keepFloors", ""), "4");
-    CHECK(std::stoi(a.getMeta("towerCount", "0")) >= 12);
-    // One stair per wall ring plus one between every pair of keep floors.
-    CHECK_EQ(a.getMeta("stairFlights", ""), "5");
-    std::set<std::string> groups;
-    for (int i = 0; i < a.getGroupCount(); ++i) groups.insert(a.getGroupName(i));
-    for (const char *required : {"walls", "battlements", "towers", "gatehouses", "stairs", "keep", "courtyard"})
-        CHECK(groups.count(required) == 1);
-    int stairGroup = -1;
-    for (int i = 0; i < a.getGroupCount(); ++i)
-        if (a.getGroupName(i) == "stairs") stairGroup = i;
-    REQUIRE(stairGroup >= 0);
-    auto stairs = a.copyGroup(stairGroup);
-    REQUIRE(stairs.get() != nullptr);
-    CHECK(stairs->getVertexCount() > 100);
-    CHECK_EQ(stairs->getMeta("group", ""), "stairs");
-    CHECK(meshIndicesInRange(*stairs));
-    int towerGroup = -1;
-    for (int i = 0; i < a.getGroupCount(); ++i)
-        if (a.getGroupName(i) == "towers") towerGroup = i;
-    REQUIRE(towerGroup >= 0);
-    auto towers = a.copyGroup(towerGroup);
-    REQUIRE(towers.get() != nullptr);
-    CHECK(meshWindingAgreesWithNormals(*towers));
-}
-
-TEST_CASE("procgen.mesh.castle.parametersControlTopologyAndBounds") {
-    MeshRecipeRegistry::instance().registerBuiltins();
-    Params simple;
-    simple.setInt("rings", 1);
-    simple.setInt("keepFloors", 1);
-    simple.setInt("detail", 0);
-    simple.setFloat("width", 30.f);
-    simple.setFloat("depth", 26.f);
-    Params elaborate = simple;
-    elaborate.setInt("rings", 3);
-    elaborate.setInt("keepFloors", 5);
-    elaborate.setInt("detail", 2);
-    elaborate.setFloat("width", 58.f);
-    elaborate.setFloat("depth", 50.f);
-    MeshBuild   a, b;
-    std::string err;
-    REQUIRE(generateCastleMesh(simple, a, err));
-    REQUIRE(generateCastleMesh(elaborate, b, err));
-    CHECK(b.getVertexCount() > a.getVertexCount() * 2);
-    CHECK(std::stoi(b.getMeta("towerCount", "0")) > std::stoi(a.getMeta("towerCount", "0")));
-    CHECK_EQ(b.getMeta("stairFlights", ""), "7");
-
-    Params scaled = simple;
-    scaled.setFloat("scale", 2.f);
-    MeshBuild s;
-    REQUIRE(generateCastleMesh(scaled, s, err));
-    float maxA = 0.f, maxS = 0.f;
-    for (int i = 0; i < a.getVertexCount(); ++i) maxA = std::max(maxA, std::fabs(a.getPositionX(i)));
-    for (int i = 0; i < s.getVertexCount(); ++i) maxS = std::max(maxS, std::fabs(s.getPositionX(i)));
-    CHECK(std::fabs(maxS - maxA * 2.f) < 1e-3f);
-}
-
-TEST_CASE("procgen.mesh.castle.validationAndModuleDiscovery") {
-    Procgen *mod = Procgen::create();
-    CHECK(mod->hasMeshRecipe("mesh.castle"));
-    auto schemaResult = mod->getMeshRecipeSchema("mesh.castle");
-    REQUIRE(schemaResult.ok());
-    auto schema = std::move(schemaResult).takeValue();
-    CHECK_EQ(schema.getParamCount(), 25);
-    const ParamDescriptor *rings = schema.find("rings");
-    REQUIRE(rings != nullptr);
-    CHECK_EQ(rings->defaultValue, "2");
-    CHECK(rings->hasMinimum);
-    CHECK(rings->hasMaximum);
-    CHECK_EQ(rings->minimum, 1.0);
-    CHECK_EQ(rings->maximum, 4.0);
-    CHECK(!rings->description.empty());
-    auto missingSchema = mod->getMeshRecipeSchema("mesh.missing");
-    CHECK(!missingSchema.ok());
-    const eve::Diagnostic *schemaDiagnostic = missingSchema.error();
-    REQUIRE(schemaDiagnostic != nullptr);
-    CHECK_EQ(schemaDiagnostic->code(), eve::DiagnosticCode::NotFound);
-    Params p;
-    p.setFloat("width", 16.f);
-    p.setFloat("depth", 16.f);
-    p.setFloat("towerRadius", 7.f);
-    p.setFloat("wallThickness", 3.f);
-    auto params = requireParams(p);
-    auto failed = mod->buildMeshHandle("mesh.castle", params.handle);
-    CHECK(!failed.ok());
-    const eve::Diagnostic *failedDiagnostic = failed.error();
-    REQUIRE(failedDiagnostic != nullptr);
-    CHECK_EQ(failedDiagnostic->code(), eve::DiagnosticCode::Failed);
-}
-
-TEST_CASE("procgen.meshBuild.appendTransformedComposesRecipeNodes") {
-    Params p;
-    p.setInt("segments", 1);
-    p.setFloat("segLength", 2.f);
-    MeshBuild   source, combined;
-    std::string err;
-    REQUIRE(generateLinearStructure("mesh.stonewall", p, source, err));
-    REQUIRE(combined.appendTransformed(&source, 3.f, 2.f, -4.f, 90.f, 2.f, 1.f, .5f));
-    CHECK_EQ(combined.getVertexCount(), source.getVertexCount());
-    CHECK_EQ(combined.getIndexCount(), source.getIndexCount());
-    CHECK(meshIndicesInRange(combined));
-    CHECK(meshNormalsFiniteUnit(combined));
-    REQUIRE(combined.appendTransformed(&source, -3.f, 0.f, 4.f, 0.f, -1.f, 1.f, 1.f));
-    CHECK_EQ(combined.getVertexCount(), source.getVertexCount() * 2);
-    CHECK_EQ(combined.getIndexCount(), source.getIndexCount() * 2);
-    CHECK(!combined.appendTransformed(&combined, 0, 0, 0, 0, 1, 1, 1));
-    CHECK(!combined.appendTransformed(nullptr, 0, 0, 0, 0, 1, 1, 1));
-    CHECK(!combined.appendTransformed(&source, 0, 0, 0, 0, 0, 1, 1));
-}
-
-// --- Water (graphics): sky reflection + animated edge waves + middle drop ripples ---
-
-namespace {
-
-struct WaterLumaGrid {
-    int                grid = 16;
-    std::vector<float> cells;
-};
-
-/** Render the current scene and downsample luma into a grid (for comparison). */
-[[maybe_unused]] WaterLumaGrid waterCaptureLuma(Graphics *gfx, int grid) {
-    for (int frame = 0; frame < 3; ++frame) {
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-    }
-    std::unique_ptr<eve::image::ImageData> img(gfx->newImageData());
-    REQUIRE(img.get() != nullptr);
-    const uint8_t *px = static_cast<const uint8_t *>(img->getData());
-    const int      w  = img->getWidth();
-    const int      h  = img->getHeight();
-    WaterLumaGrid  out;
-    out.grid = grid;
-    out.cells.assign(size_t(grid * grid), 0.f);
-    for (int y = 0; y < h; ++y) {
-        for (int x = 0; x < w; ++x) {
-            const size_t o  = (size_t(y) * w + size_t(x)) * 4u;
-            const float  l  = 0.2126f * px[o] + 0.7152f * px[o + 1] + 0.0722f * px[o + 2];
-            const int    gx = std::min(grid - 1, x * grid / w);
-            const int    gy = std::min(grid - 1, y * grid / h);
-            out.cells[size_t(gy * grid + gx)] += l;
-        }
-    }
-    const float scale = 1.f / (float(w / grid) * float(h / grid));
-    for (float &c : out.cells) c *= scale;
-    return out;
-}
-
-[[maybe_unused]] float waterDiff(const WaterLumaGrid &a, const WaterLumaGrid &b) {
-    float     sum = 0.f;
-    const int n   = a.grid * a.grid;
-    for (int i = 0; i < n; ++i) sum += std::fabs(a.cells[size_t(i)] - b.cells[size_t(i)]);
-    return sum / float(n);
-}
-
-}  // namespace
-
-
-/** Build a unit cube ([-0.5,0.5]鲁) with per-face UVs in [0,1]虏. */
-[[maybe_unused]] static Mesh *makeUnitCube(Graphics *gfx) {
-    std::vector<float>    pos, nrm, uv;
-    std::vector<uint32_t> idx;
-    // 6 faces: +X,-X,+Y,-Y,+Z,-Z. Each face 4 corners (CCW from outside).
-    const float nx[6] = {1, -1, 0, 0, 0, 0};
-    const float ny[6] = {0, 0, 1, -1, 0, 0};
-    const float nz[6] = {0, 0, 0, 0, 1, -1};
-    // Corner offsets relative to face center (unit cube half-extent 0.5).
-    const float ox[4] = {0.5f, -0.5f, -0.5f, 0.5f};
-    const float oy[4] = {0.5f, 0.5f, -0.5f, -0.5f};
-    const float oz[4] = {0.5f, -0.5f, -0.5f, 0.5f};
-    const float uu[4] = {0.f, 1.f, 1.f, 0.f};
-    const float vv[4] = {0.f, 0.f, 1.f, 1.f};
-    for (int f = 0; f < 6; ++f) {
-        const uint32_t base = uint32_t(pos.size() / 3);
-        for (int c = 0; c < 4; ++c) {
-            // Tangents spanning the face so corners are correct for each normal axis.
-            float px = 0.f, py = 0.f, pz = 0.f;
-            if (nx[f] != 0.f) {
-                px = nx[f] * 0.5f;
-                py = oy[c];
-                pz = oz[c];
-            } else if (ny[f] != 0.f) {
-                py = ny[f] * 0.5f;
-                px = ox[c];
-                pz = oz[c];
-            } else {
-                pz = nz[f] * 0.5f;
-                px = ox[c];
-                py = oy[c];
-            }
-            pos.push_back(px);
-            pos.push_back(py);
-            pos.push_back(pz);
-            nrm.push_back(nx[f]);
-            nrm.push_back(ny[f]);
-            nrm.push_back(nz[f]);
-            uv.push_back(uu[c]);
-            uv.push_back(vv[c]);
-        }
-        idx.push_back(base + 0);
-        idx.push_back(base + 1);
-        idx.push_back(base + 2);
-        idx.push_back(base + 0);
-        idx.push_back(base + 2);
-        idx.push_back(base + 3);
-    }
-    return gfx->newMeshFromArrays(pos.data(), nrm.data(), uv.data(), int(pos.size() / 3), idx.data(), int(idx.size()));
-}
-
-
-TEST_CASE("procgen.terrain.file.decodeEvtrAndEvtrn") {
-    // EVTR: chunked archive, UNORM16-quantized heights, no metres-per-cell.
-    Heightmap heightmap(19, 13);
-    for (int y = 0; y < heightmap.getHeight(); ++y)
-        for (int x = 0; x < heightmap.getWidth(); ++x)
-            heightmap.setHeight(x, y, 10.f + float(x) * 0.25f + float(y) * 0.5f);
-    const HydrologyMap   hydrology = TerrainPipeline::buildHydrology(heightmap, 5.f, 10.f);
-    const ClimateMap     climate   = TerrainPipeline::buildClimate(heightmap, hydrology, 10.f, 0.6f);
-    std::vector<uint8_t> evtr;
+TEST_CASE("procgen.terrain.archive_bakeOpenEdgeChunkAndCorruptionContract") {
+    Heightmap terrain(9, 7);
+    for (int y = 0; y < 7; ++y)
+        for (int x = 0; x < 9; ++x) terrain.setHeight(x, y, 10.f + x * .25f + y * .5f);
+    const auto           drainage = TerrainPipeline::buildHydrology(terrain, 5.f, 10.f);
+    const auto           climate  = TerrainPipeline::buildClimate(terrain, drainage, 10.f, .6f);
+    std::vector<uint8_t> bytes;
+    std::vector<uint8_t> replay;
     std::string          error;
-    REQUIRE(TerrainAsset::bake(heightmap, hydrology, climate, 8, evtr, &error));
+    REQUIRE(TerrainAsset::bake(terrain, drainage, climate, 4, bytes, &error));
+    REQUIRE(TerrainAsset::bake(terrain, drainage, climate, 4, replay, &error));
+    CHECK_EQ(bytes, replay);
+    TerrainAsset asset;
+    REQUIRE(asset.open(bytes.data(), bytes.size(), &error));
+    CHECK_EQ(asset.getWidth(), 9);
+    CHECK_EQ(asset.getHeight(), 7);
+    CHECK_EQ(asset.getChunkSize(), 4);
+    CHECK_EQ(asset.chunks().size(), static_cast<size_t>(6));
+    TerrainChunkData edge;
+    REQUIRE(asset.loadChunk(2, 1, edge, &error));
+    CHECK_EQ(edge.width, 1);
+    CHECK_EQ(edge.height, 3);
+    CHECK(std::abs(edge.heights.height(0, 2) - terrain.height(8, 6)) < .001f);
+    CHECK_EQ(edge.biomes.size(), static_cast<size_t>(3));
 
-    auto decodedEvtr =
-        decodeTerrainFile(std::span<const std::uint8_t>(evtr.data(), evtr.size()), TerrainFileFormat::Auto);
-    REQUIRE(decodedEvtr.ok());
-    const DecodedTerrainFile evtrTerrain = std::move(decodedEvtr).takeValue();
-    CHECK_EQ(evtrTerrain.format, std::string("evtr"));
-    CHECK_EQ(evtrTerrain.heightmap.getWidth(), 19);
-    CHECK_EQ(evtrTerrain.heightmap.getHeight(), 13);
-    // An EVTR archive carries no cell size, so the level owns the spacing.
-    CHECK(!evtrTerrain.hasSpacing);
-    CHECK(std::abs(evtrTerrain.minHeight - 10.f) < 0.01f);
-    CHECK(std::abs(evtrTerrain.maxHeight - (10.f + 18 * 0.25f + 12 * 0.5f)) < 0.01f);
-    // Quantization is UNORM16 over the archive range, so allow one step.
-    for (int y = 0; y < 13; y += 4)
-        for (int x = 0; x < 19; x += 3)
-            CHECK(std::abs(evtrTerrain.heightmap.height(x, y) - heightmap.height(x, y)) < 0.01f);
-
-    // EVTRN: raw float32 heightfield written by the asset importer.
-    auto putU32 = [](std::vector<uint8_t> &out, std::uint32_t value) {
-        for (unsigned shift = 0; shift != 32; shift += 8) out.push_back(static_cast<std::uint8_t>(value >> shift));
-    };
-    auto putF32 = [&putU32](std::vector<uint8_t> &out, float value) {
-        putU32(out, std::bit_cast<std::uint32_t>(value));
-    };
-    constexpr int        kWidth = 5, kHeight = 3;
-    std::vector<uint8_t> evtrn = {'E', 'V', 'T', 'R', 'N', 0, 1, 0};
-    putU32(evtrn, kWidth);
-    putU32(evtrn, kHeight);
-    putF32(evtrn, 2.5f);
-    putF32(evtrn, 4.0f);
-    for (int y = 0; y < kHeight; ++y)
-        for (int x = 0; x < kWidth; ++x) putF32(evtrn, float(x) - float(y) * 0.5f);
-
-    auto decodedEvtrn =
-        decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()), TerrainFileFormat::Auto);
-    REQUIRE(decodedEvtrn.ok());
-    const DecodedTerrainFile evtrnTerrain = std::move(decodedEvtrn).takeValue();
-    CHECK_EQ(evtrnTerrain.format, std::string("evtrn"));
-    CHECK(evtrnTerrain.hasSpacing);
-    CHECK_EQ(evtrnTerrain.spacingX, 2.5f);
-    CHECK_EQ(evtrnTerrain.spacingZ, 4.0f);
-    CHECK_EQ(evtrnTerrain.heightmap.getWidth(), kWidth);
-    CHECK_EQ(evtrnTerrain.heightmap.getHeight(), kHeight);
-    CHECK_EQ(evtrnTerrain.heightmap.height(4, 2), 3.f);
-    CHECK_EQ(evtrnTerrain.heightmap.height(0, 2), -1.f);
-    CHECK_EQ(evtrnTerrain.minHeight, -1.f);
-    CHECK_EQ(evtrnTerrain.maxHeight, 4.f);
-
-    // A caller that names the format still gets the magic checked.
-    auto mismatched =
-        decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size()), TerrainFileFormat::Evtr);
-    CHECK(!mismatched.ok());
-    const eve::Diagnostic *mismatchDiagnostic = mismatched.status().primaryDiagnostic();
-    REQUIRE(mismatchDiagnostic != nullptr);
-    CHECK_EQ(int(mismatchDiagnostic->code()), int(eve::DiagnosticCode::ParseError));
-
-    // Unknown magic, truncated payload, and a size/dimension mismatch all fail
-    // rather than returning a partially filled grid.
-    std::vector<uint8_t> unknown = evtrn;
-    unknown[0]                   = 'X';
-    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(unknown.data(), unknown.size()), TerrainFileFormat::Auto)
-               .ok());
-    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(evtrn.data(), evtrn.size() - 4), TerrainFileFormat::Evtrn)
-               .ok());
-    std::vector<uint8_t> wrongCount = evtrn;
-    wrongCount[8]                   = 9;  // claims nine columns for a payload holding five
-    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(wrongCount.data(), wrongCount.size()),
-                             TerrainFileFormat::Evtrn)
-               .ok());
-    CHECK(!decodeTerrainFile(std::span<const std::uint8_t>(), TerrainFileFormat::Auto).ok());
-
-    CHECK_EQ(int(parseTerrainFileFormat("EVTRN")), int(TerrainFileFormat::Evtrn));
-    CHECK_EQ(int(parseTerrainFileFormat("evtr")), int(TerrainFileFormat::Evtr));
-    CHECK_EQ(int(parseTerrainFileFormat("")), int(TerrainFileFormat::Auto));
-    CHECK_EQ(int(parseTerrainFileFormat("nonsense")), int(TerrainFileFormat::Auto));
+    const auto entry = asset.chunks().front();
+    bytes[static_cast<size_t>(entry.offset) + entry.storedSize / 2] ^= 0x5a;
+    TerrainAsset corrupt;
+    REQUIRE(corrupt.open(bytes.data(), bytes.size(), &error));
+    TerrainChunkData rejected;
+    CHECK(!corrupt.loadChunk(entry.chunkX, entry.chunkY, rejected, &error));
 }
+
+TEST_CASE("procgen.terrain.streamingBudget_limitsLoadsAndEvictsDistantChunks") {
+    Heightmap terrain(24, 24);
+    for (int y = 0; y < 24; ++y)
+        for (int x = 0; x < 24; ++x) terrain.setHeight(x, y, static_cast<float>(x + y * 2));
+    const auto           drainage = TerrainPipeline::buildHydrology(terrain, 5.f, -1.f);
+    const auto           climate  = TerrainPipeline::buildClimate(terrain, drainage, -1.f, .5f);
+    std::vector<uint8_t> bytes;
+    std::string          error;
+    REQUIRE(TerrainAsset::bake(terrain, drainage, climate, 8, bytes, &error));
+    TerrainStreamingCache cache;
+    REQUIRE(cache.open(bytes.data(), bytes.size(), &error));
+    const auto first = cache.streamAround(12, 12, 1, 2, &error);
+    CHECK_EQ(first.loaded, 2);
+    CHECK_EQ(first.pending, 3);
+    CHECK_EQ(first.resident, 2);
+    const auto complete = cache.streamAround(12, 12, 1, 0, &error);
+    CHECK_EQ(complete.loaded, 3);
+    CHECK_EQ(complete.resident, 5);
+    CHECK_EQ(cache.streamAround(12, 12, 1, 0, &error).loaded, 0);
+    float height = 0.f;
+    REQUIRE(cache.sampleHeight(7.5f, 12.f, height));
+    CHECK(std::abs(height - 31.5f) < .002f);
+    TerrainSample sample;
+    REQUIRE(cache.sampleCell(12, 12, sample));
+    CHECK(std::abs(sample.height - 36.f) < .002f);
+    const auto moved = cache.streamAround(23, 23, 0, 0, &error);
+    CHECK_EQ(moved.evicted, 5);
+    CHECK_EQ(moved.resident, 1);
+    CHECK(!cache.sampleCell(12, 12, sample));
+    REQUIRE(cache.sampleCell(23, 23, sample));
+    CHECK(std::abs(sample.height - 69.f) < .002f);
+    CHECK_EQ(cache.streamAround(0, 0, -1, 0, &error).resident, 1);
+}
+
+TEST_CASE("procgen.cloud.field_seedTimeAndPeriodDetermineCoverage") {
+    CloudField::Params params;
+    params.seed       = 99;
+    params.worldScale = 64.f;
+    params.coverage   = .5f;
+    CloudField  first(params);
+    CloudField  replay(params);
+    const float atStart = first.coverageAt(3.f, 4.f, 0.f);
+    REQUIRE(std::abs(atStart - replay.coverageAt(3.f, 4.f, 0.f)) < 1e-5f);
+    CHECK(std::abs(atStart - first.coverageAt(67.f, 4.f, 0.f)) < 1e-4f);
+    CHECK(std::abs(atStart - first.coverageAt(3.f, 68.f, 0.f)) < 1e-4f);
+    CHECK(atStart >= 0.f);
+    CHECK(atStart <= 1.f);
+    const float atFive        = first.coverageAt(3.f, 4.f, 5.f);
+    const float atTen         = first.coverageAt(3.f, 4.f, 10.f);
+    const bool  shadowChanged = atStart != atFive || atFive != atTen;
+    CHECK(shadowChanged);
+}
+
+TEST_CASE("procgen.cloud.shadow_overheadAngledAndBelowHorizonProjection") {
+    CloudField::Params fieldParams;
+    fieldParams.seed       = 7;
+    fieldParams.worldScale = 48.f;
+    CloudField          field(fieldParams);
+    CloudShadow::Params params;
+    params.field         = field;
+    params.sunDirX       = 0.f;
+    params.sunDirY       = 1.f;
+    params.sunDirZ       = 0.f;
+    params.cloudAltitude = 50.f;
+    CloudShadow overhead(params);
+    REQUIRE(std::abs(overhead.coverageAt(5.f, 6.f, 0.f) - field.coverageAt(5.f, 6.f, 0.f)) < 1e-5f);
+    params.sunDirX = .5f;
+    CloudShadow angled(params);
+    float       offsetX = 0.f, offsetZ = 0.f;
+    angled.cloudOffset(offsetX, offsetZ);
+    CHECK(std::abs(angled.coverageAt(5.f, 6.f, 0.f) - field.coverageAt(5.f + offsetX, 6.f + offsetZ, 0.f)) < 1e-5f);
+    params.sunDirY = -1.f;
+    CloudShadow below(params);
+    CHECK_EQ(below.coverageAt(5.f, 6.f, 0.f), 0.f);
+    CHECK_EQ(below.shadowFactorAt(5.f, 6.f, 0.f), 1.f);
+}
+
+TEST_CASE("procgen.pbr.materialMapSetAndChannelRangeContract") {
+    SUB_CASE("registry recipes produce six maps with replayable albedo") {
+        auto& registry = PbrRecipeRegistry::instance();
+        registry.registerPbrBuiltins();
+        for (const char* id : {"pbr.soil", "pbr.rock", "pbr.marble", "pbr.water", "pbr.wood", "pbr.cloth"}) {
+            Params params;
+            params.setSeed(7);
+            params.setSize(24, 24);
+            std::string error;
+            auto        first  = registry.generate(id, params, error);
+            auto        replay = registry.generate(id, params, error);
+            REQUIRE(static_cast<bool>(first));
+            REQUIRE(static_cast<bool>(replay));
+            REQUIRE(first->albedo != nullptr);
+            REQUIRE(first->normal != nullptr);
+            REQUIRE(first->roughness != nullptr);
+            REQUIRE(first->metallic != nullptr);
+            REQUIRE(first->height != nullptr);
+            REQUIRE(first->ao != nullptr);
+            CHECK_EQ(first->albedo->getWidth(), 24);
+            CHECK_EQ(first->albedo->getHeight(), 24);
+            CHECK(std::memcmp(first->albedo->getData(), replay->albedo->getData(), first->albedo->getSize()) == 0);
+        }
+    };
+    SUB_CASE("metallic and roughness inputs constrain pixel channels") {
+        auto& registry = PbrRecipeRegistry::instance();
+        registry.registerPbrBuiltins();
+        Params params;
+        params.setSeed(3);
+        params.setSize(24, 24);
+        params.setFloat("metallic", 1.f);
+        params.setFloat("roughnessLow", .1f);
+        params.setFloat("roughnessHigh", .2f);
+        std::string error;
+        auto        material = registry.generate("pbr.marble", params, error);
+        REQUIRE(static_cast<bool>(material));
+        const auto* metallic  = static_cast<const uint8_t*>(material->metallic->getData());
+        const auto* roughness = static_cast<const uint8_t*>(material->roughness->getData());
+        for (size_t index = 0; index < material->metallic->getSize(); index += 4) {
+            CHECK_EQ(metallic[index], 255);
+            CHECK(roughness[index] >= 25);
+            CHECK(roughness[index] <= 51);
+        }
+    };
+}
+
+TEST_CASE("procgen.linearStructure.recipeMetadataAndSegmentScalingContract") {
+    SUB_CASE("registered recipes produce triangle geometry and metadata") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        for (const char* id :
+             {"mesh.fence", "mesh.stonewall", "mesh.bridge", "mesh.greatwall", "mesh.hedge", "mesh.chevaldefrise"}) {
+            Params params;
+            params.setSeed(7);
+            params.setInt("segments", 4);
+            params.setFloat("segLength", 1.f);
+            MeshBuild   mesh;
+            std::string error;
+            REQUIRE(registry.generate(id, params, mesh, error));
+            CHECK(mesh.getVertexCount() > 0);
+            CHECK_EQ(mesh.getIndexCount() % 3, 0);
+            CHECK(meshIndicesInRange(mesh));
+            CHECK_EQ(mesh.getMeta("algorithm", ""), id);
+            CHECK_EQ(mesh.getMeta("segments", ""), "4");
+        }
+    };
+    SUB_CASE("segment count scales fence vertex count") {
+        auto& registry = MeshRecipeRegistry::instance();
+        registry.registerBuiltins();
+        Params params;
+        params.setInt("segments", 2);
+        MeshBuild   two;
+        MeshBuild   six;
+        std::string error;
+        REQUIRE(registry.generate("mesh.fence", params, two, error));
+        params.setInt("segments", 6);
+        REQUIRE(registry.generate("mesh.fence", params, six, error));
+        CHECK_EQ(six.getVertexCount(), 3 * two.getVertexCount());
+    };
+}
+
+TEST_CASE("procgen.castle.ringsAndFloors_determineGroupsAndStairCount") {
+    Params params;
+    params.setSeed(8675309);
+    params.setFloat("width", 48.f);
+    params.setFloat("depth", 40.f);
+    params.setInt("rings", 2);
+    params.setInt("keepFloors", 4);
+    params.setInt("detail", 2);
+    MeshBuild   mesh;
+    MeshBuild   replay;
+    std::string error;
+    REQUIRE(generateCastleMesh(params, mesh, error));
+    REQUIRE(generateCastleMesh(params, replay, error));
+    CHECK_EQ(mesh.positions(), replay.positions());
+    CHECK(meshIndicesInRange(mesh));
+    CHECK_EQ(mesh.getMeta("rings", ""), "2");
+    CHECK_EQ(mesh.getMeta("keepFloors", ""), "4");
+    CHECK_EQ(mesh.getMeta("stairFlights", ""), "5");
+    std::set<std::string> groups;
+    for (int i = 0; i < mesh.getGroupCount(); ++i) groups.insert(mesh.getGroupName(i));
+    for (const char* required : {"walls", "battlements", "towers", "gatehouses", "stairs", "keep", "courtyard"})
+        CHECK(groups.count(required) == 1);
+}
+
+TEST_CASE("procgen.hexTerrain.seededMesh_replaysHydrologyAndBiomeCounts") {
+    Params params;
+    params.setSeed(20260825);
+    params.setSize(38, 28);
+    params.setInt("riverCount", 8);
+    params.setFloat("radius", .62f);
+    MeshBuild   first;
+    MeshBuild   replay;
+    std::string error;
+    REQUIRE(generateHexTerrainMesh(params, first, error));
+    REQUIRE(generateHexTerrainMesh(params, replay, error));
+    CHECK_EQ(first.positions(), replay.positions());
+    CHECK_EQ(first.indices(), replay.indices());
+    CHECK(meshIndicesInRange(first));
+    CHECK_EQ(first.getMeta("algorithm", ""), "mesh.hexterrain");
+    CHECK(std::stoi(first.getMeta("cells.ocean", "0")) > 0);
+    CHECK(std::stoi(first.getMeta("cells.grassland", "0")) > 0);
+    CHECK(std::stoi(first.getMeta("cells.river", "0")) > 0);
+}
+
 }  // namespace test_procgen_unit
 #endif

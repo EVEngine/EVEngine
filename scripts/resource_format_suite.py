@@ -62,8 +62,14 @@ def inventory(root=ROOT):
                             for origin in policy.get("origins", [source])
                             if Path(origin).name.startswith("asset_") and origin.endswith(".cpp")})
         cases = {}
+        seen_sections = set()
         for name in files:
             for physical, source in source_sections(root, name, catalogue):
+                # Multiple legacy origins may now share one rewritten source.
+                section = (physical, source)
+                if section in seen_sections:
+                    continue
+                seen_sections.add(section)
                 for case in test_levels.cases_in(source):
                     if case in cases:
                         raise ValueError("duplicate test: " + case)

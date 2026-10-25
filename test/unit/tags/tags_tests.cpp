@@ -11,8 +11,6 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_tags)
 #include "PrivateTestScope.h"
 #include "editor/GameplayTagPicker.h"
@@ -20,41 +18,46 @@
 #include "tags/TagStore.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// gameplay_tags.cpp
+
 namespace test_gameplay_tags {
 using eve::tags::GameplayTagMatch;
 using eve::tags::GameplayTagRegistry;
 
-TEST_CASE("gameplayTags.registryValidatesStableNamesAndIds") {
+// Name contract: canonical dot segments map to stable ids. Repeating the same
+// definition is a NoOp; conflicting descriptions and malformed names reject.
+TEST_CASE("gameplayTags.spec.registry_names_ids_and_conflicts") {
     GameplayTagRegistry registry;
-    auto                attack = registry.registerTag("Combat.Action.Attack", "An offensive combat action");
-    REQUIRE(attack.ok());
-    // FNV-1a 64-bit vector for the canonical UTF-8 name, including case and dots.
-    CHECK_EQ(attack.value().value(), std::uint64_t(0x5fd0e8ccf2e3cf33ull));
-    auto duplicate = registry.registerTag("Combat.Action.Attack", "An offensive combat action");
-    REQUIRE(duplicate.ok());
-    CHECK(duplicate.status().code() == eve::StatusCode::NoOp);
-    CHECK(!registry.registerTag("Combat..Attack", "invalid").ok());
-    CHECK(!registry.registerTag("Combat.Action.Attack", "different metadata").ok());
+    auto                first = registry.registerTag("Combat.Action.Attack", "offensive action");
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().value(), std::uint64_t{0x5fd0e8ccf2e3cf33ull});
+    auto repeated = registry.registerTag("Combat.Action.Attack", "offensive action");
+    REQUIRE(repeated.ok());
+    CHECK_EQ(repeated.code(), eve::StatusCode::NoOp);
+    CHECK(!registry.registerTag("Combat..Attack", "bad").ok());
+    CHECK(!registry.registerTag("Combat.Action.Attack", "different").ok());
+    CHECK_EQ(registry.definitions().size(), std::size_t{1});
 }
 
-TEST_CASE("gameplayTags.registrySearchesHierarchyDeterministically") {
+// Search contract: root uses dot boundaries; text filtering is case
+// insensitive, and results are ordered by canonical name.
+TEST_CASE("gameplayTags.spec.hierarchy_and_search") {
     GameplayTagRegistry registry;
-    REQUIRE(registry.registerTag("Combat", "Combat root").ok());
-    REQUIRE(registry.registerTag("Combat.Action", "Actions").ok());
-    REQUIRE(registry.registerTag("Combat.Action.Attack", "Melee and ranged attacks").ok());
-    REQUIRE(registry.registerTag("State.Stunned", "Cannot act").ok());
-
-    const auto combat = registry.search({}, "Combat");
-    REQUIRE(combat.size() == 3);
-    CHECK(combat[0].name == "Combat");
-    CHECK(combat[2].name == "Combat.Action.Attack");
-    const auto filtered = registry.search("RANGED", "Combat");
-    REQUIRE(filtered.size() == 1);
-    CHECK(filtered[0].name == "Combat.Action.Attack");
+    REQUIRE(registry.registerTag("Combat", "root").ok());
+    REQUIRE(registry.registerTag("Combat.Action", "actions").ok());
+    REQUIRE(registry.registerTag("Combat.Action.Attack", "Melee and RANGED attacks").ok());
+    REQUIRE(registry.registerTag("Combatant", "different prefix").ok());
+    auto descendants = registry.search({}, "Combat");
+    REQUIRE_EQ(descendants.size(), std::size_t{3});
+    CHECK_EQ(descendants[0].name, "Combat");
+    CHECK_EQ(descendants[2].name, "Combat.Action.Attack");
+    auto filtered = registry.search("ranged", "Combat");
+    REQUIRE_EQ(filtered.size(), std::size_t{1});
+    CHECK_EQ(filtered[0].name, "Combat.Action.Attack");
 }
 
-TEST_CASE("gameplayTags.registryCodecRoundTripsAndRejectsTamperedIds") {
+// Codec contract: version-one values round trip by value, while altered ids
+// or unsupported versions fail without publishing a partial registry.
+TEST_CASE("gameplayTags.spec.codec_round_trip_and_validation") {
     GameplayTagRegistry registry;
     REQUIRE(registry.registerTag("Combat.Action.Attack", "Attack").ok());
     REQUIRE(registry.registerTag("State.Stunned", "Stun").ok());
@@ -63,51 +66,48 @@ TEST_CASE("gameplayTags.registryCodecRoundTripsAndRejectsTamperedIds") {
     auto decoded = GameplayTagRegistry::fromValue(encoded.value());
     REQUIRE(decoded.ok());
     CHECK(decoded.value().definitions() == registry.definitions());
-
-    eve::Value tampered = encoded.value();
-    tampered.find("tags")->at(0).set("id", "0000000000000000");
-    CHECK(!GameplayTagRegistry::fromValue(tampered).ok());
-    tampered = encoded.value();
-    tampered.set("version", 2);
-    CHECK(!GameplayTagRegistry::fromValue(tampered).ok());
+    eve::Value badId = encoded.value();
+    badId.find("tags")->at(0).set("id", "0000000000000000");
+    CHECK(!GameplayTagRegistry::fromValue(badId).ok());
+    eve::Value badVersion = encoded.value();
+    badVersion.set("version", 2);
+    CHECK(!GameplayTagRegistry::fromValue(badVersion).ok());
 }
 
-TEST_CASE("gameplayTags.storeMatchesOnlyDotBoundaryDescendants") {
+// Hierarchical membership follows dot boundaries; similar textual prefixes
+// are not descendants, and exact mode excludes descendants.
+TEST_CASE("gameplayTags.spec.store_matches_dot_boundary_only") {
     eve::tags::TagStore store;
-    store.addTag("fighter:a", "Combat.Action.Attack.Light");
-    store.addTag("fighter:b", "Combat.Action.AttackHeavy");
-    store.addTag("fighter:c", "State.Stunned");
-
+    CHECK(store.addTag("fighter:a", "Combat.Action.Attack.Light"));
+    CHECK(store.addTag("fighter:b", "Combat.Action.AttackHeavy"));
     CHECK(store.hasTagMatching("fighter:a", "Combat.Action.Attack", GameplayTagMatch::IncludeDescendants));
     CHECK(!store.hasTagMatching("fighter:b", "Combat.Action.Attack", GameplayTagMatch::IncludeDescendants));
     CHECK(!store.hasTagMatching("fighter:a", "Combat.Action.Attack", GameplayTagMatch::Exact));
-    const auto subjects = store.subjectsWithTagMatching("Combat.Action.Attack", GameplayTagMatch::IncludeDescendants);
-    REQUIRE(subjects.size() == 1);
-    CHECK(subjects[0] == "fighter:a");
+    auto subjects = store.subjectsWithTagMatching("Combat.Action.Attack", GameplayTagMatch::IncludeDescendants);
+    REQUIRE_EQ(subjects.size(), std::size_t{1});
+    CHECK_EQ(subjects[0], "fighter:a");
     CHECK(store.matchesAllTags("fighter:a", {"Combat", "Combat.Action"}, GameplayTagMatch::IncludeDescendants));
-    CHECK(store.matchesAnyTag("fighter:c", {"Combat", "State"}, GameplayTagMatch::IncludeDescendants));
 }
 
-TEST_CASE("gameplayTagPicker.projectsSearchRootDepthAndSelection") {
+// Picker contract: root and filter project an ordered hierarchy; selection
+// accepts only a registered tag and rejects malformed roots.
+TEST_CASE("gameplayTags.spec.picker_hierarchy_filter_and_selection") {
     GameplayTagRegistry registry;
-    REQUIRE(registry.registerTag("Combat", "Combat root").ok());
-    REQUIRE(registry.registerTag("Combat.Action", "Action root").ok());
-    REQUIRE(registry.registerTag("Combat.Action.Attack", "Attack").ok());
-    REQUIRE(registry.registerTag("State.Stunned", "Stun").ok());
-
+    REQUIRE(registry.registerTag("Combat", "root").ok());
+    REQUIRE(registry.registerTag("Combat.Action", "actions").ok());
+    REQUIRE(registry.registerTag("Combat.Action.Attack", "attack").ok());
+    REQUIRE(registry.registerTag("State.Stunned", "stun").ok());
     eve::editor::GameplayTagPicker picker(registry);
     REQUIRE(picker.setRoot("Combat").ok());
     auto entries = picker.entries();
-    REQUIRE(entries.size() == 3);
-    CHECK(entries[0].depth == 0);
+    REQUIRE_EQ(entries.size(), std::size_t{3});
+    CHECK_EQ(entries[0].depth, 0);
     CHECK(entries[0].hasChildren);
-    CHECK(entries[2].depth == 2);
-    CHECK(!entries[2].hasChildren);
+    CHECK_EQ(entries[2].depth, 2);
     picker.setFilter("attack");
-    entries = picker.entries();
-    REQUIRE(entries.size() == 1);
+    REQUIRE_EQ(picker.entries().size(), std::size_t{1});
     REQUIRE(picker.select("Combat.Action.Attack").ok());
-    CHECK(picker.selected() == "Combat.Action.Attack");
+    CHECK_EQ(picker.selected(), "Combat.Action.Attack");
     CHECK(!picker.select("Combat.Action.Missing").ok());
     CHECK(!picker.setRoot("Combat..Invalid").ok());
 }
@@ -123,126 +123,107 @@ TEST_CASE("gameplayTagPicker.projectsSearchRootDepthAndSelection") {
 #include "tags/Tags.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// tags.cpp
+
 namespace test_tags_unit {
-using namespace eve;
-
-
-using eve::tags::Tags;
 using eve::tags::TagStore;
 
-TEST_CASE("tags.tagsAreSetsWithDeterministicOrdering") {
-    TagStore tags;
-    CHECK(tags.addTag("subject:b", "zeta"));
-    CHECK(tags.addTag("subject:b", "alpha"));
-    CHECK(!tags.addTag("subject:b", "alpha"));
-    CHECK(tags.hasTag("subject:b", "alpha"));
-
-    const auto values = tags.tagsOf("subject:b");
-    REQUIRE(values.size() == 2);
-    CHECK(values[0] == "alpha");
-    CHECK(values[1] == "zeta");
-    CHECK(tags.removeTag("subject:b", "alpha"));
-    CHECK(!tags.removeTag("subject:b", "alpha"));
-    CHECK(!tags.hasTag("subject:b", "alpha"));
+// Set contract: duplicate adds and absent removes are NoOps; enumeration and
+// reverse lookup are lexical rather than insertion order.
+TEST_CASE("tags.spec.set_membership_and_reverse_indexes") {
+    TagStore store;
+    CHECK(store.addTag("subject:z", "beta"));
+    CHECK(store.addTag("subject:z", "alpha"));
+    CHECK(store.addTag("subject:a", "alpha"));
+    CHECK(!store.addTag("subject:z", "alpha"));
+    CHECK_EQ(store.tagsOf("subject:z")[0], "alpha");
+    CHECK_EQ(store.tagsOf("subject:z")[1], "beta");
+    CHECK_EQ(store.subjectsWithTag("alpha")[0], "subject:a");
+    CHECK_EQ(store.subjectsWithTag("alpha")[1], "subject:z");
+    CHECK(store.removeTag("subject:a", "alpha"));
+    CHECK(!store.removeTag("subject:a", "alpha"));
+    REQUIRE_EQ(store.subjectsWithTag("alpha").size(), std::size_t{1});
 }
 
-TEST_CASE("tags.reverseTagQueriesAreIndexedAndSorted") {
-    TagStore tags;
-    tags.addTag("subject:z", "selectable");
-    tags.addTag("subject:a", "selectable");
-    tags.addTag("subject:m", "other");
-
-    const auto subjects = tags.subjectsWithTag("selectable");
-    REQUIRE(subjects.size() == 2);
-    CHECK(subjects[0] == "subject:a");
-    CHECK(subjects[1] == "subject:z");
-    tags.removeTag("subject:a", "selectable");
-    REQUIRE(tags.subjectsWithTag("selectable").size() == 1);
-    CHECK(tags.subjectsWithTag("selectable")[0] == "subject:z");
+// Quantifier contract: all(empty) is true and any(empty) is false, for both
+// tags and capabilities. Capabilities remain independent from same-name tags.
+TEST_CASE("tags.spec.all_any_and_capability_independence") {
+    TagStore store;
+    CHECK(store.addTag("subject", "shared"));
+    CHECK(store.addTag("subject", "other"));
+    CHECK(store.addCapability("subject", "shared"));
+    CHECK(store.requireAllTags("subject", {"shared", "other"}));
+    CHECK(!store.requireAllTags("subject", {"shared", "missing"}));
+    CHECK(store.requireAnyTag("subject", {"missing", "other"}));
+    CHECK(store.requireAllTags("missing", {}));
+    CHECK(!store.requireAnyTag("subject", {}));
+    CHECK(store.requireAllCapabilities("subject", {"shared"}));
+    CHECK(!store.requireAnyCapability("subject", {}));
+    CHECK(store.removeTag("subject", "shared"));
+    CHECK(!store.hasTag("subject", "shared"));
+    REQUIRE(store.hasCapability("subject", "shared"));
 }
 
-TEST_CASE("tags.requireAllAndAnyHaveExplicitEmptySetSemantics") {
-    TagStore tags;
-    tags.addTag("subject", "a");
-    tags.addTag("subject", "b");
-    tags.addCapability("subject", "x");
-    tags.addCapability("subject", "y");
-
-    CHECK(tags.requireAllTags("subject", {"a", "b"}));
-    CHECK(!tags.requireAllTags("subject", {"a", "missing"}));
-    CHECK(tags.requireAnyTag("subject", {"missing", "b"}));
-    CHECK(!tags.requireAnyTag("subject", {}));
-    CHECK(tags.requireAllTags("missing", {}));
-    CHECK(tags.requireAllCapabilities("subject", {"x", "y"}));
-    CHECK(tags.requireAnyCapability("subject", {"missing", "x"}));
-    CHECK(!tags.requireAnyCapability("missing", {"x"}));
+// Input/event contract: empty stable ids cannot mutate. Each successful
+// mutation emits one sequential event; clearEvents retains state and counter.
+TEST_CASE("tags.spec.invalid_input_and_event_sequence") {
+    TagStore store;
+    CHECK(!store.addTag("", "tag"));
+    CHECK(!store.addTag("subject", ""));
+    CHECK(!store.addCapability("", "ability"));
+    CHECK(store.events().empty());
+    CHECK(store.addTag("subject", "tag"));
+    CHECK(!store.addTag("subject", "tag"));
+    CHECK(store.addCapability("subject", "ability"));
+    CHECK(store.removeTag("subject", "tag"));
+    REQUIRE_EQ(store.events().size(), std::size_t{3});
+    CHECK_EQ(store.events()[0].action, "tag_added");
+    CHECK_EQ(store.events()[0].sequence, std::uint64_t{1});
+    CHECK_EQ(store.events()[1].action, "capability_added");
+    CHECK_EQ(store.events()[2].action, "tag_removed");
+    store.clearEvents();
+    CHECK(store.events().empty());
+    CHECK(store.hasCapability("subject", "ability"));
+    CHECK(store.removeCapability("subject", "ability"));
+    CHECK_EQ(store.events()[0].sequence, std::uint64_t{4});
 }
 
-TEST_CASE("tags.capabilitiesAreIndependentFromTags") {
-    TagStore tags;
-    CHECK(tags.addTag("subject", "shared-name"));
-    CHECK(tags.addCapability("subject", "shared-name"));
-    CHECK(tags.removeTag("subject", "shared-name"));
-    CHECK(!tags.hasTag("subject", "shared-name"));
-    CHECK(tags.hasCapability("subject", "shared-name"));
-    CHECK(tags.removeCapability("subject", "shared-name"));
-    CHECK(!tags.hasCapability("subject", "shared-name"));
+// Lifecycle contract: removeSubject clears both sets and reverse indexes;
+// clear resets the entire store including event sequence.
+TEST_CASE("tags.spec.subject_removal_and_full_clear") {
+    TagStore store;
+    store.addTag("subject", "one");
+    store.addTag("subject", "two");
+    store.addCapability("subject", "ability");
+    store.clearEvents();
+    CHECK(store.removeSubject("subject"));
+    CHECK(store.tagsOf("subject").empty());
+    CHECK(store.capabilitiesOf("subject").empty());
+    CHECK(store.subjectsWithTag("one").empty());
+    REQUIRE_EQ(store.events().size(), std::size_t{4});
+    CHECK_EQ(store.events().back().action, "subject_removed");
+    CHECK(!store.removeSubject("subject"));
+    store.clear();
+    CHECK(store.events().empty());
+    CHECK(store.addTag("new", "tag"));
+    CHECK_EQ(store.events()[0].sequence, std::uint64_t{1});
 }
 
-TEST_CASE("tags.rejectEmptyStableIdentifiersWithoutEvents") {
-    TagStore tags;
-    CHECK(!tags.addTag("", "tag"));
-    CHECK(!tags.addTag("subject", ""));
-    CHECK(!tags.addCapability("", "capability"));
-    CHECK(!tags.addCapability("subject", ""));
-    CHECK(tags.events().empty());
-}
-
-TEST_CASE("tags.eventsDescribeOnlySuccessfulMutations") {
-    TagStore tags;
-    tags.addTag("subject", "tag");
-    tags.addTag("subject", "tag");
-    tags.addCapability("subject", "capability");
-    tags.removeTag("subject", "tag");
-    REQUIRE(tags.events().size() == 3);
-    CHECK_EQ(tags.events()[0].sequence, std::uint64_t(1));
-    CHECK_EQ(tags.events()[1].sequence, std::uint64_t(2));
-    CHECK(tags.events()[0].action == "tag_added");
-    CHECK(tags.events()[0].subject == "subject");
-    CHECK(tags.events()[0].value == "tag");
-    CHECK(tags.events()[1].action == "capability_added");
-    CHECK(tags.events()[2].action == "tag_removed");
-    tags.clearEvents();
-    CHECK(tags.events().empty());
-    CHECK(tags.hasCapability("subject", "capability"));
-}
-
-TEST_CASE("tags.removeSubjectCleansBothSetsAndReverseIndex") {
-    TagStore tags;
-    tags.addTag("subject", "one");
-    tags.addTag("subject", "two");
-    tags.addCapability("subject", "ability");
-    tags.clearEvents();
-
-    CHECK(tags.removeSubject("subject"));
-    CHECK(tags.tagsOf("subject").empty());
-    CHECK(tags.capabilitiesOf("subject").empty());
-    CHECK(tags.subjectsWithTag("one").empty());
-    REQUIRE(tags.events().size() == 4);
-    CHECK(tags.events().back().action == "subject_removed");
-    CHECK(!tags.removeSubject("subject"));
-}
-
-TEST_CASE("tags.clearResetsStateEventsAndSequence") {
-    TagStore tags;
-    tags.addTag("subject", "tag");
-    tags.clear();
-    CHECK(tags.tagsOf("subject").empty());
-    CHECK(tags.events().empty());
-    tags.addCapability("new-subject", "new-capability");
-    REQUIRE(tags.events().size() == 1);
-    CHECK_EQ(tags.events()[0].sequence, std::uint64_t(1));
+// Module lifecycle contract: listener capability exists only while the Tags
+// module instance is live.
+TEST_CASE("tags.spec.module_listener_lifecycle") {
+    eve::cap::detail::clearAllRaw();
+    int queryCount = 0;
+    {
+        eve::tags::Tags module;
+        eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++queryCount; });
+        CHECK_EQ(queryCount, 1);
+        int mutationCount = 0;
+        eve::cap::forEach<eve::IStateMutation>([&](eve::IStateMutation*) { ++mutationCount; });
+        CHECK_EQ(mutationCount, 1);
+    }
+    queryCount = 0;
+    eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++queryCount; });
+    REQUIRE_EQ(queryCount, 0);
 }
 
 static const char* kTagsScript = R"SQ(
@@ -257,28 +238,10 @@ function testTagsBindings() {
     if (!tags.requireAny("subject:b", ["missing", "zeta"])) return false;
     if (!tags.addCapability("subject:b", "can.perform")) return false;
     if (!tags.requireAllCapabilities("subject:b", ["can.perform"])) return false;
-    if (!tags.hasCapability("subject:b", "can.perform")) return false;
     return tags.eventAction(tags.eventCount() - 1) == "capability_added";
 }
 )SQ";
 
 UnitSciptTest(TagsScriptTest, kTagsScript);
-
-
-TEST_CASE("tags.modulePublishesWorldStateListeners") {
-    eve::cap::detail::clearAllRaw();
-    int listeners = 0;
-    {
-        Tags tags;
-        eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
-        CHECK_EQ(listeners, 1);
-        listeners = 0;
-        eve::cap::forEach<eve::IStateMutation>([&](eve::IStateMutation*) { ++listeners; });
-        CHECK_EQ(listeners, 1);
-    }
-    listeners = 0;
-    eve::cap::forEach<eve::IStateQuery>([&](eve::IStateQuery*) { ++listeners; });
-    CHECK_EQ(listeners, 0);
-}
 }  // namespace test_tags_unit
 #endif

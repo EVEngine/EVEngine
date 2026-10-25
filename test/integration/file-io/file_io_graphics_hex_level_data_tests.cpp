@@ -2134,7 +2134,7 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
                                {"name", [](const Actor &a) -> Value { return a.name; },
                                 [](Actor &a, const Value &v) { a.name = std::get<std::string>(v); }},
                                {"hp", [](const Actor &a) -> Value { return a.hp; },
-                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }},
+                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }, "REAL"},
                            }};
 
     Repository<Actor> actors(db, mapping);
