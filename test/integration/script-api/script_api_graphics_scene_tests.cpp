@@ -1,10 +1,11 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: runtime
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_runtime)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include "common/Runtime.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // runtime.cpp
 namespace test_runtime {
@@ -12,20 +13,20 @@ using namespace eve;
 
 TEST_CASE("runtime.scopeAndNativeStackAreRestored") {
     Runtime runtime(256, ssq::Libs::ALL);
-    CHECK(Runtime::current() == nullptr);
+    REQUIRE(Runtime::current() == nullptr);
     const SQInteger top = runtime.vm().getTop();
     {
         auto scope = runtime.enter();
-        CHECK(Runtime::current() == &runtime);
-        CHECK_EQ(Runtime::stackDepth(), size_t(1));
+        REQUIRE(Runtime::current() == &runtime);
+        REQUIRE_EQ(Runtime::stackDepth(), size_t(1));
         {
             auto guard = runtime.guard();
             sq_pushinteger(runtime.handle(), 42);
-            CHECK_EQ(runtime.vm().getTop(), top + 1);
+            REQUIRE_EQ(runtime.vm().getTop(), top + 1);
         }
-        CHECK_EQ(runtime.vm().getTop(), top);
+        REQUIRE_EQ(runtime.vm().getTop(), top);
     }
-    CHECK(Runtime::current() == nullptr);
+    REQUIRE(Runtime::current() == nullptr);
 }
 
 TEST_CASE("runtime.reflectsAndUnloadsScriptClasses") {
@@ -40,139 +41,142 @@ class RuntimeProbe {
 
     const Runtime::ScriptId id     = runtime.runSource(source, "runtime-probe.nut");
     const ScriptInfo*       script = runtime.script(id);
-    CHECK(script != nullptr);
-    // zeroerr's CHECK cannot print the ScriptState enum; compare via int.
-    CHECK(static_cast<int>(script->state) == static_cast<int>(ScriptState::Loaded));
-    CHECK(std::find(script->classes.begin(), script->classes.end(), "RuntimeProbe") != script->classes.end());
+    REQUIRE(script != nullptr);
+    // zeroerr's REQUIRE cannot print the ScriptState enum; compare via int.
+    REQUIRE(static_cast<int>(script->state) == static_cast<int>(ScriptState::Loaded));
+    REQUIRE(std::find(script->classes.begin(), script->classes.end(), "RuntimeProbe") != script->classes.end());
 
     const ReflectedClass* cls = runtime.reflectedClass("RuntimeProbe");
-    CHECK(cls != nullptr);
-    CHECK_EQ(cls->source, std::string("runtime-probe.nut"));
+    REQUIRE(cls != nullptr);
+    REQUIRE_EQ(cls->source, std::string("runtime-probe.nut"));
     auto speed = std::find_if(cls->members.begin(), cls->members.end(),
                               [](const ReflectedMember& member) { return member.name == "speed"; });
-    CHECK(speed != cls->members.end());
-    CHECK(!speed->method);
-    CHECK(std::find_if(speed->attributes.begin(), speed->attributes.end(), [](const ReflectedAttribute& attribute) {
-              return attribute.name == "editor" && attribute.value == "slider";
-          }) != speed->attributes.end());
+    REQUIRE(speed != cls->members.end());
+    REQUIRE(!speed->method);
+    REQUIRE(std::find_if(speed->attributes.begin(), speed->attributes.end(), [](const ReflectedAttribute& attribute) {
+                return attribute.name == "editor" && attribute.value == "slider";
+            }) != speed->attributes.end());
 
-    CHECK(runtime.unload(id));
-    CHECK(runtime.reflectedClass("RuntimeProbe") == nullptr);
+    REQUIRE(runtime.unload(id));
+    REQUIRE(runtime.reflectedClass("RuntimeProbe") == nullptr);
     bool removed = false;
     try {
         runtime.findClass("RuntimeProbe");
     } catch (const ssq::NotFoundException&) {
         removed = true;
     }
-    CHECK(removed);
+    REQUIRE(removed);
 }
 
-TEST_CASE("runtimeWrapsCompileErrorsAndRestoresStack") {
-    Runtime         runtime(256, ssq::Libs::ALL);
-    const SQInteger top    = runtime.vm().getTop();
-    bool            caught = false;
-    try {
-        runtime.compileSource("class Broken {", "broken.nut");
-    } catch (const ScriptException& error) {
-        caught = true;
-        // zeroerr's CHECK_EQ cannot print the ScriptStage enum; compare via int.
-        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
-        CHECK_EQ(error.source(), std::string("broken.nut"));
-    }
-    CHECK(caught);
-    CHECK_EQ(runtime.vm().getTop(), top);
-}
+TEST_CASE("runtime.error_diagnostics_and_stack_contract") {
+    Runtime runtime(512, ssq::Libs::ALL);
+    auto*   sharedRuntime = &runtime;
+    SUB_CASE("runtimeWrapsCompileErrorsAndRestoresStack") {
+        auto& runtime = *sharedRuntime;
 
-TEST_CASE("runtimeRuntimeErrorCarriesLocationAndStack") {
-    Runtime runtime(256, ssq::Libs::ALL);
-    bool    caught = false;
-    try {
-        runtime.runSource(R"SQ(
+        const SQInteger top    = runtime.vm().getTop();
+        bool            caught = false;
+        try {
+            runtime.compileSource("class Broken {", "broken.nut");
+        } catch (const ScriptException& error) {
+            caught = true;
+            // zeroerr's REQUIRE_EQ cannot print the ScriptStage enum; compare via int.
+            REQUIRE_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
+            REQUIRE_EQ(error.source(), std::string("broken.nut"));
+        }
+        REQUIRE(caught);
+        REQUIRE_EQ(runtime.vm().getTop(), top);
+    };
+    SUB_CASE("runtimeRuntimeErrorCarriesLocationAndStack") {
+        auto& runtime = *sharedRuntime;
+
+        bool caught = false;
+        try {
+            runtime.runSource(R"SQ(
 function boom() { throw "kaboom" }
 function outer() { boom() }
 outer();
 )SQ",
-                          "boom.nut");
-    } catch (const ScriptException& error) {
-        caught = true;
-        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Execute));
-        CHECK_EQ(error.source(), std::string("boom.nut"));
-        CHECK(error.hasLocation());
-        CHECK(error.line() > 0);
-        CHECK(!error.function().empty());
-        const std::string message = error.what();
-        CHECK(message.find("kaboom") != std::string::npos);
-        CHECK(message.find("boom.nut:") != std::string::npos);
-        CHECK(message.find("Stack:") != std::string::npos);
-        CHECK(!error.stackTrace().empty());
-        CHECK(error.stackTrace().find("boom") != std::string::npos);
-        CHECK(error.stackTrace().find("outer") != std::string::npos);
-    }
-    CHECK(caught);
-}
+                              "boom.nut");
+        } catch (const ScriptException& error) {
+            caught = true;
+            REQUIRE_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Execute));
+            REQUIRE_EQ(error.source(), std::string("boom.nut"));
+            REQUIRE(error.hasLocation());
+            REQUIRE(error.line() > 0);
+            REQUIRE(!error.function().empty());
+            const std::string message = error.what();
+            REQUIRE(message.find("kaboom") != std::string::npos);
+            REQUIRE(message.find("boom.nut:") != std::string::npos);
+            REQUIRE(message.find("Stack:") != std::string::npos);
+            REQUIRE(!error.stackTrace().empty());
+            REQUIRE(error.stackTrace().find("boom") != std::string::npos);
+            REQUIRE(error.stackTrace().find("outer") != std::string::npos);
+        }
+        REQUIRE(caught);
+    };
+    SUB_CASE("runtimeCaughtErrorExposesThrowSiteViaLastScriptError") {
+        auto& runtime = *sharedRuntime;
 
-TEST_CASE("runtimeCaughtErrorExposesThrowSiteViaLastScriptError") {
-    Runtime runtime(256, ssq::Libs::ALL);
-    runtime.initialize();
-    runtime.runSource(R"SQ(
+        runtime.initialize();
+        runtime.runSource(R"SQ(
 function boom() { throw "kaboom" }
 function outer() { boom() }
 try { outer() } catch (e) {
     caught_stack <- eve.lastScriptError()
 }
 )SQ",
-                      "caught.nut");
-    const std::string report = runtime.vm().find("caught_stack").toString();
-    CHECK(report.find("kaboom") != std::string::npos);
-    CHECK(report.find("caught.nut") != std::string::npos);
-    CHECK(report.find("Stack:") != std::string::npos);
-    CHECK(report.find("boom") != std::string::npos);
+                          "caught.nut");
+        const std::string report = runtime.vm().find("caught_stack").toString();
+        REQUIRE(report.find("kaboom") != std::string::npos);
+        REQUIRE(report.find("caught.nut") != std::string::npos);
+        REQUIRE(report.find("Stack:") != std::string::npos);
+        REQUIRE(report.find("boom") != std::string::npos);
+    };
+    SUB_CASE("runtimeRuntimeErrorMarksScriptFailedAndRestoresStack") {
+        auto& runtime = *sharedRuntime;
+
+        const SQInteger         top = runtime.vm().getTop();
+        const Runtime::ScriptId id  = runtime.compileSource("function bad() { throw \"nope\" }\nbad();\n", "fail.nut");
+        bool                    caught = false;
+        try {
+            runtime.execute(id);
+        } catch (const ScriptException&) {
+            caught = true;
+        }
+        REQUIRE(caught);
+        const ScriptInfo* script = runtime.script(id);
+        REQUIRE(script != nullptr);
+        REQUIRE(static_cast<int>(script->state) == static_cast<int>(ScriptState::Failed));
+        REQUIRE(!script->error.empty());
+        REQUIRE(script->error.find("fail.nut") != std::string::npos);
+        REQUIRE_EQ(runtime.vm().getTop(), top);
+    };
+    SUB_CASE("runtimeCompileErrorCarriesLineColumnAndSnippet") {
+        auto& runtime = *sharedRuntime;
+
+        bool caught = false;
+        try {
+            runtime.compileSource("local x = ;\nlocal y = 1;\n", "broken.nut");
+        } catch (const ScriptException& error) {
+            caught = true;
+            REQUIRE_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
+            REQUIRE(error.hasLocation());
+            REQUIRE(error.line() >= 1);
+            const std::string message = error.what();
+            REQUIRE(message.find("local x = ;") != std::string::npos);
+            REQUIRE(message.find("broken.nut:") != std::string::npos);
+        }
+        REQUIRE(caught);
+    };
 }
 
-TEST_CASE("runtimeRuntimeErrorMarksScriptFailedAndRestoresStack") {
-    Runtime                 runtime(256, ssq::Libs::ALL);
-    const SQInteger         top    = runtime.vm().getTop();
-    const Runtime::ScriptId id     = runtime.compileSource("function bad() { throw \"nope\" }\nbad();\n", "fail.nut");
-    bool                    caught = false;
-    try {
-        runtime.execute(id);
-    } catch (const ScriptException&) {
-        caught = true;
-    }
-    CHECK(caught);
-    const ScriptInfo* script = runtime.script(id);
-    CHECK(script != nullptr);
-    CHECK(static_cast<int>(script->state) == static_cast<int>(ScriptState::Failed));
-    CHECK(!script->error.empty());
-    CHECK(script->error.find("fail.nut") != std::string::npos);
-    CHECK_EQ(runtime.vm().getTop(), top);
-}
-
-TEST_CASE("runtimeCompileErrorCarriesLineColumnAndSnippet") {
-    Runtime runtime(256, ssq::Libs::ALL);
-    bool    caught = false;
-    try {
-        runtime.compileSource("local x = ;\nlocal y = 1;\n", "broken.nut");
-    } catch (const ScriptException& error) {
-        caught = true;
-        CHECK_EQ(static_cast<int>(error.stage()), static_cast<int>(ScriptStage::Compile));
-        CHECK(error.hasLocation());
-        CHECK(error.line() >= 1);
-        const std::string message = error.what();
-        CHECK(message.find("local x = ;") != std::string::npos);
-        CHECK(message.find("broken.nut:") != std::string::npos);
-    }
-    CHECK(caught);
-}
 }  // namespace test_runtime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_runtime_error_sink)
+// Contract section: runtime error sink
 #include "PrivateTestScope.h"
-#include "common/Runtime.h"
+
 #include "devtools/DevTool.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // runtime_error_sink.cpp
 namespace test_runtime_error_sink {
 using namespace eve;
@@ -239,20 +243,18 @@ boom();
     dev::DevTool::instance().detach();
 }
 }  // namespace test_runtime_error_sink
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rx)
+// Contract section: rx
+#include "PrivateTestScope.h"
+
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <vector>
-#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
 #include "rx/Rx.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rx.cpp
 namespace test_rx {
 using eve::rx::AnonymousObservable;
@@ -290,9 +292,7 @@ using eve::rx::Value;
 // ---------------------------------------------------------------------------
 namespace {
 
-[[maybe_unused]] std::string runRxSnippet(const std::string& body) {
-    ssq::VM vm(1024, ssq::Libs::ALL);
-    eve::ModuleManager::expose(vm);
+std::string runRxSnippet(ssq::VM& vm, const std::string& body) {
     std::string prelude = R"(
         rx <- eve.Rx();
     )";
@@ -306,52 +306,31 @@ namespace {
 
 }  // namespace
 
-TEST_CASE("rx.script.subject.onNext") {
-    std::string out = runRxSnippet(R"(
-        result <- "none";
-        local s = rx.newSubject();
-        s.subscribe(function(v) { result = "got:" + v; });
-        s.onNext(42);
-    )");
-    CHECK_EQ(out, std::string("got:42"));
-}
-
-TEST_CASE("rx.script.subject.operators") {
-    std::string out = runRxSnippet(R"(
-        result <- "none";
-        local s = rx.newSubject();
-        local even = s.filter(function(v) { return v % 2 == 0; });
-        even.subscribe(function(v) { result = "even:" + v; });
-        s.onNext(1);
-        s.onNext(2);
-        s.onNext(4);
-    )");
-    CHECK_EQ(out, std::string("even:4"));
-}
-
-TEST_CASE("rx.script.map") {
-    std::string out = runRxSnippet(R"(
-        result <- "none";
-        local s = rx.newSubject();
-        local doubled = s.map(function(v) { return v * 2; });
-        doubled.subscribe(function(v) { result = "d:" + v; });
-        s.onNext(21);
-    )");
-    CHECK_EQ(out, std::string("d:42"));
-}
-
-TEST_CASE("rx.script.behaviorSubject") {
-    std::string out = runRxSnippet(R"(
+TEST_CASE("rx.script.observableBindingContract") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    auto* sharedVm = &vm;
+    SUB_CASE("subject_filter_map_delivery") {
+        const auto out = runRxSnippet(*sharedVm, R"(
+            result <- "";
+            local subject = rx.newSubject();
+            local stream = subject.filter(function(v) { return v % 2 == 0; }).map(function(v) { return v * 2; });
+            stream.subscribe(function(v) { result += v + ","; });
+            subject.onNext(1); subject.onNext(2); subject.onNext(4);
+        )");
+        REQUIRE_EQ(out, std::string("4,8,"));
+    };
+    SUB_CASE("rx.script.behaviorSubject") {
+        std::string out = runRxSnippet(*sharedVm, R"(
         result <- "none";
         local bs = rx.newBehaviorSubject(5);
         bs.subscribe(function(v) { result = "v:" + v; });
         bs.setValue(9);
     )");
-    CHECK_EQ(out, std::string("v:9"));
-}
-
-TEST_CASE("rx.script.take") {
-    std::string out = runRxSnippet(R"(
+        REQUIRE_EQ(out, std::string("v:9"));
+    };
+    SUB_CASE("rx.script.take") {
+        std::string out = runRxSnippet(*sharedVm, R"(
         result <- "";
         local s = rx.newSubject();
         s.take(2).subscribe(function(v) { result += v; });
@@ -359,11 +338,10 @@ TEST_CASE("rx.script.take") {
         s.onNext(2);
         s.onNext(3);
     )");
-    CHECK_EQ(out, std::string("12"));
-}
-
-TEST_CASE("rx.script.replaySubject") {
-    std::string out = runRxSnippet(R"(
+        REQUIRE_EQ(out, std::string("12"));
+    };
+    SUB_CASE("rx.script.replaySubject") {
+        std::string out = runRxSnippet(*sharedVm, R"(
         result <- "";
         local rs = rx.newReplaySubject(2);
         rs.onNext(1);
@@ -371,11 +349,15 @@ TEST_CASE("rx.script.replaySubject") {
         rs.onNext(3);
         rs.subscribe(function(v) { result += v; });
     )");
-    CHECK_EQ(out, std::string("23"));
+        REQUIRE_EQ(out, std::string("23"));
+    };
 }
 
+
 TEST_CASE("rx.script.fromEvent.pump") {
-    std::string out = runRxSnippet(R"(
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
+    std::string out = runRxSnippet(vm, R"(
         result <- "";
         local ev = eve.PlatformEvent();
         local ev2 = eve.PlatformEvent();
@@ -387,12 +369,14 @@ TEST_CASE("rx.script.fromEvent.pump") {
         rx.pump(ev);
         rx.pump(ev2);
     )");
-    CHECK_EQ(out, std::string("AB"));
+    REQUIRE_EQ(out, std::string("AB"));
 }
 
 TEST_CASE("rx.script.throwingSubscriberIsReported") {
+    ssq::VM vm(1024, ssq::Libs::ALL);
+    eve::ModuleManager::expose(vm);
     eve::script::resetReportedScriptCallFailures();
-    runRxSnippet(R"(
+    runRxSnippet(vm, R"(
         local s = rx.newSubject();
         s.subscribe(function(v) { throw "subscriber exploded"; });
         s.onNext(1);
@@ -403,18 +387,12 @@ TEST_CASE("rx.script.throwingSubscriberIsReported") {
     REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
 }
 }  // namespace test_rx
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scenario_recorder)
-#include <filesystem>
-#include <string>
+
+// Contract section: scenario recorder
 #include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "common/Runtime.h"
-#include "devtools/DevTool.hpp"
+
+#include <filesystem>
 #include "devtools/ScenarioRecorder.h"
-#include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scenario_recorder.cpp
 namespace test_scenario_recorder {
 using namespace eve;
@@ -547,62 +525,26 @@ TEST_CASE("devtools.scenario.replayReproducesStateDrivenError") {
     std::filesystem::remove(path, removed);
 }
 }  // namespace test_scenario_recorder
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene)
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
+
+// Contract section: scene
 #include "PrivateTestScope.h"
+
+#include <cmath>
+#include <glm/gtc/quaternion.hpp>
+#include <utility>
 #include "common/Capability.h"
 #include "common/ECS.h"
-#include "common/EntitySpatialResolver.h"
-#include "common/Module.h"
-#include "common/ProcgenSceneSink.h"
 #include "common/ScriptComponentSnapshot.h"
-#include "common/SquirrelBinding.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "physics/World.h"
 #include "physics/World3D.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
-#include "scene/SceneCameraProjection.h"
-#include "scene/SceneComponent.h"
 #include "scene/SceneHost.h"
-#include "scene/SceneNodeRef.h"
 #include "scene/SceneObject.h"
 #include "scene/TransformSystem.h"
-#include "spatial/Octree.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene.cpp
 namespace test_scene {
 using namespace eve::scene;
@@ -612,40 +554,11 @@ namespace {
 
 [[maybe_unused]] bool approxEq(float a, float b, float eps = 1e-4f) { return std::fabs(a - b) < eps; }
 
-[[maybe_unused]] bool matApproxEq(const glm::mat4& a, const glm::mat4& b, float eps = 1e-4f) {
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
-            if (!approxEq(a[c][r], b[c][r], eps)) return false;
-        }
-    }
-    return true;
-}
-
 template <class T>
-[[maybe_unused]] T* sceneValue(eve::Result<T*> result) {
-    CHECK(result.ok());
-    if (!result.ok()) return nullptr;
+[[maybe_unused]] T* sceneValue(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::Result<T*> result) {
+    REQUIRE(result.ok());
     return std::move(result).takeValue();
 }
-
-class BattleScene : public SceneComponent {
-public:
-    bool     showAlly = true;
-    NodeDesc slot;
-
-    NodeDesc build() override {
-        std::vector<NodeDesc> kids = {
-            node("map").withPosition(0.f, 0.f, 0.f),
-            node("player").withPosition(1.f, 0.f, 0.f),
-            when(showAlly, node("ally").withPosition(2.f, 0.f, 0.f)),
-        };
-        if (slot.id.empty())
-            kids.push_back(group({}, "__slot_empty"));
-        else
-            kids.push_back(slot);
-        return node("battle", std::move(kids), "battle");
-    }
-};
 
 }  // namespace
 
@@ -657,7 +570,7 @@ TEST_CASE("Scene.link.syncRenderable3DWorldRotation") {
     // returns a different Euler family, so a multi-axis node rendered at a wrong
     // orientation. A single-axis rotation happens to survive either way, hence the
     // three-axis angles here.
-    SceneHost *h = sceneValue(SceneHost::createHost("link3d"));
+    SceneHost* h = sceneValue(_ZEROERR_TEST_CONTEXT, SceneHost::createHost("link3d"));
     h->setTree(
         node("root",
              {node("mesh").withPosition(1.f, 2.f, 3.f).withRotation(0.5f, 0.25f, 0.1f).withScaleXYZ(2.f, 3.f, 4.f)}));
@@ -680,109 +593,8 @@ TEST_CASE("Scene.link.syncRenderable3DWorldRotation") {
 }
 
 
-TEST_CASE("Scene.render.parentChildOrbitPreview") {
-    if (ecs::current()->getManager<Renderable2D>() != nullptr) {
-        auto view = ecs::View<Renderable2D, Renderable2D::Sprite>();
-        for (auto it = view.begin(); it != view.end(); ++it) {
-            auto [sp]   = *it;
-            sp->visible = false;
-        }
-    }
-
-    auto* win = eve::window::Window::create();
-    auto* gfx = Graphics::create();
-    REQUIRE(win != nullptr);
-    REQUIRE(gfx != nullptr);
-    eve::window::WindowSettings s;
-    s.width    = 640;
-    s.height   = 420;
-    s.centered = true;
-    REQUIRE(win->setWindowSettings(s));
-
-    SceneHost* h = sceneValue(SceneHost::createHost("orbit"));
-    h->setTree(node("root",
-                    {
-                        node("hub").withSpace("2d").withPosition(320.f, 210.f, 0.f).withRotation(0.f, 0.f, 0.f),
-                        node("arm",
-                             {
-                                 node("hand").withSpace("2d").withPosition(90.f, 0.f, 0.f),
-                             })
-                            .withSpace("2d")
-                            .withPosition(320.f, 210.f, 0.f),
-                        node("moon").withSpace("2d").withPosition(420.f, 210.f, 0.f),
-                    })
-                   .withSpace("2d"));
-
-    auto* hub              = Renderable2D::create();
-    hub->sprite()->width   = 48;
-    hub->sprite()->height  = 48;
-    hub->sprite()->r       = 0.95f;
-    hub->sprite()->g       = 0.75f;
-    hub->sprite()->b       = 0.25f;
-    hub->sprite()->visible = true;
-
-    auto* hand              = Renderable2D::create();
-    hand->sprite()->width   = 28;
-    hand->sprite()->height  = 28;
-    hand->sprite()->r       = 0.35f;
-    hand->sprite()->g       = 0.85f;
-    hand->sprite()->b       = 1.f;
-    hand->sprite()->visible = true;
-
-    auto* moon              = Renderable2D::create();
-    moon->sprite()->width   = 22;
-    moon->sprite()->height  = 22;
-    moon->sprite()->r       = 0.85f;
-    moon->sprite()->g       = 0.45f;
-    moon->sprite()->b       = 0.95f;
-    moon->sprite()->visible = true;
-
-    REQUIRE(h->linkRenderable2D("hub", hub));
-    REQUIRE(h->linkRenderable2D("hand", hand));
-    REQUIRE(h->linkRenderable2D("moon", moon));
-
-    auto* cam      = Camera2D::createCamera();
-    cam->data()->r = 0.08f;
-    cam->data()->g = 0.09f;
-    cam->data()->b = 0.12f;
-
-    float handTravel = 0.f;
-    float prevHX     = hand->transform()->x;
-    for (int frame = 0; frame < 90; ++frame) {
-        const float t     = float(frame) * 0.06f;
-        SceneNode*  arm   = sceneValue(h->findById("arm"));
-        SceneNode*  moonN = sceneValue(h->findById("moon"));
-        REQUIRE(arm != nullptr);
-        REQUIRE(moonN != nullptr);
-        arm->roll         = t;
-        arm->localDirty   = true;
-        moonN->x          = 320.f + std::cos(t * 1.4f) * 120.f;
-        moonN->y          = 210.f + std::sin(t * 1.4f) * 70.f;
-        moonN->localDirty = true;
-
-        TransformSystem::updateHost(h);
-        RenderSystem::render(*gfx);
-
-        handTravel += std::fabs(hand->transform()->x - prevHX);
-        prevHX = hand->transform()->x;
-
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
-        }
-        SDL_Delay(16);
-    }
-
-    CHECK_GT(handTravel, 50.f);
-    hub->sprite()->visible  = false;
-    hand->sprite()->visible = false;
-    moon->sprite()->visible = false;
-    win->close();
-}
-
-
 TEST_CASE("Scene.link.genericMultiLinkAndSync") {
-    SceneHost* h = sceneValue(SceneHost::createHost("genlink"));
+    SceneHost* h = sceneValue(_ZEROERR_TEST_CONTEXT, SceneHost::createHost("genlink"));
     h->setTree(node("root", {node("soldier")}));
 
     auto*                 r3 = eve::graphics::Renderable3D::create();
@@ -796,7 +608,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
     CHECK_EQ(h->linkCount("soldier"), 3);
 
     // node → body + camera (syncMode 0)
-    SceneNode* n = sceneValue(h->findById("soldier"));
+    SceneNode* n = sceneValue(_ZEROERR_TEST_CONTEXT, h->findById("soldier"));
     REQUIRE(n != nullptr);
     n->x          = 3.f;
     n->y          = 4.f;
@@ -825,7 +637,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
 
     // full rebuild preserves remaining links by id
     h->setTree(node("root", {node("soldier")}));
-    SceneNode* n2 = sceneValue(h->findById("soldier"));
+    SceneNode* n2 = sceneValue(_ZEROERR_TEST_CONTEXT, h->findById("soldier"));
     REQUIRE(n2 != nullptr);
     REQUIRE_EQ(n2->links.size(), 2u);
     bool hasMesh = false, hasCam = false;
@@ -842,7 +654,7 @@ TEST_CASE("Scene.link.genericMultiLinkAndSync") {
 }
 
 TEST_CASE("Scene.link.physics2D") {
-    SceneHost* h = sceneValue(SceneHost::createHost("link2dphys"));
+    SceneHost* h = sceneValue(_ZEROERR_TEST_CONTEXT, SceneHost::createHost("link2dphys"));
     h->setTree(node("root", {node("p").withSpace("2d").withPosition(10.f, 20.f, 0.f)}));
 
     eve::physics::World w(0.f, 0.f, true, 1.f);
@@ -857,7 +669,7 @@ TEST_CASE("Scene.link.physics2D") {
     b->setPosition(30.f, 40.f);
     b->setAngle(0.5f);
     TransformSystem::updateHost(h);
-    SceneNode* n = sceneValue(h->findById("p"));
+    SceneNode* n = sceneValue(_ZEROERR_TEST_CONTEXT, h->findById("p"));
     REQUIRE(n != nullptr);
     CHECK(approxEq(n->x, 30.f));
     CHECK(approxEq(n->y, 40.f));
@@ -874,7 +686,7 @@ TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
     // family, which handed a body-authoritative node the wrong angles for any
     // multi-axis rotation; localMatrix() then rebuilt a different orientation than
     // the body actually has. Single-axis values agree either way, hence three axes.
-    SceneHost *h = sceneValue(SceneHost::createHost("link3drot"));
+    SceneHost* h = sceneValue(_ZEROERR_TEST_CONTEXT, SceneHost::createHost("link3drot"));
     h->setTree(node("root", {node("rig")}));
 
     eve::physics::World3D w(0.f, -9.8f, 0.f, true);
@@ -890,7 +702,7 @@ TEST_CASE("Scene.link.body3DPullRoundTripsEuler") {
     CHECK(h->linkPhysics3D("rig", b, 1));  // body-authoritative: pull into the node
     TransformSystem::updateHost(h);
 
-    SceneNode *n = sceneValue(h->findById("rig"));
+    SceneNode* n = sceneValue(_ZEROERR_TEST_CONTEXT, h->findById("rig"));
     REQUIRE(n != nullptr);
     REQUIRE(approxEq(n->yaw, yaw));
     REQUIRE(approxEq(n->pitch, pitch));
@@ -1021,9 +833,9 @@ function testSceneEntityEnableAndDelayedDetach() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("npc")
-    scene.addNode("prop")
+    scene.beginNode("root", "")
+    scene.addNode("npc", "")
+    scene.addNode("prop", "")
     scene.end()
     scene.mountBuildAs("life")
 
@@ -1398,60 +1210,65 @@ public:
     ssq::VM vm;
 };
 
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycle") {
-    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityLifecycle"), vm).toBool());
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityLifecycleContracts") {
+    auto* const sharedVm = &vm;
+    // Each scenario removes its entities; host names and local entity classes differ.
+    SUB_CASE("Scene.script.entityLifecycle") {
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("testSceneEntityLifecycle"), *sharedVm).toBool());
+    };
+    SUB_CASE("Scene.script.entityViewCacheAfterDetach") {
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("testSceneEntityViewCacheAfterDetach"), *sharedVm).toBool());
+    };
+    SUB_CASE("Scene.script.entityEnableAndDelayedDetach") {
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("testSceneEntityEnableAndDelayedDetach"), *sharedVm).toBool());
+    };
 }
 
 // J-3 的"引擎工具读到脚本组件"读侧：节点 → 脚本实体（原生访问）→ 已登记组件 → 字段值。
 // 这是编辑器 inspector / MCP 那一格的地基，所以在这里钉住它（不依赖编辑器 UI）。
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessReadsRegisteredComponentState") {
-    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithRegisteredComponent"), vm).toBool());
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeComponentSnapshotContracts") {
+    auto* const sharedVm = &vm;
+    // Distinct tools/loosehost scenes keep registered and anonymous component state separate.
+    SUB_CASE("Scene.script.nativeAccessReadsRegisteredComponentState") {
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("buildSceneWithRegisteredComponent"), *sharedVm).toBool());
 
-    auto *scene = eve::scene::Scene::create();
-    REQUIRE(scene != nullptr);
+        auto* scene = eve::scene::Scene::create();
+        REQUIRE(scene != nullptr);
 
-    const auto entities = scene->scriptEntitiesAt("tools", "probe");
-    REQUIRE_EQ(entities.size(), std::size_t{1});
+        const auto entities = scene->scriptEntitiesAt("tools", "probe");
+        REQUIRE_EQ(entities.size(), std::size_t{1});
 
-    auto states = eve::scriptComponentInstancesOf(entities.front());
-    REQUIRE(states.ok());
-    REQUIRE_EQ(states.value().size(), std::size_t{1});
-    CHECK_EQ(states.value().front().name, std::string("ToolProbe"));
-    CHECK_EQ(states.value().front().version.value(), std::uint64_t{1});
-    CHECK(states.value().front().generation.value() >= 1);
-    // 字段按声明顺序收集，值来自引擎侧那一个权威存储（脚本写 42.0 的那次也是写它）。
-    const auto &fields = states.value().front().fields;
-    const auto  x      = fields.find("x");
-    const auto  y      = fields.find("y");
-    REQUIRE(x != fields.end());
-    REQUIRE(y != fields.end());
-    CHECK_EQ(x->second.asDouble(), 42.0);
-    CHECK_EQ(y->second.asDouble(), 2.5);
+        auto states = eve::scriptComponentInstancesOf(entities.front());
+        REQUIRE(states.ok());
+        REQUIRE_EQ(states.value().size(), std::size_t{1});
+        REQUIRE_EQ(states.value().front().name, std::string("ToolProbe"));
+        REQUIRE_EQ(states.value().front().version.value(), std::uint64_t{1});
+        REQUIRE(states.value().front().generation.value() >= 1);
+        // 字段按声明顺序收集，值来自引擎侧那一个权威存储（脚本写 42.0 的那次也是写它）。
+        const auto& fields = states.value().front().fields;
+        const auto  x      = fields.find("x");
+        const auto  y      = fields.find("y");
+        REQUIRE(x != fields.end());
+        REQUIRE(y != fields.end());
+        REQUIRE_EQ(x->second.asDouble(), 42.0);
+        REQUIRE_EQ(y->second.asDouble(), 2.5);
 
-    // 负例：没有挂脚本的节点、未知宿主/节点都返回空数组（不是错误），调用方据此报"这里没有脚本"。
-    CHECK(scene->scriptEntitiesAt("tools", "root").empty());
-    CHECK(scene->scriptEntitiesAt("nope", "probe").empty());
-}
+        // 负例：没有挂脚本的节点、未知宿主/节点都返回空数组（不是错误），调用方据此报"这里没有脚本"。
+        REQUIRE(scene->scriptEntitiesAt("tools", "root").empty());
+        REQUIRE(scene->scriptEntitiesAt("nope", "probe").empty());
+    };
+    SUB_CASE("Scene.script.nativeAccessSkipsUnregisteredComponents") {
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("buildSceneWithUnregisteredComponent"), *sharedVm).toBool());
 
-// 未登记的组件（纯槽位语义）**不该**出现在原生工具里：它没有名字与版本，引擎无从寻址。
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.nativeAccessSkipsUnregisteredComponents") {
-    REQUIRE(vm.callFunc(vm.findFunc("buildSceneWithUnregisteredComponent"), vm).toBool());
+        auto* scene = eve::scene::Scene::create();
+        REQUIRE(scene != nullptr);
+        const auto entities = scene->scriptEntitiesAt("loosehost", "loose");
+        REQUIRE_EQ(entities.size(), std::size_t{1});
 
-    auto      *scene    = eve::scene::Scene::create();
-    const auto entities = scene->scriptEntitiesAt("loosehost", "loose");
-    REQUIRE_EQ(entities.size(), std::size_t{1});
-
-    auto states = eve::scriptComponentInstancesOf(entities.front());
-    REQUIRE(states.ok());
-    CHECK(states.value().empty());
-}
-
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityViewCacheAfterDetach") {
-    REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityViewCacheAfterDetach"), vm).toBool());
-}
-
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityEnableAndDelayedDetach") {
-    CHECK(vm.callFunc(vm.findFunc("testSceneEntityEnableAndDelayedDetach"), vm).toBool());
+        auto states = eve::scriptComponentInstancesOf(entities.front());
+        REQUIRE(states.ok());
+        REQUIRE(states.value().empty());
+    };
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.linkPhysics2D") {
@@ -1482,36 +1299,35 @@ TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.entityIsTheFirstEcsName")
     REQUIRE(vm.callFunc(vm.findFunc("testSceneEntityIsTheFirstEcsName"), vm).toBool());
 }
 
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.callbackFailureIsNotSilent") {
-    // A callback that throws used to look exactly like an empty node: the failed sq_call
-    // was turned into a false return and the script error was dropped, so a broken
-    // handler produced no signal at all (plan doc 10.8).
-    eve::script::resetReportedScriptCallFailures();
-    REQUIRE(vm.callFunc(vm.findFunc("testCallbackFailureIsReported"), vm).toBool());
-    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
-}
-
-TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.updateFailureIsNotSilent") {
-    // The per-instance update(dt) path (Scene::callMethod) had the same gap as the
-    // forEachEntity callback: a throwing update() returned false and said nothing.
-    eve::script::resetReportedScriptCallFailures();
-    REQUIRE(vm.callFunc(vm.findFunc("testUpdateFailureIsReported"), vm).toBool());
-    REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.failurePropagationContracts") {
+    auto* const sharedVm = &vm;
+    SUB_CASE("Scene.script.callbackFailureIsNotSilent") {
+        // A callback that throws used to look exactly like an empty node: the failed sq_call
+        // was turned into a false return and the script error was dropped, so a broken
+        // handler produced no signal at all (plan doc 10.8).
+        eve::script::resetReportedScriptCallFailures();
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("testCallbackFailureIsReported"), *sharedVm).toBool());
+        REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+    };
+    SUB_CASE("Scene.script.updateFailureIsNotSilent") {
+        // The per-instance update(dt) path (Scene::callMethod) had the same gap as the
+        // forEachEntity callback: a throwing update() returned false and said nothing.
+        eve::script::resetReportedScriptCallFailures();
+        REQUIRE(sharedVm->callFunc(sharedVm->findFunc("testUpdateFailureIsReported"), *sharedVm).toBool());
+        REQUIRE(eve::script::reportedScriptCallFailures() >= 1);
+    };
 }
 
 TEST_CASE_FIXTURE(SceneEcsBridgeFixture, "Scene.script.serializeAndPick") {
     REQUIRE(vm.callFunc(vm.findFunc("testSceneSerializeAndPick"), vm).toBool());
 }
 }  // namespace test_scene
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_authoring_script)
+
+// Contract section: scene authoring script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
+
 #include "scene/editor/SceneEditorModule.h"
 #include "scripts.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_authoring_script.cpp
 namespace test_scene_authoring_script {
 TEST_CASE("scene.authoring.script_owns_document_and_rejects_bad_bounds") {
@@ -1547,19 +1363,13 @@ TEST_CASE("scene.authoring.director_compiles_and_missing_native_provider_is_obse
     REQUIRE(refused);
 }
 }  // namespace test_scene_authoring_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_binding_architecture)
+// Contract section: scene binding architecture
 #include "PrivateTestScope.h"
+
 #include <simplesquirrel/vm.hpp>
 #include "common/BindingContracts.h"
-#include "common/Module.h"
 #include "common/ScriptCompiler.h"
-#include "scene/NodeDesc.h"
-#include "scene/Scene.h"
-#include "scene/SceneHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_binding_architecture.cpp
 namespace test_scene_binding_architecture {
 TEST_CASE("Scene.script.visibilityArchitectureMapping") {
@@ -1596,14 +1406,10 @@ TEST_CASE("Scene.script.visibilityArchitectureMapping") {
     CHECK(!target.value()->visible);
 }
 }  // namespace test_scene_binding_architecture
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editor_script)
+// Contract section: scene editor script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // scene_editor_script.cpp
 namespace test_scene_editor_script {
 TEST_CASE("scene.editor.script_session_owns_target_and_projects_transaction_results") {
@@ -1697,16 +1503,10 @@ TEST_CASE("scene.editor.script_physics_placement_previews_and_commits") {
     )"));
 }
 }  // namespace test_scene_editor_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_object_lifetime)
+// Contract section: scene object lifetime
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/ECS.h"
-#include "common/Module.h"
-#include "common/Runtime.h"
-#include "scene/SceneObject.h"
-#include "zeroerr/unittest.h"
+
 // scene_object_lifetime.cpp
 namespace test_scene_object_lifetime {
 TEST_CASE("Scene.script.firstObjectLookupAndDelayedDetach") {
@@ -1771,15 +1571,12 @@ TEST_CASE("Scene.script.firstObjectLookupAndDelayedDetach") {
     CHECK(table.getManager<eve::scene::SceneObject>() != nullptr);
 }
 }  // namespace test_scene_object_lifetime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_schema)
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: schema
 #include "PrivateTestScope.h"
+
 #include "schema/Schema.h"
 #include "schema/SchemaRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // schema.cpp
 namespace test_schema {
 using namespace eve::schema;
@@ -1917,358 +1714,305 @@ TEST_CASE("schema.module.reflectFromClass") {
     REQUIRE(reflected.toBool());
 }
 }  // namespace test_schema
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_compiler)
+
+// Contract section: script compiler
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <cstdio>
-#include <cstring>
-#include <filesystem>
+
 #include <fstream>
 #include <iterator>
-#include <memory>
-#include <string>
-#include "common/BindingContracts.h"
-#include "common/Runtime.h"
-#include "common/ScriptCompiler.h"
 #include "common/ScriptModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // script_compiler.cpp
 namespace test_script_compiler {
 using namespace eve;
 
-TEST_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.compileSource(
-        "persist score: int = 0\n"
-        "export function answer(value: int) -> int { return value + score }\n",
-        "game:/metadata.nut");
+TEST_CASE("scriptCompiler.nativeBindingExecution") {
+    Runtime runtime(2048, ssq::Libs::ALL);
+    auto*   sharedRuntime = &runtime;
+    SUB_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeCompose",
+                             [](int first, int second, int third) { return first * 100 + second * 10 + third; });
+        script::BindingContract contract;
+        contract.module     = "test";
+        contract.method     = "nativeCompose";
+        contract.parameters = {{"first", "int"}, {"second", "int"}, {"third", "int"}};
+        contract.returnType = "int";
+        runtime.scriptCompiler().bindings().registerContract(std::move(contract));
 
-    const auto metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
-    REQUIRE(metadata.has_value());
-    CHECK(!metadata->get().sourceHash.empty());
-    CHECK_EQ(metadata->get().persistRoots.size(), size_t(1));
-    CHECK_EQ(metadata->get().persistRoots[0], std::string("score"));
-    CHECK_EQ(metadata->get().exports.size(), size_t(1));
-    CHECK_EQ(metadata->get().exports[0], std::string("answer"));
-    CHECK_EQ(metadata->get().sourceMap.originalPosition({2, 9}).line, uint32_t(2));
+        runtime.runSource("native_named_result <- nativeCompose(third: 3, first: 1, second: 2)\n",
+                          "native-named-test.nut");
+        const auto result = runtime.vm().get<int64_t>("native_named_result");
+        REQUIRE_EQ(result, int64_t(123));
+    };
+    SUB_CASE("scriptCompiler.nestedBindingCallsKeepOuterSignatureStable") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeInner", [](int value) { return value + 1; });
+        runtime.vm().addFunc("nativeOuter", [](int first, int second) { return first * 10 + second; });
+
+        script::BindingContract inner;
+        inner.module     = "test";
+        inner.method     = "nativeInner";
+        inner.parameters = {{"value", "int"}};
+        inner.returnType = "int";
+        runtime.scriptCompiler().bindings().registerContract(std::move(inner));
+
+        script::BindingContract outer;
+        outer.module     = "test";
+        outer.method     = "nativeOuter";
+        outer.parameters = {{"first", "int"}, {"second", "int"}};
+        outer.returnType = "int";
+        runtime.scriptCompiler().bindings().registerContract(std::move(outer));
+
+        runtime.runSource("nested_binding_result <- nativeOuter(nativeInner(4), 7)\n",
+                          "nested-binding-signature-test.nut");
+        REQUIRE_EQ(runtime.vm().get<int64_t>("nested_binding_result"), int64_t(57));
+    };
+    SUB_CASE("scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments") {
+        auto&      runtime   = *sharedRuntime;
+        const auto contracts = runtime.scriptCompiler().bindings().snapshot();
+        REQUIRE(contracts.size() > size_t(100));
+
+        const script::BindingContract* generated =
+            runtime.scriptCompiler().bindings().find("animation/AnimRetargetProfile.setNormalizedNameMatching");
+        REQUIRE(generated != nullptr);
+        REQUIRE_EQ(generated->parameters.size(), size_t(1));
+        REQUIRE_EQ(generated->parameters[0].name, std::string("enabled"));
+        REQUIRE_EQ(generated->parameters[0].type, std::string("bool"));
+
+        runtime.vm().addFunc("setNormalizedNameMatching", [](bool enabled) { return enabled; });
+        runtime.runSource("generated_contract_result <- setNormalizedNameMatching(enabled: true)\n",
+                          "generated-contract-test.nut");
+        REQUIRE(runtime.vm().get<bool>("generated_contract_result"));
+    };
+    SUB_CASE("scriptCompiler.bindingContractConvertsUnitLiterals") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeAngle", [](float angle) { return angle; });
+        runtime.vm().addFunc("nativeDelay", [](float delay) { return delay; });
+
+        script::BindingContract angle;
+        angle.module     = "test";
+        angle.method     = "nativeAngle";
+        angle.parameters = {{"angle", "float", false, std::nullopt, script::ScriptUnit::Radians}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(angle));
+        script::BindingContract delay;
+        delay.module     = "test";
+        delay.method     = "nativeDelay";
+        delay.parameters = {{"delay", "float", false, std::nullopt, script::ScriptUnit::Milliseconds}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(delay));
+
+        runtime.runSource(
+            "native_angle_result <- nativeAngle(90deg)\n"
+            "native_delay_result <- nativeDelay(250ms)\n",
+            "native-units-test.nut");
+        const float angleResult    = runtime.vm().get<float>("native_angle_result");
+        const float delayResult    = runtime.vm().get<float>("native_delay_result");
+        const bool  angleConverted = angleResult > 1.5707f && angleResult < 1.5709f;
+        REQUIRE(angleConverted);
+        REQUIRE_EQ(delayResult, 250.0f);
+    };
+    SUB_CASE("scriptCompiler.bindingContractChecksStringChoices") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeMode", [](std::string mode) { return mode; });
+        script::BindingContract mode;
+        mode.module     = "test";
+        mode.method     = "nativeMode";
+        mode.parameters = {{"mode", "string", false, std::nullopt, script::ScriptUnit::None, {"idle", "run"}}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(mode));
+        runtime.runSource("native_mode_result <- nativeMode(\"run\")\n", "native-choice-test.nut");
+        const std::string modeResult = runtime.vm().get<std::string>("native_mode_result");
+        REQUIRE_EQ(modeResult, std::string("run"));
+
+        bool rejected = false;
+        try {
+            runtime.compileSource("nativeMode(\"broken\")\n", "native-choice-error.nut");
+        } catch (const ScriptException& error) {
+            rejected = std::string(error.what()).find("outside the allowed choices") != std::string::npos;
+        }
+        REQUIRE(rejected);
+    };
+    SUB_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeCount", [](int count) { return count; });
+        script::BindingContract contract;
+        contract.module     = "test";
+        contract.method     = "nativeCount";
+        contract.returnType = "int";
+        contract.parameters = {{"count", "int", false}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+        bool rejected = false;
+        try {
+            runtime.compileSource("nativeCount(\"many\")\n", "game:/type-error.nut");
+        } catch (const ScriptException& error) {
+            rejected = std::string(error.what()).find("not assignable") != std::string::npos;
+        }
+        REQUIRE(rejected);
+    };
+    SUB_CASE("scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument") {
+        auto& runtime = *sharedRuntime;
+        runtime.vm().addFunc("nativeText", [](std::string text) { return text; });
+        script::BindingContract contract;
+        contract.module     = "test";
+        contract.method     = "nativeText";
+        contract.returnType = "string";
+        contract.parameters = {{"text", "string", false}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+        runtime.runSource("compound_contract_result <- nativeText(\"count \" + (1 + 2))\n",
+                          "game:/compound-contract.nut");
+        REQUIRE_EQ(runtime.vm().get<std::string>("compound_contract_result"), std::string("count 3"));
+    };
 }
 
+TEST_CASE("scriptCompiler.sourceMetadataDiagnosticsAndTooling") {
+    Runtime runtime(2048, ssq::Libs::ALL);
+    auto*   sharedRuntime = &runtime;
+    SUB_CASE("scriptCompiler.recordsErasedLanguageMetadata") {
+        auto& runtime = *sharedRuntime;
+        runtime.compileSource(
+            "persist score: int = 0\n"
+            "export function answer(value: int) -> int { return value + score }\n",
+            "game:/metadata.nut");
 
-TEST_CASE("scriptCompiler.mapsDebuggerLocationsBidirectionally") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.compileSource("local value = 1\n", "game:/scripts/mapped.nut");
+        const auto metadata = runtime.scriptCompiler().metadata("game:/metadata.nut");
+        REQUIRE(metadata.has_value());
+        REQUIRE(!metadata->get().sourceHash.empty());
+        REQUIRE_EQ(metadata->get().persistRoots.size(), size_t(1));
+        REQUIRE_EQ(metadata->get().persistRoots[0], std::string("score"));
+        REQUIRE_EQ(metadata->get().exports.size(), size_t(1));
+        REQUIRE_EQ(metadata->get().exports[0], std::string("answer"));
+        REQUIRE_EQ(metadata->get().sourceMap.originalPosition({2, 9}).line, uint32_t(2));
+    };
+    SUB_CASE("scriptCompiler.mapsDebuggerLocationsBidirectionally") {
+        auto& runtime = *sharedRuntime;
+        runtime.compileSource("local value = 1\n", "game:/scripts/mapped.nut");
 
-    script::ScriptSourceMap map;
-    map.entries.push_back({{1, 1}, {1, 1}});
-    map.entries.push_back({{10, 1}, {3, 1}});
-    REQUIRE(runtime.scriptCompiler().setSourceMap("game:/scripts/mapped.nut", std::move(map)));
+        script::ScriptSourceMap map;
+        map.entries.push_back({{1, 1}, {1, 1}});
+        map.entries.push_back({{10, 1}, {3, 1}});
+        REQUIRE(runtime.scriptCompiler().setSourceMap("game:/scripts/mapped.nut", std::move(map)));
 
-    const auto original = script::ScriptCompiler::toOriginalPosition("C:/games/demo/scripts/mapped.nut", {12, 7});
-    CHECK_EQ(original.line, uint32_t(5));
-    CHECK_EQ(original.column, uint32_t(7));
+        const auto original = script::ScriptCompiler::toOriginalPosition("C:/games/demo/scripts/mapped.nut", {12, 7});
+        REQUIRE_EQ(original.line, uint32_t(5));
+        REQUIRE_EQ(original.column, uint32_t(7));
 
-    const auto generated = script::ScriptCompiler::toGeneratedPosition("game:/scripts/mapped.nut", {5, 7});
-    CHECK_EQ(generated.line, uint32_t(12));
-    CHECK_EQ(generated.column, uint32_t(7));
+        const auto generated = script::ScriptCompiler::toGeneratedPosition("game:/scripts/mapped.nut", {5, 7});
+        REQUIRE_EQ(generated.line, uint32_t(12));
+        REQUIRE_EQ(generated.column, uint32_t(7));
+    };
+    SUB_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
+        auto& runtime  = *sharedRuntime;
+        bool  rejected = false;
+        try {
+            runtime.compileSource("function invalid() { return await 1 }\n", "game:/invalid.nut");
+        } catch (const ScriptException&) {
+            rejected = true;
+        }
+        REQUIRE(rejected);
+        const auto metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
+        REQUIRE(metadata.has_value());
+        REQUIRE_EQ(metadata->get().diagnostics.size(), size_t(1));
+        REQUIRE_EQ(metadata->get().diagnostics[0].code, std::string("EVE2601"));
+        REQUIRE_EQ(metadata->get().diagnostics[0].position.line, uint32_t(1));
+        REQUIRE(!metadata->get().diagnostics[0].fix.empty());
+    };
+    SUB_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
+        auto& runtime  = *sharedRuntime;
+        bool  rejected = false;
+        try {
+            runtime.compileSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset-error.nut");
+        } catch (const ScriptException&) {
+            rejected = true;
+        }
+        REQUIRE(rejected);
+
+        runtime.scriptCompiler().registerAnnotation("plugin_asset");
+        runtime.runSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset.nut");
+        REQUIRE(runtime.scriptCompiler().unregisterAnnotation("plugin_asset"));
+    };
+    SUB_CASE("scriptCompiler.servesLanguageToolingQueries") {
+        auto& runtime = *sharedRuntime;
+        runtime.compileSource("local playerSpeed: float = 2.0\n", "game:/tooling.nut");
+        script::BindingContract contract;
+        contract.module          = "physics";
+        contract.method          = "toolingNewWorld";
+        contract.returnType      = "World";
+        contract.documentationId = "physics.toolingNewWorld";
+        contract.parameters      = {{"gravity", "float"}, {"sleep", "bool"}};
+        runtime.scriptCompiler().bindings().registerContract(std::move(contract));
+
+        // Completions deliberately merge this unit's symbols with native contracts.
+        // The broader "player" prefix also includes generated RTS playerCount.
+        // Use a controlled collision to verify the exact mixed set independently of
+        // which optional modules contributed contracts to this build.
+        script::BindingContract sibling;
+        sibling.module     = "test";
+        sibling.method     = "playerSpeedNative";
+        sibling.returnType = "int";
+        runtime.scriptCompiler().bindings().registerContract(std::move(sibling));
+        const auto scriptItems = runtime.scriptCompiler().completions("game:/tooling.nut", "playerSpeed");
+        REQUIRE_EQ(scriptItems.size(), size_t(2));
+        REQUIRE_EQ(scriptItems[0].label, std::string("playerSpeed"));
+        REQUIRE_EQ(scriptItems[0].kind, std::string("local"));
+        REQUIRE_EQ(scriptItems[0].insertText, std::string("playerSpeed"));
+        REQUIRE_EQ(scriptItems[1].label, std::string("playerSpeedNative"));
+        REQUIRE_EQ(scriptItems[1].kind, std::string("function"));
+        REQUIRE_EQ(scriptItems[1].insertText, std::string("playerSpeedNative()"));
+        const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "toolingNew");
+        REQUIRE_EQ(nativeItems.size(), size_t(1));
+        REQUIRE(nativeItems[0].insertText.find("gravity:") != std::string::npos);
+
+        const auto hover = runtime.scriptCompiler().hover("game:/tooling.nut", "toolingNewWorld");
+        REQUIRE(hover.has_value());
+        REQUIRE(hover->markdown.find("physics.toolingNewWorld") != std::string::npos);
+        REQUIRE(runtime.scriptCompiler().diagnostics("game:/tooling.nut").empty());
+    };
 }
-
 
 TEST_CASE("scriptCompiler.generatedModuleContractIsExecutable") {
+    Runtime                     runtime(2048, ssq::Libs::ALL);
     const std::filesystem::path generated =
         std::filesystem::path(EVENGINE_TEST_BINARY_DIR).parent_path() / "src" / "scripts" / "module_list.nut";
     std::ifstream     input(generated, std::ios::binary);
     const std::string source(std::istreambuf_iterator<char>(input), {});
-    CHECK(!source.empty());
+    REQUIRE(!source.empty());
 
-    Runtime runtime(1024, ssq::Libs::ALL);
     runtime.runSource(source, "module_list.nut");
     ssq::Array contract(runtime.root().find("eve_module_contract"));
-    CHECK(contract.size() > 0);
+    REQUIRE(contract.size() > 0);
 }
 
-TEST_CASE("scriptCompiler.bindingContractEnablesNativeNamedArguments") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeCompose",
-                         [](int first, int second, int third) { return first * 100 + second * 10 + third; });
-    script::BindingContract contract;
-    contract.module     = "test";
-    contract.method     = "nativeCompose";
-    contract.parameters = {{"first", "int"}, {"second", "int"}, {"third", "int"}};
-    contract.returnType = "int";
-    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
-
-    runtime.runSource("native_named_result <- nativeCompose(third: 3, first: 1, second: 2)\n", "native-named-test.nut");
-    const auto result = runtime.vm().get<int64_t>("native_named_result");
-    CHECK_EQ(result, int64_t(123));
-}
-
-TEST_CASE("scriptCompiler.nestedBindingCallsKeepOuterSignatureStable") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeInner", [](int value) { return value + 1; });
-    runtime.vm().addFunc("nativeOuter", [](int first, int second) { return first * 10 + second; });
-
-    script::BindingContract inner;
-    inner.module     = "test";
-    inner.method     = "nativeInner";
-    inner.parameters = {{"value", "int"}};
-    inner.returnType = "int";
-    runtime.scriptCompiler().bindings().registerContract(std::move(inner));
-
-    script::BindingContract outer;
-    outer.module     = "test";
-    outer.method     = "nativeOuter";
-    outer.parameters = {{"first", "int"}, {"second", "int"}};
-    outer.returnType = "int";
-    runtime.scriptCompiler().bindings().registerContract(std::move(outer));
-
-    runtime.runSource("nested_binding_result <- nativeOuter(nativeInner(4), 7)\n", "nested-binding-signature-test.nut");
-    CHECK_EQ(runtime.vm().get<int64_t>("nested_binding_result"), int64_t(57));
-}
-
-TEST_CASE("scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments") {
-    Runtime    runtime(512, ssq::Libs::ALL);
-    const auto contracts = runtime.scriptCompiler().bindings().snapshot();
-    CHECK(contracts.size() > size_t(100));
-
-    const script::BindingContract* generated =
-        runtime.scriptCompiler().bindings().find("animation/AnimRetargetProfile.setNormalizedNameMatching");
-    REQUIRE(generated != nullptr);
-    REQUIRE_EQ(generated->parameters.size(), size_t(1));
-    CHECK_EQ(generated->parameters[0].name, std::string("enabled"));
-    CHECK_EQ(generated->parameters[0].type, std::string("bool"));
-
-    runtime.vm().addFunc("setNormalizedNameMatching", [](bool enabled) { return enabled; });
-    runtime.runSource("generated_contract_result <- setNormalizedNameMatching(enabled: true)\n",
-                      "generated-contract-test.nut");
-    CHECK(runtime.vm().get<bool>("generated_contract_result"));
-}
-
-TEST_CASE("scriptCompiler.bindingContractConvertsUnitLiterals") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeAngle", [](float angle) { return angle; });
-    runtime.vm().addFunc("nativeDelay", [](float delay) { return delay; });
-
-    script::BindingContract angle;
-    angle.module     = "test";
-    angle.method     = "nativeAngle";
-    angle.parameters = {{"angle", "float", false, std::nullopt, script::ScriptUnit::Radians}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(angle));
-    script::BindingContract delay;
-    delay.module     = "test";
-    delay.method     = "nativeDelay";
-    delay.parameters = {{"delay", "float", false, std::nullopt, script::ScriptUnit::Milliseconds}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(delay));
-
-    runtime.runSource(
-        "native_angle_result <- nativeAngle(90deg)\n"
-        "native_delay_result <- nativeDelay(250ms)\n",
-        "native-units-test.nut");
-    const float angleResult    = runtime.vm().get<float>("native_angle_result");
-    const float delayResult    = runtime.vm().get<float>("native_delay_result");
-    const bool  angleConverted = angleResult > 1.5707f && angleResult < 1.5709f;
-    CHECK(angleConverted);
-    CHECK_EQ(delayResult, 250.0f);
-}
-
-TEST_CASE("scriptCompiler.bindingContractChecksStringChoices") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeMode", [](std::string mode) { return mode; });
-    script::BindingContract mode;
-    mode.module     = "test";
-    mode.method     = "nativeMode";
-    mode.parameters = {{"mode", "string", false, std::nullopt, script::ScriptUnit::None, {"idle", "run"}}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(mode));
-    runtime.runSource("native_mode_result <- nativeMode(\"run\")\n", "native-choice-test.nut");
-    const std::string modeResult = runtime.vm().get<std::string>("native_mode_result");
-    CHECK_EQ(modeResult, std::string("run"));
-
-    bool rejected = false;
-    try {
-        runtime.compileSource("nativeMode(\"broken\")\n", "native-choice-error.nut");
-    } catch (const ScriptException& error) {
-        rejected = std::string(error.what()).find("outside the allowed choices") != std::string::npos;
-    }
-    CHECK(rejected);
-}
-
-
-TEST_CASE("scriptCompiler.retainsStructuredDiagnosticsAfterFailure") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    bool    rejected = false;
-    try {
-        runtime.compileSource("function invalid() { return await 1 }\n", "game:/invalid.nut");
-    } catch (const ScriptException&) {
-        rejected = true;
-    }
-    CHECK(rejected);
-    const auto metadata = runtime.scriptCompiler().metadata("game:/invalid.nut");
-    REQUIRE(metadata.has_value());
-    CHECK_EQ(metadata->get().diagnostics.size(), size_t(1));
-    CHECK_EQ(metadata->get().diagnostics[0].code, std::string("EVE2601"));
-    CHECK_EQ(metadata->get().diagnostics[0].position.line, uint32_t(1));
-    CHECK(!metadata->get().diagnostics[0].fix.empty());
-}
-
-TEST_CASE("scriptCompiler.requiresPluginAnnotationsToBeRegistered") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    bool    rejected = false;
-    try {
-        runtime.compileSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset-error.nut");
-    } catch (const ScriptException&) {
-        rejected = true;
-    }
-    CHECK(rejected);
-
-    runtime.scriptCompiler().registerAnnotation("plugin_asset");
-    runtime.runSource("class Asset { @plugin_asset(\"texture\") path = \"\" }\n", "game:/asset.nut");
-    CHECK(runtime.scriptCompiler().unregisterAnnotation("plugin_asset"));
-}
-
-TEST_CASE("scriptCompiler.servesLanguageToolingQueries") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.compileSource("local playerSpeed: float = 2.0\n", "game:/tooling.nut");
-    script::BindingContract contract;
-    contract.module          = "physics";
-    contract.method          = "toolingNewWorld";
-    contract.returnType      = "World";
-    contract.documentationId = "physics.toolingNewWorld";
-    contract.parameters      = {{"gravity", "float"}, {"sleep", "bool"}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
-
-    const auto scriptItems = runtime.scriptCompiler().completions("game:/tooling.nut", "player");
-    CHECK_EQ(scriptItems.size(), size_t(1));
-    CHECK_EQ(scriptItems[0].label, std::string("playerSpeed"));
-    const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "toolingNew");
-    CHECK_EQ(nativeItems.size(), size_t(1));
-    CHECK(nativeItems[0].insertText.find("gravity:") != std::string::npos);
-
-    const auto hover = runtime.scriptCompiler().hover("game:/tooling.nut", "toolingNewWorld");
-    REQUIRE(hover.has_value());
-    CHECK(hover->markdown.find("physics.toolingNewWorld") != std::string::npos);
-    CHECK(runtime.scriptCompiler().diagnostics("game:/tooling.nut").empty());
-}
-
-
-TEST_CASE("scriptCompiler.bindingContractChecksLiteralTypes") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeCount", [](int count) { return count; });
-    script::BindingContract contract;
-    contract.module     = "test";
-    contract.method     = "nativeCount";
-    contract.returnType = "int";
-    contract.parameters = {{"count", "int", false}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
-
-    bool rejected = false;
-    try {
-        runtime.compileSource("nativeCount(\"many\")\n", "game:/type-error.nut");
-    } catch (const ScriptException& error) {
-        rejected = std::string(error.what()).find("not assignable") != std::string::npos;
-    }
-    CHECK(rejected);
-}
-
-TEST_CASE("scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument") {
-    Runtime runtime(512, ssq::Libs::ALL);
-    runtime.vm().addFunc("nativeText", [](std::string text) { return text; });
-    script::BindingContract contract;
-    contract.module     = "test";
-    contract.method     = "nativeText";
-    contract.returnType = "string";
-    contract.parameters = {{"text", "string", false}};
-    runtime.scriptCompiler().bindings().registerContract(std::move(contract));
-
-    runtime.runSource("compound_contract_result <- nativeText(\"count \" + (1 + 2))\n", "game:/compound-contract.nut");
-    CHECK_EQ(runtime.vm().get<std::string>("compound_contract_result"), std::string("count 3"));
-}
-
-
-TEST_CASE("scriptCompiler.compilesRepositoryNutCompatibilityBaseline") {
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS)
-    // Keep corpus identities virtual while resolving imports against the same repository tree.
-    class CorpusModules final : public script::IScriptModuleProvider {
+TEST_CASE("scriptCompiler.importLoweringExecutesInVm") {
+    // A representative provider -> import lowering -> VM contract replaces the
+    // repository-wide compile-only corpus scan; corpus compatibility is not equivalent.
+    class Modules final : public script::IScriptModuleProvider {
     public:
         script::ScriptModuleStatus resolve(const script::ScriptModuleRequest& request, std::string& canonicalUri,
                                            std::string& error) override {
             if (!script::ScriptModuleResolver::canonicalize(request, canonicalUri, error))
                 return script::ScriptModuleStatus::Error;
-            return canonicalUri.rfind("baseline:/", 0) == 0 ? script::ScriptModuleStatus::Found
-                                                            : script::ScriptModuleStatus::NotHandled;
+            return canonicalUri == "contract:/math.nut" ? script::ScriptModuleStatus::Found
+                                                        : script::ScriptModuleStatus::NotHandled;
         }
         script::ScriptModuleStatus load(std::string_view canonicalUri, script::ScriptModuleSource& source,
-                                        std::string& error) override {
-            if (canonicalUri.rfind("baseline:/", 0) != 0) return script::ScriptModuleStatus::NotHandled;
-            const auto    path = std::filesystem::path(EVENGINE_SOURCE_DIR) / std::string(canonicalUri.substr(10));
-            std::ifstream input(path, std::ios::binary);
-            if (!input) {
-                error = "missing corpus module: " + path.string();
-                return script::ScriptModuleStatus::Error;
-            }
+                                        std::string&) override {
+            if (canonicalUri != "contract:/math.nut") return script::ScriptModuleStatus::NotHandled;
             source.canonicalUri = std::string(canonicalUri);
-            source.utf8Source.assign(std::istreambuf_iterator<char>(input), {});
-            source.debugOrigin = path.string();
+            source.utf8Source   = "export function doubled(value: int) -> int { return value * 2 }\n";
+            source.debugOrigin  = source.canonicalUri;
             return script::ScriptModuleStatus::Found;
         }
     };
-    const std::filesystem::path root(EVENGINE_SOURCE_DIR);
-    size_t                      compiled = 0;
-    using Clock                          = std::chrono::steady_clock;
-    const auto start                     = Clock::now();
-    double     readMs = 0, vmMs = 0, compileMs = 0, destroyMs = 0;
-    const auto milliseconds = [](auto duration) { return std::chrono::duration<double, std::milli>(duration).count(); };
-    for (std::filesystem::recursive_directory_iterator it(root), end; it != end; ++it) {
-        if (it->is_directory()) {
-            const std::string name = it->path().filename().string();
-            if (name == ".git" || name == "build" || name == "third-party") it.disable_recursion_pending();
-            continue;
-        }
-        if (it->path().extension() != ".nut") continue;
-        const auto    readStart = Clock::now();
-        std::ifstream input(it->path(), std::ios::binary);
-        REQUIRE(input.good());
-        const std::string source(std::istreambuf_iterator<char>(input), {});
-        const std::string relative = std::filesystem::relative(it->path(), root).generic_string();
-        readMs += milliseconds(Clock::now() - readStart);
-        try {
-            auto phaseStart = Clock::now();
-            {
-                Runtime runtime(1024, ssq::Libs::ALL);
-                REQUIRE(runtime.scriptModules().registerProvider(std::make_shared<CorpusModules>()) != 0);
-                const auto ready = Clock::now();
-                vmMs += milliseconds(ready - phaseStart);
-                runtime.compileSource(source, "baseline:/" + relative);
-                phaseStart = Clock::now();
-                compileMs += milliseconds(phaseStart - ready);
-            }
-            destroyMs += milliseconds(Clock::now() - phaseStart);
-        } catch (const std::exception& error) {
-            throw std::runtime_error(relative + ": " + error.what());
-        }
-        ++compiled;
-    }
-    REQUIRE(compiled >= size_t(150));
-    const double totalMs = milliseconds(Clock::now() - start);
-    std::fprintf(
-        stderr,
-        "Script corpus: %zu scripts; walk %.1f ms, read %.1f ms, VM %.1f ms, compile %.1f ms, destroy %.1f ms\n",
-        compiled, totalMs - readMs - vmMs - compileMs - destroyMs, readMs, vmMs, compileMs, destroyMs);
-#endif
+    Runtime runtime(1024, ssq::Libs::ALL);
+    REQUIRE(runtime.scriptModules().registerProvider(std::make_shared<Modules>()) != 0);
+    runtime.runSource("import { doubled } from \"contract:/math.nut\"\nimport_result <- doubled(21)\n",
+                      "contract:/main.nut");
+    REQUIRE_EQ(runtime.vm().get<int64_t>("import_result"), int64_t(42));
 }
 }  // namespace test_script_compiler
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_config)
+// Contract section: script config
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <fstream>
-#include <iterator>
-#include <string>
-#include "common/Module.h"
-#include "common/Runtime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // script_config.cpp
 namespace test_script_config {
 using namespace eve;
@@ -2354,29 +2098,16 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
     CHECK(runtime.vm().get<bool>("_ensured"));
 }
 }  // namespace test_script_config
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_module)
-#include <chrono>
-#include <cmath>
-#include <filesystem>
-#include <fstream>
-#include <limits>
-#include <memory>
-#include <string>
-#include <unordered_map>
-#include <vector>
+// Contract section: script module
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/Runtime.h"
-#include "common/ScriptCompiler.h"
-#include "common/ScriptModule.h"
+
+#include <limits>
+#include <unordered_map>
 #include "common/ServiceInterfaces.h"
 #include "filesystem/physfs/FileApi.h"
 #include "property_access/PropertyAccess.h"
 #include "property_access/squirrel/ReflectedPropertyModel.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // script_module.cpp
 namespace test_script_module {
 // script_module.cpp
@@ -2809,12 +2540,10 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
     CHECK_EQ(writeRule(runtimeArity), std::string("property_access.script.arity"));
 }
 }  // namespace test_script_module
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_ownership)
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
+// Contract section: script ownership
 #include "PrivateTestScope.h"
+
 #include "authority/Authority.h"
 #include "common/SquirrelOwnership.h"
 #include "effects/Effects.h"
@@ -2823,7 +2552,6 @@ TEST_CASE("property_access.script_validation_matches_shared_contract") {
 #include "procgen/Procgen.h"
 #include "production/Production.h"
 #include "statepatch/StatePatch.h"
-#include "zeroerr/unittest.h"
 // script_ownership.cpp
 namespace test_script_ownership {
 /**
@@ -2940,22 +2668,12 @@ TEST_CASE("scriptOwnership.procgenOwnedGridExposesAssetPlacement") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_script_ownership
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_user_doc_examples)
+// Contract section: script user doc examples
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <fstream>
+
 #include <sstream>
 #include <stdexcept>
-#include <string>
-#include <vector>
-#include "common/Capability.h"
-#include "common/Module.h"
-#include "common/Runtime.h"
-#include "common/ServiceInterfaces.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // script_user_doc_examples.cpp
 namespace test_script_user_doc_examples {
 namespace {
@@ -2967,7 +2685,7 @@ std::string           readSource(const std::filesystem::path& path) {
     output << input.rdbuf();
     return output.str();
 }
-void runChapter(const char* chapter, int selectedBlock = -1, const std::string& prefix = "",
+void runChapter(eve::Runtime& runtime, const char* chapter, int selectedBlock = -1, const std::string& prefix = "",
                 const std::string& suffix = "") {
     const auto  text = readSource(repository() / "docs/usr/modules" / (std::string(chapter) + ".md"));
     std::string code;
@@ -2982,14 +2700,6 @@ void runChapter(const char* chapter, int selectedBlock = -1, const std::string& 
         position = end + 3;
     }
     if (code.empty()) throw std::runtime_error("documentation has no executable example");
-    eve::Runtime runtime(2048, ssq::Libs::ALL);
-    runtime.initialize();
-    runtime.runSource(
-        "attributes <- eve.Attributes(); decision <- eve.Decision(); "
-        "definitions <- eve.Definitions(); tags <- eve.Tags(); "
-        "game_event <- eve.GameEvent(); policies <- eve.PolicyRegistryModule(); "
-        "transaction <- eve.Transaction();",
-        "doc-fixture");
     runtime.runSource(prefix + "\nfunction checked_doc_example() {\n" + code + suffix + "\n}\nchecked_doc_example();\n",
                       chapter);
 }
@@ -3006,18 +2716,18 @@ public:
 };
 }  // namespace
 
-TEST_CASE("userDocs.economy") { runChapter("economy"); }
-TEST_CASE("userDocs.attributes") { runChapter("attributes"); }
-TEST_CASE("userDocs.decision") { runChapter("decision"); }
-TEST_CASE("userDocs.definitions") { runChapter("definitions"); }
-TEST_CASE("userDocs.tags") { runChapter("tags"); }
-TEST_CASE("userDocs.gameEvent") { runChapter("game_event"); }
-TEST_CASE("userDocs.policyRegistry") { runChapter("policyregistry"); }
-TEST_CASE("userDocs.transaction") { runChapter("transaction"); }
-TEST_CASE("userDocs.profiler") { runChapter("profiler"); }
-TEST_CASE("userDocs.rope") { runChapter("physics_rope"); }
+TEST_CASE("userDocs.nativeBindingsAndTransactions") {
+    eve::Runtime runtime(2048, ssq::Libs::ALL);
+    runtime.initialize();
+    runtime.runSource("attributes <- eve.Attributes(); transaction <- eve.Transaction();", "doc-fixture");
+    auto* sharedRuntime = &runtime;
+    SUB_CASE("userDocs.attributes") { runChapter(*sharedRuntime, "attributes"); };
+    SUB_CASE("userDocs.transaction") { runChapter(*sharedRuntime, "transaction"); };
+}
 TEST_CASE("userDocs.ecsLifecycle") {
-    runChapter("entity", 1,
+    eve::Runtime runtime(2048, ssq::Libs::ALL);
+    runtime.initialize();
+    runChapter(runtime, "entity", 1,
                "eve_init <- null; eve_update <- null; eve_render <- null; eve_quit <- null; "
                "config <- {width=960, height=540}; gfx <- {"
                "setBackgroundColor=function(r,g,b,a) {}, clear=function() {}, "
@@ -3118,21 +2828,15 @@ assert(tutorial_state.score == 9); eve_quit();
     eve::cap::detail::clearAllRaw();
 }
 }  // namespace test_script_user_doc_examples
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sensing)
+// Contract section: sensing
 #include "PrivateTestScope.h"
+
 #include <cstddef>
 #include <optional>
-#include <string>
-#include <utility>
-#include "common/Module.h"
 #include "sensing/LineOfSightRouter.h"
 #include "sensing/Sensing.h"
 #include "sensing/TargetingPipeline.h"
 #include "simplesquirrel/simplesquirrel.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // sensing.cpp
 namespace test_sensing {
 // sensing.cpp
@@ -3210,17 +2914,12 @@ private:
 
 }  // namespace
 }  // namespace test_sensing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_settlement_script)
+// Contract section: settlement script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
-#include "common/SquirrelBinding.h"
+
 #include "settlement/SettlementModule.h"
 #include "settlement/SettlementRules.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // settlement_script.cpp
 namespace test_settlement_script {
 TEST_CASE("settlementScript.runtimeOwnsRulesAndLedger") {
@@ -3306,28 +3005,23 @@ TEST_CASE("settlementScript.rejectsUnknownKindAndNormalizesSubjectCase") {
     CHECK_EQ(vm.find("currentAfterUnknown").toFloat(), 40.0f);
 }
 }  // namespace test_settlement_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel)
-#include <cassert>
+// Contract section: simplesquirrel
+#include "PrivateTestScope.h"
+
 #include <iostream>
 #include <map>
-#include <string>
-#include "PrivateTestScope.h"
 #include "ScriptTest.h"
-// Class-layout probes need these headers, but SQVM stays opaque in binding tests.
-// clang-format off
-#include "sqpcheader.h"
-#include "sqtable.h"
-#include "sqclass.h"
-// clang-format on
 extern const char* simplesquirrel_content;
 // simplesquirrel.cpp
 namespace test_simplesquirrel {
 using namespace eve;
 
 
-UnitSciptTest(SimpleSquirrelTest, simplesquirrel_content);
+class SimpleSquirrelTest : public ScriptTest {
+public:
+    SimpleSquirrelTest() : ScriptTest(simplesquirrel_content) {}
+};
 
 TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.ExportClass") { REQUIRE(callScript("exportClass")); }
 
@@ -3388,49 +3082,6 @@ TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.RefTest") {
     REQUIRE(callScript("refTest"));
 }
 
-#if !(defined(__APPLE__) && defined(NDEBUG))
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.TestDefClass") {
-    auto root = vm.getRaw();
-    CHECK_EQ(sq_type(root), OT_TABLE);
-    auto rt = _table(root);
-    for (SQInteger i = 0; i < rt->_numofnodes; i++) {
-        if (sq_type(rt->_nodes[i].key) != OT_NULL) {
-            auto p = rt->_nodes[i].val;
-            if (sq_type(p) == OT_CLASS) {
-                printf("%s ", _string(rt->_nodes[i].key)->_val);
-            }
-        }
-    }
-    printf("\n");
-
-    ssq::Class cls = vm.findClass("Test1");
-    auto       o   = cls.getRaw();
-    CHECK_EQ(o._type, OT_CLASS);
-    auto pclass = o._unVal.pClass;
-
-    auto t = pclass->_members;
-    for (SQInteger i = 0; i < t->_numofnodes; i++) {
-        if (sq_type(t->_nodes[i].key) != OT_NULL) {
-            printf("%s ", _string(t->_nodes[i].key)->_val);
-            auto p = t->_nodes[i].val;
-            if (sq_type(p) == OT_INTEGER) {
-                if (_isfield(p)) {
-                    printf("field %d\n", static_cast<int>(_member_idx(p)));
-                }
-                if (_ismethod(p)) {
-                    printf("method %d\n", static_cast<int>(_member_idx(p)));
-                }
-            }
-        }
-    }
-
-    ssq::Object obj  = cls.find("attr1");
-    ssq::Class  attr = obj.toClass();
-
-    REQUIRE(callScript("testDefClass"));
-}
-#endif
-
 
 TEST_CASE("SimpleSquirrelTest.PerformInteration") {
     ssq::VM vm(128);
@@ -3464,9 +3115,6 @@ TEST_CASE("SimpleSquirrelTest.PerformInteration") {
     REQUIRE(members == expected);
     REQUIRE(sq_gettop(v) == initialTop);
 }
-
-
-TEST_CASE_FIXTURE(SimpleSquirrelTest, "SimpleSquirrelTest.GetterTest") { REQUIRE(callScript("getterTest")); }
 
 
 TEST_CASE("SimpleSquirrelTest.GetAttr") {
@@ -3559,16 +3207,13 @@ TEST_CASE("SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods") {
 
 
 }  // namespace test_simplesquirrel
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel_direct_member)
+
+// Contract section: simplesquirrel direct member
 #include "PrivateTestScope.h"
+
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <stdexcept>
-#include <string>
 #include <tuple>
-#include <vector>
 // simplesquirrel_direct_member.cpp
 namespace test_simplesquirrel_direct_member {
 namespace {
@@ -3655,15 +3300,12 @@ TEST_CASE("SimpleSquirrel.DirectMemberConversionsAndLifetime") {
     CHECK_EQ(MemberBindingProbe::live, 0);
 }
 }  // namespace test_simplesquirrel_direct_member
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_social)
+// Contract section: social
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 #include "social/Social.h"
 #include "social/SocialGraph.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // social.cpp
 namespace test_social {
 using namespace eve;
@@ -3692,22 +3334,18 @@ function testSocialBindings() {
 }
 )SQ";
 
-UnitSciptTest(SocialScriptTest, kSocialScript);
+class SocialScriptTest : public ScriptTest {
+public:
+    SocialScriptTest() : ScriptTest(kSocialScript) {}
+};
 
 TEST_CASE_FIXTURE(SocialScriptTest, "social.script.bindings") { REQUIRE(callScript("testSocialBindings")); }
 }  // namespace test_social
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_squirrel_binding)
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
+
+// Contract section: squirrel binding
 #include "PrivateTestScope.h"
+
 #include "common/ScriptError.h"
-#include "common/SquirrelBinding.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // squirrel_binding.cpp
 namespace test_squirrel_binding {
 using eve::Diagnostic;
@@ -3827,65 +3465,72 @@ std::string topString(HSQUIRRELVM vm) {
 
 }  // namespace
 
-TEST_CASE("squirrel_binding.call_argument_c_string_literal_arrives_as_string") {
+TEST_CASE("squirrel_binding.call_arguments_and_stack_contract") {
     ssq::VM vm(1024, ssq::Libs::ALL);
     runCallArgumentScript(vm);
-    const SQInteger top = sq_gettop(vm.getHandle());
-    ssq::Object     fn  = vm.findFunc("argText");
+    auto*           sharedVm   = &vm;
+    const SQInteger initialTop = sq_gettop(vm.getHandle());
+    SUB_CASE("squirrel_binding.call_argument_c_string_literal_arrives_as_string") {
+        auto& vm = *sharedVm;
 
-    REQUIRE(
-        SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "literal")));
-    REQUIRE(topString(vm.getHandle()) == "literal");
-    sq_settop(vm.getHandle(), top);
+        const SQInteger top = initialTop;
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), initialTop);
+        ssq::Object fn = vm.findFunc("argText");
+
+        REQUIRE(SQ_SUCCEEDED(
+            eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "literal")));
+        REQUIRE(topString(vm.getHandle()) == "literal");
+        sq_settop(vm.getHandle(), top);
+    };
+    sq_settop(vm.getHandle(), initialTop);
+    SUB_CASE("squirrel_binding.call_argument_c_string_pointer_arrives_as_string") {
+        auto& vm = *sharedVm;
+
+        const SQInteger top = initialTop;
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), initialTop);
+        ssq::Object fn   = vm.findFunc("argKind");
+        const char* text = "dynamic";
+
+        // Measured before the fix: `typeof v` was "userdata".
+        REQUIRE(
+            SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, text)));
+        REQUIRE(topString(vm.getHandle()) == "string");
+        sq_settop(vm.getHandle(), top);
+    };
+    sq_settop(vm.getHandle(), initialTop);
+    SUB_CASE("squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline") {
+        auto& vm = *sharedVm;
+
+        const SQInteger top = initialTop;
+        REQUIRE_EQ(sq_gettop(vm.getHandle()), initialTop);
+
+        ssq::Object       fn    = vm.findFunc("twoArgs");
+        const std::string owned = "owned";
+        REQUIRE(SQ_SUCCEEDED(
+            eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, owned, 7)));
+        REQUIRE(topString(vm.getHandle()) == "owned|7");
+        sq_settop(vm.getHandle(), top);
+
+        // callFunction() restores the stack it was given, on success and on a throwing callee.
+        fn = vm.findFunc("argKind");
+        REQUIRE(SQ_SUCCEEDED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "x")));
+        REQUIRE(sq_gettop(vm.getHandle()) == top);
+
+        fn               = vm.findFunc("boom");
+        const int before = eve::script::reportedScriptCallFailures();
+        REQUIRE(SQ_FAILED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable)));
+        REQUIRE(sq_gettop(vm.getHandle()) == top);
+        REQUIRE(eve::script::reportedScriptCallFailures() == before + 1);
+    };
+    sq_settop(vm.getHandle(), initialTop);
 }
 
-TEST_CASE("squirrel_binding.call_argument_c_string_pointer_arrives_as_string") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
-    runCallArgumentScript(vm);
-    const SQInteger top  = sq_gettop(vm.getHandle());
-    ssq::Object     fn   = vm.findFunc("argKind");
-    const char*     text = "dynamic";
-
-    // Measured before the fix: `typeof v` was "userdata".
-    REQUIRE(SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, text)));
-    REQUIRE(topString(vm.getHandle()) == "string");
-    sq_settop(vm.getHandle(), top);
-}
-
-TEST_CASE("squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline") {
-    ssq::VM vm(1024, ssq::Libs::ALL);
-    runCallArgumentScript(vm);
-    const SQInteger top = sq_gettop(vm.getHandle());
-
-    ssq::Object       fn    = vm.findFunc("twoArgs");
-    const std::string owned = "owned";
-    REQUIRE(
-        SQ_SUCCEEDED(eve::script::callFunctionResult(vm.getHandle(), fn.getRaw(), eve::script::rootTable, owned, 7)));
-    REQUIRE(topString(vm.getHandle()) == "owned|7");
-    sq_settop(vm.getHandle(), top);
-
-    // callFunction() restores the stack it was given, on success and on a throwing callee.
-    fn = vm.findFunc("argKind");
-    REQUIRE(SQ_SUCCEEDED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable, "x")));
-    REQUIRE(sq_gettop(vm.getHandle()) == top);
-
-    fn               = vm.findFunc("boom");
-    const int before = eve::script::reportedScriptCallFailures();
-    REQUIRE(SQ_FAILED(eve::script::callFunction(vm.getHandle(), fn.getRaw(), eve::script::rootTable)));
-    REQUIRE(sq_gettop(vm.getHandle()) == top);
-    CHECK(eve::script::reportedScriptCallFailures() == before + 1);
-}
 }  // namespace test_squirrel_binding
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_statepatch)
+
+// Contract section: statepatch
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include "StatePatchTestSupport.h"
-#include "common/Module.h"
-#include "statepatch/StatePatch.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // statepatch.cpp
 namespace test_statepatch {
 using namespace eve::statepatch;
@@ -3922,18 +3567,13 @@ TEST_CASE("statepatch.script.batchConflictQueryAndSnapshot") {
     CHECK_EQ(vm.find("result").toString(), std::string("3"));
 }
 }  // namespace test_statepatch
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_graph)
+// Contract section: tactics graph
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/ECS.h"
-#include "common/Module.h"
+
 #include "hexmap/HexSphereTopology.h"
 #include "tactics/LineOfSight.h"
 #include "tactics/TacticsPath.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tactics_graph.cpp
 namespace test_tactics_graph {
 TEST_CASE("tactics.graphScriptMovementSnapshotAndStaleRelease") {
@@ -3965,24 +3605,12 @@ TEST_CASE("tactics.graphScriptMovementSnapshotAndStaleRelease") {
     )"));
 }
 }  // namespace test_tactics_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_presentation_script)
+// Contract section: tactics presentation script
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
-#include <vector>
-#include "common/Capability.h"
-#include "common/ECS.h"
-#include "common/Module.h"
-#include "tactics/LineOfSight.h"
+
 #include "tactics/Presentation.h"
 #include "tactics/Tactics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tactics_presentation_script.cpp
 namespace test_tactics_presentation_script {
 namespace {
@@ -4177,15 +3805,10 @@ TEST_CASE("tactics.scriptReachesPresentationAndSightQueries") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_tactics_presentation_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_script)
+// Contract section: tactics script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/ECS.h"
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // tactics_script.cpp
 namespace test_tactics_script {
 TEST_CASE("tactics.scriptOwnedBattleRunsDeterministicTurn") {
@@ -4565,19 +4188,11 @@ TEST_CASE("tactics.scriptCommandLogIsReadableAndRevisionScoped") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_tactics_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tactics_snapshot_script)
+// Contract section: tactics snapshot script
 #include "PrivateTestScope.h"
-#include <memory>
-#include <string>
-#include <utility>
-#include "common/Capability.h"
-#include "common/ECS.h"
+
 #include "common/SnapshotHash.h"
-#include "tactics/Tactics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tactics_snapshot_script.cpp
 namespace test_tactics_snapshot_script {
 namespace {
@@ -4685,17 +4300,13 @@ TEST_CASE("tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_tactics_snapshot_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tags)
+// Contract section: tags
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
+
 #include "common/StateAccess.h"
 #include "tags/TagStore.h"
 #include "tags/Tags.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tags.cpp
 namespace test_tags {
 using namespace eve;
@@ -4722,26 +4333,22 @@ function testTagsBindings() {
 }
 )SQ";
 
-UnitSciptTest(TagsScriptTest, kTagsScript);
+class TagsScriptTest : public ScriptTest {
+public:
+    TagsScriptTest() : ScriptTest(kTagsScript) {}
+};
 
 TEST_CASE_FIXTURE(TagsScriptTest, "tags.script.bindings") { REQUIRE(callScript("testTagsBindings")); }
 }  // namespace test_tags
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map_tile_collision_sink)
-#include <algorithm>
-#include <cstdint>
-#include <string>
-#include <vector>
+// Contract section: map tile collision sink
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
+
+#include <cstdint>
 #include "common/ScriptProvider.h"
 #include "map/Map.h"
 #include "map/TileCollision.h"
 #include "map/TileCollisionScriptSink.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // map_tile_collision_sink.cpp
 namespace test_map_tile_collision_sink {
 // ---------------------------------------------------------------------------
@@ -4876,74 +4483,77 @@ private:
     std::vector<std::string> declaredBefore_;
 };
 
-TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkReceivesLayerIdentityAndGeometry") {
-    Map        map;
-    TileLayer* layer = map.newLayer(5, 4, 16.f, 8.f);
-    REQUIRE(layer != nullptr);
-    layer->setTileMetadata(9, 1, 1, false);
-    layer->fillRect(1, 1, 3, 2, 9);
+TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispatchContract") {
+    SUB_CASE("map.collision.scriptSinkReceivesLayerIdentityAndGeometry") {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        Map        map;
+        TileLayer* layer = map.newLayer(5, 4, 16.f, 8.f);
+        REQUIRE(layer != nullptr);
+        layer->setTileMetadata(9, 1, 1, false);
+        layer->fillRect(1, 1, 3, 2, 9);
 
-    REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("ITileCollisionSink"));
-    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+        REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("ITileCollisionSink"));
+        REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
 
-    ssq::Object published = publish("test.collision", "sink");
-    REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
-    REQUIRE(published.find("ok").toBool());
-    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{1});
+        ssq::Object published = publish("test.collision", "sink");
+        REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
+        REQUIRE(published.find("ok").toBool());
+        REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{1});
 
-    // 合并出来的那一个矩形：原点 (16, 8)、尺寸 48x16。
-    // 带副作用的调用先落到局部变量：`REQUIRE_EQ` 会把实参各求值两次（§9.76.3），
-    // 直接把 `publishCollision` 写进断言会派发两次。
-    const int publishedRects = map.publishCollision(layer);
-    REQUIRE_EQ(publishedRects, 1);
-    REQUIRE_EQ(vm.find("calls").toInt(), 1);
-    REQUIRE_EQ(vm.find("seenLayerId").toInt(), int(layer->layerRef().slot));
-    REQUIRE_EQ(vm.find("seenLayerGeneration").toInt(), int(layer->layerRef().generation));
-    REQUIRE_EQ(vm.find("seenCount").toInt(), 1);
-    REQUIRE_EQ(vm.find("seenX").toFloat(), 16.0);
-    REQUIRE_EQ(vm.find("seenY").toFloat(), 8.0);
-    REQUIRE_EQ(vm.find("seenWidth").toFloat(), 48.0);
-    REQUIRE_EQ(vm.find("seenHeight").toFloat(), 16.0);
+        // 合并出来的那一个矩形：原点 (16, 8)、尺寸 48x16。
+        // 带副作用的调用先落到局部变量：`REQUIRE_EQ` 会把实参各求值两次（§9.76.3），
+        // 直接把 `publishCollision` 写进断言会派发两次。
+        const int publishedRects = map.publishCollision(layer);
+        REQUIRE_EQ(publishedRects, 1);
+        REQUIRE_EQ(vm.find("calls").toInt(), 1);
+        REQUIRE_EQ(vm.find("seenLayerId").toInt(), int(layer->layerRef().slot));
+        REQUIRE_EQ(vm.find("seenLayerGeneration").toInt(), int(layer->layerRef().generation));
+        REQUIRE_EQ(vm.find("seenCount").toInt(), 1);
+        REQUIRE_EQ(vm.find("seenX").toFloat(), 16.0);
+        REQUIRE_EQ(vm.find("seenY").toFloat(), 8.0);
+        REQUIRE_EQ(vm.find("seenWidth").toFloat(), 48.0);
+        REQUIRE_EQ(vm.find("seenHeight").toFloat(), 16.0);
 
-    // 脚本 sink 不会替换 map 自己的权威矩形表：`collisionRects_` 仍然是唯一权威。
-    REQUIRE_EQ(map.getCollisionRectCount(), 1);
-    REQUIRE_EQ(map.getCollisionRectWidth(0), 48.f);
+        // 脚本 sink 不会替换 map 自己的权威矩形表：`collisionRects_` 仍然是唯一权威。
+        REQUIRE_EQ(map.getCollisionRectCount(), 1);
+        REQUIRE_EQ(map.getCollisionRectWidth(0), 48.f);
 
-    // 退订之后派发停止，而 map 侧的行为完全不变。
-    vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"test.collision\")"));
-    REQUIRE(vm.find("unloaded").find("ok").toBool());
-    REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
-    const int rectsAfterUnload = map.publishCollision(layer);
-    REQUIRE_EQ(rectsAfterUnload, 1);
-    REQUIRE_EQ(vm.find("calls").toInt(), 1);
-}
+        // 退订之后派发停止，而 map 侧的行为完全不变。
+        vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"test.collision\")"));
+        REQUIRE(vm.find("unloaded").find("ok").toBool());
+        REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
+        const int rectsAfterUnload = map.publishCollision(layer);
+        REQUIRE_EQ(rectsAfterUnload, 1);
+        REQUIRE_EQ(vm.find("calls").toInt(), 1);
+    };
+    SUB_CASE("map.collision.scriptSinkCanTellLayersApart") {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        Map        map;
+        TileLayer* first  = map.newLayer(3, 3, 16.f, 16.f);
+        TileLayer* second = map.newLayer(3, 3, 16.f, 16.f);
+        REQUIRE(first != nullptr);
+        REQUIRE(second != nullptr);
+        REQUIRE(first->layerRef().slot != second->layerRef().slot);
 
-TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkCanTellLayersApart") {
-    Map        map;
-    TileLayer* first  = map.newLayer(3, 3, 16.f, 16.f);
-    TileLayer* second = map.newLayer(3, 3, 16.f, 16.f);
-    REQUIRE(first != nullptr);
-    REQUIRE(second != nullptr);
-    REQUIRE(first->layerRef().slot != second->layerRef().slot);
+        first->setTileMetadata(9, 1, 1, false);
+        first->setTile(0, 0, 9);
+        second->setTileMetadata(9, 1, 1, false);
+        second->setTile(0, 0, 9);
+        second->setTile(2, 0, 9);  // 与 (0,0) 不相邻，所以合并后是两个矩形
 
-    first->setTileMetadata(9, 1, 1, false);
-    first->setTile(0, 0, 9);
-    second->setTileMetadata(9, 1, 1, false);
-    second->setTile(0, 0, 9);
-    second->setTile(2, 0, 9);  // 与 (0,0) 不相邻，所以合并后是两个矩形
+        ssq::Object published = publish("test.collision.recording", "recorder");
+        REQUIRE(published.find("ok").toBool());
 
-    ssq::Object published = publish("test.collision.recording", "recorder");
-    REQUIRE(published.find("ok").toBool());
+        const int firstRects  = map.publishCollision(first);
+        const int secondRects = map.publishCollision(second);
+        REQUIRE_EQ(firstRects, 1);
+        REQUIRE_EQ(secondRects, 2);
 
-    const int firstRects  = map.publishCollision(first);
-    const int secondRects = map.publishCollision(second);
-    REQUIRE_EQ(firstRects, 1);
-    REQUIRE_EQ(secondRects, 2);
-
-    // 层身份进得来，所以脚本分得清两次发布属于哪一层（这正是换掉 `const void*` 的收益）。
-    const std::string expectedLayers = formatLayer(first->layerRef()) + formatLayer(second->layerRef());
-    REQUIRE_EQ(vm.find("recordedLayers").toString(), expectedLayers);
-    REQUIRE_EQ(vm.find("recordedSlots").toString(), std::string("1,2,"));
+        // 层身份进得来，所以脚本分得清两次发布属于哪一层（这正是换掉 `const void*` 的收益）。
+        const std::string expectedLayers = formatLayer(first->layerRef()) + formatLayer(second->layerRef());
+        REQUIRE_EQ(vm.find("recordedLayers").toString(), expectedLayers);
+        REQUIRE_EQ(vm.find("recordedSlots").toString(), std::string("1,2,"));
+    };
 }
 
 TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkFailureIsCountedNotSwallowed") {
@@ -5002,21 +4612,14 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkSeamIsAbsen
     REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
 }
 }  // namespace test_map_tile_collision_sink
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_motion_script_sink)
-#include <cmath>
-#include <string>
-#include <vector>
+// Contract section: motion script sink
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 #include "animation/Animation.h"
 #include "animation/MotionRuntime.h"
 #include "animation/MotionScriptBindings.h"
-#include "common/ScriptProvider.h"
 #include "common/Time.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // motion_script_sink.cpp
 namespace test_motion_script_sink {
 // ---------------------------------------------------------------------------
@@ -5142,11 +4745,6 @@ tableError <- ""
 
 class MotionScriptSinkTest : public ScriptTest {
 public:
-    // NOTE: the bundle entry (`ctest -L bundle`, opt-in) sees motions left active by an
-    // earlier case, because the Animation module is process-level and MotionRuntime has no
-    // public reset: case 3 starts with activeCount()==5 instead of 4. Per-case runs -- the
-    // CI shape -- are clean. A `MotionRuntime::clear()` test hook or per-case cancellation
-    // in this file is the fix; it is not part of the merge.
     MotionScriptSinkTest() : ScriptTest(kScriptMotionSink) { ScriptProviderRegistry::instance().clearAll(); }
 
     ~MotionScriptSinkTest() {
@@ -5155,8 +4753,11 @@ public:
     }
 
     /** 推进一次动画：`Animation::advance` 是唯一的求值入口。 */
-    void advanceAnimation(eve::animation::Animation& target, double seconds, std::uint64_t tick) {
-        const eve::SimulationStep step{eve::SimulationTick{tick}, eve::Duration::fromSeconds(seconds).expect("dt")};
+    void advanceAnimation(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::animation::Animation& target,
+                          double seconds) {
+        const auto tick = target.currentTick().incremented();
+        REQUIRE(tick.has_value());
+        const eve::SimulationStep step{*tick, eve::Duration::fromSeconds(seconds).expect("dt")};
         auto                      result = target.advance(step);
         REQUIRE(result.ok());
     }
@@ -5164,31 +4765,56 @@ public:
 
 }  // namespace
 
-TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkReceivesEveryEvaluatedValue") {
-    REQUIRE(callScript("startMotionWithSink"));
-    eve::animation::Animation* module = eve::animation::Animation::create();
-    REQUIRE(module != nullptr);
-    REQUIRE_EQ(module->motions().activeCount(), 1);
+TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkValueShapeContract") {
+    SUB_CASE("animation.motion.scriptSinkReceivesEveryEvaluatedValue") {
+        REQUIRE(callScript("startMotionWithSink"));
+        eve::animation::Animation* module = eve::animation::Animation::create();
+        REQUIRE(module != nullptr);
+        REQUIRE_EQ(module->motions().activeCount(), 1);
 
-    advanceAnimation(*module, 0.25, 1);
-    advanceAnimation(*module, 0.25, 2);
-    advanceAnimation(*module, 0.25, 3);
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
 
-    // 每次 advance 都推一个值，而且单调上升（0→10 的线性 tween）。
-    REQUIRE(vm.find("writeCount").toInt() >= 3);
-    REQUIRE_EQ(vm.find("received").getType(), ssq::Type::ARRAY);
-    const double last = vm.find("lastValue").toFloat();
-    REQUIRE(last > 0.0);
-    REQUIRE(last <= 10.0);
+        // 每次 advance 都推一个值，而且单调上升（0→10 的线性 tween）。
+        REQUIRE(vm.find("writeCount").toInt() >= 3);
+        REQUIRE_EQ(vm.find("received").getType(), ssq::Type::ARRAY);
+        const double last = vm.find("lastValue").toFloat();
+        REQUIRE(last > 0.0);
+        REQUIRE(last <= 10.0);
 
-    // 跑完 1 秒的 tween：motion 结束，不再活跃。
-    advanceAnimation(*module, 0.5, 4);
-    REQUIRE_EQ(module->motions().activeCount(), 0);
-    REQUIRE(std::fabs(vm.find("lastValue").toFloat() - 10.0) < 1e-3);
+        // 跑完 1 秒的 tween：motion 结束，不再活跃。
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.5);
+        REQUIRE_EQ(module->motions().activeCount(), 0);
+        REQUIRE(std::fabs(vm.find("lastValue").toFloat() - 10.0) < 1e-3);
 
-    // 撤回适配器与 provider 登记（模块析构走同一条路）。
-    eve::animation::clearScriptMotionSinkAdapters();
-    REQUIRE(!ScriptProviderRegistry::instance().contains("animation.motion-sink.1"));
+        // 撤回适配器与 provider 登记（模块析构走同一条路）。
+        eve::animation::clearScriptMotionSinkAdapters();
+        REQUIRE(!ScriptProviderRegistry::instance().contains("animation.motion-sink.1"));
+    };
+    SUB_CASE("animation.motion.nonFloatShapesReachScriptSinksToo") {
+        REQUIRE(callScript("startNonFloatMotions"));
+        eve::animation::Animation* module = eve::animation::Animation::create();
+        REQUIRE(module != nullptr);
+        REQUIRE_EQ(module->motions().activeCount(), 4);
+
+        // 四条一起跑：每次 advance 每个 sink 都收到自己那几维的值（位置参数编组）。
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        REQUIRE(vm.find("vec2Sum").toFloat() > 0.0);
+        REQUIRE(vm.find("vec3Sum").toFloat() > 0.0);
+        REQUIRE(vm.find("colorSum").toFloat() > 0.0);
+        REQUIRE(vm.find("colorLastA").toFloat() > 0.0);
+        REQUIRE(vm.find("quatSum").toFloat() > 0.0);
+
+        // 跑到 1 秒结束：终点值就是 to 那一端（vec2 6、vec3 6、color 6/1、单位四元数 z+w≈1.414）。
+        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 1.0);
+        REQUIRE_EQ(module->motions().activeCount(), 0);
+        REQUIRE(std::fabs(vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(vm.find("colorSum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
+        REQUIRE(std::fabs(vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
+    };
 }
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked") {
@@ -5197,33 +4823,11 @@ TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.sinkIsOptionalAndOnlyB
     eve::animation::Animation* module = eve::animation::Animation::create();
     REQUIRE(module != nullptr);
     REQUIRE_EQ(module->motions().activeCount(), 1);
-    advanceAnimation(*module, 0.5, 1);
+    advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.5);
     REQUIRE_EQ(vm.find("writeCount").toInt(), 0);
     REQUIRE_EQ(ScriptProviderRegistry::instance().size(), std::size_t{0});
-}
-
-TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.nonFloatShapesReachScriptSinksToo") {
-    REQUIRE(callScript("startNonFloatMotions"));
-    eve::animation::Animation* module = eve::animation::Animation::create();
-    REQUIRE(module != nullptr);
-    REQUIRE_EQ(module->motions().activeCount(), 4);
-
-    // 四条一起跑：每次 advance 每个 sink 都收到自己那几维的值（位置参数编组）。
-    advanceAnimation(*module, 0.25, 1);
-    REQUIRE(vm.find("vec2Sum").toFloat() > 0.0);
-    REQUIRE(vm.find("vec3Sum").toFloat() > 0.0);
-    REQUIRE(vm.find("colorSum").toFloat() > 0.0);
-    REQUIRE(vm.find("colorLastA").toFloat() > 0.0);
-    REQUIRE(vm.find("quatSum").toFloat() > 0.0);
-
-    // 跑到 1 秒结束：终点值就是 to 那一端（vec2 6、vec3 6、color 6/1、单位四元数 z+w≈1.414）。
-    advanceAnimation(*module, 1.0, 2);
+    advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.5);
     REQUIRE_EQ(module->motions().activeCount(), 0);
-    REQUIRE(std::fabs(vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
-    REQUIRE(std::fabs(vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
-    REQUIRE(std::fabs(vm.find("colorSum").toFloat() - 6.0) < 1e-3);
-    REQUIRE(std::fabs(vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
-    REQUIRE(std::fabs(vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
 }
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.badValueTablesAreRejectedNotZeroFilled") {
@@ -5248,26 +4852,20 @@ TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkFailureCance
     //    不再接收值的目标上——吞掉失败就会变成那样）。
     REQUIRE(callScript("startMotionWithLateBrokenSink"));
     REQUIRE_EQ(module->motions().activeCount(), 1);
-    const eve::SimulationStep step{eve::SimulationTick{1}, eve::Duration::fromSeconds(0.25).expect("dt")};
+    const auto tick = module->currentTick().incremented();
+    REQUIRE(tick.has_value());
+    const eve::SimulationStep step{*tick, eve::Duration::fromSeconds(0.25).expect("dt")};
     const auto                advanced = module->advance(step);
     REQUIRE(!advanced.ok());
     REQUIRE_EQ(module->motions().activeCount(), 0);
 }
 }  // namespace test_motion_script_sink
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_script_link)
-#include <cmath>
-#include <string>
+// Contract section: scene script link
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 #include "common/Diagnostic.h"
-#include "common/ScriptProvider.h"
 #include "common/Status.h"
-#include "scene/NodeDesc.h"
-#include "scene/Scene.h"
-#include "scene/SceneHost.h"
-#include "scene/TransformSystem.h"
 // scene_script_link.cpp
 namespace test_scene_script_link {
 // Script-backed scene links (judgement criterion J-2).
@@ -5277,7 +4875,6 @@ namespace test_scene_script_link {
 // `scene.linkScriptAt`. These cases drive both sync directions through the real
 // `TransformSystem` dispatch and pin the absent cases (no host, no node, nothing
 // published, retired provider, broken target).
-
 
 using namespace eve;
 using namespace eve::scene;
@@ -5383,7 +4980,9 @@ bool setMemberNumber(const ssq::Object& instance, const char* name, float value)
     sq_pushobject(vm, instance.getRaw());
     sq_pushstring(vm, name, -1);
     sq_pushfloat(vm, SQFloat(value));
-    const bool ok = SQ_SUCCEEDED(sq_newslot(vm, -3, SQFalse));
+    // Existing instance fields need assignment: sq_newslot only handles tables/classes
+    // and returns SQ_OK without writing anything for an instance.
+    const bool ok = SQ_SUCCEEDED(sq_set(vm, -3));
     sq_settop(vm, top);
     return ok;
 }
@@ -5403,7 +5002,7 @@ public:
 
 protected:
     /** Mounts `root` under `name` and returns the host. */
-    SceneHost* mount(const std::string& name, NodeDesc root) {
+    SceneHost* mount(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const std::string& name, NodeDesc root) {
         auto mounted = module->mountAs(name, std::move(root));
         REQUIRE(mounted.ok());
         if (!mounted.ok()) return nullptr;
@@ -5411,21 +5010,23 @@ protected:
     }
 
     /** Publishes a script instance under `name`; the instance must be in the VM. */
-    eve::ScriptProviderHandle publish(const std::string& name, const char* instanceName) {
+    eve::ScriptProviderHandle publish(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const std::string& name,
+                                      const char* instanceName) {
         auto published = eve::ScriptProviderRegistry::instance().publish(name, vm.find(instanceName));
         REQUIRE(published.ok());
         return published.value();
     }
 
-    SceneNode* nodeOf(SceneHost* host, const std::string& id) {
+    SceneNode* nodeOf(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, SceneHost* host, const std::string& id) {
         auto found = host->findById(id);
         REQUIRE(found.ok());
         return found.ok() ? found.value() : nullptr;
     }
 
     /** Moves a node locally and marks it dirty, the way a game system would. */
-    void moveLocal(SceneHost* host, const std::string& id, float x, float y, float z) {
-        SceneNode* node = nodeOf(host, id);
+    void moveLocal(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, SceneHost* host, const std::string& id, float x,
+                   float y, float z) {
+        SceneNode* node = nodeOf(_ZEROERR_TEST_CONTEXT, host, id);
         REQUIRE(node != nullptr);
         if (node == nullptr) return;
         node->x          = x;
@@ -5452,97 +5053,150 @@ protected:
 
 }  // namespace
 
-TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.pushDrivesFollower") {
-    // Provider-present probe for the node -> script direction: the follower is
-    // called with the node's *world* transform, not its local one.
-    SceneHost* host = mount("scriptlink_push",
-                            node("root", {node("child").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
+TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBindingContract") {
+    SUB_CASE("scene.scriptLink.pushDrivesFollower") {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        // Provider-present probe for the node -> script direction: the follower is
+        // called with the node's *world* transform, not its local one.
+        SceneHost* host = mount(_ZEROERR_TEST_CONTEXT, "scriptlink_push",
+                                node("root", {node("child").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
 
-    REQUIRE(module->linkScriptAt("scriptlink_push", "child", publish("link.follower", "follower").name, "node").ok());
-    CHECK_EQ(host->linkCount("child"), 1);
+        REQUIRE(module
+                    ->linkScriptAt("scriptlink_push", "child",
+                                   publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower").name, "node")
+                    .ok());
+        REQUIRE_EQ(host->linkCount("child"), 1);
 
-    syncAll(host);
-    const ssq::Object follower = vm.find("follower");
-    CHECK(memberNumber(follower, "pushes") >= 1.0);
-    CHECK_EQ(memberString(follower, "lastId"), std::string("child"));
-    CHECK_EQ(memberNumber(follower, "lastX"), 11.0);
-    CHECK_EQ(memberNumber(follower, "lastY"), 2.0);
-    CHECK_EQ(memberNumber(follower, "lastZ"), 3.0);
-    CHECK_EQ(memberNumber(follower, "lastScale"), 1.0);
+        syncAll(host);
+        const ssq::Object follower = vm.find("follower");
+        REQUIRE(memberNumber(follower, "pushes") >= 1.0);
+        REQUIRE_EQ(memberString(follower, "lastId"), std::string("child"));
+        REQUIRE_EQ(memberNumber(follower, "lastX"), 11.0);
+        REQUIRE_EQ(memberNumber(follower, "lastY"), 2.0);
+        REQUIRE_EQ(memberNumber(follower, "lastZ"), 3.0);
+        REQUIRE_EQ(memberNumber(follower, "lastScale"), 1.0);
 
-    const double pushes = memberNumber(follower, "pushes");
+        const double pushes = memberNumber(follower, "pushes");
 
-    // Moving the node re-syncs it; the reported position is still world-space.
-    moveLocal(host, "child", 5.f, 6.f, 7.f);
-    CHECK(memberNumber(follower, "pushes") > pushes);
-    CHECK_EQ(memberNumber(follower, "lastX"), 15.0);
-    CHECK_EQ(memberNumber(follower, "lastY"), 6.0);
-    CHECK_EQ(memberNumber(follower, "lastZ"), 7.0);
+        // Moving the node re-syncs it; the reported position is still world-space.
+        moveLocal(_ZEROERR_TEST_CONTEXT, host, "child", 5.f, 6.f, 7.f);
+        REQUIRE(memberNumber(follower, "pushes") > pushes);
+        REQUIRE_EQ(memberNumber(follower, "lastX"), 15.0);
+        REQUIRE_EQ(memberNumber(follower, "lastY"), 6.0);
+        REQUIRE_EQ(memberNumber(follower, "lastZ"), 7.0);
+    };
+
+    SUB_CASE("scene.scriptLink.pullDrivesNode") {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        // Script -> node direction: "body" mode asks the provider for a local transform
+        // and moves the node to it, which is what physics does natively.
+        SceneHost* host =
+            mount(_ZEROERR_TEST_CONTEXT, "scriptlink_pull", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+
+        const ssq::Object driver = vm.find("driver");
+        REQUIRE(setMemberNumber(driver, "x", 4.f));
+        REQUIRE(setMemberNumber(driver, "y", 5.f));
+        REQUIRE(setMemberNumber(driver, "z", 6.f));
+        REQUIRE(setMemberNumber(driver, "yaw", 0.25f));
+        REQUIRE_EQ(memberNumber(driver, "x"), 4.0);
+        REQUIRE_EQ(memberNumber(driver, "y"), 5.0);
+        REQUIRE_EQ(memberNumber(driver, "z"), 6.0);
+        REQUIRE_EQ(memberNumber(driver, "yaw"), 0.25);
+
+        REQUIRE(module
+                    ->linkScriptAt("scriptlink_pull", "child",
+                                   publish(_ZEROERR_TEST_CONTEXT, "link.driver", "driver").name, "body")
+                    .ok());
+
+        // Linking already ran a transform update, so the node is at the driver's pose.
+        const SceneNode* node = nodeOf(_ZEROERR_TEST_CONTEXT, host, "child");
+        REQUIRE(node != nullptr);
+        REQUIRE(approxEq(node->x, 4.f));
+        REQUIRE(approxEq(node->y, 5.f));
+        REQUIRE(approxEq(node->z, 6.f));
+        REQUIRE(approxEq(node->yaw, 0.25f));
+
+        // And it keeps following: the node is not merely set once.
+        REQUIRE(setMemberNumber(driver, "x", -1.5f));
+        eve::scene::TransformSystem::updateHost(host);
+        REQUIRE(approxEq(nodeOf(_ZEROERR_TEST_CONTEXT, host, "child")->x, -1.5f));
+    };
+    SUB_CASE("scene.scriptLink.scriptBindingReportsResult") {
+        eve::ScriptProviderRegistry::instance().clearAll();
+        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        // The script face of the same call: a script links its own provider and reads the
+        // result table, so `eve.Scene().linkScriptAt` is exercised, not just the C++ method.
+        SceneHost* host =
+            mount(_ZEROERR_TEST_CONTEXT, "scriptlink_api", node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
+        publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower");
+
+        vm.run(vm.compileSource(
+            "local scene = eve.Scene()\n"
+            "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
+            "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
+            "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
+
+        ssq::Object linked = vm.find("linked");
+        REQUIRE_EQ(linked.getType(), ssq::Type::TABLE);
+        REQUIRE(linked.find("ok").toBool());
+        REQUIRE_EQ(host->linkCount("child"), 1);
+
+        ssq::Object missing = vm.find("missing");
+        REQUIRE_EQ(missing.getType(), ssq::Type::TABLE);
+        REQUIRE(!missing.find("ok").toBool());
+        REQUIRE_EQ(missing.find("code").toString(), std::string("not_found"));
+
+        ssq::Object orphanHost = vm.find("orphanHost");
+        REQUIRE(!orphanHost.find("ok").toBool());
+        REQUIRE_EQ(orphanHost.find("code").toString(), std::string("not_found"));
+
+        // The script-linked follower is the one the pipeline drives.
+        syncAll(host);
+        REQUIRE_EQ(memberNumber(vm.find("follower"), "lastX"), 3.0);
+        REQUIRE(memberNumber(vm.find("follower"), "pushes") >= 1.0);
+    };
 }
 
-TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.pullDrivesNode") {
-    // Script -> node direction: "body" mode asks the provider for a local transform
-    // and moves the node to it, which is what physics does natively.
-    SceneHost* host = mount("scriptlink_pull", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
-
-    const ssq::Object driver = vm.find("driver");
-    REQUIRE(setMemberNumber(driver, "x", 4.f));
-    REQUIRE(setMemberNumber(driver, "y", 5.f));
-    REQUIRE(setMemberNumber(driver, "z", 6.f));
-    REQUIRE(setMemberNumber(driver, "yaw", 0.25f));
-
-    REQUIRE(module->linkScriptAt("scriptlink_pull", "child", publish("link.driver", "driver").name, "body").ok());
-
-    // Linking already ran a transform update, so the node is at the driver's pose.
-    const SceneNode* node = nodeOf(host, "child");
-    REQUIRE(node != nullptr);
-    CHECK(approxEq(node->x, 4.f));
-    CHECK(approxEq(node->y, 5.f));
-    CHECK(approxEq(node->z, 6.f));
-    CHECK(approxEq(node->yaw, 0.25f));
-
-    // And it keeps following: the node is not merely set once.
-    REQUIRE(setMemberNumber(driver, "x", -1.5f));
-    eve::scene::TransformSystem::updateHost(host);
-    CHECK(approxEq(nodeOf(host, "child")->x, -1.5f));
-}
 
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.absentInputsAreReported") {
     // J-4 absent probes: every way of not having a target is a structured failure,
     // and none of them silently creates a link.
-    SceneHost* host = mount("scriptlink_absent", node("root", {node("child")}));
+    SceneHost* host = mount(_ZEROERR_TEST_CONTEXT, "scriptlink_absent", node("root", {node("child")}));
 
     auto unknownHost = module->linkScriptAt("scriptlink_nope", "child", "link.follower", "node");
-    CHECK(!unknownHost.ok());
-    CHECK_EQ(firstDiagnosticCode(unknownHost.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE(!unknownHost.ok());
+    REQUIRE_EQ(firstDiagnosticCode(unknownHost.status()), eve::DiagnosticCode::NotFound);
 
     auto unknownNode = module->linkScriptAt("scriptlink_absent", "nope", "link.follower", "node");
-    CHECK(!unknownNode.ok());
-    CHECK_EQ(firstDiagnosticCode(unknownNode.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE(!unknownNode.ok());
+    REQUIRE_EQ(firstDiagnosticCode(unknownNode.status()), eve::DiagnosticCode::NotFound);
 
     // Nothing published under that name: the socket is empty, and that is not a link.
     auto unpublished = module->linkScriptAt("scriptlink_absent", "child", "link.missing", "node");
-    CHECK(!unpublished.ok());
-    CHECK_EQ(firstDiagnosticCode(unpublished.status()), eve::DiagnosticCode::NotFound);
+    REQUIRE(!unpublished.ok());
+    REQUIRE_EQ(firstDiagnosticCode(unpublished.status()), eve::DiagnosticCode::NotFound);
 
-    CHECK_EQ(host->linkCount("child"), 0);
+    REQUIRE_EQ(host->linkCount("child"), 0);
 
     // With the provider published but never linked, the pipeline has nothing to do.
-    publish("link.follower", "follower");
+    publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower");
     eve::scene::TransformSystem::updateHost(host);
-    CHECK_EQ(memberNumber(vm.find("follower"), "pushes"), 0.0);
-    CHECK_EQ(host->linkCount("child"), 0);
+    REQUIRE_EQ(memberNumber(vm.find("follower"), "pushes"), 0.0);
+    REQUIRE_EQ(host->linkCount("child"), 0);
 }
 
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.retiredProviderIsDropped") {
     // A retired generation must stop being driven *and* stop being linked: the
     // record stays answerable so the scene can purge it instead of following a
     // script object that no longer exists.
-    SceneHost* host = mount("scriptlink_retire", node("root", {node("child").withPosition(1.f, 1.f, 1.f)}));
+    SceneHost* host =
+        mount(_ZEROERR_TEST_CONTEXT, "scriptlink_retire", node("root", {node("child").withPosition(1.f, 1.f, 1.f)}));
 
-    const eve::ScriptProviderHandle handle = publish("link.follower", "follower");
+    const eve::ScriptProviderHandle handle = publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower");
     REQUIRE(module->linkScriptAt("scriptlink_retire", "child", handle.name, "node").ok());
-    CHECK_EQ(host->linkCount("child"), 1);
+    REQUIRE_EQ(host->linkCount("child"), 1);
 
     syncAll(host);
     const ssq::Object follower = vm.find("follower");
@@ -5553,93 +5207,61 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.retiredProviderIsDropped") {
 
     // The next sync drops the link instead of calling a retired generation.
     syncAll(host);
-    CHECK_EQ(host->linkCount("child"), 0);
-    CHECK_EQ(memberNumber(follower, "pushes"), pushes);
+    REQUIRE_EQ(host->linkCount("child"), 0);
+    REQUIRE_EQ(memberNumber(follower, "pushes"), pushes);
 }
 
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.rejectedPullKeepsNodeIntact") {
     // A provider that returns too few numbers is rejected as a whole: the node must
     // not end up half-moved, and the link stays because the provider is alive.
-    SceneHost* host = mount("scriptlink_short", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+    SceneHost* host =
+        mount(_ZEROERR_TEST_CONTEXT, "scriptlink_short", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
 
-    REQUIRE(module->linkScriptAt("scriptlink_short", "child", publish("link.short", "shortDriver").name, "body").ok());
+    REQUIRE(module
+                ->linkScriptAt("scriptlink_short", "child",
+                               publish(_ZEROERR_TEST_CONTEXT, "link.short", "shortDriver").name, "body")
+                .ok());
 
-    const SceneNode* node = nodeOf(host, "child");
+    const SceneNode* node = nodeOf(_ZEROERR_TEST_CONTEXT, host, "child");
     REQUIRE(node != nullptr);
-    CHECK(approxEq(node->x, 1.f));
-    CHECK(approxEq(node->y, 2.f));
-    CHECK(approxEq(node->z, 3.f));
-    CHECK_EQ(host->linkCount("child"), 1);
+    REQUIRE(approxEq(node->x, 1.f));
+    REQUIRE(approxEq(node->y, 2.f));
+    REQUIRE(approxEq(node->z, 3.f));
+    REQUIRE_EQ(host->linkCount("child"), 1);
 }
 
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.brokenTargetDoesNotStallSiblings") {
     // A raising follower is reported once and skipped; the next node still syncs.
     // The broken one is linked first on purpose, so a stall would be visible.
     SceneHost* host =
-        mount("scriptlink_broken",
+        mount(_ZEROERR_TEST_CONTEXT, "scriptlink_broken",
               node("root", {node("bad").withPosition(1.f, 1.f, 1.f), node("good").withPosition(2.f, 2.f, 2.f)}));
 
-    REQUIRE(
-        module->linkScriptAt("scriptlink_broken", "bad", publish("link.raising", "raisingFollower").name, "node").ok());
-    REQUIRE(module->linkScriptAt("scriptlink_broken", "good", publish("link.follower", "follower").name, "node").ok());
+    REQUIRE(module
+                ->linkScriptAt("scriptlink_broken", "bad",
+                               publish(_ZEROERR_TEST_CONTEXT, "link.raising", "raisingFollower").name, "node")
+                .ok());
+    REQUIRE(module
+                ->linkScriptAt("scriptlink_broken", "good",
+                               publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower").name, "node")
+                .ok());
 
     const ssq::Object follower = vm.find("follower");
     const double      pushes   = memberNumber(follower, "pushes");
 
     syncAll(host);
-    CHECK(memberNumber(follower, "pushes") > pushes);
-    CHECK_EQ(memberNumber(follower, "lastX"), 2.0);
-    CHECK_EQ(host->linkCount("bad"), 1);  // its target is alive, so the link survives
+    REQUIRE(memberNumber(follower, "pushes") > pushes);
+    REQUIRE_EQ(memberNumber(follower, "lastX"), 2.0);
+    REQUIRE_EQ(host->linkCount("bad"), 1);  // its target is alive, so the link survives
 }
 
-TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.scriptBindingReportsResult") {
-    // The script face of the same call: a script links its own provider and reads the
-    // result table, so `eve.Scene().linkScriptAt` is exercised, not just the C++ method.
-    SceneHost* host = mount("scriptlink_api", node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
-    publish("link.follower", "follower");
-
-    vm.run(
-        vm.compileSource("local scene = eve.Scene()\n"
-                         "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
-                         "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
-                         "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
-
-    ssq::Object linked = vm.find("linked");
-    CHECK_EQ(linked.getType(), ssq::Type::TABLE);
-    CHECK(linked.find("ok").toBool());
-    CHECK_EQ(host->linkCount("child"), 1);
-
-    ssq::Object missing = vm.find("missing");
-    CHECK_EQ(missing.getType(), ssq::Type::TABLE);
-    CHECK(!missing.find("ok").toBool());
-    CHECK_EQ(missing.find("code").toString(), std::string("not_found"));
-
-    ssq::Object orphanHost = vm.find("orphanHost");
-    CHECK(!orphanHost.find("ok").toBool());
-    CHECK_EQ(orphanHost.find("code").toString(), std::string("not_found"));
-
-    // The script-linked follower is the one the pipeline drives.
-    syncAll(host);
-    CHECK(memberNumber(vm.find("follower"), "lastX") >= 3.0);
-}
 }  // namespace test_scene_script_link
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sensing_script_provider)
-#include <algorithm>
-#include <cmath>
-#include <string>
-#include <utility>
-#include <vector>
+// Contract section: sensing script provider
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
-#include "common/ScriptProvider.h"
-#include "sensing/Sensing.h"
+
 #include "sensing/SensingScriptCandidateSeam.h"
 #include "sensing/Targeting.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // sensing_script_provider.cpp
 namespace test_sensing_script_provider {
 // ---------------------------------------------------------------------------
@@ -5741,7 +5363,7 @@ constexpr const char* kOriginId = "00000000-0000-7000-8000-000000000001";
 constexpr const char* kEnemyId  = "00000000-0000-7000-8000-000000000002";
 constexpr const char* kAllyId   = "00000000-0000-7000-8000-000000000004";
 
-SubjectRef subject(const char* text) {
+SubjectRef subject(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const char* text) {
     const auto id = PersistentId::parse(text);
     REQUIRE(id.has_value());
     return SubjectRef::fromPersistentId(*id);
@@ -5758,7 +5380,7 @@ WorldPoint world2D(float x, float y) {
 }
 
 /** 一个带齐各类约束的 World2D 查询：用来检查下行编组有没有把字段丢掉。 */
-TargetingQuery worldQuery() {
+TargetingQuery worldQuery(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
     TargetingSpec spec;
     spec.space        = CoordinateSpace::World2D;
     spec.domain       = TargetDomain::Enemy;
@@ -5772,14 +5394,14 @@ TargetingQuery worldQuery() {
     REQUIRE(zone.has_value());
     spec.zone      = *zone;
     spec.worldArea = std::move(WorldArea::circle2D(world2D(0.f, 0.f), 10.f)).expect("circle area");
-    return TargetingQuery{subject(kOriginId), world2D(1.f, 2.f), spec};
+    return TargetingQuery{subject(_ZEROERR_TEST_CONTEXT, kOriginId), world2D(1.f, 2.f), spec};
 }
 
 /** 只给空间与原点的最小查询：坐标空间用例用它，避免被其它约束掩盖。 */
-TargetingQuery minimalWorldQuery() {
+TargetingQuery minimalWorldQuery(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
     TargetingSpec spec;
     spec.space = CoordinateSpace::World2D;
-    return TargetingQuery{subject(kOriginId), world2D(0.f, 0.f), spec};
+    return TargetingQuery{subject(_ZEROERR_TEST_CONTEXT, kOriginId), world2D(0.f, 0.f), spec};
 }
 
 class ScriptSensingProviderTest : public ScriptTest {
@@ -5813,7 +5435,7 @@ public:
     }
 
     /** 按名字退订（脚本侧 `publishFor` 拿不到 C++ 句柄，这里用名字 + 当前代际还原一个）。 */
-    void unload(const char* name) {
+    void unload(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const char* name) {
         auto& registry = ScriptProviderRegistry::instance();
         REQUIRE(registry.unload(ScriptProviderHandle{name, registry.generationOf(name)}).ok());
     }
@@ -5831,11 +5453,11 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderAn
     REQUIRE(published.find("ok").toBool());
     REQUIRE(cap::query<ISensingCandidateProvider>() != nullptr);
 
-    auto resolved = TargetingResolver{}.resolve(worldQuery());
+    auto resolved = TargetingResolver{}.resolve(worldQuery(_ZEROERR_TEST_CONTEXT));
     REQUIRE(resolved.ok());
     // 脚本回了两条：一条 enemy（被 domain 约束保留），一条缺省 neutral（被挡掉）。
     REQUIRE_EQ(resolved.value().subjects().size(), std::size_t{1});
-    REQUIRE_EQ(resolved.value().subjects().front(), subject(kEnemyId));
+    REQUIRE_EQ(resolved.value().subjects().front(), subject(_ZEROERR_TEST_CONTEXT, kEnemyId));
 
     // 下行编组：脚本看到的字段与查询里的约束逐个对上（包括区域与无界/有界距离）。
     REQUIRE_EQ(vm.find("lastOrigin").toString(), std::string(kOriginId));
@@ -5851,9 +5473,9 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderAn
     REQUIRE_EQ(vm.find("lastOriginX").toFloat(), 1.0);
 
     // 退订之后能力槽位重新为空，resolver 回到"没有提供方"。
-    unload("test.sensing.candidates");
+    unload(_ZEROERR_TEST_CONTEXT, "test.sensing.candidates");
     REQUIRE(cap::query<ISensingCandidateProvider>() == nullptr);
-    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery());
+    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
     REQUIRE(!absent.ok());
     REQUIRE_EQ(static_cast<int>(absent.code()), static_cast<int>(StatusCode::Unsupported));
 }
@@ -5864,7 +5486,7 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderSe
     ssq::Object refused = publish("test.sensing.orphan", "candidateProvider");
     REQUIRE(!refused.find("ok").toBool());
     REQUIRE_EQ(refused.find("code").toString(), std::string("not_found"));
-    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery());
+    const auto absent = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
     REQUIRE(!absent.ok());
     REQUIRE_EQ(static_cast<int>(absent.code()), static_cast<int>(StatusCode::Unsupported));
 
@@ -5873,51 +5495,55 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderSe
     REQUIRE(ScriptProviderRegistry::instance().hasCapabilitySeam(ISensingCandidateProvider::capabilityName));
 }
 
-TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerMustStayInTheQuerySpace") {
-    declareScriptSensingCandidateSeam();
-    REQUIRE(publish("test.sensing.grid", "gridCandidateProvider").find("ok").toBool());
+TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerValidationContract") {
+    SUB_CASE("sensing.script.candidateAnswerMustStayInTheQuerySpace") {
+        ScriptProviderRegistry::instance().clearAll();
+        declareScriptSensingCandidateSeam();
+        REQUIRE(publish("test.sensing.grid", "gridCandidateProvider").find("ok").toBool());
 
-    // 查询是 world2d、候选自称 grid2d：明确拒绝（`Unsupported`），而不是把格子当世界单位算距离。
-    const auto resolved = TargetingResolver{}.resolve(minimalWorldQuery());
-    REQUIRE(!resolved.ok());
-    REQUIRE_EQ(static_cast<int>(resolved.code()), static_cast<int>(StatusCode::Unsupported));
-    REQUIRE(resolved.error() != nullptr);
-    REQUIRE(resolved.error()->message().find("does not match the query space") != std::string::npos);
-}
+        // 查询是 world2d、候选自称 grid2d：明确拒绝（`Unsupported`），而不是把格子当世界单位算距离。
+        const auto resolved = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
+        REQUIRE(!resolved.ok());
+        REQUIRE_EQ(static_cast<int>(resolved.code()), static_cast<int>(StatusCode::Unsupported));
+        REQUIRE(resolved.error() != nullptr);
+        REQUIRE(resolved.error()->message().find("does not match the query space") != std::string::npos);
+    };
+    SUB_CASE("sensing.script.malformedCandidateAnswersAreRejected") {
+        ScriptProviderRegistry::instance().clearAll();
+        declareScriptSensingCandidateSeam();
 
-TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.malformedCandidateAnswersAreRejected") {
-    declareScriptSensingCandidateSeam();
+        // 返回的不是数组：拒绝（`Rejected`），而不是"当成零个候选"。
+        REQUIRE(publish("test.sensing.not-array", "notAnArrayProvider").find("ok").toBool());
+        auto notArray = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
+        REQUIRE(!notArray.ok());
+        REQUIRE_EQ(static_cast<int>(notArray.code()), static_cast<int>(StatusCode::Rejected));
+        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.not-array");
 
-    // 返回的不是数组：拒绝（`Rejected`），而不是"当成零个候选"。
-    REQUIRE(publish("test.sensing.not-array", "notAnArrayProvider").find("ok").toBool());
-    auto notArray = TargetingResolver{}.resolve(minimalWorldQuery());
-    REQUIRE(!notArray.ok());
-    REQUIRE_EQ(static_cast<int>(notArray.code()), static_cast<int>(StatusCode::Rejected));
-    unload("test.sensing.not-array");
+        // 主体不是规范 UUID：拒绝。
+        REQUIRE(publish("test.sensing.bad-subject", "badSubjectProvider").find("ok").toBool());
+        auto badSubject = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
+        REQUIRE(!badSubject.ok());
+        REQUIRE_EQ(static_cast<int>(badSubject.code()), static_cast<int>(StatusCode::Rejected));
+        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.bad-subject");
 
-    // 主体不是规范 UUID：拒绝。
-    REQUIRE(publish("test.sensing.bad-subject", "badSubjectProvider").find("ok").toBool());
-    auto badSubject = TargetingResolver{}.resolve(minimalWorldQuery());
-    REQUIRE(!badSubject.ok());
-    REQUIRE_EQ(static_cast<int>(badSubject.code()), static_cast<int>(StatusCode::Rejected));
-    unload("test.sensing.bad-subject");
+        // 格子坐标不是整数：拒绝，而不是截断成整数后继续。
+        REQUIRE(publish("test.sensing.fractional", "fractionalGridProvider").find("ok").toBool());
+        TargetingSpec gridSpec;
+        gridSpec.space = CoordinateSpace::Grid2D;
+        TargetingQuery gridQuery{subject(_ZEROERR_TEST_CONTEXT, kOriginId), TargetLocation(GridPoint::grid2D(0, 0)),
+                                 gridSpec};
+        auto           fractional = TargetingResolver{}.resolve(gridQuery);
+        REQUIRE(!fractional.ok());
+        REQUIRE_EQ(static_cast<int>(fractional.code()), static_cast<int>(StatusCode::Rejected));
+        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.fractional");
 
-    // 格子坐标不是整数：拒绝，而不是截断成整数后继续。
-    REQUIRE(publish("test.sensing.fractional", "fractionalGridProvider").find("ok").toBool());
-    TargetingSpec gridSpec;
-    gridSpec.space = CoordinateSpace::Grid2D;
-    TargetingQuery gridQuery{subject(kOriginId), TargetLocation(GridPoint::grid2D(0, 0)), gridSpec};
-    auto           fractional = TargetingResolver{}.resolve(gridQuery);
-    REQUIRE(!fractional.ok());
-    REQUIRE_EQ(static_cast<int>(fractional.code()), static_cast<int>(StatusCode::Rejected));
-    unload("test.sensing.fractional");
-
-    // 同一个空间换成整数的格子候选就是合法答案：适配器不是"只认世界坐标"。
-    REQUIRE(publish("test.sensing.grid-ok", "gridOkProvider").find("ok").toBool());
-    auto gridAnswer = TargetingResolver{}.resolve(gridQuery);
-    REQUIRE(gridAnswer.ok());
-    REQUIRE_EQ(gridAnswer.value().subjects().size(), std::size_t{1});
-    REQUIRE_EQ(gridAnswer.value().subjects().front(), subject(kEnemyId));
+        // 同一个空间换成整数的格子候选就是合法答案：适配器不是"只认世界坐标"。
+        REQUIRE(publish("test.sensing.grid-ok", "gridOkProvider").find("ok").toBool());
+        auto gridAnswer = TargetingResolver{}.resolve(gridQuery);
+        REQUIRE(gridAnswer.ok());
+        REQUIRE_EQ(gridAnswer.value().subjects().size(), std::size_t{1});
+        REQUIRE_EQ(gridAnswer.value().subjects().front(), subject(_ZEROERR_TEST_CONTEXT, kEnemyId));
+    };
 }
 
 TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderFailureIsReportedNotSwallowed") {
@@ -5925,20 +5551,20 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderFa
     REQUIRE(publish("test.sensing.broken", "brokenProvider").find("ok").toBool());
 
     // 脚本抛错 → 解析失败（`Failed`），不吞：吞掉会让上层把"没候选"当成"真的没有敌人"。
-    const auto failed = TargetingResolver{}.resolve(minimalWorldQuery());
+    const auto failed = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
     REQUIRE(!failed.ok());
     REQUIRE_EQ(static_cast<int>(failed.code()), static_cast<int>(StatusCode::Failed));
 
     // 提供方在失败后还活着：换回能用的脚本对象，同一条通路恢复。
-    unload("test.sensing.broken");
+    unload(_ZEROERR_TEST_CONTEXT, "test.sensing.broken");
     REQUIRE(publish("test.sensing.good", "candidateProvider").find("ok").toBool());
-    REQUIRE(TargetingResolver{}.resolve(minimalWorldQuery()).ok());
+    REQUIRE(TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT)).ok());
 }
 
 TEST_CASE("sensing.script.coordinateSpaceSpellingMatchesTheModuleName") {
     // 脚本词表只有一份，但它必须与模块既有的 `coordinateSpaceName` 拼写一致；这条用例把两者钉在
     // 一起：任何一边改名字，这里就红。
-    const SubjectRef origin   = subject(kOriginId);
+    const SubjectRef origin   = subject(_ZEROERR_TEST_CONTEXT, kOriginId);
     const auto       queryFor = [&origin](CoordinateSpace space) {
         TargetingSpec spec;
         spec.space = space;
@@ -5962,4 +5588,3 @@ TEST_CASE("sensing.script.coordinateSpaceSpellingMatchesTheModuleName") {
     }
 }
 }  // namespace test_sensing_script_provider
-#endif

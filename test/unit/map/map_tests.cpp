@@ -2586,3 +2586,117 @@ TEST_CASE("map.dualGrid.render.isometricDisplayDepth") {
 }
 }  // namespace test_map_unit
 #endif
+
+#include <limits>
+#include "map/Pathfinder.h"
+#include "zeroerr/unittest.h"
+namespace test_map_navigation_snapshot_migrated {
+using namespace eve::map;
+TEST_CASE("map.navigation.snapshotOwnsInputsAndOnlyVersionsChangedContent") {
+    NavigationGridSnapshot captured;
+    {
+        Pathfinder map(3, 3);
+        auto       first = map.captureNavigationGrid();
+        REQUIRE(first.ok());
+        captured = std::move(first).takeValue();
+        CHECK_EQ(captured.width(), 3);
+        CHECK_EQ(captured.costs().size(), 9u);
+        const auto revision = captured.revision();
+        CHECK_EQ(map.captureNavigationGrid().value().revision(), revision);
+        map.setBlocked(1, 1, true);
+        auto changed = map.captureNavigationGrid().takeValue();
+        CHECK(changed.revision() > revision);
+        CHECK_EQ(changed.costs()[4], 0.f);
+        CHECK_EQ(captured.costs()[4], 1.f);
+        map.setBlocked(1, 1, true);
+        CHECK_EQ(map.captureNavigationGrid().value().revision(), changed.revision());
+        map.setTopology("hex");
+        auto hex = map.captureNavigationGrid().takeValue();
+        CHECK(hex.topology() == NavigationTopology::Hex);
+        CHECK(hex.revision() > changed.revision());
+    }
+    CHECK(captured.valid());
+    CHECK_EQ(captured.costs()[4], 1.f);
+}
+TEST_CASE("map.navigation.snapshotRejectsAbsentAndMalformedSources") {
+    Pathfinder map;
+    REQUIRE(!map.captureNavigationGrid().ok());
+    map.setSize(2, 2);
+    auto previous = map.captureNavigationGrid().takeValue();
+    map.setCellCost(0, 0, std::numeric_limits<float>::quiet_NaN());
+    REQUIRE(!map.captureNavigationGrid().ok());
+    CHECK_EQ(previous.costs()[0], 1.f);
+    map.setCellCost(0, 0, 1.f);
+    CHECK_EQ(map.captureNavigationGrid().value().revision(), previous.revision());
+}
+
+TEST_CASE("map.navigation.changeHintObservesLayerEditsWithoutCapturing") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    auto            *layer = TileLayer::createLayer(2, 2, 1.f, 1.f);
+    Pathfinder       map(layer);
+    map.blockGid(3);
+    const auto before = map.getNavigationChangeStamp();
+    REQUIRE(map.getNavigationChangeStamp() == before);
+    layer->setTile(0, 0, 3);
+    const auto edited = map.getNavigationChangeStamp();
+    REQUIRE(edited.configuration == before.configuration);
+    REQUIRE(edited.layer != before.layer);
+    auto captured = map.captureNavigationGrid().takeValue();
+    REQUIRE_EQ(captured.costs()[0], 0.f);
+    REQUIRE(map.getNavigationChangeStamp() == edited);
+    map.setCellCost(1, 1, 2.f);
+    REQUIRE(map.getNavigationChangeStamp().configuration > edited.configuration);
+}
+
+}  // namespace test_map_navigation_snapshot_migrated
+
+#include "map/Fov.h"
+namespace test_rts_performance_semantics_migrated {
+TEST_CASE("rts.performanceFovIndexSurvivesOrderedRemovalMoveAndClear") {
+    eve::map::Fov fov(40, 20);
+    const int first = fov.addRevealer(2, 2, 1), middle = fov.addRevealer(10, 2, 1), last = fov.addRevealer(20, 2, 1);
+    fov.removeRevealer(middle);
+    fov.setRevealerPosition(last, 30, 2);
+    fov.compute();
+    REQUIRE(fov.isVisible(2, 2));
+    REQUIRE(fov.isVisible(30, 2));
+    REQUIRE(!fov.isVisible(10, 2));
+    eve::map::Fov moved(std::move(fov));
+    moved.removeRevealer(first);
+    moved.setRevealerRadius(last, 2);
+    moved.compute();
+    REQUIRE(!moved.isVisible(2, 2));
+    REQUIRE(moved.isVisible(31, 2));
+    moved.clearRevealers();
+    moved.setRevealerPosition(last, 1, 1);
+    const int fresh = moved.addRevealer(5, 5, 1);
+    REQUIRE(fresh != last);
+    moved.compute();
+    REQUIRE(moved.isVisible(5, 5));
+    REQUIRE(!moved.isVisible(30, 2));
+}
+
+TEST_CASE("rts.performanceOpenHeightmapMatchesHeightRayPathAndInvalidatesOnEdits") {
+    eve::map::Fov fast(50, 50), reference(50, 50);
+    for (auto *fov : {&fast, &reference}) {
+        fov->setMode("heightmap");
+        fov->setEyeOffset(1.f);
+        fov->setCliffBlock(0.f);
+        fov->addRevealer(10, 10, 8);
+        fov->addRevealer(15, 14, 6);
+    }
+    // Outside every revealer's radius; forces the reference through ordinary height rays.
+    reference.setOpaque(49, 49, true);
+    for (int stage = 0; stage < 3; ++stage) {
+        if (stage == 1)
+            for (auto *fov : {&fast, &reference}) fov->setElevation(12, 10, 4.f);
+        if (stage == 2)
+            for (auto *fov : {&fast, &reference}) fov->setOpaque(10, 12, true);
+        fast.compute();
+        reference.compute();
+        for (int y = 0; y < 50; ++y)
+            for (int x = 0; x < 50; ++x) REQUIRE(fast.isVisible(x, y) == reference.isVisible(x, y));
+    }
+}
+}  // namespace test_rts_performance_semantics_migrated

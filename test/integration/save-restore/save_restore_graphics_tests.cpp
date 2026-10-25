@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: common game save session
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_game_save_session)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -113,16 +115,14 @@ TEST_CASE("gameSave.absentProviderAndContentMigrationAreExplicit") {
     CHECK_EQ(first.value, 25);
 }
 }  // namespace test_common_game_save_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_persistence)
+// Contract section: dialogue persistence
 #include "PrivateTestScope.h"
+
 #include "dialogue/ConversationPersistence.h"
 #include "dialogue/DialogueSequence.h"
 #include "dialogue/DialogueState.h"
 #include "dnut_interpreter/SequenceRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue_persistence.cpp
 namespace test_dialogue_persistence {
 using namespace eve;
@@ -209,14 +209,13 @@ TEST_CASE("dialoguePersistence.rejectsLegacyUnversionedState") {
     CHECK_EQ(static_cast<int>(rejected.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
 }
 }  // namespace test_dialogue_persistence
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_canvas_persistence)
+// Contract section: graphics canvas persistence
 #include "PrivateTestScope.h"
+
 #include <cmath>
 #include "GraphicsParitySupport.h"
 #include "graphics/Canvas.h"
-#include "zeroerr/unittest.h"
 // graphics_canvas_persistence.cpp
 namespace test_graphics_canvas_persistence {
 using namespace eve::graphics;
@@ -249,10 +248,10 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
     CHECK(std::abs(snapshot->getPixel(2, 2).a - 0.75f) < 0.01f);
 }
 }  // namespace test_graphics_canvas_persistence
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_save_session)
+// Contract section: rpg save session
 #include "PrivateTestScope.h"
+
 #include "common/Value.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
@@ -264,8 +263,6 @@ TEST_CASE("graphics.canvas.separateSubmissionsPreserveAndClearRGBA8") {
 #include "rpg/RPGActor.h"
 #include "rpg/RPGSaveSession.h"
 #include "rpg/Tracker.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_save_session.cpp
 namespace test_rpg_save_session {
 using namespace eve::rpg;
@@ -649,4 +646,3 @@ TEST_CASE("rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidat
     QuestRegistry::clear();
 }
 }  // namespace test_rpg_save_session
-#endif

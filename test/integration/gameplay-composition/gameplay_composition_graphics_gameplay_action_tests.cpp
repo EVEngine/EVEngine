@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: editor spline path binder
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_spline_path_binder)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <algorithm>
 #include <cmath>
@@ -573,16 +575,14 @@ TEST_CASE("editor.splinePath.gizmoStyleControlsNodeLineAndTextPresentation") {
     CHECK(line->color == style.lineColor);
 }
 }  // namespace test_editor_spline_path_binder
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_stylize_mesh_vfx)
+// Contract section: editor stylize mesh vfx
 #include "PrivateTestScope.h"
+
 #include "stylize/MeshVfxAsset.h"
 #include "stylize/StyleInstance.h"
 #include "stylize/editing/MeshVfxTarget.h"
 #include "stylize/editing/StylizeTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_stylize_mesh_vfx.cpp
 namespace test_editor_stylize_mesh_vfx {
 // editor_stylize_mesh_vfx.cpp
@@ -724,17 +724,15 @@ TEST_CASE("editor.stylize.runtime_rejects_stale_generation_before_graphics_use")
              static_cast<int>(EditorStatus::Conflict));
 }
 }  // namespace test_editor_stylize_mesh_vfx
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_surface_fluid_preview)
+// Contract section: editor surface fluid preview
 #include "PrivateTestScope.h"
+
 #include "fluids/SurfaceDropletSimulation.h"
 #include "fluids/SurfaceFluidRenderData.h"
 #include "fluids/SurfaceWetnessField.h"
 #include "fluids/editing/SurfaceFluidTarget.h"
 #include "fluids/editor/EditorSurfaceFluidPreview.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_surface_fluid_preview.cpp
 namespace test_editor_surface_fluid_preview {
 // editor_surface_fluid_preview.cpp
@@ -870,14 +868,13 @@ TEST_CASE("editor.surface_fluid_runtime_bridge_publishes_all_parameter_groups") 
     CHECK_EQ(render.wetMaterial.wetDarkening, 0.35f);
 }
 }  // namespace test_editor_surface_fluid_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_task_diagnostic_v2)
+// Contract section: editor task diagnostic v2
 #include "PrivateTestScope.h"
+
 #include <chrono>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
 #include <thread>
 #include "common/Module.h"
 #include "editor/EditorDiagnostics.h"
@@ -886,8 +883,6 @@ TEST_CASE("editor.surface_fluid_runtime_bridge_publishes_all_parameter_groups") 
 #include "editor/EditorWorkspace.h"
 #include "editor/VegetationConverterController.h"
 #include "graphics/material/editor/EditorGraph.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_task_diagnostic_v2.cpp
 namespace test_editor_task_diagnostic_v2 {
 // editor_task_diagnostic_v2.cpp
@@ -1224,13 +1219,11 @@ TEST_CASE("editor.workspace.shares_selection_and_focus_channels_across_presenter
     CHECK_EQ(workspace.getSelectionCount("world"), 0);
 }
 }  // namespace test_editor_task_diagnostic_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_texture_recipe_target)
+// Contract section: editor texture recipe target
 #include "PrivateTestScope.h"
+
 #include "procgen/editing/TextureRecipeTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_texture_recipe_target.cpp
 namespace test_editor_texture_recipe_target {
 using namespace eve::procgen_editing;
@@ -1292,17 +1285,15 @@ TEST_CASE("editor.texture_recipe_snapshot_is_atomic_and_preview_is_deterministic
     CHECK_EQ(runtime.revision(), target.revision());
 }
 }  // namespace test_editor_texture_recipe_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_transaction_consumer)
+// Contract section: editor transaction consumer
 #include "PrivateTestScope.h"
+
 #include <array>
 #include <cstdint>
 #include <memory>
 #include <stdexcept>
-#include <string>
 #include <string_view>
-#include <utility>
 #include <vector>
 #include "editor/EditorAuthority.h"
 #include "editor/EditorCommandService.h"
@@ -1311,8 +1302,6 @@ TEST_CASE("editor.texture_recipe_snapshot_is_atomic_and_preview_is_deterministic
 #include "editor/EditorTransactionService.h"
 #include "map/level/editing/FieldTargets.h"
 #include "map/level/editing/TileBuffer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_transaction_consumer.cpp
 namespace test_editor_transaction_consumer {
 // editor_transaction_consumer.cpp
@@ -1881,22 +1870,14 @@ TEST_CASE("editor.v2.read_only_authority_rejects_mutation") {
     CHECK_EQ(static_cast<int>(result.code()), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_transaction_consumer
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_ui_document)
+// Contract section: editor ui document
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "common/Module.h"
-#include "editor/EditorAuthority.h"
+
 #include "editor/EditorIds.h"
-#include "editor/EditorTransactionService.h"
 #include "ui/Theme.h"
 #include "ui/editing/UiDocument.h"
 #include "ui/editing/UiTheme.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_ui_document.cpp
 namespace test_editor_ui_document {
 // editor_ui_document.cpp
@@ -2247,14 +2228,11 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
     CHECK_EQ(vm.find("stateCount").toInt(), 3);
 }
 }  // namespace test_editor_ui_document
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_ui_skin_preview)
+// Contract section: editor ui skin preview
 #include "PrivateTestScope.h"
-#include <map>
+
 #include "ui/editor/EditorUiSkinPreview.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_ui_skin_preview.cpp
 namespace test_editor_ui_skin_preview {
 using namespace eve::editor;
@@ -2351,10 +2329,10 @@ TEST_CASE("editor.ui.skin_preview_resolves_assets_crops_cover_and_clips_to_paren
     CHECK(!rejected.diagnostics.empty());
 }
 }  // namespace test_editor_ui_skin_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_voxel_catalog)
+// Contract section: editor voxel catalog
 #include "PrivateTestScope.h"
+
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "editor/Editor.h"
@@ -2363,8 +2341,6 @@ TEST_CASE("editor.ui.skin_preview_resolves_assets_crops_cover_and_clips_to_paren
 #include "voxel/editing/VoxelPaletteTarget.h"
 #include "voxel/editor/VoxelCatalogEditor.h"
 #include "voxel/editor/VoxelEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_voxel_catalog.cpp
 namespace test_editor_voxel_catalog {
 // editor_voxel_catalog.cpp
@@ -2593,16 +2569,13 @@ TEST_CASE("editor.voxel_palette.invalid_snapshot_does_not_partially_replace") {
     CHECK_EQ(target.snapshotValue(), before);
 }
 }  // namespace test_editor_voxel_catalog
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_workspace_layout_shell)
+// Contract section: editor workspace layout shell
 #include "PrivateTestScope.h"
-#include "editor/EditorWorkspace.h"
+
 #include "ui/UIHost.h"
 #include "ui/Widget.h"
 #include "ui/editor/WorkspaceLayoutShell.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_workspace_layout_shell.cpp
 namespace test_editor_workspace_layout_shell {
 using eve::editor::EditorWorkspace;
@@ -2764,20 +2737,14 @@ TEST_CASE("editor.ui.layout.workspace_shell_single_panel_skips_tabs") {
     CHECK_EQ(findById(tree, "only")->type, NodeType::PanelFrame);
 }
 }  // namespace test_editor_workspace_layout_shell
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_effects_domain_adapters)
+// Contract section: effects domain adapters
 #include "PrivateTestScope.h"
-#include <array>
-#include <cstdint>
-#include <string>
-#include <utility>
+
 #include "card/CardEffects.h"
 #include "rts/RTSEffects.h"
 #include "vehicle/VehicleEffects.h"
 #include "weapon/WeaponEffects.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // effects_domain_adapters.cpp
 namespace test_effects_domain_adapters {
 namespace {
@@ -3197,13 +3164,10 @@ TEST_CASE("effects.card.finiteDecisionRuleProvidesImmunityWindow") {
     CHECK_EQ(card.target().health, 80);
 }
 }  // namespace test_effects_domain_adapters
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_game_save_integration)
+// Contract section: game save integration
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string_view>
-#include <utility>
+
 #include "common/ECS.h"
 #include "common/GameSaveSession.h"
 #include "inventory/Bag.h"
@@ -3216,7 +3180,6 @@ TEST_CASE("effects.card.finiteDecisionRuleProvidesImmunityWindow") {
 #include "rpg/Tracker.h"
 #include "tactics/Tactics.h"
 #include "tactics/TacticsGameSaveParticipant.h"
-#include "zeroerr/unittest.h"
 // game_save_integration.cpp
 namespace test_game_save_integration {
 namespace {
@@ -3299,22 +3262,16 @@ TEST_CASE("gameSave.rpgAndTacticsRestoreTogether") {
     actor->release();
 }
 }  // namespace test_game_save_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_action)
-#include <memory>
-#include <optional>
-#include <string>
-#include <string_view>
-#include <utility>
+// Contract section: gameplay action
 #include "PrivateTestScope.h"
+
+#include <optional>
 #include "action/Action.h"
 #include "common/ConditionKeys.h"
 #include "common/Identity.h"
 #include "rpg/SkillAction.h"
 #include "weapon/WeaponAction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gameplay_action.cpp
 namespace test_gameplay_action {
 namespace {
@@ -3892,25 +3849,18 @@ TEST_CASE("gameplayAction.skillAndWeaponAdaptersShareTheSamePipelineShape") {
     CHECK(weaponRequest.value().parameters.find("pelletCount") != weaponRequest.value().parameters.end());
 }
 }  // namespace test_gameplay_action
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_control_rpg_product)
+// Contract section: gameplay control rpg product
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
 #include "common/GameplayControl.h"
 #include "common/GameplayInstanceCatalog.h"
-#include "inventory/Bag.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
-#include "rpg/GameState.h"
 #include "rpg/ProductControl.h"
-#include "rpg/Quest.h"
 #include "rpg/RPG.h"
 #include "rpg/ShopCatalogue.h"
-#include "rpg/Tracker.h"
 #include "rpg/WorldState.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gameplay_control_rpg_product.cpp
 namespace test_gameplay_control_rpg_product {
 namespace {
@@ -4126,20 +4076,14 @@ TEST_CASE("gameplay.control.rpgControlFactoryReturnsStructuredOwnership") {
     CHECK_EQ(control->gameplayDomain(), std::string_view("rpg.product"));
 }
 }  // namespace test_gameplay_control_rpg_product
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_control_weapon)
+// Contract section: gameplay control weapon
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
 #include "common/GameplayControlJson.h"
-#include "common/GameplayInstanceCatalog.h"
-#include "inventory/Bag.h"
 #include "inventory/InventoryResourceAccount.h"
-#include "inventory/Item.h"
 #include "transaction/Transaction.h"
 #include "weapon/WeaponControl.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gameplay_control_weapon.cpp
 namespace test_gameplay_control_weapon {
 namespace {
@@ -4355,21 +4299,16 @@ TEST_CASE("gameplay.control.weaponRejectsUnauthorizedWielderWithoutCharging") {
     eve::inventory::ItemRegistry::clear();
 }
 }  // namespace test_gameplay_control_weapon
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpuagents)
+// Contract section: gpuagents
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include <vector>
+
 #include "gpuagents/AgentInstanceRenderer.h"
 #include "gpuagents/EffectBackend.h"
 #include "gpuagents/GpuAgentWorld.h"
 #include "gpuagents/GpuAgents.h"
 #include "gpuagents/ObstacleField.h"
 #include "gpuagents/solvers/FishSolver.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gpuagents.cpp
 namespace test_gpuagents {
 using namespace eve::gpuagents;
@@ -4633,4 +4572,3 @@ TEST_CASE("gpuagents.reset_clears_alive") {
     CHECK(backend.renderer().sync(backend.simulation().states()) == 0);
 }
 }  // namespace test_gpuagents
-#endif

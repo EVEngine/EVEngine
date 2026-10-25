@@ -1,33 +1,29 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: demo
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_demo)
-#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "demo/Demo.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "sound/SoundData.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // demo.cpp
 namespace test_demo {
@@ -84,10 +80,10 @@ TEST_CASE("demo.newPlanetTexture") {
     win->close();
 }
 }  // namespace test_demo
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sound)
+// Contract section: sound
 #include "PrivateTestScope.h"
+
 #include <cstdint>
 #include <cstdlib>
 #include <cstring>
@@ -96,14 +92,10 @@ TEST_CASE("demo.newPlanetTexture") {
 #include <string>
 #include <vector>
 #include "PathBesideSource.h"
-#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
 #include "sound/Decoder.h"
 #include "sound/Sound.h"
-#include "sound/SoundData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // sound.cpp
 namespace test_sound {
 namespace {
@@ -372,4 +364,3 @@ TEST_CASE("sound.modplug.midi.decode") {
     delete dec;
 }
 }  // namespace test_sound
-#endif

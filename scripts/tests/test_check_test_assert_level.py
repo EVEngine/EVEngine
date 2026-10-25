@@ -202,6 +202,37 @@ class StrictFileTests(unittest.TestCase):
                     "test/strict.cpp|evidence|1", "test/strict.cpp|new.case|1"
                 ]), {f"{source.as_posix()}|evidence|1", "test/strict.cpp|new.case|1"})
 
+    def test_merged_evidence_checks_namespace_helpers_and_preserves_lines(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "merged.cpp"
+            source.write_text(
+                'namespace test_other { TEST_CASE("other") { CHECK(false); } }\n'
+                '// namespace test_strict { CHECK(false); }\n'
+                'namespace test_strict {\n'
+                'void helper() { CHECK(false); }\n'
+                'TEST_CASE("evidence") { REQUIRE(true); CHECK(false); }\n}\n',
+                encoding="utf-8",
+            )
+            catalogue = root / "test_levels.json"
+            catalogue.write_text(json.dumps({"sources": {
+                "merged.cpp": {"origins": ["strict.cpp", "other.cpp"]}
+            }}), encoding="utf-8")
+            with patch.object(checker, "TEST_CATALOGUE", catalogue):
+                self.assertEqual(checker.strict_violations(["test/strict.cpp"]), [
+                    f"{source.as_posix()}|<outside any case>|4",
+                    f"{source.as_posix()}|evidence|5",
+                ])
+                # Frozen identities relocate by exact case name even when a merged
+                # unit source uses a different namespace convention.
+                self.assertEqual(checker.relocated_baseline([
+                    "test/other.cpp|other|1", "test/other.cpp|new.case|1"
+                ]), {f"{source.as_posix()}|other|1", "test/other.cpp|new.case|1"})
+                source.write_text('TEST_CASE("unscoped") { REQUIRE(true); }\n', encoding="utf-8")
+                self.assertEqual(checker.strict_violations(["test/strict.cpp"]), [
+                    "test/strict.cpp|<missing>|0"
+                ])
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,9 +1,11 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: RenderSystem
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
 #include "ManualPreview.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
@@ -14,13 +16,11 @@
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Batcher.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
@@ -30,17 +30,14 @@
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/image/FormatHandler.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // RenderSystem.cpp
 namespace test_RenderSystem {
@@ -415,54 +412,24 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     win->close();
 }
 }  // namespace test_RenderSystem
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem3D)
+// Contract section: RenderSystem3D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
+
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <algorithm>
-#include <cmath>
-#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
 #include "Fixtures.h"
-#include "filesystem/FileData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "medialoader/image/FormatHandler.h"
 #include "medialoader/model/ModelLoader.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // RenderSystem3D.cpp
 namespace test_RenderSystem3D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -1393,20 +1360,11 @@ TEST_CASE("RenderSystem3D.readTextureBackPixels") {
     win->close();
 }
 }  // namespace test_RenderSystem3D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ScreenSpaceReflection)
+// Contract section: ScreenSpaceReflection
 #include "PrivateTestScope.h"
-#include <memory>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "window/Window.h"
-#include "zeroerr/unittest.h"
+
+
 // ScreenSpaceReflection.cpp
 namespace test_ScreenSpaceReflection {
 using namespace eve::graphics;
@@ -1446,17 +1404,15 @@ TEST_CASE("ssr.createConfigureAndApply") {
     win->close();
 }
 }  // namespace test_ScreenSpaceReflection
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ShaderResourceSharing)
+// Contract section: ShaderResourceSharing
 #include "PrivateTestScope.h"
+
+
 #include <array>
-#include "Fixtures.h"
 #include "ShaderResourceSharingSpv.h"
-#include "graphics/Shader.h"
 #include "graphics/ShaderResources.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
-#include "zeroerr/unittest.h"
 // ShaderResourceSharing.cpp
 namespace test_ShaderResourceSharing {
 TEST_CASE("graphics.shader shared images retain ownership and replacement isolation") {
@@ -1523,43 +1479,13 @@ TEST_CASE("graphics.shader shared images retain ownership and replacement isolat
 #endif
 }
 }  // namespace test_ShaderResourceSharing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Shadow3D)
+// Contract section: Shadow3D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
+
+
 #include "graphics/Shadow.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
 #include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Shadow3D.cpp
 namespace test_Shadow3D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -1925,28 +1851,19 @@ TEST_CASE("Shadow3D.maskedCasterUsesAlbedoAlpha") {
     win->close();
 }
 }  // namespace test_Shadow3D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyAtmospherePass)
+// Contract section: SkyAtmospherePass
 #include "PrivateTestScope.h"
-#include <algorithm>
+
+
 #include <chrono>
-#include <cmath>
 #include <cstdlib>
-#include <fstream>
-#include <memory>
 #include <string_view>
-#include "Fixtures.h"
 #include "common/config.h"
-#include "graphics/Canvas.h"
 #include "graphics/DisplayOutputEncoding.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/ViewPreparation.h"
 #include "graphics/sky/SkyAtmosphereLuts.h"
 #include "graphics/sky/SkyAtmospherePass.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 #ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"
 #endif
@@ -2267,18 +2184,11 @@ TEST_CASE("graphics.sky atmosphere survives graphics provider retirement") {
 }
 #endif
 }  // namespace test_SkyAtmospherePass
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyMoon)
+// Contract section: SkyMoon
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
+
+
 #ifndef EVENGINE_WEBGPU
 #include "SkyWispsSpv.h"
 #endif
@@ -2332,29 +2242,19 @@ TEST_CASE("graphics.sky lunar surface preserves phase earthlight occultation and
 }
 #endif
 }  // namespace test_SkyMoon
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyRuntime)
+// Contract section: SkyRuntime
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <fstream>
+
+
 #include <iterator>
 #include <limits>
-#include "Fixtures.h"
 #include "SkyPreparationSupport.h"
 #include "common/Value.h"
-#include "common/config.h"
 #include "daynight/sky/SkyProfile.h"
 #include "daynight/sky/SkyRuntime.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Canvas.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/sky/SkyAtmospherePass.h"
 #include "graphics/sky/SkyWispsAsset.h"
 #include "graphics/sky/SkyWispsLayer.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 #ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"
 #endif
@@ -2581,17 +2481,13 @@ TEST_CASE("daynight.sky optical cycle survives midnight and restores the same re
 #endif
 }
 }  // namespace test_SkyRuntime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyScriptBindings)
+// Contract section: SkyScriptBindings
 #include "PrivateTestScope.h"
-#include <fstream>
-#include <iterator>
+
+
 #include <simplesquirrel/simplesquirrel.hpp>
-#include "Fixtures.h"
 #include "common/Module.h"
-#include "common/config.h"
-#include "zeroerr/unittest.h"
 // SkyScriptBindings.cpp
 namespace test_SkyScriptBindings {
 TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time commands") {
@@ -2657,24 +2553,12 @@ TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time
     )"));
 }
 }  // namespace test_SkyScriptBindings
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyTextureGpu)
+// Contract section: SkyTextureGpu
 #include "PrivateTestScope.h"
-#include <array>
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
-#include "ShaderResourceSharingSpv.h"
+
+
 #include "SkyTextureGpuSpv.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "graphics/ShaderResources.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 // SkyTextureGpu.cpp
 namespace test_SkyTextureGpu {
 // sky_volume_vert: #version 450
@@ -2749,16 +2633,11 @@ TEST_CASE("graphics.sky HDR volume uploads preserve interpolation and failed rep
 #endif
 }
 }  // namespace test_SkyTextureGpu
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyViewPreparation)
+// Contract section: SkyViewPreparation
 #include "PrivateTestScope.h"
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/Canvas.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ViewPreparation.h"
-#include "zeroerr/unittest.h"
+
+
 // SkyViewPreparation.cpp
 namespace test_SkyViewPreparation {
 TEST_CASE("graphics.view preparation failures cancel dispatch and registrations detach") {
@@ -2823,28 +2702,11 @@ TEST_CASE("graphics.view preparation runs before offscreen target opens") {
     REQUIRE(calls == 1);
 }
 }  // namespace test_SkyViewPreparation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyWisps)
+// Contract section: SkyWisps
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <cstring>
-#include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <memory>
-#include "Fixtures.h"
-#include "SkyPreparationSupport.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ShaderResources.h"
-#include "graphics/sky/SkyAtmospherePass.h"
-#include "graphics/sky/SkyWispsLayer.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
+
+
 #ifndef EVENGINE_WEBGPU
 #include "SkyWispsSpv.h"
 #endif
@@ -3147,51 +3009,18 @@ TEST_CASE("graphics.sky wisps preserve phase blending and celestial vertex light
 }
 #endif
 }  // namespace test_SkyWisps
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_TextureSampler)
+// Contract section: TextureSampler
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstdint>
-#include <memory>
+
+
 #include <optional>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <vector>
-#include "Fixtures.h"
-#include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
 #include "procgen/Procgen.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // TextureSampler.cpp
 namespace test_TextureSampler {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3473,43 +3302,16 @@ TEST_CASE("Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLife
     ecs::DestroyEntity(hiddenSource);
 }
 }  // namespace test_TextureSampler
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIOverlaySmoke)
+// Contract section: UIOverlaySmoke
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
+
+
 #include <string>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UIOverlaySmoke.cpp
 namespace test_UIOverlaySmoke {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3789,43 +3591,12 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     win->close();
 }
 }  // namespace test_UIOverlaySmoke
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Volumetric)
+// Contract section: Volumetric
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
+
+
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Volumetric.cpp
 namespace test_Volumetric {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -4580,4 +4351,3 @@ TEST_CASE("volumetric.froxelAtlasCompositesIntegratedMedia") {
     win->close();
 }
 }  // namespace test_Volumetric
-#endif

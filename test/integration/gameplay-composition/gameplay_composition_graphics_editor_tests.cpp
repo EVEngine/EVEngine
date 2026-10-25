@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: dialogue state integration
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_state_integration)
-#include "PrivateTestScope.h"
 #include <array>
 #include <cstdint>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -21,7 +23,6 @@
 #include "statepatch/StateAccessAdapter.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // dialogue_state_integration.cpp
 namespace test_dialogue_state_integration {
@@ -341,14 +342,11 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
     CHECK(!flow.isActive());
 }
 }  // namespace test_dialogue_state_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_contracts)
-#include <zeroerr/unittest.h>
-#include <string>
-#include <type_traits>
-#include <vector>
+// Contract section: editing contracts
 #include "PrivateTestScope.h"
+
+#include <zeroerr/unittest.h>
 #include "animation/editing/AnimationClip.h"
 #include "animation/editor/EditorAnimationClip.h"
 #include "avatar/editing/AvatarTarget.h"
@@ -424,8 +422,6 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
 #include "voxel/editing/VoxelWorldTarget.h"
 #include "voxel/editor/EditorVoxelCatalogTarget.h"
 #include "voxel/editor/EditorVoxelPaletteTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editing_contracts.cpp
 namespace test_editing_contracts {
 // editing_contracts.cpp
@@ -684,76 +680,14 @@ TEST_CASE("editing.idInstances.selectionVectorKeepsIndependentIdentityAndText") 
     CHECK(static_cast<bool>(assigned.front().domain == eve::editing::SelectionDomain::Scene));
 }
 }  // namespace test_editing_contracts
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_result_storage)
+
+// Contract section: editing satellite contract suite
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <string>
-#include "editing/EditingResult.h"
-// editing_result_storage.cpp
-namespace test_editing_result_storage {
-TEST_CASE("editing.failureFactoryPreservesRuleAndStatus") {
-    auto result = eve::editing::failed<int>(eve::StatusCode::Conflict, eve::DiagnosticCode::Conflict,
-                                            eve::editing::RuleId("test.conflict"), "collision");
-    CHECK(!result.ok());
-    CHECK(result.code() == eve::StatusCode::Conflict);
-    CHECK(result.diagnostics().size() == 1);
-    const auto& diagnostic = result.diagnostics().front();
-    CHECK(diagnostic.message() == "collision");
-    CHECK(diagnostic.source() == "editing");
-    CHECK(eve::editing::diagnosticRule(diagnostic).value() == "test.conflict");
-}
 
-TEST_CASE("editing.failureFactoryRejectsSuccessfulStatus") {
-#if !defined(ZEROERR_NO_ASSERT)
-    bool caught = false;
-    try {
-        auto result = eve::editing::failed<void>(eve::StatusCode::Applied, eve::editing::RuleId("test.invalid"),
-                                                 "invalid category");
-        result.ignore();
-    } catch (const zeroerr::AssertionData& failure) {
-        caught = true;
-        CHECK(std::string(failure.file).find("EditingResult.h") != std::string::npos);
-        CHECK(failure.cond == "eve::Status(status, {}).isFailure()");
-        CHECK(!failure.passed);
-    }
-    CHECK(caught);
-#else
-    CHECK(true);
-#endif
-}
-
-TEST_CASE("editing.ruleDiagnosticPreservesOwnedTextSeverityAndProjection") {
-    std::string ruleText(4096, 'r');
-    std::string message(4096, 'm');
-    auto        diagnostic = eve::editing::ruleDiagnostic(eve::DiagnosticCode::Conflict, eve::editing::RuleId(ruleText),
-                                                          eve::Severity::Warning, message);
-    ruleText               = "changed";
-    message                = "changed";
-    CHECK(static_cast<bool>(diagnostic.code() == eve::DiagnosticCode::Conflict));
-    CHECK(static_cast<bool>(diagnostic.severity() == eve::Severity::Warning));
-    CHECK(diagnostic.message() == std::string(4096, 'm'));
-    CHECK(diagnostic.path().empty());
-    CHECK(diagnostic.source() == "editing");
-    REQUIRE(diagnostic.details().size() == 1u);
-    CHECK(diagnostic.details().front().first == "rule");
-    CHECK(diagnostic.details().front().second == std::string(4096, 'r'));
-    CHECK(eve::editing::diagnosticRule(diagnostic).value() == std::string(4096, 'r'));
-}
-}  // namespace test_editing_result_storage
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_satellite_contract_suite)
-#include "PrivateTestScope.h"
 #include <functional>
-#include <string>
 #include "audio/editing/AudioEditingProvider.h"
 #include "audio/editing/AudioTarget.h"
-#include "editor/Editor.h"
 #include "physics/editing/PhysicsEditingProvider.h"
-#include "physics/editing/PhysicsTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editing_satellite_contract_suite.cpp
 namespace test_editing_satellite_contract_suite {
 using namespace eve::editing;
@@ -875,108 +809,20 @@ TEST_CASE("editing.satellite.audio_and_physics_publish_open_factory_providers") 
     CHECK(static_cast<bool>(physicsTarget));
 }
 }  // namespace test_editing_satellite_contract_suite
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_value_lifecycle)
+// Contract section: editor
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <type_traits>
-#include "editing/EditingValue.h"
-#include "editing/EditingValueJson.h"
-// editing_value_lifecycle.cpp
-namespace test_editing_value_lifecycle {
-using EditingValue = eve::editing::Value;
-static_assert(std::is_nothrow_move_constructible_v<EditingValue> ==
-              std::is_nothrow_move_constructible_v<EditingValue::Storage>);
-static_assert(std::is_nothrow_move_assignable_v<EditingValue> ==
-              std::is_nothrow_move_assignable_v<EditingValue::Storage>);
-static_assert(std::is_nothrow_default_constructible_v<EditingValue>);
 
-TEST_CASE("editing.valueLifecycle.deepCopyMoveAndDeterministicJson") {
-    EditingValue original(EditingValue::Object{{"z", EditingValue::Array{1, "text"}}, {"a", true}});
-    EditingValue copy(original);
-    (*original.getIf<EditingValue::Object>())["z"] = EditingValue(99);
-    REQUIRE(copy.getIf<EditingValue::Object>() != nullptr);
-    REQUIRE(copy.getIf<EditingValue::Object>()->at("z").getIf<EditingValue::Array>() != nullptr);
-    CHECK(eve::editing::editorValueToJson(copy) == "{\"a\":true,\"z\":[1,\"text\"]}");
-    EditingValue assigned;
-    assigned = copy;
-    CHECK(assigned == copy);
-    EditingValue moved(std::move(assigned));
-    CHECK(moved == copy);
-    assigned = EditingValue("reused");
-    CHECK(assigned.type() == EditingValue::Type::String);
-    EditingValue destination;
-    destination = std::move(moved);
-    CHECK(destination == copy);
-    auto parsed = eve::editing::editorValueFromJson(eve::editing::editorValueToJson(destination));
-    REQUIRE(parsed.ok());
-    CHECK(parsed.value() == destination);
-    CHECK(eve::editing::editorValueContentHash(parsed.value()) == eve::editing::editorValueContentHash(copy));
-    CHECK(copy.isWithinLimits(3, 10, 100));
-    CHECK(!copy.isWithinLimits(1, 10, 100));
-}
-
-TEST_CASE("editing.valueLifecycle.scalarKindsAndInvalidJsonRemainStable") {
-    CHECK(EditingValue().type() == EditingValue::Type::Null);
-    CHECK(EditingValue(nullptr).type() == EditingValue::Type::Null);
-    CHECK(EditingValue(true).type() == EditingValue::Type::Bool);
-    CHECK(EditingValue(1).type() == EditingValue::Type::Integer);
-    CHECK(EditingValue(int64_t(2)).type() == EditingValue::Type::Integer);
-    CHECK(EditingValue(1.5f).type() == EditingValue::Type::Number);
-    CHECK(EditingValue(2.5).type() == EditingValue::Type::Number);
-    CHECK(*EditingValue(static_cast<const char*>(nullptr)).getIf<std::string>() == "");
-    CHECK(*EditingValue(std::string("owned")).getIf<std::string>() == "owned");
-    auto rejected = eve::editing::editorValueFromJson("{broken");
-    CHECK(!rejected.ok());
-    CHECK(rejected.error() != nullptr);
-}
-
-TEST_CASE("editing.valueLifecycle.getIfKeepsDirectConstAndMutableBorrows") {
-    using V = EditingValue;
-    V text(std::string(4096, 'a'));
-    CHECK(static_cast<bool>(static_cast<const V&>(text).getIf<std::string>() == text.getIf<std::string>()));
-    text.getIf<std::string>()->append("changed");
-    CHECK(static_cast<const V&>(text).getIf<std::string>()->size() == 4103u);
-    CHECK(text.getIf<bool>() == nullptr);
-    CHECK(static_cast<const V&>(text).getIf<V::Array>() == nullptr);
-    V null;
-    CHECK(null.getIf<std::monostate>() != nullptr);
-    CHECK(static_cast<const V&>(null).getIf<std::monostate>() != nullptr);
-    V boolean(true);
-    *boolean.getIf<bool>() = false;
-    CHECK(!*static_cast<const V&>(boolean).getIf<bool>());
-    V integer(int64_t(42));
-    *integer.getIf<int64_t>() = 43;
-    CHECK(*static_cast<const V&>(integer).getIf<int64_t>() == 43);
-    V number(2.5);
-    *number.getIf<double>() = 3.5;
-    CHECK(*static_cast<const V&>(number).getIf<double>() == 3.5);
-    V array(V::Array{1, "two"});
-    array.getIf<V::Array>()->push_back(true);
-    CHECK(static_cast<const V&>(array).getIf<V::Array>()->size() == 3u);
-    V object(V::Object{{"key", "value"}});
-    (*object.getIf<V::Object>())["other"] = 4;
-    CHECK(static_cast<const V&>(object).getIf<V::Object>()->size() == 2u);
-}
-}  // namespace test_editing_value_lifecycle
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cmath>
 #include <filesystem>
 #include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
-#include <string>
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "editor/BrushKernel.h"
 #include "editor/EditCommand.h"
 #include "editor/EditConstraint.h"
-#include "editor/Editor.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorInspector.h"
@@ -997,9 +843,6 @@ TEST_CASE("editing.valueLifecycle.getIfKeepsDirectConstAndMutableBorrows") {
 #include "procgen/editing/HeightmapTarget.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap_target/HeightmapTargetModule.h"
-#include "scene/editor/EditorSceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor.cpp
 namespace test_editor {
 // editor.cpp
@@ -2397,27 +2240,20 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK(!vm.find("densityReject").toTable().get<bool>("ok"));
 }
 }  // namespace test_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_animation_clip)
+// Contract section: editor animation clip
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <cmath>
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimStateMachine.h"
-#include "animation/editing/AnimationClip.h"
 #include "animation/editing/AnimationGraph.h"
 #include "animation/editor/AnimationClipEditor.h"
 #include "animation/editor/AnimationEditorModule.h"
-#include "animation/editor/EditorAnimationClip.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_animation_clip.cpp
 namespace test_editor_animation_clip {
 // editor_animation_clip.cpp
@@ -2794,21 +2630,15 @@ TEST_CASE("editor.animation.state_graph_builds_real_runtime_state_machine") {
     CHECK_EQ(static_cast<int>(missing.code()), static_cast<int>(EditorStatus::NotFound));
 }
 }  // namespace test_editor_animation_clip
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_archspace_target)
+// Contract section: editor archspace target
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include <fstream>
 #include "archspace/ArchSpaceCatalog.h"
 #include "archspace/ArchSpaceDocument.h"
 #include "archspace/editing/ArchSpaceTarget.h"
 #include "archspace/editor/ArchSpaceEditorModule.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_archspace_target.cpp
 namespace test_editor_archspace_target {
 using namespace eve::archspace;
@@ -2981,19 +2811,11 @@ TEST_CASE("editor.archspace.adapter_registers_commands_and_owns_automation_targe
     CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
 }
 }  // namespace test_editor_archspace_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_archspace_tools)
+// Contract section: editor archspace tools
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <array>
-#include <span>
-#include <string>
-#include "archspace/ArchSpaceCatalog.h"
+
 #include "archspace/editor/EditorArchSpaceTools.h"
-#include "editing/EditingAuthority.h"
-#include "editor/EditorSession.h"
-#include "zeroerr/unittest.h"
 // editor_archspace_tools.cpp
 namespace test_editor_archspace_tools {
 namespace {
@@ -3209,23 +3031,16 @@ TEST_CASE("editor.archspace.wall_draw_cancel_does_not_mutate") {
     CHECK(!tool.isDrawing());
 }
 }  // namespace test_editor_archspace_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_editor)
+// Contract section: editor audio editor
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <limits>
 #include "audio/editor/AudioEditorModule.h"
 #include "audio/editor/AudioSourceEditor.h"
 #include "audio/editor/EditorAudioEffects.h"
 #include "audio/editor/EditorAudioImportDiagnostics.h"
 #include "audio/editor/EditorAudioTarget.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_editor.cpp
 namespace test_editor_audio_editor {
 // editor_audio_editor.cpp
@@ -3479,20 +3294,12 @@ TEST_CASE("editor.audio.source_editor_property_edits_do_not_stale_audition") {
              static_cast<int>(eve::audio_editing::AudioTransportState::Playing));
 }
 }  // namespace test_editor_audio_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_source_script)
+// Contract section: editor audio source script
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include <tuple>
-#include "audio/editor/EditorAudioTarget.h"
-#include "common/Module.h"
-#include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_source_script.cpp
 namespace test_editor_audio_source_script {
 // editor_audio_source_script.cpp
@@ -3667,14 +3474,12 @@ TEST_CASE("editor.audio.mixer_bus_hierarchy_is_cycle_safe_and_reversible") {
     CHECK_EQ(restored.children(ObjectId("music")).size(), static_cast<std::size_t>(1));
 }
 }  // namespace test_editor_audio_source_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_transport)
+// Contract section: editor audio transport
 #include "PrivateTestScope.h"
+
 #include "audio/editor/EditorAudioTransport.h"
 #include "audio/editor/EditorAudioWaveform.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_transport.cpp
 namespace test_editor_audio_transport {
 // editor_audio_transport.cpp
@@ -3768,27 +3573,19 @@ TEST_CASE("editor.audio.waveform_builds_bounded_envelopes_and_loop_diagnostics")
              static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_audio_transport
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_automation_v2)
+// Contract section: editor automation v2
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
+
 #include "common/RenderCapture.h"
-#include "editor/Editor.h"
-#include "editor/EditorSession.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/material/editor/EditorMaterialTarget.h"
 #include "graphics/material/editor/MaterialEditorModule.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
 #include "scene/editor/EditorPrefab.h"
-#include "scene/editor/EditorSceneTarget.h"
 #include "scene/editor/SceneEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_automation_v2.cpp
 namespace test_editor_automation_v2 {
 // editor_automation_v2.cpp
@@ -4282,14 +4079,11 @@ TEST_CASE("editor.prefab_snapshot_round_trip_rejects_invalid_hierarchy") {
     CHECK_EQ(static_cast<int>(prefabs.loadSnapshot(broken).code()), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_automation_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_document_editor)
+// Contract section: editor avatar document editor
 #include "PrivateTestScope.h"
+
 #include "avatar/editor/AvatarDocumentEditor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_document_editor.cpp
 namespace test_editor_avatar_document_editor {
 using eve::avatar_editor::AvatarDocumentEditor;
@@ -4341,17 +4135,11 @@ TEST_CASE("editor.avatar.document_editor_rejects_referenced_parameter_delete") {
     CHECK_EQ(editor.previewRevision(), editor.revision());
 }
 }  // namespace test_editor_avatar_document_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_editor)
+// Contract section: editor avatar editor
 #include "PrivateTestScope.h"
+
 #include "avatar/editor/AvatarEditorModule.h"
-#include "avatar/editor/EditorAvatarTarget.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_editor.cpp
 namespace test_editor_avatar_editor {
 using eve::avatar_editing::AvatarDocumentTarget;
@@ -4422,14 +4210,11 @@ TEST_CASE("editor.avatar.automation_owns_headless_targets_for_agent_lifecycle") 
             std::string::npos);
 }
 }  // namespace test_editor_avatar_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_target)
+// Contract section: editor avatar target
 #include "PrivateTestScope.h"
+
 #include "avatar/AvatarInstance.h"
-#include "avatar/editing/AvatarTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_target.cpp
 namespace test_editor_avatar_target {
 using namespace eve::avatar_editing;
@@ -4538,23 +4323,18 @@ TEST_CASE("editor.avatar.runtime_publishes_metadata_and_preserves_generation_on_
     CHECK_EQ(runtime.revision(), revision);
 }
 }  // namespace test_editor_avatar_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_host_package)
+// Contract section: editor host package
 #include "PrivateTestScope.h"
+
 #include "action/editor/ActionEditorModule.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
 #include "editing/EditingValueJson.h"
 #include "editing/EditorPackage.h"
 #include "editing/PropertySchemaJson.h"
-#include "editor/Editor.h"
 #include "editor/EditorHost.h"
 #include "editor/EditorMcpProjector.h"
 #include "fluids/editor/FluidsEditorModule.h"
 #include "voxel/editor/VoxelEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_host_package.cpp
 namespace test_editor_host_package {
 using namespace eve::editor;
@@ -4712,26 +4492,15 @@ TEST_CASE("editor.script.automated_command_requires_panel_binding") {
     CHECK(commands.find("inputSchema") != std::string::npos);
 }
 }  // namespace test_editor_host_package
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_script_component_payload)
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+// Contract section: editor script component payload
 #include "PrivateTestScope.h"
+
 #include "ScriptTest.h"
-#include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/ScriptComponentStore.h"
-#include "editor/Editor.h"
 #include "editor/EditorAutomationTargetFactory.h"
-#include "editor/EditorTransactionService.h"
-#include "scene/editor/SceneEditorModule.h"
 #include "scene/editor/ScriptComponentPayloadProvider.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_script_component_payload.cpp
 namespace test_editor_script_component_payload {
 // ---------------------------------------------------------------------------
@@ -5321,4 +5090,3 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
     REQUIRE(none.value().empty());
 }
 }  // namespace test_editor_script_component_payload
-#endif

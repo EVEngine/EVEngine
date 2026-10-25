@@ -433,3 +433,67 @@ TEST_CASE("transaction.statepatchParticipantCompensateRestoresBeforeState") {
     CHECK_EQ(store.get("actor", "value"), std::string("1"));
     CHECK_EQ(store.revision(), uint64_t{1});
 }
+
+#include <chrono>
+#include <cstdint>
+#include <memory>
+#include <span>
+#include "common/UuidV7.h"
+#include "transaction/Transaction.h"
+
+namespace test_identity_transaction_audit_unit {
+namespace {
+eve::UuidEntropySource deterministicEntropy() {
+    auto cursor = std::make_shared<std::uint8_t>(1);
+    return [cursor](std::span<std::uint8_t> bytes) {
+        for (auto& byte : bytes) byte = (*cursor)++;
+        return true;
+    };
+}
+}  // namespace
+
+
+TEST_CASE("identity.audit.canonicalTransactionRestoresWithoutStringAllocators") {
+    using namespace std::chrono_literals;
+    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
+    const auto entropy = deterministicEntropy();
+
+    eve::transaction::Ledger source(eve::PersistentId::nil(), entropy, clock);
+    auto                     created = source.create("combat", "command");
+    REQUIRE(created.ok());
+    auto* plan = std::move(created).takeValue();
+    REQUIRE(plan != nullptr);
+    const auto transactionId = plan->identity();
+    CHECK(!transactionId.isNil());
+    CHECK_EQ(plan->id(), transactionId.format());
+
+    auto staged = plan->stage("debit", "treasury", "{\"amount\":10}");
+    REQUIRE(staged.ok());
+    const auto operationId = std::move(staged).takeValue();
+    CHECK(!operationId.isNil());
+    const auto* operation = plan->findOperation(operationId);
+    REQUIRE(operation != nullptr);
+    CHECK_EQ(operation->id, operationId.format());
+    CHECK(plan->markValid(operationId).ok());
+    CHECK(plan->validate().ok());
+    CHECK(plan->commit().ok());
+
+    const auto snapshot = source.snapshotJson();
+    CHECK(snapshot.find("transaction-0000000000000001") == std::string::npos);
+    CHECK(snapshot.find("operation-0000000000000001") == std::string::npos);
+
+    eve::transaction::Ledger restored(eve::PersistentId::nil(), deterministicEntropy(), clock);
+    auto                     restoredResult = restored.restore(snapshot);
+    REQUIRE(restoredResult.ok());
+    auto* restoredPlan = restored.find(transactionId);
+    REQUIRE(restoredPlan != nullptr);
+    CHECK_EQ(restoredPlan->identity(), transactionId);
+    CHECK(restoredPlan->findOperation(operationId) != nullptr);
+
+    const auto before          = restored.snapshotJson();
+    auto       failedCanonical = restored.restore("{\"version\":1,\"nextTransaction\":\"2\",\"plans\":[");
+    CHECK(!failedCanonical.ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+}  // namespace test_identity_transaction_audit_unit

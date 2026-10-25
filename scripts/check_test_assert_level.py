@@ -243,7 +243,7 @@ def enclosing_case(masked: str, text: str, index: int) -> str:
     return name
 
 
-def strict_sources(name: str) -> list[tuple[Path, str]]:
+def strict_sources(name: str, *, strict_scope: bool = False) -> list[tuple[Path, str]]:
     """Resolve legacy evidence through the authoritative migration catalogue."""
     path = Path(name)
     if path.is_file():
@@ -258,8 +258,28 @@ def strict_sources(name: str) -> list[tuple[Path, str]]:
         target = TEST_CATALOGUE.parent / source
         if not target.is_file():
             return []
-        sections = test_levels.origin_source_sections(target.read_text(encoding="utf-8"), policy)
-        resolved.append((target, sections[path.name]))
+        text = target.read_text(encoding="utf-8")
+        if test_levels.origin_guard_ranges(text):
+            section = test_levels.origin_source_sections(text, policy)[path.name]
+        elif not strict_scope or len(policy.get("origins", [])) == 1:
+            section = text
+        else:
+            # Merged sources retain each original responsibility's namespace after
+            # removing selection macros. Inspect helpers as well as cases without
+            # extending the strict contract to unrelated neighbouring responsibilities.
+            masked = mask_non_code(text)
+            namespace = "test_" + path.stem
+            ranges = []
+            for match in re.finditer(r"\bnamespace\s+" + re.escape(namespace) + r"\s*\{", masked):
+                start = match.end() - 1
+                end = match_brace(masked, start)
+                if end < 0:
+                    return []
+                ranges.append((start, end + 1))
+            if not ranges:
+                return []
+            section = test_levels.source_text_in_ranges(text, ranges)
+        resolved.append((target, section))
     return resolved
 
 
@@ -271,7 +291,7 @@ def strict_violations(files: Sequence[str] = STRICT_FILES) -> list[str]:
     """
     found: list[str] = []
     for name in files:
-        sources = strict_sources(name)
+        sources = strict_sources(name, strict_scope=True)
         if not sources:
             found.append(f"{name}|<missing>|0")
             continue

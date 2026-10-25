@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: RenderImageAudit
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderImageAudit)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <algorithm>
@@ -81,7 +83,6 @@
 #include "ui/UI.h"
 #include "voxel/VoxelWorld.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // RenderImageAudit.cpp
 namespace test_RenderImageAudit {
@@ -3347,52 +3348,16 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     auditSwapchain(gfx, "fovmore", "hex_topology", bg);
 }
 }  // namespace test_RenderImageAudit
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSceneEffects)
+// Contract section: RenderSceneEffects
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <assimp/matrix4x4.h>
-#include <assimp/mesh.h>
 #include <assimp/scene.h>
-#include <cmath>
-#include <cstdint>
-#include <cstdio>
-#include <cstring>
-#include <glm/gtc/matrix_transform.hpp>
-#include <string>
-#include <vector>
 #include "Fixtures.h"
 #include "SceneColor.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
 #include "graphics/Shadow.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "medialoader/model/ModelLoader.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // RenderSceneEffects.cpp
 namespace test_RenderSceneEffects {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -4621,4 +4586,3 @@ TEST_CASE("RenderScenes.shadow.receiveOffIgnoresUmbra") {
     win->close();
 }
 }  // namespace test_RenderSceneEffects
-#endif

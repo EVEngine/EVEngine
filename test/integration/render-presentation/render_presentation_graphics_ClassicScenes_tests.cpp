@@ -1,9 +1,11 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: AmbientOcclusion
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
 #include "ManualPreview.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_AmbientOcclusion)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <memory>
@@ -17,7 +19,6 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -29,9 +30,7 @@
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // AmbientOcclusion.cpp
 namespace test_AmbientOcclusion {
@@ -292,40 +291,14 @@ TEST_CASE("ao.overlayDarkensLitScene") {
     win->close();
 }
 }  // namespace test_AmbientOcclusion
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_AntiAliasing)
+// Contract section: AntiAliasing
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <memory>
-#include <string>
+
+
 #include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
 #include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
 #include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // AntiAliasing.cpp
 namespace test_AntiAliasing {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -562,20 +535,16 @@ TEST_CASE("aa.msaaSamplesApi") {
     gfx->present();
 }
 }  // namespace test_AntiAliasing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_BloomPyramid)
+// Contract section: BloomPyramid
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
+
+
 #include "common/config.h"
 #include "graphics/Bloom.h"
-#include "graphics/Canvas.h"
 #include "graphics/shaders/PostProcessWgsl.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 // BloomPyramid.cpp
 namespace test_BloomPyramid {
 #ifndef EVENGINE_WEBGPU
@@ -648,11 +617,11 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
     REQUIRE(std::abs(restored->getPixel(32, 16).r - energy) < .004f);
 }
 }  // namespace test_BloomPyramid
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ClassicScenes)
+// Contract section: ClassicScenes
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
+
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
@@ -661,7 +630,6 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
 #include <assimp/vector3.h>
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -670,47 +638,17 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
 #include <filesystem>
 #include <fstream>
 #include <functional>
-#include <memory>
-#include <string>
 #include <unordered_map>
-#include <vector>
-#include "Fixtures.h"
 #include "PathBesideSource.h"
 #include "RenderImageAudit.h"
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "os/OS.h"
 #include "timer/Timer.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ClassicScenes.cpp
 namespace test_ClassicScenes {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2320,42 +2258,13 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
     REQUIRE(globalBest > 1.0);
 }
 }  // namespace test_ClassicScenes
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ClusteredLighting)
+// Contract section: ClusteredLighting
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
+
+
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClusteredLight.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ClusteredLighting.cpp
 namespace test_ClusteredLighting {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2475,40 +2384,11 @@ TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {
     win->close();
 }
 }  // namespace test_ClusteredLighting
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_GlobalIllumination)
+// Contract section: GlobalIllumination
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // GlobalIllumination.cpp
 namespace test_GlobalIllumination {
 using namespace eve::graphics;
@@ -2577,49 +2457,11 @@ TEST_CASE("gi.qualityAndApplyFromDepth") {
     win->close();
 }
 }  // namespace test_GlobalIllumination
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_IBL)
+// Contract section: IBL
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
-#include "data/ByteData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // IBL.cpp
 namespace test_IBL {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3124,42 +2966,12 @@ TEST_CASE("IBL.outdoorSkyDiffersFromStudio") {
     win->close();
 }
 }  // namespace test_IBL
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Lighting2D)
+// Contract section: Lighting2D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstring>
+
+
 #include <initializer_list>
-#include <string>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Lighting2D.cpp
 namespace test_Lighting2D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3858,44 +3670,11 @@ TEST_CASE("Lighting2D.hdrCanvasLitBlendDoesNotCrash") {
     win->close();
 }
 }  // namespace test_Lighting2D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Outline)
+// Contract section: Outline
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cstdio>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "ManualPreview.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // Outline.cpp
 namespace test_Outline {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -4160,40 +3939,11 @@ done:
     win->close();
 }
 }  // namespace test_Outline
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Quad)
+// Contract section: Quad
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstring>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // Quad.cpp
 namespace test_Quad {
 using namespace eve::graphics;
@@ -4268,4 +4018,3 @@ TEST_CASE("Quad.spriteAtlasSamplesSubRect") {
     win->close();
 }
 }  // namespace test_Quad
-#endif

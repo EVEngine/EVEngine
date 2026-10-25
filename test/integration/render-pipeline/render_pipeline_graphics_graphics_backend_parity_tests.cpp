@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: action prefab runtime
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_prefab_runtime)
-#include "PrivateTestScope.h"
 #include <filesystem>
 #include <string_view>
 #include "PathBesideSource.h"
@@ -15,7 +17,6 @@
 #include "graphics/RenderSystem3D.h"
 #include "model3d/Model3D.h"
 #include "scene/loader/SceneLoader.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // action_prefab_runtime.cpp
 namespace test_action_prefab_runtime {
@@ -208,12 +209,11 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     CHECK_EQ(renderableCount(true), 0u);
 }
 }  // namespace test_action_prefab_runtime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_graphics_vegetation_scene)
+// Contract section: asset graphics vegetation scene
 #include "PrivateTestScope.h"
+
 #include <cstdio>
-#include <filesystem>
 #include <fstream>
 #include "asset/CanonicalImageCook.h"
 #include "asset/Evpack.h"
@@ -223,12 +223,9 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
 #include "asset/graphics/VegetationSceneLiveElements.h"
 #include "filesystem/FileData.h"
 #include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/Texture.h"
 #include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_graphics_vegetation_scene.cpp
 namespace test_asset_graphics_vegetation_scene {
 using namespace eve;
@@ -730,10 +727,10 @@ TEST_CASE("asset.graphics.vegetationSceneLoadsAndProjectsAtomically") {
     CHECK_EQ(duplicateAssociation.error()->code(), DiagnosticCode::Conflict);
 }
 }  // namespace test_asset_graphics_vegetation_scene
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_diffuse_light_probe)
+// Contract section: diffuse light probe
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
 #include <array>
 #include <cmath>
@@ -741,12 +738,7 @@ TEST_CASE("asset.graphics.vegetationSceneLoadsAndProjectsAtomically") {
 #include <memory>
 #include "common/ECS.h"
 #include "common/ProcgenProbeSink.h"
-#include "graphics/Canvas.h"
 #include "graphics/DiffuseLightProbeRegistry.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
-#include "image/ImageData.h"
 // diffuse_light_probe.cpp
 namespace test_diffuse_light_probe {
 using namespace eve;
@@ -838,18 +830,13 @@ TEST_CASE("graphics.lightProbe.customProvidedChangesRenderedPixels") {
     ecs::DestroyEntity(camera);
 }
 }  // namespace test_diffuse_light_probe
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids)
+// Contract section: fluids
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <array>
-#include <cmath>
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
-#include <fstream>
-#include <limits>
 #include <numeric>
 #include <utility>
 #include <vector>
@@ -866,9 +853,6 @@ TEST_CASE("graphics.lightProbe.customProvidedChangesRenderedPixels") {
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidCodec.h"
 #include "fluids/VolumeFluidDiffuse.h"
-#include "graphics/Graphics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // fluids.cpp
 namespace test_fluids {
 // fluids.cpp
@@ -1430,20 +1414,16 @@ TEST_CASE("fluids.ssf.occlusionDoesNotTiltForegroundNormals") {
 // fluids_surface.cpp
 using namespace eve::fluids;
 }  // namespace test_fluids
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpgpu)
-#include <algorithm>
+// Contract section: gpgpu
+#include "PrivateTestScope.h"
+
 #include <chrono>
-#include <cmath>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
 #include <string>
-#include <vector>
-#include "PrivateTestScope.h"
 #include "ScriptTest.h"
-#include "common/ECS.h"
 #include "common/Exception.h"
 #include "common/ScriptComponentStore.h"
 #include "gpgpu/ComputeShader.h"
@@ -1455,30 +1435,21 @@ using namespace eve::fluids;
 #include "gpgpu/ShaderSystem.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
-#include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "procgen/PointCompute.h"
 #include "procgen/PointGraph.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gpgpu.cpp
 namespace test_gpgpu {
 using namespace eve;
@@ -2295,8 +2266,10 @@ float readArrayFloat(ssq::VM &vm, ssq::Object arr, int idx) {
 // ---------------------------------------------------------------------------
 
 
-
-UnitSciptTest(GpuBufferBulkReadFixture, R"SQ(
+class GpuBufferBulkReadFixture : public ScriptTest {
+public:
+    GpuBufferBulkReadFixture()
+        : ScriptTest(R"SQ(
 // 模块绑定是**惰性**的：不碰 `eve.Gpgpu` 就不会注册 `GpuBuffer` 类，而原生指针要交给脚本
 // 就必须先有这个类（否则 simplesquirrel 退化成裸 userpointer，脚本侧一调方法就报错）。
 // 这一行就是"先让 exposer 跑一遍"，不需要真的设备。
@@ -2309,7 +2282,8 @@ function readRange(buf, count_, startIndex) {
     count = values.len()
     return true
 }
-)SQ");
+)SQ") {}
+};
 
 TEST_CASE_FIXTURE(GpuBufferBulkReadFixture, "gpgpu.buffer.readFloat32sReturnsAnArrayToScript") {
     TestBuffer buffer(4 * int(sizeof(float)));
@@ -2331,7 +2305,10 @@ TEST_CASE_FIXTURE(GpuBufferBulkReadFixture, "gpgpu.buffer.readFloat32sReturnsAnA
     REQUIRE_EQ(vm.find("count").toInt(), 0);
 }
 
-UnitSciptTest(EcsPackFixture, R"SQ(
+class EcsPackFixture : public ScriptTest {
+public:
+    EcsPackFixture()
+        : ScriptTest(R"SQ(
 class Vec { x = null; y = null }
 class Entity { Vec = null }
 function makeEntities() {
@@ -2345,7 +2322,8 @@ function getNoComp() { return [Entity()] }
 function getNotInstances() { return [1, 2] }
 function getScalar() { return 42 }
 function readBack(ents) { return [ents[0].Vec.x, ents[0].Vec.y, ents[1].Vec.x, ents[1].Vec.y] }
-)SQ");
+)SQ") {}
+};
 
 TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.roundTrip") {
     ssq::Object ents   = vm.callFunc(vm.findFunc("getEntities"), vm);
@@ -2428,7 +2406,10 @@ TEST_CASE_FIXTURE(EcsPackFixture, "gpgpu.ecsPack.errors") {
 // this pins the third interop bridge from plan doc 2.1 -- script component numbers entering
 // a GPU buffer -- for the real component objects.
 
-UnitSciptTest(EcsPackScriptEcsFixture, R"SQ(
+class EcsPackScriptEcsFixture : public ScriptTest {
+public:
+    EcsPackScriptEcsFixture()
+        : ScriptTest(R"SQ(
 class Pos extends eve.Component { x = 1.0; y = 2.0 }
 class Node extends eve.Entity { pos = Pos }
 function makeNodes() {
@@ -2440,7 +2421,8 @@ function getNodes() { return makeNodes() }
 function getView() { return eve.view(Node) }
 function getFields() { return ["x", "y"] }
 function readBack(ents) { return [ents[0].pos.x, ents[0].pos.y, ents[1].pos.x, ents[1].pos.y] }
-)SQ");
+)SQ") {}
+};
 
 TEST_CASE_FIXTURE(EcsPackScriptEcsFixture, "gpgpu.ecsPack.scriptEcsComponentsRoundTrip") {
     ssq::Object ents   = vm.callFunc(vm.findFunc("getNodes"), vm);
@@ -2476,7 +2458,10 @@ TEST_CASE_FIXTURE(EcsPackScriptEcsFixture, "gpgpu.ecsPack.scriptEcsComponentsRou
 // 会一律失败（`sq_get` 用 DONT_FALL_BACK，连 `_get` 都不会兜底）。
 // ---------------------------------------------------------------------------
 
-UnitSciptTest(EcsPackRegisteredScriptEcsFixture, R"SQ(
+class EcsPackRegisteredScriptEcsFixture : public ScriptTest {
+public:
+    EcsPackRegisteredScriptEcsFixture()
+        : ScriptTest(R"SQ(
 class RPos extends eve.Component { x = 1.0; y = 2.0 }
 class RNode extends eve.Entity { rpos = RPos }
 function makeRegistered() {
@@ -2489,7 +2474,8 @@ function makeRegistered() {
 }
 function getRegisteredFields() { return ["x", "y"] }
 function readBackRegistered(ents) { return [ents[0].rpos.x, ents[0].rpos.y, ents[1].rpos.x, ents[1].rpos.y] }
-)SQ");
+)SQ") {}
+};
 
 TEST_CASE_FIXTURE(EcsPackRegisteredScriptEcsFixture, "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip") {
     ssq::Object ents = vm.callFunc(vm.findFunc("makeRegistered"), vm);
@@ -2528,35 +2514,21 @@ TEST_CASE_FIXTURE(EcsPackRegisteredScriptEcsFixture, "gpgpu.ecsPack.registeredSc
     REQUIRE_EQ(afterUnpack->find("y")->asDouble(), 60.0);
 }
 }  // namespace test_gpgpu
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_backend_parity)
+
+// Contract section: graphics backend parity
 #include "PrivateTestScope.h"
+
 #include <cstddef>
-#include <cstdint>
-#include <cstdlib>
-#include <filesystem>
-#include <fstream>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <memory>
 #include "GraphicsParitySupport.h"
 #include "common/config.h"
-#include "filesystem/FileData.h"
 #include "graphics/AlphaMask.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Mesh.h"
 #include "graphics/PrimitiveDrawList.h"
-#include "graphics/RenderControl.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
 #include "image/Image.h"
-#include "image/ImageData.h"
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/graphics/PixelWorldGraphics.h"
-#include "zeroerr/unittest.h"
 // graphics_backend_parity.cpp
 namespace test_graphics_backend_parity {
 using namespace eve::graphics;
@@ -3455,15 +3427,11 @@ TEST_CASE("graphics.backendParity.alphaMaskThresholdSoftnessAndInversion") {
     REQUIRE(invertedHigh[0] < 15);
 }
 }  // namespace test_graphics_backend_parity
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_display_output)
+// Contract section: graphics display output
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include "graphics/DisplayOutputEncoding.h"
-#include "graphics/Graphics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_display_output.cpp
 namespace test_graphics_display_output {
 using eve::graphics::Color;
@@ -3516,15 +3484,11 @@ TEST_CASE("graphics.displayOutput.apiValidation") {
     }
 }
 }  // namespace test_graphics_display_output
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_fog)
+// Contract section: graphics fog
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <vector>
-#include "GraphicsParitySupport.h"
+
 #include "graphics/AtmosphereVolume.h"
-#include "graphics/Volumetric.h"
 #include "graphics/fog/AnalyticalVolLight.h"
 #include "graphics/fog/ContinuousArt.h"
 #include "graphics/fog/FogInteractor.h"
@@ -3532,8 +3496,6 @@ TEST_CASE("graphics.displayOutput.apiValidation") {
 #include "graphics/fog/FogSystem.h"
 #include "graphics/fog/ProceduralDust.h"
 #include "graphics/fog/RealtimeFog.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_fog.cpp
 namespace test_graphics_fog {
 // graphics_fog.cpp
@@ -3641,18 +3603,12 @@ TEST_CASE("graphics_fog.injectToVolumetricKeepsHeightFog") {
     CHECK(!system.injectToVolumetric(nullptr).ok());
 }
 }  // namespace test_graphics_fog
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_gbuffer_depth)
+// Contract section: graphics gbuffer depth
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <glm/gtc/matrix_transform.hpp>
-#include <memory>
 #include "Fixtures.h"
-#include "graphics/ClipSpace.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_gbuffer_depth.cpp
 namespace test_graphics_gbuffer_depth {
 TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
@@ -3689,19 +3645,10 @@ TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
     }
 }
 }  // namespace test_graphics_gbuffer_depth
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_headless)
+// Contract section: graphics headless
 #include "PrivateTestScope.h"
-#include <functional>
-#include <memory>
-#include "common/Exception.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Texture.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // graphics_headless.cpp
 namespace test_graphics_headless {
 using namespace eve::graphics;
@@ -3789,21 +3736,12 @@ TEST_CASE("graphics.headless.initCanvasDrawAndErrors") {
     gfx->clearScreen();
 }
 }  // namespace test_graphics_headless
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_map_fog)
+// Contract section: graphics map fog
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <memory>
-#include <vector>
-#include "GraphicsParitySupport.h"
-#include "graphics/Canvas.h"
+
 #include "graphics/Color.h"
-#include "graphics/Graphics.h"
 #include "graphics/MapFog.h"
-#include "graphics/Texture.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 // graphics_map_fog.cpp
 namespace test_graphics_map_fog {
 using eve::graphics::Color;
@@ -3878,23 +3816,11 @@ TEST_CASE("graphics.mapFog.makeCloudTextureIsRepeatable") {
     CHECK(fog->getCloudTileB() == 3.f);
 }
 }  // namespace test_graphics_map_fog
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_pbr_surface)
+// Contract section: graphics pbr surface
 #include "PrivateTestScope.h"
-#include <array>
-#include <limits>
-#include <memory>
-#include <vector>
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
+
 #include "graphics/PbrSurface.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_pbr_surface.cpp
 namespace test_graphics_pbr_surface {
 using namespace eve::graphics;
@@ -4090,22 +4016,11 @@ TEST_CASE("graphics.pbrSurface.extensionFactorsAndUvChangePixels") {
     REQUIRE(difference(reference, render(base)) > 100);
 }
 }  // namespace test_graphics_pbr_surface
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_raytracing_alignment)
+// Contract section: graphics raytracing alignment
 #include "PrivateTestScope.h"
-#include <cstdio>
-#include <glm/gtc/matrix_transform.hpp>
-#include <memory>
-#include <vector>
-#include "common/Capability.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
+
 #include "graphics/IRayTracing.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_raytracing_alignment.cpp
 namespace test_graphics_raytracing_alignment {
 TEST_CASE("graphics.raytracing.reflectionHitVisibility") {
@@ -4180,19 +4095,10 @@ TEST_CASE("graphics.raytracing.reflectionHitVisibility") {
     rt->clearScene();
 }
 }  // namespace test_graphics_raytracing_alignment
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_skin_palette_render)
+// Contract section: graphics skin palette render
 #include "PrivateTestScope.h"
-#include <array>
-#include <memory>
-#include <vector>
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // graphics_skin_palette_render.cpp
 namespace test_graphics_skin_palette_render {
 TEST_CASE("graphics.skinPalette.largeJointMovesRenderedPixels") {
@@ -4282,25 +4188,11 @@ TEST_CASE("graphics.skinPalette.influenceLimitChangesRenderedDeformation") {
     }
 }
 }  // namespace test_graphics_skin_palette_render
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_texture_mips)
+// Contract section: graphics texture mips
 #include "PrivateTestScope.h"
-#include <array>
-#include <iostream>
-#include <limits>
-#include <memory>
-#include <vector>
-#include "asset/CanonicalImageCook.h"
-#include "asset/RuntimeDefinition.h"
+
 #include "asset/graphics/EvpackImageLoader.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/PbrSurface.h"
-#include "graphics/Texture.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_texture_mips.cpp
 namespace test_graphics_texture_mips {
 TEST_CASE("graphics.texture.explicit_mips_preserve_every_uploaded_level") {
@@ -4463,4 +4355,3 @@ TEST_CASE("graphics.pbrSurface.texture_dimensions_are_validated_before_publicati
     REQUIRE(gfx->releaseTexture(texture2d));
 }
 }  // namespace test_graphics_texture_mips
-#endif

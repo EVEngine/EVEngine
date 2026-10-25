@@ -1,6 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: mcp
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp)
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
 #include <Poco/JSON/Array.h>
@@ -17,7 +20,6 @@
 #include <sstream>
 #include <string>
 #include <thread>
-#include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
 #include "common/ProcgenQuery.h"
@@ -32,7 +34,6 @@
 #include "editor/Editor.h"
 #include "pixelworld/PixelWorldModule.h"
 #include "ui/EditorHost.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // mcp.cpp
 namespace test_mcp {
@@ -1121,31 +1122,18 @@ TEST_CASE("devtools.mcp.setBreakpointWithCondition") {
     dt.detach();
 }
 }  // namespace test_mcp
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_agent_export)
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
+
+// Contract section: mcp agent export
+#include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <chrono>
 #include <cstdint>
 #include <cstdio>
-#include <filesystem>
 #include <iostream>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include <thread>
 #include <vector>
-#include "PrivateTestScope.h"
 #include "common/CrashLog.h"
 #include "devtools/ConsolePanel.hpp"
-#include "devtools/DevTool.hpp"
 #include "devtools/McpScriptTools.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_agent_export.cpp
 namespace test_mcp_agent_export {
 // Agent-facing runtime evidence: engine stderr, crash forensics and the
@@ -1520,28 +1508,15 @@ TEST_CASE("devtools.mcp.scriptToolNameRules") {
     dt.detach();
 }
 }  // namespace test_mcp_agent_export
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_hot_reload)
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <unordered_map>
-#include <vector>
+// Contract section: mcp hot reload
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
+#include <unordered_map>
 #include "common/Module.h"
-#include "common/Runtime.h"
 #include "common/ScriptError.h"
 #include "common/ServiceInterfaces.h"
 #include "common/SquirrelBinding.h"
-#include "ui/EditorHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_hot_reload.cpp
 namespace test_mcp_hot_reload {
 namespace {
@@ -1792,15 +1767,12 @@ TEST_CASE("devtools.mcp.hostScriptImport") {
     std::filesystem::remove_all(root);
 }
 }  // namespace test_mcp_hot_reload
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_scene_literal)
-#include <Poco/JSON/Parser.h>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+
+// Contract section: mcp scene literal
 #include "PrivateTestScope.h"
+
+#include <limits>
 #include "devtools/McpSceneLiteral.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_scene_literal.cpp
 namespace test_mcp_scene_literal {
 TEST_CASE("mcp.scene_authoring.parameters_preserve_nested_values_and_precision") {
@@ -1821,29 +1793,11 @@ TEST_CASE("mcp.scene_authoring.parameters_preserve_nested_values_and_precision")
     REQUIRE(!eve::dev::sceneLiteral(input, 17).ok());
 }
 }  // namespace test_mcp_scene_literal
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_soft_restart)
-#include <Poco/Dynamic/Var.h>
-#include <Poco/Exception.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <Poco/Net/NetException.h>
-#include <Poco/Net/SocketAddress.h>
-#include <Poco/Net/StreamSocket.h>
-#include <Poco/Timespan.h>
-#include <chrono>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include <thread>
+// Contract section: mcp soft restart
 #include "PrivateTestScope.h"
-#include "devtools/AiPanel.hpp"
-#include "devtools/DevTool.hpp"
-#include "devtools/McpServer.hpp"
+
 #include "devtools/SoftRestart.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_soft_restart.cpp
 namespace test_mcp_soft_restart {
 // Soft restart over MCP: reset game state without dropping the resource cache.
@@ -2072,27 +2026,16 @@ TEST_CASE("devtools.mcp.eveRestartTool") {
     dt.detach();
 }
 }  // namespace test_mcp_soft_restart
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_model)
+// Contract section: model
+#include "PrivateTestScope.h"
+
 #include <cassert>
 #include <map>
-#include <string>
-#include <vector>
-#include "PrivateTestScope.h"
 #include "ScriptTest.h"
-// Squirrel internal headers require this dependency order.
-// clang-format off
-#include "sqobject.h"
-#include "sqpcheader.h"
-#include "sqtable.h"
-#include "sqclass.h"
-#include "sqvm.h"
-// clang-format on
 #include "squirrel.h"
 // Squirrel internal headers require this dependency order.
 // clang-format off
-#include "sqobject.h"
 #include "sqpcheader.h"
 #include "sqtable.h"
 #include "sqclass.h"
@@ -2183,17 +2126,14 @@ protected:
 TEST_CASE_FIXTURE(ModelScriptTest, "ModelScriptTest.basic") { REQUIRE(vm.callFunc(vm.findFunc("basic"), vm).toBool()); }
 #endif
 }  // namespace test_model
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_module_lazy_bind)
+
+// Contract section: module lazy bind
+#include "PrivateTestScope.h"
+
 #include <squirrel.h>
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include "Fixtures.h"
-#include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "common/Runtime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // module_lazy_bind.cpp
 namespace test_module_lazy_bind {
 // module_lazy_bind.cpp
@@ -2469,37 +2409,32 @@ TEST_CASE("ModuleManager.RegistryConflictPreservesCommittedInstance") {
     CHECK_EQ(RegistryProbe::live, 1);
 }
 }  // namespace test_module_lazy_bind
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mouse)
+
+// Contract section: mouse
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* mouse_content;
 // mouse.cpp
 namespace test_mouse {
 using namespace eve;
 
 
-UnitSciptTest(Mouse, mouse_content);
+class Mouse : public ScriptTest {
+public:
+    Mouse() : ScriptTest(mouse_content) {}
+};
 
-#define TestScript(func) \
-    TEST_CASE_FIXTURE(Mouse, "Mouse." #func) { REQUIRE(callScript(#func)); }
+TEST_CASE_FIXTURE(Mouse, "Mouse.basic") { REQUIRE(callScript("basic")); }
 
-// clang-format off
-TestScript(basic)
-TestScript(relativeMode)
-TestScript(visibility)
-// clang-format on
+TEST_CASE_FIXTURE(Mouse, "Mouse.relativeMode") { REQUIRE(callScript("relativeMode")); }
+
+TEST_CASE_FIXTURE(Mouse, "Mouse.visibility") { REQUIRE(callScript("visibility")); }
 }  // namespace test_mouse
-#undef TestScript
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_script)
-#include <simplesquirrel/simplesquirrel.hpp>
+
+// Contract section: npc ai script
 #include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "common/SquirrelBinding.h"
+
 #include "npc_ai/NpcAiModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // npc_ai_script.cpp
 namespace test_npc_ai_script {
 TEST_CASE("npcAiScript.worldOwnsSignalAndBlackboardAgents") {
@@ -2573,16 +2508,11 @@ TEST_CASE("npcAiScript.rejectsOutOfRangeFieldsAndHonorsZeroMemory") {
     CHECK(vm.find("okTick").toTable().get<bool>("ok"));
 }
 }  // namespace test_npc_ai_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_orders)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+// Contract section: orders
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
 #include "orders/CommandQueue.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // orders.cpp
 namespace test_orders {
 using namespace eve::orders;
@@ -2640,20 +2570,14 @@ TEST_CASE("orders.script.ownedQueueReplace") {
     CHECK_EQ(vm.find("result").toString(), std::string("replaced"));
 }
 }  // namespace test_orders
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_biome_controller)
-#include <zeroerr/unittest.h>
-#include <algorithm>
+// Contract section: pcg biome controller
+#include "PrivateTestScope.h"
+
 #include <cmath>
 #include <functional>
-#include <limits>
 #include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "Fixtures.h"
-#include "PrivateTestScope.h"
 #include "animation/AnimSkin.h"
-#include "common/SquirrelBinding.h"
 #include "graphics/Graphics.h"
 #include "procgen/PcgFrameRateManager.h"
 #include "procgen/PcgSpawnProgress.h"
@@ -2664,8 +2588,6 @@ TEST_CASE("orders.script.ownedQueueReplace") {
 #include "procgen/heightmap/PcgBiomeController.h"
 #include "procgen/heightmap/PcgRuntimeStamper.h"
 #include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pcg_biome_controller.cpp
 namespace test_pcg_biome_controller {
 // pcg_biome_controller.cpp
@@ -2797,12 +2719,10 @@ using namespace eve::procgen;
 // pcg_task_queue.cpp
 using namespace eve::procgen;
 }  // namespace test_pcg_biome_controller
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_color_preview_sync)
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: pcg color preview sync
 #include "PrivateTestScope.h"
+
 #include "ui/PcgColorPreviewSync.h"
 #include "ui/PcgControllerSelection.h"
 #include "ui/PcgDraggableWindow.h"
@@ -2810,7 +2730,6 @@ using namespace eve::procgen;
 #include "ui/PcgScreenshotSavedNotice.h"
 #include "ui/PcgTooltip.h"
 #include "ui/UI.h"
-#include "zeroerr/unittest.h"
 // pcg_color_preview_sync.cpp
 namespace test_pcg_color_preview_sync {
 // pcg_color_preview_sync.cpp
@@ -2861,17 +2780,13 @@ using eve::ui::PcgScreenshotSavedNotice;
 // pcg_tooltip.cpp
 using eve::ui::PcgTooltipManager;
 }  // namespace test_pcg_color_preview_sync
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_terrain_watcher)
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: pcg terrain watcher
 #include "PrivateTestScope.h"
+
 #include "procgen/PointSet.h"
 #include "procgen/heightmap/PcgTerrainWatcher.h"
 #include "procgen/heightmap/PcgTreeManager.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
 // pcg_terrain_watcher.cpp
 namespace test_pcg_terrain_watcher {
 // pcg_terrain_watcher.cpp
@@ -2911,13 +2826,11 @@ TEST_CASE("procgen.pcgTreeManager.bindsRealVm") {
     )"));
 }
 }  // namespace test_pcg_terrain_watcher
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_cloth)
-#include <array>
-#include <cmath>
+// Contract section: physics cloth
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
+#include <array>
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothModel.h"
 extern const char* physics_cloth_content;
@@ -2926,22 +2839,20 @@ namespace test_physics_cloth {
 using namespace eve;
 
 
-UnitSciptTest(PhysicsClothScriptTest, physics_cloth_content);
+class PhysicsClothScriptTest : public ScriptTest {
+public:
+    PhysicsClothScriptTest() : ScriptTest(physics_cloth_content) {}
+};
 
 TEST_CASE_FIXTURE(PhysicsClothScriptTest, "PhysicsCloth.scriptBindings") { REQUIRE(callScript("basic")); }
 }  // namespace test_physics_cloth
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_policyregistry)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <stdexcept>
-#include <string>
-#include <string_view>
-#include <vector>
+
+// Contract section: policyregistry
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
+#include <stdexcept>
+#include <string_view>
 #include "policyregistry/PolicyRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // policyregistry.cpp
 namespace test_policyregistry {
 using namespace eve::policyregistry;
@@ -2972,15 +2883,11 @@ TEST_CASE("policyregistry.scriptDiscoversButDoesNotStoreCallbacks") {
     CHECK_EQ(vm.find("result").toString(), std::string("general-7:handled"));
 }
 }  // namespace test_policyregistry
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_module_assembly)
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: procgen module assembly
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
 #include "procgen/ModuleAssembly.h"
-#include "zeroerr/unittest.h"
 // procgen_module_assembly.cpp
 namespace test_procgen_module_assembly {
 using namespace eve::procgen;
@@ -3019,17 +2926,12 @@ TEST_CASE("procgen.moduleAssembly.squirrelBuildsValidatedPlacementTransforms") {
     )"));
 }
 }  // namespace test_procgen_module_assembly
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_runtime_generation)
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <utility>
+// Contract section: procgen runtime generation
 #include "PrivateTestScope.h"
-#include "procgen/Procgen.h"
+
+#include <utility>
 #include "procgen/RuntimeGeneration.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_runtime_generation.cpp
 namespace test_procgen_runtime_generation {
 using namespace eve::procgen;
@@ -3192,32 +3094,18 @@ TEST_CASE("procgen.runtimeGeneration.squirrelAdvancesBudgetedRefresh") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_procgen_runtime_generation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_scene_sink)
-#include <cmath>
-#include <future>
-#include <limits>
-#include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <type_traits>
-#include <unordered_map>
-#include <utility>
-#include <vector>
+// Contract section: procgen scene sink
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/Module.h"
+
+#include <future>
+#include <type_traits>
 #include "common/ProcgenSceneSink.h"
 #include "common/ProcgenWorldQuery.h"
 #include "procgen/MeshBuild.h"
-#include "procgen/Procgen.h"
-#include "procgen/RuntimeGeneration.h"
 #include "procgen/ShapeGrammar.h"
 #include "procgen/SpatialData.h"
 #include "procgen/spline/SplinePath.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_scene_sink.cpp
 namespace test_procgen_scene_sink {
 // procgen_scene_sink.cpp
@@ -3736,16 +3624,11 @@ TEST_CASE("procgen.script.newShapeGrammarIsTheDocumentedEntryPoint") {
     REQUIRE(vm.find("report").toString().find("symbols=") != std::string::npos);
 }
 }  // namespace test_procgen_scene_sink
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_production)
-#include <cstdint>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+
+// Contract section: production
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
 #include "production/Production.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // production.cpp
 namespace test_production {
 using namespace eve::production;
@@ -3775,16 +3658,12 @@ TEST_CASE("production.script.queueLifecycle") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_production
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_profiler)
-#include <string>
+// Contract section: profiler
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 #include "common/Profile.h"
 #include "profiler/Profiler.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 extern const char* profiler_content;
 // profiler.cpp
 namespace test_profiler {
@@ -3825,24 +3704,21 @@ TEST_CASE("profiler.core.aggregatesSelfAndTotal") {
 
 // profiler_script.cpp
 
-UnitSciptTest(ProfilerScriptTest, profiler_content);
+class ProfilerScriptTest : public ScriptTest {
+public:
+    ProfilerScriptTest() : ScriptTest(profiler_content) {}
+};
 
 TEST_CASE_FIXTURE(ProfilerScriptTest, "ProfilerScriptTest.capture") { REQUIRE(callScript("captureWorks")); }
 }  // namespace test_profiler
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_reload_script)
-#include <iostream>
-#include <simplesquirrel/simplesquirrel.hpp>
+
+// Contract section: reload script
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
 #include "common/IStateProvider.h"
-#include "common/Module.h"
-#include "devtools/DevTool.hpp"
 #include "devtools/ReloadSession.h"
 #include "devtools/Snapshot.hpp"
 #include "scripts.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // reload_script.cpp
 namespace test_reload_script {
 namespace {
@@ -4037,13 +3913,10 @@ public:
     ssq::VM vm;
 };
 
-#define UnitReloadScriptTest(name, content)   \
-    class name : public ReloadScriptTest {    \
-    public:                                   \
-        name() : ReloadScriptTest(content) {} \
-    }
-
-UnitReloadScriptTest(ReloadScriptTestFixture, kReloadScript);
+class ReloadScriptTestFixture : public ReloadScriptTest {
+public:
+    ReloadScriptTestFixture() : ReloadScriptTest(kReloadScript) {}
+};
 
 TEST_CASE_FIXTURE(ReloadScriptTestFixture, "reloadScript.protocolKeepsOldValuesAndNewFields") {
     REQUIRE(vm.callFunc(vm.findFunc("reloadProtocolKeepsOldValuesAndNewFields"), vm).toBool());
@@ -4200,20 +4073,14 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
 
 }  // namespace
 }  // namespace test_reload_script
-#undef UnitReloadScriptTest
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_classic_semantic_index)
-#include <filesystem>
-#include <fstream>
-#include <simplesquirrel/vm.hpp>
-#include <sstream>
-#include "PathBesideSource.h"
+
+// Contract section: rpg classic semantic index
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
+#include <simplesquirrel/vm.hpp>
+#include "PathBesideSource.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_classic_semantic_index.cpp
 namespace test_rpg_classic_semantic_index {
 namespace {
@@ -4256,17 +4123,12 @@ TEST_CASE("rpg.classic.semanticQuestEventSceneRuntime") {
     CHECK(!marker.value()->visible);
 }
 }  // namespace test_rpg_classic_semantic_index
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_dnut_script)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+// Contract section: rpg dnut script
 #include "PrivateTestScope.h"
+
 #include "common/ECS.h"
-#include "common/Module.h"
 #include "rpg/RpgDialect.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_dnut_script.cpp
 namespace test_rpg_dnut_script {
 /**
@@ -4485,14 +4347,10 @@ TEST_CASE("rpg.dnut.scriptOwnsAnimationAndVerifiesTheEffect") {
     eve::rpg::RpgStoryCatalogue::clear();
 }
 }  // namespace test_rpg_dnut_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_script)
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: rpg script
 #include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // rpg_script.cpp
 namespace test_rpg_script {
 TEST_CASE("rpg.script.beginCastSkillAcceptsNullAndOmittedTarget") {
@@ -4516,15 +4374,11 @@ TEST_CASE("rpg.script.beginCastSkillAcceptsNullAndOmittedTarget") {
     CHECK(vm.find("withTarget").toBool());
 }
 }  // namespace test_rpg_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_world_state_script)
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: rpg world state script
 #include "PrivateTestScope.h"
-#include "common/Module.h"
+
 #include "rpg/WorldState.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_world_state_script.cpp
 namespace test_rpg_world_state_script {
 TEST_CASE("rpg.script.worldStateAcceptsStringIdentifiers") {
@@ -4549,20 +4403,12 @@ TEST_CASE("rpg.script.worldStateAcceptsStringIdentifiers") {
     CHECK(!vm.find("restored").toBool());
 }
 }  // namespace test_rpg_world_state_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_simplesquirrel)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+// Contract section: simplesquirrel
 #include "PrivateTestScope.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // Squirrel internal headers require this dependency order.
 // clang-format off
-#include "sqpcheader.h"
-#include "sqvm.h"
-#include "sqtable.h"
-#include "sqclass.h"
 // clang-format on
 // simplesquirrel.cpp
 // Keep VM-private layout with the existing VM-introspection probes; exposing SQVM
@@ -4604,4 +4450,3 @@ TEST_CASE("SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods") 
     REQUIRE_EQ(vm.find("afterLog").toString(), std::string("set:x"));  // 写入也走了元方法
 }
 }  // namespace test_simplesquirrel_vm_internals
-#endif

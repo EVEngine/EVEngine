@@ -1,33 +1,26 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: window cpp
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_window_cpp)
-#include "PrivateTestScope.h"
 #include <cstdlib>
 #include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // window_cpp.cpp
 namespace test_window_cpp {
@@ -370,18 +363,14 @@ TEST_CASE("window.showMessageBoxOptional") {
     win->close();
 }
 }  // namespace test_window_cpp
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_window_lifecycle)
+// Contract section: window lifecycle
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
 #include <optional>
 #include "graphics/Color.h"
-#include "graphics/Graphics.h"
 #include "platform_event/PlatformEvent.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // window_lifecycle.cpp
 namespace test_window_lifecycle {
 // Window minimize / restore and app background / foreground resume.
@@ -589,4 +578,3 @@ TEST_CASE("graphics.lifecycle.minimizeRestoreStillPresents") {
     win->close();
 }
 }  // namespace test_window_lifecycle
-#endif

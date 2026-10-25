@@ -185,3 +185,46 @@ TEST_CASE("spatial.invalidBounds") {
     }
     CHECK(threw);
 }
+
+#include <array>
+#include <set>
+#include "spatial/SpatialHash2D.h"
+namespace test_rts_performance_semantics_migrated {
+TEST_CASE("rts.performanceSpatialQueriesMatchBruteForceAcrossNegativeAndRepeatedBuckets") {
+    eve::spatial::SpatialHash2D grid(2.f);
+    const std::array            boxes{eve::spatial::makeAABB2(-8.f, -6.f, 6.f, 8.f),
+                           eve::spatial::makeAABB2(-3.f, -2.f, -1.f, 0.f), eve::spatial::makeAABB2(0.f, 0.f, 0.f, 0.f),
+                           eve::spatial::makeAABB2(1.f, -4.f, 3.f, -1.f)};
+    for (int i = 0; i < 4; ++i) REQUIRE(grid.insert(i, boxes[i].minX, boxes[i].minY, boxes[i].maxX, boxes[i].maxY));
+    for (int y = -9; y <= 9; ++y)
+        for (int x = -9; x <= 9; ++x) {
+            grid.queryCircle(float(x), float(y), 2.5f);
+            std::set<int> expected, actual;
+            for (int i = 0; i < 4; ++i)
+                if (boxes[i].intersectsCircle(float(x), float(y), 2.5f)) expected.insert(i);
+            for (int i = 0; i < grid.getResultCount(); ++i) REQUIRE(actual.insert(grid.getResultId(i)).second);
+            CHECK(actual == expected);
+        }
+    REQUIRE(grid.update(0, 12.f, 12.f, 13.f, 13.f));
+    grid.queryPoint(0.f, 0.f);
+    CHECK_EQ(grid.getResultCount(), 1);
+    CHECK_EQ(grid.getResultId(0), 2);
+    eve::spatial::SpatialHash2D reference(2.f);
+    grid.clear();
+    for (int id = 0; id < 4; ++id) {
+        REQUIRE(grid.insert(id, -1.f, -1.f, 3.f, 3.f));
+        REQUIRE(reference.insert(id, -1.f, -1.f, 3.f, 3.f));
+    }
+    for (int id : {2, 0, 3, 1, 2}) {
+        REQUIRE(grid.update(id, -0.5f, -0.5f, 2.5f, 2.5f));
+        REQUIRE(reference.insert(id, -0.5f, -0.5f, 2.5f, 2.5f));
+        for (float x : {-1.f, 0.f, 2.5f, 3.f}) {
+            grid.queryCircle(x, 0.f, 3.f);
+            reference.queryCircle(x, 0.f, 3.f);
+            CHECK_EQ(grid.getResultCount(), reference.getResultCount());
+            for (int index = 0; index < grid.getResultCount(); ++index)
+                CHECK_EQ(grid.getResultId(index), reference.getResultId(index));
+        }
+    }
+}
+}  // namespace test_rts_performance_semantics_migrated

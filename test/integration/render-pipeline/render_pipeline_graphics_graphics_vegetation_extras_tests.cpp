@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: graphics vegetation extras
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_extras)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <cmath>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,7 +16,6 @@
 #include "graphics/VegetationField.h"
 #include "graphics/VegetationFieldGpu.h"
 #include "image/ImageData.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // graphics_vegetation_extras.cpp
 namespace test_graphics_vegetation_extras {
@@ -599,10 +600,10 @@ TEST_CASE("graphics.vegetation.motion_array_deforms_rest_stream_with_explicit_no
     REQUIRE(gfx->releaseTexture(atlas.value().texture));
 }
 }  // namespace test_graphics_vegetation_extras
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_webgpu_pbr_variant)
+// Contract section: graphics webgpu pbr variant
 #include "PrivateTestScope.h"
+
 #include "common/config.h"
 #ifdef EVENGINE_WEBGPU
 #include <cstdint>
@@ -626,7 +627,6 @@ TEST_CASE("graphics.vegetation.motion_array_deforms_rest_stream_with_explicit_no
 #include "graphics/webgpu/PbrVariantSource.h"
 #endif
 #ifdef EVENGINE_WEBGPU
-#include "zeroerr/assert.h"
 #endif
 #ifdef EVENGINE_WEBGPU
 #include "zeroerr/unittest.h"
@@ -709,33 +709,27 @@ TEST_CASE("graphics.webgpu.pbrVariantSpecializationRemovesUnreachableBindings") 
 
 #endif
 }  // namespace test_graphics_webgpu_pbr_variant
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_grass)
+// Contract section: grass
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
-#include <memory>
 #include <string>
 #include <vector>
 #include "PathBesideSource.h"
 #include "filesystem/FileData.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
 #include "graphics/Grass.h"
-#include "graphics/Light.h"
 #include "graphics/Material.h"
-#include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
@@ -748,10 +742,7 @@ TEST_CASE("graphics.webgpu.pbrVariantSpecializationRemovesUnreachableBindings") 
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "image/Image.h"
-#include "image/ImageData.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // grass.cpp
 namespace test_grass {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -1107,23 +1098,15 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     win->close();
 }
 }  // namespace test_grass
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_model3d_gltf_uv)
+// Contract section: model3d gltf uv
 #include "PrivateTestScope.h"
+
 #include <assimp/material.h>
 #include <assimp/scene.h>
-#include <cmath>
-#include <filesystem>
-#include "PathBesideSource.h"
-#include "graphics/Graphics.h"
-#include "graphics/Material.h"
-#include "graphics/RenderSystem3D.h"
 #include "medialoader/model/ModelLoader.h"
 #include "model3d/ModelData.h"
 #include "model3d/ModelRenderer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // model3d_gltf_uv.cpp
 namespace test_model3d_gltf_uv {
 TEST_CASE("model3d.gltfUvOriginAndTransformSurviveLoader") {
@@ -1168,21 +1151,14 @@ TEST_CASE("model3d.missingPreviewTextureRetainsMaterialFactors") {
     REQUIRE(entity->getMaterial()->pbrSurface().textures[0].texture == nullptr);
 }
 }  // namespace test_model3d_gltf_uv
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_mesh_vertex_axis_gizmo)
+// Contract section: procgen mesh vertex axis gizmo
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <memory>
+
 #include "GraphicsParitySupport.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/Graphics.h"
 #include "graphics/editing/PrimitiveGizmoRenderer.h"
-#include "image/ImageData.h"
 #include "procgen/editing/MeshVertexAxisGizmo.h"
-#include "zeroerr/unittest.h"
 // procgen_mesh_vertex_axis_gizmo.cpp
 namespace test_procgen_mesh_vertex_axis_gizmo {
 using namespace eve::editing;
@@ -1236,21 +1212,12 @@ TEST_CASE("procgen.meshVertexAxisGizmo.picksMovesAndRendersThroughPrimitiveBacke
     CHECK(visiblePixels > 40u);
 }
 }  // namespace test_procgen_mesh_vertex_axis_gizmo
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_spline_gizmo_render)
+// Contract section: procgen spline gizmo render
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <memory>
-#include "GraphicsParitySupport.h"
-#include "graphics/Canvas.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/Graphics.h"
-#include "graphics/editing/PrimitiveGizmoRenderer.h"
-#include "image/ImageData.h"
+
 #include "procgen/editing/SplinePathDocument.h"
 #include "procgen/editing/SplinePathGizmo.h"
-#include "zeroerr/unittest.h"
 // procgen_spline_gizmo_render.cpp
 namespace test_procgen_spline_gizmo_render {
 using namespace eve::editing;
@@ -1315,24 +1282,12 @@ TEST_CASE("procgen.splineGizmo.rendersThroughPrimitiveBackend") {
     CHECK(visiblePixels > 80u);
 }
 }  // namespace test_procgen_spline_gizmo_render
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_mesh_vertex)
+// Contract section: stylize mesh vertex
 #include "PrivateTestScope.h"
+
 #include <array>
-#include <cmath>
-#include <memory>
-#include <vector>
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
-#include "image/ImageData.h"
 #include "stylize/StyleShaders.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // stylize_mesh_vertex.cpp
 namespace test_stylize_mesh_vertex {
 namespace {
@@ -1538,44 +1493,17 @@ TEST_CASE("stylize.cartoon.vertexColorFeedsMaterialColor") {
     REQUIRE(totalLuma(whiteFrame) > totalLuma(greyFrame));
 }
 }  // namespace test_stylize_mesh_vertex
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tensor)
+// Contract section: tensor
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
+
 #include <functional>
-#include <memory>
 #include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "tensor/Graph.h"
 #include "tensor/KernelGen.h"
 #include "tensor/Optimizer.h"
 #include "tensor/TF.h"
 #include "tensor/Tensor.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tensor.cpp
 namespace test_tensor {
 using namespace eve::tensor;
@@ -1732,44 +1660,10 @@ namespace {
 
 // --- new-op GPU paths (only run with a live Vulkan device; headless) -------
 }  // namespace test_tensor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tensor_gpu)
+// Contract section: tensor gpu
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <memory>
-#include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "tensor/Graph.h"
-#include "tensor/KernelGen.h"
-#include "tensor/Optimizer.h"
-#include "tensor/TF.h"
-#include "tensor/Tensor.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // tensor_gpu.cpp
 namespace test_tensor_gpu {
 using namespace eve::tensor;
@@ -1976,45 +1870,11 @@ TEST_CASE("tensor.gpu.stageBisect") {
     checkGpuGraphMatchesEager(_ZEROERR_TEST_CONTEXT, tf, stage4, x.get(), "stage4");
 }
 }  // namespace test_tensor_gpu
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tensor_gpu_contract)
+// Contract section: tensor gpu contract
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <functional>
-#include <memory>
-#include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
+
 #include "tensor/GpuBackend.h"
-#include "tensor/Graph.h"
-#include "tensor/KernelGen.h"
-#include "tensor/Optimizer.h"
-#include "tensor/TF.h"
-#include "tensor/Tensor.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tensor_gpu_contract.cpp
 namespace test_tensor_gpu_contract {
 using namespace eve::tensor;
@@ -2169,11 +2029,10 @@ TEST_CASE("tensor.gpu.quantizedWeightsMatchEager") {
     }
 }
 }  // namespace test_tensor_gpu_contract
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tensor_onnx_gpu)
+// Contract section: tensor onnx gpu
 #include "PrivateTestScope.h"
-#include "common/config.h"
+
 #if !defined(EVENGINE_WEBGPU)
 #include <cstring>
 #endif
@@ -2551,44 +2410,15 @@ TEST_CASE("tensor.onnx.gpu.parallelCompilation") {
 }
 #endif
 }  // namespace test_tensor_onnx_gpu
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_virtualgeometry_builder)
+// Contract section: virtualgeometry builder
 #include "PrivateTestScope.h"
-#include <array>
-#include <cmath>
-#include <cstdint>
-#include <string>
-#include <vector>
+
 #include "data/ByteData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "virtualgeometry/Builder.h"
 #include "virtualgeometry/LodSelection.h"
 #include "virtualgeometry/VirtualGeometry.h"
 #include "virtualgeometry/VirtualGeometryRenderer.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // virtualgeometry_builder.cpp
 namespace test_virtualgeometry_builder {
 // virtualgeometry_builder.cpp
@@ -2732,11 +2562,6 @@ namespace {
 
 }  // namespace
 
-TEST_CASE("virtualgeometry.module.create") {
-    auto *mod = VirtualGeometry::create();
-    REQUIRE(mod != nullptr);
-    CHECK_EQ(mod->getName(), std::string("VirtualGeometry"));
-}
 
 TEST_CASE("virtualgeometry.gpu.buildIcosphere") {
     if (!tryInitHeadlessGfx()) return;
@@ -2847,4 +2672,3 @@ TEST_CASE("virtualgeometry.gpu.lodTransitionSweep") {
     delete r;
 }
 }  // namespace test_virtualgeometry_builder
-#endif

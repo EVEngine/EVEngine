@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: card rts production integration
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_rts_production_integration)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <utility>
 #include "attributes/AttributeSetResourceAccount.h"
@@ -12,7 +14,6 @@
 #include "economy/EconomyLedger.h"
 #include "rts/RTS.h"
 #include "rts/RTSEconomy.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // card_rts_production_integration.cpp
 namespace test_card_rts_production_integration {
@@ -168,24 +169,19 @@ TEST_CASE("production.rtsFacadeRoutesCanonicalAttributesEffectsAndBuild") {
     CHECK_EQ(building->orders()->values.orderCount(), 1u);
 }
 }  // namespace test_card_rts_production_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_rts_script_composition)
+// Contract section: card rts script composition
 #include "PrivateTestScope.h"
+
 #include <filesystem>
 #include <fstream>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
 #include "PathBesideSource.h"
-#include "card/Card.h"
-#include "common/ECS.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "economy/EconomySystem.h"
-#include "rts/RTS.h"
 #include "transaction/AtomicBatch.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // card_rts_script_composition.cpp
 namespace test_card_rts_script_composition {
 namespace {
@@ -509,4 +505,3 @@ TEST_CASE("card.rtsScriptGatheringUsesConfiguredResourceAndDropoff") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_card_rts_script_composition
-#endif

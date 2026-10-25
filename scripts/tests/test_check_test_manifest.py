@@ -1,3 +1,4 @@
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -193,6 +194,25 @@ class CheckTestManifestTest(unittest.TestCase):
         invalid = VALID_TABLE.replace('"math;core"', '"math;nosuchdomain"')
         errors = table_contract_errors(parse_domain_table(invalid))
         self.assertTrue(any("undeclared domain" in error for error in errors))
+
+    def test_real_asset_workflow_tasks_keep_original_graphics_link_domain(self):
+        # These real CPU/GPU tasks used to share the graphics executable. A
+        # semantic asset module label must not duplicate their importer/renderer
+        # closure in unit_test_asset after a physical source regrouping.
+        tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))
+        policies = json.loads((TEST_DIR / "test_levels.json").read_text(encoding="utf-8"))["sources"]
+        for filename, semantic_module in (
+            ("asset_pipeline_graphics_file_admission_tests.cpp", "asset"),
+            ("asset_pipeline_graphics_import_workflows_tests.cpp", "asset_graphics"),
+        ):
+            with self.subTest(source=filename):
+                relative = "integration/asset-pipeline/" + filename
+                source = TEST_DIR / relative
+                self.assertEqual(policies[relative]["role"], "tests")
+                self.assertEqual(policies[relative]["module"], semantic_module)
+                domain, _reason, error = classify(source.stem, source.read_text(encoding="utf-8"), tables)
+                self.assertIsNone(error)
+                self.assertEqual(domain, "graphics")
 
     def test_real_table_classifies_every_test_source(self):
         tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))

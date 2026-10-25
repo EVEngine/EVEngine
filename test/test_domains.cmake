@@ -231,7 +231,6 @@ set(EVE_TEST_PREFIX_DOMAIN
     "json;core"
     "math_smooth;core"
     "xml;core"
-    "medialoader_model_link;core"
     "=model;core"
     "module_lazy_bind;core"
     "module_manager_registry;core"

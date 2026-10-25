@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: terrain curve texture
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_curve_texture)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
 #include <algorithm>
 #include <array>
@@ -23,7 +25,6 @@
 #include "procgen/heightmap/TerrainStamp.h"
 #include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/heightmap/TerrainStreaming.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // terrain_curve_texture.cpp
 namespace test_terrain_curve_texture {
@@ -603,18 +604,12 @@ TEST_CASE("procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess") {
     }
 }
 }  // namespace test_terrain_curve_texture
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_detail)
+// Contract section: terrain detail
 #include "PrivateTestScope.h"
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/PointSet.h"
-#include "procgen/heightmap/Heightmap.h"
+
 #include "procgen/heightmap/TerrainDetailLayer.h"
 #include "procgen/heightmap/TerrainDetailPlacement.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
 // terrain_detail.cpp
 namespace test_terrain_detail {
 using namespace eve::procgen;
@@ -716,18 +711,11 @@ TEST_CASE("procgen.detail.scriptPointExport") {
     CHECK(std::abs(output.getColorR(0) - 0.5F) < 0.000001F);
 }
 }  // namespace test_terrain_detail
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_erosion)
+// Contract section: terrain erosion
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
+
 #include "procgen/heightmap/TerrainErosion.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
 // terrain_erosion.cpp
 namespace test_terrain_erosion {
 using namespace eve::procgen;
@@ -762,20 +750,13 @@ TEST_CASE("procgen.erosion.thermalScriptOutputsAndRejectedAlias") {
     CHECK(std::abs(height.height(1, 1) - 1.957325F) < 1e-6F);
 }
 }  // namespace test_terrain_erosion
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_generation_session)
+// Contract section: terrain generation session
 #include "PrivateTestScope.h"
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
+
 #include "procgen/heightmap/TerrainEffect.h"
-#include "procgen/heightmap/TerrainErosion.h"
 #include "procgen/heightmap/TerrainGenerationSession.h"
-#include "procgen/heightmap/TerrainStamp.h"
-#include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/heightmap/TerrainWaterField.h"
-#include "zeroerr/unittest.h"
 // terrain_generation_session.cpp
 namespace test_terrain_generation_session {
 using namespace eve::procgen;
@@ -885,16 +866,10 @@ TEST_CASE("procgen.session.snapshotRealVmRoundTrip") {
     CHECK(out.data()[0] == 0.25F);
 }
 }  // namespace test_terrain_generation_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_legacy_hydraulic)
+// Contract section: terrain legacy hydraulic
 #include "PrivateTestScope.h"
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainErosion.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
+
 // terrain_legacy_hydraulic.cpp
 namespace test_terrain_legacy_hydraulic {
 // terrain_legacy_hydraulic.cpp
@@ -955,22 +930,13 @@ TEST_CASE("procgen.legacyThermal.steepestOrderHardnessAndScript") {
     )"));
 }
 }  // namespace test_terrain_legacy_hydraulic
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_multitile)
+// Contract section: terrain multitile
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <vector>
-#include "procgen/PointSet.h"
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainDetailLayer.h"
 #include "procgen/heightmap/TerrainMultiTile.h"
-#include "procgen/heightmap/TerrainStamp.h"
-#include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/heightmap/TerrainTreePlacement.h"
-#include "zeroerr/unittest.h"
 // terrain_multitile.cpp
 namespace test_terrain_multitile {
 using namespace eve::procgen;
@@ -1151,34 +1117,20 @@ TEST_CASE("procgen.terrainStitcher.workspaceUndoAndScriptBinding") {
     )"));
 }
 }  // namespace test_terrain_multitile
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_probe)
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: terrain probe
 #include "PrivateTestScope.h"
+
 #include "common/Capability.h"
 #include "common/ProcgenProbeSink.h"
 #include "common/Value.h"
-#include "image/ImageData.h"
-#include "procgen/PointSet.h"
-#include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap/TerrainBiomePreset.h"
-#include "procgen/heightmap/TerrainDetailLayer.h"
 #include "procgen/heightmap/TerrainImageAdapter.h"
-#include "procgen/heightmap/TerrainMultiTile.h"
-#include "procgen/heightmap/TerrainObjectPlacement.h"
 #include "procgen/heightmap/TerrainProbePlacement.h"
 #include "procgen/heightmap/TerrainSpawnPlan.h"
 #include "procgen/heightmap/TerrainSplatmap.h"
-#include "procgen/heightmap/TerrainStamp.h"
-#include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/heightmap/TerrainTerraceRemover.h"
-#include "procgen/heightmap/TerrainTreePlacement.h"
 #include "procgen/heightmap/TerrainWorldWorkspace.h"
-#include "zeroerr/unittest.h"
 // terrain_probe.cpp
 namespace test_terrain_probe {
 // terrain_probe.cpp
@@ -1921,17 +1873,10 @@ TEST_CASE("procgen.terrainHeightAdjuster.setsWorldUnitsAtomicallyAndBinds") {
     )"));
 }
 }  // namespace test_terrain_probe
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_sediment)
+
+// Contract section: terrain sediment
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainErosion.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "procgen/heightmap/TerrainWaterField.h"
-#include "zeroerr/unittest.h"
+
 // terrain_sediment.cpp
 namespace test_terrain_sediment {
 using namespace eve::procgen;
@@ -1959,17 +1904,12 @@ TEST_CASE("procgen.sediment.scriptCombinedAndStandalone") {
     CHECK(heights.data()[0] == 1);
 }
 }  // namespace test_terrain_sediment
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_smooth_stamp_script)
+// Contract section: terrain smooth stamp script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "common/SquirrelBinding.h"
 #include "procgen/MeshBuild.h"
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainStamp.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
 // terrain_smooth_stamp_script.cpp
 namespace test_terrain_smooth_stamp_script {
 using namespace eve::procgen;
@@ -2018,14 +1958,10 @@ TEST_CASE("procgen.smoothStamp.scriptBakeAndApply") {
     )"));
 }
 }  // namespace test_terrain_smooth_stamp_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_stamp_script)
+// Contract section: terrain stamp script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "zeroerr/unittest.h"
+
 // terrain_stamp_script.cpp
 namespace test_terrain_stamp_script {
 TEST_CASE("procgen.mask.scriptWorldContextConfiguration") {
@@ -2421,18 +2357,10 @@ TEST_CASE("procgen.effect.scriptAllEffectsAndFailures") {
     CHECK(terrain.data() == std::vector<float>({0.5F, 0.5F, -1}));
 }
 }  // namespace test_terrain_stamp_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_tree)
+// Contract section: terrain tree
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/PointSet.h"
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "procgen/heightmap/TerrainTreePlacement.h"
-#include "zeroerr/unittest.h"
+
 // terrain_tree.cpp
 namespace test_terrain_tree {
 using namespace eve::procgen;
@@ -2516,20 +2444,11 @@ TEST_CASE("procgen.tree.scriptRemoveAndPrototypeRefresh") {
     CHECK(output.getCount() == 0);
 }
 }  // namespace test_terrain_tree
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_terrain_water)
+// Contract section: terrain water
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "procgen/heightmap/Heightmap.h"
+
 #include "procgen/heightmap/TerrainMask.h"
-#include "procgen/heightmap/TerrainStamp.h"
-#include "procgen/heightmap/TerrainStampScript.h"
-#include "procgen/heightmap/TerrainWaterField.h"
-#include "zeroerr/unittest.h"
 // terrain_water.cpp
 namespace test_terrain_water {
 using namespace eve::procgen;
@@ -2624,14 +2543,10 @@ TEST_CASE("procgen.water.scriptOwnsFieldAndSamplesValues") {
     )"));
 }
 }  // namespace test_terrain_water
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_thunder_strike)
+// Contract section: thunder strike
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/SquirrelBinding.h"
+
 #include "weather/ThunderStrike.h"
 #include "weather/Weather.h"
 // thunder_strike.cpp
@@ -2657,10 +2572,10 @@ TEST_CASE("weather.thunderStrike.squirrelContract") {
     )"));
 }
 }  // namespace test_thunder_strike
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_timer)
+// Contract section: timer
 #include "PrivateTestScope.h"
+
 #include "ScriptTest.h"
 extern const char* timer_content;
 // timer.cpp
@@ -2668,26 +2583,25 @@ namespace test_timer {
 using namespace eve;
 
 
-UnitSciptTest(TimerTest, timer_content);
+class TimerTest : public ScriptTest {
+public:
+    TimerTest() : ScriptTest(timer_content) {}
+};
 
 TEST_CASE_FIXTURE(TimerTest, "TimerTest.basic") { REQUIRE(callScript("basic")); }
 }  // namespace test_timer
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_transaction)
+
+// Contract section: transaction
 #include "PrivateTestScope.h"
-#include <array>
+
 #include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 #include "StatePatchTestSupport.h"
 #include "common/Module.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // transaction.cpp
 namespace test_transaction {
 // transaction.cpp
@@ -2841,15 +2755,11 @@ template <size_t N>
 
 }  // namespace
 }  // namespace test_transaction
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ui_tween_script)
+// Contract section: ui tween script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
+
 #include "ui/UI.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ui_tween_script.cpp
 namespace test_ui_tween_script {
 TEST_CASE("UI.tween.scriptOptionalEaseAndDelay") {
@@ -2879,21 +2789,16 @@ TEST_CASE("UI.tween.scriptOptionalEaseAndDelay") {
     CHECK_EQ(vm.find("itemCount").toInt(), 0);
 }
 }  // namespace test_ui_tween_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_vehicle)
-#include <utility>
+// Contract section: vehicle
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
+
 #include "common/ECS.h"
 #include "common/ScriptProvider.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleMobility.h"
 #include "vehicle/VehicleOrderQueueAdapter.h"
 #include "weapon/Weapon.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // vehicle.cpp
 namespace test_vehicle {
 using namespace eve;
@@ -2964,7 +2869,10 @@ function testVehicleCppView() {
 }
 )SQ";
 
-UnitSciptTest(VehicleViewScriptTest, kViewScript);
+class VehicleViewScriptTest : public ScriptTest {
+public:
+    VehicleViewScriptTest() : ScriptTest(kViewScript) {}
+};
 
 TEST_CASE_FIXTURE(VehicleViewScriptTest, "vehicle.script.viewSeesNewVehicle") {
     REQUIRE(callScript("testVehicleCppView"));
@@ -3113,7 +3021,10 @@ function testVehicleRtsFlow() {
 }
 )SQ";
 
-UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
+class VehicleRtsFlowTest : public ScriptTest {
+public:
+    VehicleRtsFlowTest() : ScriptTest(kRtsFlowScript) {}
+};
 
 TEST_CASE_FIXTURE(VehicleRtsFlowTest, "vehicle.script.rtsFlow") { REQUIRE(callScript("testVehicleRtsFlow")); }
 
@@ -3148,18 +3059,12 @@ namespace {
 
 }  // namespace
 }  // namespace test_vehicle
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_weapon)
+
+// Contract section: weapon
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
-#include "common/ECS.h"
-#include "common/ScriptProvider.h"
-#include "weapon/Weapon.h"
+
 #include "weapon/WeaponLogic.h"
 #include "weapon/WeaponSystem.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // weapon.cpp
 namespace test_weapon {
 using namespace eve;
@@ -3305,7 +3210,10 @@ function testEveryWeaponEntityClassIsVisible() {
 }
 )SQ";
 
-UnitSciptTest(WeaponViewScriptTest, kViewScript);
+class WeaponViewScriptTest : public ScriptTest {
+public:
+    WeaponViewScriptTest() : ScriptTest(kViewScript) {}
+};
 
 TEST_CASE_FIXTURE(WeaponViewScriptTest, "weapon.script.viewSeesNewWeapon") { REQUIRE(callScript("testWeaponCppView")); }
 
@@ -3469,4 +3377,3 @@ TEST_CASE_FIXTURE(WeaponProjectileProviderTest, "weapon.script.projectileProvide
     REQUIRE_EQ(mod.getEventType(0), std::string("fire"));
 }
 }  // namespace test_weapon
-#endif

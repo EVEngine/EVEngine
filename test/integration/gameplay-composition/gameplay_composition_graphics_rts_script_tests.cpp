@@ -1,12 +1,13 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: rts script
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_script)
-#include "PrivateTestScope.h"
 #include <array>
 #include "PathBesideSource.h"
 #include "RtsCompositionFixtures.h"
 #include "rts/RTS.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // rts_script.cpp
 namespace test_rts_script {
@@ -1129,17 +1130,15 @@ TEST_CASE("rts.settlement.healingUsesTheConfiguredCombatPipeline") {
     CHECK_EQ(target.health, 70.0);
 }
 }  // namespace test_rts_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_authoring)
+// Contract section: scene authoring
 #include "PrivateTestScope.h"
+
 #include <cmath>
 #include <limits>
 #include "scene/editing/SceneAuthoring.h"
 #include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_authoring.cpp
 namespace test_scene_authoring {
 namespace {
@@ -1322,15 +1321,13 @@ TEST_CASE("scene.authoring.screen_anchor_preserves_depth_and_rejects_singular_pa
     REQUIRE_EQ(session->saveJson(), singular);
 }
 }  // namespace test_scene_authoring
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editing_commands)
+// Contract section: scene editing commands
 #include "PrivateTestScope.h"
+
 #include <map>
 #include "editing/EditingValueJson.h"
 #include "scene/editing/SceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_editing_commands.cpp
 namespace test_scene_editing_commands {
 namespace {
@@ -1417,17 +1414,12 @@ TEST_CASE("scene.editing.snapshot_restore_is_validated_atomic_and_reversible") {
 }
 }  // namespace
 }  // namespace test_scene_editing_commands
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editor_live_session)
+// Contract section: scene editor live session
 #include "PrivateTestScope.h"
-#include "editing/EditingValueJson.h"
+
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
-#include "scene/editing/SceneTarget.h"
-#include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_editor_live_session.cpp
 namespace test_scene_editor_live_session {
 TEST_CASE("scene.editor.live_session_preserves_links_rejects_divergence_and_stale_host") {
@@ -1503,14 +1495,10 @@ TEST_CASE("scene.editor.detached_root_keeps_world_transform") {
     REQUIRE_EQ(host->findById("child").value()->world[3][1], 4.f);
 }
 }  // namespace test_scene_editor_live_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editor_session)
+// Contract section: scene editor session
 #include "PrivateTestScope.h"
-#include <cmath>
-#include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // scene_editor_session.cpp
 namespace test_scene_editor_session {
 TEST_CASE("scene.editor.session_create_restore_and_undo_share_one_history") {
@@ -1766,21 +1754,17 @@ TEST_CASE("scene.editor.physics_placement_selected_parent_uses_its_final_world_f
     CHECK(std::abs(localX("child") - 1.0) < 0.08);
 }
 }  // namespace test_scene_editor_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_follow_player)
+// Contract section: scene follow player
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
-#include <cmath>
-#include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "common/SquirrelBinding.h"
 #include "scene/FollowPlayer.h"
 #include "scene/LocationProfile.h"
 #include "scene/LocationProfileBindings.h"
 #include "scene/editor/ScenePhysicsPlacement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_follow_player.cpp
 namespace test_scene_follow_player {
 // scene_follow_player.cpp
@@ -2249,20 +2233,16 @@ TEST_CASE("scene.physicsPlacement_supports_vector_gravity_motion_locks_and_telep
     CHECK(std::abs(teleportFrame.value().objects[0].transform.x - 10.0) < 0.001);
 }
 }  // namespace test_scene_follow_player
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_projected_overlap)
+// Contract section: scene projected overlap
 #include "PrivateTestScope.h"
+
 #include <memory>
 #include "common/Capability.h"
 #include "common/SceneVisibilityEvidence.h"
 #include "editing/EditingProperty.h"
-#include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editing/SceneRegions.h"
-#include "scene/editor/SceneEditorSession.h"
 #include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_projected_overlap.cpp
 namespace test_scene_projected_overlap {
 namespace {
@@ -2415,18 +2395,10 @@ TEST_CASE("scene.projected_overlap.provider_absent_rejects_measure_and_commit_wi
     if (previous) eve::cap::provide<eve::ISceneVisibilityEvidence>(previous);
 }
 }  // namespace test_scene_projected_overlap
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_regions)
+// Contract section: scene regions
 #include "PrivateTestScope.h"
-#include <memory>
-#include "editing/EditingProperty.h"
-#include "scene/editing/SceneAuthoringDocument.h"
-#include "scene/editing/SceneRegions.h"
-#include "scene/editor/SceneEditorSession.h"
-#include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // scene_regions.cpp
 namespace test_scene_regions {
 namespace {
@@ -2585,19 +2557,11 @@ TEST_CASE("scene.regions.evidence_is_matched_by_object_region_and_definition") {
                std::string("Unmeasurable"));
 }
 }  // namespace test_scene_regions
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_relations)
+// Contract section: scene relations
 #include "PrivateTestScope.h"
-#include <memory>
-#include "common/Capability.h"
-#include "common/SceneVisibilityEvidence.h"
-#include "scene/editing/SceneAuthoringDocument.h"
-#include "scene/editor/SceneEditorSession.h"
+
 #include "scene/editor/SceneRelationEvidence.h"
-#include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_relations.cpp
 namespace test_scene_relations {
 namespace {
@@ -2965,14 +2929,13 @@ TEST_CASE("scene.relations.malformed_visual_provider_evidence_returns_failure") 
     }
 }
 }  // namespace test_scene_relations
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_schema_production_integration)
+// Contract section: schema production integration
 #include "PrivateTestScope.h"
+
 #include "definitions/Definitions.h"
 #include "policyregistry/PolicyRegistry.h"
 #include "schema/SchemaRegistry.h"
-#include "zeroerr/unittest.h"
 // schema_production_integration.cpp
 namespace test_schema_production_integration {
 namespace {
@@ -3026,11 +2989,10 @@ TEST_CASE("schema.productionBoundary.validatesPolicyMetadataBeforeMutation") {
     CHECK_EQ(registry.size(), 1);
 }
 }  // namespace test_schema_production_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_settlement_replay_composition)
+// Contract section: settlement replay composition
 #include "PrivateTestScope.h"
-#include <array>
+
 #include <string_view>
 #include "card/CardEffects.h"
 #include "combat/Damage.h"
@@ -3038,8 +3000,6 @@ TEST_CASE("schema.productionBoundary.validatesPolicyMetadataBeforeMutation") {
 #include "rpg/SettlementAdapter.h"
 #include "settlement/SettlementRules.h"
 #include "tactics/TacticsSettlement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // settlement_replay_composition.cpp
 namespace test_settlement_replay_composition {
 namespace {
@@ -3407,25 +3367,21 @@ TEST_CASE("settlement.replay.tacticsCommitFailureRollsBackDomainState") {
     CHECK_EQ(health, 100.0);
 }
 }  // namespace test_settlement_replay_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_snapshot_consumers)
+// Contract section: snapshot consumers
 #include "PrivateTestScope.h"
+
 #include <cstdint>
 #include <string>
-#include <string_view>
 #include <utility>
 #include "GameEventTestSupport.h"
 #include "StatePatchTestSupport.h"
 #include "authority/Authority.h"
 #include "common/Snapshot.h"
-#include "definitions/Definitions.h"
 #include "game_event/GameEvent.h"
 #include "production/Production.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // snapshot_consumers.cpp
 namespace test_snapshot_consumers {
 namespace {
@@ -3702,18 +3658,10 @@ TEST_CASE("snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtom
     CHECK_EQ(definitionsRestored.snapshotJson(), definitionsBefore);
 }
 }  // namespace test_snapshot_consumers
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_snapshot_envelope)
+// Contract section: snapshot envelope
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string_view>
-#include <utility>
-#include "authority/Authority.h"
-#include "common/Snapshot.h"
-#include "definitions/Definitions.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // snapshot_envelope.cpp
 namespace test_snapshot_envelope {
 using eve::ContentId;
@@ -3913,12 +3861,11 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
     CHECK_EQ(definitions.snapshotJson(), definitionsBefore);
 }
 }  // namespace test_snapshot_envelope
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_softbody_volume)
+// Contract section: softbody volume
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <cmath>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
 #include "asset/CanonicalMesh.h"
@@ -3935,10 +3882,7 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
 #include "physics/softbody/cook/SoftBodyModelCooker.h"
 #include "physics/softbody/editing/SoftBody3DSchema.h"
 #include "physics/softbody/graphics/SoftBody3DRenderer.h"
-#include "schema/SchemaRegistry.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // softbody_volume.cpp
 namespace test_softbody_volume {
 using eve::physics::SoftBody3D;
@@ -4246,17 +4190,14 @@ TEST_CASE("softbody.volume.renderPreview") {
     window->close();
 }
 }  // namespace test_softbody_volume
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_standard_combat_abilities)
+// Contract section: standard combat abilities
 #include "PrivateTestScope.h"
+
 #include <set>
-#include <string>
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "combat/StandardAbilities.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // standard_combat_abilities.cpp
 namespace test_standard_combat_abilities {
 TEST_CASE("standardCombatAbilities.providesTwentyUniqueValidatedArchetypes") {
@@ -4316,23 +4257,18 @@ TEST_CASE("standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAs
     }
 }
 }  // namespace test_standard_combat_abilities
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_action_attack_vfx)
+// Contract section: stylize action attack vfx
 #include "PrivateTestScope.h"
+
 #include <optional>
-#include <string>
-#include <string_view>
 #include "action/ActionAttackVfxBlock.h"
 #include "action/ActionCameraBlock.h"
 #include "action/ActionNotifyRegistry.h"
-#include "common/Capability.h"
 #include "stylize/AttackVfxLayerExecutor.h"
 #include "stylize/AttackVfxRecipe.h"
 #include "stylize/AttackVfxRuntime.h"
 #include "stylize/action/StylizeAction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // stylize_action_attack_vfx.cpp
 namespace test_stylize_action_attack_vfx {
 using namespace eve::stylize;
@@ -4541,4 +4477,3 @@ TEST_CASE("stylize.action.attack_vfx concurrent executions use isolated clocks")
     eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
 }
 }  // namespace test_stylize_action_attack_vfx
-#endif

@@ -43,7 +43,7 @@ add_custom_command(
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneCameraQueries.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneNodeRef.h"
             "${CMAKE_SOURCE_DIR}/src/modules/scene/SceneHost.h"
-            "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp" "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
+            "${CMAKE_SOURCE_DIR}/test/unit/scene/scene_tests.cpp"
             "${CMAKE_SOURCE_DIR}/test/integration/script-api/script_api_graphics_scene_tests.cpp"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/binding_architecture.json"
             "${CMAKE_SOURCE_DIR}/src/modules/inventory/Inventory.cpp"

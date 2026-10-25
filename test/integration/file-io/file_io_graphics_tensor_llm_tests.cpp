@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: language server
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_language_server)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -9,7 +11,6 @@
 #include <sstream>
 #include <string>
 #include "devtools/LanguageServer.hpp"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // language_server.cpp
 namespace test_language_server {
@@ -267,18 +268,16 @@ TEST_CASE("devtools.languageServer.semanticTokensClassFunctionAndSlot") {
     std::filesystem::remove_all(root, error);
 }
 }  // namespace test_language_server
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map_dual_grid_masks)
+// Contract section: map dual grid masks
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <fstream>
-#include <iterator>
 #include <memory>
 #include "filesystem/FileData.h"
 #include "image/ImageData.h"
@@ -331,23 +330,18 @@ TEST_CASE("map.dualGridMask.packagedSbsFixturesDecode") {
 }
 
 }  // namespace test_map_dual_grid_masks
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_project_index)
+// Contract section: mcp project index
 #include "PrivateTestScope.h"
+
 #include <Poco/JSON/Parser.h>
 #include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <sstream>
 #include <thread>
 #include "PathBesideSource.h"
 #include "devtools/McpArchitectureTools.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpProjectIndexTools.hpp"
 #include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_project_index.cpp
 namespace test_mcp_project_index {
 namespace {
@@ -694,15 +688,13 @@ TEST_CASE("devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookali
     CHECK(findNode(dynamic, "script:writeMarker")->getArray("unknownCalls")->size() > 0);
 }
 }  // namespace test_mcp_project_index
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_photo_mode_session)
+// Contract section: pcg photo mode session
 #include "PrivateTestScope.h"
-#include <fstream>
+
 #include <limits>
 #include "ui/PcgPhotoModeSession.h"
 #include "ui/PcgPhotoModeValues.h"
-#include "zeroerr/unittest.h"
 // pcg_photo_mode_session.cpp
 namespace test_pcg_photo_mode_session {
 // pcg_photo_mode_session.cpp
@@ -771,28 +763,17 @@ TEST_CASE("ui.pcgPhotoModeValues.roundTripsAllFieldsAndRejectsUnknownSchema") {
     CHECK_EQ(after.value(), before);
 }
 }  // namespace test_pcg_photo_mode_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_reflection_probe_culling)
+// Contract section: reflection probe culling
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <array>
-#include <cmath>
-#include <cstdint>
-#include <fstream>
+
 #include <glm/glm.hpp>
-#include <iterator>
-#include <limits>
-#include <string>
 #include <string_view>
-#include "PathBesideSource.h"
 #include "common/ECS.h"
 #include "graphics/ReflectionProbeCapture.h"
 #include "graphics/ReflectionProbeRegistry.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/shaders/ReflectionProbeWgsl.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // reflection_probe_culling.cpp
 namespace test_reflection_probe_culling {
 // reflection_probe_culling.cpp
@@ -871,32 +852,20 @@ TEST_CASE("graphics.reflectionProbe.diffuseWhiteFurnaceNormalization") {
     CHECK(glsl.find("params.diffuseMode != 0u ? 1.0 : noL") != std::string::npos);
 }
 }  // namespace test_reflection_probe_culling
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_remotesync)
+// Contract section: remotesync
 #include "PrivateTestScope.h"
+
 #include <Poco/Exception.h>
 #include <Poco/Net/ServerSocket.h>
 #include <Poco/Net/SocketAddress.h>
 #include <Poco/Net/StreamSocket.h>
 #include <Poco/Timespan.h>
-#include <algorithm>
 #include <atomic>
-#include <chrono>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
 #include <functional>
-#include <memory>
-#include <sstream>
-#include <string>
-#include <thread>
 #include <vector>
-#include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // remotesync.cpp
 namespace test_remotesync {
 namespace {
@@ -1194,17 +1163,12 @@ TEST_CASE("hotreload.remoteSyncUnreachableRecovers") {
     std::filesystem::remove_all(overlay, ec);
 }
 }  // namespace test_remotesync
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_classic)
+// Contract section: rpg classic
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <fstream>
+
 #include <regex>
 #include <set>
-#include <sstream>
-#include <string>
-#include "PathBesideSource.h"
 #include "common/Runtime.h"
 #include "dialogue/DialogueSequence.h"
 #include "dnut_interpreter/DnutCompiler.h"
@@ -1220,8 +1184,6 @@ TEST_CASE("hotreload.remoteSyncUnreachableRecovers") {
 #include "rpg/RpgDialect.h"
 #include "rpg/Skill.h"
 #include "rpg/Tracker.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_classic.cpp
 namespace test_rpg_classic {
 TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
@@ -1648,44 +1610,25 @@ TEST_CASE("rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences") {
     localization->clear();
 }
 }  // namespace test_rpg_classic
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_classic_playthrough)
+// Contract section: rpg classic playthrough
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
-#include "dialogue/DialogueSequence.h"
-#include "dnut_interpreter/DnutCompiler.h"
-#include "dnut_interpreter/SequenceRuntime.h"
-#include "i18n/I18n.h"
+
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Item.h"
-#include "map/Map.h"
-#include "map/MapObject.h"
 #include "rpg/Battle.h"
 #include "rpg/BattleTactics.h"
-#include "rpg/EncounterCatalogue.h"
 #include "rpg/GameState.h"
 #include "rpg/Party.h"
-#include "rpg/Quest.h"
 #include "rpg/QuestReward.h"
 #include "rpg/RPG.h"
 #include "rpg/RPGActor.h"
 #include "rpg/RPGSaveSession.h"
-#include "rpg/RpgDialect.h"
 #include "rpg/ShopCatalogue.h"
 #include "rpg/ShopTransaction.h"
-#include "rpg/Skill.h"
-#include "rpg/Tracker.h"
 #include "rpg/WorldInteraction.h"
 #include "rpg/WorldState.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_classic_playthrough.cpp
 namespace test_rpg_classic_playthrough {
 namespace {
@@ -1934,21 +1877,12 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
     eve::rpg::RpgStoryCatalogue::clear();
 }
 }  // namespace test_rpg_classic_playthrough
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_tensor_llm)
+// Contract section: tensor llm
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <chrono>
-#include <cmath>
+
 #include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <limits>
 #include <map>
-#include <memory>
-#include <string>
-#include <vector>
 #include "tensor/AffineQuant.h"
 #include "tensor/Graph.h"
 #include "tensor/KernelGen.h"
@@ -1959,8 +1893,6 @@ TEST_CASE("rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint") {
 #include "tensor/Quant.h"
 #include "tensor/TF.h"
 #include "tensor/Tensor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // tensor_llm.cpp
 namespace test_tensor_llm {
 // tensor_llm.cpp
@@ -2615,4 +2547,3 @@ namespace {
 
 }  // namespace
 }  // namespace test_tensor_llm
-#endif

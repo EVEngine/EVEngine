@@ -335,11 +335,8 @@ TEST_CASE("UI.hud.valueTweenRetargetDelayClampAndRebuildCancellation") {
     ecs::DestroyEntity(&host->get());
 }
 
-#include <limits>
 #include "ui/UIHost.h"
 #include "ui/editing/UiDocument.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 using namespace eve::ui_editing;
 using namespace eve::editing;
 TEST_CASE("editor.ui.hud_fill_snapshot_roundtrip_and_runtime_publication_are_atomic") {

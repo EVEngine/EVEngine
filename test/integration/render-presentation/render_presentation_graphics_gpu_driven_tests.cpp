@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: Xray
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Xray)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
@@ -11,14 +13,11 @@
 #include <vector>
 #include "Fixtures.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -31,12 +30,9 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "medialoader/model/ModelLoader.h"
 #include "stylize/Stylize.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Xray.cpp
 namespace test_Xray {
@@ -256,17 +252,12 @@ done:
     win->close();
 }
 }  // namespace test_Xray
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_sprite_spine)
+// Contract section: animation sprite spine
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <cmath>
-#include <cstdio>
 #include <filesystem>
-#include <memory>
-#include <string>
-#include <vector>
 #include "PathBesideSource.h"
 #include "animation/Animation.h"
 #include "animation/SpineAnim.h"
@@ -278,31 +269,9 @@ done:
 #include "animation/SpriteSheet.h"
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
 #include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_sprite_spine.cpp
 namespace test_animation_sprite_spine {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -519,28 +488,18 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     win->close();
 }
 }  // namespace test_animation_sprite_spine
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_avatar_vrm_vulkan)
+// Contract section: avatar vrm vulkan
 #include "PrivateTestScope.h"
+
 #include <cstring>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/VrmDocument.h"
 #include "common/ECS.h"
 #include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/vulkan/Graphics.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // avatar_vrm_vulkan.cpp
 namespace test_avatar_vrm_vulkan {
 TEST_CASE("avatar.vrm.importMorphGazeSpringAndRollback") {
@@ -604,39 +563,25 @@ TEST_CASE("avatar.vrm.importMorphGazeSpringAndRollback") {
     REQUIRE(fs->unmount(directory));
 }
 }  // namespace test_avatar_vrm_vulkan
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decal)
+// Contract section: decal
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
-#include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <iterator>
 #include <limits>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
 #include "RenderImageAudit.h"
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
 #include "decal/Decal.h"
 #include "decal/DecalManager.h"
 #include "decal/ProceduralDecal.h"
-#include "graphics/Graphics.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
 #include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // decal.cpp
 namespace test_decal {
 using namespace eve::decal;
@@ -1352,44 +1297,15 @@ TEST_CASE("decal.renderGalleryPng") {
     win->close();
 }
 }  // namespace test_decal
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue)
+// Contract section: dialogue
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <string>
-#include <vector>
+
 #include "avatar/Avatar.h"
 #include "dialogue/Dialogue.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue.cpp
 namespace test_dialogue {
 using namespace eve::dialogue;
@@ -1563,34 +1479,17 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     win->close();
 }
 }  // namespace test_dialogue
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpu_driven)
+// Contract section: gpu driven
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
+
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "Fixtures.h"
 #include "ScriptTest.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
 #include "graphics/vulkan/GpuDriven.h"
-#include "graphics/vulkan/Graphics.h"
 #include "virtualgeometry/Builder.h"
 #include "virtualgeometry/VirtualGeometryAsset.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gpu_driven.cpp
 namespace test_gpu_driven {
 using namespace eve;
@@ -2618,29 +2517,13 @@ TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
     win->close();
 }
 }  // namespace test_gpu_driven
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpu_driven_parity)
+// Contract section: gpu driven parity
 #include "PrivateTestScope.h"
-#include "Fixtures.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
 #endif
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <cstring>
-#include <vector>
 // gpu_driven_parity.cpp
 namespace test_gpu_driven_parity {
 #ifdef EVENGINE_WEBGPU
@@ -3036,15 +2919,12 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     window->close();
 }
 }  // namespace test_gpu_driven_parity
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_deferred_lifetime)
+// Contract section: graphics deferred lifetime
 #include "PrivateTestScope.h"
+
 #include "graphics/ClusteredLight.h"
 #include "graphics/Color.h"
-#include "graphics/Graphics.h"
-#include "window/Window.h"
-#include "zeroerr/unittest.h"
 // graphics_deferred_lifetime.cpp
 namespace test_graphics_deferred_lifetime {
 TEST_CASE("graphics.deferredLighting.reusesCompletedFrameResources") {
@@ -3093,17 +2973,10 @@ TEST_CASE("graphics.clusteredLighting.reusesUnchangedStorageBindings") {
     }
 }
 }  // namespace test_graphics_deferred_lifetime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_deferred_targets)
+// Contract section: graphics deferred targets
 #include "PrivateTestScope.h"
-#include <memory>
-#include "graphics/Graphics.h"
-#include "graphics/RenderControl.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // graphics_deferred_targets.cpp
 namespace test_graphics_deferred_targets {
 TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
@@ -3274,47 +3147,14 @@ TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {
     CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
 }
 }  // namespace test_graphics_deferred_targets
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_font)
+// Contract section: graphics font
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <fstream>
+
 #include <functional>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
-#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "font/Font.h"
 #include "font/FontData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_font.cpp
 namespace test_graphics_font {
 using namespace eve::graphics;
@@ -3502,21 +3342,13 @@ TEST_CASE("graphics.drawText.rendersGlyphPixelsOnCanvas") {
     CHECK(fx.gfx->getFont() == nullptr);
 }
 }  // namespace test_graphics_font
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_resource_reuse)
+// Contract section: graphics resource reuse
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <memory>
-#include "Fixtures.h"
+
 #include "GraphicsParitySupport.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/Texture.h"
 #include "graphics/ViewPreparation.h"
 #include "graphics/hair/GroomInstance.h"
-#include "zeroerr/unittest.h"
 #if !defined(EVENGINE_WEBGPU)
 #include "graphics/vulkan/Graphics.h"
 #endif
@@ -3699,33 +3531,17 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     gfx->present();
 }
 }  // namespace test_graphics_resource_reuse
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_render)
+// Contract section: graphics vegetation render
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <filesystem>
-#include <fstream>
-#include <memory>
+
 #include "asset/CanonicalMesh.h"
 #include "asset/graphics/VegetationAsset.h"
-#include "filesystem/FileData.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/VegetationField.h"
 #include "graphics/VegetationMaskPacking.h"
 #include "graphics/VegetationMotion.h"
 #include "graphics/VegetationRender.h"
 #include "image/Image.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_vegetation_render.cpp
 namespace test_graphics_vegetation_render {
 using namespace eve::graphics;
@@ -3959,50 +3775,24 @@ TEST_CASE("graphics.vegetation.render_mesh_update_and_season") {
     plant->setVisible(false);
 }
 }  // namespace test_graphics_vegetation_render
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hair)
+// Contract section: hair
 #include "PrivateTestScope.h"
-#include <glm/gtc/matrix_transform.hpp>
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "graphics/hair/Binding.h"
 #include "graphics/hair/ClusterGrid.h"
 #include "graphics/hair/GroomAsset.h"
-#include "graphics/hair/GroomInstance.h"
 #include "graphics/hair/Guides.h"
 #include "graphics/hair/Procedural.h"
 #include "graphics/hair/RibbonBuilder.h"
 #include "graphics/hair/Simulation.h"
 #include "graphics/hair/StrandsDatas.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // hair.cpp
 namespace test_hair {
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
@@ -4263,4 +4053,3 @@ TEST_CASE("graphics.hair.groomInstanceGuideSimUpdate") {
     win->close();
 }
 }  // namespace test_hair
-#endif

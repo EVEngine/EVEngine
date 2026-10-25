@@ -1,11 +1,12 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: MouseWheel
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_MouseWheel)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include "mouse/Mouse.h"
 #include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // MouseWheel.cpp
 namespace test_MouseWheel {
@@ -45,10 +46,10 @@ TEST_CASE("mouse.wheel snapshot accumulates precise flipped input and resets per
     CHECK_EQ(mouse->getWheelY(), 0.f);
 }
 }  // namespace test_MouseWheel
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ScenePanel)
+// Contract section: ScenePanel
 #include "PrivateTestScope.h"
+
 #include <string>
 #include <vector>
 #include "common/Capability.h"
@@ -56,8 +57,6 @@ TEST_CASE("mouse.wheel snapshot accumulates precise flipped input and resets per
 #include "common/SceneQuery.h"
 #include "ui/ScenePanel.h"
 #include "ui/UIHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ScenePanel.cpp
 namespace test_ScenePanel {
 using namespace eve;
@@ -193,16 +192,13 @@ TEST_CASE("scenePanel.treeSelectionAndNodeEditing") {
     eve::cap::revoke<eve::ISceneQuery>(&fake);
 }
 }  // namespace test_ScenePanel
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_event)
+// Contract section: event
 #include "PrivateTestScope.h"
+
 #include <chrono>
 #include <memory>
 #include <thread>
-#include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // event.cpp
 namespace test_event {
 using eve::platform_event::Message;
@@ -385,18 +381,14 @@ TEST_CASE("event.workerPushWakesWait") {
     delete message;
 }
 }  // namespace test_event
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_control_json)
+// Contract section: gameplay control json
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
 #include "common/GameplayControlJson.h"
 #include "common/GameplayInstanceCatalog.h"
 #include "common/Module.h"
-#include "common/Runtime.h"
 #include "devtools/DevTool.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gameplay_control_json.cpp
 namespace test_gameplay_control_json {
 namespace {
@@ -596,14 +588,12 @@ TEST_CASE("gameplay.control.squirrelFacadeUsesTheSharedJsonRouter") {
     eve::dev::DevTool::instance().detach();
 }
 }  // namespace test_gameplay_control_json
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_keyboard_cpp)
+// Contract section: keyboard cpp
 #include "PrivateTestScope.h"
+
 #include "keyboard/Keyboard.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // keyboard_cpp.cpp
 namespace test_keyboard_cpp {
 namespace {
@@ -674,16 +664,13 @@ TEST_CASE("keyboard.isDownUnknown") {
     CHECK(!kb->isScancodeDown("NotARealScancode"));
 }
 }  // namespace test_keyboard_cpp
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_os)
+// Contract section: os
 #include "PrivateTestScope.h"
+
 #include <cmath>
-#include <string>
 #include "os/OS.h"
 #include "timer/Timer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // os.cpp
 namespace test_os {
 using namespace eve::os;
@@ -753,87 +740,23 @@ TEST_CASE("os.clipboardRoundTrip") {
     }
 }
 }  // namespace test_os
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_build_config)
+// Contract section: pcg build config
 #include "PrivateTestScope.h"
+
 #include <limits>
 #include "scene/PcgBuildConfig.h"
 #include "scene/PcgGrowth.h"
 #include "scene/Scene.h"
 #include "scene/SceneNodeRef.h"
-#include "zeroerr/unittest.h"
 // pcg_build_config.cpp
 namespace test_pcg_build_config {
 // pcg_build_config.cpp
 using namespace eve::scene;
-TEST_CASE("scene.pcgBuildConfig.preservesOrderedHistory") {
-    PcgBuildConfig c;
-    CHECK_EQ(c.getPublicationType(), 1);
-    REQUIRE(c.setPublicationType(0).ok());
-    REQUIRE(c.addHistory(4, "World", 123456789).ok());
-    REQUIRE(c.addHistory(0, "World", 123456790).ok());
-    CHECK_EQ(c.getHistoryCount(), uint64_t(2));
-    auto a = c.getHistoryCategory(0);
-    auto n = c.getHistorySceneName(1);
-    auto t = c.getHistoryTimestamp(1);
-    REQUIRE(a.ok());
-    REQUIRE(n.ok());
-    REQUIRE(t.ok());
-    CHECK_EQ(a.value(), 4);
-    CHECK_EQ(n.value(), "World");
-    CHECK_EQ(t.value(), int64_t(123456790));
-    c.clearHistory();
-    CHECK_EQ(c.getHistoryCount(), uint64_t(0));
-}
-TEST_CASE("scene.pcgBuildConfig.rejectsInvalidEnumsAndIndices") {
-    PcgBuildConfig c;
-    CHECK(!c.setPublicationType(2).ok());
-    CHECK_EQ(c.getPublicationType(), 1);
-    CHECK(!c.addHistory(7, "", 0).ok());
-    CHECK_EQ(c.getHistoryCount(), uint64_t(0));
-    CHECK(!c.getHistoryCategory(0).ok());
-}
 
 // pcg_growth.cpp
 using namespace eve::scene;
-TEST_CASE("scene.pcgGrowth.linearVarianceAndDelayedDeath") {
-    PcgGrowth g;
-    REQUIRE(g.configure(.15f, 1, .25f, 5).ok());
-    REQUIRE(g.start(10, 77).ok());
-    float end = g.getActualEndScale();
-    CHECK_GE(end, 1.f);
-    CHECK_LT(end, 1.25f);
-    auto start = g.advance(10);
-    REQUIRE(start.ok());
-    CHECK_EQ(start.value(), .15f);
-    auto mid = g.advance(12.5f);
-    REQUIRE(mid.ok());
-    CHECK_GT(mid.value(), .15f);
-    CHECK_LT(mid.value(), end);
-    auto done = g.advance(15);
-    REQUIRE(done.ok());
-    CHECK_EQ(done.value(), end);
-    CHECK(g.getFinished());
-    REQUIRE(g.die(20).ok());
-    auto early = g.shouldDestroy(24.999f);
-    REQUIRE(early.ok());
-    CHECK(!early.value());
-    auto due = g.shouldDestroy(25);
-    REQUIRE(due.ok());
-    CHECK(due.value());
-}
-TEST_CASE("scene.pcgGrowth.rejectsInvalidInputAtomically") {
-    PcgGrowth g;
-    REQUIRE(g.configure(.2f, 1, .2f, 2).ok());
-    REQUIRE(g.start(4, 9).ok());
-    float before = g.getActualEndScale();
-    CHECK(!g.configure(0, 1, .2f, 2).ok());
-    CHECK_EQ(g.getActualEndScale(), before);
-    CHECK(!g.advance(3).ok());
-    CHECK_EQ(g.getScale(), .2f);
-    CHECK(!g.die(std::numeric_limits<float>::quiet_NaN()).ok());
-}
+
 TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     Scene* scene = Scene::create();
     scene->beginBuild();
@@ -856,24 +779,19 @@ TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     CHECK(!node.isValid());
 }
 }  // namespace test_pcg_build_config
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_play_host)
+// Contract section: play host
 #include "PrivateTestScope.h"
-#include <chrono>
+
 #include <filesystem>
 #include <fstream>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <vector>
 #include "common/Diagnostic.h"
 #include "common/Value.h"
 #include "devtools/Debugger.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/PlayHost.h"
 #include "devtools/Snapshot.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // play_host.cpp
 namespace test_play_host {
 using namespace eve;
@@ -1247,15 +1165,11 @@ TEST_CASE("devtools.playHost.liveObservationProjectsBeforeSerializing") {
     CHECK_EQ(excluded.status().diagnostics().front().code(), DiagnosticCode::NotFound);
 }
 }  // namespace test_play_host
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_plugins)
+// Contract section: plugins
 #include "PrivateTestScope.h"
-#include <string>
-#include "common/Runtime.h"
+
 #include "plugins/Plugins.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // plugins.cpp
 namespace test_plugins {
 using eve::plugins::Plugins;
@@ -1314,17 +1228,13 @@ TEST_CASE("plugins.load.nativeLibraryAndInstantiateCppModule") {
 }
 #endif
 }  // namespace test_plugins
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_renderflow)
-#include <string>
-#include <vector>
+// Contract section: renderflow
 #include "PrivateTestScope.h"
+
 #include "common/Exception.h"
 #include "common/RenderTrace.h"
 #include "devtools/RenderFlow.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // renderflow.cpp
 namespace test_renderflow {
 using namespace eve::dev;
@@ -1791,14 +1701,14 @@ TEST_CASE("devtools.renderflow.eventLookupContiguous") {
     CHECK(flow.event(hi + 1) == nullptr);
 }
 }  // namespace test_renderflow
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_component_scheduling)
+
+// Contract section: scene component scheduling
 #include "PrivateTestScope.h"
+
 #include <stdexcept>
 #include "ScriptTest.h"
 #include "scene/SceneComponent.h"
 #include "scene/TransformSystem.h"
-#include "zeroerr/unittest.h"
 // scene_component_scheduling.cpp
 namespace test_scene_component_scheduling {
 using namespace eve;
@@ -1873,7 +1783,10 @@ TEST_CASE("scene.componentScheduling.failedBatchRetainsRemainingWork") {
 }
 
 
-UnitSciptTest(SceneScheduledScriptTest, R"SQ(
+class SceneScheduledScriptTest : public ScriptTest {
+public:
+    SceneScheduledScriptTest()
+        : ScriptTest(R"SQ(
 function verifyScheduledComponent() {
     ::scene <- eve.Scene()
     class Scheduled extends eve.SceneComponent {
@@ -1910,24 +1823,19 @@ function verifyScheduledComponent() {
     eve_scene_flush_components()
     return !first.dirty && !second.dirty && second.builds == 2
 }
-)SQ");
+)SQ") {}
+};
 TEST_CASE_FIXTURE(SceneScheduledScriptTest, "Scene.componentScheduling.scriptCoalescingAndFailureRecovery") {
     CHECK(vm.callFunc(vm.findFunc("verifyScheduledComponent"), vm).toBool());
 }
 }  // namespace test_scene_component_scheduling
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_service_mocks)
+// Contract section: service mocks
 #include "PrivateTestScope.h"
+
 #include <cstring>
 #include <map>
-#include <string>
-#include <vector>
-#include "common/Capability.h"
 #include "common/ServiceInterfaces.h"
-#include "timer/Timer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // service_mocks.cpp
 namespace test_service_mocks {
 namespace {
@@ -1993,15 +1901,10 @@ TEST_CASE("service.providers.timerRegistersReal") {
     eve::cap::detail::clearAllRaw();
 }
 }  // namespace test_service_mocks
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_timer_cpp)
+// Contract section: timer cpp
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <thread>
-#include "timer/Timer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // timer_cpp.cpp
 namespace test_timer_cpp {
 TEST_CASE("timer.getTime.monotonic") {
@@ -2040,15 +1943,12 @@ TEST_CASE("timer.simulationClockUsesInjectedFixedSteps") {
     CHECK(t->wallClockNow().unixNanoseconds() != 0);
 }
 }  // namespace test_timer_cpp
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_touch)
+// Contract section: touch
 #include "PrivateTestScope.h"
+
 #include <cstdint>
-#include "common/Exception.h"
 #include "touch/Touch.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // touch.cpp
 namespace test_touch {
 TEST_CASE("touch.getTouchesEmpty") {
@@ -2070,4 +1970,3 @@ TEST_CASE("touch.getTouchInvalidThrows") {
     CHECK(threw);
 }
 }  // namespace test_touch
-#endif

@@ -1,10 +1,11 @@
+// Cohesive asset workflow contracts share one physical translation unit.
+
+// Contract section: asset cooker
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_cooker)
-#include "PrivateTestScope.h"
 #include "asset/AssetCooker.h"
 #include "asset/RuntimeDefinition.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // asset_cooker.cpp
 namespace test_asset_cooker {
@@ -153,18 +154,16 @@ TEST_CASE("asset.cook.optionalFallbackPolicyRemainsObservableAtRuntime") {
     CHECK_EQ(policy->at("to").asString(), std::string("asset://550e8400-e29b-41d4-a716-446655440099"));
 }
 }  // namespace test_asset_cooker
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_graphics_image_mips)
+
+// Contract section: asset graphics image mips
 #include "PrivateTestScope.h"
+
 #include "asset/CanonicalImageCook.h"
-#include "asset/RuntimeDefinition.h"
 #include "asset/graphics/EvpackImageLoader.h"
 #include "asset/procgen/TerrainMaterialAtlas.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_graphics_image_mips.cpp
 namespace test_asset_graphics_image_mips {
 using namespace eve;
@@ -363,17 +362,15 @@ TEST_CASE("asset.procgen.terrainGpuGroupBindsSecondControlLayerSet") {
     CHECK(std::abs(st[3] - .25f) < .0001f);
 }
 }  // namespace test_asset_graphics_image_mips
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_graphics_loader)
+
+// Contract section: asset graphics loader
 #include "PrivateTestScope.h"
+
 #include <bit>
 #include "asset/CanonicalMesh.h"
 #include "asset/graphics/EvpackGraphicsLoader.h"
-#include "asset/graphics/EvpackImageLoader.h"
 #include "graphics/IMeshResourceFactory.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_graphics_loader.cpp
 namespace test_asset_graphics_loader {
 using namespace eve;
@@ -594,10 +591,11 @@ TEST_CASE("asset.graphics.imageBackendRejectionIsStructuredFailure") {
     CHECK_EQ(factory.uploads, 1);
 }
 }  // namespace test_asset_graphics_loader
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_image_mips)
+
+// Contract section: asset image mips
 #include "PrivateTestScope.h"
+
 #include <algorithm>
 #include <chrono>
 #include <cmath>
@@ -606,13 +604,9 @@ TEST_CASE("asset.graphics.imageBackendRejectionIsStructuredFailure") {
 #include <regex>
 #include <string>
 #include <vector>
-#include "asset/AssetCooker.h"
 #include "asset/AssetMigration.h"
 #include "asset/AssetPackageStore.h"
-#include "asset/CanonicalImageCook.h"
-#include "asset/CanonicalMesh.h"
 #include "asset/EvpackResourceReader.h"
-#include "asset/RuntimeDefinition.h"
 #include "asset/graphics/VegetationAsset.h"
 #include "asset/import/TerrainImporter.h"
 #include "asset/import/UnityImporter.h"
@@ -628,8 +622,6 @@ TEST_CASE("asset.graphics.imageBackendRejectionIsStructuredFailure") {
 #include "physics/cloth/Cloth3D.h"
 #include "procgen/editing/HeightmapTarget.h"
 #include "procgen/heightmap_target/TerrainDocumentCodec.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_image_mips.cpp
 namespace test_asset_image_mips {
 // asset_image_mips.cpp
@@ -2442,22 +2434,13 @@ TEST_CASE("asset.resourceReader.selectsBackendVariantAndPreservesCanonicalDefini
     CHECK_EQ(overBudget.error()->code(), DiagnosticCode::InvalidArgument);
 }
 }  // namespace test_asset_image_mips
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import)
+
+// Contract section: asset import
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <fstream>
+
 #include <iterator>
-#include "asset/AssetCooker.h"
-#include "asset/EvpackResourceReader.h"
-#include "asset/RuntimeDefinition.h"
-#include "asset/graphics/EvpackGraphicsLoader.h"
-#include "asset/graphics/EvpackImageLoader.h"
 #include "asset/import/AssetImporter.h"
-#include "graphics/IMeshResourceFactory.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_import.cpp
 namespace test_asset_import {
 using namespace eve;
@@ -2683,36 +2666,24 @@ TEST_CASE("asset.import.tamperedStructuredReportIsRejectedBeforePublication") {
     CHECK_EQ(rejected.error()->code(), DiagnosticCode::HashMismatch);
 }
 }  // namespace test_asset_import
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_animation)
+
+// Contract section: asset import animation
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include <array>
-#include <bit>
-#include <fstream>
 #include <memory>
 #include <sstream>
-#include "asset/AssetCooker.h"
-#include "asset/CanonicalImageCook.h"
 #include "asset/CanonicalVolumeTextureCook.h"
-#include "asset/EvpackResourceReader.h"
 #include "asset/SourceBc3.h"
-#include "asset/graphics/EvpackImageLoader.h"
 #include "asset/import/LegacyAnimationImporter.h"
-#include "asset/import/UnityImporter.h"
 #include "asset/import/UnrealImporter.h"
-#include "asset/procgen/EvpackInstanceSetLoader.h"
 #include "asset/procgen/EvpackPointGraphLoader.h"
-#include "asset/procgen/EvpackTerrainMaterialLoader.h"
 #include "graphics/Graphics.h"
 #include "graphics/PbrSurface.h"
-#include "graphics/Texture.h"
 #include "procgen/PointGraph.h"
 #include "procgen/PointSet.h"
 #include "procgen/SpatialData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_import_animation.cpp
 namespace test_asset_import_animation {
 // asset_import_animation.cpp
@@ -3197,571 +3168,15 @@ TEST_CASE("asset.import.unrealM4RejectsTraversalAndWrongR16Length") {
     CHECK_EQ(rejected.error()->code(), DiagnosticCode::ParseError);
 }
 }  // namespace test_asset_import_animation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_gltf_animation)
+
+// Contract section: asset import structured models
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <bit>
-#include "asset/AssetCooker.h"
-#include "asset/import/AssetImporter.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// asset_import_gltf_animation.cpp
-namespace test_asset_import_gltf_animation {
-using namespace eve;
-using namespace eve::asset_import;
 
-namespace {
-GltfImportRequest animatedTriangle() {
-    GltfImportRequest request;
-    request.package    = {*PersistentId::parse("11111111-2222-4333-8444-555555555555"), "animated.test", "1.0.0", {}};
-    request.sourceName = "triangle.gltf";
-    auto& bytes        = request.externalResources["data.bin"];
-    auto  scalar       = [&](float value) {
-        auto bits = std::bit_cast<std::uint32_t>(value);
-        for (int i = 0; i < 4; ++i) bytes.push_back(static_cast<std::uint8_t>(bits >> (8 * i)));
-    };
-    for (float value : {0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 1.f, 0.f}) scalar(value);
-    for (int i = 0; i < 12; ++i) bytes.push_back(0);
-    for (int v = 0; v < 3; ++v)
-        for (int i = 0; i < 4; ++i) scalar(i == 0 ? 1.f : 0.f);
-    scalar(0);
-    scalar(1);
-    for (float value : {0.f, 0.f, 0.f, 0.f, 2.f, 0.f}) scalar(value);
-    const std::string json = R"({"asset":{"version":"2.0"},"buffers":[{"uri":"data.bin","byteLength":128}],
-      "bufferViews":[{"buffer":0,"byteLength":36},{"buffer":0,"byteOffset":36,"byteLength":12},{"buffer":0,"byteOffset":48,"byteLength":48},{"buffer":0,"byteOffset":96,"byteLength":8},{"buffer":0,"byteOffset":104,"byteLength":24}],
-      "accessors":[{"bufferView":0,"componentType":5126,"count":3,"type":"VEC3"},{"bufferView":1,"componentType":5121,"count":3,"type":"VEC4"},{"bufferView":2,"componentType":5126,"count":3,"type":"VEC4"},{"bufferView":3,"componentType":5126,"count":2,"type":"SCALAR"},{"bufferView":4,"componentType":5126,"count":2,"type":"VEC3"}],
-      "nodes":[{"name":"root","children":[1]},{"name":"joint"},{"mesh":0,"skin":0}],"skins":[{"joints":[1]}],
-      "meshes":[{"primitives":[{"attributes":{"POSITION":0,"JOINTS_0":1,"WEIGHTS_0":2}}]}],
-      "animations":[{"name":"move","samplers":[{"input":3,"output":4,"interpolation":"LINEAR"}],"channels":[{"sampler":0,"target":{"node":1,"path":"translation"}}]}]})";
-    request.documentBytes.assign(json.begin(), json.end());
-    return request;
-}
-}  // namespace
-
-TEST_CASE("asset.import.gltfAnimationSurvivesArchiveAndCook") {
-    auto imported = prepareGltfImport(animatedTriangle());
-    REQUIRE(imported.ok());
-    std::vector<std::string> types;
-    for (const auto& asset : imported.value().manifest.assets) types.push_back(asset.type);
-    REQUIRE(std::find(types.begin(), types.end(), "eve.skeleton") != types.end());
-    REQUIRE(std::find(types.begin(), types.end(), "eve.animation-clip") != types.end());
-    REQUIRE(std::find(types.begin(), types.end(), "eve.skin") != types.end());
-    REQUIRE_EQ(imported.value().manifest.dependencies.size(), std::size_t(3));
-    for (const auto& definition : imported.value().manifest.assets) {
-        const auto base  = "assets/" + definition.asset.id().format() + "/data.bin";
-        auto       found = std::find_if(imported.value().entries.begin(), imported.value().entries.end(),
-                                        [&](const auto& e) { return e.path == base; });
-        if (definition.type == "eve.skin") {
-            REQUIRE(found != imported.value().entries.end());
-            // Header + one joint/identity inverse bind + three vertices * four
-            // (joint,weight) pairs. The joint maps to bone 2 after parent ordering.
-            REQUIRE_EQ(found->bytes.size(), std::size_t(188));
-            REQUIRE_EQ(found->bytes[24], std::uint8_t(2));
-            REQUIRE_EQ(found->bytes[92 + 6], std::uint8_t(128));  // FLOAT 1.0
-        }
-        if (definition.type == "eve.animation-clip") {
-            REQUIRE(found != imported.value().entries.end());
-            REQUIRE_EQ(found->bytes.size(), std::size_t(76));
-            REQUIRE_EQ(found->bytes[28], std::uint8_t(2));   // remapped target bone
-            REQUIRE_EQ(found->bytes[71], std::uint8_t(64));  // final Y = 2.0
-        }
-    }
-    auto archive = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
-    REQUIRE(archive.ok());
-    auto parsed = asset::parseEvaArchive(archive.value());
-    REQUIRE(parsed.ok());
-    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
-    REQUIRE(profile.ok());
-    auto cooked = asset::cookEvaToEvpack(parsed.value(), profile.value());
-    REQUIRE(cooked.ok());
-    auto pack = asset::parseEvpack(cooked.value().bytes);
-    REQUIRE(pack.ok());
-    REQUIRE_EQ(pack.value().chunks().size(), std::size_t(8));
-}
-
-TEST_CASE("asset.import.gltfAnimationRejectsInvalidJointWithoutPartialSuccess") {
-    auto request                              = animatedTriangle();
-    request.externalResources["data.bin"][36] = 1;
-    auto imported                             = prepareGltfImport(request);
-    REQUIRE(!imported.ok());
-}
-
-TEST_CASE("asset.import.gltfAnimationRejectsUnsupportedInterpolation") {
-    auto        request = animatedTriangle();
-    std::string json(request.documentBytes.begin(), request.documentBytes.end());
-    json.replace(json.find("LINEAR"), 6, "UNKNOWN");
-    request.documentBytes.assign(json.begin(), json.end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(!imported.ok());
-}
-
-TEST_CASE("asset.import.gltfAnimationRejectsMissingTargetAndCycles") {
-    for (const auto& change :
-         std::vector<std::pair<std::string, std::string>>{{"\"target\":", "\"missing\":"},
-                                                          {"\"name\":\"joint\"", "\"name\":\"joint\",\"children\":[0]"},
-                                                          {"\"joints\":[1]", "\"joints\":[9]"}}) {
-        auto        request = animatedTriangle();
-        std::string json(request.documentBytes.begin(), request.documentBytes.end());
-        json.replace(json.find(change.first), change.first.size(), change.second);
-        request.documentBytes.assign(json.begin(), json.end());
-        auto imported = prepareGltfImport(request);
-        REQUIRE(!imported.ok());
-    }
-}
-
-TEST_CASE("asset.import.gltfAnimationHonorsDecodedBudget") {
-    auto request                       = animatedTriangle();
-    request.limits.maximumDecodedBytes = 128;
-    auto imported                      = prepareGltfImport(request);
-    REQUIRE(!imported.ok());
-}
-
-TEST_CASE("asset.import.gltfAnimationRetainsAndNormalizesMultipleQuantizedWeightSets") {
-    auto  request = animatedTriangle();
-    auto& bytes   = request.externalResources["data.bin"];
-    for (std::size_t i = 48; i < 96; ++i) bytes[i] = 0;
-    for (std::size_t vertex = 0; vertex < 3; ++vertex) bytes[48 + vertex * 4] = 127;
-    for (int vertex = 0; vertex < 3; ++vertex) bytes.insert(bytes.end(), {1, 0, 0, 0});
-    std::string json(request.documentBytes.begin(), request.documentBytes.end());
-    auto        replace = [&](std::string from, std::string to) {
-        const auto pos = json.find(from);
-        REQUIRE(pos != std::string::npos);
-        json.replace(pos, from.size(), to);
-    };
-    replace("\"byteLength\":128", "\"byteLength\":140");
-    replace("\"byteOffset\":104,\"byteLength\":24}",
-            "\"byteOffset\":104,\"byteLength\":24},{\"buffer\":0,\"byteOffset\":128,\"byteLength\":12}");
-    replace("\"bufferView\":2,\"componentType\":5126", "\"bufferView\":2,\"normalized\":true,\"componentType\":5121");
-    replace("\"bufferView\":4,\"componentType\":5126,\"count\":2,\"type\":\"VEC3\"}",
-            "\"bufferView\":4,\"componentType\":5126,\"count\":2,\"type\":\"VEC3\"},{\"bufferView\":5,"
-            "\"componentType\":5121,\"count\":3,\"type\":\"VEC4\"}");
-    replace("\"joints\":[1]", "\"joints\":[1,2]");
-    replace("\"WEIGHTS_0\":2", "\"WEIGHTS_0\":2,\"JOINTS_1\":5,\"WEIGHTS_1\":2");
-    request.documentBytes.assign(json.begin(), json.end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(imported.ok());
-    bool found = false;
-    for (const auto& entry : imported.value().entries) {
-        if (entry.bytes.size() != 352 || entry.bytes[2] != 'S') continue;
-        found = true;
-        REQUIRE_EQ(entry.bytes[16], std::uint8_t(8));
-        REQUIRE_EQ(entry.bytes[167], std::uint8_t(63));  // first set weight = 0.5
-        REQUIRE_EQ(entry.bytes[199], std::uint8_t(63));  // second set weight = 0.5
-    }
-    REQUIRE(found);
-    REQUIRE(std::any_of(imported.value().findings.begin(), imported.value().findings.end(),
-                        [](const auto& finding) { return finding.disposition == ImportDisposition::Baked; }));
-}
-}  // namespace test_asset_import_gltf_animation
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_gltf_material)
-#include "PrivateTestScope.h"
-#ifdef EVE_TEST_MESH_UPLOAD
-#include "asset/graphics/CookedMaterial.h"
-#endif
-#include "asset/AssetCooker.h"
-#include "asset/EvpackResourceReader.h"
-#include "asset/RuntimeDefinition.h"
-#include "asset/import/AssetImporter.h"
-#include "asset/import/ImportCommon.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// asset_import_gltf_material.cpp
-namespace test_asset_import_gltf_material {
-#ifdef EVE_TEST_MESH_UPLOAD
-
-#endif
-
-
-using namespace eve;
-using namespace eve::asset_import;
-namespace {
-GltfImportRequest materialTriangle() {
-    GltfImportRequest r;
-    r.package    = {*PersistentId::parse("11111111-2222-4333-8444-555555555555"), "material.test", "1.0.0", {}};
-    r.sourceName = "material.gltf";
-    r.externalResources["vertices.bin"].resize(36);
-    r.externalResources["uv.bin"].resize(24);
-    r.externalResources["pixel.png"] = {
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0,    0,    0,    0x0d, 0x49, 0x48, 0x44, 0x52, 0, 0,
-        0,    1,    0,    0,    0,    1,    8,    6,    0,    0,    0,    0x1f, 0x15, 0xc4, 0x89, 0,    0, 0,
-        0x0d, 0x49, 0x44, 0x41, 0x54, 8,    0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0xf0, 0x1f, 0,    5,    0,    1, 0xff,
-        0x72, 0x9c, 0x52, 0x67, 0,    0,    0,    0,    0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
-    std::string json =
-        R"({"asset":{"version":"2.0"},"buffers":[{"uri":"vertices.bin","byteLength":36},{"uri":"uv.bin","byteLength":24}],"bufferViews":[{"buffer":0,"byteLength":36},{"buffer":1,"byteLength":24}],"accessors":[{"bufferView":0,"componentType":5126,"count":3,"type":"VEC3"},{"bufferView":1,"componentType":5126,"count":3,"type":"VEC2"}],"meshes":[{"primitives":[{"attributes":{"POSITION":0,"TEXCOORD_0":1},"material":0}]}],"materials":[{"pbrMetallicRoughness":{"baseColorFactor":[0.2,0.3,0.4,0.5],"metallicFactor":0.7,"roughnessFactor":0.8,"baseColorTexture":{"index":0},"metallicRoughnessTexture":{"index":0}},"normalTexture":{"index":0,"scale":0.6},"occlusionTexture":{"index":0,"strength":0.4},"emissiveTexture":{"index":0},"emissiveFactor":[0.1,0.2,0.3],"alphaMode":"MASK","alphaCutoff":0.3,"doubleSided":true}],"textures":[{"source":0}],"images":[{"uri":"pixel.png"}]})";
-    r.documentBytes.assign(json.begin(), json.end());
-    return r;
-}
-}  // namespace
-TEST_CASE("asset.import.gltfMaterialAndImagesSurviveCook") {
-    auto result = prepareGltfImport(materialTriangle());
-    REQUIRE(result.ok());
-    REQUIRE_EQ(result.value().manifest.assets.size(), size_t(7));
-    REQUIRE_EQ(result.value().manifest.dependencies.size(), size_t(6));
-    bool found = false;
-    for (const auto& a : result.value().manifest.assets)
-        if (a.type == "eve.material") {
-            found = true;
-            for (const auto& e : result.value().entries)
-                if (e.path == a.definition) {
-                    std::string text(e.bytes.begin(), e.bytes.end());
-                    REQUIRE(text.find("metallicRoughnessTexture") != std::string::npos);
-                    REQUIRE(text.find("normalTexture") != std::string::npos);
-                    REQUIRE(text.find("masked") != std::string::npos);
-                    auto decoded = Value::fromJson(text);
-                    REQUIRE(decoded.ok());
-                    const auto* object = decoded.value().getIf<Value::Object>();
-                    REQUIRE(object != nullptr);
-                    REQUIRE_EQ(object->at("metallic").asDouble(), 0.7);
-                    REQUIRE_EQ(object->at("roughness").asDouble(), 0.8);
-                    REQUIRE_EQ(object->at("normalScale").asDouble(), 0.6);
-                    REQUIRE_EQ(object->at("occlusionStrength").asDouble(), 0.4);
-                    REQUIRE_EQ(object->at("alphaCutoff").asDouble(), 0.3);
-                }
-        }
-    REQUIRE(found);
-    auto bytes = asset::buildEvaArchive(result.value().manifest, result.value().entries);
-    REQUIRE(bytes.ok());
-    auto archive = asset::parseEvaArchive(bytes.value());
-    REQUIRE(archive.ok());
-    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
-    REQUIRE(profile.ok());
-    auto pack = asset::cookEvaToEvpack(archive.value(), profile.value());
-    REQUIRE(pack.ok());
-}
-TEST_CASE("asset.import.gltfMissingTextureFailsAtomically") {
-    auto request = materialTriangle();
-    request.externalResources.erase("pixel.png");
-    REQUIRE(!prepareGltfImport(request).ok());
-}
-
-#ifdef EVE_TEST_MESH_UPLOAD
-TEST_CASE("asset.import.materialV14ColorParametersSurviveV15CookWithImageDependency") {
-    auto imported = prepareGltfImport(materialTriangle());
-    REQUIRE(imported.ok());
-    auto bytes = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
-    REQUIRE(bytes.ok());
-    auto archive = asset::parseEvaArchive(bytes.value());
-    REQUIRE(archive.ok());
-    const auto ref = imported.value().manifest.entrypoints.at("material:0");
-    // Stage an authored N-1 definition. Cooking migrates and rehashes the owning candidate.
-    for (auto& material : archive.value().manifest.assets) {
-        if (material.asset != ref) continue;
-        material.schemaVersion = SchemaVersion(14);
-        for (auto& entry : archive.value().entries) {
-            if (entry.path != material.definition) continue;
-            auto decoded = Value::fromJson(std::string(entry.bytes.begin(), entry.bytes.end()));
-            REQUIRE(decoded.ok());
-            auto& root            = *decoded.value().getIf<Value::Object>();
-            root["schemaVersion"] = 14;
-            root.erase("alphaToCoverage");
-            root["albedoTextureStrength"] = .25;
-            root["colorMask"] =
-                Value::Object{{"secondary", Value::Array{2.0, .1, .3}}, {"minimum", .2}, {"maximum", .8}};
-            auto json = decoded.value().toJson();
-            REQUIRE(json.ok());
-            entry.bytes.assign(json.value().begin(), json.value().end());
-            material.contentHash = asset_import::detail::sha256(entry.bytes);
-        }
-    }
-    for (auto& dependency : archive.value().manifest.dependencies)
-        if (dependency.to == ref) dependency.expectedType = "eve.material/14";
-    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
-    REQUIRE(profile.ok());
-    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
-    if (!cooked) std::cerr << cooked.error()->message() << '\n';
-    REQUIRE(cooked.ok());
-    auto pack = asset::parseEvpack(cooked.value().bytes);
-    REQUIRE(pack.ok());
-    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
-    asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
-    auto                        runtime = asset_graphics::detail::readCookedMaterial(reader, ref, caps);
-    REQUIRE(runtime.ok());
-    REQUIRE(runtime.value().surface.colorMaskEnabled);
-    REQUIRE_EQ(runtime.value().surface.colorMaskSecondary[0], 2.f);
-    REQUIRE_EQ(runtime.value().surface.albedoTextureStrength, .25f);
-    REQUIRE(runtime.value().images[1].has_value());
-    auto image = reader.read(*runtime.value().images[1], "eve.image/3", caps, 1024 * 1024);
-    REQUIRE(image.ok());
-}
-#endif
-
-TEST_CASE("asset.import.gltfMaterialSupportsIdentityTransformAndRejectsBudget") {
-    auto        request = materialTriangle();
-    std::string text(request.documentBytes.begin(), request.documentBytes.end());
-    auto        at = text.find("\"baseColorTexture\":{\"index\":0}");
-    REQUIRE(at != std::string::npos);
-    text.replace(at, std::string("\"baseColorTexture\":{\"index\":0}").size(),
-                 "\"baseColorTexture\":{\"index\":0,\"extensions\":{\"KHR_texture_transform\":{}}}");
-    request.documentBytes.assign(text.begin(), text.end());
-    REQUIRE(prepareGltfImport(request).ok());
-    request                      = materialTriangle();
-    request.limits.maximumAssets = 2;
-    REQUIRE(!prepareGltfImport(request).ok());
-}
-
-TEST_CASE("asset.import.gltfMaterialExtensionsRetainParametersAndTextures") {
-    auto request = materialTriangle();
-    auto parsed  = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-    REQUIRE(parsed.ok());
-    auto& root = *parsed.value().getIf<Value::Object>();
-    auto& mat  = *root.at("materials").getIf<Value::Array>()->at(0).getIf<Value::Object>();
-    auto  ext  = Value::fromJson(
-        R"({"KHR_materials_specular":{"specularFactor":0.4,"specularColorFactor":[2,1,0.5],"specularTexture":{"index":0},"specularColorTexture":{"index":0}},"KHR_materials_anisotropy":{"anisotropyStrength":0.7,"anisotropyRotation":-1.5,"anisotropyTexture":{"index":0}},"KHR_materials_clearcoat":{"clearcoatFactor":0.8,"clearcoatRoughnessFactor":0.2,"clearcoatTexture":{"index":0},"clearcoatRoughnessTexture":{"index":0},"clearcoatNormalTexture":{"index":0,"scale":0.3}},"KHR_materials_emissive_strength":{"emissiveStrength":3},"KHR_materials_ior":{"ior":1.7}})");
-    REQUIRE(ext.ok());
-    mat["extensions"]          = std::move(ext).takeValue();
-    root["extensionsRequired"] = Value(Value::Array{Value("KHR_materials_specular"), Value("KHR_materials_ior")});
-    auto text                  = parsed.value().toJson();
-    REQUIRE(text.ok());
-    request.documentBytes.assign(text.value().begin(), text.value().end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(imported.ok());
-    bool checked = false;
-    for (const auto& entry : imported.value().entries) {
-        if (!entry.path.ends_with("/asset.json")) continue;
-        auto value = Value::fromJson(std::string(entry.bytes.begin(), entry.bytes.end()));
-        REQUIRE(value.ok());
-        auto* o = value.value().getIf<Value::Object>();
-        if (o->at("schema").asString() != "eve.material") continue;
-        REQUIRE_EQ(o->at("schemaVersion").asInt(), int64_t(15));
-        REQUIRE(!o->at("alphaToCoverage").asBool());
-        REQUIRE_EQ(o->at("specularFactor").asDouble(), 0.4);
-        REQUIRE_EQ(o->at("anisotropyRotation").asDouble(), -1.5);
-        REQUIRE_EQ(o->at("emissiveStrength").asDouble(), 3.0);
-        REQUIRE_EQ(o->at("ior").asDouble(), 1.7);
-        REQUIRE(o->contains("clearcoatNormalTexture"));
-        REQUIRE_EQ(o->at("clearcoatNormalScale").asDouble(), 0.3);
-        checked = true;
-    }
-    REQUIRE(checked);
-    auto archive = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
-    REQUIRE(archive.ok());
-    auto decoded = asset::parseEvaArchive(archive.value());
-    REQUIRE(decoded.ok());
-    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
-    REQUIRE(profile.ok());
-    auto cooked = asset::cookEvaToEvpack(decoded.value(), profile.value());
-    REQUIRE(cooked.ok());
-    auto pack = asset::parseEvpack(cooked.value().bytes);
-    REQUIRE(pack.ok());
-    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
-    asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
-    auto                        payload =
-        reader.read(imported.value().manifest.entrypoints.at("material:0"), "eve.material/15", caps, 1024 * 1024);
-    REQUIRE(payload.ok());
-#ifdef EVE_TEST_MESH_UPLOAD
-    auto runtime = eve::asset_graphics::detail::readCookedMaterial(
-        reader, imported.value().manifest.entrypoints.at("material:0"), caps);
-    REQUIRE(runtime.ok());
-    REQUIRE_EQ(runtime.value().surface.specularFactor, .4f);
-    REQUIRE_EQ(runtime.value().surface.specularColor[0], 2.f);
-    REQUIRE_EQ(runtime.value().surface.anisotropyStrength, .7f);
-    REQUIRE_EQ(runtime.value().surface.clearcoatNormalScale, .3f);
-    REQUIRE(runtime.value().images[10].has_value());
-    REQUIRE(!runtime.value().surface.textures[6].srgbDecode);
-#endif
-    bool retained = false;
-    for (const auto& chunk : payload.value().chunks) {
-        if (chunk.kind != asset::EvpackChunkKind::Definition) continue;
-        auto value = asset::decodeRuntimeDefinition(chunk.bytes);
-        REQUIRE(value.ok());
-        auto& material = *value.value().getIf<Value::Object>();
-        REQUIRE_EQ(material.at("specularColorFactor").getIf<Value::Array>()->at(0).asDouble(), 2.0);
-        REQUIRE_EQ(material.at("clearcoatNormalScale").asDouble(), 0.3);
-        auto imageRef = AssetRef::parse(material.at("specularColorTexture").asString());
-        REQUIRE(imageRef.ok());
-        auto image = reader.read(imageRef.value(), "eve.image/3", caps, 1024 * 1024);
-        REQUIRE(image.ok());
-        retained = true;
-    }
-    REQUIRE(retained);
-}
-
-TEST_CASE("asset.import.gltfExtensionsRejectInvalidInputs") {
-    for (const char* ext :
-         {R"({"KHR_materials_ior":{"ior":0.5}})", R"({"KHR_materials_specular":{"specularFactor":2}})",
-          R"({"KHR_materials_anisotropy":{"anisotropyStrength":-1}})",
-          R"({"KHR_materials_clearcoat":{"clearcoatTexture":{"index":99}}})",
-          R"({"KHR_materials_emissive_strength":{"emissiveStrength":-1}})",
-          R"({"KHR_materials_unlit":[],"KHR_materials_specular":{}})",
-          R"({"KHR_materials_unlit":{},"KHR_materials_specular":{}})", R"({"EXT_unknown":{}})"}) {
-        auto request  = materialTriangle();
-        request.mode  = GltfImportMode::Strict;
-        auto document = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-        REQUIRE(document.ok());
-        auto extension = Value::fromJson(ext);
-        REQUIRE(extension.ok());
-        auto& mat = *document.value()
-                         .getIf<Value::Object>()
-                         ->at("materials")
-                         .getIf<Value::Array>()
-                         ->at(0)
-                         .getIf<Value::Object>();
-        mat["extensions"] = std::move(extension).takeValue();
-        auto text         = document.value().toJson();
-        REQUIRE(text.ok());
-        request.documentBytes.assign(text.value().begin(), text.value().end());
-        REQUIRE(!prepareGltfImport(request).ok());
-    }
-}
-TEST_CASE("asset.import.gltfUnlitAndTextureTransformSurvive") {
-    auto request  = materialTriangle();
-    auto document = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-    REQUIRE(document.ok());
-    auto& mat =
-        *document.value().getIf<Value::Object>()->at("materials").getIf<Value::Array>()->at(0).getIf<Value::Object>();
-    mat["extensions"]      = Value(Value::Object{{"KHR_materials_unlit", Value(Value::Object{})}});
-    auto textureDefinition = Value::fromJson(
-        R"({"index":0,"texCoord":1,"extensions":{"KHR_texture_transform":{"offset":[-2,3],"scale":[2,-4],"rotation":-1.2,"texCoord":0}}})");
-    REQUIRE(textureDefinition.ok());
-    mat.at("pbrMetallicRoughness").getIf<Value::Object>()->at("baseColorTexture") =
-        std::move(textureDefinition).takeValue();
-    auto text = document.value().toJson();
-    REQUIRE(text.ok());
-    request.documentBytes.assign(text.value().begin(), text.value().end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(imported.ok());
-    bool found = false;
-    for (const auto& a : imported.value().manifest.assets)
-        if (a.type == "eve.material") {
-            for (const auto& entry : imported.value().entries)
-                if (entry.path == a.definition) {
-                    auto value = Value::fromJson(std::string(entry.bytes.begin(), entry.bytes.end()));
-                    REQUIRE(value.ok());
-                    auto& o = *value.value().getIf<Value::Object>();
-                    REQUIRE_EQ(o.at("shadingModel").asString(), std::string("unlit"));
-                    auto& transform = *o.at("baseColorTextureTransform").getIf<Value::Object>();
-                    REQUIRE_EQ(transform.at("rotation").asDouble(), -1.2);
-                    REQUIRE_EQ(transform.at("offset").getIf<Value::Array>()->at(0).asDouble(), -2.0);
-                    REQUIRE_EQ(transform.at("scale").getIf<Value::Array>()->at(1).asDouble(), -4.0);
-                    found = true;
-                }
-        }
-    REQUIRE(found);
-}
-
-TEST_CASE("asset.import.gltfTextureTransformRejectsUnavailableUvSet") {
-    auto request  = materialTriangle();
-    auto document = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-    REQUIRE(document.ok());
-    auto& root    = *document.value().getIf<Value::Object>();
-    auto& mat     = *root.at("materials").getIf<Value::Array>()->at(0).getIf<Value::Object>();
-    auto  texture = Value::fromJson(R"({"index":0,"extensions":{"KHR_texture_transform":{"texCoord":1}}})");
-    REQUIRE(texture.ok());
-    mat.at("pbrMetallicRoughness").getIf<Value::Object>()->at("baseColorTexture") = std::move(texture).takeValue();
-    auto json                                                                     = document.value().toJson();
-    REQUIRE(json.ok());
-    request.documentBytes.assign(json.value().begin(), json.value().end());
-    auto rejected = prepareGltfImport(request);
-    REQUIRE(!rejected.ok());
-    REQUIRE(rejected.error()->message().find("UV set") != std::string::npos);
-}
-TEST_CASE("asset.import.gltfMaterialSelectsNonzeroUvWithoutTransform") {
-    auto request  = materialTriangle();
-    auto document = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-    REQUIRE(document.ok());
-    auto& root  = *document.value().getIf<Value::Object>();
-    auto& attrs = *root.at("meshes")
-                       .getIf<Value::Array>()
-                       ->at(0)
-                       .getIf<Value::Object>()
-                       ->at("primitives")
-                       .getIf<Value::Array>()
-                       ->at(0)
-                       .getIf<Value::Object>()
-                       ->at("attributes")
-                       .getIf<Value::Object>();
-    attrs["TEXCOORD_2"] = Value(int64_t(1));
-    auto& material      = *root.at("materials").getIf<Value::Array>()->at(0).getIf<Value::Object>();
-    material.at("pbrMetallicRoughness")
-        .getIf<Value::Object>()
-        ->at("baseColorTexture")
-        .getIf<Value::Object>()
-        ->emplace("texCoord", Value(int64_t(2)));
-    auto json = document.value().toJson();
-    REQUIRE(json.ok());
-    request.documentBytes.assign(json.value().begin(), json.value().end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(imported.ok());
-    bool found = false;
-    for (const auto& a : imported.value().manifest.assets)
-        if (a.type == "eve.material")
-            for (const auto& e : imported.value().entries)
-                if (e.path == a.definition) {
-                    auto d = Value::fromJson(std::string(e.bytes.begin(), e.bytes.end()));
-                    REQUIRE(d.ok());
-                    REQUIRE_EQ(d.value().getIf<Value::Object>()->at("baseColorTextureTexCoord").asInt(), int64_t(2));
-                    found = true;
-                }
-    REQUIRE(found);
-}
-
-TEST_CASE("asset.import.gltfPermissiveClampsSpecularAndWarns") {
-    auto request = materialTriangle();
-    auto doc     = Value::fromJson(std::string(request.documentBytes.begin(), request.documentBytes.end()));
-    REQUIRE(doc.ok());
-    auto& mat =
-        *doc.value().getIf<Value::Object>()->at("materials").getIf<Value::Array>()->at(0).getIf<Value::Object>();
-    mat["extensions"] =
-        Value(Value::Object{{"KHR_materials_specular", Value(Value::Object{{"specularFactor", Value(38406.7422)}})}});
-    auto json = doc.value().toJson();
-    REQUIRE(json.ok());
-    request.documentBytes.assign(json.value().begin(), json.value().end());
-    auto imported = prepareGltfImport(request);
-    REQUIRE(imported.ok());
-    bool warned = false, clamped = false;
-    for (const auto& finding : imported.value().findings)
-        if (finding.severity == ImportSeverity::Warning) {
-            REQUIRE(finding.feature.find("specularFactor") != std::string::npos);
-            warned = true;
-        }
-    for (const auto& a : imported.value().manifest.assets)
-        if (a.type == "eve.material")
-            for (const auto& e : imported.value().entries)
-                if (e.path == a.definition) {
-                    auto d = Value::fromJson(std::string(e.bytes.begin(), e.bytes.end()));
-                    REQUIRE(d.ok());
-                    REQUIRE_EQ(d.value().getIf<Value::Object>()->at("specularFactor").asDouble(), 1.0);
-                    clamped = true;
-                }
-    REQUIRE(warned);
-    REQUIRE(clamped);
-    auto archive = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
-    REQUIRE(archive.ok());
-    auto decoded = asset::parseEvaArchive(archive.value());
-    REQUIRE(decoded.ok());
-    bool persisted = false;
-    for (const auto& entry : imported.value().entries)
-        if (entry.path.find("report") != std::string::npos) {
-            std::string report(entry.bytes.begin(), entry.bytes.end());
-            if (report.find("warning") != std::string::npos && report.find("specularFactor") != std::string::npos)
-                persisted = true;
-        }
-    REQUIRE(persisted);
-    request.mode = GltfImportMode::Strict;
-    REQUIRE(!prepareGltfImport(request).ok());
-}
-}  // namespace test_asset_import_gltf_material
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_structured_models)
-#include "PrivateTestScope.h"
-#include <algorithm>
-#include <bit>
-#include <filesystem>
 #include "PathBesideSource.h"
-#include "asset/AssetCooker.h"
-#include "asset/CanonicalMesh.h"
-#include "asset/graphics/EvpackGraphicsLoader.h"
 #include "asset/graphics/EvpackStaticPrefab.h"
 #include "asset/import/StructuredModelImporter.h"
-#include "asset/scene/EvpackSceneTemplateLoader.h"
 #include "graphics/IImageResourceFactory.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_import_structured_models.cpp
 namespace test_asset_import_structured_models {
 using namespace eve;
@@ -4010,228 +3425,14 @@ TEST_CASE("asset.import.structuredModelsScadCompilerTimeout") {
 }
 #endif
 }  // namespace test_asset_import_structured_models
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_tga)
-#include "PrivateTestScope.h"
-#include "asset/CanonicalImageCook.h"
-#include "asset/SourceTga.h"
-#include "asset/import/AssetImporter.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// asset_import_tga.cpp
-namespace test_asset_import_tga {
-using namespace eve;
-namespace {
-std::vector<std::uint8_t> fixture(bool rle, unsigned channels, unsigned orientation) {
-    std::vector<std::uint8_t> bytes(18, 0);
-    bytes[2]  = rle ? 10 : 2;
-    bytes[12] = 2;
-    bytes[14] = 2;
-    bytes[16] = std::uint8_t(channels * 8);
-    bytes[17] = std::uint8_t(orientation | (channels == 4 ? 8 : 0));
-    if (rle) bytes.push_back(0x81);
-    const unsigned copies = rle ? 1 : 2;
-    for (unsigned i = 0; i < copies; ++i) {
-        bytes.insert(bytes.end(), {30, 20, 10});
-        if (channels == 4) bytes.push_back(40);
-    }
-    if (rle) bytes.push_back(1);
-    bytes.insert(bytes.end(), {70, 60, 50});
-    if (channels == 4) bytes.push_back(80);
-    bytes.insert(bytes.end(), {110, 100, 90});
-    if (channels == 4) bytes.push_back(120);
-    return bytes;
-}
-}  // namespace
-TEST_CASE("asset.import.tgaRawAndRlePreserveOrientationAndAlpha") {
-    for (bool rle : {false, true})
-        for (unsigned channels : {3u, 4u})
-            for (unsigned orientation : {0u, 16u, 32u, 48u}) {
-                auto decoded = asset::detail::decodeTgaRgba8(fixture(rle, channels, orientation), 1024);
-                REQUIRE(decoded.ok());
-                const std::vector<std::uint8_t> source{10, 20, 30, 40, 10, 20,  30,  40,
-                                                       50, 60, 70, 80, 90, 100, 110, 120};
-                for (unsigned i = 0; i < 4; ++i) {
-                    const auto x = (orientation & 16) ? 1 - i % 2 : i % 2, y = (orientation & 32) ? i / 2 : 1 - i / 2;
-                    for (unsigned c = 0; c < 4; ++c)
-                        REQUIRE_EQ(decoded.value().rgba[(y * 2 + x) * 4 + c],
-                                   channels == 3 && c == 3 ? std::uint8_t(255) : source[i * 4 + c]);
-                }
-            }
-}
-TEST_CASE("asset.import.tgaRejectsBadPacketsAndCooksLinearPixels") {
-    auto source = fixture(true, 4, 32);
-    for (std::size_t size = 0; size < source.size(); ++size)
-        REQUIRE(!asset::detail::decodeTgaRgba8(std::span(source).first(size), 1024).ok());
-    REQUIRE(!asset::detail::decodeTgaRgba8(source, 39).ok());
-    auto overflow = source;
-    overflow[18]  = 255;
-    REQUIRE(!asset::detail::decodeTgaRgba8(overflow, 1024).ok());
-    auto interleaved = source;
-    interleaved[17] |= 64;
-    REQUIRE(!asset::detail::decodeTgaRgba8(interleaved, 1024).ok());
-    auto footer = source;
-    footer.insert(footer.end(), {255, 255, 255, 255, 0, 0, 0, 0});
-    const std::string signature("TRUEVISION-XFILE.\0", 18);
-    footer.insert(footer.end(), signature.begin(), signature.end());
-    REQUIRE(!asset::detail::decodeTgaRgba8(footer, 1024).ok());
-    asset_import::ImageImportRequest request;
-    request.package      = {*PersistentId::parse("11111111-2222-4333-8444-555555555555"), "tga.test", "1.0.0", {}};
-    request.sourceName   = "mask.tga";
-    request.encodedBytes = source;
-    request.colorSpace   = asset_import::ImageColorSpace::Linear;
-    request.usage        = "mask";
-    auto imported        = asset_import::prepareImageImport(request);
-    REQUIRE(imported.ok());
-    bool checked = false;
-    for (const auto& entry : imported.value().entries)
-        if (entry.path == imported.value().manifest.assets.front().definition) {
-            auto cooked = asset::cookCanonicalImageRgba8(entry.bytes, source, 1024);
-            REQUIRE(cooked.ok());
-            REQUIRE_EQ(cooked.value().bulk[28], std::uint8_t(10));
-            REQUIRE_EQ(cooked.value().bulk[31], std::uint8_t(40));
-            REQUIRE_EQ(cooked.value().bulk[43], std::uint8_t(120));
-            checked = true;
-        }
-    REQUIRE(checked);
-}
-}  // namespace test_asset_import_tga
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_tiff)
+// Contract section: asset import unity collection
 #include "PrivateTestScope.h"
-#include <zlib.h>
-#include <array>
-#include "asset/CanonicalImageCook.h"
-#include "asset/SourceTiff.h"
-#include "asset/import/AssetImporter.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// asset_import_tiff.cpp
-namespace test_asset_import_tiff {
-using namespace eve;
-namespace {
-std::vector<std::uint8_t> fixture(unsigned compression, unsigned bits, bool little, bool reverse = false) {
-    std::vector<std::uint8_t> raw;
-    const auto                put = [&](std::vector<std::uint8_t>& v, unsigned n, unsigned bytes) {
-        for (unsigned i = 0; i < bytes; ++i) v.push_back(std::uint8_t(n >> ((little ? i : bytes - 1 - i) * 8)));
-    };
-    for (auto value : {10u, 20u, 30u, 40u, 90u, 90u, 90u, 90u}) put(raw, bits == 8 ? value : value * 257, bits / 8);
-    std::vector<std::uint8_t> encoded;
-    if (compression == 1)
-        encoded = raw;
-    else if (compression == 8) {
-        uLongf length = compressBound(uLong(raw.size()));
-        encoded.resize(length);
-        REQUIRE_EQ(compress2(encoded.data(), &length, raw.data(), uLong(raw.size()), 6), Z_OK);
-        encoded.resize(length);
-    } else {
-        std::vector<unsigned> codes{256};
-        for (auto v : raw) codes.push_back(v);
-        codes.push_back(257);
-        unsigned acc = 0, count = 0;
-        for (auto code : codes) {
-            acc = (acc << 9) | code;
-            count += 9;
-            while (count >= 8) {
-                count -= 8;
-                encoded.push_back(std::uint8_t(acc >> count));
-            }
-        }
-        if (count) encoded.push_back(std::uint8_t(acc << (8 - count)));
-    }
-    constexpr unsigned        tags = 12, bitsOffset = 8 + 2 + tags * 12 + 4, stripOffset = bitsOffset + 8;
-    std::vector<std::uint8_t> out{std::uint8_t(little ? 'I' : 'M'), std::uint8_t(little ? 'I' : 'M')};
-    put(out, 42, 2);
-    put(out, 8, 4);
-    put(out, tags, 2);
-    auto tag = [&](unsigned id, unsigned type, unsigned n, unsigned value) {
-        put(out, id, 2);
-        put(out, type, 2);
-        put(out, n, 4);
-        if (type == 3 && n == 1) {
-            put(out, value, 2);
-            put(out, 0, 2);
-        } else
-            put(out, value, 4);
-    };
-    tag(256, 4, 1, 2);
-    tag(257, 4, 1, 1);
-    tag(258, 3, 4, bitsOffset);
-    tag(259, 3, 1, compression);
-    tag(262, 3, 1, 2);
-    tag(273, 4, 1, stripOffset);
-    tag(274, 3, 1, reverse ? 2 : 1);
-    tag(277, 3, 1, 4);
-    tag(278, 4, 1, 1);
-    tag(279, 4, 1, unsigned(encoded.size()));
-    tag(317, 3, 1, 2);
-    tag(338, 3, 1, 0);
-    put(out, 0, 4);
-    for (int i = 0; i < 4; ++i) put(out, bits, 2);
-    out.insert(out.end(), encoded.begin(), encoded.end());
-    return out;
-}
-}  // namespace
-TEST_CASE("asset.import.tiffPreservesFourthChannelPredictorAndEndian") {
-    for (auto compression : {1u, 5u, 8u})
-        for (auto bits : {8u, 16u})
-            for (bool little : {false, true}) {
-                auto source = fixture(compression, bits, little);
-                auto result = asset::detail::decodeTiffRgba8(source, 1024);
-                REQUIRE(result.ok());
-                REQUIRE_EQ(result.value().rgba, (std::vector<std::uint8_t>{10, 20, 30, 40, 100, 110, 120, 130}));
-                auto reversed = asset::detail::decodeTiffRgba8(fixture(compression, bits, little, true), 1024);
-                REQUIRE(reversed.ok());
-                REQUIRE_EQ(reversed.value().rgba, (std::vector<std::uint8_t>{100, 110, 120, 130, 10, 20, 30, 40}));
-            }
-}
-TEST_CASE("asset.import.tiffRejectsTruncationAndBudgetAndCooksPixels") {
-    const auto source = fixture(5, 8, true);
-    for (std::size_t n = 0; n < source.size(); ++n) {
-        auto truncated = asset::detail::decodeTiffRgba8(std::span(source).first(n), 1024);
-        REQUIRE(!truncated.ok());
-    }
-    REQUIRE(!asset::detail::decodeTiffRgba8(source, 31).ok());
-    auto malformed = source;
-    malformed[4]   = 255;
-    REQUIRE(!asset::detail::decodeTiffRgba8(malformed, 1024).ok());
-    asset_import::ImageImportRequest request;
-    request.package      = {*PersistentId::parse("11111111-2222-4333-8444-555555555555"), "tiff.test", "1.0.0", {}};
-    request.sourceName   = "mask.tif";
-    request.encodedBytes = source;
-    request.colorSpace   = asset_import::ImageColorSpace::Linear;
-    request.usage        = "mask";
-    auto imported        = asset_import::prepareImageImport(request);
-    REQUIRE(imported.ok());
-    const auto path = imported.value().manifest.assets.front().definition;
-    for (const auto& entry : imported.value().entries)
-        if (entry.path == path) {
-            auto cooked = asset::cookCanonicalImageRgba8(entry.bytes, source, 1024);
-            REQUIRE(cooked.ok());
-            REQUIRE_EQ(cooked.value().bulk.size(), std::size_t(36));
-            REQUIRE_EQ(cooked.value().bulk[31], std::uint8_t(40));
-            REQUIRE_EQ(cooked.value().bulk[35], std::uint8_t(130));
-            const auto json =
-                Value::fromJson(std::string(cooked.value().definition.begin(), cooked.value().definition.end()));
-            REQUIRE(json.ok());
-            REQUIRE_EQ(json.value().getIf<Value::Object>()->at("sourceEncoding").asString(), std::string("tiff"));
-        }
-}
-}  // namespace test_asset_import_tiff
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_unity_collection)
-#include "PrivateTestScope.h"
-#include <algorithm>
-#include "asset/AssetCooker.h"
 #include "asset/EvaArchive.h"
-#include "asset/import/UnityImporter.h"
 #include "asset/import/UnitySource.h"
 #include "asset_import/UnityPackageFixture.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // asset_import_unity_collection.cpp
 namespace test_asset_import_unity_collection {
 using namespace eve;
@@ -4433,4 +3634,3428 @@ TEST_CASE("asset.import.unityPackageAndDirectoryProduceIdenticalCanonicalArchive
     REQUIRE(directArchive.value() == packagedArchive.value());
 }
 }  // namespace test_asset_import_unity_collection
-#endif
+
+// Contract section: asset import unity fbx
+#include "PrivateTestScope.h"
+
+#include <assimp/scene.h>
+#include <assimp/Exporter.hpp>
+#include <limits>
+#include "asset/SourcePng.h"
+#include "asset/graphics/PrefabBoundsCatalog.h"
+#include "asset/graphics/ProcgenPrefabSceneSink.h"
+#include "asset/graphics/StaticPrefabRenderInstance.h"
+#include "common/Capability.h"
+#include "common/ProcgenWorldQuery.h"
+#include "graphics/Material.h"
+#include "graphics/RenderControl.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/RenderSystem3D.h"
+#include "procgen/Procgen.h"
+#include "procgen/RuntimeGeneration.h"
+#include "procgen/road/RoadNetworkCodec.h"
+#include "procgen/road/RoadRecipes.h"
+#include "scene/Scene.h"
+#include "window/Window.h"
+// asset_import_unity_fbx.cpp
+namespace test_asset_import_unity_fbx {
+using namespace eve;
+using namespace eve::asset_import;
+
+namespace {
+UnityProjectImportRequest triangleFbx(bool extendedStreams = true, bool twoSubmeshes = false) {
+    aiScene scene;
+    scene.mRootNode                           = new aiNode("Root");
+    scene.mRootNode->mNumChildren             = 1;
+    scene.mRootNode->mChildren                = new aiNode*[1]{new aiNode("GroundTileModular.002")};
+    scene.mRootNode->mChildren[0]->mParent    = scene.mRootNode;
+    const unsigned meshCount                  = twoSubmeshes ? 2 : 1;
+    scene.mRootNode->mChildren[0]->mNumMeshes = meshCount;
+    scene.mRootNode->mChildren[0]->mMeshes    = twoSubmeshes ? new unsigned[2]{0, 1} : new unsigned[1]{0};
+    scene.mNumMeshes                          = meshCount;
+    scene.mMeshes                             = new aiMesh*[meshCount];
+    for (unsigned meshIndex = 0; meshIndex < meshCount; ++meshIndex) {
+        scene.mMeshes[meshIndex] = new aiMesh;
+        auto& mesh               = *scene.mMeshes[meshIndex];
+        mesh.mName.Set("Geometry");
+        mesh.mMaterialIndex      = meshIndex;
+        mesh.mNumVertices        = 3;
+        mesh.mVertices           = new aiVector3D[3]{{1, 0, 0}, {0, 1, 0}, {0, 0, 1}};
+        mesh.mNormals            = new aiVector3D[3]{{0, 1, 0}, {0, 1, 0}, {0, 1, 0}};
+        mesh.mTextureCoords[0]   = new aiVector3D[3]{{0, 0, 0}, {1, 0, 0}, {0, 1, 0}};
+        mesh.mNumUVComponents[0] = 2;
+        if (extendedStreams) {
+            mesh.mTextureCoords[1]   = new aiVector3D[3]{{0.25f, 0.5f, 0}, {0.75f, 0.5f, 0}, {0.25f, 1.f, 0}};
+            mesh.mNumUVComponents[1] = 2;
+            mesh.mTangents           = new aiVector3D[3]{{1, 0, 0}, {1, 0, 0}, {1, 0, 0}};
+            mesh.mBitangents         = new aiVector3D[3]{{0, 0, -1}, {0, 0, -1}, {0, 0, -1}};
+            mesh.mColors[0]          = new aiColor4D[3]{{1, 0, 0, 1}, {0, 1, 0, 0.5f}, {0, 0, 1, 0.25f}};
+        }
+        mesh.mNumFaces             = 1;
+        mesh.mFaces                = new aiFace[1];
+        mesh.mFaces[0].mNumIndices = 3;
+        mesh.mFaces[0].mIndices    = new unsigned[3]{0, 1, 2};
+    }
+    scene.mNumMaterials = meshCount;
+    scene.mMaterials    = new aiMaterial*[meshCount];
+    for (unsigned index = 0; index < meshCount; ++index) scene.mMaterials[index] = new aiMaterial;
+    Assimp::Exporter exporter;
+    const auto*      blob = exporter.ExportToBlob(&scene, "fbxa");
+    if (!blob) throw std::runtime_error(exporter.GetErrorString());
+    UnityProjectImportRequest request;
+    request.package   = {*PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040"), "fbx.test", "1.0.0", {}};
+    const auto* begin = static_cast<const std::uint8_t*>(blob->data);
+    request.files["Assets/tile.fbx"] = {begin, begin + blob->size};
+    const std::string meta =
+        "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nModelImporter:\n  internalIDToNameTable: []\n  meshes:\n"
+        "    globalScale: 100\n    fileIdsGeneration: 2\n    useFileScale: 1\n    swapUVChannels: 0\n"
+        "  tangentSpace:\n    normalImportMode: 0\n";
+    request.files["Assets/tile.fbx.meta"] = {meta.begin(), meta.end()};
+    return request;
+}
+
+namespace {
+UnityProjectImportRequest trianglePrefab() {
+    auto request = triangleFbx(false);
+    auto put     = [&](const char* path, const std::string& data) { request.files[path] = {data.begin(), data.end()}; };
+    put("Assets/tile.mat", R"(--- !u!21 &2100000
+Material:
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_SavedProperties:
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: dddddddddddddddddddddddddddddddd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Metallic: 0.5
+    - _Glossiness: 0.25
+    - _Mode: 0
+    m_Colors:
+    - _Color: {r: 1, g: 0.5, b: 0.25, a: 1}
+)");
+    put("Assets/tile.mat.meta", "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nNativeFormatImporter:\n");
+    request.files["Assets/pixel.png"] = {
+        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0,    0,    0,    0x0d, 0x49, 0x48, 0x44, 0x52, 0, 0,
+        0,    1,    0,    0,    0,    1,    8,    6,    0,    0,    0,    0x1f, 0x15, 0xc4, 0x89, 0,    0, 0,
+        0x0d, 0x49, 0x44, 0x41, 0x54, 8,    0xd7, 0x63, 0xf8, 0xcf, 0xc0, 0xf0, 0x1f, 0,    5,    0,    1, 0xff,
+        0x72, 0x9c, 0x52, 0x67, 0,    0,    0,    0,    0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82};
+    put("Assets/pixel.png.meta", "guid: dddddddddddddddddddddddddddddddd\nTextureImporter:\n  sRGBTexture: 1\n");
+    put("Assets/tile.prefab", R"(--- !u!1 &1
+GameObject:
+  m_Name: Tile
+--- !u!4 &4
+Transform:
+  m_GameObject: {fileID: 1}
+  m_Father: {fileID: 0}
+  m_LocalPosition: {x: 1, y: 2, z: 3}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+--- !u!33 &33
+MeshFilter:
+  m_GameObject: {fileID: 1}
+  m_Mesh: {fileID: -813904291765591093, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}
+--- !u!23 &23
+MeshRenderer:
+  m_GameObject: {fileID: 1}
+  m_Enabled: 1
+  m_Materials:
+  - {fileID: 2100000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 2}
+)");
+    put("Assets/tile.prefab.meta", "guid: cccccccccccccccccccccccccccccccc\nPrefabImporter:\n");
+    return request;
+}
+}  // namespace
+
+TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
+    auto request  = trianglePrefab();
+    auto prepared = prepareUnityProjectImport(request);
+    REQUIRE(prepared.ok());
+    auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    asset::AssetCookProfile profile{
+        {"win32", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}, asset::CookPublication::LocalInspection, 16};
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile);
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    class Meshes                final : public graphics::IMeshResourceFactory {
+    public:
+        int                     uploads = 0, releases = 0, token = 0;
+        bool                    reject = false;
+        Result<graphics::Mesh*> uploadMesh(const float*, const float*, const float*, int, const std::uint32_t*,
+                                                          int) override {
+            ++uploads;
+            if (reject)
+                return Result<graphics::Mesh*>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "injected upload failure"));
+            return Result<graphics::Mesh*>::success(reinterpret_cast<graphics::Mesh*>(&token));
+        }
+        Result<void> setMeshTangentFrame(graphics::Mesh*, std::span<const float>, std::span<const float>) override {
+            return Result<void>::success();
+        }
+        Result<void> releaseMesh(graphics::Mesh*) override {
+            ++releases;
+            return Result<void>::success();
+        }
+    } meshes;
+    class Images final : public graphics::IImageResourceFactory {
+    public:
+        int                        token = 0, uploads = 0, releases = 0;
+        bool                       reject = false;
+        Result<graphics::Texture*> uploadRgba8(std::uint32_t, std::uint32_t, const std::uint8_t*, bool) override {
+            ++uploads;
+            if (reject)
+                return Result<graphics::Texture*>::failure(
+                    Diagnostic::error(DiagnosticCode::Failed, "injected texture failure"));
+            return Result<graphics::Texture*>::success(reinterpret_cast<graphics::Texture*>(&token));
+        }
+        Result<void> releaseImage(graphics::Texture*) override {
+            ++releases;
+            return Result<void>::success();
+        }
+    } images;
+    asset::EvpackCapabilities caps{"win32", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    const auto                ref          = prepared.value().manifest.entrypoints.at("Assets/tile.prefab");
+    auto                      templateData = asset_scene::EvpackSceneTemplateLoader(reader).load(ref, caps);
+    REQUIRE(templateData.ok());
+    REQUIRE(templateData.value().root.children.size() == 1u);
+    REQUIRE_EQ(templateData.value().root.children[0].x, 1.f);
+    REQUIRE_EQ(templateData.value().root.children[0].y, 2.f);
+    REQUIRE_EQ(templateData.value().root.children[0].z, -3.f);
+    auto loaded = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
+    REQUIRE(loaded.ok());
+    auto owner = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(loaded).takeValue());
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
+    REQUIRE_EQ(meshes.uploads, 1);
+    auto bounds = owner->localBounds();
+    REQUIRE(bounds.ok());
+    // This FBX export decodes to X/Z in [-1,0], Y in [0,1]; the prefab root retains (1,2,-3).
+    const std::array<float, 6> expectedBounds{0.f, 2.f, -4.f, 1.f, 3.f, -3.f};
+    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis)
+        REQUIRE(std::fabs(bounds.value()[axis] - expectedBounds[axis]) < 1e-4f);
+    auto packageBuild = reader.buildId();
+    REQUIRE(packageBuild.ok());
+    REQUIRE(owner->sourceAsset() == ref);
+    REQUIRE(owner->sourceBuildId() == packageBuild.value());
+    asset_graphics::PrefabBoundsCatalog catalog;
+    REQUIRE(catalog.add(*owner).ok());
+    REQUIRE(!catalog.add(*owner).ok());
+    auto catalogBounds = catalog.localBounds(ref, packageBuild.value());
+    REQUIRE(catalogBounds.ok());
+    auto placementBounds = catalog.localBounds(ref, packageBuild.value(), PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(placementBounds.ok());
+    const std::array<float, 6> expectedPlacementBounds{-1.f, 0.f, -1.f, 0.f, 1.f, 0.f};
+    for (std::size_t axis = 0; axis < expectedPlacementBounds.size(); ++axis)
+        REQUIRE(std::fabs(placementBounds.value()[axis] - expectedPlacementBounds[axis]) < 1e-4f);
+    REQUIRE(!catalog.localBounds(ref, packageBuild.value(), static_cast<PrefabRootPose>(255)).ok());
+    auto staleBuild = PersistentId::parse("00000000-0000-0000-0000-000000000001");
+    REQUIRE(staleBuild.has_value());
+    auto missingAsset = AssetRef::fromId(*staleBuild);
+    REQUIRE(missingAsset.ok());
+    REQUIRE(!catalog.localBounds(ref, *staleBuild).ok());
+    REQUIRE(!catalog.localBounds(missingAsset.value(), packageBuild.value()).ok());
+    class Ground final : public IProcgenWorldQuery {
+        Result<ProcgenSurfaceHit> projectDown(float x, float z, float, float, std::uint64_t) override {
+            ProcgenSurfaceHit hit;
+            hit.hit = true;
+            hit.x   = x;
+            hit.z   = z;
+            hit.y   = x + 2.f * z;
+            return Result<ProcgenSurfaceHit>::success(hit);
+        }
+    } ground;
+    struct RestoreProviders {
+        IProcgenWorldQuery*  world  = eve::cap::query<IProcgenWorldQuery>();
+        IProcgenAssetBounds* assets = eve::cap::query<IProcgenAssetBounds>();
+        ~RestoreProviders() {
+            eve::cap::provide<IProcgenWorldQuery>(world);
+            eve::cap::provide<IProcgenAssetBounds>(assets);
+        }
+    } restoreProviders;
+    eve::cap::provide<IProcgenWorldQuery>(&ground);
+    eve::cap::provide<IProcgenAssetBounds>(&catalog);
+    auto road = procgen::road::RoadNetwork::makeStraight(40.f, 2);
+    REQUIRE(road.ok());
+    auto style              = road.value().edges()[0].style;
+    style.sideObjectsRight  = false;
+    style.sideTerrain.mode  = procgen::road::RoadSideTerrainMode::Average;
+    style.sideTerrain.asset = procgen::road::RoadSideAssetBinding{ref, packageBuild.value()};
+    REQUIRE(road.value().setEdgeStyle(1, style).ok());
+    procgen::Params roadParams;
+    roadParams.setString("placementWorldRevision", "fixture-plane/v1");
+    REQUIRE(procgen::road::setRoadRecipeNetwork(roadParams, road.value()).ok());
+    auto roadBake = procgen::road::bakeRoadNetworkRecipe(roadParams);
+    REQUIRE(roadBake.ok());
+    int sidePoints = 0;
+    for (int i = 0; i < roadBake.value().placements.getCount(); ++i) {
+        const auto& points = roadBake.value().placements;
+        if (points.getStringAttribute(i, "road_role", "") != "side.left") continue;
+        ++sidePoints;
+        const auto& p = points.points()[i];
+        REQUIRE(std::fabs(p.y - (p.x + 2.f * p.z - .5f)) < 1e-4f);
+        REQUIRE(points.getStringAttribute(i, "asset", "") == ref.format());
+        REQUIRE(points.getStringAttribute(i, "asset_build_id", "") == packageBuild.value().format());
+        REQUIRE(points.getStringAttribute(i, "asset_root_pose", "") == "placement");
+    }
+    REQUIRE(sidePoints > 0);
+    auto* sceneGraphics = graphics::Graphics::create();
+    REQUIRE(sceneGraphics != nullptr);
+    auto placedScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics,
+                                                                        PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(placedScene.ok());
+    for (unsigned axis = 0; axis < 3; ++axis)
+        REQUIRE(std::fabs(placedScene.value()->parts()[0].localTransform[12 + axis]) < 1e-5f);
+    REQUIRE(placedScene.value()->release().ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics, static_cast<PrefabRootPose>(255))
+                 .ok());
+    auto preparedScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(preparedScene.ok());
+    REQUIRE(preparedScene.value()->parts().size() == 1u);
+    const auto& scenePart = preparedScene.value()->parts()[0];
+    REQUIRE(scenePart.mesh != nullptr);
+    REQUIRE(scenePart.material != nullptr);
+    REQUIRE(scenePart.material->hasPbrSurface());
+    REQUIRE(std::fabs(scenePart.localTransform[12] - 1.f) < 1e-5f);
+    auto secondScene = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(secondScene.ok());
+    REQUIRE(secondScene.value()->parts()[0].mesh == scenePart.mesh);
+    REQUIRE(secondScene.value()->parts()[0].material != scenePart.material);
+    REQUIRE(!owner->release().ok());
+    REQUIRE(meshes.releases == 0);
+    REQUIRE(images.releases == 0);
+    REQUIRE(owner->drawCount() == 1u);
+    REQUIRE(preparedScene.value()->release().ok());
+    REQUIRE(preparedScene.value()->release().ok());
+    REQUIRE(preparedScene.value()->parts().empty());
+    REQUIRE(!owner->release().ok());
+    REQUIRE(secondScene.value()->parts().size() == 1u);
+    REQUIRE(secondScene.value()->parts()[0].material->hasPbrSurface());
+    REQUIRE(secondScene.value()->release().ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene({}, *sceneGraphics).ok());
+    auto renderPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(renderPreparation.ok());
+    const auto            sourceMatrix = renderPreparation.value()->parts()[0].localTransform;
+    const auto*           sourceMesh   = renderPreparation.value()->parts()[0].mesh;
+    std::array<float, 16> world{-2.f, 0.f, 0.f, 0.f, .5f, 3.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 10.f, 20.f, 30.f, 1.f};
+    auto instance = asset_graphics::StaticPrefabRenderInstance::create(std::move(renderPreparation).takeValue(), world);
+    REQUIRE(instance.ok());
+    REQUIRE(instance.value()->rendererCount() == 1u);
+    auto renderer = instance.value()->renderer(0);
+    REQUIRE(renderer.ok());
+    REQUIRE(renderer.value()->getMesh() == sourceMesh);
+    REQUIRE(renderer.value()->getMaterial()->hasPbrSurface());
+    REQUIRE(renderer.value()->getVisible());
+    REQUIRE(renderer.value()->transform()->hasLinkedWorld);
+    for (unsigned column = 0; column < 4; ++column)
+        for (unsigned row = 0; row < 4; ++row) {
+            float expected = 0.f;
+            for (unsigned k = 0; k < 4; ++k) expected += world[k * 4 + row] * sourceMatrix[column * 4 + k];
+            REQUIRE(std::fabs(renderer.value()->transform()->linkedWorld[column][row] - expected) < 1e-5f);
+        }
+    REQUIRE(!owner->release().ok());
+    world[12] += 5.f;
+    REQUIRE(instance.value()->setWorldTransform(world).ok());
+    const float movedX       = renderer.value()->transform()->x;
+    auto        invalidWorld = world;
+    invalidWorld[12]         = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!instance.value()->setWorldTransform(invalidWorld).ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    auto rejectedPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(rejectedPreparation.ok());
+    REQUIRE(
+        !asset_graphics::StaticPrefabRenderInstance::create(std::move(rejectedPreparation).takeValue(), invalidWorld)
+             .ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    invalidWorld    = world;
+    invalidWorld[0] = std::numeric_limits<float>::max();
+    REQUIRE(!instance.value()->setWorldTransform(invalidWorld).ok());
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    REQUIRE(!instance.value()->renderer(1).ok());
+    {
+        auto deferredPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+        REQUIRE(deferredPreparation.ok());
+        ecs::ScopedDefer deferred;
+        REQUIRE(!asset_graphics::StaticPrefabRenderInstance::create(std::move(deferredPreparation).takeValue(), world)
+                     .ok());
+    }
+    REQUIRE(renderer.value()->transform()->x == movedX);
+    ecs::DestroyEntity(renderer.value());
+    auto*      replacement       = graphics::Renderable3D::create();
+    const auto replacementHandle = ecs::handle_of(replacement);
+    REQUIRE(!instance.value()->renderer(0).ok());
+    REQUIRE(!instance.value()->setWorldTransform(world).ok());
+    REQUIRE(instance.value()->release().ok());
+    REQUIRE(ecs::try_get(replacementHandle) == replacement);
+    REQUIRE(instance.value()->release().ok());
+    REQUIRE(instance.value()->rendererCount() == 0u);
+    REQUIRE(!instance.value()->setWorldTransform(world).ok());
+    ecs::DestroyEntity(replacement);
+    auto ownedPreparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics);
+    REQUIRE(ownedPreparation.ok());
+    auto ownedInstance =
+        asset_graphics::StaticPrefabRenderInstance::create(std::move(ownedPreparation).takeValue(), world);
+    REQUIRE(ownedInstance.ok());
+    auto ownedRenderer = ownedInstance.value()->renderer(0);
+    REQUIRE(ownedRenderer.ok());
+    const auto ownedHandle = ecs::handle_of(ownedRenderer.value());
+    REQUIRE(ownedInstance.value()->release().ok());
+    REQUIRE(ecs::try_get(ownedHandle) == nullptr);
+    {
+        auto* sceneHostSystem = eve::scene::Scene::create();
+        auto* baseSink        = cap::query<IProcgenSceneSink>();
+        REQUIRE(baseSink != nullptr);
+        asset_graphics::ProcgenPrefabSceneSink sink(*sceneGraphics, *baseSink);
+        REQUIRE(sink.admit(owner).ok());
+        ProcgenInstanceDesc pose;
+        pose.id            = "posed-facility";
+        pose.sourcePointId = 77;
+        pose.x             = 5.f;
+        pose.pitch         = 30.f;
+        pose.yaw           = 45.f;
+        pose.roll          = -20.f;
+        pose.scaleX        = -2.f;
+        pose.scaleY        = 3.f;
+        pose.scaleZ        = .5f;
+        pose.asset         = owner->sourceAsset().format();
+        pose.assetBinding  = ProcgenInstanceAssetBinding{owner->sourceAsset(), owner->sourceBuildId()};
+        REQUIRE(sink.replaceBatch("posed-facilities", 1, {pose}).ok());
+        auto host = sceneHostSystem->findHost("__pcg/posed-facilities");
+        REQUIRE(host.ok());
+        auto node = host.value()->findById(pose.id);
+        REQUIRE(node.ok());
+        const auto sceneWorld = node.value()->world;
+        int        matched    = 0;
+        {
+            auto view = ecs::View<graphics::Renderable3D, graphics::Renderable3D::Transform3D,
+                                  graphics::Renderable3D::MeshRenderer>();
+            for (auto it = view.begin(); it != view.end(); ++it) {
+                auto [transform, mesh] = *it;
+                if (mesh->mesh != sourceMesh || !mesh->visible) continue;
+                ++matched;
+                for (unsigned column = 0; column < 4; ++column)
+                    for (unsigned row = 0; row < 4; ++row) {
+                        float expected = 0.f;
+                        for (unsigned k = 0; k < 4; ++k) expected += sceneWorld[k][row] * sourceMatrix[column * 4 + k];
+                        REQUIRE(std::fabs(transform->linkedWorld[column][row] - expected) < 1e-4f);
+                    }
+            }
+        }
+        REQUIRE(matched == 1);
+        REQUIRE(!owner->release().ok());
+        struct RestoreRecipeSink {
+            IProcgenSceneSink* previous;
+            ~RestoreRecipeSink() { cap::provide<IProcgenSceneSink>(previous); }
+        } restoreSink{baseSink};
+        cap::provide<IProcgenSceneSink>(&sink);
+        procgen::Procgen proc;
+        auto             generatedHandle = proc.newPointSetHandle();
+        REQUIRE(generatedHandle.ok());
+        auto generatedPoints = proc.resolvePointSet(generatedHandle.value());
+        REQUIRE(generatedPoints.isBound());
+        *generatedPoints.operator->() = roadBake.value().placements;
+        REQUIRE(proc.publishInstances("road-baked-facilities", generatedHandle.value(), "asset", "").ok());
+        REQUIRE(sink.rendererCount("road-baked-facilities") == static_cast<std::size_t>(sidePoints));
+        REQUIRE(sink.instanceCount("road-baked-facilities") == roadBake.value().placements.getCount());
+        REQUIRE(proc.removeInstances("road-baked-facilities").ok());
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(proc.releasePointSet(generatedHandle.value()).ok());
+        REQUIRE(sink.release().ok());
+    }
+    meshes.reject = true;
+    auto failed   = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
+    REQUIRE(!failed.ok());
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
+    meshes.reject      = false;
+    images.reject      = true;
+    auto textureFailed = asset_graphics::EvpackStaticPrefab::load(reader, meshes, images, ref, caps);
+    REQUIRE(!textureFailed.ok());
+    REQUIRE_EQ(meshes.releases, 1);
+    REQUIRE_EQ(owner->drawCount(), std::size_t(1));
+    auto released = owner->release();
+    REQUIRE(released.ok());
+    REQUIRE_EQ(meshes.releases, 2);
+    REQUIRE_EQ(images.releases, 1);
+    REQUIRE_EQ(owner->drawCount(), std::size_t(0));
+    auto retainedBounds = owner->localBounds();
+    REQUIRE(retainedBounds.ok());
+    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis)
+        REQUIRE(retainedBounds.value()[axis] == bounds.value()[axis]);
+    REQUIRE(catalog.localBounds(ref, packageBuild.value()).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::prepareScene(owner, *sceneGraphics).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::pinResources(owner).ok());
+    REQUIRE(!asset_graphics::EvpackStaticPrefab::pinResources({}).ok());
+    // A source root is below the decoder's synthetic container. Replacing its
+    // rotation/translation must retain both signed scale and the child's pose.
+    images.reject                      = false;
+    auto              hierarchyRequest = trianglePrefab();
+    auto&             prefabBytes      = hierarchyRequest.files.at("Assets/tile.prefab");
+    std::string       hierarchy(prefabBytes.begin(), prefabBytes.end());
+    const std::string father = "m_Father: {fileID: 0}";
+    hierarchy.replace(hierarchy.find(father), father.size(), "m_Father: {fileID: 400}");
+    hierarchy += R"(--- !u!1 &100
+GameObject:
+  m_Name: PlacementRoot
+  m_IsActive: 1
+--- !u!4 &400
+Transform:
+  m_GameObject: {fileID: 100}
+  m_Father: {fileID: 0}
+  m_LocalPosition: {x: 7, y: 8, z: 9}
+  m_LocalRotation: {x: 0, y: 0.70710678, z: 0, w: 0.70710678}
+  m_LocalScale: {x: -2, y: 3, z: 4}
+)";
+    prefabBytes.assign(hierarchy.begin(), hierarchy.end());
+    auto hierarchyImport = prepareUnityProjectImport(hierarchyRequest);
+    REQUIRE(hierarchyImport.ok());
+    auto hierarchyEva = asset::buildEvaArchive(hierarchyImport.value().manifest, hierarchyImport.value().entries);
+    REQUIRE(hierarchyEva.ok());
+    auto hierarchyArchive = asset::parseEvaArchive(hierarchyEva.value());
+    REQUIRE(hierarchyArchive.ok());
+    auto hierarchyCook = asset::cookEvaToEvpack(hierarchyArchive.value(), profile);
+    REQUIRE(hierarchyCook.ok());
+    auto hierarchyPack = asset::parseEvpack(hierarchyCook.value().bytes);
+    REQUIRE(hierarchyPack.ok());
+    asset::EvpackResourceReader hierarchyReader(
+        std::make_shared<const asset::Evpack>(std::move(hierarchyPack).takeValue()));
+    auto hierarchyLoad = asset_graphics::EvpackStaticPrefab::load(hierarchyReader, meshes, images, ref, caps);
+    REQUIRE(hierarchyLoad.ok());
+    auto hierarchyOwner  = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(hierarchyLoad).takeValue());
+    auto hierarchyBounds = hierarchyOwner->localBounds(PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(hierarchyBounds.ok());
+    const std::array<float, 6> expectedHierarchyBounds{-2, 6, -16, 0, 9, -12};
+    for (unsigned axis = 0; axis < 6; ++axis)
+        REQUIRE(std::fabs(hierarchyBounds.value()[axis] - expectedHierarchyBounds[axis]) < 1e-4f);
+    auto hierarchyScene = asset_graphics::EvpackStaticPrefab::prepareScene(hierarchyOwner, *sceneGraphics,
+                                                                           PrefabRootPose::ReplaceTranslationRotation);
+    REQUIRE(hierarchyScene.ok());
+    const auto& hierarchyMatrix = hierarchyScene.value()->parts()[0].localTransform;
+    REQUIRE(hierarchyMatrix[0] == -2.f);
+    REQUIRE(hierarchyMatrix[5] == 3.f);
+    REQUIRE(hierarchyMatrix[10] == 4.f);
+    REQUIRE(hierarchyMatrix[12] == -2.f);
+    REQUIRE(hierarchyMatrix[13] == 6.f);
+    REQUIRE(hierarchyMatrix[14] == -12.f);
+    REQUIRE(hierarchyScene.value()->release().ok());
+    REQUIRE(hierarchyOwner->release().ok());
+}
+}  // namespace
+
+TEST_CASE("asset.import.unityStaticPrefabRendersOwnedEcsInstances") {
+    auto prepared = prepareUnityProjectImport(trianglePrefab());
+    REQUIRE(prepared.ok());
+    auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    asset::AssetCookProfile profile{
+        {"win32", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}, asset::CookPublication::LocalInspection, 16};
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile);
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    auto*                       testWindow = window::Window::create();
+    auto*                       gfx        = graphics::Graphics::create();
+    window::WindowSettings      settings;
+    settings.width  = 320;
+    settings.height = 240;
+    REQUIRE(testWindow->setWindowSettings(settings));
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(graphics::Color(.04f, .06f, .09f, 1.f));
+    auto* camera = graphics::Camera3D::createCamera();
+    camera->setEye(-2.f, 2.f, -3.f);
+    camera->setTarget(0.f, 0.f, 0.f);
+    camera->setAmbient(1.f, 1.f, 1.f);
+    asset_graphics::GraphicsMeshFactoryAdapter  meshes(*gfx);
+    asset_graphics::GraphicsImageFactoryAdapter images(*gfx);
+    const asset::EvpackCapabilities capabilities{"win32", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                            loaded = asset_graphics::EvpackStaticPrefab::load(
+        reader, meshes, images, prepared.value().manifest.entrypoints.at("Assets/tile.prefab"), capabilities);
+    REQUIRE(loaded.ok());
+    auto owner       = std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(loaded).takeValue());
+    auto preparation = asset_graphics::EvpackStaticPrefab::prepareScene(owner, *gfx);
+    REQUIRE(preparation.ok());
+    std::array<float, 16> world{1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, -.5f, -2.5f, 3.5f, 1.f};
+    auto instance = asset_graphics::StaticPrefabRenderInstance::create(std::move(preparation).takeValue(), world);
+    REQUIRE(instance.ok());
+    for (const char* feature : {"shadow", "gbuffer", "ao", "gi", "aa", "atmosphere", "msaa", "visResolve", "gpuDriven"})
+        gfx->getRenderControl()->disable(feature);
+    auto render = [&] {
+        for (int frame = 0; frame < 4; ++frame) {
+            graphics::RenderSystem3D::render(*gfx);
+            graphics::RenderSystem::render(*gfx);
+        }
+    };
+    render();
+    std::vector<std::uint8_t> pixels;
+    pixels.reserve(settings.width * settings.height * 4);
+    int redPixels = 0;
+    for (int y = 0; y < settings.height; ++y)
+        for (int x = 0; x < settings.width; ++x) {
+            const auto color = gfx->getPixel(x, y);
+            if (color.r > color.g + .15f && color.r > color.b + .15f) ++redPixels;
+            for (float channel : {color.r, color.g, color.b, color.a})
+                pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+        }
+    REQUIRE(redPixels > 100);
+    auto png = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+    REQUIRE(png.ok());
+    const auto outputPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                            ("static-prefab-owned-" + gfx->getBackendName() + ".png");
+    std::filesystem::create_directories(outputPath.parent_path());
+    std::ofstream output(outputPath, std::ios::binary);
+    output.write(reinterpret_cast<const char*>(png.value().data()), std::streamsize(png.value().size()));
+    REQUIRE(output.good());
+    REQUIRE(instance.value()->release().ok());
+    render();
+    int remainingRed = 0;
+    for (int y = 0; y < settings.height; y += 2)
+        for (int x = 0; x < settings.width; x += 2) {
+            const auto color = gfx->getPixel(x, y);
+            if (color.r > color.g + .15f && color.r > color.b + .15f) ++remainingRed;
+        }
+    REQUIRE(remainingRed == 0);
+    {
+        auto* sceneHostSystem = eve::scene::Scene::create();
+        auto* baseSink        = cap::query<IProcgenSceneSink>();
+        REQUIRE(baseSink != nullptr);
+        asset_graphics::ProcgenPrefabSceneSink sink(*gfx, *baseSink);
+        REQUIRE(sink.admit(owner).ok());
+        REQUIRE(!sink.admit(owner).ok());
+        REQUIRE(!owner->release().ok());
+        struct RestoreSceneSink {
+            IProcgenSceneSink* previous;
+            ~RestoreSceneSink() { cap::provide<IProcgenSceneSink>(previous); }
+        } restore{baseSink};
+        cap::provide<IProcgenSceneSink>(&sink);
+        procgen::Procgen proc;
+        auto             pointHandle = proc.newPointSetHandle();
+        REQUIRE(pointHandle.ok());
+        auto points = proc.resolvePointSet(pointHandle.value());
+        REQUIRE(points.isBound());
+        const int point = points->add(-.5f, -2.5f, 3.5f);
+        REQUIRE(points->trySetPointId(point, 1001).ok());
+        points->setStringAttribute(point, "asset", owner->sourceAsset().format());
+        points->setStringAttribute(point, "asset_build_id", owner->sourceBuildId().format());
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.rendererCount("prefab-facilities") == 1u);
+        const auto           revision = sink.batchRevision("prefab-facilities");
+        ProcgenInstanceDelta oversizedDelta;
+        oversizedDelta.baseRevision   = revision;
+        oversizedDelta.targetRevision = revision + 1;
+        oversizedDelta.targetPointOrder.resize(65537, 1001);
+        auto oversized = sink.applyDelta("prefab-facilities", oversizedDelta);
+        REQUIRE(!oversized.ok());
+        REQUIRE(oversized.error() != nullptr);
+        REQUIRE(oversized.error()->code() == DiagnosticCode::PreconditionViolation);
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        procgen::RuntimeGeneration savedRuntime(404);
+        REQUIRE(savedRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        savedRuntime.updateSource(-5.f, 5.f, 1.f, 0.f);
+        std::unique_ptr<procgen::ProcgenCellRequest> generated(savedRuntime.nextGenerate());
+        REQUIRE(generated != nullptr);
+        REQUIRE(savedRuntime.completeGeneration(generated.get(), points.operator->()));
+        const auto persistedCell =
+            savedRuntime.serializeCell(generated->getLevel(), generated->getX(), generated->getZ());
+        REQUIRE(!persistedCell.empty());
+        auto redMask = [&] {
+            std::vector<bool> mask;
+            for (int y = 0; y < settings.height; y += 2)
+                for (int x = 0; x < settings.width; x += 2) {
+                    const auto color = gfx->getPixel(x, y);
+                    mask.push_back(color.r > color.g + .15f && color.r > color.b + .15f);
+                }
+            return mask;
+        };
+        render();
+        const auto visible = redMask();
+        REQUIRE(std::count(visible.begin(), visible.end(), true) > 25);
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        auto batchPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(batchPng.ok());
+        const auto batchPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                               ("static-prefab-batch-" + gfx->getBackendName() + ".png");
+        std::ofstream batchOutput(batchPath, std::ios::binary);
+        batchOutput.write(reinterpret_cast<const char*>(batchPng.value().data()),
+                          std::streamsize(batchPng.value().size()));
+        REQUIRE(batchOutput.good());
+        auto staleBuild = owner->sourceBuildId().format();
+        staleBuild[0]   = staleBuild[0] == '0' ? '1' : '0';
+        points->setStringAttribute(point, "asset_build_id", staleBuild);
+        REQUIRE(!proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        render();
+        REQUIRE(redMask() == visible);
+        ProcgenInstanceDesc moved;
+        moved.id              = "pcg-id-1001";
+        moved.sourcePointId   = 1001;
+        moved.x               = 10.f;
+        moved.y               = -2.5f;
+        moved.z               = 3.5f;
+        moved.asset           = owner->sourceAsset().format();
+        moved.assetBinding    = ProcgenInstanceAssetBinding{owner->sourceAsset(), owner->sourceBuildId()};
+        auto missing          = moved;
+        missing.id            = "missing-prefab";
+        missing.sourcePointId = 1002;
+        auto missingAsset     = AssetRef::parse("asset://018f0b7e-6e50-7a10-8c22-2c8f8e3dd191");
+        REQUIRE(missingAsset.ok());
+        missing.asset               = missingAsset.value().format();
+        missing.assetBinding->asset = missingAsset.value();
+        REQUIRE(
+            !sink.replaceBatches({{"prefab-facilities", revision + 1, {moved}}, {"missing-facilities", 1, {missing}}})
+                 .ok());
+        REQUIRE(!sceneHostSystem->findHost("__pcg/missing-facilities").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        REQUIRE(sink.pendingRetirements() == 0u);
+        render();
+        REQUIRE(redMask() == visible);
+        REQUIRE(!sink.replaceBatchesCoordinated({{"prefab-facilities", revision + 1, {moved}}},
+                                                [] {
+                                                    return Result<void>::failure(Diagnostic::error(
+                                                        DiagnosticCode::Failed, "injected prepared owner failure"));
+                                                })
+                     .ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == revision);
+        REQUIRE(sink.pendingRetirements() == 0u);
+        render();
+        REQUIRE(redMask() == visible);
+        ProcgenInstanceDelta delta;
+        delta.baseRevision     = revision;
+        delta.targetRevision   = revision + 1;
+        delta.updated          = {moved};
+        delta.targetPointOrder = {1001};
+        REQUIRE(sink.applyDelta("prefab-facilities", delta).ok());
+        REQUIRE(sink.pendingRetirements() == 1u);
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        render();
+        const auto hidden = redMask();
+        REQUIRE(std::count(hidden.begin(), hidden.end(), true) == 0);
+        procgen::RuntimeGeneration restoredRuntime(404);
+        REQUIRE(restoredRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        REQUIRE(restoredRuntime.deserializeCell(persistedCell));
+        std::unique_ptr<procgen::PointSet> restoredPoints(
+            restoredRuntime.getCellOutput(generated->getLevel(), generated->getX(), generated->getZ()));
+        REQUIRE(restoredPoints != nullptr);
+        *points.operator->() = *restoredPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        auto                              reimportRequest = trianglePrefab();
+        const std::array<std::uint8_t, 4> greenPixel{0, 255, 0, 255};
+        auto                              greenImage = asset::detail::encodeSourcePng(1, 1, greenPixel, 4096);
+        REQUIRE(greenImage.ok());
+        reimportRequest.files["Assets/pixel.png"] = std::move(greenImage).takeValue();
+        auto&             prefabBytes             = reimportRequest.files.at("Assets/tile.prefab");
+        std::string       changedPrefab(prefabBytes.begin(), prefabBytes.end());
+        const std::string oldScale      = "m_LocalScale: {x: 1, y: 1, z: 1}";
+        const auto        scalePosition = changedPrefab.find(oldScale);
+        REQUIRE(scalePosition != std::string::npos);
+        changedPrefab.replace(scalePosition, oldScale.size(), "m_LocalScale: {x: 2, y: 1, z: 1}");
+        prefabBytes.assign(changedPrefab.begin(), changedPrefab.end());
+        auto reimported = prepareUnityProjectImport(reimportRequest);
+        REQUIRE(reimported.ok());
+        auto replacementEva = asset::buildEvaArchive(reimported.value().manifest, reimported.value().entries);
+        REQUIRE(replacementEva.ok());
+        auto replacementArchive = asset::parseEvaArchive(replacementEva.value());
+        REQUIRE(replacementArchive.ok());
+        auto replacementCook = asset::cookEvaToEvpack(replacementArchive.value(), profile);
+        REQUIRE(replacementCook.ok());
+        auto replacementPack = asset::parseEvpack(replacementCook.value().bytes);
+        REQUIRE(replacementPack.ok());
+        asset::EvpackResourceReader replacementReader(
+            std::make_shared<const asset::Evpack>(std::move(replacementPack).takeValue()));
+        REQUIRE(reimported.value().manifest.entrypoints.at("Assets/tile.prefab") == owner->sourceAsset());
+        auto replacementLoad = asset_graphics::EvpackStaticPrefab::load(replacementReader, meshes, images,
+                                                                        owner->sourceAsset(), capabilities);
+        REQUIRE(replacementLoad.ok());
+        auto replacementOwner =
+            std::shared_ptr<asset_graphics::EvpackStaticPrefab>(std::move(replacementLoad).takeValue());
+        REQUIRE(replacementOwner->sourceBuildId() != owner->sourceBuildId());
+        asset_graphics::PrefabBoundsCatalog versionBounds;
+        REQUIRE(versionBounds.add(*owner).ok());
+        REQUIRE(versionBounds.add(*replacementOwner).ok());
+        auto oldBounds = versionBounds.localBounds(owner->sourceAsset(), owner->sourceBuildId());
+        auto newBounds = versionBounds.localBounds(owner->sourceAsset(), replacementOwner->sourceBuildId());
+        REQUIRE(oldBounds.ok());
+        REQUIRE(newBounds.ok());
+        REQUIRE(newBounds.value()[0] < oldBounds.value()[0]);
+        REQUIRE(sink.admit(replacementOwner).ok());
+        REQUIRE(!sink.admit(replacementOwner).ok());
+        REQUIRE(!replacementOwner->release().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        points->setStringAttribute(point, "asset_build_id", replacementOwner->sourceBuildId().format());
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        render();
+        int greenPixels = 0;
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                if (color.g > color.r + .15f && color.g > color.b + .15f) ++greenPixels;
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        REQUIRE(greenPixels > 100);
+        const auto reimportMask = redMask();
+        REQUIRE(std::count(reimportMask.begin(), reimportMask.end(), true) == 0);
+        auto reimportPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(reimportPng.ok());
+        const auto reimportPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                                  ("static-prefab-reimport-" + gfx->getBackendName() + ".png");
+        std::ofstream reimportOutput(reimportPath, std::ios::binary);
+        reimportOutput.write(reinterpret_cast<const char*>(reimportPng.value().data()),
+                             std::streamsize(reimportPng.value().size()));
+        REQUIRE(reimportOutput.good());
+        *points.operator->() = *restoredPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        points->setPosition(point, .5f, -.5f, .5f);
+        points->setStringAttribute(point, "asset_root_pose", "placement");
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        procgen::RuntimeGeneration placedRuntime(404);
+        REQUIRE(placedRuntime.addLevel(10.f, 6.f, 1.5f) == 0);
+        placedRuntime.updateSource(-5.f, 5.f, 1.f, 0.f);
+        std::unique_ptr<procgen::ProcgenCellRequest> placedRequest(placedRuntime.nextGenerate());
+        REQUIRE(placedRequest != nullptr);
+        REQUIRE(placedRuntime.completeGeneration(placedRequest.get(), points.operator->()));
+        const auto placedCell =
+            placedRuntime.serializeCell(placedRequest->getLevel(), placedRequest->getX(), placedRequest->getZ());
+        REQUIRE(!placedCell.empty());
+        REQUIRE(proc.removeInstances("prefab-facilities").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        const auto removedPlacedMask = redMask();
+        REQUIRE(std::count(removedPlacedMask.begin(), removedPlacedMask.end(), true) == 0);
+        procgen::RuntimeGeneration placedRestore(404);
+        REQUIRE(placedRestore.addLevel(10.f, 6.f, 1.5f) == 0);
+        REQUIRE(placedRestore.deserializeCell(placedCell));
+        std::unique_ptr<procgen::PointSet> placedPoints(
+            placedRestore.getCellOutput(placedRequest->getLevel(), placedRequest->getX(), placedRequest->getZ()));
+        REQUIRE(placedPoints != nullptr);
+        REQUIRE(placedPoints->getStringAttribute(point, "asset_root_pose", "") == "placement");
+        REQUIRE(placedPoints->getStringAttribute(point, "asset_build_id", "") == owner->sourceBuildId().format());
+        REQUIRE(placedPoints->points()[point].id == 1001u);
+        *points.operator->() = *placedPoints;
+        REQUIRE(proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.collectRetired().ok());
+        render();
+        REQUIRE(redMask() == visible);
+        pixels.clear();
+        for (int y = 0; y < settings.height; ++y)
+            for (int x = 0; x < settings.width; ++x) {
+                const auto color = gfx->getPixel(x, y);
+                for (float channel : {color.r, color.g, color.b, color.a})
+                    pixels.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(channel, 0.f, 1.f) * 255.f)));
+            }
+        auto placedPng = asset::detail::encodeSourcePng(settings.width, settings.height, pixels, 4 * 1024 * 1024);
+        REQUIRE(placedPng.ok());
+        const auto placedPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                                ("static-prefab-placement-restore-" + gfx->getBackendName() + ".png");
+        std::ofstream placedOutput(placedPath, std::ios::binary);
+        placedOutput.write(reinterpret_cast<const char*>(placedPng.value().data()),
+                           std::streamsize(placedPng.value().size()));
+        REQUIRE(placedOutput.good());
+        const auto placedRevision = sink.batchRevision("prefab-facilities");
+        points->setStringAttribute(point, "asset_root_pose", "unknown");
+        REQUIRE(!proc.publishInstances("prefab-facilities", pointHandle.value(), "asset", "").ok());
+        REQUIRE(sink.batchRevision("prefab-facilities") == placedRevision);
+        render();
+        REQUIRE(redMask() == visible);
+        REQUIRE(proc.removeInstances("prefab-facilities").ok());
+        REQUIRE(sink.rendererCount("prefab-facilities") == 0u);
+        REQUIRE(sink.pendingRetirements() == 1u);
+        REQUIRE(sink.collectRetired().ok());
+        REQUIRE(!owner->release().ok());
+        REQUIRE(!replacementOwner->release().ok());
+        REQUIRE(sink.release().ok());
+        REQUIRE(replacementOwner->release().ok());
+        REQUIRE(versionBounds.localBounds(owner->sourceAsset(), replacementOwner->sourceBuildId()).ok());
+        REQUIRE(proc.releasePointSet(pointHandle.value()).ok());
+    }
+    REQUIRE(owner->release().ok());
+    testWindow->close();
+}
+
+TEST_CASE("asset.import.unityFbxHashesNodeNameAndProducesCanonicalMesh") {
+    auto             request = triangleFbx();
+    UnitySourceAsset source{
+        "Assets/tile.fbx", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", UnitySourceKind::Model, "ModelImporter", {}};
+    auto prepared = prepareUnityFbx(request, source);
+    REQUIRE(prepared.ok());
+    REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(1));
+    REQUIRE_EQ(prepared.value().sourceMappings.front().sourceObject, std::string("-813904291765591093"));
+    const auto meshEntry = std::find_if(prepared.value().entries.begin(), prepared.value().entries.end(),
+                                        [](const auto& entry) { return entry.path.ends_with("mesh.bin"); });
+    REQUIRE(meshEntry != prepared.value().entries.end());
+    auto decoded = asset::decodeCanonicalMesh(meshEntry->bytes);
+    REQUIRE(decoded.ok());
+    REQUIRE_EQ(decoded.value().texcoords.size(), std::size_t(2));
+    REQUIRE_EQ(decoded.value().texcoords.at(1), std::vector<float>({0.25f, 0.5f, 0.75f, 0.5f, 0.25f, 0.f}));
+    REQUIRE_EQ(decoded.value().attributes.at("TANGENT").components, std::uint32_t(4));
+    REQUIRE_EQ(decoded.value().attributes.at("TANGENT").values,
+               std::vector<float>({1, 0, 0, -1, 1, 0, 0, -1, 1, 0, 0, -1}));
+    REQUIRE_EQ(decoded.value().attributes.at("COLOR_0").components, std::uint32_t(4));
+    REQUIRE_EQ(decoded.value().attributes.at("COLOR_0").values,
+               std::vector<float>({1, 0, 0, 1, 0, 1, 0, 0.5f, 0, 0, 1, 0.25f}));
+    auto repeated = prepareUnityFbx(request, source);
+    REQUIRE(repeated.ok());
+    REQUIRE(prepared.value().sourceMappings.front().asset == repeated.value().sourceMappings.front().asset);
+}
+
+TEST_CASE("asset.import.unityFbxCharacterProducesSkinAndAnimation") {
+    const auto    path = eve_test_path::pathBesideTestDir(__FILE__, "assets/mixamo/Idle.fbx");
+    std::ifstream input(path, std::ios::binary);
+    REQUIRE(input.good());
+    UnityProjectImportRequest request;
+    request.package = {*PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040"), "fbx.character", "1.0.0", {}};
+    request.files["Assets/Idle.fbx"] = {std::istreambuf_iterator<char>(input), std::istreambuf_iterator<char>()};
+    const std::string meta =
+        "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nModelImporter:\n  meshes:\n"
+        "    globalScale: 100\n    fileIdsGeneration: 2\n    useFileScale: 1\n"
+        "    swapUVChannels: 0\n  tangentSpace:\n    normalImportMode: 0\n";
+    request.files["Assets/Idle.fbx.meta"] = {meta.begin(), meta.end()};
+    UnitySourceAsset source{
+        "Assets/Idle.fbx", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", UnitySourceKind::Model, "ModelImporter", {}};
+    auto prepared = prepareUnityFbx(request, source);
+    if (!prepared) throw std::runtime_error(prepared.status().diagnostics().front().message());
+    REQUIRE(prepared.ok());
+    const auto hasType = [&](const char* type) {
+        return std::any_of(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                           [&](const auto& asset) { return asset.type == type; });
+    };
+    CHECK(hasType("eve.mesh"));
+    CHECK(hasType("eve.skeleton"));
+    CHECK(hasType("eve.skin"));
+    CHECK(hasType("eve.animation-clip"));
+    auto encoded = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    asset::AssetCookProfile profile{
+        {"win32", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}, asset::CookPublication::LocalInspection, 16};
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile);
+    REQUIRE(cooked.ok());
+}
+
+TEST_CASE("asset.import.unityFbxRejectsCorruptionAndRecoversReferencedLegacyIdentity") {
+    auto             request = triangleFbx();
+    UnitySourceAsset source{
+        "Assets/tile.fbx", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", UnitySourceKind::Model, "ModelImporter", {}};
+    request.files.at(source.path) = {1, 2, 3};
+    auto corrupt                  = prepareUnityFbx(request, source);
+    REQUIRE(!corrupt.ok());
+    request           = triangleFbx();
+    auto&       bytes = request.files.at(source.path + ".meta");
+    std::string meta(bytes.begin(), bytes.end());
+    meta.replace(meta.find("fileIdsGeneration: 2"), 20, "fileIdsGeneration: 1");
+    bytes.assign(meta.begin(), meta.end());
+    const std::string prefab =
+        "--- !u!33 &3300000\nMeshFilter:\n  m_Mesh: {fileID: 1243444849563829797, guid: "
+        "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}\n";
+    request.files["Assets/legacy.prefab"] = {prefab.begin(), prefab.end()};
+    auto legacy                           = prepareUnityFbx(request, source);
+    REQUIRE(legacy.ok());
+    REQUIRE_EQ(legacy.value().sourceMappings.front().sourceObject, std::string("1243444849563829797"));
+
+    request.files.erase("Assets/legacy.prefab");
+    auto indexed = prepareUnityFbx(request, source);
+    REQUIRE(indexed.ok());
+    REQUIRE_EQ(indexed.value().sourceMappings.front().sourceObject, std::string("4300000"));
+}
+}  // namespace test_asset_import_unity_fbx
+
+
+// Contract section: asset import unity native
+#include "PrivateTestScope.h"
+
+// asset_import_unity_native.cpp
+namespace test_asset_import_unity_native {
+using namespace eve;
+using namespace eve::asset_import;
+namespace {
+void put(UnityProjectImportRequest& r, const std::string& path, const std::string& text) {
+    r.files[path] = {text.begin(), text.end()};
+}
+UnityProjectImportRequest fixture() {
+    UnityProjectImportRequest r;
+    r.package = {*PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040"),
+                 "native.test",
+                 "1.0.0",
+                 {{"license", Value(Value::Object{{"redistribution", Value("project-only")}})}}};
+    std::string data;
+    const char* digits = "0123456789abcdef";
+    const float vertices[]{1, 2, 3, 0, 1, 0, 0.25f, 0.75f, 4, 5, 6, 0, 1, 0, 0.5f, 0.5f, 7, 8, 9, 0, 1, 0, 1, 0};
+    for (float f : vertices) {
+        auto v = std::bit_cast<std::uint32_t>(f);
+        for (unsigned i = 0; i < 4; ++i) {
+            auto b = (v >> (8 * i)) & 255u;
+            data += digits[b >> 4];
+            data += digits[b & 15];
+        }
+    }
+    std::string mesh =
+        "%YAML 1.1\n--- !u!43 &4300000\nMesh:\n  serializedVersion: 9\n  m_MeshCompression: 0\n  m_BindPose: []\n  "
+        "m_SubMeshes:\n";
+    mesh += "  - serializedVersion: 2\n    firstByte: 0\n    indexCount: 3\n    topology: 0\n    baseVertex: 0\n";
+    mesh += "  - serializedVersion: 2\n    firstByte: 6\n    indexCount: 0\n    topology: 0\n    baseVertex: 0\n";
+    mesh += "  - serializedVersion: 2\n    firstByte: 6\n    indexCount: 3\n    topology: 0\n    baseVertex: 0\n";
+    mesh +=
+        "  m_IndexFormat: 0\n  m_IndexBuffer: 000001000200020001000000\n  m_VertexData:\n    m_VertexCount: 3\n    "
+        "m_Channels:\n";
+    for (int i = 0; i < 14; ++i)
+        mesh += "    - stream: 0\n      offset: " +
+                std::to_string(i == 1   ? 12
+                               : i == 4 ? 24
+                                        : 0) +
+                "\n      format: 0\n      dimension: " +
+                std::to_string(i == 0 || i == 1 ? 3
+                               : i == 4         ? 2
+                                                : 0) +
+                "\n";
+    mesh += "    m_DataSize: 96\n    _typelessdata: " + data + "\n  m_StreamData:\n    size: 0\n";
+    put(r, "Assets/mesh.asset", mesh);
+    put(r, "Assets/mesh.asset.meta", "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+    put(r, "Assets/material.mat",
+        "--- !u!21 &2100000\nMaterial:\n  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}\n  "
+        "m_Floats:\n    - _Mode: 2\n    - _Metallic: 0\n    - _Glossiness: 0.5\n  m_Colors:\n    - _Color: {r: 1, g: "
+        "0.5, b: 0.25, a: 0.3}\n");
+    put(r, "Assets/material.mat.meta", "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
+    std::string prefab =
+        "--- !u!1 &1\nGameObject:\n  m_Name: Child\n  m_IsActive: 1\n--- !u!4 &4\nTransform:\n  m_GameObject: {fileID: "
+        "1}\n  m_Father: {fileID: 0}\n  m_LocalPosition: {x: 0, y: 0, z: 0}\n  m_LocalRotation: {x: 0, y: 0, z: 0, w: "
+        "1}\n  m_LocalScale: {x: 1, y: 1, z: 1}\n--- !u!33 &33\nMeshFilter:\n  m_GameObject: {fileID: 1}\n  m_Mesh: "
+        "{fileID: 4300000, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}\n--- !u!23 &23\nMeshRenderer:\n  "
+        "m_GameObject: {fileID: 1}\n  m_Enabled: 1\n  m_CastShadows: 0\n  m_ReceiveShadows: 0\n  m_Materials:\n";
+    for (int i = 0; i < 3; ++i)
+        prefab +=
+            i == 1 ? "  - {fileID: 0}\n" : "  - {fileID: 2100000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 2}\n";
+    put(r, "Assets/child.prefab", prefab);
+    put(r, "Assets/child.prefab.meta", "guid: cccccccccccccccccccccccccccccccc\n");
+    return r;
+}
+std::string instance(int id, int alias, const std::string& guid, float x) {
+    return "--- !u!1001 &" + std::to_string(id) +
+           "\nPrefabInstance:\n  m_Modification:\n    m_TransformParent: {fileID: 0}\n    m_Modifications:\n    - "
+           "target: {fileID: 4, guid: " +
+           guid + ", type: 3}\n      propertyPath: m_LocalPosition.x\n      value: " + std::to_string(x) +
+           "\n      objectReference: {fileID: 0}\n    m_RemovedComponents: []\n  m_SourcePrefab: {fileID: 100100000, "
+           "guid: " +
+           guid + ", type: 3}\n--- !u!4 &" + std::to_string(alias) +
+           " stripped\nTransform:\n  m_CorrespondingSourceObject: {fileID: 4, guid: " + guid +
+           ", type: 3}\n  m_PrefabInstance: {fileID: " + std::to_string(id) + "}\n";
+}
+}  // namespace
+TEST_CASE("asset.import.unityNativeMeshPreservesEmptySlotsAndCanonicalCoordinates") {
+    auto r        = fixture();
+    auto prepared = prepareUnityProjectImport(r);
+    REQUIRE(prepared.ok());
+    REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(4));
+    const auto materialRef = prepared.value().manifest.entrypoints.at("Assets/material.mat");
+    const auto material = std::find_if(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                                       [&](const auto& asset) { return asset.asset == materialRef; });
+    REQUIRE(material != prepared.value().manifest.assets.end());
+    REQUIRE_EQ(material->schemaVersion, SchemaVersion(15));
+    std::size_t materialLinks = 0;
+    for (const auto& dependency : prepared.value().manifest.dependencies) {
+        if (dependency.to != materialRef) continue;
+        REQUIRE_EQ(dependency.expectedType, std::string("eve.material/15"));
+        ++materialLinks;
+    }
+    REQUIRE_EQ(materialLinks, std::size_t(2));
+    auto eva = asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(eva.ok());
+    auto archive = asset::parseEvaArchive(eva.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    asset::EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                        scene = asset_scene::EvpackSceneTemplateLoader(reader).load(
+        prepared.value().manifest.entrypoints.at("Assets/child.prefab"), caps);
+    REQUIRE(scene.ok());
+    REQUIRE_EQ(scene.value().renderers.size(), std::size_t(2));
+    REQUIRE(!scene.value().renderers[0].castShadows);
+    REQUIRE(!scene.value().renderers[0].receiveShadows);
+    REQUIRE(!scene.value().renderers[1].castShadows);
+    REQUIRE(!scene.value().renderers[1].receiveShadows);
+    class Factory final : public graphics::IMeshResourceFactory {
+    public:
+        int                        token = 0;
+        std::vector<float>         positions, uv;
+        std::vector<std::uint32_t> indices;
+        Result<graphics::Mesh*> uploadMesh(const float* p, const float*, const float* t, int n, const std::uint32_t* i,
+                                           int count) override {
+            positions.assign(p, p + n * 3);
+            uv.assign(t, t + n * 2);
+            indices.assign(i, i + count);
+            return Result<graphics::Mesh*>::success(reinterpret_cast<graphics::Mesh*>(&token));
+        }
+        Result<void> releaseMesh(graphics::Mesh*) override { return Result<void>::success(); }
+    } factory;
+    auto mesh = asset_graphics::EvpackGraphicsLoader(reader, factory).loadMesh(scene.value().renderers[0].mesh, caps);
+    REQUIRE(mesh.ok());
+    REQUIRE_EQ(factory.positions[0], 1.f);
+    REQUIRE_EQ(factory.positions[2], -3.f);
+    REQUIRE_EQ(factory.uv[1], 0.25f);
+    REQUIRE_EQ(factory.indices[1], std::uint32_t(2));
+    REQUIRE_EQ(factory.indices[2], std::uint32_t(1));
+    class Images final : public graphics::IImageResourceFactory {
+    public:
+        Result<graphics::Texture*> uploadRgba8(std::uint32_t, std::uint32_t, const std::uint8_t*, bool) override {
+            return Result<graphics::Texture*>::failure(
+                Diagnostic::error(DiagnosticCode::Failed, "unexpected texture upload"));
+        }
+        Result<void> releaseImage(graphics::Texture*) override { return Result<void>::success(); }
+    } images;
+    auto drawable = asset_graphics::EvpackStaticPrefab::load(
+        reader, factory, images, prepared.value().manifest.entrypoints.at("Assets/child.prefab"), caps);
+    REQUIRE(drawable.ok());
+    REQUIRE_EQ(drawable.value()->drawCount(), std::size_t(2));
+    auto released = factory.releaseMesh(mesh.value().mesh);
+    REQUIRE(released.ok());
+}
+TEST_CASE("asset.import.unityVegetationPrefabDependenciesUseCurrentMaterialSchema") {
+    auto request = fixture();
+    put(request, "Assets/material.mat",
+        "--- !u!21 &2100000\nMaterial:\n  m_Shader: {fileID: 4800000, guid: 7befaa6f41d00a6478d5f4af21d66518, type: "
+        "3}\n");
+    auto imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    const auto  material = imported.value().manifest.entrypoints.at("Assets/material.mat");
+    std::size_t count    = 0;
+    for (const auto& dependency : imported.value().manifest.dependencies) {
+        if (dependency.to != material) continue;
+        REQUIRE_EQ(dependency.expectedType, std::string("eve.material/15"));
+        ++count;
+    }
+    REQUIRE_EQ(count, std::size_t(2));
+    auto bytes = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(bytes.ok());
+    auto archive = asset::parseEvaArchive(bytes.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+}
+TEST_CASE("asset.import.unityNativeMeshRejectsTruncatedAndOutOfRangeBuffers") {
+    auto        r     = fixture();
+    auto&       bytes = r.files.at("Assets/mesh.asset");
+    std::string text(bytes.begin(), bytes.end());
+    const auto  at = text.find("000001000200");
+    REQUIRE(at != std::string::npos);
+    text.replace(at, 4, "ffff");
+    put(r, "Assets/mesh.asset", text);
+    auto invalid = prepareUnityProjectImport(r);
+    REQUIRE(!invalid.ok());
+    r = fixture();
+    text.assign(r.files.at("Assets/mesh.asset").begin(), r.files.at("Assets/mesh.asset").end());
+    const auto data = text.find("_typelessdata: ");
+    text.erase(data + 14, 2);
+    put(r, "Assets/mesh.asset", text);
+    auto truncated = prepareUnityProjectImport(r);
+    REQUIRE(!truncated.ok());
+}
+TEST_CASE("asset.import.unityNestedPrefabInstancesHaveDistinctIdentityAndOverrides") {
+    auto r = fixture();
+    put(r, "Assets/parent.prefab",
+        instance(100, 104, "cccccccccccccccccccccccccccccccc", 2) +
+            instance(200, 204, "cccccccccccccccccccccccccccccccc", 7));
+    put(r, "Assets/parent.prefab.meta", "guid: dddddddddddddddddddddddddddddddd\n");
+    auto prepared = prepareUnityProjectImport(r);
+    REQUIRE(prepared.ok());
+    const auto ref   = prepared.value().manifest.entrypoints.at("Assets/parent.prefab");
+    const auto asset = std::find_if(prepared.value().manifest.assets.begin(), prepared.value().manifest.assets.end(),
+                                    [&](const auto& a) { return a.asset == ref; });
+    REQUIRE(asset != prepared.value().manifest.assets.end());
+    const auto entry = std::find_if(prepared.value().entries.begin(), prepared.value().entries.end(),
+                                    [&](const auto& e) { return e.path == asset->definition; });
+    REQUIRE(entry != prepared.value().entries.end());
+    auto value = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
+    REQUIRE(value.ok());
+    const auto& object = *value.value().getIf<Value::Object>();
+    REQUIRE_EQ(object.at("renderers").getIf<Value::Array>()->size(), std::size_t(4));
+    std::vector<double> positions;
+    for (const auto& n : *object.at("nodes").getIf<Value::Array>()) {
+        const auto& node = *n.getIf<Value::Object>();
+        if (node.at("parentSourceFileId").asInt() == 0)
+            positions.push_back(node.at("position").getIf<Value::Array>()->at(0).asDouble());
+    }
+    std::sort(positions.begin(), positions.end());
+    REQUIRE_EQ(positions.size(), std::size_t(2));
+    REQUIRE_EQ(positions[0], 2.0);
+    REQUIRE_EQ(positions[1], 7.0);
+    auto repeated = prepareUnityProjectImport(r);
+    REQUIRE(repeated.ok());
+    REQUIRE_EQ(prepared.value().entries.size(), repeated.value().entries.size());
+    for (std::size_t i = 0; i < prepared.value().entries.size(); ++i)
+        REQUIRE_EQ(prepared.value().entries[i].bytes, repeated.value().entries[i].bytes);
+    put(r, "Assets/child.prefab", instance(300, 304, "dddddddddddddddddddddddddddddddd", 0));
+    auto cycle = prepareUnityProjectImport(r);
+    REQUIRE(!cycle.ok());
+}
+
+TEST_CASE("asset.import.unityNestedPrefabRemovalAndBudgetAreValidated") {
+    auto       r    = fixture();
+    auto       text = instance(100, 104, "cccccccccccccccccccccccccccccccc", 2);
+    const auto at   = text.find("m_RemovedComponents: []");
+    REQUIRE(at != std::string::npos);
+    text.replace(at, std::string("m_RemovedComponents: []").size(),
+                 "m_RemovedComponents:\n    - {fileID: 23, guid: cccccccccccccccccccccccccccccccc, type: 3}");
+    put(r, "Assets/parent.prefab", text);
+    put(r, "Assets/parent.prefab.meta", "guid: dddddddddddddddddddddddddddddddd\n");
+    auto index = indexUnitySources(r.files);
+    REQUIRE(index.ok());
+    const auto source = std::find_if(index.value().assets.begin(), index.value().assets.end(),
+                                     [](const auto& a) { return a.path == "Assets/parent.prefab"; });
+    REQUIRE(source != index.value().assets.end());
+    auto expanded = expandUnityPrefab(r, index.value(), *source);
+    REQUIRE(expanded.ok());
+    const std::string flattened(expanded.value().bytes.begin(), expanded.value().bytes.end());
+    REQUIRE(flattened.find("MeshRenderer:") == std::string::npos);
+    REQUIRE(flattened.find("m_LocalPosition: {x: 2.000000,") != std::string::npos);
+    r.limits.maximumAssets = 2;
+    auto limited           = expandUnityPrefab(r, index.value(), *source);
+    REQUIRE(!limited.ok());
+}
+
+TEST_CASE("asset.import.unityNativeSubmeshIdentitySurvivesEmptySlotBecomingPopulated") {
+    auto r      = fixture();
+    auto before = prepareUnityProjectImport(r);
+    REQUIRE(before.ok());
+    std::string text(r.files.at("Assets/mesh.asset").begin(), r.files.at("Assets/mesh.asset").end());
+    auto        at = text.find("indexCount: 0");
+    REQUIRE(at != std::string::npos);
+    text.replace(at, 13, "indexCount: 3");
+    at = text.rfind("firstByte: 6");
+    REQUIRE(at != std::string::npos);
+    text.replace(at, 12, "firstByte: 12");
+    at = text.find("000001000200020001000000");
+    REQUIRE(at != std::string::npos);
+    text.insert(at + 24, "000001000200");
+    put(r, "Assets/mesh.asset", text);
+    auto after = prepareUnityProjectImport(r);
+    REQUIRE(after.ok());
+    const auto key    = "unity:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/4300000/submesh/2";
+    auto       lookup = [&](const auto& candidate) {
+        return std::find_if(candidate.sourceMappings.begin(), candidate.sourceMappings.end(),
+                                  [&](const auto& m) { return m.sourceObject == key; });
+    };
+    const auto old = lookup(before.value()), updated = lookup(after.value());
+    REQUIRE(old != before.value().sourceMappings.end());
+    REQUIRE(updated != after.value().sourceMappings.end());
+    REQUIRE(old->asset == updated->asset);
+}
+
+TEST_CASE("asset.import.unityNativeMeshManySlotsKeepDefinitionsAndMappingsAligned") {
+    auto        r = fixture();
+    std::string mesh(r.files.at("Assets/mesh.asset").begin(), r.files.at("Assets/mesh.asset").end());
+    const auto  begin = mesh.find("  m_SubMeshes:");
+    const auto  end   = mesh.find("  m_VertexData:");
+    REQUIRE(begin != std::string::npos);
+    REQUIRE(end != std::string::npos);
+    std::string slots = "  m_SubMeshes:\n", indices;
+    for (int i = 0; i < 12; ++i) {
+        slots += "  - serializedVersion: 2\n    firstByte: " + std::to_string(i * 6) +
+                 "\n    indexCount: 3\n    topology: 0\n    baseVertex: 0\n";
+        indices += "000001000200";
+    }
+    slots += "  m_IndexFormat: 0\n  m_IndexBuffer: " + indices + "\n";
+    mesh.replace(begin, end - begin, slots);
+    put(r, "Assets/mesh.asset", mesh);
+    auto index = indexUnitySources(r.files);
+    REQUIRE(index.ok());
+    const auto source = std::find_if(index.value().assets.begin(), index.value().assets.end(),
+                                     [](const auto& a) { return a.path == "Assets/mesh.asset"; });
+    REQUIRE(source != index.value().assets.end());
+    auto prepared = prepareUnityNativeMesh(r, *source);
+    REQUIRE(prepared.ok());
+    REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(12));
+    auto archive = eve::asset::buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(archive.ok());
+    for (int i = 0; i < 12; ++i) {
+        const auto key = "4300000/submesh/" + std::to_string(i);
+        const auto expected =
+            r.package.packageId.child("unity:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa:4300000:submesh:" + std::to_string(i));
+        const auto mapping =
+            std::find_if(prepared.value().sourceMappings.begin(), prepared.value().sourceMappings.end(),
+                         [&](const auto& m) { return m.sourceObject == key; });
+        REQUIRE(mapping != prepared.value().sourceMappings.end());
+        REQUIRE(mapping->asset.id() == expected);
+    }
+}
+}  // namespace test_asset_import_unity_native
+
+
+// Contract section: asset import unity package
+#include "PrivateTestScope.h"
+
+#include <zlib.h>
+#include <cstdio>
+// asset_import_unity_package.cpp
+namespace test_asset_import_unity_package {
+using namespace eve;
+using namespace eve::asset_import;
+
+using namespace unity_test;
+
+TEST_CASE("asset.import.unityPackageAcceptsLegacyPathTrailerAndDependencyManifest") {
+    std::vector<std::uint8_t> tar;
+    appendAsset(tar, guidA, "Assets/model.fbx\n00");
+    appendTar(tar, ".icon.png", bytes("thumbnail"));
+    appendTar(tar, "packagemanagermanifest", {}, '5');
+    appendTar(tar, "packagemanagermanifest/pathname", bytes("Packages/manifest.json\n00"));
+    appendTar(tar, "packagemanagermanifest/asset", bytes("{\"dependencies\":{}}"));
+    tar.resize(tar.size() + 1024);
+    auto result = readUnityPackage(gzip(tar));
+    REQUIRE(result.ok());
+    REQUIRE(result.value().contains("Assets/model.fbx"));
+    REQUIRE(result.value().at("Packages/manifest.json") == bytes("{\"dependencies\":{}}"));
+    for (const auto path :
+         {"Assets/model.fbx\n01", "Assets/model.fbx\n00\nevil", "Assets/model.fbx\n\n00", "Packages/manifest.json"}) {
+        std::vector<std::uint8_t> invalid;
+        appendAsset(invalid, guidA, path);
+        invalid.resize(invalid.size() + 1024);
+        REQUIRE(!readUnityPackage(gzip(invalid)).ok());
+    }
+    for (const auto path : {"Assets/manifest.json", "Packages/../manifest.json", "Packages/other.json"}) {
+        std::vector<std::uint8_t> invalid;
+        appendTar(invalid, "packagemanagermanifest/pathname", bytes(path));
+        appendTar(invalid, "packagemanagermanifest/asset", bytes("{}"));
+        invalid.resize(invalid.size() + 1024);
+        REQUIRE(!readUnityPackage(gzip(invalid)).ok());
+    }
+}
+
+
+TEST_CASE("asset.import.unityPackageRestoresPathsMetadataAndFolders") {
+    std::vector<std::uint8_t> tar;
+    appendAsset(tar, guidA, "Assets/Models/模型.fbx\r\n", "binary-model-data");
+    appendTar(tar, std::string(guidB) + "/pathname", bytes("Assets/Models"));
+    appendTar(tar, std::string(guidB) + "/asset.meta", metadata(guidB, "folderAsset: yes\n"));
+    tar.resize(tar.size() + 1024);
+    auto unpacked = readUnityPackage(gzip(tar));
+    REQUIRE(unpacked.ok());
+    REQUIRE_EQ(unpacked.value().size(), std::size_t(3));
+    REQUIRE(unpacked.value().contains("Assets/Models/模型.fbx"));
+    REQUIRE(unpacked.value().at("Assets/Models/模型.fbx.meta") == metadata(guidA));
+    auto index = indexUnitySources(unpacked.value());
+    REQUIRE(index.ok());
+    REQUIRE_EQ(index.value().assets.size(), std::size_t(2));
+    REQUIRE(index.value().assets[0].kind == UnitySourceKind::Folder);
+    REQUIRE(index.value().assets[1].kind == UnitySourceKind::Model);
+}
+
+TEST_CASE("asset.import.unityPackageRejectsUnsafeDestinationsAndCollisions") {
+    for (const auto path : {"../evil", "Assets/../evil", "C:/evil", "Assets\\evil", "/Assets/evil", "Assets//evil",
+                            "Assets/evil.", "Assets/evil ", "Library/cache"}) {
+        std::vector<std::uint8_t> tar;
+        appendAsset(tar, guidA, path);
+        tar.resize(tar.size() + 1024);
+        auto result = readUnityPackage(gzip(tar));
+        REQUIRE(!result.ok());
+    }
+    std::vector<std::uint8_t> tar;
+    appendAsset(tar, guidA, "Assets/Model.fbx");
+    appendAsset(tar, guidB, "Assets/model.fbx");
+    tar.resize(tar.size() + 1024);
+    auto collision = readUnityPackage(gzip(tar));
+    REQUIRE(!collision.ok());
+    REQUIRE(collision.error()->code() == DiagnosticCode::Conflict);
+}
+
+TEST_CASE("asset.import.unityPackageRejectsCorruptionLinksDuplicatesAndMissingPayloads") {
+    std::vector<std::uint8_t> validTar;
+    appendAsset(validTar, guidA, "Assets/Model.fbx");
+    validTar.resize(validTar.size() + 1024);
+    auto compressed = gzip(validTar);
+    compressed.pop_back();
+    auto truncated = readUnityPackage(compressed);
+    REQUIRE(!truncated.ok());
+    compressed = gzip(validTar);
+    compressed[compressed.size() - 8] ^= 1;
+    auto crc = readUnityPackage(compressed);
+    REQUIRE(!crc.ok());
+    compressed = gzip(validTar);
+    compressed.push_back(0);
+    auto trailing = readUnityPackage(compressed);
+    REQUIRE(!trailing.ok());
+    auto badTar = validTar;
+    badTar[0] ^= 1;
+    auto checksum = readUnityPackage(gzip(badTar));
+    REQUIRE(!checksum.ok());
+    for (char type : {'1', '2', 'x'}) {
+        std::vector<std::uint8_t> tar;
+        appendTar(tar, std::string(guidA) + "/asset", {}, type);
+        tar.resize(tar.size() + 1024);
+        auto linked = readUnityPackage(gzip(tar));
+        REQUIRE(!linked.ok());
+    }
+    std::vector<std::uint8_t> duplicate;
+    appendAsset(duplicate, guidA, "Assets/model.fbx");
+    appendTar(duplicate, std::string(guidA) + "/asset", bytes("duplicate"));
+    duplicate.resize(duplicate.size() + 1024);
+    auto repeated = readUnityPackage(gzip(duplicate));
+    REQUIRE(!repeated.ok());
+    std::vector<std::uint8_t> missing;
+    appendTar(missing, std::string(guidA) + "/pathname", bytes("Assets/model.fbx"));
+    appendTar(missing, std::string(guidA) + "/asset.meta", metadata(guidA));
+    missing.resize(missing.size() + 1024);
+    auto absent = readUnityPackage(gzip(missing));
+    REQUIRE(!absent.ok());
+}
+
+TEST_CASE("asset.import.unityPackageHonorsCompressedDecodedAndAssetBudgets") {
+    std::vector<std::uint8_t> tar;
+    appendAsset(tar, guidA, "Assets/Model.fbx");
+    tar.resize(tar.size() + 1024);
+    auto              compressed = gzip(tar);
+    AssetImportLimits limits;
+    limits.maximumSourceBytes = compressed.size() - 1;
+    auto source               = readUnityPackage(compressed, limits);
+    REQUIRE(!source.ok());
+    limits                     = {};
+    limits.maximumDecodedBytes = tar.size() - 1;
+    auto decoded               = readUnityPackage(compressed, limits);
+    REQUIRE(!decoded.ok());
+    limits               = {};
+    limits.maximumAssets = 0;
+    auto count           = readUnityPackage(compressed, limits);
+    REQUIRE(!count.ok());
+}
+
+TEST_CASE("asset.import.unityIndexCoversAllContentFamiliesAndSignedReferences") {
+    UnitySourceFiles                                                  files;
+    const std::array<std::pair<std::string_view, UnitySourceKind>, 9> cases{{{"house.prefab", UnitySourceKind::Prefab},
+                                                                             {"hero.fbx", UnitySourceKind::Model},
+                                                                             {"walk.anim", UnitySourceKind::Animation},
+                                                                             {"icons.png", UnitySourceKind::Image},
+                                                                             {"click.wav", UnitySourceKind::Audio},
+                                                                             {"font.ttf", UnitySourceKind::Font},
+                                                                             {"surface.mat", UnitySourceKind::Material},
+                                                                             {"world.unity", UnitySourceKind::Scene},
+                                                                             {"logic.cs", UnitySourceKind::Script}}};
+    for (std::size_t i = 0; i < cases.size(); ++i) {
+        auto guid             = std::string(guidA);
+        guid.back()           = static_cast<char>('0' + i);
+        const auto path       = "Assets/" + std::string(cases[i].first);
+        files[path]           = bytes("%YAML 1.1\n");
+        files[path + ".meta"] = metadata(guid, "NativeFormatImporter:\n");
+    }
+    files["Assets/house.prefab"] =
+        bytes("%YAML 1.1\n  m_Mesh: {fileID: -9223372036854775808, guid: " + std::string(guidB) +
+              ", type: 3}\n  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}\n");
+    auto index = indexUnitySources(files);
+    REQUIRE(index.ok());
+    REQUIRE_EQ(index.value().assets.size(), cases.size());
+    REQUIRE_EQ(index.value().findings.size(), std::size_t(1));
+    for (const auto& [name, kind] : cases) {
+        auto it = std::find_if(index.value().assets.begin(), index.value().assets.end(),
+                               [&](const auto& a) { return a.path == "Assets/" + std::string(name); });
+        REQUIRE(it != index.value().assets.end());
+        REQUIRE(it->kind == kind);
+    }
+    auto renamed                       = files;
+    renamed["Assets/renamed.fbx"]      = renamed.at("Assets/hero.fbx");
+    renamed["Assets/renamed.fbx.meta"] = renamed.at("Assets/hero.fbx.meta");
+    renamed.erase("Assets/hero.fbx");
+    renamed.erase("Assets/hero.fbx.meta");
+    auto reindexed = indexUnitySources(renamed);
+    REQUIRE(reindexed.ok());
+    auto renamedEntry = std::find_if(reindexed.value().assets.begin(), reindexed.value().assets.end(),
+                                     [](const auto& a) { return a.path == "Assets/renamed.fbx"; });
+    REQUIRE(renamedEntry != reindexed.value().assets.end());
+    REQUIRE_EQ(renamedEntry->guid, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1");
+}
+
+TEST_CASE("asset.import.unityIndexRejectsAmbiguousMetadataAndInvalidReferences") {
+    UnitySourceFiles files{{"Assets/a.prefab", bytes("%YAML 1.1\n")}, {"Assets/a.prefab.meta", metadata(guidA)}};
+    files["Assets/b.prefab"]      = files.at("Assets/a.prefab");
+    files["Assets/b.prefab.meta"] = metadata(guidA);
+    auto duplicate                = indexUnitySources(files);
+    REQUIRE(!duplicate.ok());
+    files.erase("Assets/b.prefab");
+    files.erase("Assets/b.prefab.meta");
+    files["Assets/a.prefab.meta"] = metadata(guidA, "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
+    auto repeatedKey              = indexUnitySources(files);
+    REQUIRE(!repeatedKey.ok());
+    files["Assets/a.prefab.meta"] = metadata(guidA);
+    files["Assets/a.prefab"] =
+        bytes("%YAML 1.1\nm_Mesh: {fileID: 9223372036854775808, guid: " + std::string(guidB) + "}\n");
+    auto overflow = indexUnitySources(files);
+    REQUIRE(!overflow.ok());
+}
+
+TEST_CASE("asset.import.unityIndexRejectsFileDirectoryConflictsAndInvalidUtf8") {
+    UnitySourceFiles files{{"Assets/props", bytes("file")}, {"Assets/props/house.fbx", bytes("model")}};
+    auto             conflict = indexUnitySources(files);
+    REQUIRE(!conflict.ok());
+    files.clear();
+    files["Assets/model.fbx"] = bytes("model");
+    auto meta                 = metadata(guidA);
+    meta.push_back(0xff);
+    files["Assets/model.fbx.meta"] = meta;
+    auto encoding                  = indexUnitySources(files);
+    REQUIRE(!encoding.ok());
+}
+}  // namespace test_asset_import_unity_package
+
+
+// Contract section: asset import unity sprite
+#include "PrivateTestScope.h"
+
+#include "asset/SpriteAnimation.h"
+// asset_import_unity_sprite.cpp
+namespace test_asset_import_unity_sprite {
+using namespace eve;
+using namespace eve::asset;
+using namespace eve::asset_import;
+namespace {
+UnityProjectImportRequest spriteRequest() {
+    UnityProjectImportRequest r;
+    r.package               = {*PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040"),
+                               "sprite-test",
+                               "1.0.0",
+                               {{"provider", "local"}, {"license", Value::Object{{"redistribution", "project-only"}}}}};
+    auto put                = [&](const char* path, const std::string& s) { r.files[path] = {s.begin(), s.end()}; };
+    r.files["Assets/s.png"] = {137, 80,  78, 71,  13, 10, 26,  10, 0,   0,   0,   13,  73,  72,  68,  82, 0, 0,
+                               0,   1,   0,  0,   0,  1,  8,   6,  0,   0,   0,   31,  21,  196, 137, 0,  0, 0,
+                               13,  73,  68, 65,  84, 8,  215, 99, 248, 207, 192, 240, 31,  0,   5,   0,  1, 255,
+                               114, 156, 82, 103, 0,  0,  0,   0,  73,  69,  78,  68,  174, 66,  96,  130};
+    std::string meta =
+        "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\nTextureImporter:\n  spriteMode: 2\n  spritePixelsToUnits: 100\n    "
+        "filterMode: 0\n  spriteSheet:\n    sprites:";
+    for (const auto id : {"-7", "-8"})
+        meta += "\n    - serializedVersion: 2\n      name: frame" + std::string(id) +
+                "\n      rect:\n        x: 0\n        y: 0\n        width: 1\n        height: 1\n      alignment: 0\n  "
+                "    pivot: {x: 0, y: 0}\n      border: {x: 0, y: 0, z: 0, w: 0}\n      internalID: " +
+                id + "\n";
+    put("Assets/s.png.meta", meta);
+    put("Assets/a.anim.meta", "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nNativeFormatImporter:\n");
+    put("Assets/a.anim", R"(--- !u!74 &7400000
+AnimationClip:
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves: []
+  m_FloatCurves: []
+  m_PPtrCurves:
+  - curve:
+    - time: 0
+      value: {fileID: -7, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}
+    - time: 0.5
+      value: {fileID: -8, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}
+    attribute: m_Sprite
+    path:
+    classID: 212
+    script: {fileID: 0}
+  m_SampleRate: 2
+  m_AnimationClipSettings:
+    m_StartTime: 0
+    m_StopTime: 1
+    m_LoopTime: 1
+  m_Events: []
+)");
+    return r;
+}
+}  // namespace
+TEST_CASE("asset.import.unitySpriteRoundTripsSignedKeysPivotAndLoopBoundary") {
+    auto request  = spriteRequest();
+    auto prepared = prepareUnityProjectImport(request);
+    REQUIRE(prepared.ok());
+    REQUIRE_EQ(prepared.value().manifest.assets.size(), std::size_t(2));
+    auto encoded = buildEvaArchive(prepared.value().manifest, prepared.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    auto profile = assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    EvpackResourceReader reader(std::make_shared<const Evpack>(std::move(pack).takeValue()));
+    EvpackCapabilities   caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto clip = SpriteAnimationClip::load(reader, prepared.value().manifest.entrypoints.at("Assets/a.anim"), caps);
+    REQUIRE(clip.ok());
+    REQUIRE_EQ(clip.value().frameCount(), std::size_t(2));
+    auto first = clip.value().sample(0);
+    REQUIRE(first.ok());
+    REQUIRE_EQ(first.value().pivot[0], .5);
+    REQUIRE_EQ(first.value().pivot[1], .5);
+    auto second = clip.value().sample(.5);
+    REQUIRE(second.ok());
+    REQUIRE_EQ(second.value().name, std::string("frame-8"));
+    auto loop = clip.value().sample(1);
+    REQUIRE(loop.ok());
+    REQUIRE_EQ(loop.value().name, first.value().name);
+    auto invalid = clip.value().sample(std::numeric_limits<double>::quiet_NaN());
+    REQUIRE(!invalid.ok());
+    auto negative = clip.value().sample(-1);
+    REQUIRE(!negative.ok());
+}
+TEST_CASE("asset.import.unitySpriteRejectsMissingFileIdAndOutOfBoundsRect") {
+    auto        request = spriteRequest();
+    auto&       b       = request.files.at("Assets/a.anim");
+    std::string s(b.begin(), b.end());
+    s.replace(s.find("fileID: -8"), 10, "fileID: -9");
+    b.assign(s.begin(), s.end());
+    auto missing = prepareUnityProjectImport(request);
+    REQUIRE(!missing.ok());
+    request = spriteRequest();
+    auto& m = request.files.at("Assets/s.png.meta");
+    s.assign(m.begin(), m.end());
+    s.replace(s.find("width: 1"), 8, "width: 2");
+    m.assign(s.begin(), s.end());
+    auto bounds = prepareUnityProjectImport(request);
+    REQUIRE(!bounds.ok());
+}
+
+TEST_CASE("asset.import.unitySpriteSchemaRejectsVersionAndDuplicateTimeAndHoldsNonLoopEnd") {
+    auto prepared = prepareUnityProjectImport(spriteRequest());
+    REQUIRE(prepared.ok());
+    const auto& assets = prepared.value().manifest.assets;
+    auto        asset =
+        std::find_if(assets.begin(), assets.end(), [](const auto& a) { return a.type == "eve.sprite-animation"; });
+    REQUIRE(asset != assets.end());
+    const auto& entries = prepared.value().entries;
+    auto        entry =
+        std::find_if(entries.begin(), entries.end(), [&](const auto& e) { return e.path == asset->definition; });
+    REQUIRE(entry != entries.end());
+    auto value = Value::fromJson(std::string(entry->bytes.begin(), entry->bytes.end()));
+    REQUIRE(value.ok());
+    auto& object          = *value.value().getIf<Value::Object>();
+    object["loop"]        = false;
+    object["futureField"] = "retained";
+    auto clip             = SpriteAnimationClip::decode(value.value());
+    REQUIRE(clip.ok());
+    auto last = clip.value().sample(100);
+    REQUIRE(last.ok());
+    REQUIRE_EQ(last.value().name, std::string("frame-8"));
+    object["schemaVersion"] = 2;
+    auto version            = SpriteAnimationClip::decode(value.value());
+    REQUIRE(!version.ok());
+    object["schemaVersion"]                     = 1;
+    auto& frames                                = *object.at("frames").getIf<Value::Array>();
+    (*frames[1].getIf<Value::Object>())["time"] = 0;
+    auto duplicate                              = SpriteAnimationClip::decode(value.value());
+    REQUIRE(!duplicate.ok());
+}
+}  // namespace test_asset_import_unity_sprite
+
+
+// Contract section: asset import unity vegetation material
+#include "PrivateTestScope.h"
+
+#include "asset/graphics/CookedMaterial.h"
+// asset_import_unity_vegetation_material.cpp
+namespace test_asset_import_unity_vegetation_material {
+using namespace eve;
+using namespace eve::asset_import;
+namespace {
+UnityProjectImportRequest fixture() {
+    UnityProjectImportRequest r;
+    r.package = {*PersistentId::parse("11111111-2222-4333-8444-555555555555"), "vegetation.material", "1.0.0", {}};
+    auto put  = [&](const std::string& path, const std::string& text) { r.files[path] = {text.begin(), text.end()}; };
+    put("Assets/leaf.mat.meta", "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+    put("Assets/mask.png.meta", "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\n");
+    const std::array<std::uint8_t, 8> pixels{200, 128, 64, 55, 20, 0, 255, 255};
+    auto                              png = asset::detail::encodeSourcePng(2, 1, pixels, 4096);
+    REQUIRE(png.ok());
+    r.files["Assets/mask.png"] = std::move(png).takeValue();
+    put("Assets/leaf.mat", R"(--- !u!21 &2100000
+Material:
+  m_Shader: {fileID: 4800000, guid: 7befaa6f41d00a6478d5f4af21d66518, type: 3}
+  m_SavedProperties:
+    m_TexEnvs:
+    - _MainMaskTex:
+        m_Texture: {fileID: 2800000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissiveTex:
+        m_Texture: {fileID: 2800000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _MainOcclusionValue: 0.5
+    - _MainSmoothnessValue: 0.5
+    - _MainColorMode: 1
+    - _MainAlbedoValue: 0.4
+    - _MainMaskMinValue: 0.2
+    - _MainMaskMaxValue: 0.8
+    - _RenderSpecular: 0
+    - _RenderNormals: 2
+    - _RenderCull: 2
+    - _RenderCoverage: 1
+    - _GlobalOverlay: 0.3
+    - _GlobalWetness: 0.8
+    - _OverlayVariationValue: 0.1
+    - _OverlayProjectionValue: 0.6
+    - _VertexOcclusionOverlayMode: 1
+    - _GlobalColors: 0.7
+    - _ColorsIntensityValue: 1.4
+    - _ColorsMaskValue: 0.25
+    - _ColorsVariationValue: 0.2
+    - _VertexOcclusionColorsMode: 1
+    - _VertexOcclusionMinValue: 0.15
+    - _VertexOcclusionMaxValue: 0.85
+    - _GlobalAlpha: 0.65
+    - _AlphaVariationValue: 0.35
+    - _DetailFadeMode: 1
+    - _FadeGlancingValue: 0.2
+    - _FadeCameraValue: 0.4
+    - _FadeConstantValue: 0.6
+    - _LayerExtrasValue: 3
+    - _ExtrasPositionMode: 1
+    - _LayerColorsValue: 4
+    - _ColorsPositionMode: 1
+    - _LayerMotionValue: 5
+    - _LayerVertexValue: 6
+    - _GlobalSize: 0.75
+    - _SizeFadeStartValue: 10
+    - _SizeFadeEndValue: 80
+    - _VertexDynamicMode: 1
+    - _MotionPosition_10: 0.45
+    - _MotionFacingValue: 0.55
+    - _MotionAmplitude_10: 0.31
+    - _MotionSpeed_10: 2.1
+    - _MotionScale_10: 1.1
+    - _MotionVariation_10: 0.11
+    - _MotionAmplitude_20: 0.32
+    - _MotionAmplitude_22: 0.12
+    - _MotionSpeed_20: 6.1
+    - _MotionScale_20: 3.1
+    - _MotionVariation_20: 0.21
+    - _MotionAmplitude_32: 0.33
+    - _MotionSpeed_32: 20.1
+    - _MotionScale_32: 10.1
+    - _MotionVariation_32: 0.31
+    - _InteractionAmplitude: 0.81
+    - _InteractionMaskValue: 0.71
+    - _PerspectivePushValue: 0.41
+    - _PerspectiveNoiseValue: 0.51
+    - _PerspectiveAngleValue: 0.61
+    - _EmissiveMode: 1
+    - _EmissiveIntensityMode: 0
+    - _EmissiveIntensityValue: 3
+    - _emissive_intensity_value: 2.5
+    - _EmissivePhaseValue: 0.8
+    - _EmissiveTexMinValue: 0.1
+    - _EmissiveTexMaxValue: 0.9
+    - _GlobalEmissive: 0.7
+    - _GradientMinValue: 0.2
+    - _GradientMaxValue: 0.8
+    m_Colors:
+    - _MainColor: {r: 2, g: 0.5, b: 0.25, a: 1}
+    - _MainColorTwo: {r: 0.1, g: 0.2, b: 0.3, a: 1}
+    - _MainUVs: {r: 2, g: 3, b: 0.25, a: 0.1}
+    - _VertexOcclusionColor: {r: 0.1, g: 0.2, b: 0.3, a: 0.34117648}
+    - _EmissiveColor: {r: 4, g: 2, b: 1, a: 1}
+    - _EmissiveUVs: {r: 3, g: 2, b: 0.2, a: 0.1}
+    - _GradientColorOne: {r: 2, g: 3, b: 4, a: 1}
+    - _GradientColorTwo: {r: 0.1, g: 0.2, b: 0.3, a: 1}
+)");
+    return r;
+}
+}  // namespace
+
+TEST_CASE("asset.import.unityCollectionRetainsOtherAssetsWhenMaterialDependencyIsAbsent") {
+    auto              request       = fixture();
+    auto&             materialBytes = request.files["Assets/leaf.mat"];
+    std::string       material(materialBytes.begin(), materialBytes.end());
+    const std::string presentGuid = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
+    const std::string absentGuid  = "cccccccccccccccccccccccccccccccc";
+    for (std::size_t offset = material.find(presentGuid); offset != std::string::npos;
+         offset             = material.find(presentGuid, offset + absentGuid.size()))
+        material.replace(offset, presentGuid.size(), absentGuid);
+    materialBytes.assign(material.begin(), material.end());
+
+    auto imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    CHECK(!imported.value().manifest.entrypoints.contains("Assets/leaf.mat"));
+    bool dependencyFinding = false;
+    for (const auto& finding : imported.value().findings)
+        if (finding.sourcePath == "Assets/leaf.mat" && finding.feature == "resource.dependency" &&
+            finding.disposition == ImportDisposition::Unsupported &&
+            finding.message.find("TVE texture source is absent") != std::string::npos)
+            dependencyFinding = true;
+    CHECK(dependencyFinding);
+}
+
+TEST_CASE("asset.import.unityVegetationMaterialConvertsMaskAndPreservesSource") {
+    auto       request  = fixture();
+    const auto original = request.files;
+    auto       imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    const auto materialRef = imported.value().manifest.entrypoints.at("Assets/leaf.mat");
+    Value      material;
+    for (const auto& a : imported.value().manifest.assets)
+        if (a.asset == materialRef) {
+            REQUIRE_EQ(a.schemaVersion, SchemaVersion(15));
+            for (const auto& e : imported.value().entries)
+                if (e.path == a.definition) {
+                    auto value = Value::fromJson(std::string(e.bytes.begin(), e.bytes.end()));
+                    REQUIRE(value.ok());
+                    material = std::move(value).takeValue();
+                }
+        }
+    REQUIRE(material.isObject());
+    const auto& object = *material.getIf<Value::Object>();
+    REQUIRE_EQ(object.at("albedoTextureStrength").asDouble(), .4);
+    REQUIRE_EQ(object.at("baseColor").getIf<Value::Array>()->at(0).asDouble(), 2.0);
+    REQUIRE_EQ(object.at("baseColor").getIf<Value::Array>()->at(1).asDouble(), .5);
+    REQUIRE_EQ(object.at("specularFactor").asDouble(), 0.0);
+    REQUIRE_EQ(object.at("cullMode").asString(), std::string("front"));
+    REQUIRE(!object.at("doubleSided").asBool());
+    REQUIRE(object.at("alphaToCoverage").asBool());
+    const auto& vegetation = *object.at("vegetationSurface").getIf<Value::Object>();
+    REQUIRE_EQ(vegetation.at("overlay").asDouble(), .3);
+    REQUIRE_EQ(vegetation.at("wetness").asDouble(), .8);
+    REQUIRE_EQ(vegetation.at("overlayVariation").asDouble(), .1);
+    REQUIRE_EQ(vegetation.at("overlayProjection").asDouble(), .6);
+    REQUIRE_EQ(vegetation.at("vertexOcclusionAlpha").asDouble(), .34117648);
+    REQUIRE_EQ(vegetation.at("vertexOcclusionColor").getIf<Value::Array>()->at(1).asDouble(), .2);
+    REQUIRE(vegetation.at("invertVertexOcclusion").asBool());
+    REQUIRE_EQ(vegetation.at("colors").asDouble(), .7);
+    REQUIRE_EQ(vegetation.at("colorsIntensity").asDouble(), 1.4);
+    REQUIRE_EQ(vegetation.at("colorsMask").asDouble(), .25);
+    REQUIRE_EQ(vegetation.at("colorsVariation").asDouble(), .2);
+    REQUIRE_EQ(vegetation.at("vertexOcclusionMinimum").asDouble(), .15);
+    REQUIRE_EQ(vegetation.at("vertexOcclusionMaximum").asDouble(), .85);
+    REQUIRE(vegetation.at("invertVertexOcclusionColors").asBool());
+    REQUIRE_EQ(vegetation.at("backfaceNormalMode").asInt(), int64_t(2));
+    const auto& alpha = *object.at("vegetationAlpha").getIf<Value::Object>();
+    REQUIRE_EQ(alpha.at("global").asDouble(), .65);
+    REQUIRE_EQ(alpha.at("variation").asDouble(), .35);
+    REQUIRE(alpha.at("detailFade").asBool());
+    REQUIRE_EQ(alpha.at("glancing").asDouble(), .2);
+    REQUIRE_EQ(alpha.at("camera").asDouble(), .4);
+    REQUIRE_EQ(alpha.at("constant").asDouble(), .6);
+    REQUIRE_EQ(object.at("emissive").getIf<Value::Array>()->at(0).asDouble(), 4.0);
+    REQUIRE_EQ(object.at("emissiveStrength").asDouble(), 2.5);
+    const auto& emission = *object.at("vegetationEmission").getIf<Value::Object>();
+    REQUIRE_EQ(emission.at("minimum").asDouble(), .1);
+    REQUIRE_EQ(emission.at("maximum").asDouble(), .9);
+    REQUIRE_EQ(emission.at("phase").asDouble(), .8);
+    REQUIRE_EQ(emission.at("global").asDouble(), .7);
+    const auto& gradient = *object.at("vegetationGradient").getIf<Value::Object>();
+    REQUIRE_EQ(gradient.size(), size_t(4));
+    REQUIRE_EQ(gradient.at("colorOne").getIf<Value::Array>()->at(2).asDouble(), 4.0);
+    REQUIRE_EQ(gradient.at("colorTwo").getIf<Value::Array>()->at(0).asDouble(), .1);
+    REQUIRE_EQ(gradient.at("minimum").asDouble(), .2);
+    REQUIRE_EQ(gradient.at("maximum").asDouble(), .8);
+    const auto& emissionTransform = *object.at("emissiveTextureTransform").getIf<Value::Object>();
+    REQUIRE_EQ(emissionTransform.at("scale").getIf<Value::Array>()->at(0).asDouble(), 3.0);
+    REQUIRE_EQ(emissionTransform.at("offset").getIf<Value::Array>()->at(1).asDouble(), -1.1);
+    const auto& fields = *object.at("vegetationFields").getIf<Value::Object>();
+    REQUIRE_EQ(fields.at("extrasLayer").asInt(), int64_t(3));
+    REQUIRE(fields.at("extrasUsePivotPosition").asBool());
+    REQUIRE_EQ(fields.at("colorsLayer").asInt(), int64_t(4));
+    REQUIRE(fields.at("colorsUsePivotPosition").asBool());
+    REQUIRE_EQ(fields.at("motionLayer").asInt(), int64_t(5));
+    REQUIRE_EQ(fields.at("vertexLayer").asInt(), int64_t(6));
+    REQUIRE_EQ(fields.at("globalSize").asDouble(), .75);
+    REQUIRE_EQ(fields.at("sizeFadeStart").asDouble(), 10.0);
+    REQUIRE_EQ(fields.at("sizeFadeEnd").asDouble(), 80.0);
+    const auto& motion = *object.at("vegetationMotion").getIf<Value::Object>();
+    REQUIRE_EQ(motion.size(), size_t(21));
+    REQUIRE_EQ(motion.at("dynamicMode").asDouble(), 1.0);
+    REQUIRE_EQ(motion.at("rigidity").asDouble(), .45);
+    REQUIRE_EQ(motion.at("facing").asDouble(), .55);
+    REQUIRE_EQ(motion.at("bending").asDouble(), .31);
+    REQUIRE_EQ(motion.at("branch").asDouble(), .32);
+    REQUIRE_EQ(motion.at("flutter").asDouble(), .33);
+    REQUIRE_EQ(motion.at("interactionMask").asDouble(), .71);
+    REQUIRE_EQ(motion.at("perspectiveAngle").asDouble(), .61);
+    const auto& transform = *object.at("metallicRoughnessTextureTransform").getIf<Value::Object>();
+    REQUIRE_EQ(transform.at("offset").getIf<Value::Array>()->at(1).asDouble(), -2.1);
+    auto maskRef = AssetRef::parse(object.at("metallicRoughnessTexture").asString());
+    REQUIRE(maskRef.ok());
+    bool checked = false;
+    for (const auto& a : imported.value().manifest.assets)
+        if (a.asset == maskRef.value()) {
+            for (const auto& e : imported.value().entries)
+                if (e.path == a.definition) {
+                    auto value = Value::fromJson(std::string(e.bytes.begin(), e.bytes.end()));
+                    REQUIRE(value.ok());
+                    const auto blob = value.value().getIf<Value::Object>()->at("blob").asString();
+                    for (const auto& b : imported.value().entries)
+                        if (b.path == blob) {
+                            auto cooked = asset::cookCanonicalImageRgba8(e.bytes, b.bytes, 4096);
+                            REQUIRE(cooked.ok());
+                            REQUIRE_EQ((std::vector<std::uint8_t>(cooked.value().bulk.begin() + 28,
+                                                                  cooked.value().bulk.end())),
+                                       (std::vector<std::uint8_t>{192, 228, 0, 64, 128, 128, 0, 255}));
+                            checked = true;
+                        }
+                }
+        }
+    REQUIRE(checked);
+    REQUIRE_EQ(request.files, original);
+    auto encoded = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(encoded.ok());
+    auto archive = asset::parseEvaArchive(encoded.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    auto                        loaded = asset_graphics::detail::readCookedMaterial(
+        reader, materialRef, {"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}});
+    REQUIRE(loaded.ok());
+    REQUIRE(loaded.value().surface.colorMaskEnabled);
+    REQUIRE_EQ(loaded.value().surface.albedoTextureStrength, .4f);
+    REQUIRE_EQ(loaded.value().surface.specularFactor, 0.f);
+    REQUIRE_EQ(loaded.value().surface.cullMode, graphics::PbrCullMode::Front);
+    REQUIRE(loaded.value().surface.alphaToCoverage);
+    REQUIRE(loaded.value().vegetationSurface.has_value());
+    REQUIRE_EQ(loaded.value().vegetationSurface->overlayCoverage, .3f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->wetnessCoverage, .8f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->overlayVariation, .1f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->overlayProjection, .6f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->vertexOcclusionAlpha, .34117648f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->vertexOcclusionColor[2], .3f);
+    REQUIRE(loaded.value().vegetationSurface->invertVertexOcclusion);
+    REQUIRE_EQ(loaded.value().vegetationSurface->colorsCoverage, .7f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->colorsIntensity, 1.4f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->colorsMask, .25f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->colorsVariation, .2f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->vertexOcclusionMinimum, .15f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->vertexOcclusionMaximum, .85f);
+    REQUIRE(loaded.value().vegetationSurface->invertVertexOcclusionColors);
+    REQUIRE_EQ(loaded.value().vegetationSurface->backfaceNormalMode, graphics::PbrVegetationBackfaceNormalMode::Same);
+    REQUIRE_EQ(loaded.value().vegetationSurface->albedo[0], 2.f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->roughness, 1.f);
+    REQUIRE_EQ(loaded.value().vegetationSurface->alphaCutoff, .5f);
+    REQUIRE(loaded.value().surface.vegetationAlpha.enabled);
+    REQUIRE_EQ(loaded.value().surface.vegetationAlpha.global, .65f);
+    REQUIRE_EQ(loaded.value().surface.vegetationAlpha.variation, .35f);
+    REQUIRE(loaded.value().surface.vegetationAlpha.detailFade);
+    REQUIRE_EQ(loaded.value().surface.vegetationAlpha.glancing, .2f);
+    REQUIRE_EQ(loaded.value().surface.vegetationAlpha.camera, .4f);
+    REQUIRE_EQ(loaded.value().surface.vegetationAlpha.constant, .6f);
+    REQUIRE(loaded.value().surface.vegetationEmission.enabled);
+    REQUIRE_EQ(loaded.value().surface.vegetationEmission.minimum, .1f);
+    REQUIRE_EQ(loaded.value().surface.vegetationEmission.maximum, .9f);
+    REQUIRE_EQ(loaded.value().surface.vegetationEmission.phase, .8f);
+    REQUIRE_EQ(loaded.value().surface.vegetationEmission.global, .7f);
+    REQUIRE_EQ(loaded.value().surface.emissive[0], 4.f);
+    REQUIRE_EQ(loaded.value().surface.emissiveStrength, 2.5f);
+    REQUIRE(loaded.value().images[4].has_value());
+    REQUIRE(loaded.value().surface.vegetationGradient.enabled);
+    REQUIRE_EQ(loaded.value().surface.vegetationGradient.colorOne[2], 4.f);
+    REQUIRE_EQ(loaded.value().surface.vegetationGradient.colorTwo[0], .1f);
+    REQUIRE_EQ(loaded.value().surface.vegetationGradient.minimum, .2f);
+    REQUIRE_EQ(loaded.value().surface.vegetationGradient.maximum, .8f);
+    REQUIRE_EQ(loaded.value().surface.vegetationExtras.layer, 3u);
+    REQUIRE(loaded.value().surface.vegetationExtras.usePivotPosition);
+    REQUIRE_EQ(loaded.value().surface.vegetationColors.layer, 4u);
+    REQUIRE(loaded.value().surface.vegetationColors.usePivotPosition);
+    REQUIRE_EQ(loaded.value().surface.vegetationVertex.layer, 6u);
+    REQUIRE_EQ(loaded.value().surface.vegetationVertex.globalSize, .75f);
+    REQUIRE_EQ(loaded.value().surface.vegetationVertex.sizeFadeStart, 10.f);
+    REQUIRE_EQ(loaded.value().surface.vegetationVertex.sizeFadeEnd, 80.f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.layer, 5u);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.mode, graphics::PbrVegetationMotionMode::Disabled);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.dynamicMode, 1.f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.rigidity, .45f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.facing, .55f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.bending, .31f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.bendingSpeed, 2.1f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.branch, .32f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.rolling, .12f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.flutter, .33f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.interaction, .81f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.interactionMask, .71f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.perspectivePush, .41f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.perspectiveNoise, .51f);
+    REQUIRE_EQ(loaded.value().surface.vegetationMotion.perspectiveAngle, .61f);
+    bool renderState = false;
+    for (const auto& f : imported.value().findings)
+        if (f.feature == "Material.TVE.renderState" && f.disposition == ImportDisposition::Translated)
+            renderState = true;
+    REQUIRE(renderState);
+}
+TEST_CASE("asset.import.unityVegetationDetailSurvivesCookWithThreeNamedImages") {
+    auto                                                     request = fixture();
+    const std::array<std::pair<const char*, const char*>, 3> sources{
+        {{"detail-albedo.png", "cccccccccccccccccccccccccccccccc"},
+         {"detail-normal.png", "dddddddddddddddddddddddddddddddd"},
+         {"detail-mask.png", "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"}}};
+    const std::array<uint8_t, 4> pixel{128, 64, 32, 255};
+    auto                         png = asset::detail::encodeSourcePng(1, 1, pixel, 4096);
+    REQUIRE(png.ok());
+    for (const auto& [name, guid] : sources) {
+        request.files["Assets/" + std::string(name)] = png.value();
+        const std::string meta = "guid: " + std::string(guid) + "\ntextureType: 0\nenableMipMap: 0\n";
+        request.files["Assets/" + std::string(name) + ".meta"] = {meta.begin(), meta.end()};
+    }
+    auto&       bytes = request.files["Assets/leaf.mat"];
+    std::string material(bytes.begin(), bytes.end());
+    const auto  floats = material.find("    m_Floats:");
+    REQUIRE(floats != std::string::npos);
+    material.insert(floats, R"(    - _SecondAlbedoTex:
+        m_Texture: {fileID: 2800000, guid: cccccccccccccccccccccccccccccccc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondNormalTex:
+        m_Texture: {fileID: 2800000, guid: dddddddddddddddddddddddddddddddd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SecondMaskTex:
+        m_Texture: {fileID: 2800000, guid: eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+)");
+    material.insert(material.find("    m_Colors:"), R"(    - _DetailMode: 1
+    - _DetailValue: 0.75
+    - _SecondUVsMode: 1
+    - _SecondNormalValue: 2
+    - _DetailBlendMode: 1
+    - _DetailMaskMode: 1
+    - _DetailBlendMinValue: 0.15
+    - _DetailBlendMaxValue: 0.2
+)");
+    material.append(R"(    - _SecondUVs: {r: 2, g: 1.5, b: 0.1, a: 0.2}
+    - _SecondColor: {r: 0.8, g: 0.7, b: 0.6, a: 1}
+    - _SecondColorTwo: {r: 1, g: 1, b: 1, a: 1}
+)");
+    bytes.assign(material.begin(), material.end());
+    auto imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    auto eva = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(eva.ok());
+    auto archive = asset::parseEvaArchive(eva.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    auto                        loaded = asset_graphics::detail::readCookedMaterial(
+        reader, imported.value().manifest.entrypoints.at("Assets/leaf.mat"),
+        {"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}});
+    REQUIRE(loaded.ok());
+    REQUIRE_EQ(loaded.value().surface.vegetationDetail.value, .75f);
+    REQUIRE_EQ(loaded.value().surface.vegetationDetail.uvMode, 1u);
+    REQUIRE_EQ(loaded.value().surface.vegetationDetail.normalValue, 2.f);
+    REQUIRE_EQ(loaded.value().surface.vegetationDetail.blendMinimum, .15f);
+    REQUIRE_EQ(loaded.value().surface.vegetationDetail.blendMaximum, .2f);
+    REQUIRE(loaded.value().detailImages[0].has_value());
+    REQUIRE(loaded.value().detailImages[1].has_value());
+    REQUIRE(loaded.value().detailImages[2].has_value());
+}
+TEST_CASE("asset.import.unityVegetationMaterialRejectsMissingMaskAndPngBudget") {
+    auto request = fixture();
+    request.files.erase("Assets/mask.png");
+    request.files.erase("Assets/mask.png.meta");
+    REQUIRE(!prepareUnityProjectImport(request).ok());
+    request                     = fixture();
+    const std::string duplicate = "    - _MainColorMode: 0\n";
+    request.files["Assets/leaf.mat"].insert(request.files["Assets/leaf.mat"].end(), duplicate.begin(), duplicate.end());
+    REQUIRE(!prepareUnityProjectImport(request).ok());
+    const std::array<std::uint8_t, 4> pixel{1, 2, 3, 4};
+    REQUIRE(!asset::detail::encodeSourcePng(UINT32_MAX, UINT32_MAX, pixel, 4096).ok());
+    REQUIRE(!asset::detail::encodeSourcePng(1, 1, pixel, 8).ok());
+    for (const auto& [property, invalid] : std::array<std::pair<const char*, const char*>, 6>{
+             {{"_VertexDynamicMode: 1", "_VertexDynamicMode: 2"},
+              {"_MotionAmplitude_10: 0.31", "_MotionAmplitude_10: -0.01"},
+              {"_RenderSpecular: 0", "_RenderSpecular: 2"},
+              {"_RenderNormals: 2", "_RenderNormals: 3"},
+              {"_RenderCull: 2", "_RenderCull: 3"},
+              {"_RenderCoverage: 1", "_RenderCoverage: 2"}}}) {
+        request           = fixture();
+        auto&       bytes = request.files["Assets/leaf.mat"];
+        std::string text(bytes.begin(), bytes.end());
+        const auto  at = text.find(property);
+        REQUIRE(at != std::string::npos);
+        text.replace(at, std::char_traits<char>::length(property), invalid);
+        bytes.assign(text.begin(), text.end());
+        REQUIRE(!prepareUnityProjectImport(request).ok());
+    }
+}
+
+TEST_CASE("asset.import.unityVegetationEmissionRejectsMissingTextureAndInvalidControls") {
+    auto replace = [&](UnityProjectImportRequest& request, std::string_view from, std::string_view to) {
+        auto&       bytes = request.files["Assets/leaf.mat"];
+        std::string text(bytes.begin(), bytes.end());
+        const auto  at = text.find(from);
+        REQUIRE(at != std::string::npos);
+        text.replace(at, from.size(), to);
+        bytes.assign(text.begin(), text.end());
+    };
+
+    auto request = fixture();
+    replace(request,
+            "    - _EmissiveTex:\n        m_Texture: {fileID: 2800000, guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, "
+            "type: 3}\n        m_Scale: {x: 1, y: 1}\n        m_Offset: {x: 0, y: 0}\n",
+            "");
+    REQUIRE(!prepareUnityProjectImport(request).ok());
+
+    for (const auto& [valid, invalid] : std::array<std::pair<std::string_view, std::string_view>, 6>{
+             {{"_EmissiveMode: 1", "_EmissiveMode: 2"},
+              {"_EmissiveIntensityMode: 0", "_EmissiveIntensityMode: 2"},
+              {"_emissive_intensity_value: 2.5", "_emissive_intensity_value: -0.01"},
+              {"_EmissivePhaseValue: 0.8", "_EmissivePhaseValue: 1.01"},
+              {"_EmissiveTexMaxValue: 0.9", "_EmissiveTexMaxValue: 1.01"},
+              {"_EmissiveUVs: {r: 3, g: 2", "_EmissiveUVs: {r: 0, g: 2"}}}) {
+        request = fixture();
+        replace(request, valid, invalid);
+        REQUIRE(!prepareUnityProjectImport(request).ok());
+    }
+}
+
+TEST_CASE("asset.import.unityVegetationGradientRejectsInvalidHdrAndEndpoints") {
+    auto replace = [&](UnityProjectImportRequest& request, std::string_view from, std::string_view to) {
+        auto&       bytes = request.files["Assets/leaf.mat"];
+        std::string text(bytes.begin(), bytes.end());
+        const auto  at = text.find(from);
+        REQUIRE(at != std::string::npos);
+        text.replace(at, from.size(), to);
+        bytes.assign(text.begin(), text.end());
+    };
+
+    for (const auto& [valid, invalid] : std::array<std::pair<std::string_view, std::string_view>, 5>{
+             {{"_GradientColorOne: {r: 2", "_GradientColorOne: {r: -0.01"},
+              {"_GradientColorTwo: {r: 0.1, g: 0.2", "_GradientColorTwo: {r: 0.1, g: -0.01"},
+              {"_GradientMinValue: 0.2", "_GradientMinValue: -0.01"},
+              {"_GradientMaxValue: 0.8", "_GradientMaxValue: 1.01"},
+              {"_VertexOcclusionColor: {r: 0.1", "_VertexOcclusionColor: {r: -0.01"}}}) {
+        auto request = fixture();
+        replace(request, valid, invalid);
+        REQUIRE(!prepareUnityProjectImport(request).ok());
+    }
+}
+
+TEST_CASE("asset.import.unityVegetationSubsurfaceReachesRuntimeMaterial") {
+    auto        request = fixture();
+    auto&       bytes   = request.files["Assets/leaf.mat"];
+    std::string material(bytes.begin(), bytes.end());
+    const auto  shader = material.find("7befaa6f41d00a6478d5f4af21d66518");
+    REQUIRE(shader != std::string::npos);
+    material.replace(shader, 32, "a933075b367f9b24981408633f72ff34");
+    material.insert(material.find("    m_Colors:"),
+                    "    - _SubsurfaceValue: 0.4\n    - _SubsurfaceScatteringValue: 3\n"
+                    "    - _SubsurfaceAngleValue: 6\n    - _SubsurfaceMaskValue: 0.5\n");
+    material += "    - _MotionHighlightColor: {r: 2.1185474, g: 0.5, b: 0, a: 1}\n";
+    bytes.assign(material.begin(), material.end());
+    auto imported = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    auto ref = imported.value().manifest.entrypoints.at("Assets/leaf.mat");
+    auto eva = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(eva.ok());
+    auto archive = asset::parseEvaArchive(eva.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    auto                        loaded = asset_graphics::detail::readCookedMaterial(
+        reader, ref, {"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}});
+    REQUIRE(loaded.ok());
+    const auto& trans = loaded.value().surface.translucency;
+    REQUIRE_EQ(trans.intensity, .4f);
+    REQUIRE_EQ(trans.strength, 3.f);
+    REQUIRE_EQ(trans.scattering, 6.f);
+    REQUIRE_EQ(trans.maskAmount, .5f);
+    REQUIRE_EQ(trans.direct, 1.f);
+    REQUIRE_EQ(trans.normalDistortion, 0.f);
+    REQUIRE_EQ(trans.ambient, .2f);
+    REQUIRE_EQ(trans.shadow, 1.f);
+    REQUIRE_EQ(loaded.value().surface.motionHighlightColor[0], 2.1185474f);
+    REQUIRE_EQ(loaded.value().surface.motionHighlightColor[1], .5f);
+    REQUIRE_EQ(loaded.value().surface.motionHighlightColor[2], 0.f);
+    REQUIRE(loaded.value().images[1].has_value());
+}
+
+TEST_CASE("asset.import.unityVegetationAuthoredNormalOddMipsMatchUnity") {
+    auto        request       = fixture();
+    auto&       materialBytes = request.files["Assets/leaf.mat"];
+    std::string material(materialBytes.begin(), materialBytes.end());
+    material.insert(material.find("    m_Floats:"),
+                    "    - _MainNormalTex:\n        m_Texture: {fileID: 2800000, guid: "
+                    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}\n");
+    materialBytes.assign(material.begin(), material.end());
+    const std::string meta =
+        "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nTextureImporter:\n"
+        "  textureType: 1\n  convertToNormalMap: 0\n  flipGreenChannel: 1\n"
+        "  enableMipMap: 1\n  mipMapMode: 0\n  nPOTScale: 0\n";
+    request.files["Assets/mask.png.meta"] = {meta.begin(), meta.end()};
+    std::vector<uint8_t> pixels;
+    for (unsigned y = 0; y < 3; ++y)
+        for (unsigned x = 0; x < 7; ++x)
+            pixels.insert(pixels.end(), {uint8_t((37 * x + 71 * y) % 256), uint8_t((91 * x + 13 * y) % 256),
+                                         uint8_t((17 * x + 43 * y) % 256), uint8_t((29 * x + 31 * y) % 256)});
+    auto png = asset::detail::encodeSourcePng(7, 3, pixels, 4096);
+    REQUIRE(png.ok());
+    request.files["Assets/mask.png"] = std::move(png).takeValue();
+    auto imported                    = prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    // Unity RGBAFloat exports, canonical top-down RG, green flip enabled.
+    const std::array<uint8_t, 50> reference{0,   255, 37,  164, 74,  73,  111, 238, 148, 147, 185, 56,  222,
+                                            221, 71,  242, 108, 151, 145, 60,  182, 225, 219, 134, 0,   43,
+                                            37,  208, 142, 229, 179, 138, 216, 47,  253, 212, 34,  121, 71,
+                                            30,  108, 195, 96,  181, 182, 225, 12,  98,  182, 225};
+    unsigned                      checked = 0;
+    for (const auto& entry : imported.value().entries) {
+        if (!entry.path.ends_with("normal.rgba8-mips")) continue;
+        REQUIRE_EQ(entry.bytes.size(), size_t(100));
+        for (size_t i = 0; i < 25; ++i) {
+            for (size_t c = 0; c < 2; ++c)
+                REQUIRE(std::abs(int(entry.bytes[i * 4 + c]) - int(reference[i * 2 + c])) <= 1);
+            REQUIRE_EQ(entry.bytes[i * 4 + 2], uint8_t(255));
+            REQUIRE_EQ(entry.bytes[i * 4 + 3], uint8_t(255));
+        }
+        ++checked;
+    }
+    REQUIRE_EQ(checked, 1u);
+}
+
+TEST_CASE("asset.import.unityVegetationNormalPreservesLinearSourceAndGeneratesHeight") {
+    for (int mode : {0, 1, 2, 3, 4, 5, 6}) {
+        const bool  height  = mode != 0 && mode != 6;
+        auto        request = fixture();
+        auto&       bytes   = request.files["Assets/leaf.mat"];
+        std::string material(bytes.begin(), bytes.end());
+        material.insert(material.find("    m_Floats:"),
+                        "    - _MainNormalTex:\n        m_Texture: {fileID: 2800000, guid: "
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}\n");
+        material.insert(material.find("    m_Floats:"),
+                        "    - _MainAlbedoTex:\n        m_Texture: {fileID: 2800000, guid: "
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}\n");
+        material.insert(material.find("    m_Colors:"), "    - _MainNormalValue: -2\n");
+        bytes.assign(material.begin(), material.end());
+        std::string meta =
+            std::string(
+                "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nTextureImporter:\n  textureType: 1\n  convertToNormalMap: ") +
+            (height ? "1\n  wrapU: -1\n  wrapV: -1\n" : "0\n");
+        if (mode == 2) meta += "  normalMapFilter: 1\n  filterMode: 2\n";
+        if (mode == 4) meta += "  filterMode: 1\n";
+        if (mode == 5 || mode == 6) meta += "  flipGreenChannel: 1\n";
+        if (mode == 3) {
+            meta += "  filterMode: 0\n  enableMipMap: 0\n";
+            const auto u = meta.find("wrapU: -1");
+            meta.replace(u, 9, "wrapU: 1");
+            const auto v = meta.find("wrapV: -1");
+            meta.replace(v, 9, "wrapV: 2");
+        }
+        request.files["Assets/mask.png.meta"] = {meta.begin(), meta.end()};
+        if (height || mode == 6) {
+            std::vector<std::uint8_t> ramp(8 * 8 * 4);
+            for (unsigned y = 0; y < 8; ++y)
+                for (unsigned x = 0; x < 8; ++x) {
+                    const auto at = (y * 8 + x) * 4;
+                    ramp[at] = ramp[at + 1] = ramp[at + 2] = std::uint8_t((mode == 5 ? y : x) * 32);
+                    ramp[at + 3]                           = 255;
+                    if (mode == 6) {
+                        ramp[at + 1] = std::uint8_t(y * 32);
+                        ramp[at + 2] = 17;
+                        ramp[at + 3] = 43;
+                    }
+                }
+            auto png = asset::detail::encodeSourcePng(8, 8, ramp, 4096);
+            REQUIRE(png.ok());
+            request.files["Assets/mask.png"] = std::move(png).takeValue();
+        }
+        auto imported = prepareUnityProjectImport(request);
+        REQUIRE(imported.ok());
+        const auto materialRef = imported.value().manifest.entrypoints.at("Assets/leaf.mat");
+        auto       encoded     = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+        REQUIRE(encoded.ok());
+        auto archive = asset::parseEvaArchive(encoded.value());
+        REQUIRE(archive.ok());
+        auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+        REQUIRE(profile.ok());
+        auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+        REQUIRE(cooked.ok());
+        auto pack = asset::parseEvpack(cooked.value().bytes);
+        REQUIRE(pack.ok());
+        asset::EvpackResourceReader reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+        auto                        loaded = asset_graphics::detail::readCookedMaterial(
+            reader, materialRef, {"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}});
+        REQUIRE(loaded.ok());
+        REQUIRE_EQ(loaded.value().surface.normalMode, graphics::PbrNormalMode::VegetationRG);
+        REQUIRE_EQ(loaded.value().surface.normalScale, -2.f);
+        REQUIRE(loaded.value().images[2].has_value());
+        REQUIRE(!loaded.value().surface.textures[2].srgbDecode);
+        REQUIRE_EQ(loaded.value().surface.textures[2].wrapS, mode == 3 ? 33071u : 10497u);
+        REQUIRE_EQ(loaded.value().surface.textures[2].wrapT, mode == 3 ? 33648u : 10497u);
+        for (const auto slot : {0u, 1u, 2u, 3u}) {
+            REQUIRE_EQ(loaded.value().surface.textures[slot].wrapS, mode == 3 ? 33071u : 10497u);
+            REQUIRE_EQ(loaded.value().surface.textures[slot].wrapT, mode == 3 ? 33648u : 10497u);
+            REQUIRE_EQ(loaded.value().surface.textures[slot].minFilter, mode == 3                             ? 9728u
+                                                                        : mode == 0 || mode == 4 || mode == 6 ? 9985u
+                                                                                                              : 9987u);
+            REQUIRE_EQ(loaded.value().surface.textures[slot].magFilter, mode == 3 ? 9728u : 9729u);
+        }
+        if (height || mode == 6) {
+            bool checked = false;
+            for (const auto& a : imported.value().manifest.assets) {
+                if (a.asset != *loaded.value().images[2]) continue;
+                for (const auto& e : imported.value().entries) {
+                    if (e.path != a.definition) continue;
+                    auto value = Value::fromJson(std::string(e.bytes.begin(), e.bytes.end()));
+                    REQUIRE(value.ok());
+                    const auto blob = value.value().getIf<Value::Object>()->at("blob").asString();
+                    for (const auto& b : imported.value().entries) {
+                        if (b.path != blob) continue;
+                        auto normal = asset::cookCanonicalImageRgba8(e.bytes, b.bytes, 4096);
+                        REQUIRE(normal.ok());
+                        // Unity 6000.0.79f1 RGBA32: RampX 8x8, Standard, heightScale 0.25.
+                        std::vector<std::uint8_t> expected;
+                        for (unsigned y = 0; y < 8; ++y)
+                            for (unsigned x = 0; x < 8; ++x)
+                                expected.insert(expected.end(),
+                                                {std::uint8_t(x == 0 || x == 7 ? 172 : 112), 128, 255, 255});
+                        REQUIRE_EQ(value.value().getIf<Value::Object>()->at("mipCount").asInt(),
+                                   int64_t(mode == 3 ? 1 : 4));
+                        if (mode != 3) {
+                            // Unity's next height level is [16,80,144,208]/255, then
+                            // 2x2 and 1x1 produce zero periodic central differences.
+                            for (unsigned y = 0; y < 4; ++y)
+                                for (unsigned x = 0; x < 4; ++x)
+                                    expected.insert(expected.end(),
+                                                    {uint8_t(x == 0 || x == 3 ? 143 : 112), 128, 255, 255});
+                            for (unsigned i = 0; i < 5; ++i) expected.insert(expected.end(), {128, 128, 255, 255});
+                        }
+                        if (mode == 5) {
+                            size_t offset = 0;
+                            for (unsigned extent : {8u, 4u, 2u, 1u}) {
+                                for (unsigned y = 0; y < extent; ++y)
+                                    for (unsigned x = 0; x < extent; ++x) {
+                                        const auto original = expected[offset + (x * extent + y) * 4];
+                                        expected[offset + (y * extent + x) * 4 + 1] = original;
+                                    }
+                                for (unsigned i = 0; i < extent * extent; ++i) expected[offset + i * 4] = 128;
+                                offset += extent * extent * 4;
+                            }
+                        }
+                        if (mode == 6) {
+                            expected.clear();
+                            // Independently reduced linear ramps: centers are 0,16,48,112
+                            // and steps 32,64,128,256. Source B/A do not enter normal RG.
+                            for (unsigned extent : {8u, 4u, 2u, 1u}) {
+                                const unsigned step  = 256 / extent;
+                                const unsigned first = (step - 32) / 2;
+                                for (unsigned y = 0; y < extent; ++y)
+                                    for (unsigned x = 0; x < extent; ++x)
+                                        expected.insert(expected.end(), {uint8_t(first + x * step),
+                                                                         uint8_t(255 - first - y * step), 255, 255});
+                            }
+                            REQUIRE(loaded.value().images[0].has_value());
+                            REQUIRE(*loaded.value().images[0] != *loaded.value().images[2]);
+                        }
+                        REQUIRE_EQ(
+                            (std::vector<std::uint8_t>(normal.value().bulk.begin() + 28, normal.value().bulk.end())),
+                            expected);
+                        checked = true;
+                    }
+                }
+            }
+            REQUIRE(checked);
+        }
+        if (height) {
+            for (const auto invalidSetting : {"  heightScale: 1.1\n", "  wrapU: 3\n", "  normalMapFilter: 7\n"}) {
+                auto              invalid = request;
+                const std::string invalidMeta =
+                    "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nTextureImporter:\n"
+                    "  textureType: 1\n  convertToNormalMap: 1\n" +
+                    std::string(invalidSetting);
+                invalid.files["Assets/mask.png.meta"] = {invalidMeta.begin(), invalidMeta.end()};
+                auto rejected                         = prepareUnityProjectImport(invalid);
+                if (std::string_view(invalidSetting).find("wrapU") != std::string_view::npos) {
+                    REQUIRE(rejected.ok());
+                    bool unsupported = false;
+                    for (const auto& finding : rejected.value().findings)
+                        if (finding.disposition == ImportDisposition::Unsupported &&
+                            finding.feature == "resource.conversion")
+                            unsupported = true;
+                    REQUIRE(unsupported);
+                    REQUIRE(!rejected.value().manifest.entrypoints.contains("Assets/leaf.mat"));
+                } else {
+                    REQUIRE(!rejected.ok());
+                }
+            }
+        }
+        const std::string duplicate = "  convertToNormalMap: 0\n";
+        auto&             metadata  = request.files["Assets/mask.png.meta"];
+        metadata.insert(metadata.end(), duplicate.begin(), duplicate.end());
+        REQUIRE(!prepareUnityProjectImport(request).ok());
+    }
+}
+
+TEST_CASE("asset.import.unityVegetationAutomaticNpotMatchesUnity") {
+    // Unity 6000.0.79f1 RGBAFloat oracle, 5x7 independent RGB pattern,
+    // default cubic resize, Standard height normal, heightScale=0.25.
+    struct Reference {
+        bool                 height;
+        int                  mode, width, heightPixels, levels;
+        std::vector<uint8_t> rg;
+        unsigned             sourceWidth = 5, sourceHeight = 7;
+        int                  algorithm = 0;
+    };
+    const std::vector<Reference> references = {
+        {false, 1, 4, 8, 4, {17,  19,  60,  133, 107, 88,  151, 85,  65,  28,  108, 141, 155, 97,  181, 94,  127, 39,
+                             165, 153, 202, 108, 130, 105, 185, 51,  172, 164, 135, 120, 95,  117, 139, 62,  126, 175,
+                             90,  131, 131, 128, 72,  74,  109, 186, 146, 142, 190, 139, 119, 87,  165, 168, 167, 124,
+                             181, 153, 167, 100, 216, 113, 126, 68,  74,  166, 63,  80,  149, 91,  162, 102, 141, 113,
+                             112, 124, 139, 135, 167, 117, 137, 128, 128, 96,  139, 126, 134, 111}},
+        {false, 2, 8, 8, 4, {13,  10,  27,  44,  49,  98,  72,  141, 95,  120, 118, 64,  140, 71,  154, 102, 61,
+                             19,  75,  53,  97,  107, 120, 150, 143, 128, 163, 73,  176, 80,  182, 110, 123, 30,
+                             137, 64,  156, 119, 173, 162, 192, 140, 194, 84,  155, 91,  114, 122, 178, 41,  190,
+                             76,  187, 130, 152, 173, 134, 151, 135, 96,  111, 102, 84,  133, 131, 53,  143, 87,
+                             141, 141, 106, 184, 88,  163, 103, 107, 122, 114, 133, 145, 67,  64,  81,  99,  101,
+                             152, 118, 195, 136, 173, 158, 118, 180, 125, 194, 156, 116, 76,  130, 109, 152, 150,
+                             171, 166, 172, 144, 164, 116, 173, 135, 186, 167, 164, 84,  178, 116, 200, 129, 211,
+                             87,  166, 65,  92,  95,  73,  142, 84,  176, 44,  32,  85,  124, 130, 96,  163, 91,
+                             157, 53,  167, 146, 164, 118, 116, 112, 106, 76,  117, 168, 121, 140, 157, 135, 147,
+                             96,  184, 133, 149, 105, 129, 155, 113, 89,  143, 104, 138, 118, 139, 134, 133, 111}},
+        {false, 3, 4, 4, 3, {39,  23,  84,  137, 134, 92,  166, 89,  159, 45,  169, 158, 166, 114,
+                             113, 111, 107, 68,  117, 183, 118, 139, 163, 134, 140, 94,  189, 141,
+                             149, 96,  129, 160, 113, 91,  145, 102, 138, 122, 140, 132, 134, 112}},
+        {true, 1, 4, 8, 4, {133, 117, 115, 123, 122, 133, 140, 132, 132, 140, 115, 139, 123, 139, 140, 132, 125, 141,
+                            116, 138, 130, 132, 139, 128, 122, 134, 124, 131, 133, 127, 131, 133, 127, 127, 124, 130,
+                            128, 131, 131, 134, 126, 128, 119, 130, 129, 126, 136, 122, 119, 126, 126, 120, 135, 114,
+                            129, 116, 122, 108, 131, 110, 133, 119, 124, 123, 128, 127, 128, 130, 128, 135, 128, 132,
+                            128, 128, 128, 125, 128, 120, 128, 123, 128, 128, 128, 128, 128, 128}},
+        {true, 2, 8, 8, 4, {147, 114, 116, 114, 114, 118, 120, 126, 128, 132, 126, 134, 120, 134, 148, 133, 146,
+                            144, 116, 144, 114, 143, 120, 143, 129, 143, 127, 141, 122, 136, 147, 131, 135, 145,
+                            116, 145, 115, 143, 121, 138, 130, 135, 133, 133, 130, 130, 140, 128, 128, 136, 118,
+                            136, 121, 134, 128, 130, 134, 127, 132, 128, 127, 133, 132, 137, 136, 126, 118, 127,
+                            121, 128, 128, 132, 133, 133, 127, 131, 121, 134, 136, 137, 139, 129, 116, 129, 115,
+                            129, 124, 131, 134, 128, 131, 123, 122, 121, 139, 121, 128, 125, 117, 124, 118, 121,
+                            129, 114, 140, 110, 135, 111, 123, 112, 129, 112, 127, 102, 120, 102, 126, 103, 135,
+                            106, 137, 112, 129, 118, 121, 121, 127, 121, 131, 126, 120, 127, 124, 131, 135, 129,
+                            126, 138, 123, 137, 129, 134, 132, 133, 128, 129, 124, 128, 127, 124, 131, 126, 124,
+                            117, 128, 118, 131, 121, 127, 122, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128}},
+        {true, 3, 4, 4, 3, {131, 126, 119, 127, 124, 131, 136, 129, 125, 138, 123, 137, 130, 134,
+                            132, 133, 127, 129, 124, 128, 128, 124, 131, 126, 123, 117, 128, 118,
+                            132, 121, 127, 122, 128, 128, 128, 128, 128, 128, 128, 128, 128, 128}},
+        {false,
+         1,
+         8,
+         4,
+         4,
+         {0,   0,   32,  78, 63,  156, 95,  88,  127, 56,  159, 134, 190, 175, 222, 34,  47,  9,   79,  87, 111, 165,
+          142, 96,  174, 65, 157, 143, 67,  184, 99,  43,  95,  17,  126, 95,  158, 173, 190, 105, 185, 73, 119, 151,
+          29,  193, 61,  51, 142, 26,  174, 104, 205, 182, 237, 114, 159, 82,  45,  160, 76,  201, 108, 60, 40,  43,
+          103, 126, 154, 99, 144, 109, 134, 61,  198, 144, 127, 117, 68,  126, 119, 93,  124, 113, 121, 103},
+         7,
+         3,
+         1},
+        {false,
+         2,
+         8,
+         4,
+         4,
+         {0,   0,   32,  78, 63,  156, 95,  88,  127, 56,  159, 134, 190, 175, 222, 34,  47,  9,   79,  87, 111, 165,
+          142, 96,  174, 65, 157, 143, 67,  184, 99,  43,  95,  17,  126, 95,  158, 173, 190, 105, 185, 73, 119, 151,
+          29,  193, 61,  51, 142, 26,  174, 104, 205, 182, 237, 114, 159, 82,  45,  160, 76,  201, 108, 60, 40,  43,
+          103, 126, 154, 99, 144, 109, 134, 61,  198, 144, 127, 117, 68,  126, 119, 93,  124, 113, 121, 103},
+         7,
+         3,
+         1},
+        {false,
+         3,
+         4,
+         2,
+         3,
+         {32, 37, 96, 165, 161, 100, 162, 99, 138, 57, 203, 184, 100, 119, 76, 119, 117, 111, 125, 109, 121, 110},
+         7,
+         3,
+         1},
+        {true,
+         1,
+         8,
+         4,
+         4,
+         {142, 117, 112, 117, 121, 117, 128, 117, 119, 124, 114, 130, 128, 122, 155, 122, 131, 138, 112, 138, 121, 138,
+          128, 138, 122, 136, 125, 130, 136, 122, 145, 122, 126, 138, 112, 138, 121, 138, 130, 138, 127, 131, 128, 125,
+          136, 133, 140, 133, 126, 117, 112, 117, 121, 117, 135, 117, 135, 119, 123, 125, 128, 133, 140, 133, 130, 128,
+          120, 128, 125, 128, 135, 128, 125, 128, 124, 128, 130, 128, 131, 128, 128, 128, 128, 128, 128, 128},
+         7,
+         3,
+         1},
+        {true,
+         2,
+         8,
+         4,
+         4,
+         {142, 117, 112, 117, 121, 117, 128, 117, 119, 124, 114, 130, 128, 122, 155, 122, 131, 138, 112, 138, 121, 138,
+          128, 138, 122, 136, 125, 130, 136, 122, 145, 122, 126, 138, 112, 138, 121, 138, 130, 138, 127, 131, 128, 125,
+          136, 133, 140, 133, 126, 117, 112, 117, 121, 117, 135, 117, 135, 119, 123, 125, 128, 133, 140, 133, 130, 128,
+          120, 128, 125, 128, 135, 128, 125, 128, 124, 128, 130, 128, 131, 128, 128, 128, 128, 128, 128, 128},
+         7,
+         3,
+         1},
+        {true,
+         3,
+         4,
+         2,
+         3,
+         {129, 128, 120, 128, 126, 128, 135, 128, 123, 128, 125, 128, 132, 128, 130, 128, 128, 128, 128, 128, 128, 128},
+         7,
+         3,
+         1}};
+    for (const auto& reference : references) {
+        auto        request       = fixture();
+        auto&       materialBytes = request.files["Assets/leaf.mat"];
+        std::string material(materialBytes.begin(), materialBytes.end());
+        material.insert(material.find("    m_Floats:"),
+                        "    - _MainNormalTex:\n        m_Texture: {fileID: 2800000, guid: "
+                        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb, type: 3}\n");
+        materialBytes.assign(material.begin(), material.end());
+        const std::string meta =
+            "guid: bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\nTextureImporter:\n  textureType: 1\n  convertToNormalMap: " +
+            std::to_string(reference.height ? 1 : 0) + "\n  nPOTScale: " + std::to_string(reference.mode) +
+            "\n  enableMipMap: 1\n  mipMapMode: 0\n  resizeAlgorithm: " + std::to_string(reference.algorithm) + "\n";
+        request.files["Assets/mask.png.meta"] = {meta.begin(), meta.end()};
+        std::vector<uint8_t> pixels;
+        for (unsigned y = 0; y < reference.sourceHeight; ++y)
+            for (unsigned x = 0; x < reference.sourceWidth; ++x)
+                pixels.insert(pixels.end(), {uint8_t((37 * x + 71 * y) % 256), uint8_t((91 * x + 13 * y) % 256),
+                                             uint8_t((17 * x + 43 * y) % 256), uint8_t((29 * x + 31 * y) % 256)});
+        auto png = asset::detail::encodeSourcePng(reference.sourceWidth, reference.sourceHeight, pixels, 4096);
+        REQUIRE(png.ok());
+        request.files["Assets/mask.png"] = std::move(png).takeValue();
+        auto imported                    = prepareUnityProjectImport(request);
+        REQUIRE(imported.ok());
+        unsigned checked = 0;
+        for (const auto& entry : imported.value().entries) {
+            if (!entry.path.ends_with("normal.rgba8-mips")) continue;
+            REQUIRE_EQ(entry.bytes.size(), reference.rg.size() * 2);
+            for (size_t i = 0; i < reference.rg.size() / 2; ++i) {
+                REQUIRE(std::abs(int(entry.bytes[i * 4]) - int(reference.rg[i * 2])) <= 1);
+                REQUIRE(std::abs(int(entry.bytes[i * 4 + 1]) - int(reference.rg[i * 2 + 1])) <= 1);
+                REQUIRE_EQ(entry.bytes[i * 4 + 2], uint8_t(255));
+                REQUIRE_EQ(entry.bytes[i * 4 + 3], uint8_t(255));
+            }
+            const auto definition = entry.path.substr(0, entry.path.rfind('/') + 1) + "asset.json";
+            for (const auto& candidate : imported.value().entries)
+                if (candidate.path == definition) {
+                    auto value = Value::fromJson(std::string(candidate.bytes.begin(), candidate.bytes.end()));
+                    REQUIRE(value.ok());
+                    const auto& object = *value.value().getIf<Value::Object>();
+                    REQUIRE_EQ(object.at("width").asInt(), int64_t(reference.width));
+                    REQUIRE_EQ(object.at("height").asInt(), int64_t(reference.heightPixels));
+                    REQUIRE_EQ(object.at("mipCount").asInt(), int64_t(reference.levels));
+                    auto cooked = asset::cookCanonicalImageRgba8(candidate.bytes, entry.bytes, 4096);
+                    REQUIRE(cooked.ok());
+                    ++checked;
+                }
+        }
+        REQUIRE_EQ(checked, 1u);
+    }
+}
+}  // namespace test_asset_import_unity_vegetation_material
+
+
+// Contract section: asset procgen terrain detail render
+#include "PrivateTestScope.h"
+
+#include <string_view>
+#include "asset/EvpackImageDecoder.h"
+#include "asset/procgen/TerrainDetailCard.h"
+#include "asset/procgen/TerrainVegetationGpu.h"
+#include "asset/procgen/TerrainVegetationRuntime.h"
+#include "graphics/Light.h"
+#include "image/ImageData.h"
+// asset_procgen_terrain_detail_render.cpp
+namespace test_asset_procgen_terrain_detail_render {
+// asset_procgen_terrain_detail_render.cpp
+using namespace eve;
+
+namespace {
+
+std::vector<std::uint8_t> terrainDetailBytes(std::string_view text) { return {text.begin(), text.end()}; }
+
+bool saveReadback(const image::ImageData& screenshot, const std::filesystem::path& path) {
+    std::vector<std::uint8_t> rgba;
+    rgba.reserve(std::size_t(screenshot.getWidth()) * std::size_t(screenshot.getHeight()) * 4);
+    for (int y = 0; y < screenshot.getHeight(); ++y)
+        for (int x = 0; x < screenshot.getWidth(); ++x) {
+            const auto pixel = screenshot.getPixel(x, y);
+            for (const float value : {pixel.r, pixel.g, pixel.b, pixel.a})
+                rgba.push_back(static_cast<std::uint8_t>(std::lround(std::clamp(value, 0.f, 1.f) * 255.f)));
+        }
+    auto png =
+        asset::detail::encodeSourcePng(static_cast<std::uint32_t>(screenshot.getWidth()),
+                                       static_cast<std::uint32_t>(screenshot.getHeight()), rgba, 4 * 1024 * 1024);
+    if (!png) return false;
+    std::filesystem::create_directories(path.parent_path());
+    std::ofstream output(path, std::ios::binary);
+    output.write(reinterpret_cast<const char*>(png.value().data()), std::streamsize(png.value().size()));
+    return output.good();
+}
+
+}  // namespace
+
+TEST_CASE("asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource") {
+    asset_import::UnityProjectImportRequest request;
+    request.package = {
+        *PersistentId::parse("6cb7a302-f360-4ae3-b22f-dd722e63e18c"), "terrain.detail.render.fixture", "1.0.0", {}};
+    request.terrainDataPath                = "Assets/Terrain.asset";
+    request.files[request.terrainDataPath] = terrainDetailBytes(R"yaml(%YAML 1.1
+TerrainData:
+  m_HeightmapResolution: 2
+  m_HeightmapScale: {x: 1, y: 1, z: 1}
+  m_Heights: 0000000000000000
+  m_DetailPrototypes:
+  - prototype: {fileID: 2800000, guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa, type: 3}
+)yaml");
+    request.files[request.terrainDataPath + ".meta"] =
+        terrainDetailBytes("fileFormatVersion: 2\nguid: 11111111111111111111111111111111\n");
+    request.files["Assets/grass.png.meta"] = terrainDetailBytes(
+        "fileFormatVersion: 2\nguid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+        "TextureImporter:\n  sRGBTexture: 1\n  alphaIsTransparency: 1\n");
+    const std::array<std::uint8_t, 16> pixels{20, 170, 35, 255, 30, 220, 45, 255, 15, 120, 25, 255, 25, 190, 40, 255};
+    auto                               png = asset::detail::encodeSourcePng(2, 2, pixels, 4096);
+    REQUIRE(png.ok());
+    request.files["Assets/grass.png"]                            = std::move(png).takeValue();
+    request.files[request.terrainDataPath + ".eve-details.json"] = terrainDetailBytes(R"json(
+{"schema":"eve.unity-terrain-details","schemaVersion":3,
+ "wavingGrass":{"amount":0.12,"speed":0.7,"strength":0.08,"tint":[0.8,1,0.8,1]},
+ "prototypes":[{"prototype":"unity-texture-guid:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "renderMode":"Grass","usePrototypeMesh":false,"useInstancing":true,
+  "minWidth":0.45,"maxWidth":0.65,"minHeight":0.8,"maxHeight":1.2,
+  "noiseSeed":19,"noiseSpread":0.1,"density":1,"alignToGround":0,"positionJitter":0.1,
+  "healthyColor":[0.8,1,0.8,1],"dryColor":[0.7,0.8,0.4,1],"bendFactor":0.5,
+  "holeEdgePadding":0,"useDensityScaling":true}],
+ "instances":[
+  {"prototype":"unity-texture-guid:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","position":[-0.7,0,0],"rotation":[0,0,0,1],"scale":[0.7,1,0.7]},
+  {"prototype":"unity-texture-guid:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","position":[0,0,0],"rotation":[0,0.3826834,0,0.9238795],"scale":[0.8,1.15,0.8]},
+  {"prototype":"unity-texture-guid:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","position":[0.7,0,0],"rotation":[0,0.7071068,0,0.7071068],"scale":[0.65,0.9,0.65]}]}
+)json");
+
+    auto imported = asset_import::prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    const auto instanceAsset =
+        std::find_if(imported.value().manifest.assets.begin(), imported.value().manifest.assets.end(),
+                     [](const auto& candidate) { return candidate.type == "eve.instance-set"; });
+    REQUIRE(instanceAsset != imported.value().manifest.assets.end());
+    auto eva = asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(eva.ok());
+    auto archive = asset::parseEvaArchive(eva.value());
+    REQUIRE(archive.ok());
+    auto profile = asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    asset::EvpackResourceReader     reader(std::make_shared<const asset::Evpack>(std::move(pack).takeValue()));
+    const auto&                     variant = profile.value().variant;
+    const asset::EvpackCapabilities capabilities{
+        variant.os,        variant.arch,    variant.graphics, variant.textureFamilies, {variant.shaderFormat},
+        {variant.quality}, variant.features};
+    asset_procgen::EvpackInstanceSetLoader instanceLoader(reader);
+    auto                                   loaded = instanceLoader.load(instanceAsset->asset, capabilities);
+    REQUIRE(loaded.ok());
+    REQUIRE_EQ(loaded.value().prototypes.size(), std::size_t(1));
+    REQUIRE_EQ(loaded.value().instances.size(), std::size_t(3));
+    auto resource = AssetRef::parse(loaded.value().prototypes.front().resourceAsset);
+    REQUIRE(resource.ok());
+    auto image = asset::decodeEvpackImage(reader, resource.value(), capabilities);
+    REQUIRE(image.ok());
+    CHECK_EQ(image.value().width, 2u);
+    CHECK_EQ(image.value().height, 2u);
+    CHECK_EQ(image.value().pixels.size(), std::size_t(16));
+
+    auto*                  testWindow = window::Window::create();
+    auto*                  gfx        = graphics::Graphics::create();
+    window::WindowSettings settings;
+    settings.width  = 320;
+    settings.height = 240;
+    REQUIRE(testWindow->setWindowSettings(settings));
+    gfx->setScreenReadbackEnabled(true);
+    gfx->setBackgroundColor(graphics::Color(.04f, .06f, .09f, 1.f));
+    auto* camera = graphics::Camera3D::createCamera();
+    camera->setEye(0.f, 1.1f, 3.f);
+    camera->setTarget(0.f, .5f, 0.f);
+    camera->setAmbient(.55f, .55f, .55f);
+    auto* sun = graphics::Light3D::createLight("dir");
+    sun->setDirection(.4f, 1.f, .5f);
+    sun->setColor(1.f, .96f, .9f, 1.4f);
+
+    auto card = asset_procgen::buildTerrainDetailCard(loaded.value().prototypes.front());
+    REQUIRE(card.ok());
+    auto* mesh = gfx->newMeshFromArrays(card.value().positions.data(), card.value().normals.data(),
+                                        card.value().texcoords.data(), int(card.value().positions.size() / 3),
+                                        card.value().indices.data(), int(card.value().indices.size()));
+    REQUIRE(mesh != nullptr);
+    auto* texture = gfx->newTexture(int(image.value().width), int(image.value().height), image.value().pixels.data());
+    REQUIRE(texture != nullptr);
+    auto* material = gfx->newMaterial();
+    material->setAlbedoTexture(texture);
+    material->setSurfaceMode("masked");
+    material->setDoubleSided(true);
+    material->setRoughness(1.f);
+    for (const auto& instance : loaded.value().instances) {
+        auto* detail = graphics::Renderable3D::create();
+        detail->setMesh(mesh);
+        detail->setMaterial(material);
+        detail->setPosition(instance.position[0], instance.position[1], instance.position[2]);
+        detail->setScale(instance.scale[0], instance.scale[1], instance.scale[2]);
+    }
+    auto* renderControl = gfx->getRenderControl();
+    for (const char* feature : {"shadow", "gbuffer", "ao", "gi", "aa", "atmosphere", "msaa", "visResolve", "gpuDriven"})
+        renderControl->disable(feature);
+    {
+        for (int frame = 0; frame < 4; ++frame) {
+            graphics::RenderSystem3D::render(*gfx);
+            REQUIRE(!gfx->gpuDrivenEnabled());
+            graphics::RenderSystem::render(*gfx);
+        }
+        auto screenshot  = std::make_unique<image::ImageData>(settings.width / 2, settings.height / 2, "RGBA8");
+        int  greenPixels = 0;
+        for (int y = 0; y < settings.height; y += 2)
+            for (int x = 0; x < settings.width; x += 2) {
+                const auto pixel = gfx->getPixel(x, y);
+                screenshot->setPixel(x / 2, y / 2, {pixel.r, pixel.g, pixel.b, pixel.a});
+                if (pixel.g > pixel.r + .04f && pixel.g > pixel.b + .02f) ++greenPixels;
+            }
+        REQUIRE_GT(greenPixels, 40);
+        const auto outputPath = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" /
+                                ("terrain-detail-imported-" + gfx->getBackendName() + ".png");
+        REQUIRE(saveReadback(*screenshot, outputPath));
+    }
+    testWindow->close();
+}
+
+// asset_procgen_terrain_vegetation.cpp
+using namespace eve::asset_procgen;
+
+namespace {
+class Resolver final : public ITerrainVegetationGpuResolver {
+public:
+    eve::Result<TerrainVegetationGpuPrototype> resolve(const TerrainVegetationGpuPrototypeRequest& request) override {
+        ++calls;
+        seenMetadata = seenMetadata || request.detail != nullptr;
+        if (request.prototype == "missing")
+            return eve::Result<TerrainVegetationGpuPrototype>::failure(
+                eve::Diagnostic::error(eve::DiagnosticCode::NotFound, "missing prototype"));
+        if (request.prototype == "tree") {
+            TerrainVegetationGpuPrototype result;
+            std::array<float, 16>         first{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+            auto                          second = first;
+            second[12]                           = 2.f;
+            result.parts.push_back({first, 20, 30, 7u, 3u});
+            result.parts.push_back({second, 21, 31, 7u, 3u});
+            return eve::Result<TerrainVegetationGpuPrototype>::success(std::move(result));
+        }
+        return eve::Result<TerrainVegetationGpuPrototype>::success({calls, calls + 10, 7u, 3u});
+    }
+    eve::Result<void> drawShadow(const TerrainVegetationGpuPrototypeRequest&, const std::array<float, 16>&,
+                                 const std::array<float, 16>&) override {
+        ++shadowCalls;
+        return eve::Result<void>::success();
+    }
+    std::uint32_t calls        = 0;
+    std::uint32_t shadowCalls  = 0;
+    bool          seenMetadata = false;
+};
+}  // namespace
+
+TEST_CASE("asset.procgen.terrainDetailCardsPreserveBillboardAndCrossedGrassSemantics") {
+    RuntimeInstancePrototype billboard{"unity-texture-guid:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "GrassBillboard", false,
+                                       true};
+    auto                     billboardGeometry = buildTerrainDetailCard(billboard);
+    REQUIRE(billboardGeometry.ok());
+    CHECK(billboardGeometry.value().cameraFacing);
+    CHECK_EQ(billboardGeometry.value().positions.size(), std::size_t(12));
+    CHECK_EQ(billboardGeometry.value().indices.size(), std::size_t(6));
+    CHECK_EQ(billboardGeometry.value().positions[1], 0.f);
+    CHECK_EQ(billboardGeometry.value().positions[7], 1.f);
+
+    RuntimeInstancePrototype grass = billboard;
+    grass.renderMode               = "Grass";
+    auto crossed                   = buildTerrainDetailCard(grass);
+    REQUIRE(crossed.ok());
+    CHECK(!crossed.value().cameraFacing);
+    CHECK_EQ(crossed.value().positions.size(), std::size_t(24));
+    CHECK_EQ(crossed.value().indices.size(), std::size_t(12));
+
+    RuntimeInstancePrototype mesh{"unity-guid:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "VertexLit", true, true};
+    auto                     unsupported = buildTerrainDetailCard(mesh);
+    REQUIRE(!unsupported.ok());
+    CHECK_EQ(unsupported.error()->code(), eve::DiagnosticCode::Unsupported);
+}
+
+TEST_CASE("asset.procgen.terrainVegetationRealizesGraphAndBakedInstancesIntoBuckets") {
+    eve::procgen::Heightmap heightmap(3, 3);
+    auto                    spatial    = eve::procgen::SpatialData::heightfield(heightmap, 0.f, 0.f, 1.f, 1.f);
+    auto                    graphAsset = eve::AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440000");
+    REQUIRE(graphAsset.ok());
+    LoadedPointGraph loaded{std::move(graphAsset).takeValue(), std::make_unique<eve::procgen::PointGraph>(), "tag", {}};
+    REQUIRE(loaded.graph->addNode("sample", "spatial.sample"));
+    REQUIRE(loaded.graph->setNodeSpatial("sample", &spatial));
+    REQUIRE(loaded.graph->setNodeFloat("sample", "spacing", 1.f));
+    REQUIRE(loaded.graph->addNode("tag", "attribute.set.string"));
+    REQUIRE(loaded.graph->connect("sample", "tag", 0));
+    REQUIRE(loaded.graph->setNodeString("tag", "attribute", "prototype"));
+    REQUIRE(loaded.graph->setNodeString("tag", "value", "grass-card"));
+
+    auto instanceAsset = eve::AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440001");
+    REQUIRE(instanceAsset.ok());
+    LoadedInstanceSet baked{std::move(instanceAsset).takeValue(), {}, {}, {}};
+    baked.wavingGrassAmount   = .4f;
+    baked.wavingGrassSpeed    = .6f;
+    baked.wavingGrassStrength = .8f;
+    baked.wavingGrassTint     = {.3f, .7f, .4f, 1.f};
+    baked.prototypes.push_back({"oak", "VertexLit", true, true});
+    baked.instances.push_back({"oak", {3.f, 2.f, 1.f}, {0.f, 0.f, 0.f, 1.f}, {2.f, 3.f, 2.f}});
+    auto realized = realizeTerrainVegetation(&loaded, &baked);
+    REQUIRE(realized.ok());
+    CHECK(realized.value().generatedCount > 0);
+    CHECK_EQ(realized.value().explicitCount, 1u);
+    CHECK_EQ(realized.value().wavingGrassAmount, .4f);
+    CHECK_EQ(realized.value().wavingGrassSpeed, .6f);
+    CHECK_EQ(realized.value().wavingGrassStrength, .8f);
+    CHECK_EQ(realized.value().wavingGrassTint[1], .7f);
+    REQUIRE_EQ(realized.value().prototypes.size(), std::size_t(1));
+    REQUIRE_EQ(realized.value().buckets.size(), std::size_t(2));
+    CHECK_EQ(realized.value().buckets[0].prototype, std::string("grass-card"));
+    CHECK_EQ(realized.value().buckets[1].prototype, std::string("oak"));
+    CHECK(realized.value().graphNodesEvaluated > 0);
+    CHECK(realized.value().graphMilliseconds >= 0.0);
+    for (const auto& instance : realized.value().instances) CHECK(instance.id != 0);
+}
+
+TEST_CASE("asset.procgen.terrainVegetationSupportsOptionalProvidersAndRejectsBudgets") {
+    auto instanceAsset = eve::AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440001");
+    REQUIRE(instanceAsset.ok());
+    LoadedInstanceSet baked{std::move(instanceAsset).takeValue(), {}, {}, {}};
+    baked.instances.push_back({"tree", {}, {0.f, 0.f, 0.f, 1.f}, {1.f, 1.f, 1.f}});
+    auto explicitOnly = realizeTerrainVegetation(nullptr, &baked);
+    REQUIRE(explicitOnly.ok());
+    CHECK_EQ(explicitOnly.value().explicitCount, 1u);
+
+    TerrainVegetationLimits limits;
+    limits.maximumTotalInstances = 1;
+    baked.instances.push_back({"tree", {}, {0.f, 0.f, 0.f, 1.f}, {1.f, 1.f, 1.f}});
+    auto overBudget = realizeTerrainVegetation(nullptr, &baked, limits);
+    REQUIRE(!overBudget.ok());
+    CHECK_EQ(overBudget.error()->code(), eve::DiagnosticCode::InvalidArgument);
+
+    auto absent = realizeTerrainVegetation(nullptr, nullptr);
+    REQUIRE(!absent.ok());
+    CHECK_EQ(absent.error()->code(), eve::DiagnosticCode::NotFound);
+}
+
+TEST_CASE("asset.procgen.terrainVegetationGpuPlanResolvesBucketsAtomically") {
+    TerrainVegetationRealization realization;
+    realization.instances = {{1, "grass", {}, {1.f, 2.f, 3.f}, {0.f, 0.f, 0.f, 1.f}, {2.f, 2.f, 2.f}},
+                             {2, "tree", {}, {4.f, 5.f, 6.f}, {0.f, 0.f, 0.f, 1.f}, {1.f, 2.f, 1.f}}};
+    realization.buckets   = {{"grass", 0, 1}, {"tree", 1, 1}};
+    realization.prototypes.push_back({"grass", "GrassBillboard", false, true});
+    realization.prototypes.back().useInstancing = false;
+    realization.prototypes.back().minHeight     = 1.f;
+    realization.prototypes.back().maxHeight     = 3.f;
+    realization.prototypes.back().dryColor      = {0.6f, 0.4f, 0.2f, 1.f};
+    realization.prototypes.back().healthyColor  = {0.2f, 0.8f, 0.4f, 1.f};
+    realization.wavingGrassAmount               = .4f;
+    realization.wavingGrassSpeed                = .6f;
+    realization.wavingGrassStrength             = .8f;
+    realization.wavingGrassTint                 = {.3f, .7f, .4f, 1.f};
+    Resolver resolver;
+    auto     plan = buildTerrainVegetationGpuPlan(realization, resolver, {2.5});
+    REQUIRE(plan.ok());
+    CHECK(resolver.seenMetadata);
+    CHECK_EQ(resolver.calls, 2u);
+    REQUIRE_EQ(plan.value().instances.size(), std::size_t(3));
+    CHECK_EQ(plan.value().instances[0].meshId, 1u);
+    CHECK_EQ(plan.value().instances[1].materialId, 30u);
+    CHECK_EQ(plan.value().instances[2].materialId, 31u);
+    CHECK(std::abs(plan.value().instances[2].model[3][0] - 6.f) < 0.0001f);
+    CHECK(std::abs(plan.value().instances[0].model[3][0] - 1.f) < 0.0001f);
+    CHECK(std::abs(plan.value().instances[0].color.r - .4f) < 0.0001f);
+    CHECK(std::abs(plan.value().instances[0].color.g - .6f) < 0.0001f);
+    CHECK(std::abs(plan.value().instances[0].terrainWave.x - 1.5f) < 0.0001f);
+    CHECK_EQ(plan.value().instances[0].terrainWave.y, .4f);
+    CHECK_EQ(plan.value().instances[0].terrainWave.z, .8f);
+    CHECK_EQ(plan.value().instances[0].terrainWave.w, 1.f);
+    CHECK_EQ(plan.value().instances[0].terrainWaveTint.g, .7f);
+    CHECK_EQ(plan.value().instances[1].terrainWave.w, 0.f);
+    CHECK_EQ(plan.value().instances[2].terrainWave.w, 0.f);
+
+    auto invalidFrame =
+        buildTerrainVegetationGpuPlan(realization, resolver, {std::numeric_limits<double>::quiet_NaN()});
+    REQUIRE(!invalidFrame.ok());
+    CHECK_EQ(invalidFrame.error()->code(), eve::DiagnosticCode::InvalidArgument);
+
+    realization.instances[1].prototype = "missing";
+    auto rejected                      = buildTerrainVegetationGpuPlan(realization, resolver);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(rejected.error()->code(), eve::DiagnosticCode::Conflict);
+}
+
+TEST_CASE("asset.procgen.terrainVegetationRendererOwnsFrameStateAndRejectsInvalidTime") {
+    TerrainVegetationRealization realization;
+    Resolver                     resolver;
+    TerrainVegetationRenderer    renderer(std::move(realization), resolver);
+
+    CHECK(renderer.lastSubmissionError() == nullptr);
+    CHECK(renderer.setFrame({12.5}).ok());
+    auto invalid = renderer.setFrame({std::numeric_limits<double>::infinity()});
+    REQUIRE(!invalid.ok());
+    CHECK_EQ(invalid.error()->code(), eve::DiagnosticCode::InvalidArgument);
+}
+
+TEST_CASE("asset.procgen.terrainVegetationControlWeightsCullDeterministicallyAndFlipV") {
+    TerrainVegetationRealization source;
+    source.generatedCount = 3;
+    source.explicitCount  = 1;
+    source.instances      = {{1, "grass", "Grass", {0.f, 0.f, 0.f}},
+                             {2, "grass", "Grass", {1.f, 0.f, 1.f}},
+                             {3, "flower", "Flower", {0.f, 0.f, 1.f}},
+                             {4, "tree", {}, {1.f, 0.f, 0.f}}};
+    source.buckets        = {{"flower", 0, 1}, {"grass", 1, 2}, {"tree", 3, 1}};
+
+    auto materialAsset = eve::AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440002");
+    REQUIRE(materialAsset.ok());
+    LoadedTerrainMaterial material{std::move(materialAsset).takeValue()};
+    material.layers.resize(2);
+    material.layers[0].name = "Grass";
+    material.layers[1].name = "Flower";
+    TerrainMaterialAtlases    atlases;
+    TerrainMaterialAtlasGroup group;
+    group.firstLayer = 0;
+    group.layerCount = 2;
+    group.control    = {2, 2, {255, 0, 0, 0, 255, 0, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0}};
+    atlases.groups.push_back(std::move(group));
+
+    auto normal = filterTerrainVegetationByLayerWeights(source, material, atlases, {0, 0, 1, 1, false});
+    REQUIRE(normal.ok());
+    CHECK_EQ(normal.value().instances.size(), std::size_t(3));
+    CHECK_EQ(normal.value().weightCulledCount, 1u);
+    CHECK_EQ(normal.value().explicitCount, 1u);
+    auto flipped = filterTerrainVegetationByLayerWeights(source, material, atlases, {0, 0, 1, 1, true});
+    REQUIRE(flipped.ok());
+    CHECK_EQ(flipped.value().instances.size(), std::size_t(2));
+    CHECK_EQ(flipped.value().weightCulledCount, 2u);
+}
+}  // namespace test_asset_procgen_terrain_detail_render
+
+
+// Contract section: asset scene bindings
+#include "PrivateTestScope.h"
+
+// asset_scene_bindings.cpp
+namespace test_asset_scene_bindings {
+using namespace eve;
+using namespace eve::asset;
+
+namespace {
+constexpr const char*    objectId = "018f6f22-2490-7ad2-bf58-4f1dbca31041";
+constexpr const char*    assetId  = "018f6f22-2490-7ad2-bf58-4f1dbca31040";
+const EvpackCapabilities caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+
+Value::Object definition() {
+    return {{"schema", "eve.scene-template"},
+            {"schemaVersion", 2},
+            {"coordinateSystem", "right-handed-x-right-y-up-minus-z-forward"},
+            {"nodes", Value::Array{Value::Object{{"objectId", objectId},
+                                                 {"sourceFileId", 1},
+                                                 {"parentSourceFileId", 0},
+                                                 {"name", "Node"},
+                                                 {"position", Value::Array{0, 0, 0}},
+                                                 {"rotation", Value::Array{0, 0, 0, 1}},
+                                                 {"scale", Value::Array{1, 1, 1}}}}},
+            {"renderers", Value::Array{Value::Object{{"objectId", objectId},
+                                                     {"mesh", std::string("asset://") + assetId},
+                                                     {"material", std::string("asset://") + assetId},
+                                                     {"enabled", true}}}}};
+}
+
+Result<asset_scene::LoadedSceneTemplate> load(Value::Object root, unsigned version = 2) {
+    auto encoded = encodeRuntimeDefinition(Value(std::move(root)));
+    REQUIRE(encoded.ok());
+    EvpackBuild build;
+    build.packageId = *PersistentId::parse(assetId);
+    build.buildId   = *PersistentId::parse(objectId);
+    build.variants  = {{"windows", "x86_64", "vulkan", {"rgba8"}, "spirv-1.6", "high", {}}};
+    build.chunks.push_back({build.packageId,
+                            "eve.scene-template",
+                            SchemaVersion(version),
+                            0,
+                            EvpackChunkKind::Definition,
+                            0,
+                            EvpackCodec::None,
+                            8,
+                            {},
+                            std::move(encoded).takeValue()});
+    auto packed = buildEvpack(std::move(build));
+    REQUIRE(packed.ok());
+    auto parsed = parseEvpack(packed.value());
+    REQUIRE(parsed.ok());
+    EvpackResourceReader reader(std::make_shared<const Evpack>(std::move(parsed).takeValue()));
+    auto                 ref = AssetRef::fromId(*PersistentId::parse(assetId));
+    REQUIRE(ref.ok());
+    return asset_scene::EvpackSceneTemplateLoader(reader).load(ref.value(), caps);
+}
+
+std::array<double, 4> yxz(double yaw, double pitch, double roll) {
+    const double y = yaw / 2, x = pitch / 2, z = roll / 2;
+    return {std::cos(y) * std::sin(x) * std::cos(z) + std::sin(y) * std::cos(x) * std::sin(z),
+            std::sin(y) * std::cos(x) * std::cos(z) - std::cos(y) * std::sin(x) * std::sin(z),
+            std::cos(y) * std::cos(x) * std::sin(z) - std::sin(y) * std::sin(x) * std::cos(z),
+            std::cos(y) * std::cos(x) * std::cos(z) + std::sin(y) * std::sin(x) * std::sin(z)};
+}
+}  // namespace
+
+TEST_CASE("asset.sceneBindingsRejectDanglingDuplicateAndUnversionedBindings") {
+    auto valid = load(definition());
+    REQUIRE(valid.ok());
+    REQUIRE_EQ(valid.value().renderers.size(), std::size_t(1));
+    auto root                                                                                 = definition();
+    (*root.at("renderers").getIf<Value::Array>()->front().getIf<Value::Object>())["objectId"] = assetId;
+    auto invalid                                                                              = load(root);
+    REQUIRE(!invalid.ok());
+    root                                                = definition();
+    auto duplicate                                      = root.at("nodes").getIf<Value::Array>()->front();
+    (*duplicate.getIf<Value::Object>())["sourceFileId"] = 2;
+    root.at("nodes").getIf<Value::Array>()->push_back(duplicate);
+    auto repeated = load(root);
+    REQUIRE(!repeated.ok());
+    root                  = definition();
+    root["schemaVersion"] = 1;
+    auto unversioned      = load(root, 1);
+    REQUIRE(!unversioned.ok());
+    root.erase("renderers");
+    auto legacy = load(root, 1);
+    REQUIRE(!legacy.ok());
+}
+
+TEST_CASE("asset.sceneBindingsPreserveCombinedAndGimbalRotations") {
+    constexpr double radians = 0.017453292519943295;
+    for (double pitch : {37.0, 90.0, -90.0}) {
+        const auto expected = yxz(23 * radians, pitch * radians, -19 * radians);
+        auto       root     = definition();
+        (*root.at("nodes").getIf<Value::Array>()->front().getIf<Value::Object>())["rotation"] =
+            Value::Array{expected[0], expected[1], expected[2], expected[3]};
+        auto loaded = load(root);
+        REQUIRE(loaded.ok());
+        const auto& node   = loaded.value().root.children.front();
+        const auto  actual = yxz(node.yaw * radians, node.pitch * radians, node.roll * radians);
+        double      dot    = 0;
+        for (std::size_t i = 0; i < 4; ++i) dot += expected[i] * actual[i];
+        REQUIRE(std::abs(std::abs(dot) - 1.0) < 1e-6);
+    }
+}
+}  // namespace test_asset_scene_bindings
+
+
+// Contract section: asset shader
+#include "PrivateTestScope.h"
+
+#include "asset/ShaderAsset.h"
+#include "asset/import/ShaderImporter.h"
+// asset_shader.cpp
+namespace test_asset_shader {
+using namespace eve;
+using namespace eve::asset;
+
+namespace {
+Value shaderDefinition() {
+    auto value = Value::fromJson(R"({"schema":"eve.shader","schemaVersion":1,
+      "interface":"mesh3d","format":"spirv-1.6",
+      "vertex":[119734787,67072,0,2,0,327695,0,1,1852399981,0],
+      "fragment":[119734787,67072,0,2,0,327695,4,1,1852399981,0],
+      "parameters":[{"name":"strength","default":[1.0]}]})");
+    REQUIRE(value.ok());
+    return std::move(value).takeValue();
+}
+}  // namespace
+
+
+TEST_CASE("asset.shader cooks reopens and loads beside Unity schema versions") {
+    auto id = PersistentId::parse("550e8400-e29b-41d4-a716-446655440000");
+    REQUIRE(id);
+    auto reference = AssetRef::parse("asset://550e8400-e29b-41d4-a716-446655440000");
+    REQUIRE(reference.ok());
+    auto json = shaderDefinition().toJson();
+    REQUIRE(json.ok());
+    EvaArchive source;
+    source.manifest.packageId      = *id;
+    source.manifest.packageName    = "shader.test";
+    source.manifest.packageVersion = "1.0.0";
+    const std::string path         = "assets/" + id->format() + "/asset.json";
+    source.manifest.assets.push_back({reference.value(), "eve.shader", SchemaVersion(1), path, {}, {}});
+    source.manifest.entrypoints.emplace("default", reference.value());
+    source.entries.push_back({path, {json.value().begin(), json.value().end()}});
+    auto profile = assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto first = cookEvaToEvpack(source, profile.value());
+    REQUIRE(first.ok());
+    auto second = cookEvaToEvpack(source, profile.value());
+    REQUIRE(second.ok());
+    REQUIRE_EQ(first.value().bytes, second.value().bytes);
+    auto package = parseEvpack(first.value().bytes);
+    REQUIRE(package.ok());
+    EvpackResourceReader reader(std::make_shared<const Evpack>(std::move(package).takeValue()));
+    EvpackCapabilities   capabilities{"windows", "x86_64", "vulkan", {"bc", "rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                 loaded = loadShaderAsset(reader, reference.value(), capabilities);
+    REQUIRE(loaded.ok());
+    REQUIRE_EQ(loaded.value().parameters[0].name, std::string("strength"));
+    capabilities.graphics = "webgpu";
+    REQUIRE(!loadShaderAsset(reader, reference.value(), capabilities).ok());
+    auto web = assetCookProfileForTarget("web-wasm32-webgpu");
+    REQUIRE(web.ok());
+    REQUIRE(!cookEvaToEvpack(source, web.value()).ok());
+}
+
+TEST_CASE("asset.shader import preserves identity and rejects invalid candidates") {
+    auto id = PersistentId::parse("018f6f22-2490-7ad2-bf58-4f1dbca31040");
+    REQUIRE(id);
+    asset_import::ImportPackageIdentity identity{*id, "shader.test", "1.0.0", {}};
+    auto                                definition = shaderDefinition();
+    auto                                json       = definition.toJson();
+    REQUIRE(json.ok());
+    auto first = asset_import::prepareShaderImport(identity, json.value());
+    REQUIRE(first.ok());
+    auto second = asset_import::prepareShaderImport(identity, json.value());
+    REQUIRE(second.ok());
+    REQUIRE_EQ(first.value().manifest.assets[0].asset, second.value().manifest.assets[0].asset);
+    REQUIRE_EQ(first.value().manifest.assets[0].asset.id(), id->child("shader:default"));
+    auto archive = buildEvaArchive(first.value().manifest, first.value().entries);
+    REQUIRE(archive.ok());
+    auto reopened = parseEvaArchive(archive.value());
+    REQUIRE(reopened.ok());
+    REQUIRE(!asset_import::prepareShaderImport(identity, "{}").ok());
+    REQUIRE(!asset_import::prepareShaderImport({}, json.value()).ok());
+}
+}  // namespace test_asset_shader
+
+
+// Contract section: graphics vegetation translucency
+#include "PrivateTestScope.h"
+
+#include "graphics/Canvas.h"
+#include "graphics/Mesh.h"
+// graphics_vegetation_translucency.cpp
+namespace test_graphics_vegetation_translucency {
+using namespace eve::graphics;
+
+
+TEST_CASE("graphics.vegetation.translucency_gpu_backlight_and_ambient") {
+    auto* gfx = Graphics::create();
+    gfx->initHeadless(64, 64);
+    auto* canvas = gfx->newCanvas(64, 64);
+    REQUIRE(canvas != nullptr);
+    const float    positions[]{-.9f, -.9f, .5f, .9f, -.9f, .5f, .9f, .9f, .5f, -.9f, .9f, .5f};
+    const float    normals[]{0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
+    const float    uv[]{0, 0, 1, 0, 1, 1, 0, 1};
+    const uint32_t indices[]{0, 2, 1, 0, 3, 2};
+    auto*          mesh = gfx->newMeshFromArrays(positions, normals, uv, 4, indices, 6);
+    REQUIRE(mesh != nullptr);
+    Lighting3DPack lighting{};
+    lighting.count               = 1;
+    lighting.ambient             = {.2f, .2f, .2f, 0};
+    lighting.lights[0].posRadius = {0, 0, -1, 0};
+    lighting.lights[0].color     = {.5f, .6f, .7f, 0};
+    gfx->setMesh3DViewProj(glm::mat4(1));
+    gfx->setMesh3DView(glm::mat4(1));
+    gfx->setMesh3DCameraPos({0, 0, 2});
+    Color tint(.5f, .5f, .5f, 1);
+    float materialRoughness = 1;
+    auto  render            = [&](const PbrSurface& surface) {
+        auto drawSurface                               = surface;
+        drawSurface.vegetationColor.backfaceNormalMode = PbrVegetationBackfaceNormalMode::Same;
+        gfx->begin3DFrameToCanvas(canvas);
+        gfx->setMesh3DLighting(lighting);
+        gfx->setMesh3DMaterial(0, materialRoughness);
+        gfx->setMesh3DSurface(SurfaceMode::Opaque, BlendMode::Opaque, true, true, .5f, "cutoff");
+        REQUIRE(gfx->setMesh3DPbrSurface(&drawSurface).ok());
+        gfx->drawMesh(mesh, glm::mat4(1), nullptr, tint);
+        REQUIRE(gfx->setMesh3DPbrSurface(nullptr).ok());
+        gfx->end3DFrameToCanvas();
+        std::unique_ptr<eve::image::ImageData> image(canvas->newImageData());
+        REQUIRE(image != nullptr);
+        return image->getPixel(32, 32);
+    };
+    PbrSurface surface;
+    const auto baseline                  = render(surface);
+    surface.vegetationColor.overlayColor = {.2f, .4f, .8f};
+    surface.vegetationColor.overlay      = .25f;
+    surface.vegetationColor.wetness      = .5f;
+    const auto           staged          = render(surface);
+    const auto           originalTint    = tint;
+    std::array<float, 3> stagedRgb{};
+    for (size_t c = 0; c < 3; ++c) {
+        const float overlay = std::lerp(.5f, surface.vegetationColor.overlayColor[size_t(c)], .25f);
+        stagedRgb[c]        = std::lerp(overlay, overlay * overlay, .25f);
+    }
+    tint                       = Color(stagedRgb[0], stagedRgb[1], stagedRgb[2], 1);
+    surface.vegetationColor    = {};
+    const auto stagedReference = render(surface);
+    CHECK(std::abs(staged.r - stagedReference.r) < .005f);
+    CHECK(std::abs(staged.g - stagedReference.g) < .005f);
+    CHECK(std::abs(staged.b - stagedReference.b) < .005f);
+    tint                                         = originalTint;
+    surface.vegetationColor.overlayColor         = {.2f, .4f, .8f};
+    surface.vegetationColor.overlay              = .3f;
+    surface.vegetationColor.wetness              = 0;
+    surface.vegetationColor.overlayVariation     = .5f;
+    surface.vegetationColor.overlayProjection    = 0;
+    surface.vegetationColor.vertexOcclusionAlpha = .5f;
+    std::vector<float> factors{.5f, 0, 1, 0, 0, .5f, 0, 1, 0, 0, .5f, 0, 1, 0, 0, .5f, 0, 1, 0, 0};
+    REQUIRE(mesh->adoptVegetationFactors(std::move(factors)).ok());
+    const auto  factored    = render(surface);
+    const float overlayMask = std::clamp((.3f * .75f * .5f - .1f) / .1001f, 0.f, 1.f);
+    tint =
+        Color(std::lerp(.5f, .2f, overlayMask), std::lerp(.5f, .4f, overlayMask), std::lerp(.5f, .8f, overlayMask), 1);
+    surface.vegetationColor      = {};
+    const auto factoredReference = render(surface);
+    CHECK(std::abs(factored.r - factoredReference.r) < .005f);
+    CHECK(std::abs(factored.g - factoredReference.g) < .005f);
+    CHECK(std::abs(factored.b - factoredReference.b) < .005f);
+    tint                                         = originalTint;
+    surface.vegetationColor.overlayColor         = {.2f, .4f, .8f};
+    surface.vegetationColor.overlay              = 1;
+    surface.vegetationColor.overlayVariation     = 0;
+    surface.vegetationColor.overlayProjection    = 1;
+    surface.vegetationColor.vertexOcclusionAlpha = 1;
+    const auto sideProjected                     = render(surface);
+    CHECK(std::abs(sideProjected.r - baseline.r) < .005f);
+    CHECK(std::abs(sideProjected.g - baseline.g) < .005f);
+    CHECK(std::abs(sideProjected.b - baseline.b) < .005f);
+    std::vector<float> clearFactors;
+    REQUIRE(mesh->adoptVegetationFactors(std::move(clearFactors)).ok());
+    surface.vegetationColor                      = {};
+    tint                                         = originalTint;
+    surface.vegetationColor.overlayColor         = {.5f, .5f, .5f};
+    surface.vegetationColor.overlay              = 1;
+    surface.vegetationColor.overlayVariation     = 0;
+    surface.vegetationColor.overlayProjection    = 0;
+    surface.vegetationColor.vertexOcclusionAlpha = 1;
+    surface.vegetationColor.overlaySmoothness    = .8f;
+    const auto overlaySmooth                     = render(surface);
+    surface.vegetationColor                      = {};
+    materialRoughness                            = .2f;
+    const auto overlaySmoothReference            = render(surface);
+    CHECK(std::abs(overlaySmooth.r - overlaySmoothReference.r) < .005f);
+    CHECK(std::abs(overlaySmooth.g - overlaySmoothReference.g) < .005f);
+    CHECK(std::abs(overlaySmooth.b - overlaySmoothReference.b) < .005f);
+    materialRoughness                       = 1;
+    surface.vegetationColor.wetness         = .5f;
+    surface.vegetationColor.wetnessContrast = 0;
+    const auto wetSmooth                    = render(surface);
+    surface.vegetationColor                 = {};
+    materialRoughness                       = .25f;
+    const auto wetSmoothReference           = render(surface);
+    CHECK(std::abs(wetSmooth.r - wetSmoothReference.r) < .005f);
+    CHECK(std::abs(wetSmooth.g - wetSmoothReference.g) < .005f);
+    CHECK(std::abs(wetSmooth.b - wetSmoothReference.b) < .005f);
+    materialRoughness = 1;
+    const uint8_t tiltedNormal[]{204, 128, 255, 255};
+    auto*         tiltedNormalTexture = gfx->newTexture(1, 1, tiltedNormal);
+    REQUIRE(tiltedNormalTexture != nullptr);
+    auto& normalBinding                          = surface.textures[size_t(PbrTextureSlot::Normal)];
+    normalBinding.texture                        = tiltedNormalTexture;
+    normalBinding.srgbDecode                     = false;
+    surface.normalScale                          = 1;
+    surface.vegetationColor.overlay              = 1;
+    surface.vegetationColor.overlayVariation     = 0;
+    surface.vegetationColor.overlayProjection    = 0;
+    surface.vegetationColor.vertexOcclusionAlpha = 1;
+    surface.vegetationColor.overlayColor         = {.5f, .5f, .5f};
+    surface.vegetationColor.overlayNormalScale   = .25f;
+    const auto overlayNormal                     = render(surface);
+    surface.vegetationColor                      = {};
+    surface.normalScale                          = .25f;
+    const auto overlayNormalReference            = render(surface);
+    CHECK(std::abs(overlayNormal.r - overlayNormalReference.r) < .005f);
+    CHECK(std::abs(overlayNormal.g - overlayNormalReference.g) < .005f);
+    CHECK(std::abs(overlayNormal.b - overlayNormalReference.b) < .005f);
+    surface.textures[size_t(PbrTextureSlot::Normal)] = {};
+    surface.normalScale                              = 1;
+    tint                                             = originalTint;
+    surface.translucency.intensity                   = .1f;
+    surface.translucency.strength                    = 2;
+    surface.translucency.direct                      = .8f;
+    surface.translucency.ambient                     = .3f;
+    const auto lit                                   = render(surface);
+    // Center view lobe is approximately 0.5^2, not 1 from renormalizing
+    // the distorted light. Two .5 albedo stages and source intensity*10 remain.
+    CHECK(std::abs(lit.r - baseline.r - .065f) < .008f);
+    CHECK(std::abs(lit.g - baseline.g - .078f) < .008f);
+    CHECK(std::abs(lit.b - baseline.b - .091f) < .008f);
+    surface.vegetationColor.overlay              = 1;
+    surface.vegetationColor.overlayVariation     = 0;
+    surface.vegetationColor.overlayProjection    = 0;
+    surface.vegetationColor.vertexOcclusionAlpha = 1;
+    surface.vegetationColor.overlayColor         = {.5f, .5f, .5f};
+    surface.vegetationColor.overlaySmoothness    = 0;
+    surface.vegetationColor.overlaySubsurface    = .25f;
+    const auto overlaySubsurface                 = render(surface);
+    surface.vegetationColor                      = {};
+    surface.translucency.intensity               = .025f;
+    const auto overlaySubsurfaceReference        = render(surface);
+    CHECK(std::abs(overlaySubsurface.r - overlaySubsurfaceReference.r) < .005f);
+    CHECK(std::abs(overlaySubsurface.g - overlaySubsurfaceReference.g) < .005f);
+    CHECK(std::abs(overlaySubsurface.b - overlaySubsurfaceReference.b) < .005f);
+    surface.translucency.intensity = .1f;
+    std::vector<float> highlightValues(4, .5f);
+    REQUIRE(mesh->adoptMotionHighlights(std::move(highlightValues)).ok());
+    surface.motionHighlightColor   = {1, 1, 1};
+    const auto highlighted         = render(surface);
+    surface.translucency.intensity = 0;
+    const auto highlightedBaseline = render(surface);
+    // Final albedo receives highlight once; the earlier translucency albedo
+    // remains unchanged. Applying it twice would give 2.25 instead of 1.5.
+    CHECK(std::abs(highlighted.r - highlightedBaseline.r - (lit.r - baseline.r) * 1.5f) < .008f);
+    CHECK(std::abs(highlighted.g - highlightedBaseline.g - (lit.g - baseline.g) * 1.5f) < .008f);
+    CHECK(std::abs(highlighted.b - highlightedBaseline.b - (lit.b - baseline.b) * 1.5f) < .008f);
+    surface.motionHighlightColor   = {0, 0, 0};
+    surface.translucency.intensity = .1f;
+    std::vector<float> clearHighlights;
+    REQUIRE(mesh->adoptMotionHighlights(std::move(clearHighlights)).ok());
+    surface.motionHighlightColor = {1, 1, 1};
+    const auto absentHighlight   = render(surface);
+    CHECK(std::abs(absentHighlight.r - lit.r) < .005f);
+    // The left and right vertices differ. Center sampling must interpolate,
+    // rather than use a flat value from one endpoint.
+    std::vector<float> gradientHighlights{0, 1, 1, 0};
+    REQUIRE(mesh->adoptMotionHighlights(std::move(gradientHighlights)).ok());
+    const auto gradientLit         = render(surface);
+    surface.translucency.intensity = 0;
+    const auto gradientBaseline    = render(surface);
+    CHECK(std::abs(gradientLit.r - gradientBaseline.r - (lit.r - baseline.r) * 1.5f) < .008f);
+    surface.motionHighlightColor   = {0, 0, 0};
+    surface.translucency.intensity = .1f;
+    clearHighlights.clear();
+    REQUIRE(mesh->adoptMotionHighlights(std::move(clearHighlights)).ok());
+    // Translucency mask remains active without enabling the separate RGB tint mask.
+    const uint8_t orm[]{255, 255, 0, 128};
+    auto*         mask = gfx->newTexture(1, 1, orm);
+    REQUIRE(mask != nullptr);
+    auto& binding                    = surface.textures[size_t(PbrTextureSlot::MetallicRoughness)];
+    binding.texture                  = mask;
+    binding.srgbDecode               = false;
+    surface.translucency.maskMinimum = 0;
+    surface.translucency.maskMaximum = 1;
+    surface.translucency.maskAmount  = 1;
+    REQUIRE(!surface.colorMaskEnabled);
+    const auto masked = render(surface);
+    CHECK(std::abs(masked.r - baseline.r - .0326f) < .008f);
+    CHECK(std::abs(masked.g - baseline.g - .0391f) < .008f);
+    CHECK(std::abs(masked.b - baseline.b - .0457f) < .008f);
+    surface.translucency.maskAmount = 0;
+    surface.translucency.direct     = 0;
+    const auto ambientOnly          = render(surface);
+    CHECK(std::abs(ambientOnly.r - baseline.r - .015f) < .006f);
+    surface.translucency.direct  = .8f;
+    surface.translucency.ambient = 0;
+    const auto directOnly        = render(surface);
+    CHECK(std::abs(directOnly.r - baseline.r - .05f) < .006f);
+    surface.translucency.globalIntensity = .5f;
+    surface.translucency.overlay         = .5f;
+    const auto globalReduced             = render(surface);
+    CHECK(std::abs(globalReduced.r - baseline.r - .0125f) < .006f);
+    lighting.lights[0].color       = {0, 0, 0, 0};
+    const auto noLight             = render(surface);
+    surface.translucency.intensity = 0;
+    const auto noLightBaseline     = render(surface);
+    CHECK(std::abs(noLight.r - noLightBaseline.r) < .005f);
+    CHECK(std::abs(noLight.g - noLightBaseline.g) < .005f);
+    CHECK(std::abs(noLight.b - noLightBaseline.b) < .005f);
+    // Exercise the same lighting through Unity import, canonical cooking and
+    // runtime image resolution, including the source HDR tint without conversion.
+    eve::asset_import::UnityProjectImportRequest request;
+    request.package = {
+        *eve::PersistentId::parse("11111111-2222-4333-8444-555555555555"), "translucency.gpu", "1.0.0", {}};
+    auto put = [&](const std::string& path, const std::string& text) {
+        request.files[path] = {text.begin(), text.end()};
+    };
+    put("Assets/leaf.mat.meta", "guid: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n");
+    put("Assets/leaf.mat", R"(--- !u!21 &2100000
+Material:
+  m_Shader: {fileID: 4800000, guid: a933075b367f9b24981408633f72ff34, type: 3}
+  m_SavedProperties:
+    m_Floats:
+    - _SubsurfaceValue: 0.1
+    - _SubsurfaceScatteringValue: 2
+    - _SubsurfaceAngleValue: 2
+    - _SubsurfaceNormalValue: 0.5
+    - _SubsurfaceDirectValue: 0.8
+    - _SubsurfaceAmbientValue: 0.3
+    - _SubsurfaceMaskValue: 0
+    m_Colors:
+    - _MainColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    - _MotionHighlightColor: {r: 1, g: 1, b: 1, a: 1}
+)");
+    auto imported = eve::asset_import::prepareUnityProjectImport(request);
+    REQUIRE(imported.ok());
+    const auto ref = imported.value().manifest.entrypoints.at("Assets/leaf.mat");
+    auto       eva = eve::asset::buildEvaArchive(imported.value().manifest, imported.value().entries);
+    REQUIRE(eva.ok());
+    auto archive = eve::asset::parseEvaArchive(eva.value());
+    REQUIRE(archive.ok());
+    auto profile = eve::asset::assetCookProfileForTarget("windows-x86_64-vulkan");
+    REQUIRE(profile.ok());
+    auto cooked = eve::asset::cookEvaToEvpack(archive.value(), profile.value());
+    REQUIRE(cooked.ok());
+    auto pack = eve::asset::parseEvpack(cooked.value().bytes);
+    REQUIRE(pack.ok());
+    eve::asset::EvpackResourceReader reader(std::make_shared<const eve::asset::Evpack>(std::move(pack).takeValue()));
+    const eve::asset::EvpackCapabilities caps{"windows", "x86_64", "vulkan", {"rgba8"}, {"spirv-1.6"}, {"high"}, {}};
+    auto                                 material = eve::asset_graphics::detail::readCookedMaterial(reader, ref, caps);
+    REQUIRE(material.ok());
+    eve::asset_graphics::GraphicsImageFactoryAdapter factory(*gfx);
+    eve::asset_graphics::EvpackImageLoader           loader(reader, factory);
+    std::vector<Texture*>                            images;
+    for (size_t slot = 0; slot < material.value().images.size(); ++slot) {
+        if (!material.value().images[slot]) continue;
+        auto image = loader.load(*material.value().images[slot], caps);
+        REQUIRE(image.ok());
+        material.value().surface.textures[slot].texture = image.value().texture;
+        images.push_back(image.value().texture);
+    }
+    tint                     = material.value().color;
+    lighting.lights[0].color = {.5f, .6f, .7f, 0};
+    const auto sourceLit     = render(material.value().surface);
+    CHECK(std::abs(sourceLit.r - lit.r) < .005f);
+    CHECK(std::abs(sourceLit.g - lit.g) < .005f);
+    CHECK(std::abs(sourceLit.b - lit.b) < .005f);
+    std::vector<float> importedHighlights(4, .5f);
+    REQUIRE(mesh->adoptMotionHighlights(std::move(importedHighlights)).ok());
+    const auto sourceHighlighted = render(material.value().surface);
+    CHECK(std::abs(sourceHighlighted.r - highlighted.r) < .005f);
+    CHECK(std::abs(sourceHighlighted.g - highlighted.g) < .005f);
+    CHECK(std::abs(sourceHighlighted.b - highlighted.b) < .005f);
+    for (auto* image : images) REQUIRE(factory.releaseImage(image).ok());
+}
+}  // namespace test_graphics_vegetation_translucency

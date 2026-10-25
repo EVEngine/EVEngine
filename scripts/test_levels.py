@@ -377,16 +377,54 @@ def cmake_quote(text: str) -> str:
     return '"' + text.replace("\\", "/").replace('"', '\\"').replace("$", "\\$") + '"'
 
 
+def origin_guard_ranges(text: str) -> list[tuple[int, int, int, tuple[str, ...]]]:
+    """Match legacy selection guards to their real, possibly nested closing directive."""
+    directives = re.finditer(
+        r"^[ \t]*#[ \t]*(if|ifdef|ifndef|endif)\b(?:[^\n]*\\\n)*[^\n]*(?:\n|$)",
+        mask_cpp(text), re.MULTILINE,
+    )
+    stack = []
+    ranges = []
+    for directive in directives:
+        kind = directive[1]
+        if kind != "endif":
+            expression = directive[0].replace("\\\n", " ")
+            origins = tuple(re.findall(r"defined\s*\(\s*EVE_TEST_ORIGIN_(\w+)\s*\)", expression))
+            selected = origins if kind == "if" and "EVE_TEST_FILTER_ORIGINS" in expression else ()
+            stack.append((directive.start(), directive.end(), selected))
+        elif stack:
+            start, body, origins = stack.pop()
+            if origins:
+                ranges.append((start, body, directive.end(), origins))
+    return sorted(ranges)
+
+
+def source_text_in_ranges(text: str, ranges: list[tuple[int, int]]) -> str:
+    """Keep selected C++ intervals and mask the rest without changing source positions."""
+    result = list(re.sub(r"[^\n]", " ", text))
+    for start, end in ranges:
+        result[start:end] = text[start:end]
+    return "".join(result)
+
+
+def always_source_text(text: str) -> str:
+    """Return code outside all origin-selection blocks, preserving other backend guards."""
+    result = list(text)
+    for start, _, end, _ in origin_guard_ranges(text):
+        result[start:end] = re.sub(r"[^\n]", " ", text[start:end])
+    return "".join(result)
+
+
 def origin_source_sections(text: str, policy: dict) -> dict[str, str]:
     """Select relocated responsibilities while retaining physical source line numbers."""
-    result = {}
-    guards = list(re.finditer(r"^#if !defined\(EVE_TEST_FILTER_ORIGINS\)(?:[^\n]*\\\n)*[^\n]*\n", text, re.MULTILINE))
-    for index, guard in enumerate(guards):
-        end = guards[index + 1].start() if index + 1 < len(guards) else len(text)
-        for origin in re.findall(r"defined\(EVE_TEST_ORIGIN_(\w+)\)", guard[0].replace("\\\n", " ")):
-            result[origin + ".cpp"] = "\n" * text.count("\n", 0, guard.end()) + text[guard.end():end]
+    intervals: dict[str, list[tuple[int, int]]] = {}
+    for _, start, end, origins in origin_guard_ranges(text):
+        for origin in origins:
+            intervals.setdefault(origin + ".cpp", []).append((start, end))
+    result = {origin: source_text_in_ranges(text, ranges) for origin, ranges in intervals.items()}
+    unconditional = always_source_text(text)
     for origin in policy.get("origins", []):
-        result.setdefault(origin, text)
+        result.setdefault(origin, unconditional)
     return result
 
 
@@ -414,11 +452,15 @@ def emit_cmake(data: dict, output: Path) -> None:
             raise ValueError(f"ambiguous zeroerr source basename: {basename}")
         seen.add(basename)
         path = root / source
-        origin_policies[source] = origin_case_policies(path.read_text(encoding="utf-8"), policy) if path.exists() else {}
+        source_text = path.read_text(encoding="utf-8") if path.exists() else ""
+        origin_policies[source] = origin_case_policies(source_text, policy)
         for origin in policy.get("origins", []):
             aliases.setdefault(origin, []).append(source)
         lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + basename)} {cmake_quote(';'.join(policy.get('generated', [])))})")
         lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + basename)} {cmake_quote(';'.join(classified_cases(policy)))})")
+        if origin_guard_ranges(source_text):
+            always = ';'.join(cases_in(always_source_text(source_text)))
+            lines.append(f"set({cmake_quote('EVE_TEST_ALWAYS_CASE_NAMES_' + basename)} {cmake_quote(always)})")
         for name, category in [("", policy["default"]), *classified_cases(policy).items()]:
             key = f"{basename}|{name}"
             level, resources = CLASSIFICATIONS[category]
@@ -435,6 +477,8 @@ def emit_cmake(data: dict, output: Path) -> None:
         if "/" not in source or (source.startswith(("unit/", "integration/")) and not policy.get("origins")):
             desktop.append(str(root / source))
     for origin, destinations in sorted(aliases.items()):
+        origin_basename = Path(origin).name
+        canonical_metadata = origin_basename in seen
         key = 'EVE_TEST_RELOCATED_' + Path(origin).name
         lines.append(f"set({cmake_quote(key)} {cmake_quote(';'.join(str(root / s) for s in destinations))})")
         desktop.append(str(root / origin))
@@ -449,10 +493,16 @@ def emit_cmake(data: dict, output: Path) -> None:
                 labels = [level, 'reason:' + category] + ['requires:' + r for r in resources]
                 if 'graphics' not in resources and 'window' not in resources:
                     labels.append('no-render')
-                lines.append(f"set({cmake_quote('EVE_TEST_LEVEL_' + Path(origin).name + '|' + name)} {cmake_quote(';'.join(labels))})")
-        lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + Path(origin).name)} {cmake_quote(';'.join(names))})")
-        lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + Path(origin).name)} {cmake_quote(';'.join(prefixes))})")
-        if prefixes:
+                if not canonical_metadata:
+                    lines.append(f"set({cmake_quote('EVE_TEST_LEVEL_' + origin_basename + '|' + name)} {cmake_quote(';'.join(labels))})")
+        # Physical source metadata has precedence over a deleted origin with
+        # the same basename. Keep that origin's distinct selection available
+        # only through its explicit legacy-selector namespace.
+        lines.append(f"set({cmake_quote('EVE_TEST_ORIGIN_CASE_NAMES_' + origin_basename)} {cmake_quote(';'.join(names))})")
+        if not canonical_metadata:
+            lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + origin_basename)} {cmake_quote(';'.join(names))})")
+            lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + origin_basename)} {cmake_quote(';'.join(prefixes))})")
+        if prefixes and not canonical_metadata:
             policy = data['sources'][destinations[0]]
             level, resources = CLASSIFICATIONS[policy['default']]
             labels = [level, 'reason:' + policy['default']] + ['requires:' + r for r in resources]

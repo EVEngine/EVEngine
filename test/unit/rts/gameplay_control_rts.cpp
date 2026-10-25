@@ -197,3 +197,48 @@ TEST_CASE("rts.terrainGridOriginScaleAndVerticalSegments") {
     REQUIRE(firstTerrainImpact(1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 0.f, 0.f, 1.f, ground).has_value());
     CHECK(!firstTerrainImpact(1.f, 1.f, 1.f, 1.f, 1.f, 2.f, 0.f, 0.f, 1.f, ground).has_value());
 }
+
+#include "rts/RTSTypes.h"
+namespace test_rts_performance_semantics_migrated {
+TEST_CASE("rts.performanceOrderProjectionInvalidatesOnLifecycleAndSameIdRestore") {
+    eve::rts::OrderComponent orders;
+    eve::rts::CommandSpec    first;
+    first.kind   = eve::rts::OrderKind::AttackMove;
+    first.target = {3.f, 4.f};
+    REQUIRE(orders.enqueue(first, 5).ok());
+    for (int i = 0; i < 3; ++i) {
+        auto current = orders.current();
+        REQUIRE(current.ok());
+        CHECK_EQ(current.value().target.x, 3.f);
+        CHECK_EQ(current.value().formationSlot, 5);
+    }
+    eve::rts::OrderComponent restored;
+    first.target = {7.f, 8.f};
+    REQUIRE(restored.enqueue(first, 9).ok());
+    auto snapshot = restored.snapshotState();
+    REQUIRE(snapshot.ok());
+    REQUIRE(orders.restoreState(snapshot.value()).ok());
+    auto current = orders.current();
+    REQUIRE(current.ok());
+    CHECK_EQ(current.value().target.x, 7.f);
+    CHECK_EQ(current.value().formationSlot, 9);
+    REQUIRE(orders.restore(snapshot.value().queueJson).ok());
+    current = orders.current();
+    REQUIRE(current.ok());
+    CHECK_EQ(current.value().target.x, 7.f);
+    eve::rts::OrderComponent copied(orders);
+    first.target = {11.f, 12.f};
+    REQUIRE(copied.enqueue(first, 2).ok());
+    REQUIRE(copied.complete(copied.current().expect("active").id).ok());
+    current = copied.current();
+    REQUIRE(current.ok());
+    CHECK_EQ(current.value().target.x, 11.f);
+    copied.clear();
+    REQUIRE(copied.enqueue(first, 3).ok());
+    const auto afterClear = copied.current().expect("after clear");
+    CHECK_EQ(afterClear.formationSlot, 3);
+    REQUIRE(copied.replace(first, 4).ok());
+    const auto afterReplace = copied.current().expect("after replace");
+    CHECK_EQ(afterReplace.formationSlot, 4);
+}
+}  // namespace test_rts_performance_semantics_migrated

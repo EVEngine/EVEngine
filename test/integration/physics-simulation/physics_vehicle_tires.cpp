@@ -200,30 +200,3 @@ TEST_CASE("physics.vehicleTires2D.compatibilityMobilityQueuesInsteadOfTeleportin
     CHECK(r.vehicle->suspension()->wheels[0].angularVelocity > 0);
     CHECK_EQ(r.vehicle->motion()->x, r.body->getX());
 }
-
-TEST_CASE("physics.vehicleTires.definitionCodecAdmitsAndRejectsTireParameters") {
-    definitions::Definition source;
-    source.id   = "tires";
-    source.json = R"({"suspension":{"wheelInertia":0.2,"tireFriction":0.7,"longitudinalStiffness":4000,
-        "corneringStiffness":3000,"rollingResistance":0.02,"brakeTorque":80,"maxSteerAngle":0.5,"supportAcceleration2D":8}})";
-    auto parsed = parseVehicleDefinition(source);
-    REQUIRE(parsed.ok());
-    const auto& config = parsed.value().suspension;
-    CHECK(std::abs(config.wheelInertia - .2) < 1e-6);
-    CHECK(std::abs(config.tireFriction - .7) < 1e-6);
-    CHECK_EQ(config.longitudinalStiffness, 4000);
-    CHECK_EQ(config.corneringStiffness, 3000);
-    CHECK(std::abs(config.rollingResistance - .02) < 1e-6);
-    CHECK_EQ(config.brakeTorque, 80);
-    CHECK_EQ(config.maxSteerAngle, .5f);
-    CHECK_EQ(config.supportAcceleration2D, 8);
-    for (const char* invalid : {R"({"suspension":{"wheelInertia":0}})", R"({"suspension":{"tireFriction":-1}})",
-                                R"({"suspension":{"maxSteerAngle":2}})", R"({"suspension":{"brakeTorque":"heavy"}})"}) {
-        source.json = invalid;
-        CHECK(!parseVehicleDefinition(source).ok());
-    }
-    source.json   = "{}";
-    auto defaults = parseVehicleDefinition(source);
-    REQUIRE(defaults.ok());
-    CHECK(defaults.value().suspension.wheelInertia > 0);
-}

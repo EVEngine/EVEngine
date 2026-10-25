@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: rts combat
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_combat)
-#include "PrivateTestScope.h"
 #include "RtsCompositionFixtures.h"
 // rts_combat.cpp
 namespace test_rts_combat {
@@ -1743,11 +1745,10 @@ TEST_CASE("rts.artilleryRelocationChoosesReachableLowThreatFreshPosition") {
     blue->release();
 }
 }  // namespace test_rts_combat
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_combat_3)
+// Contract section: rts combat 3
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_combat_3.cpp
 namespace test_rts_combat_3 {
 TEST_CASE("rts.suppressionAndEscortFacadesRoundTripDedicatedTacticalState") {
@@ -2144,11 +2145,10 @@ TEST_CASE("rts.facadeHealsCombatRootsAndAppliesCanonicalStatusDefinitions") {
     CHECK(inspected.value().find("\"activeEffects\":1") != std::string::npos);
 }
 }  // namespace test_rts_combat_3
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_composition)
+// Contract section: rts composition
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_composition.cpp
 namespace test_rts_composition {
 TEST_CASE("rts.compositionRootsAndBatchViews") {
@@ -2832,11 +2832,10 @@ TEST_CASE("rts.contentPackPublishesAtomicallyToCanonicalDefinitions") {
     CHECK_EQ(replaced.value().replaced, 4u);
 }
 }  // namespace test_rts_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_economy)
+// Contract section: rts economy
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_economy.cpp
 namespace test_rts_economy {
 TEST_CASE("rts.autoAssignedWorkerGathersAndCreditsCanonicalAccount") {
@@ -3747,11 +3746,10 @@ TEST_CASE("rts.buildInfluenceComposesPoweredOwnershipWithCanonicalPlacementProvi
     faction->release();
 }
 }  // namespace test_rts_economy
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_economy_2)
+// Contract section: rts economy 2
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_economy_2.cpp
 namespace test_rts_economy_2 {
 TEST_CASE("rts.facadeMigratesMobileSupplyReserveAmmoAndAutoResupplyControls") {
@@ -3894,4 +3892,3 @@ TEST_CASE("rts.facadeExposesManualBuildersAndFactionWorkforceAutomation") {
     CHECK(inspected.value().find("\"reserveWorkers\":1") != std::string::npos);
 }
 }  // namespace test_rts_economy_2
-#endif

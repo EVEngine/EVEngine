@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: particles gpu resident
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_gpu_resident)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -18,7 +20,6 @@
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // particles_gpu_resident.cpp
 namespace test_particles_gpu_resident {
@@ -731,29 +732,16 @@ TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
     window->close();
 }
 }  // namespace test_particles_gpu_resident
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_p2_p3)
+// Contract section: particles p2 p3
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
+
 #include <fstream>
 #include <memory>
 #include <sstream>
-#include <string>
-#include <vector>
 #include "common/ParticleSdf.h"
-#include "graphics/Graphics.h"
 #include "particles/ParticleEffect.h"
-#include "particles/ParticleEmitter.h"
 #include "particles/ParticleEmitterPool.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles_p2_p3.cpp
 namespace test_particles_p2_p3 {
 using namespace eve::particles;
@@ -895,20 +883,10 @@ TEST_CASE("particles.reference.effectPackLoadsAndRenders") {
     window->close();
 }
 }  // namespace test_particles_p2_p3
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_playback)
+// Contract section: particles playback
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include "graphics/Graphics.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_playback.cpp
 namespace test_particles_playback {
 using namespace eve::particles;
@@ -1016,24 +994,10 @@ TEST_CASE("particles.playback.renderDistanceTrailAndLoopingBurst") {
     window->close();
 }
 }  // namespace test_particles_playback
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_reference_effects)
+// Contract section: particles reference effects
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <array>
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "graphics/Graphics.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_reference_effects.cpp
 namespace test_particles_reference_effects {
 using namespace eve::particles;
@@ -1199,24 +1163,10 @@ TEST_CASE("particles.reference.compositedBurstsRenderAtMultipleAngles") {
     window->close();
 }
 }  // namespace test_particles_reference_effects
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_scalability)
+// Contract section: particles scalability
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleRuntime.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // particles_scalability.cpp
 namespace test_particles_scalability {
 using namespace eve::particles;
@@ -1319,27 +1269,19 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
     window->close();
 }
 }  // namespace test_particles_scalability
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen)
+// Contract section: procgen
+#include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <algorithm>
-#include <array>
 #include <bit>
-#include <cmath>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
-#include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>
-#include <memory>
 #include <numeric>
 #include <set>
-#include <string>
 #include <unordered_set>
-#include <vector>
-#include "PrivateTestScope.h"
 #include "RenderImageAudit.h"
 #include "asset/procgen/TerrainMaterialAtlas.h"
 #include "data/ByteData.h"
@@ -1352,15 +1294,12 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
 #include "graphics/Grass.h"
-#include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
@@ -1388,9 +1327,6 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen.cpp
 namespace test_procgen {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2664,29 +2600,14 @@ TEST_CASE("graphics.water.render.planar") {
     win->close();
 }
 }  // namespace test_procgen
-#endif
 
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_lsystem)
-#include <memory>
-#include <set>
+// Contract section: procgen lsystem
 #include "PrivateTestScope.h"
+
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "RenderImageAudit.h"
 #include "common/Module.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
-#include "image/Image.h"
 #include "procgen/PointSet.h"
-#include "procgen/Procgen.h"
 #include "procgen/algorithms/LSystem.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_lsystem.cpp
 namespace test_procgen_lsystem {
 using namespace eve::procgen;
@@ -2726,24 +2647,11 @@ TEST_CASE("procgen.script.newLSystemIsTheDocumentedEntryPoint") {
     REQUIRE(vm.find("points").toInt() > 0);
 }
 }  // namespace test_procgen_lsystem
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_preview)
+
+// Contract section: procgen preview
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include <set>
-#include <string>
+
 #include "ManualPreview.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "image/ImageData.h"
-#include "procgen/GeneratorRegistry.h"
-#include "procgen/Semantic.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_preview.cpp
 namespace test_procgen_preview {
 using namespace eve::procgen;
@@ -2873,37 +2781,10 @@ TEST_CASE("procgen.render.dungeonCaveMazePreview") {
     win->close();
 }
 }  // namespace test_procgen_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_lifetime)
+// Contract section: resource lifetime
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // resource_lifetime.cpp
 namespace test_resource_lifetime {
 #include "graphics/shaders/aa_fxaa_frag_spv.inc"
@@ -3062,16 +2943,10 @@ TEST_CASE("graphics.resourceLifetime.shaderHandleIsBorrowedUntilReleased") {
     win->close();
 }
 }  // namespace test_resource_lifetime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg_simulation)
+// Contract section: rpg simulation
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <memory>
-#include <string>
-#include <vector>
+
 #include "animation/Animation.h"
 #include "animation/SpriteAnim.h"
 #include "animation/SpriteClip.h"
@@ -3080,38 +2955,11 @@ TEST_CASE("graphics.resourceLifetime.shaderHandleIsBorrowedUntilReleased") {
 #include "building/Ghost.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
 #include "map/Map.h"
-#include "map/TileLayer.h"
 #include "map/TileProjection.h"
 #include "map/TileSystem.h"
 #include "rpg/RPG.h"
 #include "rpg/Settlement.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // rpg_simulation.cpp
 namespace test_rpg_simulation {
 // RPG cross-module simulation: a tiny "village defense" scenario that drives
@@ -3679,17 +3527,11 @@ TEST_CASE("rpg.simulation.villageDefenseSystems") {
     cam->data()->active = false;
 }
 }  // namespace test_rpg_simulation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_pointset)
-#include <simplesquirrel/simplesquirrel.hpp>
+// Contract section: procgen pointset
 #include "PrivateTestScope.h"
-#include "common/Module.h"
-#include "procgen/PointSet.h"
-#include "procgen/Procgen.h"
+
 #include "procgen/heightmap/Heightmap.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // procgen_pointset.cpp
 namespace test_procgen_pointset {
 using namespace eve::procgen;
@@ -3862,4 +3704,3 @@ TEST_CASE("procgen.script.pointsetPolygonAndBatchApiAreBound") {
     REQUIRE_EQ(vm.find("removed").toInt(), 0);
 }
 }  // namespace test_procgen_pointset
-#endif

@@ -1,7 +1,9 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: graphics authoring projection
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_authoring_projection)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <limits>
 #include "graphics/Mesh.h"
@@ -9,7 +11,6 @@
 #include "graphics/RenderTransformProjection.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // graphics_authoring_projection.cpp
 namespace test_graphics_authoring_projection {
@@ -78,10 +79,10 @@ TEST_CASE("graphics.authoring.scene_link_preserves_reflection_shear_and_direct_s
     ecs::DestroyEntity(host);
 }
 }  // namespace test_graphics_authoring_projection
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_primitive_cache)
+// Contract section: graphics primitive cache
 #include "PrivateTestScope.h"
+
 #include <array>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "GraphicsParitySupport.h"
@@ -93,8 +94,6 @@ TEST_CASE("graphics.authoring.scene_link_preserves_reflection_shear_and_direct_s
 #include "graphics/VegetationField.h"
 #include "graphics/editing/PrimitiveGizmoRenderer.h"
 #include "graphics/editing/VegetationFieldGizmo.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_primitive_cache.cpp
 namespace test_graphics_primitive_cache {
 // graphics_primitive_cache.cpp
@@ -429,10 +428,10 @@ TEST_CASE("GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy") {
     CHECK(vm.find("stale").toBool());
 }
 }  // namespace test_graphics_primitive_cache
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_raytracing)
+// Contract section: graphics raytracing
 #include "PrivateTestScope.h"
+
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include "common/Capability.h"
@@ -443,8 +442,6 @@ TEST_CASE("GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy") {
 #include "graphics/RayTracingCaps.h"
 #include "graphics/RenderControl.h"
 #include "graphics/raytracing/RayTracingModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_raytracing.cpp
 namespace test_graphics_raytracing {
 using namespace eve::graphics;
@@ -512,28 +509,20 @@ TEST_CASE("graphics.raytracing.moduleScriptFacade") {
     (void)rtMod->caps();
 }
 }  // namespace test_graphics_raytracing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation)
+// Contract section: graphics vegetation
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <limits>
+
 #include <memory>
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
 #include "graphics/Material.h"
-#include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/Texture.h"
 #include "graphics/VegetationDetails.h"
-#include "graphics/VegetationField.h"
 #include "graphics/VegetationFieldGpu.h"
 #include "graphics/VegetationMotion.h"
 #include "graphics/VegetationRender.h"
 #include "graphics/editing/VegetationFieldTarget.h"
 #include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_vegetation.cpp
 namespace test_graphics_vegetation {
 // graphics_vegetation.cpp
@@ -1310,30 +1299,15 @@ TEST_CASE("graphics.vegetation.field_target_rejects_stale_runtime_and_invalid_ex
     CHECK(!target.currentRevision(selection).ok());
 }
 }  // namespace test_graphics_vegetation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_gizmo)
+// Contract section: graphics vegetation gizmo
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
-#include <limits>
-#include <memory>
+
 #include "asset/graphics/EvpackImageLoader.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
 #include "graphics/Light.h"
-#include "graphics/Mesh.h"
-#include "graphics/PbrSurface.h"
-#include "graphics/Texture.h"
-#include "graphics/VegetationField.h"
 #include "graphics/VegetationMaskPacking.h"
-#include "graphics/VegetationMotion.h"
 #include "graphics/VegetationNormal.h"
 #include "graphics/VegetationPacking.h"
-#include "graphics/editing/VegetationFieldGizmo.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_vegetation_gizmo.cpp
 namespace test_graphics_vegetation_gizmo {
 // graphics_vegetation_gizmo.cpp
@@ -1874,171 +1848,15 @@ TEST_CASE("graphics.vegetation.explicit_mip_provider_absence_is_observable") {
     REQUIRE_EQ(factory.calls, 0u);
 }
 }  // namespace test_graphics_vegetation_gizmo
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_identity_result_audit)
+// Contract section: kaykit combat assets
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <cstdint>
-#include <limits>
-#include <memory>
-#include <span>
-#include <string>
-#include <type_traits>
-#include "common/Identity.h"
-#include "common/RuntimeHandle.h"
-#include "common/UuidV7.h"
-#include "effects/EffectContainer.h"
-#include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// identity_result_audit.cpp
-namespace test_identity_result_audit {
-namespace {
 
-template <class Id>
-Id parsedId(const char *text) {
-    const auto parsed = Id::parse(text);
-    return parsed ? *parsed : Id::nil();
-}
-
-eve::UuidEntropySource deterministicEntropy() {
-    auto cursor = std::make_shared<std::uint8_t>(1);
-    return [cursor](std::span<std::uint8_t> bytes) {
-        for (auto &byte : bytes) byte = (*cursor)++;
-        return true;
-    };
-}
-
-}  // namespace
-
-static_assert(!std::is_convertible_v<eve::AssetGuid, eve::DocumentId>);
-static_assert(!std::is_convertible_v<eve::EventId, eve::TransactionId>);
-static_assert(!std::is_convertible_v<eve::TransactionId, eve::OperationId>);
-static_assert(!std::is_convertible_v<eve::SceneObjectId, eve::PersistentId>);
-
-TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
-    constexpr const char *text  = "01020304-0506-0708-090a-0b0c0d0e0f10";
-    const auto            asset = parsedId<eve::AssetGuid>(text);
-    REQUIRE(!asset.isNil());
-    CHECK_EQ(asset.format(), text);
-    CHECK_EQ(eve::DocumentId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::SceneObjectId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::ArtifactId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::EventId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::TransactionId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::OperationId::fromUuid(asset).format(), text);
-    CHECK_EQ(eve::EffectId::fromUuid(asset).format(), text);
-
-    CHECK(!eve::AssetGuid::parse("asset-01020304-0506-0708-090a-0b0c0d0e0f10").has_value());
-    CHECK(!eve::AssetGuid::parse("{01020304-0506-0708-090a-0b0c0d0e0f10}").has_value());
-}
-
-TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive") {
-    REQUIRE(eve::LogicalId::parse("rpg:Skill.Fire").has_value());
-    CHECK(!eve::LogicalId::parse("RPG:Skill.Fire").has_value());
-    CHECK(!eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
-    CHECK(!eve::LogicalId::parse("rpg:skill/fire").has_value());
-    CHECK(eve::LogicalId::fromParts("game_event", "Damage.Applied").has_value());
-}
-
-TEST_CASE("identity.audit.canonicalTransactionRestoresWithoutStringAllocators") {
-    using namespace std::chrono_literals;
-    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
-    const auto entropy = deterministicEntropy();
-
-    eve::transaction::Ledger source(eve::PersistentId::nil(), entropy, clock);
-    auto                     created = source.create("combat", "command");
-    REQUIRE(created.ok());
-    auto *plan = std::move(created).takeValue();
-    REQUIRE(plan != nullptr);
-    const auto transactionId = plan->identity();
-    CHECK(!transactionId.isNil());
-    CHECK_EQ(plan->id(), transactionId.format());
-
-    auto staged = plan->stage("debit", "treasury", "{\"amount\":10}");
-    REQUIRE(staged.ok());
-    const auto operationId = std::move(staged).takeValue();
-    CHECK(!operationId.isNil());
-    const auto *operation = plan->findOperation(operationId);
-    REQUIRE(operation != nullptr);
-    CHECK_EQ(operation->id, operationId.format());
-    CHECK(plan->markValid(operationId).ok());
-    CHECK(plan->validate().ok());
-    CHECK(plan->commit().ok());
-
-    const auto snapshot = source.snapshotJson();
-    CHECK(snapshot.find("transaction-0000000000000001") == std::string::npos);
-    CHECK(snapshot.find("operation-0000000000000001") == std::string::npos);
-
-    eve::transaction::Ledger restored(eve::PersistentId::nil(), deterministicEntropy(), clock);
-    auto                     restoredResult = restored.restore(snapshot);
-    REQUIRE(restoredResult.ok());
-    auto *restoredPlan = restored.find(transactionId);
-    REQUIRE(restoredPlan != nullptr);
-    CHECK_EQ(restoredPlan->identity(), transactionId);
-    CHECK(restoredPlan->findOperation(operationId) != nullptr);
-
-    const auto before          = restored.snapshotJson();
-    auto       failedCanonical = restored.restore("{\"version\":1,\"nextTransaction\":\"2\",\"plans\":[");
-    CHECK(!failedCanonical.ok());
-    CHECK_EQ(restored.snapshotJson(), before);
-    CHECK_EQ(restored.snapshotJson(), before);
-}
-
-TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
-    struct RegistryTag {};
-    using Handle = eve::RuntimeHandle<RegistryTag>;
-
-    constexpr Handle oldHandle(4u, 1u);
-    const auto       next = oldHandle.nextGeneration();
-    REQUIRE(next.has_value());
-    CHECK(next.value() != oldHandle);
-    CHECK_EQ(next->index(), oldHandle.index());
-    CHECK_EQ(next->generation(), 2u);
-    CHECK(!Handle(4u, std::numeric_limits<Handle::generation_type>::max()).nextGeneration().has_value());
-    CHECK_EQ(Handle::fromPacked(oldHandle.packed()), oldHandle);
-}
-
-TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally") {
-    using namespace std::chrono_literals;
-    const auto clock = [] { return std::chrono::system_clock::time_point{std::chrono::milliseconds{0x010203040506}}; };
-    eve::effects::EffectDefinition definition;
-    definition.id               = "combat:burn";
-    definition.policy.stackMode = eve::effects::StackMode::NewInstance;
-
-    eve::effects::EffectContainer canonical(deterministicEntropy(), clock);
-    auto                          applied = canonical.applyCanonical(definition, "actor:1", "spell:1");
-    REQUIRE(applied.ok());
-    const auto effectId = std::move(applied).takeValue();
-    CHECK(!effectId.isNil());
-    const auto *effect = canonical.find(effectId);
-    REQUIRE(effect != nullptr);
-    CHECK_EQ(effect->identity, effectId);
-    REQUIRE(canonical.eventAt(0) != nullptr);
-    CHECK_EQ(canonical.eventAt(0)->effectIdentity, effectId);
-    CHECK(canonical.remove(effectId).ok());
-
-    eve::effects::EffectContainer legacy;
-    auto                          legacyResult = legacy.apply(definition, "actor:2", "spell:1");
-    REQUIRE(legacyResult.ok());
-    CHECK(legacyResult.value().starts_with("effect-"));
-    REQUIRE(legacy.find(legacyResult.value()) != nullptr);
-    CHECK(legacy.find(legacyResult.value())->identity.isNil());
-}
-}  // namespace test_identity_result_audit
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_kaykit_combat_assets)
-#include "PrivateTestScope.h"
 #include <algorithm>
-#include <array>
-#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 #include "PathBesideSource.h"
 #include "action/ActionNotifyRegistry.h"
 #include "action/editor/ActionPreviewController.h"
@@ -2052,8 +1870,6 @@ TEST_CASE("identity.audit.canonicalEffectUsesUuidAndLegacyFacadeProjectsLocally"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // kaykit_combat_assets.cpp
 namespace test_kaykit_combat_assets {
 namespace {
@@ -2272,16 +2088,14 @@ TEST_CASE("kaykitCombatAssets.importRigClipsAndDriveActionEditorPreview") {
     CHECK(filesystem->unmount(assetDir));
 }
 }  // namespace test_kaykit_combat_assets
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map_tile_editing)
+// Contract section: map tile editing
 #include "PrivateTestScope.h"
+
 #include <bit>
 #include <cstdint>
 #include "map/TileLayer.h"
 #include "map/editing/TileLayerTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // map_tile_editing.cpp
 namespace test_map_tile_editing {
 TEST_CASE("map.editing.preservesFlipBitsWhenRestoringFieldValue") {
@@ -2315,14 +2129,12 @@ TEST_CASE("map.editing.terrainBrushPreservesManualNeighbors") {
     CHECK_EQ(layer->getTile(0, 0), 42);
 }
 }  // namespace test_map_tile_editing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_npc_ai_navigation)
+// Contract section: npc ai navigation
 #include "PrivateTestScope.h"
+
 #include <map>
 #include "npc_ai/Navigation.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // npc_ai_navigation.cpp
 namespace test_npc_ai_navigation {
 using namespace eve::npc_ai;
@@ -2438,47 +2250,31 @@ TEST_CASE("npc_ai.navigationTicketIsAbandonedWhenStateExits") {
     CHECK_EQ(snapshot.value().activeState, std::string("idle"));
 }
 }  // namespace test_npc_ai_navigation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_attach_extra)
+// Contract section: particles attach extra
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <filesystem>
-#include <memory>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
 #include "ResourceTestSupport.h"
-#include "animation/AnimClip.h"
-#include "animation/AnimImporter.h"
 #include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
 #include "animation/AnimSkin.h"
 #include "animation/Animation.h"
 #include "animation/SpineAnim.h"
 #include "animation/SpineSkeleton.h"
 #include "animation/SpineSkeletonData.h"
-#include "filesystem/Filesystem.h"
 #include "ik/Skeleton2D.h"
 #include "ik/Skeleton3D.h"
 #include "ik/Solver2D.h"
 #include "ik/Solver3D.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
 #include "particles/Particles.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles_attach_extra.cpp
 namespace test_particles_attach_extra {
 using namespace eve::particles;
 using namespace eve::animation;
 using namespace eve::ik;
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 namespace {
 
@@ -3043,46 +2839,17 @@ TEST_CASE("particles.attach.smokeAndFirePresetsOnIk3d") {
     }
 }
 }  // namespace test_particles_attach_extra
-#undef M_PI
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_attach_more)
+// Contract section: particles attach more
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <filesystem>
-#include <memory>
-#include <string>
-#include "PathBesideSource.h"
-#include "ResourceTestSupport.h"
-#include "animation/AnimClip.h"
-#include "animation/AnimImporter.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
-#include "animation/AnimSkin.h"
-#include "animation/Animation.h"
-#include "animation/SpineAnim.h"
-#include "animation/SpineSkeleton.h"
-#include "animation/SpineSkeletonData.h"
-#include "filesystem/Filesystem.h"
-#include "ik/Skeleton2D.h"
-#include "ik/Skeleton3D.h"
-#include "ik/Solver2D.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+#include <numbers>
 // particles_attach_more.cpp
 namespace test_particles_attach_more {
 using namespace eve::particles;
 using namespace eve::animation;
 using namespace eve::ik;
 
-#ifndef M_PI
-#define M_PI 3.14159265358979323846
-#endif
 
 namespace {
 
@@ -3635,7 +3402,7 @@ TEST_CASE("particles.attach.followRotationToggleResyncs") {
     CHECK(std::fabs(e->getDirection() - 0.1f) < 1e-4f);
 
     e->setFollowBoneRotation(true);  // triggers syncAttach
-    CHECK(std::fabs(e->getDirection() - float(M_PI * 0.5)) < 0.05f);
+    CHECK(std::fabs(e->getDirection() - float(std::numbers::pi_v<double> * 0.5)) < 0.05f);
 
     e->setFollowBoneRotation(false);
     e->setDirection(0.3f);
@@ -3644,31 +3411,11 @@ TEST_CASE("particles.attach.followRotationToggleResyncs") {
     e->detach();
 }
 }  // namespace test_particles_attach_more
-#undef M_PI
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_attach_skin)
+// Contract section: particles attach skin
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <cstdio>
-#include <filesystem>
-#include <memory>
-#include <string>
-#include "PathBesideSource.h"
-#include "ResourceTestSupport.h"
-#include "animation/AnimClip.h"
-#include "animation/AnimImporter.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
-#include "animation/AnimSkin.h"
-#include "filesystem/Filesystem.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles_attach_skin.cpp
 namespace test_particles_attach_skin {
 using namespace eve::particles;
@@ -4038,4 +3785,3 @@ TEST_CASE("particles.skin.emptyBoneFilterFallsBack") {
     e->detach();
 }
 }  // namespace test_particles_attach_skin
-#endif

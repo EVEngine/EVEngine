@@ -1,17 +1,18 @@
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: ModelPrefetch
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ModelPrefetch)
 #include <filesystem>
 #include <future>
 #include <thread>
 #include <vector>
-#include "PrivateTestScope.h"
 #include "common/AsyncWork.h"
 #include "common/Capability.h"
 #include "common/Resource.h"
 #include "filesystem/Filesystem.h"
 #include "model3d/Model3D.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // ModelPrefetch.cpp
 namespace test_ModelPrefetch {
@@ -100,22 +101,15 @@ TEST_CASE("model3d.prefetch decodes on worker and joins the canonical cache") {
     REQUIRE(eve::ResourceManager::getInstance().pendingCount() == 0);
 }
 }  // namespace test_ModelPrefetch
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_PreparedFile)
+
+// Contract section: PreparedFile
 #include "PrivateTestScope.h"
+
 #include <atomic>
 #include <chrono>
-#include <future>
-#include <thread>
-#include "common/AsyncWork.h"
-#include "common/Capability.h"
-#include "common/Resource.h"
 #include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
 #include "filesystem/PreparedFile.h"
 #include "thread/Thread.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // PreparedFile.cpp
 namespace test_PreparedFile {
 TEST_CASE("filesystem.prepared snapshots deduplicate and survive cache eviction") {
@@ -186,16 +180,15 @@ TEST_CASE("filesystem.prepared rejects missing executor without submitting") {
     REQUIRE(!eve::filesystem::requestPreparedFile("snapshot.bin").ok());
 }
 }  // namespace test_PreparedFile
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_mixamo)
+// Contract section: animation mixamo
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <fstream>
 #include <memory>
 #include <string>
-#include <vector>
 #include "PathBesideSource.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimImporter.h"
@@ -207,30 +200,18 @@ TEST_CASE("filesystem.prepared rejects missing executor without submitting") {
 #include "animation/MotionDatabase.h"
 #include "animation/MotionMatcher.h"
 #include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_mixamo.cpp
 namespace test_animation_mixamo {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -682,20 +663,14 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
     win->close();
 }
 }  // namespace test_animation_mixamo
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_disk_asset_catalog_v2)
+// Contract section: editor disk asset catalog v2
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <filesystem>
-#include <fstream>
+
 #include <iterator>
-#include <string>
 #include "editor/EditorDiskAssetCatalog.h"
 #include "editor/EditorDiskDocumentStore.h"
 #include "editor/EditorValueJson.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_disk_asset_catalog_v2.cpp
 namespace test_editor_disk_asset_catalog_v2 {
 // editor_disk_asset_catalog_v2.cpp
@@ -826,24 +801,15 @@ TEST_CASE("editor.v2.disk_document_atomic_conflict_and_autosave") {
     std::filesystem::remove_all(root, ec);
 }
 }  // namespace test_editor_disk_asset_catalog_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_font)
+// Contract section: font
 #include "PrivateTestScope.h"
-#include <fstream>
+
 #include <functional>
-#include <memory>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
-#include "common/Exception.h"
 #include "data/ByteData.h"
-#include "filesystem/Filesystem.h"
 #include "font/Font.h"
 #include "font/FontData.h"
 #include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // font.cpp
 namespace test_font {
 namespace {
@@ -954,38 +920,12 @@ TEST_CASE("font.newFontData.invalidSize") {
     CHECK(expectException([&] { module->newFontData(&data, -8); }));
 }
 }  // namespace test_font
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_map)
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <cmath>
-#include <string>
-#include <vector>
+// Contract section: map
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
+
+#include <algorithm>
 #include "data/DataModule.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "map/DualGrid.h"
 #include "map/Fov.h"
 #include "map/Map.h"
@@ -996,9 +936,6 @@ TEST_CASE("font.newFontData.invalidSize") {
 #include "map/TileLayer.h"
 #include "map/TileProjection.h"
 #include "map/TileSystem.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // map.cpp
 namespace test_map {
 using namespace eve::map;
@@ -1142,66 +1079,27 @@ TEST_CASE("map.render.orthoAndIsoPreview") {
     win->close();
 }
 }  // namespace test_map
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_model3d)
+
+// Contract section: model3d
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <assimp/texture.h>
 #include <assimp/vector3.h>
-#include <algorithm>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <functional>
-#include <memory>
-#include <string>
 #include <unordered_map>
-#include <vector>
 #include "Fixtures.h"
-#include "PathBesideSource.h"
-#include "common/Exception.h"
-#include "data/ByteData.h"
-#include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "image/Image.h"
-#include "image/ImageData.h"
-#include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "model3d/ModelRenderer.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // model3d.cpp
 namespace test_model3d {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2317,37 +2215,10 @@ TEST_CASE("model3d.render.cesiumManGltf") {
     CHECK(fs->unmount(dir));
 }
 }  // namespace test_model3d
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles)
+// Contract section: particles
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstring>
-#include <string>
-#include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
+
 #include "particles/FloatingPointFixParticles.h"
 #include "particles/GroundParticleCulling.h"
 #include "particles/ParticleEmitter.h"
@@ -2358,9 +2229,6 @@ TEST_CASE("model3d.render.cesiumManGltf") {
 #include "physics/Physics.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // particles.cpp
 namespace test_particles {
 using namespace eve::particles;
@@ -2528,38 +2396,18 @@ TEST_CASE("particles.render.fireAndSmokePreview") {
     win->close();
 }
 }  // namespace test_particles
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource)
+// Contract section: resource
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdlib>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <functional>
+
 #include <map>
-#include <memory>
 #include <mutex>
 #include <set>
 #include <stdexcept>
-#include <string>
-#include <thread>
 #include <type_traits>
 #include <utility>
-#include <vector>
-#include "PathBesideSource.h"
-#include "common/AsyncWork.h"
-#include "common/Capability.h"
-#include "common/Resource.h"
 #include "common/ResourceRef.h"
-#include "data/ByteData.h"
-#include "filesystem/FileData.h"
 #include "filesystem/ResourceReader.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // resource.cpp
 namespace test_resource {
 // resource.cpp
@@ -2921,19 +2769,12 @@ template <typename T>
 
 }  // namespace
 }  // namespace test_resource
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_decoder_lifetime)
+// Contract section: resource decoder lifetime
 #include "PrivateTestScope.h"
-#include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
+
 #include "medialoader/sound/WaveDecoder.h"
 #include "sound/Decoder.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // resource_decoder_lifetime.cpp
 namespace test_resource_decoder_lifetime {
 namespace {
@@ -2992,23 +2833,11 @@ TEST_CASE("resourceFormats.sound.clone.nestedClonesRetainStorageAndIndependentPo
     CHECK(drain(_ZEROERR_TEST_CONTEXT, *nested) == expected);
 }
 }  // namespace test_resource_decoder_lifetime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_format_model)
+// Contract section: resource format model
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include <array>
-#include <cmath>
-#include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
-#include "data/ByteData.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // resource_format_model.cpp
 namespace test_resource_format_model {
 namespace {
@@ -3048,24 +2877,12 @@ TEST_CASE("resourceFormats.model.dae.independentTriangle") { triangle(_ZEROERR_T
 TEST_CASE("resourceFormats.model.gltf.independentTriangle") { triangle(_ZEROERR_TEST_CONTEXT, "gltf"); }
 TEST_CASE("resourceFormats.model.glb.independentTriangle") { triangle(_ZEROERR_TEST_CONTEXT, "glb"); }
 }  // namespace test_resource_format_model
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_resource_format_sound)
+// Contract section: resource format sound
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
-#include "data/ByteData.h"
-#include "sound/Decoder.h"
+
 #include "sound/Sound.h"
 #include "sound/SoundData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // resource_format_sound.cpp
 namespace test_resource_format_sound {
 namespace {
@@ -3122,57 +2939,14 @@ TEST_CASE("resourceFormats.sound.flac.independentPcmAndStreaming") { decodeTone(
 TEST_CASE("resourceFormats.sound.ogg.independentPcmAndStreaming") { decodeTone(_ZEROERR_TEST_CONTEXT, "ogg", false); }
 TEST_CASE("resourceFormats.sound.mp3.independentPcmAndStreaming") { decodeTone(_ZEROERR_TEST_CONTEXT, "mp3", false); }
 }  // namespace test_resource_format_sound
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_sceneloader)
+// Contract section: sceneloader
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <assimp/mesh.h>
-#include <assimp/scene.h>
-#include <assimp/vector3.h>
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <string>
-#include <thread>
-#include <vector>
-#include "PathBesideSource.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "model3d/Model3D.h"
+
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
 #include "scene/loader/SceneLoader.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // sceneloader.cpp
 namespace test_sceneloader {
 using namespace eve::scene;
@@ -3803,26 +3577,13 @@ TEST_CASE("SceneLoader.prewarmAsync.reusesDecodedScene") {
     loader->unload("sl_prewarm.obj");
 }
 }  // namespace test_sceneloader
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_spritestack)
+// Contract section: spritestack
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <cstdio>
-#include <filesystem>
-#include <fstream>
-#include <memory>
+
 #include <optional>
-#include "common/Exception.h"
-#include "filesystem/FileData.h"
 #include "graphics/Color.h"
-#include "graphics/Graphics.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
 #include "spritestack/SpriteStack.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // spritestack.cpp
 namespace test_spritestack {
 using eve::graphics::Color;
@@ -3983,4 +3744,3 @@ TEST_CASE("spritestack.render.batchUses2DStacks") {
     for (ImageData *layer : layers) delete layer;
 }
 }  // namespace test_spritestack
-#endif
