@@ -37,6 +37,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include "ManualPreview.h"
 #include "PathBesideSource.h"
 #include "RenderImageAudit.h"
 #include "ResourceTestSupport.h"
@@ -246,9 +247,9 @@ namespace {
     }
 }
 
-[[maybe_unused]] void auditGpuFrame(Graphics *gfx, const char *scene, const char *phase, const RenderAuditBg &bg,
-                                    bool flicker = false, const std::function<void()> &after3D = {},
-                                    const char *rawCaptureName = nullptr) {
+[[maybe_unused]] void auditGpuFrame(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, const char *scene,
+                                    const char *phase, const RenderAuditBg &bg, bool flicker = false,
+                                    const std::function<void()> &after3D = {}, const char *rawCaptureName = nullptr) {
     auto drawOnce = [&]() {
         RenderSystem3D::render(*gfx);
         if (after3D) after3D();
@@ -260,7 +261,8 @@ namespace {
     drawOnce();
     std::unique_ptr<ImageData> a(gfx->newImageData());
     REQUIRE(a.get() != nullptr);
-    if (rawCaptureName) REQUIRE(saveImagePng(*a, auditOutDir() + "/" + rawCaptureName));
+    if (rawCaptureName && eve::test::manualPreviewEnabled())
+        REQUIRE(saveImagePng(*a, auditOutDir() + "/" + rawCaptureName));
     RenderAuditConfig cfg{scene, phase, "", 0};
     auto              result = auditImage(*a, cfg, bg, /*step=*/2);
     if (flicker) {
@@ -278,7 +280,8 @@ namespace {
     REQUIRE(!result.hasSevere());
 }
 
-[[maybe_unused]] void auditGpu2D(Graphics *gfx, const char *scene, const char *phase, const RenderAuditBg &bg) {
+[[maybe_unused]] void auditGpu2D(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, const char *scene,
+                                 const char *phase, const RenderAuditBg &bg) {
     gfx->setScreenReadbackEnabled(false);
     for (int i = 0; i < 2; ++i) RenderSystem::render(*gfx);
     gfx->setScreenReadbackEnabled(true);
@@ -304,7 +307,8 @@ namespace {
     gfx->present();
 }
 
-[[maybe_unused]] void auditSwapchain(Graphics *gfx, const char *scene, const char *phase, const RenderAuditBg &bg) {
+[[maybe_unused]] void auditSwapchain(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, const char *scene,
+                                     const char *phase, const RenderAuditBg &bg) {
     std::unique_ptr<ImageData> a(gfx->newImageData());
     REQUIRE(a.get() != nullptr);
     RenderAuditConfig cfg{scene, phase, "", 0};
@@ -437,7 +441,7 @@ struct Studio3D {
     return s;
 }
 
-[[maybe_unused]] Texture *capturePresented(Graphics *gfx) {
+[[maybe_unused]] Texture *capturePresented(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx) {
     gfx->setScreenReadbackEnabled(false);
     for (int i = 0; i < 2; ++i) {
         RenderSystem3D::render(*gfx);
@@ -768,7 +772,7 @@ TEST_CASE("graphics.imageAudit.pipelineConfigs") {
         if (result.hasDefects()) {
             appendAuditReport(outDir, result);
             saveAuditOverlay(*a, result, outDir);
-        } else {
+        } else if (eve::test::manualPreviewEnabled()) {
             saveImagePng(*a, outDir + "/pipeline_cube_" + std::string(ph.name) + ".png");
         }
 
@@ -848,11 +852,11 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     unlit->setAlbedoTexture(makeSolid(gfx, 200, 50, 50));
     unlit->setReceiveLight(false);
 
-    auditGpuFrame(gfx, "materials", "pbr_default", bg, true);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "pbr_default", bg, true);
 
     box->setMaterial(unlit);
     box->setReceiveLight(false);
-    auditGpuFrame(gfx, "materials", "unlit", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "unlit", bg);
     box->setMaterial(nullptr);
     box->setReceiveLight(true);
     box->setTexture(makeSolid(gfx, 210, 210, 215));
@@ -860,50 +864,50 @@ TEST_CASE("graphics.imageAudit.materialsAndCamera") {
     box->setMetallic(1.f);
     box->setRoughness(0.08f);
     cam->setEnvIntensity(1.3f);
-    auditGpuFrame(gfx, "materials", "metal_ibl", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "metal_ibl", bg);
     cam->setEnvIntensity(0.f);
     box->setMetallic(0.f);
     box->setRoughness(0.95f);
-    auditGpuFrame(gfx, "materials", "dielectric_rough", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "dielectric_rough", bg);
     box->setMetallic(0.15f);
     box->setRoughness(0.45f);
 
     box->setTexture(checker);
     box->setTexCellBomb(4.f, 0.85f, 1.f);
-    auditGpuFrame(gfx, "materials", "tex_cell_bomb", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "tex_cell_bomb", bg);
     box->setTexCellBomb(4.f, 0.f, 1.f);
     box->setHeightTexture(height);
     box->setParallax(0.06f, 8.f, 24.f);
-    auditGpuFrame(gfx, "materials", "parallax", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "parallax", bg);
     box->setParallax(0.f);
     box->setHeightTexture(nullptr);
     box->setTexture(makeSolid(gfx, 210, 210, 215));
 
     box->setHair(true);
-    auditGpuFrame(gfx, "materials", "hair", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "hair", bg);
     box->setHair(false);
 
     box->setMesh(cyl);
-    auditGpuFrame(gfx, "materials", "cylinder", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "cylinder", bg);
     box->setMesh(sphere);
 
     ground->setReceiveShadow(false);
-    auditGpuFrame(gfx, "materials", "receive_shadow_off", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "receive_shadow_off", bg);
     ground->setReceiveShadow(true);
 
     sun->setShadowBias(0.02f);
-    auditGpuFrame(gfx, "materials", "shadow_bias_high", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "shadow_bias_high", bg);
     sun->setShadowBias(0.002f);
 
     cam->setFov(28.f);
-    auditGpuFrame(gfx, "materials", "fov_narrow", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "fov_narrow", bg);
     cam->setFov(75.f);
-    auditGpuFrame(gfx, "materials", "fov_wide", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "fov_wide", bg);
     cam->setFov(60.f);
 
     cam->data()->nearZ = 0.8f;
     cam->data()->farZ  = 6.f;
-    auditGpuFrame(gfx, "materials", "near_far_tight", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "materials", "near_far_tight", bg);
     cam->data()->nearZ = 0.05f;
     cam->data()->farZ  = 40.f;
 
@@ -967,7 +971,7 @@ TEST_CASE("graphics.imageAudit.vertexColorsReachPresentedPixels") {
         }
     CHECK(redDominant > 300);
     CHECK(greenDominant > 300);
-    saveImagePng(*image, auditOutDir() + "/vertex_colors_presented.png");
+    if (eve::test::manualPreviewEnabled()) saveImagePng(*image, auditOutDir() + "/vertex_colors_presented.png");
 
     delete material;
     resetScene3D();
@@ -1064,7 +1068,7 @@ TEST_CASE("graphics.imageAudit.postFx") {
         aa->setMode(mode);
         aa->applyTo(gfx, sceneTex, aaDest);
         blitAndPresent(gfx, aaDest->getTexture());
-        auditSwapchain(gfx, "postfx", (std::string("aa_") + mode).c_str(), bg);
+        auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postfx", (std::string("aa_") + mode).c_str(), bg);
     }
 
     std::unique_ptr<AmbientOcclusion> ao(gfx->newAmbientOcclusion());
@@ -1085,7 +1089,7 @@ TEST_CASE("graphics.imageAudit.postFx") {
         ao->applyOverlay(gfx, aoMap->getTexture());
         gfx->setCanvas();
         blitAndPresent(gfx, composed->getTexture());
-        auditSwapchain(gfx, "postfx", (std::string("ao_") + mode).c_str(), bg);
+        auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postfx", (std::string("ao_") + mode).c_str(), bg);
     }
 
     std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
@@ -1104,7 +1108,7 @@ TEST_CASE("graphics.imageAudit.postFx") {
     vol->applyFog(gfx, depth);
     gfx->setCanvas();
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "postfx", "vol_fog", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postfx", "vol_fog", bg);
 
     vol->setMode("raymarch");
     vol->setLightDirection(0.45f, 1.f, 0.35f);
@@ -1116,12 +1120,12 @@ TEST_CASE("graphics.imageAudit.postFx") {
     vol->rayMarch(gfx, depth);
     gfx->setCanvas();
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "postfx", "vol_raymarch", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postfx", "vol_raymarch", bg);
 
     vol->setMode("screenspace");
     vol->applyFromSceneTo(gfx, sceneTex, composed);
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "postfx", "vol_screenspace", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postfx", "vol_screenspace", bg);
 
     rc->disable("gbuffer");
     rc->compile();
@@ -1158,7 +1162,7 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
         packed[i] = makeSprite(cells[i], ox + float(i % 2) * cw, oy + float(i / 2) * ch, cw, ch, false);
         packed[i]->setNormalTexture(flatN);
     }
-    auditGpuFrame(gfx, "composite", "sprites_over_3d", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "composite", "sprites_over_3d", bg);
 
     auto *pt = Light2D::createLight("point");
     pt->setPosition(200.f, 150.f);
@@ -1166,21 +1170,21 @@ TEST_CASE("graphics.imageAudit.composite2d3d") {
     pt->setRadius(280.f);
     pt->setEnabled(true);
     for (auto *sp : packed) sp->sprite()->receiveLight = true;
-    auditGpuFrame(gfx, "composite", "lit2d_normal", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "composite", "lit2d_normal", bg);
 
     pt->setEnabled(false);
     auto *dir2 = Light2D::createLight("dir");
     dir2->setDirection(0.6f, -0.4f);
     dir2->setColor(0.95f, 0.9f, 1.f, 1.6f);
     dir2->setEnabled(true);
-    auditGpuFrame(gfx, "composite", "dir2d", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "composite", "dir2d", bg);
 
     dir2->setEnabled(false);
     for (auto *sp : packed) sp->sprite()->visible = false;
     Texture *atlas          = makeAtlas4(gfx, 16);
     auto    *atlasSp        = makeSprite(atlas, 80.f, 60.f, 240.f, 180.f, false);
     atlasSp->sprite()->quad = gfx->newQuad(0, 0, 16, 16);
-    auditGpuFrame(gfx, "composite", "atlas_quad", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "composite", "atlas_quad", bg);
 }
 
 TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
@@ -1210,15 +1214,15 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
     if (toon->hasUniform("rimPower")) toon->sendFloat("rimPower", 2.6f);
     if (toon->hasUniform("rimStrength")) toon->sendFloat("rimStrength", 0.45f);
     studio.subject->setShader(toon);
-    auditGpuFrame(gfx, "stylize", "mesh_cartoon", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "stylize", "mesh_cartoon", bg);
 
     Shader *ink = stylize->newMeshShader(gfx, "ink");
     REQUIRE(ink != nullptr);
     studio.subject->setShader(ink);
-    auditGpuFrame(gfx, "stylize", "mesh_ink", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "stylize", "mesh_ink", bg);
     studio.subject->setShader(nullptr);
 
-    Texture *sceneTex = capturePresented(gfx);
+    Texture *sceneTex = capturePresented(_ZEROERR_TEST_CONTEXT, gfx);
     REQUIRE(sceneTex != nullptr);
     const int w = 400, h = 300;
     Canvas   *dest = gfx->newCanvas(w, h);
@@ -1229,7 +1233,7 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
         REQUIRE(pass != nullptr);
         pass->applyTo(gfx, sceneTex, dest);
         blitAndPresent(gfx, dest->getTexture());
-        auditSwapchain(gfx, "stylize", (std::string("post_") + id).c_str(), bg);
+        auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "stylize", (std::string("post_") + id).c_str(), bg);
         delete pass;
     }
 
@@ -1238,7 +1242,7 @@ TEST_CASE("graphics.imageAudit.stylizeAndSsaa") {
     aa->setMode("ssaa");
     aa->applyTo(gfx, sceneTex, dest);
     blitAndPresent(gfx, dest->getTexture());
-    auditSwapchain(gfx, "stylize", "aa_ssaa", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "stylize", "aa_ssaa", bg);
 }
 
 TEST_CASE("graphics.imageAudit.multiObjectLod") {
@@ -1274,12 +1278,12 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     right->setScale(0.35f, 0.55f, 0.35f);
     right->setCastShadow(true);
 
-    auditGpuFrame(gfx, "multi", "gallery", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "gallery", bg);
 
     studio.subject->setTint(1.f, 0.25f, 0.2f, 1.f);
-    auditGpuFrame(gfx, "multi", "tint_red", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "tint_red", bg);
     studio.subject->setTint(1.f, 1.f, 1.f, 0.72f);
-    auditGpuFrame(gfx, "multi", "tint_alpha", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "tint_alpha", bg);
     studio.subject->setTint(1.f, 1.f, 1.f, 1.f);
 
     left->setVisible(false);
@@ -1294,7 +1298,7 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     studio.subject->setPart(0, "body", hi, matA);
     studio.subject->setPart(1, "cap", cyl, matB);
     studio.subject->setScale(0.5f, 0.5f, 0.5f);
-    auditGpuFrame(gfx, "multi", "mesh_parts", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "mesh_parts", bg);
     studio.subject->clearParts();
     studio.subject->setMesh(hi);
     left->setVisible(true);
@@ -1303,12 +1307,12 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     studio.subject->setMeshLod(0, hi);
     studio.subject->setMeshLod(1, lo, 3.2f);
     studio.cam->setEye(0.f, 1.2f, 2.2f);
-    auditGpuFrame(gfx, "multi", "lod_near", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "lod_near", bg);
     studio.cam->setEye(0.f, 2.2f, 7.5f);
-    auditGpuFrame(gfx, "multi", "lod_far", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "lod_far", bg);
     studio.cam->setEye(4.2f, 1.5f, 0.1f);
     studio.cam->setTarget(0.f, 0.15f, 0.f);
-    auditGpuFrame(gfx, "multi", "camera_side", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "multi", "camera_side", bg);
     studio.cam->setEye(0.f, 1.5f, 4.0f);
 
     Canvas *cv = gfx->newCanvas(400, 300);
@@ -1325,7 +1329,7 @@ TEST_CASE("graphics.imageAudit.multiObjectLod") {
     c3->sprite()->canvas = cv;
     RenderSystem::render(*gfx);
     blitAndPresent(gfx, cv->getTexture());
-    auditSwapchain(gfx, "multi", "canvas_2d", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "multi", "canvas_2d", bg);
 }
 
 TEST_CASE("graphics.imageAudit.lightsAndXform") {
@@ -1359,25 +1363,25 @@ TEST_CASE("graphics.imageAudit.lightsAndXform") {
     pB->setColor(0.25f, 0.4f, 1.f, 5.f);
     pB->setRadius(5.f);
     pB->setEnabled(true);
-    auditGpuFrame(gfx, "lights", "dir_rgb_points", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "dir_rgb_points", bg);
 
     studio.sun->setShadowStrength(0.35f);
-    auditGpuFrame(gfx, "lights", "shadow_soft", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "shadow_soft", bg);
     studio.sun->setShadowStrength(1.f);
     studio.subject->setCastShadow(false);
     studio.subject->setReceiveShadow(false);
     studio.ground->setReceiveShadow(false);
-    auditGpuFrame(gfx, "lights", "cast_receive_off", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "cast_receive_off", bg);
     studio.subject->setCastShadow(true);
     studio.subject->setReceiveShadow(true);
     studio.ground->setReceiveShadow(true);
 
     studio.subject->setRotation(0.9f, 0.4f, 0.15f);
-    auditGpuFrame(gfx, "lights", "yaw_pitch_roll", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "yaw_pitch_roll", bg);
     studio.subject->setRotation(0.f, 0.f, 0.f);
 
     studio.cam->setUp(0.25f, 0.97f, 0.f);
-    auditGpuFrame(gfx, "lights", "camera_roll", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "camera_roll", bg);
     studio.cam->setUp(0.f, 1.f, 0.f);
 
     pR->setEnabled(false);
@@ -1387,7 +1391,7 @@ TEST_CASE("graphics.imageAudit.lightsAndXform") {
     studio.subject->setMetallic(1.f);
     studio.subject->setRoughness(0.12f);
     studio.cam->setEnvIntensity(1.8f);
-    auditGpuFrame(gfx, "lights", "ibl_metal", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "lights", "ibl_metal", bg);
 }
 
 TEST_CASE("graphics.imageAudit.samplerMorph") {
@@ -1409,9 +1413,9 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     studio.subject->setTexture(checker);
 
     gfx->setTextureSampler(checker, "nearest", "none", 1.f, 0.f);
-    auditGpuFrame(gfx, "sampler", "nearest", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "sampler", "nearest", bg);
     gfx->setTextureSampler(checker, "linear", "none", 1.f, 0.f);
-    auditGpuFrame(gfx, "sampler", "linear", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "sampler", "linear", bg);
 
     TextureCreateInfo    mip = TextureCreateInfo::withMipmaps(true, 8.f);
     std::vector<uint8_t> mipPx(32 * 32 * 4);
@@ -1428,11 +1432,11 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     Texture *mipTex = gfx->newTexture(32, 32, mipPx.data(), mip);
     studio.subject->setTexture(mipTex);
     gfx->setTextureSampler(mipTex, "linear", "linear", 8.f, 2.5f);
-    auditGpuFrame(gfx, "sampler", "mip_lod_bias", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "sampler", "mip_lod_bias", bg);
 
     Texture *rep = makeChecker(gfx, 16, 16, true);
     studio.ground->setTexture(rep);
-    auditGpuFrame(gfx, "sampler", "repeat_uv", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "sampler", "repeat_uv", bg);
 
     const float hs    = 0.45f;
     const float pos[] = {
@@ -1464,7 +1468,7 @@ TEST_CASE("graphics.imageAudit.samplerMorph") {
     studio.subject->setMesh(morphMesh);
     studio.subject->setTexture(makeSolid(gfx, 200, 160, 90));
     gfx->bakeMeshMorph(morphMesh);
-    auditGpuFrame(gfx, "sampler", "morph_base", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "sampler", "morph_base", bg);
     morphMesh->setMorphWeight("inflate", 1.f);
     gfx->bakeMeshMorph(morphMesh);
 }
@@ -1506,9 +1510,9 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     REQUIRE(depth != nullptr);
 
     blitAndPresent(gfx, albedo);
-    auditSwapchain(gfx, "gbuffer", "albedo", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "albedo", bg);
     blitAndPresent(gfx, normal);
-    auditSwapchain(gfx, "gbuffer", "normal", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "normal", bg);
 
     rc->disable("gbuffer");
     rc->compile();
@@ -1566,7 +1570,7 @@ TEST_CASE("graphics.imageAudit.occlusionScatter") {
     vol->scatter(gfx, occMap->getTexture());
     gfx->setCanvas();
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "scatter", "scatter_on", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "scatter", "scatter_on", bg);
 
     occA->setCastOcclusion(false);
     occB->setCastOcclusion(false);
@@ -1580,7 +1584,7 @@ TEST_CASE("graphics.imageAudit.occlusionScatter") {
     vol->scatter(gfx, occMap->getTexture());
     gfx->setCanvas();
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "scatter", "scatter_off", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "scatter", "scatter_off", bg);
 }
 
 TEST_CASE("graphics.imageAudit.textureSources") {
@@ -1605,7 +1609,7 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     Texture *pasted = gfx->newTexture(dst.get());
     REQUIRE(pasted != nullptr);
     studio.subject->setTexture(pasted);
-    auditGpuFrame(gfx, "texsrc", "imagedata_paste", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "texsrc", "imagedata_paste", bg);
 
     auto *fs = eve::filesystem::Filesystem::create();
     REQUIRE(fs != nullptr);
@@ -1631,7 +1635,7 @@ TEST_CASE("graphics.imageAudit.textureSources") {
     REQUIRE(diff->getSampler().maxAnisotropy > 1.f);
     studio.subject->setTexture(diff);
     studio.subject->setNormalTexture(nrm);
-    auditGpuFrame(gfx, "texsrc", "file_rock", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "texsrc", "file_rock", bg);
 }
 
 TEST_CASE("graphics.imageAudit.renderControlToggles") {
@@ -1654,12 +1658,12 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
 
     rc->disable("depthTest");
     rc->compile();
-    auditGpuFrame(gfx, "rctrl", "depth_test_off", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "rctrl", "depth_test_off", bg);
     rc->enable("depthTest");
 
     rc->disable("hair");
     rc->compile();
-    auditGpuFrame(gfx, "rctrl", "hair_off", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "rctrl", "hair_off", bg);
     rc->enable("hair");
 
     Shader *hairSh = gfx->newHairShader();
@@ -1678,7 +1682,7 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
     makeSprite(makeSolid(gfx, 200, 90, 70), 200.f, 0.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 70, 180, 110), 0.f, 150.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 220, 200, 60), 200.f, 150.f, 200.f, 150.f, false);
-    auditGpuFrame(gfx, "rctrl", "forward_off_hair", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "rctrl", "forward_off_hair", bg);
     rc->enable("forward");
     rc->compile();
     studio.subject->setVisible(true);
@@ -1700,7 +1704,7 @@ TEST_CASE("graphics.imageAudit.renderControlToggles") {
     gfx->setTextureSampler(aniso, "linear", "linear", 16.f, 0.f);
     studio.ground->setTexture(aniso);
     studio.subject->setTexture(aniso);
-    auditGpuFrame(gfx, "rctrl", "aniso_mip", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "rctrl", "aniso_mip", bg);
 }
 
 TEST_CASE("graphics.imageAudit.sprite2dCamera") {
@@ -1728,7 +1732,7 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
     for (int i = 0; i < 4; ++i) {
         packed[i] = makeSprite(cells[i], float((i % 2) * 200), float((i / 2) * 150), 200.f, 150.f);
     }
-    auditGpu2D(gfx, "sprite2d", "identity", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "sprite2d", "identity", bg);
 
     auto *cam = Camera2D::createCamera();
     cam->setPosition(200.f, 150.f);
@@ -1747,7 +1751,7 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
         packed[i]->transform()->sx  = 1.f;
         packed[i]->transform()->sy  = 1.f;
     }
-    auditGpu2D(gfx, "sprite2d", "zoom_1_3", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "sprite2d", "zoom_1_3", bg);
 
     cam->setZoom(1.f);
     for (int i = 0; i < 4; ++i) {
@@ -1758,7 +1762,7 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
         packed[i]->transform()->sx  = 2.f;
         packed[i]->transform()->sy  = 2.f;
     }
-    auditGpu2D(gfx, "sprite2d", "scale_sx_sy", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "sprite2d", "scale_sx_sy", bg);
 
     cam->data()->active = false;
     std::vector<uint32_t> frag(custom2d_frag_spv, custom2d_frag_spv + custom2d_frag_spv_count);
@@ -1775,7 +1779,7 @@ TEST_CASE("graphics.imageAudit.sprite2dCamera") {
         packed[i]->transform()->sy  = 1.f;
         packed[i]->sprite()->shader = sh;
     }
-    auditGpu2D(gfx, "sprite2d", "custom_spv", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "sprite2d", "custom_spv", bg);
 }
 
 TEST_CASE("graphics.imageAudit.overlayFx") {
@@ -1794,7 +1798,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     RenderAuditBg bg{0.08f, 0.09f, 0.11f};
     auto          studio = makeStudio3D(gfx);
     (void)studio;
-    Texture *sceneTex = capturePresented(gfx);
+    Texture *sceneTex = capturePresented(_ZEROERR_TEST_CONTEXT, gfx);
     REQUIRE(sceneTex != nullptr);
 
     auto                     *stylize = eve::stylize::Stylize::create();
@@ -1810,7 +1814,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     Canvas *temp = gfx->newCanvas(400, 300);
     chain->apply(gfx, sceneTex, dest, temp);
     blitAndPresent(gfx, dest->getTexture());
-    auditSwapchain(gfx, "overlay", "stylechain_cartoon_pixel", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "overlay", "stylechain_cartoon_pixel", bg);
     delete pixel;
     delete cartoon;
     delete chain;
@@ -1828,7 +1832,7 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     gfx->setFont(gpuFont);
     gfx->setPresentOverlay(&printOverlayThunk, gfx);
     makeSprite(makeSolid(gfx, 180, 140, 70), 0.f, 0.f, 400.f, 84.f, false);
-    auditGpuFrame(gfx, "overlay", "font_draw_text", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "overlay", "font_draw_text", bg);
     gfx->setPresentOverlay(nullptr, nullptr);
 
     auto                            *parts = eve::particles::Particles::create();
@@ -1842,7 +1846,8 @@ TEST_CASE("graphics.imageAudit.overlayFx") {
     em->setColorEnd(1.f, 0.55f, 0.15f, 1.f);
     em->setTexture(makeSolid(gfx, 230, 140, 50));
     em->emit(48);
-    auditGpuFrame(gfx, "overlay", "particles", bg, false, [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "overlay", "particles", bg, false,
+                  [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
 }
 
 TEST_CASE("graphics.imageAudit.voxelAndHair") {
@@ -1889,7 +1894,7 @@ TEST_CASE("graphics.imageAudit.voxelAndHair") {
         world.selectVisible(&vp[0][0], cd->eyeX, cd->eyeY, cd->eyeZ, 40.f, true);
         world.drawVisible(gfx, atlas, 2);
     };
-    auditGpuFrame(gfx, "voxel_hair", "voxels", bg, false, drawVoxels);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "voxel_hair", "voxels", bg, false, drawVoxels);
 
     studio.cam->setEye(0.f, 1.5f, 4.0f);
     studio.cam->setTarget(0.f, 0.15f, 0.f);
@@ -1903,7 +1908,7 @@ TEST_CASE("graphics.imageAudit.voxelAndHair") {
     card->setHair(true);
     card->setPosition(0.f, 0.05f, 0.2f);
     card->setCastShadow(false);
-    auditGpuFrame(gfx, "voxel_hair", "hair_cards", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "voxel_hair", "hair_cards", bg);
 }
 
 TEST_CASE("graphics.imageAudit.uiAndMap") {
@@ -1943,18 +1948,18 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
         gfx->present();
     };
     presentMap();
-    auditSwapchain(gfx, "uimap", "ortho_fill", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "ortho_fill", bg);
 
     cam->setZoom(1.25f);
     presentMap();
-    auditSwapchain(gfx, "uimap", "ortho_zoom", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "ortho_zoom", bg);
     cam->setZoom(1.f);
 
     auto *ui = eve::ui::UI::create();
     REQUIRE(ui->initBackend());
     ui->beginFrameAndRender();
     presentMap();
-    auditSwapchain(gfx, "uimap", "imgui_hook", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "imgui_hook", bg);
     ui->dispatchEvents();
 
     layer->setVisible(false);
@@ -1972,7 +1977,7 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     display->setCamera(cam);
     makeSprite(makeSolid(gfx, 70, 90, 130), 0.f, 0.f, 400.f, 300.f, false)->sprite()->layer = -1;
     presentMap();
-    auditSwapchain(gfx, "uimap", "dual_grid", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "dual_grid", bg);
 
     display->setVisible(false);
     eve::map::TileLayer *iso   = map->newLayer(18, 18, 32.f, 16.f);
@@ -1985,7 +1990,7 @@ TEST_CASE("graphics.imageAudit.uiAndMap") {
     for (int y = 0; y < 18; ++y)
         for (int x = 0; x < 18; ++x) iso->setTile(x, y, 1 + (x * 3 + y) % 15);
     presentMap();
-    auditSwapchain(gfx, "uimap", "isometric", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "uimap", "isometric", bg);
 }
 
 TEST_CASE("graphics.imageAudit.skinnedStill") {
@@ -2021,7 +2026,7 @@ TEST_CASE("graphics.imageAudit.skinnedStill") {
     studio.cam->setEye(0.f, 1.3f, 3.2f);
     studio.cam->setTarget(0.f, 0.7f, 0.f);
     studio.ground->setPosition(0.f, 0.f, 0.f);
-    auditGpuFrame(gfx, "skinned", "bind_pose", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "bind_pose", bg);
 }
 
 TEST_CASE("graphics.imageAudit.skinnedPose") {
@@ -2077,10 +2082,10 @@ TEST_CASE("graphics.imageAudit.skinnedPose") {
     studio.cam->setEye(0.f, 1.3f, 3.2f);
     studio.cam->setTarget(0.f, 0.7f, 0.f);
     studio.ground->setPosition(0.f, 0.f, 0.f);
-    auditGpuFrame(gfx, "skinned", "pose_t0", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_t0", bg);
 
     studio.subject->setMesh(uploadAt(clip->getDuration() * 0.5f));
-    auditGpuFrame(gfx, "skinned", "pose_tmid", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "skinned", "pose_tmid", bg);
 }
 
 TEST_CASE("graphics.imageAudit.reloadTex") {
@@ -2107,9 +2112,9 @@ TEST_CASE("graphics.imageAudit.reloadTex") {
     Texture *diff = gfx->newTextureFromFile("Rock1_Diffuse.png");
     REQUIRE(diff != nullptr);
     studio.subject->setTexture(diff);
-    auditGpuFrame(gfx, "reload", "before", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "reload", "before", bg);
     REQUIRE(gfx->reloadTextureFromFile("Rock1_Diffuse.png"));
-    auditGpuFrame(gfx, "reload", "after", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "reload", "after", bg);
 }
 
 TEST_CASE("graphics.imageAudit.morphInflate") {
@@ -2159,13 +2164,13 @@ TEST_CASE("graphics.imageAudit.morphInflate") {
     studio.subject->setMesh(morphMesh);
     studio.subject->setTexture(makeSolid(gfx, 200, 160, 90));
     gfx->bakeMeshMorph(morphMesh);
-    auditGpuFrame(gfx, "morph", "base", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "morph", "base", bg);
     morphMesh->setMorphWeight("inflate", 1.f);
     gfx->bakeMeshMorph(morphMesh);
-    auditGpuFrame(gfx, "morph", "inflate", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "morph", "inflate", bg);
     morphMesh->setMorphWeight("inflate", 0.45f);
     gfx->bakeMeshMorph(morphMesh);
-    auditGpuFrame(gfx, "morph", "inflate_mid", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "morph", "inflate_mid", bg);
 }
 
 TEST_CASE("graphics.imageAudit.procgenAssets") {
@@ -2203,7 +2208,7 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
         auto textureView = pg->generateTextureBorrowed(id, paramsHandle, gfx);
         REQUIRE(textureView.isBound());
         studio.subject->setTexture(textureView.get());
-        auditGpuFrame(gfx, "procgen", id, bg);
+        auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "procgen", id, bg);
     }
 
     auto normalResult = pg->generateNormalImageHandle("tex.stone", paramsHandle);
@@ -2218,7 +2223,7 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     auto stoneTextureView = pg->generateTextureBorrowed("tex.stone", paramsHandle, gfx);
     REQUIRE(stoneTextureView.isBound());
     studio.subject->setTexture(stoneTextureView.get());
-    auditGpuFrame(gfx, "procgen", "stone_normal", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "procgen", "stone_normal", bg);
     studio.subject->setNormalTexture(nullptr);
     auto releaseNormalResult = eve::procgen::Procgen::release(normalHandle);
     REQUIRE(releaseNormalResult.ok());
@@ -2236,12 +2241,12 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     REQUIRE(marbleTextureView.isBound());
     studio.subject->setTexture(marbleTextureView.get());
     studio.subject->setScale(0.7f, 0.7f, 0.7f);
-    auditGpuFrame(gfx, "procgen", "marching_cubes", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "procgen", "marching_cubes", bg);
 
     auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
     REQUIRE(releaseParamsResult.ok());
 
-    Texture *sceneTex = capturePresented(gfx);
+    Texture *sceneTex = capturePresented(_ZEROERR_TEST_CONTEXT, gfx);
     REQUIRE(sceneTex != nullptr);
     Canvas *dest = gfx->newCanvas(400, 300);
     REQUIRE(dest != nullptr);
@@ -2250,11 +2255,11 @@ TEST_CASE("graphics.imageAudit.procgenAssets") {
     aa->setQuality("medium");
     aa->applyTo(gfx, sceneTex, dest);
     blitAndPresent(gfx, dest->getTexture());
-    auditSwapchain(gfx, "procgen", "ssaa_medium", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "procgen", "ssaa_medium", bg);
     aa->setQuality("high");
     aa->applyTo(gfx, sceneTex, dest);
     blitAndPresent(gfx, dest->getTexture());
-    auditSwapchain(gfx, "procgen", "ssaa_high", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "procgen", "ssaa_high", bg);
 }
 
 TEST_CASE("graphics.imageAudit.mapFovHex") {
@@ -2312,7 +2317,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
         }
     }
     presentMap();
-    auditSwapchain(gfx, "mapfov", "shadowcast", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "shadowcast", bg);
 
     fov->setAlgorithm("raycast");
     fov->compute();
@@ -2323,7 +2328,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
         }
     }
     presentMap();
-    auditSwapchain(gfx, "mapfov", "raycast", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "raycast", bg);
 
     std::vector<uint8_t> r8;
     REQUIRE(fov->fillMaskR8(r8));
@@ -2346,7 +2351,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     layer->setVisible(false);
     auto *maskSp = makeSprite(maskVis, 0.f, 0.f, 400.f, 300.f, false);
     presentMap();
-    auditSwapchain(gfx, "mapfov", "mask_vis", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "mask_vis", bg);
     maskSp->sprite()->visible = false;
 
     auto *pg           = eve::procgen::Procgen::create();
@@ -2374,7 +2379,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     auto releaseGridResult = eve::procgen::Procgen::release(gridHandle);
     REQUIRE(releaseGridResult.ok());
     presentMap();
-    auditSwapchain(gfx, "mapfov", "dungeon_bsp", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "dungeon_bsp", bg);
     layer->setVisible(false);
 
     auto releaseParamsResult = eve::procgen::Procgen::release(paramsHandle);
@@ -2392,7 +2397,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
         for (int x = 0; x < 18; ++x) hex->setTile(x, y, 1 + (x * 3 + y) % 15);
     makeSprite(makeSolid(gfx, 70, 90, 130), 0.f, 0.f, 400.f, 300.f, false)->sprite()->layer = -1;
     presentMap();
-    auditSwapchain(gfx, "mapfov", "hexagonal", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "hexagonal", bg);
     hex->setVisible(false);
 
     eve::map::TileLayer *stag    = map->newLayer(18, 20, 32.f, 16.f);
@@ -2407,7 +2412,7 @@ TEST_CASE("graphics.imageAudit.mapFovHex") {
     for (int y = 0; y < 20; ++y)
         for (int x = 0; x < 18; ++x) stag->setTile(x, y, 1 + (x + y * 2) % 15);
     presentMap();
-    auditSwapchain(gfx, "mapfov", "staggered", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mapfov", "staggered", bg);
 }
 
 TEST_CASE("graphics.imageAudit.particleSkin") {
@@ -2475,7 +2480,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     REQUIRE(em->hasSkinSource());
     em->emitFromSkin(64);
     REQUIRE(em->getCount() >= 16);
-    auditGpuFrame(gfx, "partskin", "emit_from_skin", bg, false,
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "partskin", "emit_from_skin", bg, false,
                   [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
 
     em->clearSkinSource();
@@ -2489,7 +2494,7 @@ TEST_CASE("graphics.imageAudit.particleSkin") {
     em->attachToBone(bonePose.get(), root);
     em->syncAttach();
     em->emit(24);
-    auditGpuFrame(gfx, "partskin", "attach_bone", bg, false,
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "partskin", "attach_bone", bg, false,
                   [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
 }
 
@@ -2512,7 +2517,7 @@ TEST_CASE("graphics.imageAudit.materialHair") {
 
     studio.subject->setReceiveLight(false);
     studio.subject->setTexture(makeSolid(gfx, 220, 90, 70));
-    auditGpuFrame(gfx, "mathair", "receive_off", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "mathair", "receive_off", bg);
     studio.subject->setReceiveLight(true);
 
     Material *hairMat = gfx->newMaterial();
@@ -2526,7 +2531,7 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     card->setMaterial(hairMat);
     card->setPosition(0.f, 0.05f, 0.35f);
     card->setCastShadow(false);
-    auditGpuFrame(gfx, "mathair", "hair_material", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "mathair", "hair_material", bg);
 
     // General-purpose transparent PBR materials must use the transparent
     // forward queue without pretending to be hair. Isolate this frame from the
@@ -2554,14 +2559,15 @@ TEST_CASE("graphics.imageAudit.materialHair") {
     frontCard->setMaterial(glassFront);
     frontCard->setPosition(0.22f, -0.05f, 0.65f);
     frontCard->setCastShadow(false);
-    auditGpuFrame(gfx, "mathair", "transparent_pbr_overlap", bg, false, {}, "mathair_transparent_pbr_overlap.png");
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "mathair", "transparent_pbr_overlap", bg, false, {},
+                  "mathair_transparent_pbr_overlap.png");
 
     studio.subject->setVisible(false);
     makeSprite(makeSolid(gfx, 90, 140, 200), 0.f, 0.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 200, 90, 70), 200.f, 0.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 70, 180, 110), 0.f, 150.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 220, 200, 60), 200.f, 150.f, 200.f, 150.f, false);
-    auditGpuFrame(gfx, "mathair", "hair_only_packed", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "mathair", "hair_only_packed", bg);
 }
 
 TEST_CASE("graphics.imageAudit.clusteredHair") {
@@ -2603,7 +2609,7 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
         l->setRadius(3.5f);
         l->setEnabled(true);
     }
-    auditGpuFrame(gfx, "cluster", "twelve_points", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "cluster", "twelve_points", bg);
 
     Shader *hairSh = gfx->newHairShader();
     REQUIRE(hairSh != nullptr);
@@ -2614,11 +2620,11 @@ TEST_CASE("graphics.imageAudit.clusteredHair") {
     card->setHair(true);
     card->setPosition(0.f, 0.05f, 0.4f);
     card->setCastShadow(false);
-    auditGpuFrame(gfx, "cluster", "hair_plus_clustered", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "cluster", "hair_plus_clustered", bg);
 
     rc->disable("clustered");
     rc->compile();
-    auditGpuFrame(gfx, "cluster", "packed_fallback", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "cluster", "packed_fallback", bg);
     rc->enable("clustered");
     rc->compile();
 }
@@ -2660,13 +2666,13 @@ TEST_CASE("graphics.imageAudit.clothFluid2D") {
     cloth.setColor(0.95f, 0.35f, 0.2f, 1.f);
     cloth.update(0.016f);
     presentExtra([&]() { cloth.draw(gfx); });
-    auditSwapchain(gfx, "phys2d", "cloth", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "phys2d", "cloth", bg);
 
     cloth.setGravity(0.f, 400.f);
     cloth.applyForce(80.f, 0.f);
     for (int i = 0; i < 8; ++i) cloth.update(0.016f);
     presentExtra([&]() { cloth.draw(gfx); });
-    auditSwapchain(gfx, "phys2d", "cloth_wind", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "phys2d", "cloth_wind", bg);
 
     eve::physics::Fluid2D fluid(512);
     fluid.setGravity(0.f, 0.f);
@@ -2677,7 +2683,7 @@ TEST_CASE("graphics.imageAudit.clothFluid2D") {
         for (int x = 30; x < 380; x += 16) fluid.emit(float(x), float(y), 1);
     REQUIRE(fluid.getParticleCount() > 100);
     presentExtra([&]() { fluid.draw(gfx); });
-    auditSwapchain(gfx, "phys2d", "fluid", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "phys2d", "fluid", bg);
 }
 
 TEST_CASE("graphics.imageAudit.particlePresets") {
@@ -2714,7 +2720,8 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
         em->setEmissionArea("rect", 140.f, 80.f);
         em->emit(48);
         REQUIRE(em->getCount() >= 16);
-        auditGpuFrame(gfx, "presets", phase, bg, false, [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
+        auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "presets", phase, bg, false,
+                      [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
     };
     burst("spark", "spark", 1.f, 0.85f, 0.25f);
     burst("smoke", "smoke", 0.75f, 0.78f, 0.82f);
@@ -2728,7 +2735,8 @@ TEST_CASE("graphics.imageAudit.particlePresets") {
     em->setColorEnd(1.f, 0.45f, 0.15f, 1.f);
     em->setEmissionArea("rect", 140.f, 80.f);
     em->emit(40);
-    auditGpuFrame(gfx, "presets", "json_fire", bg, false, [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "presets", "json_fire", bg, false,
+                  [&]() { eve::particles::ParticleRenderSystem::render(gfx); });
 }
 
 TEST_CASE("graphics.imageAudit.mapPath") {
@@ -2783,7 +2791,7 @@ TEST_CASE("graphics.imageAudit.mapPath") {
     layer->setTile(1, 9, 8);
     layer->setTile(23, 9, 12);
     presentMap();
-    auditSwapchain(gfx, "mappath", "astar", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mappath", "astar", bg);
 
     std::unique_ptr<eve::map::FlowField> field(pf->buildFlowField(23, 9));
     REQUIRE(field.get() != nullptr);
@@ -2794,7 +2802,7 @@ TEST_CASE("graphics.imageAudit.mapPath") {
         }
     }
     presentMap();
-    auditSwapchain(gfx, "mappath", "flow_field", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mappath", "flow_field", bg);
 
     std::unique_ptr<eve::map::Path> group(pf->findGroupPath(2, 2, 23, 9));
     REQUIRE(group.get() != nullptr);
@@ -2803,7 +2811,7 @@ TEST_CASE("graphics.imageAudit.mapPath") {
             if (layer->getTile(x, y) != 2) layer->setTile(x, y, 5);
     for (int i = 0; i < group->getLength(); ++i) layer->setTile(group->getX(i), group->getY(i), 14);
     presentMap();
-    auditSwapchain(gfx, "mappath", "group_flow", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "mappath", "group_flow", bg);
 }
 
 TEST_CASE("graphics.imageAudit.reloadTexBytes") {
@@ -2846,15 +2854,15 @@ TEST_CASE("graphics.imageAudit.reloadTexBytes") {
     Texture *tex = gfx->newTextureFromFile("audit_reload_swap.png");
     REQUIRE(tex != nullptr);
     studio.subject->setTexture(tex);
-    auditGpuFrame(gfx, "texbytes", "red", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "texbytes", "red", bg);
 
     writeSolidPng(50, 200, 80);
     REQUIRE(gfx->reloadTextureFromFile("audit_reload_swap.png"));
-    auditGpuFrame(gfx, "texbytes", "green", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "texbytes", "green", bg);
 
     writeSolidPng(60, 90, 220);
     REQUIRE(gfx->reloadTextureFromFile("audit_reload_swap.png"));
-    auditGpuFrame(gfx, "texbytes", "blue", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "texbytes", "blue", bg);
 }
 
 TEST_CASE("graphics.imageAudit.postQuality") {
@@ -2882,7 +2890,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
     rc->enable("gbufferAlbedo");
     rc->compile();
 
-    Texture *sceneTex = capturePresented(gfx);
+    Texture *sceneTex = capturePresented(_ZEROERR_TEST_CONTEXT, gfx);
     REQUIRE(sceneTex != nullptr);
     GBuffer *gb = rc->getGBuffer();
     REQUIRE(gb != nullptr);
@@ -2907,7 +2915,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
         ao->applyOverlay(gfx, aoMap->getTexture());
         gfx->setCanvas();
         blitAndPresent(gfx, composed->getTexture());
-        auditSwapchain(gfx, "postq", (std::string("ssao_") + q).c_str(), bg);
+        auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postq", (std::string("ssao_") + q).c_str(), bg);
     }
 
     std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
@@ -2927,7 +2935,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
         vol->applyFog(gfx, depth);
         gfx->setCanvas();
         blitAndPresent(gfx, composed->getTexture());
-        auditSwapchain(gfx, "postq", (std::string("fog_") + q).c_str(), bg);
+        auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postq", (std::string("fog_") + q).c_str(), bg);
     }
 
     vol->setMode("raymarch");
@@ -2941,7 +2949,7 @@ TEST_CASE("graphics.imageAudit.postQuality") {
     vol->rayMarch(gfx, depth);
     gfx->setCanvas();
     blitAndPresent(gfx, composed->getTexture());
-    auditSwapchain(gfx, "postq", "raymarch_high", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "postq", "raymarch_high", bg);
 
     rc->disable("gbuffer");
     rc->compile();
@@ -3005,13 +3013,13 @@ TEST_CASE("graphics.imageAudit.dualIsoFov") {
     fov->compute();
     paintFov();
     presentMap();
-    auditSwapchain(gfx, "dualiso", "fov_permissive", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "dualiso", "fov_permissive", bg);
 
     fov->setAlgorithm("rectangle");
     fov->compute();
     paintFov();
     presentMap();
-    auditSwapchain(gfx, "dualiso", "fov_rectangle", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "dualiso", "fov_rectangle", bg);
     ortho->setVisible(false);
 
     eve::map::TileLayer *logic   = map->newLayer(16, 16, 32.f, 16.f);
@@ -3031,7 +3039,7 @@ TEST_CASE("graphics.imageAudit.dualIsoFov") {
     display->setCamera(cam);
     makeSprite(makeSolid(gfx, 70, 90, 130), 0.f, 0.f, 400.f, 300.f, false)->sprite()->layer = -1;
     presentMap();
-    auditSwapchain(gfx, "dualiso", "dual_isometric", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "dualiso", "dual_isometric", bg);
 }
 
 TEST_CASE("graphics.imageAudit.avatarImage") {
@@ -3066,19 +3074,19 @@ TEST_CASE("graphics.imageAudit.avatarImage") {
     av->setLayerOffset("bl", 0.f, 150.f);
     av->setLayerOffset("br", 200.f, 150.f);
     av->sync();
-    auditGpu2D(gfx, "avatar", "layers_packed", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "avatar", "layers_packed", bg);
 
     av->setLayerColor("tl", 0.95f, 0.35f, 0.25f, 1.f);
     av->setLayerColor("tr", 0.25f, 0.55f, 0.95f, 1.f);
     av->sync();
-    auditGpu2D(gfx, "avatar", "recolor", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "avatar", "recolor", bg);
 
     REQUIRE(av->defineExpression("flash", "tl=1;tr=1;bl=1;br=1"));
     REQUIRE(av->applyExpression("flash"));
     av->setLayerColor("bl", 0.95f, 0.85f, 0.2f, 1.f);
     av->setLayerColor("br", 0.7f, 0.3f, 0.9f, 1.f);
     av->sync();
-    auditGpu2D(gfx, "avatar", "expression", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "avatar", "expression", bg);
 }
 
 TEST_CASE("graphics.imageAudit.avatarVroid") {
@@ -3121,10 +3129,10 @@ TEST_CASE("graphics.imageAudit.avatarVroid") {
     studio.cam->setTarget(0.f, 0.7f, 0.f);
     studio.ground->setPosition(0.f, 0.f, 0.f);
     av->sync();
-    auditGpuFrame(gfx, "vroid", "bind_pose", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "vroid", "bind_pose", bg);
     av->setRotation3D(0.4f, 0.15f, 0.f);
     av->sync();
-    auditGpuFrame(gfx, "vroid", "yaw_pitch", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "vroid", "yaw_pitch", bg);
 }
 
 TEST_CASE("graphics.imageAudit.box2dDebug") {
@@ -3174,7 +3182,7 @@ TEST_CASE("graphics.imageAudit.box2dDebug") {
         gfx->present();
     };
     presentDebug();
-    auditSwapchain(gfx, "box2d", "debug_draw", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "box2d", "debug_draw", bg);
 }
 
 TEST_CASE("graphics.imageAudit.imageRotate") {
@@ -3210,12 +3218,12 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     REQUIRE(rot90.get() != nullptr);
     Texture *t90  = gfx->newTexture(rot90.get());
     auto    *full = makeSprite(t90, 0.f, 0.f, 400.f, 300.f, false);
-    auditGpu2D(gfx, "imrotate", "nearest_90", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "imrotate", "nearest_90", bg);
 
     std::unique_ptr<ImageData> rotSprite(src.rotate(1.5707963f, "rotsprite", true));
     REQUIRE(rotSprite.get() != nullptr);
     full->sprite()->texture = gfx->newTexture(rotSprite.get());
-    auditGpu2D(gfx, "imrotate", "rotsprite_90", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "imrotate", "rotsprite_90", bg);
 
     makeSprite(makeSolid(gfx, 90, 140, 200), 0.f, 0.f, 200.f, 150.f, false);
     makeSprite(makeSolid(gfx, 200, 90, 70), 200.f, 0.f, 200.f, 150.f, false);
@@ -3225,7 +3233,7 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     std::unique_ptr<ImageData> rot45(src.rotate(0.78539816f, "linear", true));
     REQUIRE(rot45.get() != nullptr);
     makeSprite(gfx->newTexture(rot45.get()), 80.f, 50.f, 240.f, 200.f, false);
-    auditGpu2D(gfx, "imrotate", "linear_45", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "imrotate", "linear_45", bg);
 
     auto *cam = Camera2D::createCamera();
     cam->setPosition(200.f, 150.f);
@@ -3234,9 +3242,9 @@ TEST_CASE("graphics.imageAudit.imageRotate") {
     auto    *big          = makeSprite(bigTex, 0.f, 0.f, 800.f, 600.f, false);
     big->sprite()->camera = cam;
     big->sprite()->layer  = 50;
-    auditGpu2D(gfx, "imrotate", "cam_pan_tl", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "imrotate", "cam_pan_tl", bg);
     cam->setPosition(400.f, 250.f);
-    auditGpu2D(gfx, "imrotate", "cam_pan_mid", bg);
+    auditGpu2D(_ZEROERR_TEST_CONTEXT, gfx, "imrotate", "cam_pan_mid", bg);
 }
 
 TEST_CASE("graphics.imageAudit.sceneGraph") {
@@ -3264,13 +3272,13 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
         eve::scene::node("root", {eve::scene::node("subject").withPosition(0.f, 0.15f, 0.f).withScale(0.55f)}));
     REQUIRE(host->linkRenderable3D("subject", studio.subject));
     eve::scene::TransformSystem::updateHost(host);
-    auditGpuFrame(gfx, "scene", "linked_rest", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "scene", "linked_rest", bg);
 
     host->setTreeReconcile(eve::scene::node(
         "root",
         {eve::scene::node("subject").withPosition(0.7f, 0.2f, 0.f).withRotation(0.8f, 0.15f, 0.f).withScale(0.6f)}));
     eve::scene::TransformSystem::updateHost(host);
-    auditGpuFrame(gfx, "scene", "linked_moved", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "scene", "linked_moved", bg);
 
     auto *left = Renderable3D::create();
     left->setMesh(studio.sphere);
@@ -3281,7 +3289,7 @@ TEST_CASE("graphics.imageAudit.sceneGraph") {
     REQUIRE(host->linkRenderable3D("subject", studio.subject));
     REQUIRE(host->linkRenderable3D("left", left));
     eve::scene::TransformSystem::updateHost(host);
-    auditGpuFrame(gfx, "scene", "two_nodes", bg);
+    auditGpuFrame(_ZEROERR_TEST_CONTEXT, gfx, "scene", "two_nodes", bg);
 }
 
 TEST_CASE("graphics.imageAudit.fovHeightHex") {
@@ -3336,7 +3344,7 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
         }
     }
     presentMap();
-    auditSwapchain(gfx, "fovmore", "heightmap", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "fovmore", "heightmap", bg);
     ortho->setVisible(false);
 
     eve::map::TileLayer *hex     = map->newLayer(18, 16, 32.f, 28.f);
@@ -3364,7 +3372,7 @@ TEST_CASE("graphics.imageAudit.fovHeightHex") {
     }
     makeSprite(makeSolid(gfx, 70, 90, 130), 0.f, 0.f, 400.f, 300.f, false)->sprite()->layer = -1;
     presentMap();
-    auditSwapchain(gfx, "fovmore", "hex_topology", bg);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "fovmore", "hex_topology", bg);
 }
 }  // namespace test_RenderImageAudit
 
@@ -3439,7 +3447,6 @@ namespace {
     for (int i = 0; i < frames; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 }
 

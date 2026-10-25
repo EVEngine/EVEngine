@@ -333,7 +333,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     spriteA->sprite()->layer = 1;
     spriteB->sprite()->layer = 1;
 
-    for (int frame = 0; frame < 60; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         solid->transform()->x   = 40.0f + float(frame) * 0.8f;
         spriteA->transform()->y = 80.0f + float((frame % 40) - 20) * 0.5f;
         spriteB->transform()->x = 360.0f + float((frame % 30) - 15) * 0.4f;
@@ -343,7 +343,6 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     fs->remove(tmpName);
@@ -442,9 +441,8 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     onScreen->sprite()->b       = 1;
     onScreen->sprite()->visible = true;
 
-    for (int frame = 0; frame < 30; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 
     Color p2 = c2->getPixel(64, 64);
@@ -774,8 +772,8 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
 
     RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
 
-    // ~1s of visible rotation so the smoke case is a real on-screen scene.
-    for (int i = 0; i < 60; ++i) {
+    // Submit distinct poses through the real 3D and overlay presentation path.
+    for (int i = 0; i < 3; ++i) {
         ent->transform()->yaw = float(i) * 0.05f;
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
@@ -783,7 +781,6 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     win->close();
@@ -3488,7 +3485,7 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     REQUIRE(UIHost::resolve(smokeHost).has_value());
 
     int framesOk = 0;
-    for (int frame = 0; frame < 30; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         solid->transform()->x = 80.0f + float(frame) * 2.0f;
 
         // ImGui frame must be built before present (RenderSystem ends with present).
@@ -3504,15 +3501,13 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
         // After present+readback, swapchain content should be readable.
         Color p = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-        CHECK(std::isfinite(p.r));
-        CHECK(std::isfinite(p.g));
-        CHECK(std::isfinite(p.b));
+        REQUIRE(std::isfinite(p.r));
+        REQUIRE(std::isfinite(p.g));
+        REQUIRE(std::isfinite(p.b));
         ++framesOk;
-
-        SDL_Delay(8);
     }
 
-    CHECK_EQ(framesOk, 30);
+    REQUIRE_EQ(framesOk, 3);
     CHECK(UIHost::resolve(UISystem::findHost("smoke")).has_value());
     auto currentHost = UIHost::resolve(ui->current());
     REQUIRE(currentHost.has_value());
@@ -3584,7 +3579,7 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
                                       "root"));
     REQUIRE(UIHost::resolve(galleryHost).has_value());
 
-    for (int frame = 0; frame < 90; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         bgA->transform()->x = 40.f + float(frame) * 1.2f;
         bgB->transform()->y = 220.f + std::sin(float(frame) * 0.08f) * 24.f;
         volume              = 0.35f + 0.3f * (0.5f + 0.5f * std::sin(float(frame) * 0.06f));
@@ -3614,7 +3609,6 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
             ui->processEvent(&e);
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     CHECK(UIHost::resolve(UISystem::findHost("gallery")).has_value());

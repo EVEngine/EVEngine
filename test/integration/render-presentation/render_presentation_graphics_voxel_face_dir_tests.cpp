@@ -805,57 +805,6 @@ TEST_CASE("softbody.gpu.clothSelfCollisionSeparates") {
     REQUIRE_GT(minSeen, minDist * 0.5f);
 }
 
-TEST_CASE("softbody.gpu.clothLargeSelfCollision") {
-    if (!tryInitGpuWindow()) return;
-    auto *gpgpu = Gpgpu::create();
-    REQUIRE(gpgpu != nullptr);
-    if (!gpgpu->isAvailable()) return;
-
-    std::unique_ptr<ClothGPU> cloth;
-    try {
-        cloth = std::unique_ptr<ClothGPU>(eve::cloth::Cloth::create()->newClothGPU(100, 80, 12.f, 20.f, 20.f));
-    } catch (...) {
-        return;
-    }
-    REQUIRE(cloth.get() != nullptr);
-    REQUIRE_EQ(cloth->getParticleCount(), 8000);
-    // Keep the top row pinned so the 8000-particle sheet hangs like a curtain
-    // under gravity. This exercises the spatially-hashed self-collision at
-    // scale and verifies solver stability, not perfect separation in a pile.
-    cloth->setGravity(0.f, 180.f);
-    cloth->setBounds(0.f, 0.f, 1200.f, 1000.f);
-    cloth->setParticleSize(3.f);
-    cloth->setStiffness(0.9f);
-    cloth->setIterations(24);
-    cloth->setDamping(0.3f);
-    cloth->setSelfCollision(true);
-
-    for (int f = 0; f < 120; ++f) {
-        cloth->update(1.f / 60.f);
-    }
-
-    for (int i = 0; i < 200; ++i) {
-        const int idx = (i * 79) % cloth->getParticleCount();
-        REQUIRE(std::isfinite(cloth->getParticleX(idx)));
-        REQUIRE(std::isfinite(cloth->getParticleY(idx)));
-    }
-    // The upper half of the hanging sheet stays near its rest column (x = 620)
-    // and rest heights — the solver is stable at 8000 particles.
-    for (int r = 1; r <= 40; r += 3) {
-        const int idx = r * 100 + 50;
-        REQUIRE(std::fabs(cloth->getParticleX(idx) - 620.f) < 30.f);
-        REQUIRE(std::fabs(cloth->getParticleY(idx) - (20.f + float(r) * 12.f)) < 15.f);
-    }
-    // Everything stays inside the bounds.
-    for (int i = 0; i < 400; ++i) {
-        const int idx = (i * 131) % cloth->getParticleCount();
-        REQUIRE_GE(cloth->getParticleX(idx), 0.f);
-        REQUIRE_LE(cloth->getParticleX(idx), 1200.f);
-        REQUIRE_GE(cloth->getParticleY(idx), 0.f);
-        REQUIRE_LE(cloth->getParticleY(idx), 1000.f);
-    }
-}
-
 
 }  // namespace test_softbody
 

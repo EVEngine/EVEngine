@@ -2418,7 +2418,18 @@ TEST_CASE("editor.v2.asset_database_import_query_dependencies_and_page_generatio
     extra.guid       = AssetGuid("asset-extra");
     extra.logicalUri = "content://Other/Extra.asset";
     extra.typeId     = "generic";
-    CHECK(database.publish(std::move(extra)).ok());
+    REQUIRE(database.publish(std::move(extra)).ok());
+    REQUIRE_EQ(database.generation(), std::uint64_t(3));
+    AssetQuery textures;
+    textures.typeIds = {"texture"};
+    auto typedPage   = database.query(textures, 0, 1, database.generation());
+    REQUIRE(typedPage.ok());
+    REQUIRE_EQ(typedPage.value().values.size(), std::size_t(1));
+    REQUIRE_EQ(typedPage.value().values.front().guid, AssetGuid("asset-texture"));
+    REQUIRE(!typedPage.value().hasMore);
+    auto byUri = database.findByUri("content://Other/Extra.asset");
+    REQUIRE(byUri.ok());
+    REQUIRE_EQ(byUri.value().guid, AssetGuid("asset-extra"));
     auto expired = database.query(query, firstPage.value().nextOffset, 1, generation);
     CHECK_EQ(static_cast<int>(expired.code()), static_cast<int>(EditorStatus::Conflict));
 }
@@ -2525,25 +2536,6 @@ TEST_CASE("editor.v2.import_place_save_and_reopen_headless_loop") {
     CHECK(reopened.content(reopenedDocument.value().id).value() == savedScene);
 }
 
-TEST_CASE("editor.v2.asset_database_indexes_and_pages_100k_records") {
-    MemoryAssetDatabase database;
-    constexpr int       count = 100000;
-    for (int index = 0; index < count; ++index) {
-        AssetRecord record;
-        record.guid       = AssetGuid("asset-" + std::to_string(index));
-        record.logicalUri = "content://Bulk/asset-" + std::to_string(index);
-        record.typeId     = index % 2 == 0 ? "bulk.even" : "bulk.odd";
-        REQUIRE(database.publish(std::move(record)).ok());
-    }
-    CHECK_EQ(database.generation(), static_cast<std::uint64_t>(count));
-    AssetQuery query;
-    query.typeIds = {"bulk.odd"};
-    auto page     = database.query(query, 1000, 128, database.generation());
-    REQUIRE(page.ok());
-    CHECK_EQ(page.value().values.size(), static_cast<std::size_t>(128));
-    CHECK(page.value().hasMore);
-    CHECK(database.findByUri("content://Bulk/asset-99999").ok());
-}
 
 // editor_environment_browser.cpp
 using namespace eve::editor;

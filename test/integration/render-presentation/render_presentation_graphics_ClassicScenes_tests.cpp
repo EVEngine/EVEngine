@@ -1100,7 +1100,7 @@ float viewHz() {
     return 30.f;
 }
 
-/** Extra per-phase / diagnostic PNGs. Default is one hero shot per scene. */
+/** Extra per-phase / diagnostic PNGs; regular contracts do not emit hero images. */
 bool dumpPhaseFrames() {
     const char *env = std::getenv("EVENGINE_DUMP_PHASES");
     return env && env[0] && env[0] != '0';
@@ -1108,14 +1108,16 @@ bool dumpPhaseFrames() {
 
 std::string classicOutDir() { return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes"; }
 
-void saveFramePng(Graphics * /*gfx*/, const std::string &name, eve::image::ImageData *frame) {
+void saveFramePng(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics * /*gfx*/, const std::string &name,
+                  eve::image::ImageData *frame) {
     const std::string outDir = classicOutDir();
     REQUIRE(saveImagePng(*frame, outDir + "/" + name));
     std::printf("ClassicScenes frame: %s\n", (outDir + "/" + name).c_str());
 }
 
 /** CPU-only audit of the already-read-back snapshot. No extra present/readback. */
-void auditCapturedFrame(eve::image::ImageData *frame, Graphics *gfx, const char *sceneTag, const char *phase) {
+void auditCapturedFrame(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, eve::image::ImageData *frame, Graphics *gfx,
+                        const char *sceneTag, const char *phase) {
     REQUIRE(frame != nullptr);
     const Color       c = gfx->getBackgroundColor();
     RenderAuditConfig cfg{sceneTag, phase, "", 0};
@@ -1149,7 +1151,8 @@ void resetRenderControl(Graphics *gfx) {
 }
 
 /** Extra lighting / RenderControl snaps at the current camera. No extra fly frames. */
-void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneTag, bool polishMetals) {
+void snapStaticConfigGrid(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                          const char *sceneTag, bool polishMetals) {
     struct Extra {
         RenderCfg   cfg;
         const char *enableFeat;
@@ -1191,8 +1194,9 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         RenderSystem::render(*gfx);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        if (dumpPhaseFrames()) saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
-        auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
+        if (dumpPhaseFrames())
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
+        auditCapturedFrame(_ZEROERR_TEST_CONTEXT, snap, gfx, sceneTag, ex.tag);
         delete snap;
         gfx->setScreenReadbackEnabled(false);
         if (ex.msaaSamples >= 0) gfx->setMsaaSamples(4);
@@ -1201,28 +1205,29 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
     gfx->setScreenReadbackEnabled(true);
 }
 
-void snapAndSave(Graphics *gfx, const char *name) {
+void snapAndSave(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, const char *name) {
     gfx->setScreenReadbackEnabled(true);
     warmPresent(gfx);
     eve::image::ImageData *snap = gfx->newImageData();
     REQUIRE(snap != nullptr);
-    saveFramePng(gfx, name, snap);
+    saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, name, snap);
     delete snap;
     gfx->setScreenReadbackEnabled(false);
 }
 
 /** Isolate the pbr_chart ground disk: hide spheres, dump lighting vs GBuffer normals. */
-void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &cam) {
+void dumpPbrChartGroundDiag(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                            const CamKey &cam) {
     REQUIRE(!actors.ents.empty());
     applyCam(actors.cam, cam);
 
     applyConfig(actors, RenderCfg::DirectionalShadows, false);
-    snapAndSave(gfx, "pbr_chart_diag_shadows.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_shadows.png");
     CamKey side = cam;
     side.eyeX   = 2.f * cam.tgtX - cam.eyeX;
     side.eyeZ   = 2.f * cam.tgtZ - cam.eyeZ;
     applyCam(actors.cam, side);
-    snapAndSave(gfx, "pbr_chart_diag_shadows_side.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_shadows_side.png");
     applyCam(actors.cam, cam);
 
     for (size_t i = 1; i < actors.ents.size(); ++i) actors.ents[i]->setVisible(false);
@@ -1230,14 +1235,14 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     const float savedRough = ground->meshRenderer()->roughness;
 
     applyConfig(actors, RenderCfg::DirectionalLit, false);
-    snapAndSave(gfx, "pbr_chart_diag_ground_dir.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_dir.png");
 
     applyConfig(actors, RenderCfg::IblReflections, false);
-    snapAndSave(gfx, "pbr_chart_diag_ground_ibl.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_ibl.png");
 
     applyConfig(actors, RenderCfg::DirectionalLit, false);
     ground->setRoughness(1.f);
-    snapAndSave(gfx, "pbr_chart_diag_ground_matte.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_matte.png");
     ground->setRoughness(savedRough);
 
     RenderControl *rc = gfx->getRenderControl();
@@ -1260,7 +1265,7 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     gfx->present();
     eve::image::ImageData *nSnap = gfx->newImageData();
     REQUIRE(nSnap != nullptr);
-    saveFramePng(gfx, "pbr_chart_diag_gbuffer_n.png", nSnap);
+    saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_gbuffer_n.png", nSnap);
     delete nSnap;
 
     for (auto *e : actors.ents) e->setVisible(true);
@@ -1268,14 +1273,15 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     gfx->setScreenReadbackEnabled(true);
 }
 
-void dumpCornellShadowSweep(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path) {
+void dumpCornellShadowSweep(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                            const std::vector<CamKey> &path) {
     REQUIRE(path.size() >= 2);
     applyConfig(actors, RenderCfg::DirectionalShadows, false);
     for (size_t i = 0; i < path.size(); ++i) {
         applyCam(actors.cam, path[i]);
         char name[80];
         std::snprintf(name, sizeof(name), "cornell_diag_shadow_k%zu.png", i);
-        snapAndSave(gfx, name);
+        snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, name);
     }
     // Consecutive micro-steps on the first leg: swimming shows up as the umbra
     // crawling across the floor between otherwise-similar frames.
@@ -1283,7 +1289,7 @@ void dumpCornellShadowSweep(Graphics *gfx, SceneActors &actors, const std::vecto
         applyCam(actors.cam, lerpKey(path[0], path[1], float(i) * 0.04f));
         char name[80];
         std::snprintf(name, sizeof(name), "cornell_diag_shadow_step%02d.png", i);
-        snapAndSave(gfx, name);
+        snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, name);
     }
 }
 
@@ -1551,13 +1557,13 @@ std::vector<CamKey> makeSponzaPath(const Bounds &b) {
 }
 
 /**
- * Fly the camera through @p path while cycling render configs.
- * Presents live frames to the window and writes one FullLit PNG per scene
- * (`{tag}.png`). Set EVENGINE_DUMP_PHASES=1 to also write per-phase dumps.
+ * Submit representative camera keys while cycling render configs.
+ * Manual preview retains the timed flythrough. Hero and per-phase PNGs are
+ * exported only for manual preview or EVENGINE_DUMP_PHASES=1 respectively.
  * Returns mean luma sampled at the end of each config phase.
  */
-std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path,
-                                     const char *sceneTag, bool polishMetalsForIbl) {
+std::vector<float> flyThroughConfigs(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                                     const std::vector<CamKey> &path, const char *sceneTag, bool polishMetalsForIbl) {
     REQUIRE(actors.cam != nullptr);
     REQUIRE(path.size() >= 2);
     REQUIRE(actors.env != nullptr);
@@ -1576,6 +1582,7 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
     gfx->setBackgroundColor(Color(0.14f, 0.15f, 0.17f, 1.f));
     addHud();
 
+    const bool  manualPreview = eve::test::manualPreviewEnabled();
     auto       *timer       = eve::timer::Timer::create();
     const float hz          = viewHz();
     const float secPerPhase = viewSecondsPerPhase();
@@ -1584,7 +1591,9 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
     std::printf("ClassicScenes[%s] view %.1fs/phase @ %.0f Hz (set EVENGINE_VIEW_SECONDS to change)\n", sceneTag,
                 secPerPhase, hz);
 
-    auto dumpHero = [&]() {
+    auto dumpHero = [&](bool captureForCaller) {
+        const bool writePng = manualPreview || dumpPhaseFrames();
+        if (!captureForCaller && !writePng) return;
         applyCam(actors.cam, path[0]);
         if (std::string(sceneTag) == "pbr_chart") {
             for (auto *e : actors.ents) e->transform()->yaw = 0.f;
@@ -1593,13 +1602,15 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         resetRenderControl(gfx);
         gfx->setScreenReadbackEnabled(true);
         warmPresent(gfx);
-        eve::image::ImageData *hero = gfx->newImageData();
-        REQUIRE(hero != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + ".png", hero);
-        delete hero;
+        if (writePng) {
+            eve::image::ImageData *hero = gfx->newImageData();
+            REQUIRE(hero != nullptr);
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + ".png", hero);
+            delete hero;
+        }
         gfx->setScreenReadbackEnabled(false);
     };
-    dumpHero();
+    dumpHero(false);
     const float tFly0 = timer->getTime();
 
     int frame = 0;
@@ -1610,13 +1621,15 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         const float phaseEnd = float(pi + 1) * secPerPhase;
         const float tPhase0  = timer->getTime();
         int         nFrames  = 0;
-        const int   frameCap = std::max(8, int(hz * secPerPhase) * 4);
+        const int   frameCap = manualPreview ? std::max(8, int(hz * secPerPhase) * 4) : 3;
         while (nFrames < frameCap) {
             const float now     = timer->getTime();
             const float elapsed = now - tFly0;
-            if (elapsed >= phaseEnd && nFrames >= 2) break;
+            if (manualPreview && elapsed >= phaseEnd && nFrames >= 2) break;
 
-            const float tPath = totalSec > 1e-4f ? std::min(elapsed / totalSec, 1.f) : 0.f;
+            // Fixed path samples exercise real camera submissions without a viewing hold.
+            const float tPath = manualPreview ? (totalSec > 1e-4f ? std::min(elapsed / totalSec, 1.f) : 0.f)
+                                              : (float(pi) + float(nFrames) / float(frameCap - 1)) / float(nPhases);
             const float legF  = tPath * float(legs);
             const int   leg   = std::min(legs - 1, int(legF));
             const float u     = legF - float(leg);
@@ -1632,7 +1645,7 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT) break;
             }
-            paceViewFrame(timer, now, hz);
+            if (manualPreview) paceViewFrame(timer, now, hz);
             ++nFrames;
             ++frame;
         }
@@ -1653,14 +1666,17 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         phaseLuma.push_back(L);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        if (dumpPhaseFrames()) saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
-        auditCapturedFrame(snap, gfx, sceneTag, cfgName(phases[pi]));
+        if (dumpPhaseFrames())
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
+        auditCapturedFrame(_ZEROERR_TEST_CONTEXT, snap, gfx, sceneTag, cfgName(phases[pi]));
         delete snap;
         std::printf("ClassicScenes[%s] phase=%s meanLuma=%.4f\n", sceneTag, cfgName(phases[pi]), L);
         gfx->setScreenReadbackEnabled(false);
     }
 
-    dumpHero();
+    // Refresh the FullLit/path-start pixels even without PNG output: callers
+    // sample this result, not the preceding IBL phase's cached readback.
+    dumpHero(true);
 
     // Callers (cornell wall sampling) may read pixels after we return.
     gfx->setScreenReadbackEnabled(true);
@@ -1824,7 +1840,7 @@ double benchGltfOrbitScene(Graphics *gfx, const char *relDir, const char *gltfFi
     }
 }
 
-void expectLightingResponse(const std::vector<float> &L) {
+void expectLightingResponse(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const std::vector<float> &L) {
     REQUIRE(L.size() >= 5);
     // Soft metals (DamagedHelmet etc.) can stay dark / slightly darker under
     // directional-only because diffuse is tiny; accept either a directional lift
@@ -1841,9 +1857,10 @@ void expectLightingResponse(const std::vector<float> &L) {
 }  // namespace
 
 // Defined below; forward-declared so early ClassicScenes cases can soft-skip via it.
-bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag, float defaultMetallic,
-                       float defaultRoughness, bool usePbrFactors, bool polishMetalsForIbl, float elev = 0.35f,
-                       float distScale = 1.7f, int minMeshes = 1, int minTextures = 0, int winW = 640, int winH = 480);
+bool runGltfOrbitScene(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const char *relDir, const char *gltfFile,
+                       const char *tag, float defaultMetallic, float defaultRoughness, bool usePbrFactors,
+                       bool polishMetalsForIbl, float elev = 0.35f, float distScale = 1.7f, int minMeshes = 1,
+                       int minTextures = 0, int winW = 640, int winH = 480);
 
 TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     const std::string dir = pathBesideThisSource("assets/classic/cornell");
@@ -1875,10 +1892,10 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     actors.pointA->setRadius(4.f);
 
     auto path = makeCornellPath(actors.bounds);
-    auto L    = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
-    expectLightingResponse(L);
-    snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
-    if (dumpPhaseFrames()) dumpCornellShadowSweep(gfx, actors, path);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
+    snapStaticConfigGrid(_ZEROERR_TEST_CONTEXT, gfx, actors, "cornell", /*polishMetals=*/true);
+    if (dumpPhaseFrames()) dumpCornellShadowSweep(_ZEROERR_TEST_CONTEXT, gfx, actors, path);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -1942,10 +1959,10 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     actors.sun->setDirection(0.9f, 0.45f, 0.25f);
 
     auto path = makeOrbitPath(actors.bounds, 0.55f, 1.65f);
-    auto L    = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
-    expectLightingResponse(L);
-    snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
-    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(gfx, actors, path[0]);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
+    snapStaticConfigGrid(_ZEROERR_TEST_CONTEXT, gfx, actors, "pbr_chart", /*polishMetals=*/false);
+    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(_ZEROERR_TEST_CONTEXT, gfx, actors, path[0]);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);
@@ -1998,8 +2015,8 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     actors.pointB->setRadius(rad * 1.2f);
 
     auto path = makeSponzaPath(actors.bounds);
-    auto L    = flyThroughConfigs(gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false);
-    expectLightingResponse(L);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
 
     // Shadows should not black out the whole atrium vs plain directional.
     REQUIRE(L[2] > 0.02f);
@@ -2011,7 +2028,7 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
 TEST_CASE("ClassicScenes.damagedHelmet.flythroughConfigs") {
     // Keep dielectric-friendly defaults: without sampling the MR map, glTF's
     // metallicFactor≈1 turns the helmet into a near-black mirror under dir-only.
-    if (!runGltfOrbitScene("assets/classic/damaged_helmet/glTF", "DamagedHelmet.gltf", "helmet",
+    if (!runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/damaged_helmet/glTF", "DamagedHelmet.gltf", "helmet",
                            /*defaultMetallic=*/0.05f, /*defaultRoughness=*/0.4f,
                            /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.25f, 1.8f)) {
         return;
@@ -2019,9 +2036,10 @@ TEST_CASE("ClassicScenes.damagedHelmet.flythroughConfigs") {
 }
 
 /** Soft-skip helper for downloaded Khronos glTF sample scenes. */
-bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag, float defaultMetallic,
-                       float defaultRoughness, bool usePbrFactors, bool polishMetalsForIbl, float elev, float distScale,
-                       int minMeshes, int minTextures, int winW, int winH) {
+bool runGltfOrbitScene(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const char *relDir, const char *gltfFile,
+                       const char *tag, float defaultMetallic, float defaultRoughness, bool usePbrFactors,
+                       bool polishMetalsForIbl, float elev, float distScale, int minMeshes, int minTextures, int winW,
+                       int winH) {
     const std::string dir = pathBesideThisSource(relDir);
     if (!fileExists(dir + "/" + gltfFile)) {
         std::printf("ClassicScenes.%s: missing %s/%s — run scripts/download_classic_scenes.sh\n", tag, dir.c_str(),
@@ -2086,8 +2104,8 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         actors.pointB->setColor(0.35f, 0.55f, 1.f, 6.5f);
 
         auto path = makeOrbitPath(actors.bounds, elev, distScale);
-        auto L    = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl);
-        expectLightingResponse(L);
+        auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, tag, polishMetalsForIbl);
+        expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
 
         md = nullptr;
         win->close();
@@ -2100,81 +2118,87 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
 }
 
 TEST_CASE("ClassicScenes.flightHelmet.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/flight_helmet/glTF", "FlightHelmet.gltf", "flight_helmet",
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/flight_helmet/glTF", "FlightHelmet.gltf", "flight_helmet",
                       /*defaultMetallic=*/0.05f, /*defaultRoughness=*/0.55f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.8f,
                       /*minMeshes=*/5, /*minTextures=*/3);
 }
 
 TEST_CASE("ClassicScenes.boomBox.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/boom_box/glTF", "BoomBox.gltf", "boom_box", 0.05f, 0.45f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/boom_box/glTF", "BoomBox.gltf", "boom_box", 0.05f, 0.45f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.3f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.scifiHelmet.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/scifi_helmet/glTF", "SciFiHelmet.gltf", "scifi_helmet", 0.05f, 0.4f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/scifi_helmet/glTF", "SciFiHelmet.gltf", "scifi_helmet",
+                      0.05f, 0.4f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.25f, 1.8f);
 }
 
 TEST_CASE("ClassicScenes.metalRoughSpheres.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/metal_rough_spheres/glTF", "MetalRoughSpheres.gltf", "metal_rough_spheres", 0.05f,
-                      0.5f, /*usePbrFactors=*/true,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/metal_rough_spheres/glTF", "MetalRoughSpheres.gltf",
+                      "metal_rough_spheres", 0.05f, 0.5f, /*usePbrFactors=*/true,
                       /*polishMetalsForIbl=*/false, 0.45f, 1.7f, /*minMeshes=*/1,
                       /*minTextures=*/0);
 }
 
 TEST_CASE("ClassicScenes.suzanne.flythroughConfigs") {
     // Blender monkey — silhouette / orientation / lit response.
-    if (!runGltfOrbitScene("assets/classic/suzanne/glTF", "Suzanne.gltf", "suzanne", 0.05f, 0.55f,
+    if (!runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/suzanne/glTF", "Suzanne.gltf", "suzanne", 0.05f,
+                           0.55f,
                            /*usePbrFactors=*/false, /*polishMetalsForIbl=*/true, 0.35f, 1.9f)) {
         return;
     }
 }
 
 TEST_CASE("ClassicScenes.duck.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/duck/glTF", "Duck.gltf", "duck", 0.02f, 0.65f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/duck/glTF", "Duck.gltf", "duck", 0.02f, 0.65f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.45f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.avocado.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/avocado/glTF", "Avocado.gltf", "avocado", 0.02f, 0.7f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/avocado/glTF", "Avocado.gltf", "avocado", 0.02f, 0.7f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.9f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.waterBottle.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/water_bottle/glTF", "WaterBottle.gltf", "water_bottle", 0.05f, 0.35f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/water_bottle/glTF", "WaterBottle.gltf", "water_bottle",
+                      0.05f, 0.35f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.4f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.lantern.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/lantern/glTF", "Lantern.gltf", "lantern", 0.05f, 0.55f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/lantern/glTF", "Lantern.gltf", "lantern", 0.05f, 0.55f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.45f, 1.85f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.antiqueCamera.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/antique_camera/glTF", "AntiqueCamera.gltf", "antique_camera", 0.08f, 0.5f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/antique_camera/glTF", "AntiqueCamera.gltf",
+                      "antique_camera", 0.08f, 0.5f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.9f, /*minMeshes=*/1,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.cesiumMilkTruck.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/cesium_milk_truck/glTF", "CesiumMilkTruck.gltf", "cesium_milk_truck", 0.05f, 0.6f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/cesium_milk_truck/glTF", "CesiumMilkTruck.gltf",
+                      "cesium_milk_truck", 0.05f, 0.6f,
                       /*usePbrFactors=*/false,
                       /*polishMetalsForIbl=*/false, 0.4f, 2.0f, /*minMeshes=*/2,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.barramundiFish.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/barramundi_fish/glTF", "BarramundiFish.gltf", "barramundi_fish", 0.02f, 0.55f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/barramundi_fish/glTF", "BarramundiFish.gltf",
+                      "barramundi_fish", 0.02f, 0.55f,
                       /*usePbrFactors=*/false,
                       /*polishMetalsForIbl=*/false, 0.3f, 1.9f, /*minMeshes=*/1,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.corset.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.85f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
@@ -2394,17 +2418,19 @@ TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {
 
     REQUIRE(L_on > L_off + 0.04f);
 
-    // Re-enable the ring of lights and spin so clustered lighting is visible.
-    for (auto *L : lights) L->setEnabled(true);
-    for (int i = 0; i < 60; ++i) {
-        ent->transform()->yaw = float(i) * 0.04f;
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
+    if (eve::test::manualPreviewEnabled()) {
+        // Re-enable the ring of lights and spin so clustered lighting is visible.
+        for (auto *L : lights) L->setEnabled(true);
+        for (int i = 0; i < 60; ++i) {
+            ent->transform()->yaw = float(i) * 0.04f;
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+            SDL_Delay(16);
         }
-        SDL_Delay(16);
     }
 
     dir->setEnabled(false);

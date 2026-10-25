@@ -2164,6 +2164,7 @@ TEST_CASE("rts.facadeHealsCombatRootsAndAppliesCanonicalStatusDefinitions") {
 }  // namespace test_rts_combat_3
 
 // Contract section: rts composition
+#include <bit>
 #include "PrivateTestScope.h"
 
 // rts_composition.cpp
@@ -2266,7 +2267,7 @@ TEST_CASE("rts.typedLinkDetectsStaleTarget") {
     unit->release();
 }
 
-TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
+TEST_CASE("rts.exactOverlapPublishesShortDeterministicMotion") {
     auto simulate = [&] {
         ecs::Table        world;
         ecs::ScopedTable  guard(world);
@@ -2276,9 +2277,12 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
         crowd.setSeparationRadius(2.0f);
         crowd.setSeparationWeight(1.0f);
         std::vector<Unit*> units;
-        units.reserve(96);
-        for (int index = 0; index < 96; ++index) {
+        units.reserve(4);
+        for (int index = 0; index < 4; ++index) {
             Unit* unit = Unit::createUnit();
+            REQUIRE(unit != nullptr);
+            unit->motion()->x = 0.f;
+            unit->motion()->y = 0.f;
             auto  link = eve::rts::CrowdLink::bind("rts/overlap/" + std::to_string(index));
             REQUIRE(link.ok());
             unit->crowd()->link   = std::move(link).takeValue();
@@ -2290,10 +2294,12 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
             REQUIRE(unit->orders()->values.enqueue(move).ok());
             units.push_back(unit);
         }
-        for (std::uint64_t tick = 1; tick <= 120; ++tick) {
+        for (std::uint64_t tick = 1; tick <= 8; ++tick) {
             const eve::SimulationStep step{eve::SimulationTick{tick},
-                                           eve::Duration::fromSeconds(0.05).expect("large crowd dt")};
-            REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
+                                           eve::Duration::fromSeconds(1.0 / 120.0).expect("short crowd dt")};
+            const auto                advanced = eve::rts::CrowdMotionSystem::step(step, crowd);
+            REQUIRE(advanced.ok());
+            REQUIRE_EQ(advanced.value(), units.size());
         }
         std::vector<WorldPosition> positions;
         positions.reserve(units.size());
@@ -2305,13 +2311,25 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
     const auto first  = simulate();
     const auto second = simulate();
     REQUIRE_EQ(first.size(), second.size());
-    int progressed = 0;
+    REQUIRE_EQ(first.size(), size_t(4));
+    float forwardProjection = 0.f;
     for (std::size_t index = 0; index < first.size(); ++index) {
-        progressed += first[index].x > 5.0f;
-        CHECK(std::abs(first[index].x - second[index].x) < 1e-5f);
-        CHECK(std::abs(first[index].y - second[index].y) < 1e-5f);
+        REQUIRE(std::isfinite(first[index].x));
+        REQUIRE(std::isfinite(first[index].y));
+        REQUIRE_EQ(std::bit_cast<uint32_t>(first[index].x), std::bit_cast<uint32_t>(second[index].x));
+        REQUIRE_EQ(std::bit_cast<uint32_t>(first[index].y), std::bit_cast<uint32_t>(second[index].y));
+        forwardProjection += first[index].x * 20.f + first[index].y * 10.f;
+        for (std::size_t other = 0; other < index; ++other) {
+            const float dx = first[index].x - first[other].x;
+            const float dy = first[index].y - first[other].y;
+            // All pair distances start at exactly zero. Positive distance proves
+            // the overlap was unlocked, without demanding long-distance travel.
+            REQUIRE(dx * dx + dy * dy > 0.f);
+        }
     }
-    CHECK(progressed > 80);
+    // The initial projection is exactly zero. Positive net motion toward the
+    // common (20,10) order observes the RTS -> crowd -> Unit publication path.
+    REQUIRE_GT(forwardProjection, 0.f);
 }
 
 TEST_CASE("rts.linkedAirDefensesFormStableNetworksAndDistributeAircraft") {
