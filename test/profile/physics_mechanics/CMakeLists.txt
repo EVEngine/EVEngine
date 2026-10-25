@@ -173,3 +173,8 @@ add_test(NAME carrierComposition.physicsImplementationAbsent COMMAND carrier_pro
 add_dependencies(force_integration carrier_probe_absent)
 
 set_tests_properties(carrierComposition.physicsImplementationAbsent PROPERTIES FAIL_REGULAR_EXPRESSION "Assertion Failed" PASS_REGULAR_EXPRESSION "TEST CASE:[ ]+2[ ]+0[ ]+0[ ]+0")
+
+# Match the normal host tests' assertion and unique-fixture registration contract.
+foreach(_physics_check_target IN ITEMS force_integration carrier_probe_absent vehicle_tires_absent)
+  target_include_directories(${_physics_check_target} BEFORE PRIVATE "${EVE_ROOT}/cmake/overrides/zeroerr")
+endforeach()
