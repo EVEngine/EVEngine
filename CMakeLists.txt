@@ -253,15 +253,7 @@ set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vk
 set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
 function(eve_prepare_vkbuilder_headers)
 if(EXISTS "${_vkbuilder_header}")
-    # Prefer an engine-owned overlay when present (APIs staged for upstream
-    # VKBuilder). Fall back to the pinned submodule header otherwise.
-    set(_vkbuilder_override_dir "${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/vkbuilder")
-    if(EXISTS "${_vkbuilder_override_dir}/vkbuilder.hpp")
-        set(_vkbuilder_source_path "${_vkbuilder_override_dir}/vkbuilder.hpp")
-    else()
-        set(_vkbuilder_source_path "${_vkbuilder_header}")
-    endif()
-    file(READ "${_vkbuilder_source_path}" _vkbuilder_source)
+    file(READ "${_vkbuilder_header}" _vkbuilder_source)
     set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
     use_default_color_blending = false;
     this->color_blending = color_blending;
@@ -314,10 +306,6 @@ if(EXISTS "${_vkbuilder_header}")
     file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
         DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
-    if(EXISTS "${_vkbuilder_override_dir}/vkbuilder")
-        file(COPY "${_vkbuilder_override_dir}/vkbuilder/"
-            DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder")
-    endif()
     file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
 endif()
 endfunction()
