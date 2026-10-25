@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "asset_graphics_material_color.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "asset/RuntimeDefinition.h"
 #include "asset/graphics/CookedMaterial.h"
 #include "zeroerr/assert.h"

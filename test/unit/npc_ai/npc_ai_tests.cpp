@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "npc_ai.cpp",
+    "npc_ai_ecs.cpp",
+    "npc_ai_smart_object.cpp",
+    "decision_context.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

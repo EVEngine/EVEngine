@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "sensing.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Module.h"
 #include "sensing/LineOfSightRouter.h"
 #include "sensing/Sensing.h"

@@ -1,3 +1,28 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "agent_development_session.cpp",
+    "callgraph.cpp",
+    "console.cpp",
+    "debugger.cpp",
+    "mcp_architecture_graph.cpp",
+    "mcp_whitebox.cpp",
+    "frame_stats.cpp",
+    "language_index.cpp",
+    "language_text.cpp",
+    "mcp_console.cpp",
+    "mcp_tool_filter.cpp",
+    "play_trace.cpp",
+    "game_world_context.cpp",
+    "mcp_frame_capture.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_development_session)

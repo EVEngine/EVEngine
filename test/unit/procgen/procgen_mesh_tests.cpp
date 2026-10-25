@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "gts_mesh_splitter.cpp",
+    "procgen_lsystem.cpp",
+    "procgen_mesh_boolean.cpp",
+    "procgen_mesh_modifier_graph.cpp",
+    "procgen_mesh_uv_projection.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gts_mesh_splitter)

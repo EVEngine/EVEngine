@@ -1,3 +1,53 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "editor.script_tool.implements_the_same_session_protocol",
+      "editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace",
+      "editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState",
+      "editor.animation.clip_editor_script_composes_workspace_and_transactions",
+      "editor.avatar.document_editor_script_composes_workspace_and_rejects_referenced_delete",
+      "editor.biome.rules_editor_script_composes_workspace_and_exclusions",
+      "editor.audio.source_editor_script_composes_workspace_and_transactions"
+    ],
+    "platform-file": [
+      "archspace.document.opening_cutout_changes_mesh_and_helpers_work"
+    ]
+  },
+  "module": "dialogue",
+  "modules": [
+    "dialogue",
+    "editing",
+    "editor",
+    "scene_editor"
+  ],
+  "origins": [
+    "dialogue_state_integration.cpp",
+    "editing_contracts.cpp",
+    "editing_result_storage.cpp",
+    "editing_satellite_contract_suite.cpp",
+    "editing_value_lifecycle.cpp",
+    "editor.cpp",
+    "editor_animation_clip.cpp",
+    "editor_archspace_target.cpp",
+    "editor_archspace_tools.cpp",
+    "editor_audio_editor.cpp",
+    "editor_audio_source_script.cpp",
+    "editor_audio_transport.cpp",
+    "editor_automation_v2.cpp",
+    "editor_avatar_document_editor.cpp",
+    "editor_avatar_editor.cpp",
+    "editor_avatar_target.cpp",
+    "editor_host_package.cpp",
+    "editor_script_component_payload.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_state_integration)

@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "dialogue_authoring.cpp",
+    "dialogue_text.cpp",
+    "dialogue.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "avatar/Avatar.h"
 #include "common/Capability.h"
 #include "common/GameplayControl.h"

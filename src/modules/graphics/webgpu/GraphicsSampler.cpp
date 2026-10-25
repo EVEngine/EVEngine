@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <iterator>
 #include "graphics/Texture.h"

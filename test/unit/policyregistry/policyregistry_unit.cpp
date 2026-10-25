@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "policyregistry.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "policyregistry/PolicyRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

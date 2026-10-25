@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_terrain_opacity.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "procgen/heightmap/TerrainSplatmap.h"
 #include "procgen/heightmap/TerrainWorldWorkspace.h"
 #include "procgen/road/RoadTerrainWorkspace.h"

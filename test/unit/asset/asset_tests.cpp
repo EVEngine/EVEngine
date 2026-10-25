@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "asset_dependency.cpp",
+    "asset_diff.cpp",
+    "asset_eva_archive.cpp",
+    "asset_evpack.cpp",
+    "asset_runtime_definition.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <array>
 #include <utility>
 #include "zeroerr/assert.h"

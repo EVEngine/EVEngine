@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_junction_seams.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #include "procgen/road/RoadBake.h"

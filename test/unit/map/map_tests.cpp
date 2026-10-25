@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "map_dual_grid_masks.cpp",
+    "map_fov.cpp",
+    "map_object_contract.cpp",
+    "resource_format_map.cpp",
+    "map.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "map/DualGrid.h"
 #include "map/FlowField.h"
 #include "map/Fov.h"

@@ -1,3 +1,31 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "rts.formation.scriptCommandsReachCanonicalOrdersAndReplay",
+      "rts.groups.scriptAndReplayUseCanonicalAdmission"
+    ]
+  },
+  "module": "rts",
+  "modules": [
+    "rts"
+  ],
+  "origins": [
+    "rts_crowd.cpp",
+    "rts_crowd_production.cpp",
+    "rts_formation.cpp",
+    "rts_groups.cpp",
+    "rts_orders.cpp",
+    "rts_production.cpp",
+    "rts_restore.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_crowd)

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "graphics_fog.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "graphics/AtmosphereVolume.h"
 #include "graphics/fog/AnalyticalVolLight.h"
 #include "graphics/fog/ContinuousArt.h"

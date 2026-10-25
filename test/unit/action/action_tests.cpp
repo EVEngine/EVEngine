@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "ability_asset.cpp",
+    "ability_controller.cpp",
+    "ability_system.cpp",
+    "action_notify_registry.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ability_asset) || \

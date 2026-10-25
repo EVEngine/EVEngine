@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "physics_rope.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "physics/DistanceField3D.h"
 #include "physics/rope/Rope.h"
 #include "physics/rope/Rope3D.h"

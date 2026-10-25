@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "pcg_biome_controller.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "animation/AnimSkin.h"
 #include "procgen/PcgFrameRateManager.h"
 #include "procgen/PcgSpawnProgress.h"

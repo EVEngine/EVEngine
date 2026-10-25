@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "gameplay_tags.cpp",
+    "tags.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_tags)
 #include "PrivateTestScope.h"
 #include "editor/GameplayTagPicker.h"

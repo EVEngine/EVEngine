@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_recipe_artifact.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Capability.h"
 #include "common/ProcgenWorldQuery.h"
 #include "procgen/GeneratedArtifact.h"

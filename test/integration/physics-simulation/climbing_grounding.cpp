@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "module-composition": [
+      "climbing.grounding.lowStepUsesProductionMotor",
+      "climbing.grounding.tallStepRemainsBlocked",
+      "climbing.grounding.lowCeilingRejectsStepWithoutPublishingRaisedPose"
+    ]
+  },
+  "module": "climbing"
+}
+*/
+// clang-format on
 #include "climbing/ClimbingECS.h"
 #include "physics/Body3D.h"
 #include "physics/World3D.h"

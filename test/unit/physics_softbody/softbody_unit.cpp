@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "softbody.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "physics/cloth/Cloth.h"
 #include "physics/cloth/Cloth3D.h"
 #include "zeroerr/assert.h"

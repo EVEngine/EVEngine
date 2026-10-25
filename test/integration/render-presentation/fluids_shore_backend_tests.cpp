@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-offscreen",
+  "module": "fluids"
+}
+*/
+// clang-format on
+
 #include "common/Runtime.h"
 #include "fluids/ShallowWaterField.h"
 #include "graphics/Graphics.h"

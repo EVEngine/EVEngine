@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "action_combo_windows.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "action/input/ActionComboWindowState.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

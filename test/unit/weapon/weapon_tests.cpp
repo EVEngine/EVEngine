@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "projectile_runtime.cpp",
+    "spell_fragment_compiler.cpp",
+    "weapon_infinite_reload.cpp",
+    "weapon.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/Diagnostic.h"

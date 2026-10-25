@@ -1,3 +1,57 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "runtime-lifecycle",
+  "cases": {
+    "concurrency": [
+      "event.workerPushWakesWait",
+      "timer.step.deltaPositiveAfterSleep"
+    ],
+    "script-binding": [
+      "gameplay.control.squirrelFacadeUsesTheSharedJsonRouter",
+      "devtools.playHost.liveObservationProjectsBeforeSerializing",
+      "Scene.componentScheduling.scriptCoalescingAndFailureRecovery"
+    ],
+    "render-window": [
+      "keyboard.textInput",
+      "keyboard.keyScancodeRoundTrip"
+    ]
+  },
+  "module": "mouse",
+  "modules": [
+    "devtools",
+    "keyboard",
+    "mouse",
+    "os",
+    "platform_event",
+    "plugins",
+    "scene",
+    "timer",
+    "touch",
+    "ui"
+  ],
+  "origins": [
+    "MouseWheel.cpp",
+    "ScenePanel.cpp",
+    "event.cpp",
+    "gameplay_control_json.cpp",
+    "keyboard_cpp.cpp",
+    "os.cpp",
+    "pcg_build_config.cpp",
+    "play_host.cpp",
+    "plugins.cpp",
+    "renderflow.cpp",
+    "scene_component_scheduling.cpp",
+    "service_mocks.cpp",
+    "timer_cpp.cpp",
+    "touch.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_MouseWheel)

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "agent.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "agent/Agent.h"
 #include "agent/Codec.h"
 #include "common/Capability.h"

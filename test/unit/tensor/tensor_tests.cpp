@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "tensor_llm.cpp",
+    "tensor.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "tensor/AffineQuant.h"

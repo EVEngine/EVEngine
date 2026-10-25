@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_terrain_batch.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Value.h"
 #include "procgen/heightmap/TerrainSplatmap.h"
 #include "procgen/heightmap/TerrainWorldWorkspace.h"

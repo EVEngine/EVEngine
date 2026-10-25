@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "camera.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "camera/CameraController.h"
 #include "common/CameraObstruction.h"
 #include "common/Capability.h"

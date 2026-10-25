@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "pixelworld_script.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/PixelWorldModule.h"
 #include "pixelworld/streaming/PixelWorldStreaming.h"

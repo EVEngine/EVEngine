@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "physics_destruction_cook.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #include "asset/CanonicalMesh.h"

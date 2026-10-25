@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "model3d_normals.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "data/ByteData.h"
 #include "image/ImageData.h"
 #include "model3d/Model3D.h"

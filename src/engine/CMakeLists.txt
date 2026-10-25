@@ -65,6 +65,7 @@ endif()
 eve_module_enabled(devtools _has_devtools)
 if(_has_devtools)
     create_module(EVDevTools devtools)
+    include("${CMAKE_CURRENT_SOURCE_DIR}/devtools/McpToolFamilies.cmake")
     # Snapshot / DAP pull Poco JSON+Net; disable Windows #pragma lib auto-link
     # (would request PocoFoundationd.lib instead of our *mdd postfix).
     # NOMINMAX: Poco headers pull in windows.h; without it the min/max macros

@@ -1,3 +1,31 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "performance",
+  "cases": {
+    "render-window": [
+      "stylize.meshVfx.sceneColorRefractionSamplesBoundTexture"
+    ]
+  },
+  "module": "animation",
+  "modules": [
+    "animation",
+    "emergence",
+    "settlement",
+    "stylize"
+  ],
+  "origins": [
+    "animation_motion.cpp",
+    "emergence_perf.cpp",
+    "settlement_benchmark.cpp",
+    "stylize_mesh_vfx_benchmark.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_motion)

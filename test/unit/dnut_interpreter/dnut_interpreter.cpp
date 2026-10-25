@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "dnut_interpreter.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "dnut_interpreter/DnutBlockScanner.h"
 #include "dnut_interpreter/DnutCompiler.h"
 #include "dnut_interpreter/DnutLexer.h"

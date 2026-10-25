@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "common/Profile.h"
 #include "rts/RTS.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"

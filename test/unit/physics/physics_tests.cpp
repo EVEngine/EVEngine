@@ -1,3 +1,23 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "box3d.cpp",
+    "physics_jolt.cpp",
+    "physics_jolt_contacts.cpp",
+    "physics_jolt_cooking.cpp",
+    "physics_rigid_backend.cpp",
+    "targeting.cpp",
+    "water_mesh.cpp",
+    "physics_force_models.cpp",
+    "physics_tire_stability.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_box3d)

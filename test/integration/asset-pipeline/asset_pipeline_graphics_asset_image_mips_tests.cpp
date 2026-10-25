@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-pipeline",
+  "cases": {
+    "asset-files": [
+      "asset.import.unityTerrainPrefabUsesGuidFileIdAndCanonicalCoordinates",
+      "asset.packageStore.reopensBeforeAtomicPublishAndFailureKeepsOldEvpack",
+      "asset.packageStore.publishesAndReopensEva",
+      "asset.import.realGlbDecodesCanonicalMeshAndTraversesRuntimePack",
+      "asset.import.animationFixtureBecomesCanonicalEvaAndTwoRuntimeTargets",
+      "asset.import.animationFixtureRejectsDeclaredKeyCountMismatch",
+      "asset.import.structuredModelsScadCompilerAbsent",
+      "asset.import.structuredModelsScadCompilerTimeout"
+    ],
+    "render-offscreen": [
+      "asset.import.unityTexture3dSurvivesCookAndVulkanUpload"
+    ]
+  },
+  "module": "asset",
+  "modules": [
+    "asset",
+    "asset_graphics",
+    "asset_import"
+  ],
+  "origins": [
+    "asset_cooker.cpp",
+    "asset_graphics_image_mips.cpp",
+    "asset_graphics_loader.cpp",
+    "asset_image_mips.cpp",
+    "asset_import.cpp",
+    "asset_import_animation.cpp",
+    "asset_import_gltf_animation.cpp",
+    "asset_import_gltf_material.cpp",
+    "asset_import_structured_models.cpp",
+    "asset_import_tga.cpp",
+    "asset_import_tiff.cpp",
+    "asset_import_unity_collection.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_cooker)

@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "particles_effect_asset.cpp",
+    "particles_gpu_resident.cpp",
+    "particles_p2_p3.cpp",
+    "particles_playback.cpp",
+    "particles_renderer.cpp",
+    "particles_scalability.cpp",
+    "particles.cpp",
+    "pcg_material_selector.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <cstdint>
 #include <memory>

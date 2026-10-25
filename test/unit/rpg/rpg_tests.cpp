@@ -1,3 +1,32 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "rpg.cpp",
+    "rpg_actor_checkpoint.cpp",
+    "rpg_battle.cpp",
+    "rpg_battle_tactics.cpp",
+    "rpg_class.cpp",
+    "rpg_dialect.cpp",
+    "rpg_gamestate.cpp",
+    "gameplay_control_rpg.cpp",
+    "rpg_encounter_catalogue.cpp",
+    "rpg_party.cpp",
+    "rpg_state_canonical.cpp",
+    "rpg_progression.cpp",
+    "rpg_quest.cpp",
+    "rpg_reload.cpp",
+    "rpg_skill_condition.cpp",
+    "rpg_story_event.cpp",
+    "rpg_trait.cpp",
+    "status_effect_adapter.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/unittest.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rpg)

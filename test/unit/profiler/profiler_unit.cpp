@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "profiler.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "ScriptTest.h"
 #include "common/Profile.h"
 #include "profiler/Profiler.h"

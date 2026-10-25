@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "ik.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "ik/IK.h"
 #include "ik/Skeleton2D.h"
 #include "ik/Skeleton3D.h"
@@ -125,7 +137,7 @@ TEST_CASE("ik.solver2d.chain_scope_pins_root_and_ignores_side_branch_target") {
     near(skeleton.getY(side), 20.f);
     near(skeleton.getX(tip), 11.f, 1e-2f);
     near(skeleton.getY(tip), 21.f, 1e-2f);
-    for (const auto [end, root] : {std::pair{tip, chainRoot}, std::pair{chainRoot, chainRoot}, std::pair{0, 99}}) {
+    for (const auto& [end, root] : {std::pair{tip, chainRoot}, std::pair{chainRoot, chainRoot}, std::pair{0, 99}}) {
         bool rejected = false;
         try {
             (void)solver.solveChain(&skeleton, end, root);

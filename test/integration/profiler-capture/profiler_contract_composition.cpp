@@ -1,3 +1,4 @@
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"profiler"}
 #include "profiler/Profiler.h"
 #include "zeroerr/unittest.h"
 

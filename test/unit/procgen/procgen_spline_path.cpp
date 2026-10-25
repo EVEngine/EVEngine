@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_spline_path.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "procgen/spline/SplinePath.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

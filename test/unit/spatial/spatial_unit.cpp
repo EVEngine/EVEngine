@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "spatial.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Exception.h"
 #include "spatial/BSPTree2D.h"
 #include "spatial/BSPTree3D.h"

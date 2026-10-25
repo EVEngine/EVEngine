@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "transaction.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "StatePatchTestSupport.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"

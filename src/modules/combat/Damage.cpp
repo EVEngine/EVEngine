@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "combat/Damage.h"
 
 #include "common/Profile.h"

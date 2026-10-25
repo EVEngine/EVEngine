@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "gpgpu.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "gpgpu/GpuBuffer.h"
 #include "zeroerr/unittest.h"
 

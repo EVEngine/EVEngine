@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "graphics",
+  "modules": [
+    "graphics",
+    "image"
+  ],
+  "origins": [
+    "AmbientOcclusion.cpp",
+    "AntiAliasing.cpp",
+    "BloomPyramid.cpp",
+    "ClassicScenes.cpp",
+    "ClusteredLighting.cpp",
+    "GlobalIllumination.cpp",
+    "IBL.cpp",
+    "Lighting2D.cpp",
+    "Outline.cpp",
+    "Quad.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #include "ManualPreview.h"

@@ -1,3 +1,33 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "card.genericBatchComposesWithEconomyWithoutRts",
+      "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
+      "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
+      "card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills",
+      "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+      "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff"
+    ],
+    "platform-file": [
+      "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard"
+    ]
+  },
+  "module": "card",
+  "modules": [
+    "card"
+  ],
+  "origins": [
+    "card_rts_production_integration.cpp",
+    "card_rts_script_composition.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_rts_production_integration)

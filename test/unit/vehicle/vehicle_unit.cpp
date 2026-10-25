@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "vehicle.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "vehicle/Vehicle.h"

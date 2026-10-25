@@ -97,6 +97,12 @@ For iOS, use macOS/Xcode. `make build/ios-debug` builds a device application; `m
 
 ## Check and run
 
+Platform recipes live in `cmake/platforms/*.mk`; feature checks live in
+`cmake/tasks/*.mk`. Keep the root Makefile as composition and shared defaults.
+Module-specific graphics, physics, procgen and UI settings live beside their
+sources in `src/modules/<host>/BuildSettings.cmake`, included in the original
+order and scope. Module declarations still belong exclusively to the manifest.
+
 Run [source checks and affected tests](TESTING.md) before submitting changes. `make devlab` exercises hot reload/debugging. Missing headers, unavailable SDKs or changed generators need environment/configuration repairs before engine behavior changes.
 
 Assertions use `EV_PARAM_CHECK` / `EV_ASSERT` in `src/engine/common/Assert.h`. Debug enables them; non-Debug builds remove them by default. Explicitly retain them with `-DEVENGINE_ENABLE_ASSERTS=ON`.

@@ -1,3 +1,4 @@
+// eve-hot-path
 // Keeps the window settings and the render surface aligned with the platform.
 //
 // Two things used to live in the SDL event pump and forced it to depend on both

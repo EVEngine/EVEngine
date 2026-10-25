@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "physics_destruction_p3.cpp",
+    "physics_destruction.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "physics/destruction/GeometryCollectionAsset.h"
 #include "physics/destruction/GeometryCollectionSnapshot.h"
 #include "schema/SchemaRegistry.h"

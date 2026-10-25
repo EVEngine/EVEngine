@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "i18n.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "i18n/I18n.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

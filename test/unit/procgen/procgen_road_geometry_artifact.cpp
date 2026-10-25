@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_road_geometry_artifact.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "procgen/GeneratedArtifact.h"
 #include "procgen/road/RoadGeometrySources.h"
 #include "zeroerr/assert.h"

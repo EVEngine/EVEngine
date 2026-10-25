@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_attribute_table.cpp",
+    "procgen_foliage_clusters.cpp",
+    "procgen_grid_graph.cpp",
+    "procgen_point_delta.cpp",
+    "procgen_point_graph.cpp",
+    "procgen_pointset.cpp",
+    "procgen_poisson.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_attribute_table)
 #include "PrivateTestScope.h"
 #include <algorithm>

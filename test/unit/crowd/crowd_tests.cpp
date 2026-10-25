@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "crowd.cpp",
+    "crowd_avoidance.cpp",
+    "crowd_contacts.cpp",
+    "crowd_interaction.cpp",
+    "crowd_spawn.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "pixelworld.cpp",
+    "pixelworld_control.cpp",
+    "pixelworld_generation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

@@ -1,3 +1,66 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "concurrency",
+  "cases": {
+    "script-binding": [
+      "devtools.mcp.consoleToolsRoundTripScriptPrint",
+      "procgen.result.squirrelExecutionAndSchedulerShareProjection",
+      "procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically"
+    ],
+    "runtime-lifecycle": [
+      "devtools.mcp.inputBatchWaitCompletesAcrossPoll"
+    ],
+    "platform-network": [
+      "event.VariantMessage",
+      "network.NetWorkerQueue",
+      "network.Channel.fragmentedAndCoalescedFrames",
+      "network.Channel.rejectsOversizedFrameHeader",
+      "network.Network.timeoutAndVerifySsl",
+      "network.Network.cppFactoriesReturnOwners",
+      "network.NetWriterReaderRoundtrip",
+      "network.NetReaderOverrunIsSticky"
+    ]
+  },
+  "module": "animation",
+  "modules": [
+    "animation",
+    "cmdline",
+    "common",
+    "devtools",
+    "network",
+    "pixelworld_thread",
+    "procgen",
+    "thread",
+    "voxel"
+  ],
+  "origins": [
+    "animation_batch_lod.cpp",
+    "animation_binary.cpp",
+    "cmdline_sdk_hash.cpp",
+    "common_diagnostic_vector_instances.cpp",
+    "mcp_architecture_graph.cpp",
+    "mcp_binding_architecture.cpp",
+    "mcp_console.cpp",
+    "mcp_domain_tools.cpp",
+    "mcp_editor_targets.cpp",
+    "mcp_input_tools.cpp",
+    "mcp_stdio.cpp",
+    "mcp_tool_filter.cpp",
+    "network.cpp",
+    "pixelworld_parallel.cpp",
+    "procgen_result_contract.cpp",
+    "procgen_rng_contract.cpp",
+    "render_graph.cpp",
+    "thread.cpp",
+    "voxel.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_batch_lod)

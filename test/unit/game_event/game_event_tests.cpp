@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "event_envelope.cpp",
+    "eventstream.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "game_event/GameEvent.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

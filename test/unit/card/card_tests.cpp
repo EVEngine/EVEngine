@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "card_gameplay_control.cpp",
+    "card_reload.cpp",
+    "card_play_condition.cpp",
+    "card.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "card/Card.h"
 #include "card/CardPlay.h"
 #include "card/CardState.h"

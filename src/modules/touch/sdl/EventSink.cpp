@@ -1,3 +1,4 @@
+// eve-hot-path
 // Feeds SDL finger events into the touch module's press state.
 //
 // This lived in the SDL event pump, which therefore had to know about the touch

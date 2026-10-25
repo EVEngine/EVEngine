@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_incremental_build.cpp",
+    "procgen_module_assembly.cpp",
+    "procgen_object_build_layer.cpp",
+    "procgen_runtime_generation.cpp",
+    "procgen_scene_sink.cpp",
+    "prototype_kit.cpp",
+    "roguelike_generator.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

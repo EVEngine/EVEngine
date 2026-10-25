@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "building_placement_regression.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "building/BuildingDef.h"
 #include "building/Ghost.h"
 #include "building/PlacementSession.h"

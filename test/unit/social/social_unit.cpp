@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "social.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "ScriptTest.h"
 #include "social/SocialGraph.h"
 #include "zeroerr/assert.h"

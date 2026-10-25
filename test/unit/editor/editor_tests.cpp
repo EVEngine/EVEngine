@@ -1,3 +1,18 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "local-format",
+  "origins": [
+    "editor_level.cpp",
+    "editor_tilemap_formats.cpp",
+    "property_validation_parity.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

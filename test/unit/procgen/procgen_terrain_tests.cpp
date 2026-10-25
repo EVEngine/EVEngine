@@ -1,3 +1,31 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "pcg_terrain_watcher.cpp",
+    "procgen_hex_terrain.cpp",
+    "terrain_curve_texture.cpp",
+    "terrain_detail.cpp",
+    "terrain_effect.cpp",
+    "terrain_erosion.cpp",
+    "terrain_generation_session.cpp",
+    "terrain_legacy_hydraulic.cpp",
+    "terrain_mask.cpp",
+    "terrain_multitile.cpp",
+    "terrain_probe.cpp",
+    "terrain_sediment.cpp",
+    "terrain_smooth_stamp.cpp",
+    "terrain_smooth_stamp_persistence.cpp",
+    "terrain_stamp.cpp",
+    "terrain_tree.cpp",
+    "terrain_water.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
