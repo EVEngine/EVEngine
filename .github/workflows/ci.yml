@@ -795,12 +795,13 @@ jobs:
           if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
             third_party_args+=("${{ steps.third-party-cache.outputs.cmake-args }}")
           fi
+          # Bash 3.2 treats empty arrays as unset under nounset.
           configure_dawn() {
             cmake -S . -B build/webgpu-native -G Ninja \
               -DCMAKE_BUILD_TYPE=Debug \
               -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
               -DEVENGINE_COMPILER_CACHE=SCCACHE \
-              "${third_party_args[@]}" \
+              ${third_party_args[@]+"${third_party_args[@]}"} \
               -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
               -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
           }
