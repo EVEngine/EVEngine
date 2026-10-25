@@ -490,6 +490,8 @@ jobs:
     timeout-minutes: 360
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Debug .o blobs use -g0/-O2 (no /Zi); keep key stable to avoid a second
+      # namespace while the account cache quota is tight across the build matrix.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
       # warm other PRs. Let PRs consume the dev cache without duplicating it.
@@ -1400,6 +1402,8 @@ jobs:
     timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Shared across the Linux Debug job; object hash includes -g0 so new
+      # entries are smaller without opening a parallel GHA cache namespace.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
       # Populate shared caches only from long-lived branches; PR-scoped writes
       # are dead stores after that PR closes and quickly evict reusable entries.

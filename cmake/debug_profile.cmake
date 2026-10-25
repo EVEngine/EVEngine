@@ -1,16 +1,20 @@
 # Debug compiler profiles for CMAKE_BUILD_TYPE=Debug (and multi-config Debug).
 #
-#   normal (default): GCC/Clang -g1 -O2 ; MSVC /Zi /O2
-#     Line tables + optimized code — enough for CI asserts and symbolized
-#     sanitizer/crash stacks without full type DWARF.
+#   normal (default): GCC/Clang -g0 -O2 ; MSVC /O2 (no /Zi)
+#     No DWARF/PDB in compiler outputs. CI stores each .o in sccache → GitHub
+#     Actions cache, and the host matrix (linux/win/mac/android ×
+#     debug/release/asan/…) keeps a separate namespace per cell — DWARF at
+#     ~75%+ of .o size was exhausting the account quota and forcing cold
+#     compiles. Asserts still use __FILE__/__LINE__; function names remain
+#     in the symbol table. ASan/UBSan keeps its own RelWithDebInfo `-g` lane.
 #   detail:           GCC/Clang -g2 -O1 ; MSVC /Zi /O1
-#     Richer DWARF and milder opts for interactive debugging / triage.
+#     Rich DWARF/PDB and milder opts for interactive debugging / triage.
 #
 # Asserts stay enabled for CONFIG:Debug regardless of optimization level
 # (see ZEROERR_NO_ASSERT wiring in the root CMakeLists.txt).
 
 set(EVENGINE_DEBUG_LEVEL "normal" CACHE STRING
-    "Debug compiler profile: normal (-g1 -O2 / MSVC /O2) or detail (-g2 -O1 / MSVC /O1)")
+    "Debug compiler profile: normal (-g0 -O2 / MSVC /O2, no DWARF) or detail (-g2 -O1 / MSVC /Zi /O1)")
 set_property(CACHE EVENGINE_DEBUG_LEVEL PROPERTY STRINGS normal detail)
 if(NOT EVENGINE_DEBUG_LEVEL MATCHES "^(normal|detail)$")
     message(FATAL_ERROR
@@ -31,16 +35,18 @@ if(MSVC)
         set(_eve_debug_cxx_flags "/Zi /O1")
     else()
         # /RTC1 (CMake's historic Debug default) is incompatible with /O2.
-        set(_eve_debug_c_flags "/Zi /O2")
-        set(_eve_debug_cxx_flags "/Zi /O2")
+        # Omit /Zi so .obj (and sccache entries) stay free of debug records;
+        # local triage uses DEBUG_LEVEL=detail.
+        set(_eve_debug_c_flags "/O2")
+        set(_eve_debug_cxx_flags "/O2")
     endif()
 else()
     if(EVENGINE_DEBUG_LEVEL STREQUAL "detail")
         set(_eve_debug_c_flags "-g2 -O1")
         set(_eve_debug_cxx_flags "-g2 -O1")
     else()
-        set(_eve_debug_c_flags "-g1 -O2")
-        set(_eve_debug_cxx_flags "-g1 -O2")
+        set(_eve_debug_c_flags "-g0 -O2")
+        set(_eve_debug_cxx_flags "-g0 -O2")
     endif()
 endif()
 
