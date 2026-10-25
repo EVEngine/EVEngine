@@ -2,9 +2,9 @@
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderTransformProjection.h"
-#include "physics/bake/RigidPlayback.h"
-#include "physics/bake/graphics_script/PhysicsBakeGraphics.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "physics/backend/bake/RigidPlayback.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
+#include "physics/bake_graphics/script/PhysicsBakeGraphics.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 TEST_CASE("physics.bake.scriptRigidPresentationBorrowsTargetsAndPreservesFailures") {

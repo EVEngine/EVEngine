@@ -3,13 +3,13 @@
 #include <iostream>
 #include <random>
 #include <stdexcept>
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/BakedParticlePlayback.h"
-#include "physics/bake/DeformPlayback.h"
-#include "physics/bake/RigidPlayback.h"
-#include "physics/bake/collapse/CollapseAnimation.h"
-#include "physics/bake/collapse/CollapseCaptureSource.h"
-#include "physics/bake/collapse/CollapsePlayback.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/BakedParticlePlayback.h"
+#include "physics/backend/bake/DeformPlayback.h"
+#include "physics/backend/bake/RigidPlayback.h"
+#include "physics/backend/bake/collapse/CollapseAnimation.h"
+#include "physics/backend/bake/collapse/CollapseCaptureSource.h"
+#include "physics/backend/bake/collapse/CollapsePlayback.h"
 
 namespace {
 void require(bool condition) {

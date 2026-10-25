@@ -6,9 +6,9 @@
 #include <stdexcept>
 #include <string_view>
 #include <vector>
-#include "physics/bake/BakedParticlePlayback.h"
-#include "physics/bake/DeformPlayback.h"
-#include "physics/bake/RigidPlayback.h"
+#include "physics/backend/bake/BakedParticlePlayback.h"
+#include "physics/backend/bake/DeformPlayback.h"
+#include "physics/backend/bake/RigidPlayback.h"
 
 namespace {
 using Clock = std::chrono::steady_clock;

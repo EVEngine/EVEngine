@@ -248,12 +248,12 @@ function(eve_resolve_modules)
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "physics-bake-only")
         set(_hostless_profile TRUE)
-        set(_profile_seed common physics_bake physics_bake_collapse)
+        set(_profile_seed common physics_backend)
         set(EVENGINE_PROFILE_CORE_KIND physics_bake CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "physics-bake-script-only")
         set(_hostless_profile TRUE)
-        set(_profile_seed common physics_bake physics_bake_collapse physics_bake_script)
+        set(_profile_seed common physics_backend)
         set(EVENGINE_PROFILE_CORE_KIND physics_bake CACHE INTERNAL
             "Core boundary selected by the active profile" FORCE)
     elseif(EVENGINE_PROFILE STREQUAL "asset-core-only")
@@ -336,7 +336,7 @@ function(eve_resolve_modules)
         endif()
 
         if(EVENGINE_PROFILE STREQUAL "physics-bake-render" AND
-           "${m}" MATCHES "^(physics_bake(_collapse|_script|_graphics|_graphics_script)?|font|devtools)$")
+           "${m}" MATCHES "^(physics_backend|physics_bake_graphics|font|devtools)$")
             set(_on TRUE)
         endif()
 

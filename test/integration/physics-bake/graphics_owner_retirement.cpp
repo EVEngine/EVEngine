@@ -1,8 +1,8 @@
 #include <memory>
 #include "common/config.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/DeformPlayback.h"
-#include "physics/bake/graphics/DeformMeshPresentation.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/DeformPlayback.h"
+#include "physics/bake_graphics/DeformMeshPresentation.h"
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
 using BakeGraphicsBackend = eve::graphics::webgpu::Graphics;
@@ -31,30 +31,31 @@ TEST_CASE("physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement") {
                                            {1, topology, {{2, 0, 0}, {3, 0, 0}, {2, 1, 0}}}},
                                           recipe)
                          .expect("track");
+        auto player       = DeformPlayback::prepare(track).expect("player");
         auto presentation = DeformMeshPresentation::prepare(track, .1f).expect("presentation");
         {
             auto owner = std::make_unique<BakeGraphicsBackend>();
             owner->initHeadless(16, 16);
-            auto* mesh = presentation->createMesh(*owner).expect("first owner mesh");
+            auto* mesh = presentation->createMesh(player, *owner).expect("first owner mesh");
             REQUIRE(owner->describeMesh(mesh).has_value());
-            REQUIRE(presentation->player().seek(1).ok());
-            REQUIRE(presentation->upload(*owner, *mesh).ok());
+            REQUIRE(player.seek(1).ok());
+            REQUIRE(presentation->upload(player, *owner, *mesh).ok());
             // The owner destroys its registered mesh. Never reuse the facade after this scope.
         }
-        REQUIRE(presentation->player().seek(.5).ok());
+        REQUIRE(player.seek(.5).ok());
         std::vector<DeformPoint> points(3);
-        REQUIRE(presentation->player().sample(points).ok());
+        REQUIRE(player.sample(points).ok());
         REQUIRE(points[0].x == 1);
         {
             auto replacement = std::make_unique<BakeGraphicsBackend>();
             replacement->initHeadless(16, 16);
-            auto* mesh = presentation->createMesh(*replacement).expect("replacement owner mesh");
+            auto* mesh = presentation->createMesh(player, *replacement).expect("replacement owner mesh");
             REQUIRE(replacement->describeMesh(mesh).has_value());
-            REQUIRE(presentation->player().time() == .5);
-            REQUIRE(presentation->player().seek(0).ok());
-            REQUIRE(presentation->upload(*replacement, *mesh).ok());
+            REQUIRE(player.time() == .5);
+            REQUIRE(player.seek(0).ok());
+            REQUIRE(presentation->upload(player, *replacement, *mesh).ok());
         }
-        REQUIRE(presentation->player().sample(points).ok());
+        REQUIRE(player.sample(points).ok());
         REQUIRE(points[0].x == 0);
         presentation.reset();
     }

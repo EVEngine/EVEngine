@@ -3,14 +3,16 @@
 #include "graphics/DrawItem2D.h"
 #include "graphics/Graphics.h"
 #include "particles/ParticleRecording.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/BakedParticlePlayback.h"
-#include "physics/bake/graphics/ParticleBakePresentation.h"
-#include "physics/bake/particle_capture/ParticleBakeCapture.h"
+#include "particles/bake/capture/ParticleBakeCapture.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/BakedParticlePlayback.h"
+#include "physics/bake_graphics/ParticleBakePresentation.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve::physics;
+using eve::particles::buildParticleTrack;
+using eve::particles::ParticleRecordingSource;
 TEST_CASE("physics.bake.particleSpritesRenderIndependentBirthIntervals") {
     auto*                       window   = eve::window::Window::create();
     auto*                       graphics = eve::graphics::Graphics::create();
@@ -78,32 +80,35 @@ TEST_CASE("physics.bake.particleSpritesRenderIndependentBirthIntervals") {
     auto                          combined     = buildParticleTrack(2, sources, recipe).expect("combined");
     const auto                    combinedPath = files.directory / "combined.eveparticle";
     REQUIRE(combined.save(combinedPath.string()).ok());
-    auto group = ParticleBakePresentation::prepare(
-                     ParticleTrack::loadForRecipe(combinedPath.string(), recipe).expect("reload combined"))
-                     .expect("group");
+    auto groupTrack  = ParticleTrack::loadForRecipe(combinedPath.string(), recipe).expect("reload combined");
+    auto groupPlayer = BakedParticlePlayback::prepare(groupTrack).expect("group player");
+    auto group       = ParticleBakePresentation::prepare(groupTrack).expect("group");
     greenEvents.clear();
     events.clear();
-    auto track  = ParticleTrack::loadForRecipe(path.string(), recipe).expect("reload after source destruction");
-    auto first  = ParticleBakePresentation::prepare(track).expect("first");
-    auto second = ParticleBakePresentation::prepare(track).expect("second");
-    second->player().seek(1).expect("dead");
+    auto track        = ParticleTrack::loadForRecipe(path.string(), recipe).expect("reload after source destruction");
+    auto firstPlayer  = BakedParticlePlayback::prepare(track).expect("first player");
+    auto secondPlayer = BakedParticlePlayback::prepare(track).expect("second player");
+    auto first        = ParticleBakePresentation::prepare(track).expect("first");
+    auto second       = ParticleBakePresentation::prepare(track).expect("second");
+    secondPlayer.seek(1).expect("dead");
     eve::graphics::DrawItem2D material;
     material.receiveLight = false;
-    auto frame            = [&](ParticleBakePresentation& presentation) {
+    REQUIRE(!group->draw(firstPlayer, *graphics, material).ok());
+    auto frame = [&](ParticleBakePresentation& presentation, BakedParticlePlayback& player) {
         graphics->clear(eve::Color(0, 0, 0, 1), std::nullopt, std::nullopt);
-        auto drawn = presentation.draw(*graphics, material);
+        auto drawn = presentation.draw(player, *graphics, material);
         REQUIRE(drawn.ok());
         graphics->present();
         return graphics->getPixel(80, 60).r;
     };
-    REQUIRE(frame(*first) > 0.5f);
-    REQUIRE(frame(*second) < 0.01f);
-    REQUIRE(first->player().time() == 0);
-    first->player().setPlacement({100, 0}).expect("move");
-    REQUIRE(frame(*first) < 0.01f);
+    REQUIRE(frame(*first, firstPlayer) > 0.5f);
+    REQUIRE(frame(*second, secondPlayer) < 0.01f);
+    REQUIRE(firstPlayer.time() == 0);
+    firstPlayer.setPlacement({100, 0}).expect("move");
+    REQUIRE(frame(*first, firstPlayer) < 0.01f);
     first.reset();
-    second->player().seek(0).expect("rewind");
-    REQUIRE(frame(*second) > 0.5f);
+    secondPlayer.seek(0).expect("rewind");
+    REQUIRE(frame(*second, secondPlayer) > 0.5f);
     second.reset();
     eve::graphics::DrawItem2D redMaterial, greenMaterial;
     redMaterial.receiveLight = greenMaterial.receiveLight = false;
@@ -112,7 +117,7 @@ TEST_CASE("physics.bake.particleSpritesRenderIndependentBirthIntervals") {
     const ParticleBakeMaterial materials[]{{redId, redMaterial}, {greenId, greenMaterial}};
     auto                       groupFrame = [&]() {
         graphics->clear(eve::Color(0, 0, 0, 1), std::nullopt, std::nullopt);
-        REQUIRE(group->draw(*graphics, materials).value() == 2);
+        REQUIRE(group->draw(groupPlayer, *graphics, materials).value() == 2);
         graphics->present();
         return graphics->getPixel(80, 60);
     };
@@ -121,12 +126,12 @@ TEST_CASE("physics.bake.particleSpritesRenderIndependentBirthIntervals") {
     greenMaterial.layer = 1;
     REQUIRE(groupFrame().g > 0.5f);
     graphics->clear(eve::Color(0, 0, 0, 1), std::nullopt, std::nullopt);
-    REQUIRE(!group->draw(*graphics, std::span<const ParticleBakeMaterial>(materials).first(1)).ok());
+    REQUIRE(!group->draw(groupPlayer, *graphics, std::span<const ParticleBakeMaterial>(materials).first(1)).ok());
     graphics->present();
     REQUIRE(graphics->getPixel(80, 60).r < 0.01f);
     REQUIRE(graphics->getPixel(80, 60).g < 0.01f);
     const ParticleBakeMaterial duplicates[]{{redId, redMaterial}, {redId, greenMaterial}};
-    REQUIRE(!group->draw(*graphics, duplicates).ok());
+    REQUIRE(!group->draw(groupPlayer, *graphics, duplicates).ok());
     REQUIRE(groupFrame().g > 0.5f);
     group.reset();
     window->close();

@@ -29,7 +29,7 @@ function bakeRigid(recipe,path) {
     local body=world.newBody("dynamic",-0.5,3.2,0.0);
     body.newBoxShape(0.6,0.6,0.6,1.0,0.5,0.65);
     body.setLinearVelocity(0.7,0.0,0.0);
-    local recorder=requireBake(physicsBakeRecording.beginRigid(recipe,replay.samples));
+    local recorder=requireBake(physics.bakeRecording().beginRigid(recipe,replay.samples));
     requireBake(recorder.bindBody3D(world,body,BODY_ID));
     requireBake(recorder.capture3D(world,0.0));
     for(local tick=1;tick<=replay.ticks;tick++) {
@@ -51,14 +51,12 @@ function bakeDeform(kind,recipe,path) {
         if(!source.pin(0) || !source.pin(19)) throw "cannot pin replay rope";
         if(!source.setRestLength(3.2)) throw "cannot set rope slack";
     }
-    local recorder=requireBake(physicsBakeRecording.beginDeform(recipe,replay.samples*source.getParticleCount()));
-    if(kind=="cloth") requireBake(recorder.captureCloth(source,0.0));
-    else requireBake(recorder.captureRope(source,0.0));
+    local recorder=requireBake(physics.bakeRecording().beginDeform(recipe,replay.samples*source.getParticleCount()));
+    requireBake(source.captureBake(recorder,0.0));
     for(local tick=1;tick<=replay.ticks;tick++) {
         source.update(replay.step);
         if(tick%config.bake.stride==0) {
-            if(kind=="cloth") requireBake(recorder.captureCloth(source,tick*replay.step));
-            else requireBake(recorder.captureRope(source,tick*replay.step));
+            requireBake(source.captureBake(recorder,tick*replay.step));
         }
     }
     source=null; collectgarbage(); // Owning VM factory releases the native solver.
@@ -73,12 +71,12 @@ function bakeParticles(recipe,path) {
     emitter.setLinearAcceleration(0.0,85.0,0.0,85.0);
     emitter.setParticleSize(9.0,9.0); emitter.setSizes(1.0,0.1);
     emitter.setColorStart(1.0,0.65,0.15,1.0); emitter.setColorEnd(1.0,0.15,0.05,0.0);
-    requireBake(particleBakeRecording.begin(emitter,20000)); emitter.emit(64);
+    requireBake(particles.bakeRecording().begin(emitter,20000)); emitter.emit(64);
     for(local tick=1;tick<=replay.ticks;tick++) particles.update(replay.step);
-    local journal=requireBake(particleBakeRecording.finish(emitter));
+    local journal=requireBake(particles.bakeRecording().finish(emitter));
     emitter.stop(); emitter.reset(); emitter=null; collectgarbage();
     // Emitter is ECS-owned; stop/reset retires its live particles. No update runs during replay.
-    local archive=requireBake(particleBakeRecording.newArchive(recipe));
+    local archive=requireBake(particles.bakeRecording().newArchive(recipe));
     requireBake(archive.addJournal(journal,EMITTER_ID));
     requireBake(archive.save(path));
 }
@@ -86,9 +84,9 @@ function loadChannel(kind) {
     local recipe=makeRecipe(kind);
     local path=replay.directory+"/"+kind+"-"+requireBake(recipe.key())+".bake";
     local load=function() {
-        if(kind=="rigid") return physicsBake.loadRigid(path,recipe);
-        if(kind=="particles") return physicsBake.loadParticles(path,recipe);
-        return physicsBake.loadDeform(path,recipe);
+        if(kind=="rigid") return physics.bake().loadRigid(path,recipe);
+        if(kind=="particles") return physics.bake().loadParticles(path,recipe);
+        return physics.bake().loadDeform(path,recipe);
     };
     local loaded=load();
     if(!loaded.ok) {
@@ -155,13 +153,13 @@ eve_init = function() {
         local target=meshObject(gfx.newMeshCube(0.6),0.0,0.0,color[0],color[1],color[2]);
         replay.rigids.push({player=player,target=target}); replay.players.push(player);
         foreach(pair in [{source=fabric,x=0.0},{source=cable,x=4.0}]) {
-            local view=requireBake(physicsBakeGraphics.prepareDeform(pair.source,0.045));
+            local view=requireBake(physicsBakeGraphics.prepareDeform(requireBake(pair.source.prepareInstance()),0.045));
             requireBake(view.setPlacement(pair.x,0.0,z,0.0,0.0,0.0,1.0));
             local mesh=requireBake(view.createMesh(gfx));
             meshObject(mesh,0.0,0.0,color[0],color[1],color[2]);
             replay.deforms.push({player=view,mesh=mesh}); replay.players.push(view);
         }
-        local view=requireBake(physicsBakeGraphics.prepareParticles(burst,[EMITTER_ID]));
+        local view=requireBake(physicsBakeGraphics.prepareParticles(requireBake(burst.prepareInstance()),[EMITTER_ID]));
         requireBake(view.setPlacement(instance*650.0,0.0,0.0,0.0,0.0,0.0,1.0));
         local material=eve.Sprite2D(); material.setVisible(false); material.setReceiveLight(false);
         material.setBlend("additive"); replay.materials.push(material);

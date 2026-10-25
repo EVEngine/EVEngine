@@ -8,7 +8,7 @@ import unittest
 
 
 ROOT = Path(__file__).resolve().parents[2]
-GENERATOR = ROOT / "src/modules/physics/destruction/BakeBuildIdentity.cmake"
+GENERATOR = ROOT / "src/modules/physics/backend/bake/BakeBuildIdentity.cmake"
 
 
 class CollapseBakeIdentityTests(unittest.TestCase):

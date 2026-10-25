@@ -3,8 +3,8 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "common/SquirrelOwnership.h"
 #include "physics/Physics.h"
-#include "physics/bake/recording_script/PhysicsBakeRecording.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
+#include "physics/bake_recording/PhysicsBakeRecording.h"
 #include "physics/cloth/Cloth3D.h"
 #include "physics/cloth/ClothModule.h"
 #include "physics/rope/Rope.h"
@@ -55,8 +55,7 @@ TEST_CASE("physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources")
     destroyedClothSources = destroyedRopeSources = 0;
     ssq::VM vm(2048);
     auto    table = vm.addTable("eve");
-    eve::physics::PhysicsBake::expose(table);
-    eve::physics::PhysicsBakeRecording::expose(table);
+    eve::physics::Physics::expose(table);
     eve::cloth::Cloth::expose(table);
     eve::physics::Rope::expose(table);
     vm.addFunc("watchCloth", &watchOwnedSource<eve::physics::Cloth3D>);
@@ -72,7 +71,7 @@ TEST_CASE("physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources")
             assert(recipe.setParameters("gravity-default").ok);
             assert(recipe.setSource("fixture", kind).ok);
             assert(recipe.setTiming(1.0 / 60.0, 30).ok);
-            local capture = eve.PhysicsBakeRecording();
+            local capture = eve.Physics().bakeRecording();
             assert(!capture.beginDeform(null, 32).ok);
             assert(!capture.beginDeform(recipe, 0).ok);
             assert(!capture.beginDeform(recipe, 2000001).ok);
@@ -80,30 +79,27 @@ TEST_CASE("physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources")
             assert(made.ok && made.hasValue);
             local session = made.value;
             assert(!session.save(assetPath(kind)).ok);
-            assert(!session.captureCloth(null, 0.0).ok);
-            assert(!session.captureRope(recipe, 0.0).ok);
             local source = kind == "cloth" ? eve.Cloth().newCloth3D(3,3,1.0,0.0,3.0,0.0)
                 : eve.Rope().newRope3D(4,0.0,3.0,0.0,3.0,3.0,0.0);
             assert(kind == "cloth" ? watchCloth(source) : watchRope(source));
+            assert(!source.captureBake(null,0.0).ok);
+            assert(!source.captureBake(recipe,0.0).ok);
+            assert(!source.captureBake(session,-1.0).ok);
             if (kind == "cloth") {
                 source.unpin(0); source.unpin(1); source.unpin(2);
-                assert(!session.captureRope(source,0.0).ok);
-                assert(session.captureCloth(source,0.0).ok);
-            } else {
-                assert(!session.captureCloth(source,0.0).ok);
-                assert(session.captureRope(source,0.0).ok);
             }
+            assert(source.captureBake(session,0.0).ok);
             for (local i=0; i<30; ++i) source.update(1.0 / 60.0);
             if (kind == "cloth") {
-                assert(!session.captureCloth(source,0.1).ok);
-                assert(session.captureCloth(source,0.5).ok);
+                assert(!source.captureBake(session,0.1).ok);
+                assert(source.captureBake(session,0.5).ok);
                 source.tearConstraint(0,1);
-                assert(!session.captureCloth(source,1.0).ok);
+                assert(!source.captureBake(session,1.0).ok);
             } else {
-                assert(!session.captureRope(source,0.1).ok);
-                assert(session.captureRope(source,0.5).ok);
+                assert(!source.captureBake(session,0.1).ok);
+                assert(source.captureBake(session,0.5).ok);
                 assert(source.cut(1));
-                assert(!session.captureRope(source,1.0).ok);
+                assert(!source.captureBake(session,1.0).ok);
             }
             assert(session.frameCount() == 2);
             assert(session.sampleCount() == (kind == "cloth" ? 18 : 8));
@@ -112,9 +108,9 @@ TEST_CASE("physics.bake.scriptRecordsLiveClothAndRopeThenReplaysWithoutSources")
             assert(recipe.setSource("fixture", "changed after admission").ok);
             assert(session.save(assetPath(kind)).ok);
             assert(!session.save(assetPath(kind)).ok);
-            assert(!eve.PhysicsBake().loadDeform(assetPath(kind),recipe).ok);
+            assert(!eve.Physics().bake().loadDeform(assetPath(kind),recipe).ok);
             assert(recipe.setSource("fixture",kind).ok);
-            local loaded = eve.PhysicsBake().loadDeform(assetPath(kind),recipe);
+            local loaded = eve.Physics().bake().loadDeform(assetPath(kind),recipe);
             assert(loaded.ok && loaded.hasValue);
             made = null; session = null; recipe = null; collectgarbage();
             local player = loaded.value;
@@ -147,8 +143,6 @@ TEST_CASE("physics.bake.scriptRigidRecordingUsesGenerationalBindings") {
     } cleanup{dir};
     ssq::VM vm(4096);
     auto    table = vm.addTable("eve");
-    eve::physics::PhysicsBake::expose(table);
-    eve::physics::PhysicsBakeRecording::expose(table);
     eve::physics::Physics::expose(table);
     vm.addFunc("assetPath", [&](bool planar) { return (dir / (planar ? "2d.rigid" : "3d.rigid")).string(); });
     vm.run(vm.compileSource(R"(
@@ -160,7 +154,7 @@ TEST_CASE("physics.bake.scriptRigidRecordingUsesGenerationalBindings") {
             assert(recipe.setParameters("zero-gravity;linear-velocity").ok);
             assert(recipe.setSource("body", planar ? "rectangle" : "box").ok);
             assert(recipe.setTiming(1.0/60.0,30).ok);
-            local capture = eve.PhysicsBakeRecording();
+            local capture = eve.Physics().bakeRecording();
             assert(!capture.beginRigid(null,8).ok && !capture.beginRigid(recipe,0).ok);
             local session = capture.beginRigid(recipe,8).value;
             local physics = eve.Physics();
@@ -211,7 +205,7 @@ TEST_CASE("physics.bake.scriptRigidRecordingUsesGenerationalBindings") {
             replacement = null; world = null; foreign = null; collectgarbage();
             assert(session.save(assetPath(planar)).ok);
             assert(!session.save(assetPath(planar)).ok);
-            local loaded = eve.PhysicsBake().loadRigid(assetPath(planar),recipe);
+            local loaded = eve.Physics().bake().loadRigid(assetPath(planar),recipe);
             assert(loaded.ok && loaded.hasValue);
             session = null; recipe = null; collectgarbage();
             local player = loaded.value;

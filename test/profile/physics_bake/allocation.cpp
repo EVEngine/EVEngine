@@ -2,8 +2,8 @@
 #include <iostream>
 #include <new>
 #include <stdexcept>
-#include "physics/bake/collapse/CollapseCaptureSource.h"
-#include "physics/bake/collapse/CollapsePlayback.h"
+#include "physics/backend/bake/collapse/CollapseCaptureSource.h"
+#include "physics/backend/bake/collapse/CollapsePlayback.h"
 
 namespace {
 bool         failNextAllocation = false;
@@ -47,7 +47,7 @@ int  main() {
         void* proxy = ::operator new(1);
         ::operator delete(proxy);
         check(failNextAllocation);
-        auto rejected      = eve::physics::CollapsePlayback::prepare(std::move(candidate));
+        auto rejected = eve::physics::CollapsePlayback::prepare(std::move(candidate));
         check(!failNextAllocation);
         check(!rejected.ok());
         check(rejected.status().code() == eve::StatusCode::Failed);

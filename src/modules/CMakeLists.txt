@@ -270,6 +270,11 @@ else()
   list(APPEND EVENGINE_EXCLUDED_BACKEND_SUBDIRS jolt)
 endif()
 
+# Native-only baked playback deliberately omits VM projections.
+if(EVENGINE_PROFILE STREQUAL "physics-bake-only")
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES PhysicsBake.cpp)
+endif()
+
 # --- create every enabled module -------------------------------------------
 
 foreach(_mod IN LISTS EVE_ENABLED_MODULES)
@@ -534,6 +539,7 @@ if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHEC
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Box2DSimulationBackend.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DJoints.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSphereSweep.cpp
@@ -922,11 +928,11 @@ if(TARGET EVImage)
   target_link_libraries(EVImage PRIVATE webpdemux)
 endif()
 
-if(TARGET EVPhysicsDestruction OR TARGET EVPhysicsBakeScript)
-  include("${CMAKE_CURRENT_SOURCE_DIR}/physics/destruction/BakeBuildIdentity.cmake")
+if(TARGET EVPhysicsDestruction OR TARGET EVPhysics_backend)
+  include("${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/bake/BakeBuildIdentity.cmake")
   set(_eve_bake_identity_dir "${CMAKE_CURRENT_BINARY_DIR}/generated/physics_bake")
   eve_configure_collapse_bake_identity("${_eve_bake_identity_dir}")
-  foreach(_eve_bake_identity_target EVPhysicsDestruction EVPhysicsBakeScript)
+  foreach(_eve_bake_identity_target EVPhysicsDestruction EVPhysics_backend)
     if(TARGET ${_eve_bake_identity_target})
       target_include_directories(${_eve_bake_identity_target} PRIVATE "${_eve_bake_identity_dir}")
     endif()

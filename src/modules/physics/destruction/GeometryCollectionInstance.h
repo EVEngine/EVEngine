@@ -4,7 +4,7 @@
 #include "common/Result.h"
 #include "common/Time.h"
 #include "physics/PhysicsLink.h"
-#include "physics/bake/collapse/CollapseCaptureSource.h"
+#include "physics/backend/bake/collapse/CollapseCaptureSource.h"
 #include "physics/destruction/DestructionField.h"
 #include "physics/destruction/GeometryCollectionAsset.h"
 #include "physics/destruction/GeometryCollectionSnapshot.h"

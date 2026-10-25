@@ -5,7 +5,7 @@
 #include <vector>
 #include "physics/Body3D.h"
 #include "physics/World3D.h"
-#include "physics/bake/collapse/CollapseAnimation.h"
+#include "physics/backend/bake/collapse/CollapseAnimation.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

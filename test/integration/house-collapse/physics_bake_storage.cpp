@@ -316,7 +316,8 @@ TEST_CASE("physics.bake.recipeIdentityAndAdmission") {
     const auto planarBytes = planar.encode().expect("pixel recipe");
     ASSERT(planarBytes.substr(0, 8) == "EVEBREC1");
     ASSERT(planar.key().expect("pixel key") != key);
-    ASSERT(eve::physics::BakeRecipe::decode(planarBytes).expect("pixel decode").coordinates() == eve::physics::BakeCoordinates::PlanarPixels);
+    ASSERT(eve::physics::BakeRecipe::decode(planarBytes).expect("pixel decode").coordinates() ==
+           eve::physics::BakeCoordinates::PlanarPixels);
     ASSERT(!planar.setCoordinates(static_cast<eve::physics::BakeCoordinates>(99)).ok());
     ASSERT(planar.encode().expect("failed admission preserved") == planarBytes);
     CollapseAnimation wrongSpace;

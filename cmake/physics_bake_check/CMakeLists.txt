@@ -1,8 +1,5 @@
 # Link whole manifest-selected modules, not a hand-picked source subset.
-set(_eve_bake_expected common physics_bake physics_bake_collapse)
-if(EVENGINE_PROFILE STREQUAL "physics-bake-script-only")
-    list(APPEND _eve_bake_expected physics_bake_script)
-endif()
+set(_eve_bake_expected common physics_backend)
 if(NOT "${EVE_ENABLED_MODULES}" STREQUAL "${_eve_bake_expected}")
     message(FATAL_ERROR "${EVENGINE_PROFILE} must contain exactly ${_eve_bake_expected}")
 endif()

@@ -5,8 +5,8 @@
 #include <vector>
 #include "particles/ParticleAppearance.h"
 #include "particles/ParticleRecording.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/particle_capture/ParticleBakeCapture.h"
+#include "particles/bake/capture/ParticleBakeCapture.h"
+#include "physics/backend/bake/BakeRecipe.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 namespace {
@@ -22,6 +22,8 @@ struct ReferenceFrame {
 TEST_CASE("physics.bake.particleReplayMatchesLiveAppearanceAndLifetime") {
     using namespace eve::particles;
     using namespace eve::physics;
+    using eve::particles::buildParticleTrack;
+    using eve::particles::ParticleRecordingSource;
     constexpr float dt = 1.f / 64.f;  // Exact binary time isolates lifetime semantics from timestamp rounding.
     std::vector<ReferenceFrame> reference;
     auto*                       emitter = ParticleEmitter::createEmitter(8);

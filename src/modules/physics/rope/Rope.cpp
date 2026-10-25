@@ -3,7 +3,9 @@
 #include "common/Exception.h"
 #include "common/Json.h"
 #include "common/SquirrelOwnership.h"
+#include "physics/backend/bake/script/DeformCaptureBinding.h"
 #include "physics/rope/Rope3D.h"
+#include "physics/rope/Rope3DBakeCapture.h"
 #include "schema/SchemaRegistry.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -177,6 +179,10 @@ void Rope::expose(ssq::Table& table) {
     auto cls = table.addClass(name, Rope::create, false);
     expose(cls);
     auto rope = table.addClass<Rope3D>("Rope3D", std::function<Rope3D*()>([]() -> Rope3D* { return nullptr; }), true);
+    rope.addFunc("captureBake",
+                 [vm = table.getHandle()](Rope3D* self, const ssq::Object& recordingObject, float seconds) {
+                     return eve::physics::bake_detail::appendCapturedDeform(vm, *self, recordingObject, seconds);
+                 });
     rope.addFunc("update", &Rope3D::update);
     rope.addFunc("setGravity", &Rope3D::setGravity);
     rope.addFunc("getGravityX", &Rope3D::getGravityX);

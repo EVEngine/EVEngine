@@ -1,9 +1,11 @@
 #include "particles/ParticleRecording.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/particle_capture/ParticleBakeCapture.h"
+#include "particles/bake/capture/ParticleBakeCapture.h"
+#include "physics/backend/bake/BakeRecipe.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve::physics;
+using eve::particles::buildParticleTrack;
+using eve::particles::ParticleRecordingSource;
 TEST_CASE("physics.bake.particleEventsBecomeIndependentTrajectories") {
     using namespace eve::particles;
     auto* emitter = ParticleEmitter::createEmitter(4);

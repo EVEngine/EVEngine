@@ -2,9 +2,9 @@
 #include <cmath>
 #include <filesystem>
 #include <iostream>
-#include "physics/bake/collapse/CollapseAnimation.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/collapse/CollapsePlayback.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/collapse/CollapseAnimation.h"
+#include "physics/backend/bake/collapse/CollapsePlayback.h"
 
 // Separate process admission of a real producer asset, reused by standalone
 // and manifest profiles. Their build targets define the verified link closure.

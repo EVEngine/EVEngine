@@ -3,11 +3,11 @@
 #include <fstream>
 #include <iterator>
 #include <random>
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/BakedAssetFile.h"
-#include "physics/bake/DeformTrack.h"
-#include "physics/bake/ParticleTrack.h"
-#include "physics/bake/RigidPoseTrack.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/BakedAssetFile.h"
+#include "physics/backend/bake/DeformTrack.h"
+#include "physics/backend/bake/ParticleTrack.h"
+#include "physics/backend/bake/RigidPoseTrack.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 using namespace eve;

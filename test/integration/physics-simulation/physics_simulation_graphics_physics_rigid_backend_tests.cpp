@@ -1,3 +1,4 @@
+#include "physics/Box2DSimulationBackend.h"
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_prediction)

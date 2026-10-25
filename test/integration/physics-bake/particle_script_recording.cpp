@@ -4,8 +4,8 @@
 #include <vector>
 #include "particles/ParticleEmitter.h"
 #include "particles/Particles.h"
-#include "physics/bake/particle_script/ParticleBakeRecording.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "particles/bake/script/ParticleBakeRecording.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 TEST_CASE("physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchive") {
@@ -22,7 +22,7 @@ TEST_CASE("physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchiv
     ssq::VM vm(2048);
     auto    table = vm.addTable("eve");
     eve::physics::PhysicsBake::expose(table);
-    eve::physics::ParticleBakeRecording::expose(table);
+    eve::particles::ParticleBakeRecording::expose(table);
     eve::particles::Particles::expose(table);
     vm.addFunc("assetPath", [&] { return (dir / "combined.particles").string(); });
     vm.run(vm.compileSource(R"(
@@ -33,7 +33,7 @@ TEST_CASE("physics.bake.scriptParticleJournalsPublishRetryableMultiEmitterArchiv
         assert(recipe.setSource("fixture","two-emitters").ok);
         assert(recipe.setTiming(1.0/60.0,1).ok);
         assert(recipe.setRandomStream("first","7").ok && recipe.setRandomStream("second","9").ok);
-        local recorder = eve.ParticleBakeRecording();
+        local recorder = eve.Particles().bakeRecording();
         assert(!recorder.newArchive(recipe).ok);
         assert(recipe.setCoordinates("pixels2d").ok);
         local archive = recorder.newArchive(recipe).value;
@@ -136,7 +136,7 @@ TEST_CASE("physics.bake.scriptParticleAssetOutlivesProducerVmAndEcsSources") {
         ssq::VM producer(2048);
         auto    table = producer.addTable("eve");
         eve::physics::PhysicsBake::expose(table);
-        eve::physics::ParticleBakeRecording::expose(table);
+        eve::particles::ParticleBakeRecording::expose(table);
         eve::particles::Particles::expose(table);
         producer.addFunc("assetPath", [&] { return path; });
         producer.addFunc("rememberSource", [&](eve::particles::ParticleEmitter* emitter) {
@@ -145,7 +145,7 @@ TEST_CASE("physics.bake.scriptParticleAssetOutlivesProducerVmAndEcsSources") {
         producer.run(producer.compileSource(recipeSource));
         producer.run(producer.compileSource(R"(
             local particles = eve.Particles();
-            local recorder = eve.ParticleBakeRecording();
+            local recorder = eve.Particles().bakeRecording();
             local archive = recorder.newArchive(recipe).value;
             local sources = [particles.newEmitter(4),particles.newEmitter(4)];
             foreach (i, emitter in sources) {

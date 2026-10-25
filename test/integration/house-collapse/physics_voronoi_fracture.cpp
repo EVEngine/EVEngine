@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include "asset/CanonicalMesh.h"
 #include "physics/World3D.h"
-#include "physics/bake/collapse/CollapsePlayback.h"
+#include "physics/backend/bake/collapse/CollapsePlayback.h"
 #include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/FractureGeometry.h"
 #include "physics/destruction/FractureRecipe.h"

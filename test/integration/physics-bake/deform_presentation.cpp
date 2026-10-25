@@ -1,9 +1,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/DeformPlayback.h"
-#include "physics/bake/graphics/DeformMeshPresentation.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/DeformPlayback.h"
+#include "physics/bake_graphics/DeformMeshPresentation.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -38,10 +38,15 @@ TEST_CASE("physics.bake.deformMeshesRenderAndUpdateWithoutSimulation") {
                     : std::vector<DeformPoint>{{0, -1, 0}, {0, 1, 0}};
         auto moved = positions;
         for (auto& point : moved) point.x += 4;
-        auto  track = DeformTrack::prepare({{0, topology, positions}, {1, topology, moved}}, recipe).expect("track");
+        auto  track  = DeformTrack::prepare({{0, topology, positions}, {1, topology, moved}}, recipe).expect("track");
+        auto  player = DeformPlayback::prepare(track).expect("player");
         auto  presentation = DeformMeshPresentation::prepare(track, 0.2f).expect("presentation");
-        auto* mesh         = presentation->createMesh(*graphics).expect("GPU mesh");
-        auto  draw         = [&]() {
+        auto* mesh         = presentation->createMesh(player, *graphics).expect("GPU mesh");
+        auto  foreignTrack =
+            DeformTrack::prepare({{0, topology, positions}, {1, topology, moved}}, recipe).expect("other asset");
+        auto foreignPlayer = DeformPlayback::prepare(foreignTrack).expect("other player");
+        REQUIRE(!presentation->upload(foreignPlayer, *graphics, *mesh).ok());
+        auto draw = [&]() {
             graphics->begin3DFrame();
             graphics->setMesh3DViewProj(projection * view);
             graphics->setMesh3DView(view);
@@ -51,23 +56,23 @@ TEST_CASE("physics.bake.deformMeshesRenderAndUpdateWithoutSimulation") {
             return graphics->getPixel(80, 60);
         };
         REQUIRE(draw().r > 0.01f);
-        REQUIRE(presentation->player().seek(1).ok());
-        REQUIRE(presentation->upload(*graphics, *mesh).ok());
+        REQUIRE(player.seek(1).ok());
+        REQUIRE(presentation->upload(player, *graphics, *mesh).ok());
         REQUIRE(draw().r < 0.01f);
-        REQUIRE(presentation->player().seek(0).ok());
-        REQUIRE(presentation->upload(*graphics, *mesh).ok());
+        REQUIRE(player.seek(0).ok());
+        REQUIRE(presentation->upload(player, *graphics, *mesh).ok());
         // Keep the detached facade alive while testing rejection; never pass a dangling reference.
         REQUIRE(graphics->releaseMesh(mesh));
-        REQUIRE(!presentation->upload(*graphics, *mesh).ok());
-        REQUIRE(presentation->player().time() == 0);
+        REQUIRE(!presentation->upload(player, *graphics, *mesh).ok());
+        REQUIRE(player.time() == 0);
         delete mesh;
-        mesh = presentation->createMesh(*graphics).expect("replacement mesh after target retirement");
+        mesh = presentation->createMesh(player, *graphics).expect("replacement mesh after target retirement");
         REQUIRE(draw().r > 0.01f);
-        REQUIRE(presentation->player().seek(1).ok());
-        REQUIRE(presentation->upload(*graphics, *mesh).ok());
+        REQUIRE(player.seek(1).ok());
+        REQUIRE(presentation->upload(player, *graphics, *mesh).ok());
         REQUIRE(draw().r < 0.01f);
-        REQUIRE(presentation->player().seek(0).ok());
-        REQUIRE(presentation->upload(*graphics, *mesh).ok());
+        REQUIRE(player.seek(0).ok());
+        REQUIRE(presentation->upload(player, *graphics, *mesh).ok());
         presentation.reset();
         REQUIRE(draw().r > 0.01f);
         REQUIRE(graphics->releaseMesh(mesh));

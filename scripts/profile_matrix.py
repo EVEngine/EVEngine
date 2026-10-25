@@ -72,8 +72,8 @@ def is_editor_module(name: str) -> bool:
 CORE_SEEDS = {
     "procgen-core-only": ("common",),
     "physics-core-only": ("common", "platform_event"),
-    "physics-bake-only": ("common", "physics_bake", "physics_bake_collapse"),
-    "physics-bake-script-only": ("common", "physics_bake", "physics_bake_collapse", "physics_bake_script"),
+    "physics-bake-only": ("common", "physics_backend"),
+    "physics-bake-script-only": ("common", "physics_backend"),
     "asset-core-only": ("common", "data", "asset"),
     "crowd-core-only": ("common", "crowd"),
     "crowd-thread-core-only": ("common", "crowd", "crowd_thread"),
@@ -257,7 +257,7 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
             if profile == "physics-bake-render":
                 selection_profile = "minimal"
             enabled = module.required or profile == "full" or selection_profile in module.groups
-            if profile == "physics-bake-render" and module.name in {"physics_bake", "physics_bake_collapse", "physics_bake_script", "physics_bake_graphics", "physics_bake_graphics_script", "font", "devtools"}:
+            if profile == "physics-bake-render" and module.name in {"physics_backend", "physics_bake_graphics", "font", "devtools"}:
                 enabled = True
             if profile in RUNTIME_ONLY and is_editor_module(module.name):
                 enabled = False
@@ -316,9 +316,7 @@ def check_contracts() -> int:
         if profile in {"physics-bake-only", "physics-bake-script-only"} and (enabled_set != set(CORE_SEEDS[profile]) or groups != ["squirrel"]):
             errors.append(f"{profile}: playback closure acquired an unexpected dependency")
         if profile == "physics-bake-render":
-            forbidden = {"physics", "physics_cloth", "physics_rope", "physics_destruction", "particles",
-                         "physics_bake_capture", "physics_bake_deform_capture", "physics_bake_particle_capture",
-                         "physics_bake_recording_script", "physics_bake_particle_script"}
+            forbidden = {"physics", "physics_cloth", "physics_rope", "physics_destruction", "particles"}
             if enabled_set & forbidden or set(groups) & {"box2d", "box3d", "jolt"}:
                 errors.append("physics-bake-render: playback acquired live simulation dependencies")
         if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in (

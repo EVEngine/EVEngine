@@ -3,8 +3,10 @@
 #include "common/Exception.h"
 #include "common/SquirrelOwnership.h"
 #include "gpgpu/Gpgpu.h"
+#include "physics/backend/bake/script/DeformCaptureBinding.h"
 #include "physics/cloth/Cloth.h"
 #include "physics/cloth/Cloth3D.h"
+#include "physics/cloth/Cloth3DBakeCapture.h"
 #include "physics/cloth/ClothGPU.h"
 #include "physics/cloth/ClothModel.h"
 #include "physics/cloth/LayeredCloth3D.h"
@@ -144,6 +146,10 @@ void Cloth::expose(ssq::Table& table) {
 
     auto cloth3 =
         table.addClass<Cloth3D>("Cloth3D", std::function<Cloth3D*()>([]() -> Cloth3D* { return nullptr; }), true);
+    cloth3.addFunc("captureBake",
+                   [vm = table.getHandle()](Cloth3D* self, const ssq::Object& recordingObject, float seconds) {
+                       return eve::physics::bake_detail::appendCapturedDeform(vm, *self, recordingObject, seconds);
+                   });
     cloth3.addFunc("update", &Cloth3D::update);
     cloth3.addFunc("setGravity", &Cloth3D::setGravity);
     cloth3.addFunc("getGravityX", &Cloth3D::getGravityX);

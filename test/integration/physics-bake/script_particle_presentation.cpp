@@ -2,10 +2,10 @@
 #include "graphics/Graphics.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/Texture.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/BakedParticlePlayback.h"
-#include "physics/bake/graphics_script/PhysicsBakeGraphics.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/BakedParticlePlayback.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
+#include "physics/bake_graphics/script/PhysicsBakeGraphics.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -116,11 +116,17 @@ TEST_CASE("physics.bake.scriptParticlePresentationBatchesMaterialsAndRejectsPart
         assert(!bridge.prepareParticles(source,[secondId(),firstId()]).ok);
         assert(!bridge.prepareParticles(source,[12]).ok);
         assert(!bridge.prepareParticles(source,["invalid"]).ok);
-        local ready = bridge.prepareParticles(source,ids); assert(ready.ok);
+        assert(!bridge.prepareParticles(source,ids).ok);
+            local ownedSource = source.prepareInstance().value; assert(ownedSource.seek(1.0).ok);
+            local bound = bridge.prepareParticles(ownedSource,ids);
+        assert(bound.ok && bound.value.time() == ownedSource.time());
+        assert(bound.value.seek(0.5).ok && ownedSource.time() == 0.5);
+        bound = null; assert(source.seek(1.0).ok);
+        local ready = bridge.prepareParticles(source.prepareInstance().value,ids); assert(ready.ok);
         local first = ready.value; ready = null;
-        local other = bridge.prepareParticles(source,ids); assert(other.ok);
+        local other = bridge.prepareParticles(source.prepareInstance().value,ids); assert(other.ok);
         local second = other.value; other = null;
-        local partialResult = bridge.prepareParticles(source,[firstId()]); assert(partialResult.ok);
+        local partialResult = bridge.prepareParticles(source.prepareInstance().value,[firstId()]); assert(partialResult.ok);
         local partial = partialResult.value; partialResult = null;
         source = null; collectgarbage(); destroySource();
         ids.clear(); // Prepared identities are owning values, not a retained VM array.

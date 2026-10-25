@@ -18,7 +18,7 @@
 #include "graphics/RenderSystem3D.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "physics/bake/BakedAssetFile.h"
+#include "physics/backend/bake/BakedAssetFile.h"
 #include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/FractureGeometry.h"
 namespace eve::physics {

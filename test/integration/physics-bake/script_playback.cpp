@@ -2,11 +2,11 @@
 #include <limits>
 #include <random>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/DeformTrack.h"
-#include "physics/bake/ParticleTrack.h"
-#include "physics/bake/RigidPoseTrack.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/DeformTrack.h"
+#include "physics/backend/bake/ParticleTrack.h"
+#include "physics/backend/bake/RigidPoseTrack.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
 #include "physics/destruction/CollapseBakeRecipe.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

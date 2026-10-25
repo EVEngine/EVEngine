@@ -1,6 +1,6 @@
 #pragma once
 /** @brief Compatibility include; canonical checked value/playback API lives in physics_bake_collapse. */
-#include "physics/bake/collapse/CollapseAnimation.h"
+#include "physics/backend/bake/collapse/CollapseAnimation.h"
 namespace ssq {
 class Table;
 }

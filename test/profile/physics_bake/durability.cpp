@@ -11,7 +11,7 @@
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
-#include "physics/bake/BakedAssetFile.h"
+#include "physics/backend/bake/BakedAssetFile.h"
 #include "physics/destruction/CollapseAnimation.h"
 
 namespace {

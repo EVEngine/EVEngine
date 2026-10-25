@@ -1,7 +1,5 @@
 # Full module composition; no selected production-source shortcut.
-foreach(_bake_forbidden physics physics_cloth physics_rope physics_destruction particles
-        physics_bake_capture physics_bake_deform_capture physics_bake_particle_capture
-        physics_bake_recording_script physics_bake_particle_script)
+foreach(_bake_forbidden physics physics_cloth physics_rope physics_destruction particles)
     if(_bake_forbidden IN_LIST EVE_ENABLED_MODULES)
         message(FATAL_ERROR "physics-bake-render acquired live producer ${_bake_forbidden}")
     endif()

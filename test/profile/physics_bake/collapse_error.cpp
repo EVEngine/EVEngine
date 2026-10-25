@@ -3,8 +3,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include "physics/bake/collapse/CollapseAnimation.h"
-#include "physics/bake/collapse/CollapseCaptureSource.h"
+#include "physics/backend/bake/collapse/CollapseAnimation.h"
+#include "physics/backend/bake/collapse/CollapseCaptureSource.h"
 
 namespace {
 using namespace eve::physics;

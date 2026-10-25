@@ -2,10 +2,10 @@
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
-#include "physics/bake/BakeRecipe.h"
-#include "physics/bake/DeformPlayback.h"
-#include "physics/bake/graphics_script/PhysicsBakeGraphics.h"
-#include "physics/bake/script/PhysicsBake.h"
+#include "physics/backend/bake/BakeRecipe.h"
+#include "physics/backend/bake/DeformPlayback.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
+#include "physics/bake_graphics/script/PhysicsBakeGraphics.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
@@ -81,10 +81,16 @@ TEST_CASE("physics.bake.scriptDeformPresentationRendersAfterSourceAndPresenterRe
             assert(!bridge.prepareDeform(null,0.2).ok);
             assert(!bridge.prepareDeform(graphicsHost(),0.2).ok);
             if (isRope()) assert(!bridge.prepareDeform(source,0.0).ok);
-            local prepared = bridge.prepareDeform(source,0.2);
+            assert(!bridge.prepareDeform(source,0.2).ok);
+            local ownedSource = source.prepareInstance().value; assert(ownedSource.seek(1.0).ok);
+            local bound = bridge.prepareDeform(ownedSource,0.2);
+            assert(bound.ok && bound.value.time() == ownedSource.time());
+            assert(bound.value.seek(0.5).ok && ownedSource.time() == 0.5);
+            bound = null; assert(source.seek(1.0).ok);
+            local prepared = bridge.prepareDeform(source.prepareInstance().value,0.2);
             assert(prepared.ok && prepared.hasValue);
             local first = prepared.value; prepared = null;
-            local secondResult = bridge.prepareDeform(source,0.2);
+            local secondResult = bridge.prepareDeform(source.prepareInstance().value,0.2);
             assert(secondResult.ok);
             local second = secondResult.value; secondResult = null;
             assert(first.time() == 0.0 && second.time() == 0.0 && source.time() == 1.0);

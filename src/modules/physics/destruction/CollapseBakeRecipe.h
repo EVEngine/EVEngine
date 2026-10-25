@@ -1,5 +1,5 @@
 #pragma once
-#include "physics/bake/BakeRecipe.h"
+#include "physics/backend/bake/BakeRecipe.h"
 namespace ssq {
 class Table;
 }
