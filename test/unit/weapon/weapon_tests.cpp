@@ -182,6 +182,7 @@ TEST_CASE("projectileRuntime.snapshotRestoresTrajectoryAndEmptySlotGenerationsAt
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // spell_fragment_compiler.cpp
+#include "NumericReadCompatibility.h"
 namespace test_spell_fragment_compiler_unit {
 TEST_CASE("carrierRecipeCodec.decodesPresetAndRoundTripsFullForm") {
     auto parsed = eve::Value::fromJson(R"({
@@ -333,6 +334,14 @@ TEST_CASE("spellFragmentCompiler.rejectsFullFormProjectileFragments") {
     CHECK(!plan.ok());
 }
 }  // namespace test_spell_fragment_compiler_unit
+namespace test_weapon_numeric_read_compatibility {
+TEST_CASE("weapon.numericRead.optionalDoubleKeepsAbsenceValuesAndDiagnostics") {
+    weapon_numeric_read_compatibility::optionalDoubleKeepsAbsenceValuesAndDiagnostics(_ZEROERR_TEST_CONTEXT);
+}
+TEST_CASE("weapon.numericRead.optionalIntKeepsIntegralDoubleAndErrorPrecedence") {
+    weapon_numeric_read_compatibility::optionalIntKeepsIntegralDoubleAndErrorPrecedence(_ZEROERR_TEST_CONTEXT);
+}
+}  // namespace test_weapon_numeric_read_compatibility
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_weapon_infinite_reload)

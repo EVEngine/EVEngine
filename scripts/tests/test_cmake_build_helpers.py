@@ -19,6 +19,54 @@ class BuildHelperTests(unittest.TestCase):
             command = [str(ROOT / "cmake" / "with-msvc.cmd"), *command]
         return subprocess.run(command, capture_output=True, encoding="utf-8", errors="replace")
 
+    def test_arm64_monolithic_test_linker_is_scoped_to_linux_gcc(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / "source"
+            build = Path(directory) / "build"
+            source.mkdir()
+            (source / "main.cpp").write_text("int main() { return 0; }\n", encoding="utf-8")
+            cases = (
+                ("linux_aarch64_gcc", "Linux", "aarch64", "GNU", True),
+                ("linux_arm64_gcc", "Linux", "arm64", "GNU", True),
+                ("linux_x64_gcc", "Linux", "x86_64", "GNU", False),
+                ("linux_arm64_clang", "Linux", "aarch64", "Clang", False),
+                ("mac_arm64_gcc", "Darwin", "arm64", "GNU", False),
+                ("win_arm64_msvc", "Windows", "ARM64", "MSVC", False),
+            )
+            checks = []
+            for name, system, processor, compiler, expected in cases:
+                checks.append(f"""
+set(CMAKE_SYSTEM_NAME {system})
+set(CMAKE_SYSTEM_PROCESSOR {processor})
+set(CMAKE_CXX_COMPILER_ID {compiler})
+add_executable({name} main.cpp)
+eve_configure_monolithic_test_linker({name})
+get_target_property(options {name} LINK_OPTIONS)
+if({"NOT " if expected else ""}"-fuse-ld=lld" IN_LIST options)
+    message(FATAL_ERROR "Unexpected linker policy for {name}: ${{options}}")
+endif()
+get_target_property(compiler_options {name} COMPILE_OPTIONS)
+if(compiler_options)
+    message(FATAL_ERROR "Linker policy changed compiler options")
+endif()
+""")
+            (source / "CMakeLists.txt").write_text(
+                "cmake_minimum_required(VERSION 3.21)\n"
+                "project(TestLinkerPolicy LANGUAGES CXX)\n"
+                f'include("{(ROOT / "cmake/compiler_options.cmake").as_posix()}")\n'
+                + "".join(checks),
+                encoding="utf-8",
+            )
+            configured = self.run_cmake("-G", "Ninja", "-S", source, "-B", build)
+            self.assertEqual(configured.returncode, 0, configured.stdout + configured.stderr)
+        test_cmake = (ROOT / "test/CMakeLists.txt").read_text(encoding="utf-8")
+        self.assertIn("eve_configure_monolithic_test_linker(unit_test)", test_cmake)
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        arm_lane = workflow.split("  linux-arm64:", 1)[1].split("  windows:", 1)[0]
+        self.assertIn("build-essential cmake ninja-build lld", arm_lane)
+        self.assertIn("CC: gcc", arm_lane)
+        self.assertIn("CXX: g++", arm_lane)
+
     def test_module_targets_and_generated_headers(self):
         for linkage in ("OBJECT", "SHARED"):
             with self.subTest(linkage=linkage), tempfile.TemporaryDirectory() as directory:

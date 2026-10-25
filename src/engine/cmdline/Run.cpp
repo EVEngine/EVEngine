@@ -16,7 +16,7 @@
 #include "graphics/Light.h"
 #include "graphics/RenderSystem3D.h"
 #include "scripts.h"
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
 #include "devtools/DevTool.hpp"
 #include "devtools/McpServer.hpp"
 #endif
@@ -362,6 +362,12 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
                  std::string devServer) {
     std::fprintf(stderr, "[startup] Run() begins at process clock %.1f ms\n",
                  (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
+#if !EVENGINE_CMDLINE_DEVTOOLS
+    if (debug || dapPort > 0 || mcpPort > 0) {
+        std::cerr << "eve run: debugging requires the devtools module" << std::endl;
+        return 4;
+    }
+#endif
     // Overlap VkInstance creation with VM/script boot: the loader+ICD init is
     // typically 100ms+ and does not need a window.
     eve::boot::startVulkanInstanceWarmup();
@@ -437,7 +443,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             StartupStage stage("runtime: ModuleManager::expose");
             runtime.initialize();
         }
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
             dt.attach(runtime, /*sampleLocals=*/true);
@@ -506,6 +512,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
             eve.set("sceneDirectorScript", std::string(scene_director_content ? scene_director_content : ""));
             eve.set("devServerArg", devServer);
             const char* bench = std::getenv("EVE_BOOT_BENCH");
+            eve.set("packageCheck", std::getenv("EVE_PACKAGE_CHECK") != nullptr);
             eve.set("bootBench", bench && bench[0] != '\0' && bench[0] != '0');
 #if defined(__EMSCRIPTEN__)
             // The browser has no blocking loop; load.nut defines eve_frame and
@@ -530,6 +537,11 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         std::fprintf(stderr, "[startup] load.nut begins at process clock %.1f ms\n",
                      (double) std::clock() * 1000.0 / (double) CLOCKS_PER_SEC);
         runtime.runSource(root, "load.nut");
+        if (std::getenv("EVE_PACKAGE_CHECK")) {
+            if (runtime.root().find("_frame_count").toInt() < 30)
+                throw std::runtime_error("Package acceptance did not complete 30 frames");
+            std::cout << "[package-check] passed: 30 frames\n";
+        }
 #if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         bool editorHostDrive = false;
         try {
@@ -564,14 +576,14 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         EM_ASM({ if (window.eveEngineReady) window.eveEngineReady(); });
         emscripten_set_main_loop(&webgpuFrameTick, 0, /*simulateInfiniteLoop=*/1);
 #endif
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(__EMSCRIPTEN__)
         if (debug) eve::dev::DevTool::instance().detach();
 #endif
         return 0;
     } catch (const std::exception& e) {
         std::string what = e.what() ? e.what() : "unknown exception";
         eve::recordLogEvent("error", "Run failed: " + what);
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             auto& dt = eve::dev::DevTool::instance();
             // The VM error hook and the Runtime error-handler sink (wired in
@@ -592,7 +604,7 @@ int Cmdline::Run(std::string path, std::string root, bool debug, int dapPort, in
         return 3;
     } catch (...) {
         eve::recordLogEvent("error", "Run failed: unknown exception");
-#if !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
+#if EVENGINE_CMDLINE_DEVTOOLS && !defined(EVENGINE_ANDROID) && !defined(EVENGINE_IOS) && !defined(EVENGINE_WEBGPU)
         if (debug) {
             const std::string report =
                 eve::dev::DevTool::instance().notifyError("unknown exception");

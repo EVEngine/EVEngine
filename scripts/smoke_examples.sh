@@ -70,7 +70,10 @@ Cannot open root
 failed to load:
 engine build is missing the window or graphics module
 EOF
-mapfile -t MARKERS <<<"$MARKERS_SCRIPT"
+MARKERS=()
+while IFS= read -r marker; do
+  MARKERS+=("$marker")
+done <<<"$MARKERS_SCRIPT"
 
 # Runnable examples = dirs containing a main.nut.  scripts/check_examples.py
 # guarantees that every non-exempt example directory has one, so this set is the
@@ -138,6 +141,11 @@ for name in "${EXAMPLES[@]}"; do
         /bin/kill -f -s KILL "$pid" 2>/dev/null || true
       else
         kill "$pid" 2>/dev/null || true
+        # macOS ships without GNU timeout; bound shutdown just like timeout -k.
+        sleep 3
+        if kill -0 "$pid" 2>/dev/null; then
+          kill -KILL "$pid" 2>/dev/null || true
+        fi
       fi
     fi
     wait "$pid" 2>/dev/null

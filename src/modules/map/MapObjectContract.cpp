@@ -1,4 +1,5 @@
 #include "map/MapObjectContract.h"
+#include "common/ValueRead.h"
 
 #include "common/Value.h"
 
@@ -20,20 +21,21 @@ const eve::Value* member(const eve::Value::Object& object, std::string_view name
 }
 
 bool booleanMember(const eve::Value::Object& object, std::string_view name, bool fallback, bool& output) {
-    const eve::Value* value = member(object, name);
+    const auto* value = member(object, name);
     if (!value) {
         output = fallback;
         return true;
     }
-    if (!value->isBool()) return false;
-    output = value->asBool();
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    output = parsed.value();
     return true;
 }
 
 bool numericValue(const eve::Value& value, double& output) {
-    if (value.isInt64()) output = static_cast<double>(value.asInt());
-    else if (value.isDouble()) output = value.asDouble();
-    else return false;
+    auto parsed = eve::readNumericDoubleValue(value);
+    if (!parsed) return false;
+    output = parsed.value();
     return std::isfinite(output);
 }
 
@@ -120,13 +122,20 @@ eve::Result<void> validateMapObjects(std::span<const MapObject> objects, std::st
     const eve::Value* typesValue = member(*root, "types");
     if (!schema || !schema->isString() || schema->asString() != "eve.map.object-contract")
         return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::InvalidArgument, "unsupported contract schema", "$contract.schema", {}, "map.object-contract"));
+            eve::DiagnosticCode::InvalidArgument,
+            "unsupported contract schema; expected {schema:\"eve.map.object-contract\",version:1,"
+            "types:[{type,properties:[{name,kind}]}]} (not schemaId / map-of-types)",
+            "$contract.schema", {}, "map.object-contract"));
     if (!version || !version->isInt64() || version->asInt() != 1)
         return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::UnknownVersion, "unsupported contract version", "$contract.version", {}, "map.object-contract"));
+            eve::DiagnosticCode::UnknownVersion,
+            "unsupported contract version; expected version:1 with types:[{type,properties:[{name,kind}]}]",
+            "$contract.version", {}, "map.object-contract"));
     const auto* types = typesValue ? typesValue->getIf<eve::Value::Array>() : nullptr;
-    if (!types) return eve::Result<void>::failure(eve::Diagnostic::error(
-        eve::DiagnosticCode::TypeMismatch, "types must be an array", "$contract.types", {}, "map.object-contract"));
+    if (!types)
+        return eve::Result<void>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::TypeMismatch, "types must be an array of {type,properties:[{name,kind}]} rules",
+            "$contract.types", {}, "map.object-contract"));
 
     bool requireUniqueNames = true;
     bool allowUnknownTypes = false;

@@ -43,6 +43,10 @@ ROOT = Path(__file__).resolve().parent.parent
 # primitives on changed lines. Migrated once from the retired JSON catalogue;
 # edit this list (not a parallel JSON) when marking a new hot path.
 HOT_PATH_GLOBS: tuple[str, ...] = (
+    "src/modules/climbing/ClimbingExecution.cpp",
+    "src/modules/climbing/ClimbingInput.cpp",
+    "src/modules/climbing/ClimbingECS.cpp",
+    "src/modules/climbing/ClimbingServices.cpp",
     "src/modules/weapon/CombatCarrier.cpp",
     "src/modules/physics/WorldSphereSweep.cpp",
     "src/modules/physics/World3DQueries.cpp",
@@ -53,6 +57,7 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/vehicle/VehicleTireRuntime.cpp",
     "src/engine/common/SmoothMax.h",
     "src/modules/audio/EventSink.cpp",
+    "src/modules/audio/PcmStream.cpp",
     "src/modules/crowd/CrowdAvoidance.cpp",
     "src/modules/sensing/EnvironmentQuery.cpp",
     "src/modules/crowd/CrowdInternal.h",
@@ -72,6 +77,9 @@ HOT_PATH_GLOBS: tuple[str, ...] = (
     "src/modules/physics/World3DContacts.cpp",
     "src/modules/physics/box3d/Box3DWorld.cpp",
     "src/modules/physics/box3d/Box3DWorldContacts.cpp",
+    "src/modules/physics/box3d/Box3DWorldMover.cpp",
+    "src/modules/physics/box3d/Box3DWorldQueries.cpp",
+    "src/modules/physics/DistanceField3D.cpp",
     "src/modules/physics/jolt/JoltContactPolicy.cpp",
     "src/modules/physics/jolt/JoltExplosion.cpp",
     "src/modules/physics/jolt/JoltGeometryQueries.cpp",

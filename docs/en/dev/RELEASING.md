@@ -22,7 +22,7 @@ dev may require PRs. The Chinese policy cautions against mandatory status checks
 
 1. Ensure the intended commit is on dev.
 2. Create a GitHub Pre-release at that dev HEAD with a tag such as `v0.1.0`. Tags must use `vMAJOR.MINOR.PATCH`; the tree initially has the development version.
-3. Release runs `release.py start`: create the version branch, remove `-dev`, move the tag to the release commit. Run strict Debug CI, desktop Release builds/tests and mobile Release builds, then package five-platform SDKs and attach them.
+3. Release runs `release.py start`: create the version branch, remove `-dev`, move the tag to the release commit. Run strict Debug CI, desktop Release builds/tests and mobile Release builds, then package seven SDK archives across five platforms and attach them.
 4. `release.py finish` promotes the release, restores the same numeric version plus `-dev` on the version branch and opens two PRs: `promote/vX.X.X` to main and `rebase/vX.X.X` to dev. It directly pushes neither protected branch.
 5. A maintainer merges promotion first, then rebase.
 
@@ -41,6 +41,26 @@ SDKs preserve engine/vendored licenses and relative attribution paths under `sha
 Five-platform SDK tests check layout, exact versions, zip/package operations and native plugin compilation via `find_package(EVEngine)` / `add_eve_plugin()`. Android also assembles the template APK; iOS checks the device bundle, Mach-O executable and arm64 slice. Missing required mobile tools fail rather than skip.
 
 Before publication, every archive's `share/eve/VERSION` must match the tag. Upload SHA256SUMS with SDKs; artifact attestations may be enabled.
+
+### Native Windows/Linux ARM64
+
+`make sdk/win32-arm64` and `make sdk/linux-arm64` install separate SDK trees;
+append `-debug` for development SDKs. Release uses OBJECT linkage. The archive
+names include `-arm64`, while TARGET_PLATFORM remains win32/linux.
+`arm64-sdk.yml` builds on native hosted ARM64 runners using matching PREBUILT
+dependencies. Publish requires all seven SDKs, checks versions and uploads their
+SHA256SUMS. Missing artifacts prevent formal promotion.
+
+ARM64 CI runs the process-isolated unit suite including graphics with null audio.
+Linux uses native Lavapipe/Xvfb; Windows builds and caches a pinned ARM64
+SwiftShader ICD. Runtime setup failures are hard failures. Before upload, the
+archive is extracted and a fresh CMake consumer compiles/links a plugin using
+find_package(EVEngine) and add_eve_plugin(). PE/ELF architecture, exact version,
+zip/package operations, packaged-game survival for five seconds and its script
+startup marker are required. Windows must bundle native Vulkan/VC runtime DLLs.
+After publish, consumer-arm64 downloads actual release bytes, checks SHA256SUMS
+and repeats native consumer compilation and execution. Existing Android and
+cross-host consumer jobs retain their own coverage.
 
 ## Consumer validation
 

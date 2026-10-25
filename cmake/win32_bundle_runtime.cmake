@@ -17,14 +17,23 @@ if(NOT CMAKE_INSTALL_PREFIX)
 endif()
 
 set(_eve_bin "${CMAKE_INSTALL_PREFIX}/bin")
+if(NOT EVE_RUNTIME_ARCH MATCHES "^(x64|arm64)$")
+    message(FATAL_ERROR "win32 bundle: missing configured runtime architecture")
+endif()
 file(MAKE_DIRECTORY "${_eve_bin}")
 
 # --- Vulkan loader ----------------------------------------------------------
 set(_eve_vulkan_dll "")
+if(DEFINED ENV{EVE_VULKAN_LOADER})
+    if(NOT EXISTS "$ENV{EVE_VULKAN_LOADER}")
+        message(FATAL_ERROR "Configured EVE_VULKAN_LOADER does not exist")
+    endif()
+    set(_eve_vulkan_dll "$ENV{EVE_VULKAN_LOADER}")
+endif()
 foreach(_cand IN ITEMS
         "$ENV{VULKAN_SDK}/Bin/vulkan-1.dll"
         "$ENV{VULKAN_SDK}/bin/vulkan-1.dll")
-    if(EXISTS "${_cand}")
+    if(NOT _eve_vulkan_dll AND EXISTS "${_cand}")
         set(_eve_vulkan_dll "${_cand}")
     endif()
 endforeach()
@@ -51,6 +60,11 @@ if(NOT EXISTS "${_eve_vulkan_dll}")
         "Packaged games will need a Vulkan loader from the user's GPU driver.")
 else()
     file(INSTALL "${_eve_vulkan_dll}" DESTINATION "${_eve_bin}")
+    if(DEFINED ENV{EVE_VULKAN_LOADER})
+        get_filename_component(_eve_loader_dir "$ENV{EVE_VULKAN_LOADER}" DIRECTORY)
+        file(INSTALL "${_eve_loader_dir}/LICENSE.txt"
+            DESTINATION "${CMAKE_INSTALL_PREFIX}/share/eve/licenses/Vulkan-Loader")
+    endif()
     message(STATUS "win32 bundle: vulkan-1.dll -> ${_eve_bin}")
 endif()
 
@@ -72,8 +86,8 @@ foreach(_eve_ms_root IN ITEMS
             file(GLOB _eve_redist_vers "${_eve_ed}/VC/Redist/MSVC/*")
             foreach(_eve_ver IN LISTS _eve_redist_vers)
                 file(GLOB _eve_crt_subs_now
-                    "${_eve_ver}/x64/Microsoft.VC*.CRT"
-                    "${_eve_ver}/x64/Microsoft.VC*.DebugCRT")
+                    "${_eve_ver}/${EVE_RUNTIME_ARCH}/Microsoft.VC*.CRT"
+                    "${_eve_ver}/${EVE_RUNTIME_ARCH}/Microsoft.VC*.DebugCRT")
                 list(APPEND _eve_crt_subs ${_eve_crt_subs_now})
             endforeach()
         endforeach()
@@ -108,6 +122,11 @@ set(_eve_crt_dlls
     vcruntime140.dll vcruntime140_1.dll concrt140.dll
     msvcp140d.dll vcruntime140d.dll vcruntime140_1d.dll ucrtbased.dll
     concrt140d.dll)
+if(EVE_RUNTIME_ARCH STREQUAL "arm64")
+    # VS also puts the x64 FH4 helper in its arm64 redist directory. Native
+    # ARM64 uses vcruntime140; copying the x64 helper mixes architectures.
+    list(REMOVE_ITEM _eve_crt_dlls vcruntime140_1.dll vcruntime140_1d.dll)
+endif()
 foreach(_eve_dll IN LISTS _eve_crt_dlls)
     set(_eve_src "")
     foreach(_eve_dir IN LISTS _eve_crt_subs)

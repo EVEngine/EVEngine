@@ -4,16 +4,29 @@
 
 #include "common/BorrowedRef.h"
 #include "common/ECS.h"
+#include "ui/HudCanvas.h"
+#include "ui/HudGeometry.h"
 #include "ui/Theme.h"
 
+#include <cstddef>
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <string>
 #include <vector>
 
 namespace eve::ui {
 
 using UIHostHandle = ecs::EntityHandle;
+
+/** @brief Non-owning node token; valid across property reconciliation, invalid after tree replacement.
+ * @thread Resolve only on the owning UI thread; never persist in serialized documents.
+ */
+struct UINodeHandle {
+    UIHostHandle  host{};
+    std::uint64_t treeGeneration = 0;
+    std::size_t   index          = 0;
+};
 
 /** @brief Widget node kinds understood by the UI renderer. */
 enum class NodeType : uint8_t {
@@ -58,7 +71,9 @@ enum class NodeType : uint8_t {
     PanelFrame       = 38,  // titled fixed chrome (not a free-floating Window host)
     DockArea         = 39,  // named fill slot for a dock region (region in valueText)
     AppFrame         = 40,  // fixed editor frame: toolbar + body + status bar
-    Link             = 41,  // clickable text; target URI in valueText, activation via click event
+    Link             = 41,  // clickable text; target URI in valueText
+    FilledImage      = 42,  // cropped image or solid fill
+    RadialFill       = 43,  // solid sector/ring for cooldown overlays
 };
 
 /** @brief Main-axis direction for Flex containers. */
@@ -205,22 +220,30 @@ struct UINode {
     float posY = 0.f;
     bool absolute = false; // skip flex flow; placed by anchor/pos
     // --- Image / ImageButton props (NodeType::Image*) ---
-    uint64_t textureId = 0;  // opaque id from UIBackend::registerTexture; 0 = solid color
-    float tintR = 1.f;
-    float tintG = 1.f;
-    float tintB = 1.f;
-    float tintA = 1.f;
-    float uv0x = 0.f;  // source rect in texture (UV)
-    float uv0y = 0.f;
-    float uv1x = 1.f;
-    float uv1y = 1.f;
-    float borderL = 0.f;  // nine-patch border (px); all 0 = plain image
-    float borderT = 0.f;
-    float borderR = 0.f;
-    float borderB = 0.f;
-    float cornerRadius = 0.f;  // solid-color rounded rect radius
-    float wrapWidth = 0.f;     // Text wrap width (0 = no wrap)
-    float itemHeight = 0.f;    // ScrollList uniform row height (0 = frame height)
+    uint64_t      textureId        = 0;  // opaque id from UIBackend::registerTexture; 0 = solid color
+    float         tintR            = 1.f;
+    float         tintG            = 1.f;
+    float         tintB            = 1.f;
+    float         tintA            = 1.f;
+    float         uv0x             = 0.f;  // source rect in texture (UV)
+    float         uv0y             = 0.f;
+    float         uv1x             = 1.f;
+    float         uv1y             = 1.f;
+    float         borderL          = 0.f;  // nine-patch border (px); all 0 = plain image
+    float         borderT          = 0.f;
+    float         borderR          = 0.f;
+    float         borderB          = 0.f;
+    FillDirection fillDirection    = FillDirection::Right;
+    bool          fillStretch      = false;
+    float         fillStartDegrees = -90.f;
+    bool          fillClockwise    = true;
+    float         fillInnerRadius  = 0.f;  // fraction of outer radius, [0,1]
+    float         cornerRadius     = 0.f;  // solid-color rounded rect radius
+    float         fontSize         = 0.f;  // zero inherits host font; positive values are logical UI units
+    float         textR = 1.f, textG = 1.f, textB = 1.f, textA = 1.f;
+    float         textAlignX = 0.f, textAlignY = 0.f;
+    float         wrapWidth  = 0.f;  // Text wrap width (0 = no wrap)
+    float         itemHeight = 0.f;  // ScrollList uniform row height (0 = frame height)
     // --- Computed by measure/arrange pass (per frame) ---
     float measuredW = 0.f;
     float measuredH = 0.f;
@@ -268,12 +291,14 @@ public:
 
     /** @brief Meta public API. */
     struct Meta {
-        bool visible = true;
-        int layer = 0;
-        bool modal = false;
-        bool overlay = false;  // no title bar / chrome (HUD-style)
-        bool hasPos = false;
-        bool lockPos = true;       // false: initial position only; user may move/persist it
+        bool      visible = true;
+        int       layer   = 0;
+        bool      modal   = false;
+        HudCanvas canvas;
+        bool      inputTransparent = false;  // explicit display-only host; all pointer/key input passes through
+        bool      overlay          = false;  // no title bar / chrome (HUD-style)
+        bool      hasPos           = false;
+        bool      lockPos          = true;  // false: initial position only; user may move/persist it
         /** @brief When true, renderer applies pos with Always for this frame (tween/Motion). */
         bool  animDrivePos = false;
         float posX = 0.f;
@@ -300,7 +325,8 @@ public:
     };
 
     struct Tree {
-        bool dirty = true;
+        std::uint64_t       generation = 0;
+        bool                dirty      = true;
         std::vector<UINode> nodes;
         int root = -1;
         /** @brief Void. */
@@ -426,6 +452,17 @@ public:
     bool setToggleHandler(const std::string &id, std::function<void(bool)> fn);
     bool setValueHandler(const std::string &id, std::function<void(float)> fn);
     bool setTextHandler(const std::string &id, std::function<void(const std::string &)> fn);
+    /** @brief Resolve an id once into a non-owning, generation-checked node token.
+     * @return Empty when the id is missing. @cost Linear in tree size.
+     * @thread UI thread only. @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] std::optional<UINodeHandle> nodeHandle(const std::string &id);
+    /** @brief Resolve a node token in constant time without transferring ownership.
+     * @return Borrowed node, or empty after host destruction or tree replacement.
+     * @lifetime Borrow valid until tree mutation or host destruction; retain the token across frames.
+     * @thread UI thread only. @reentrancy Does not invoke callbacks.
+     */
+    [[nodiscard]] static eve::OptionalRef<UINode> resolveNode(UINodeHandle handle);
     /**
      * @brief Looks up a node by stable id without transferring ownership.
      * @return Borrowed nullable node owned by this host's tree.

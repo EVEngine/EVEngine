@@ -2650,6 +2650,34 @@ struct Reset {
 
 [[maybe_unused]] eve::Resource *get(const std::string &key) { return eve::ResourceManager::getInstance().get(key); }
 
+// A cache wait observes publication, not the executor's final thread teardown.
+// Own and join workers before destroying their gate or clearing capabilities.
+class DelayedResourceExecutor final : public eve::caps::IAsyncWorkExecutor {
+public:
+    ~DelayedResourceExecutor() override {
+        release();
+        workers_.clear();
+        eve::cap::revoke<eve::caps::IAsyncWorkExecutor>(this);
+    }
+
+    eve::Result<void> submit(std::function<void()> work) override {
+        workers_.emplace_back([this, work = std::move(work)]() {
+            { std::lock_guard<std::mutex> hold(gate_); }
+            work();
+        });
+        return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+    }
+
+    void release() {
+        if (hold_.owns_lock()) hold_.unlock();
+    }
+
+private:
+    std::mutex                   gate_;
+    std::unique_lock<std::mutex> hold_{gate_};
+    std::vector<std::jthread>    workers_;
+};
+
 }  // namespace
 
 
@@ -2657,22 +2685,7 @@ TEST_CASE("resource.requestAsyncThenWaitFor") {
     Reset reset;
     provider();
 
-    std::mutex            gate;
-    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
-    public:
-        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
-        eve::Result<void> submit(std::function<void()> work) override {
-            worker_ = std::jthread([work = std::move(work), gate = gate_]() {
-                std::lock_guard<std::mutex> hold(*gate);
-                work();
-            });
-            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-        }
-        std::mutex *gate_ = nullptr;
-        std::jthread worker_;
-    } executor{&gate};
-    // Unlock before joining even if an assertion exits the test early.
-    std::unique_lock<std::mutex> gateLock(gate);
+    DelayedResourceExecutor executor;
     eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
 
     auto queued = eve::ResourceManager::getInstance().request("async.dat");
@@ -2681,7 +2694,7 @@ TEST_CASE("resource.requestAsyncThenWaitFor") {
     CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
     CHECK(!eve::ResourceManager::getInstance().peek("async.dat").has_value());
 
-    gateLock.unlock();
+    executor.release();
     auto ready = eve::ResourceManager::getInstance().waitFor("async.dat");
     REQUIRE(ready.ok());
     CHECK_EQ(static_cast<TestResource &>(ready.value().get()).value, 1);
@@ -2692,28 +2705,13 @@ TEST_CASE("resource.getJoinsInFlightRequest") {
     Reset reset;
     provider();
 
-    std::mutex            gate;
-    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
-    public:
-        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
-        eve::Result<void> submit(std::function<void()> work) override {
-            worker_ = std::jthread([work = std::move(work), gate = gate_]() {
-                std::lock_guard<std::mutex> hold(*gate);
-                work();
-            });
-            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-        }
-        std::mutex *gate_ = nullptr;
-        std::jthread worker_;
-    } executor{&gate};
-    // Unlock before joining even if an assertion exits the test early.
-    std::unique_lock<std::mutex> gateLock(gate);
+    DelayedResourceExecutor executor;
     eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
 
     auto queued = eve::ResourceManager::getInstance().request("join.dat");
     CHECK(queued.ok());
     CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
-    gateLock.unlock();
+    executor.release();
     eve::Resource *loaded = get("join.dat");
     REQUIRE(loaded != nullptr);
     CHECK_EQ(static_cast<TestResource *>(loaded)->value, 1);
@@ -2727,29 +2725,14 @@ TEST_CASE("resource.asyncLoadFailureSurfacesInWaitFor") {
     // Failure injection on the asynchronous path: the worker fails to produce the
     // resource, so waitFor must report a failure and leave no pending job behind.
     TestProvider::failures.insert("async-fail.dat");
-    std::mutex            gate;
-    class DelayedExecutor final : public eve::caps::IAsyncWorkExecutor {
-    public:
-        explicit DelayedExecutor(std::mutex *gate) : gate_(gate) {}
-        eve::Result<void> submit(std::function<void()> work) override {
-            worker_ = std::jthread([work = std::move(work), gate = gate_]() {
-                std::lock_guard<std::mutex> hold(*gate);
-                work();
-            });
-            return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
-        }
-        std::mutex *gate_ = nullptr;
-        std::jthread worker_;
-    } executor{&gate};
-    // Unlock before joining even if an assertion exits the test early.
-    std::unique_lock<std::mutex> gateLock(gate);
+    DelayedResourceExecutor executor;
     eve::cap::provide<eve::caps::IAsyncWorkExecutor>(&executor);
 
     auto queued = eve::ResourceManager::getInstance().request("async-fail.dat");
     CHECK(queued.ok());
     CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 1u);
 
-    gateLock.unlock();
+    executor.release();
     auto ready = eve::ResourceManager::getInstance().waitFor("async-fail.dat");
     CHECK(!ready.ok());
     CHECK_EQ(eve::ResourceManager::getInstance().pendingCount(), 0u);

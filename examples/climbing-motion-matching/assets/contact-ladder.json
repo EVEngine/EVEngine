@@ -1,0 +1,90 @@
+{
+  "schemaId": "evengine.climbing-anchor-graph",
+  "schemaVersion": 2,
+  "id": "contact:ladder",
+  "sourceGeometryContentId": "contact:ladder:v1",
+  "buildSettingsHash": "contact-lab:v1",
+  "nodes": [
+    {
+      "id": "start",
+      "kind": "ladder_rung",
+      "localPosition": [
+        0,
+        1.5,
+        -0.25
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        -0.21,
+        1.5,
+        -0.25
+      ],
+      "rightHandSocket": [
+        0.21,
+        1.5,
+        -0.25
+      ],
+      "feetSocket": [
+        0,
+        0.30000000000000004,
+        -0.25
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    },
+    {
+      "id": "next",
+      "kind": "ladder_rung",
+      "localPosition": [
+        0,
+        2.1,
+        -0.25
+      ],
+      "localNormal": [
+        0,
+        0,
+        -1
+      ],
+      "localTangent": [
+        1,
+        0,
+        0
+      ],
+      "leftHandSocket": [
+        -0.21,
+        2.1,
+        -0.25
+      ],
+      "rightHandSocket": [
+        0.21,
+        2.1,
+        -0.25
+      ],
+      "feetSocket": [
+        0,
+        0.9000000000000001,
+        -0.25
+      ],
+      "occupancySlots": 1,
+      "tags": []
+    }
+  ],
+  "edges": [
+    {
+      "from": "start",
+      "to": "next",
+      "kind": "climb",
+      "bidirectional": false,
+      "requiredTags": []
+    }
+  ]
+}
