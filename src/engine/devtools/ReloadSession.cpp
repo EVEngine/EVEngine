@@ -1,4 +1,5 @@
 #include "devtools/ReloadSession.h"
+#include "devtools/McpFrameCapture.hpp"
 
 #include "devtools/Snapshot.hpp"
 
@@ -42,6 +43,7 @@ bool ReloadSession::begin(HSQUIRRELVM vm, std::string* err) {
     // Best-effort manual rollback point (same file as the F6/F7 snapshot).
     std::string saveErr;
     Snapshot::instance().saveFile(vm, "eve_snapshot.json", &saveErr);
+    resetMcpFrameCapture();
     active_ = true;
     return true;
 }
@@ -58,17 +60,12 @@ bool ReloadSession::commit(HSQUIRRELVM vm, std::string* err) {
     StateValue  current;
     std::string captureErr;
     if (Snapshot::instance().captureState(vm, current, &captureErr)) {
-        StateValue*       mergedRoots  = merged.find("roots");
-        const StateValue* currentRoots = current.find("roots");
-        if (mergedRoots && mergedRoots->isObject() && currentRoots && currentRoots->isObject()) {
-            for (const auto& name : mergedRoots->keys()) {
-                StateValue*       oldRoot = mergedRoots->find(name);
-                const StateValue* newRoot = currentRoots->find(name);
-                if (oldRoot && oldRoot->isObject() && newRoot && newRoot->isObject()) {
-                    oldRoot->mergeDefaults(*newRoot);
-                }
-            }
+        auto result = Snapshot::instance().mergeDefaultsState(buffer_, current);
+        if (!result.ok()) {
+            if (err) *err = result.diagnostics().front().message();
+            return false;
         }
+        merged = std::move(result).takeValue();
     }
 
     const bool ok = restore(vm, merged, err);

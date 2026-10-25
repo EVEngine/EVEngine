@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <utility>
 #include "common/Value.h"
+#include "common/ValueRead.h"
 #include "orders/CommandQueue.h"
 #include "vehicle/Vehicle.h"
 #include "vehicle/VehicleEffects.h"
@@ -38,11 +39,10 @@ const eve::Value* field(const eve::Value::Object& object, std::string_view name)
 }
 
 bool readString(const eve::Value::Object& object, std::string_view name, std::string& result, bool required = false) {
-    const auto* value = field(object, name);
-    if (value == nullptr) return !required;
-    const auto* text = value->getIf<std::string>();
-    if (text == nullptr || (required && text->empty())) return false;
-    result = *text;
+    if (!field(object, name)) return !required;
+    auto parsed = required ? eve::readNonEmptyStringMember(object, name) : eve::readStringMember(object, name);
+    if (!parsed) return false;
+    result = std::move(parsed.value());
     return true;
 }
 
@@ -66,33 +66,25 @@ bool readNumber(const eve::Value::Object& object, std::string_view name, float& 
 
 bool readSignedNumber(const eve::Value::Object& object, std::string_view name, float& result, float fallback) {
     const auto* value = field(object, name);
-    if (value == nullptr) {
+    if (!value) {
         result = fallback;
         return true;
     }
-    double number = 0.0;
-    if (const auto* real = value->getIf<double>())
-        number = *real;
-    else if (const auto* integer = value->getIf<std::int64_t>())
-        number = static_cast<double>(*integer);
-    else
-        return false;
-    if (!std::isfinite(number) || number < -std::numeric_limits<float>::max() ||
-        number > std::numeric_limits<float>::max())
-        return false;
-    result = static_cast<float>(number);
+    auto parsed = eve::readFiniteFloatValue(*value);
+    if (!parsed) return false;
+    result = parsed.value();
     return true;
 }
 
 bool readBool(const eve::Value::Object& object, std::string_view name, bool& result, bool fallback) {
     const auto* value = field(object, name);
-    if (value == nullptr) {
+    if (!value) {
         result = fallback;
         return true;
     }
-    const auto* boolean = value->getIf<bool>();
-    if (boolean == nullptr) return false;
-    result = *boolean;
+    auto parsed = eve::readBoolValue(*value);
+    if (!parsed) return false;
+    result = parsed.value();
     return true;
 }
 
@@ -218,7 +210,20 @@ eve::Result<VehicleDefinition> parseVehicleDefinition(const eve::definitions::De
                                        "suspension", {}, "vehicle.definition_runtime"));
         if (!readNumber(*value, "maxTravel", result.suspension.maxTravel, result.suspension.maxTravel) ||
             !readNumber(*value, "driveForce", result.suspension.driveForce, result.suspension.driveForce) ||
-            !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip))
+            !readNumber(*value, "lateralGrip", result.suspension.lateralGrip, result.suspension.lateralGrip) ||
+            !readNumber(*value, "wheelInertia", result.suspension.wheelInertia, result.suspension.wheelInertia) ||
+            !readNumber(*value, "tireFriction", result.suspension.tireFriction, result.suspension.tireFriction) ||
+            !readNumber(*value, "longitudinalStiffness", result.suspension.longitudinalStiffness,
+                        result.suspension.longitudinalStiffness) ||
+            !readNumber(*value, "corneringStiffness", result.suspension.corneringStiffness,
+                        result.suspension.corneringStiffness) ||
+            !readNumber(*value, "rollingResistance", result.suspension.rollingResistance,
+                        result.suspension.rollingResistance) ||
+            !readNumber(*value, "brakeTorque", result.suspension.brakeTorque, result.suspension.brakeTorque) ||
+            !readNumber(*value, "maxSteerAngle", result.suspension.maxSteerAngle, result.suspension.maxSteerAngle) ||
+            !readNumber(*value, "supportAcceleration2D", result.suspension.supportAcceleration2D,
+                        result.suspension.supportAcceleration2D) ||
+            result.suspension.wheelInertia <= 0 || result.suspension.maxSteerAngle > 1.4f)
             return eve::Result<VehicleDefinition>::failure(
                 eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "suspension numeric field is invalid",
                                        "suspension", {}, "vehicle.definition_runtime"));

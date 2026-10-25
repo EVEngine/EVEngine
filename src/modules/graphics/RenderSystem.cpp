@@ -1,6 +1,7 @@
 #include "graphics/RenderSystem.h"
 #include "common/Assert.h"
 #include "common/Exception.h"
+#include "common/Profile.h"
 #include "common/RenderTrace.h"
 #include "graphics/Canvas.h"
 #include "graphics/Graphics.h"
@@ -528,6 +529,7 @@ void RenderSystem::drawItems(Graphics &gfx, std::vector<DrawItem2D> &items, bool
 }
 
 void RenderSystem::render(Graphics &gfx) {
+    EV_PROFILE_MODULE("graphics", "Render2D");
     eve::debug::rtFrameBegin();
     std::vector<DrawItem2D> items;
     collectSprites(items);

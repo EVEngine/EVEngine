@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -46,6 +47,8 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
         WorldBackend    *world = nullptr;
         b3CollisionPlane planes[planeCapacity]{};
         int              count      = 0;
+        b3Vec3           steepNormals[planeCapacity]{};
+        int              steepCount = 0;
         b3Vec3           desired    = b3Vec3_zero;
         b3Vec3           up         = b3Vec3_axisY;
         b3Vec3           bestNormal = b3Vec3_zero;
@@ -54,11 +57,18 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
 
         static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int resultCount, void *context) {
             auto *self = static_cast<PlaneCollector *>(context);
-            if (self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
+            if (b3Shape_IsSensor(shapeId) || self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
             for (int i = 0; i < resultCount && self->count < planeCapacity; ++i) {
                 const b3Plane &plane = results[i].plane;
                 self->planes[self->count++] =
                     b3CollisionPlane{.plane = plane, .pushLimit = FLT_MAX, .push = 0.f, .clipVelocity = true};
+                const float upDot = b3Dot(plane.normal, self->up);
+                // Clip uphill intent independently of penetration recovery to avoid solver slop creep.
+                if (upDot > 0.f && upDot < self->world->owner_->moverSlopeCos_ && self->steepCount < planeCapacity) {
+                    const b3Vec3 horizontal = plane.normal - upDot * self->up;
+                    const float  length     = b3Length(horizontal);
+                    if (length > 1e-6f) self->steepNormals[self->steepCount++] = (1.f / length) * horizontal;
+                }
                 const float d = b3Dot(plane.normal, self->desired);
                 if (d < self->bestDot) {
                     self->bestDot    = d;
@@ -82,19 +92,25 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
 
     for (int pass = 0; pass < 5; ++pass) {
         collector.count   = 0;
+        collector.steepCount = 0;
         collector.desired = target - current;
         b3World_CollideMover(worldId_, current, &mover, filter, &PlaneCollector::callback, &collector);
         owner_->moverPlaneCount_ += collector.count;
         collided = collided || collector.count > 0;
 
-        const b3Vec3        targetDelta = target - current;
+        b3Vec3 targetDelta = target - current;
+        for (int i = 0; i < collector.steepCount; ++i) {
+            const auto  normal = collector.steepNormals[i];
+            const float inward = b3Dot(targetDelta, normal);
+            if (inward < 0.f) targetDelta = targetDelta - inward * normal;
+        }
         b3PlaneSolverResult solved      = b3SolvePlanes(targetDelta, collector.planes, collector.count);
         b3Vec3              delta       = solved.delta;
         struct MoverFilter {
             WorldBackend *world = nullptr;
             static bool   callback(b3ShapeId shapeId, void *context) {
                 auto *self = static_cast<MoverFilter *>(context);
-                return !self->world->do_shouldIgnoreQueryShape(shapeId);
+                return !b3Shape_IsSensor(shapeId) && !self->world->do_shouldIgnoreQueryShape(shapeId);
             }
         } moverFilter{this};
         const float fraction =
@@ -108,14 +124,36 @@ bool WorldBackend::do_moveCapsule(float ax, float ay, float az, float bx, float 
         if (b3LengthSquared(target - current) <= toleranceSquared) break;
     }
 
-    const b3Vec3 total      = current - start;
+    const b3Vec3 total = current - start;
+    // Grounding describes support at the destination, not planes left behind.
+    struct SupportCollector {
+        WorldBackend *world  = nullptr;
+        b3Vec3        up     = b3Vec3_axisY;
+        b3Vec3        normal = b3Vec3_zero;
+        float         upDot  = -1.f;
+
+        static bool callback(b3ShapeId shapeId, const b3PlaneResult *results, int count, void *context) {
+            auto *self = static_cast<SupportCollector *>(context);
+            if (b3Shape_IsSensor(shapeId) || self->world->do_shouldIgnoreQueryShape(shapeId)) return true;
+            for (int i = 0; i < count; ++i) {
+                const float upDot = b3Dot(results[i].plane.normal, self->up);
+                if (upDot > self->upDot) {
+                    self->upDot  = upDot;
+                    self->normal = results[i].plane.normal;
+                }
+            }
+            return true;
+        }
+    } support{this, moverUp_};
+    b3World_CollideMover(worldId_, current, &mover, filter, &SupportCollector::callback, &support);
+    if (b3LengthSquared(collector.bestNormal) <= toleranceSquared) collector.bestNormal = support.normal;
     owner_->moverDeltaX_    = total.x;
     owner_->moverDeltaY_    = total.y;
     owner_->moverDeltaZ_    = total.z;
     owner_->moverNormalX_   = collector.bestNormal.x;
     owner_->moverNormalY_   = collector.bestNormal.y;
     owner_->moverNormalZ_   = collector.bestNormal.z;
-    owner_->moverGroundDot_ = collector.maxUpDot;
+    owner_->moverGroundDot_ = support.upDot;
     owner_->moverGrounded_  = owner_->moverGroundDot_ >= owner_->moverSlopeCos_;
     return collided;
 }

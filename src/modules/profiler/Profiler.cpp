@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "profiler/Profiler.h"
 
 #include "common/GpuTimer.h"
@@ -30,6 +31,7 @@ Profiler::~Profiler() {
 }
 
 void Profiler::setEnabled(bool on) {
+    if (!on || !enabled()) frameBeginNs_ = 0;
     eve::prof::Profiler::setEnabled(on);
     if (!on) {
         frameMs_ = 0.f;
@@ -49,6 +51,7 @@ void Profiler::reset() {
     eve::prof::Profiler::reset();
     frameMs_ = 0.f;
     captureSequence_ = 0;
+    frameBeginNs_    = 0;
 }
 
 void Profiler::ensureGpuTimer() const {
@@ -64,11 +67,12 @@ void Profiler::beginFrame() {
 }
 
 void Profiler::endFrame() {
-    if (!enabled()) return;
+    if (!enabled() || frameBeginNs_ == 0) return;
     const double totalMs = static_cast<double>(nowNs() - frameBeginNs_) / 1'000'000.0;
     frameMs_             = static_cast<float>(totalMs);
     eve::prof::Profiler::frameMark();
     ++captureSequence_;
+    frameBeginNs_ = 0;
 }
 
 void Profiler::begin(const char* name) {
@@ -81,7 +85,9 @@ void Profiler::end() {
     eve::prof::Profiler::zoneEnd();
 }
 
-void Profiler::frameBegin() { beginFrame(); }
+void Profiler::frameBegin() {
+    if (enabled() && frameBeginNs_ == 0) beginFrame();
+}
 
 void Profiler::frameEnd() { endFrame(); }
 
@@ -132,7 +138,7 @@ std::string Profiler::textReport() const {
     ensureGpuTimer();
     if (gpuTimer_ && gpuTimer_->gpuTimingAvailable()) {
         char buf[64];
-        std::snprintf(buf, sizeof(buf), "  GPU frame: %.2f ms\n", gpuTimer_->gpuFrameMs());
+        std::snprintf(buf, sizeof(buf), "  GPU graphics-queue span (delayed): %.2f ms\n", gpuTimer_->gpuFrameMs());
         report += buf;
     }
     return report;

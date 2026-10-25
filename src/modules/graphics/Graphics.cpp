@@ -1,5 +1,7 @@
 #include "graphics/Graphics.h"
 #include "common/Capability.h"
+#include "common/FrameCapture.h"
+#include "common/Profile.h"
 #include "common/SquirrelBinding.h"
 #include "common/config.h"
 #include "font/FontData.h"
@@ -26,13 +28,13 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/GrassWind.h"
 #include "graphics/Light.h"
-#include "graphics/ShadowScheme.h"
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -49,6 +51,7 @@
 #include "graphics/Renderable3DBindings.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/ShaderScriptBindings.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/VegetationScriptBindings.h"
 #include "graphics/Volumetric.h"
@@ -163,7 +166,7 @@ void setShaderScript(Graphics* gfx, ssq::Object obj) {
 
 }  // namespace
 
-Graphics::Graphics() {
+Graphics::Graphics() : frameCaptures_(std::make_unique<FrameCaptureStore>()) {
     primitiveScene_ = std::make_shared<PrimitiveScene>();
     // The window module owns the native window; we own the render surface.
     // Register as its surface host so window never has to include graphics.
@@ -171,11 +174,13 @@ Graphics::Graphics() {
     // by the time it is used; see common/WindowSurfaceHost.h.
     eve::cap::provide<IWindowSurfaceHost>(this);
     eve::cap::provide<IFramePresentation>(this);
+    eve::cap::provide<IRenderFrameCapture>(frameCaptures_.get());
     registerGraphicsCapabilities();
     registerGraphicsArtifactProvider(this);
 }
 
 Graphics::~Graphics() {
+    eve::cap::revoke<IRenderFrameCapture>(frameCaptures_.get());
     eve::cap::revoke<IFramePresentation>(this);
     retireResourceLifetime();
     // Derived backends detach first, while their virtual releaseMesh boundary
@@ -185,6 +190,8 @@ Graphics::~Graphics() {
     // are destroyed where the complete types are visible.
 }
 
+FrameCaptureStore& Graphics::frameCaptures() { return *frameCaptures_; }
+
 #ifdef EVENGINE_WEBGPU
 Module_IMPL(Graphics, new eve::graphics::webgpu::Graphics());
 #else
@@ -192,6 +199,7 @@ Module_IMPL(Graphics, new vulkan::Graphics());
 #endif
 
 void Graphics::render3D() {
+    ++mesh3dDrawEpoch_;
     pushValidationScope();
     recordingEngine3D_ = true;
     eve::debug::rtFrameBegin();
@@ -203,7 +211,14 @@ void Graphics::render3D() {
 
 void Graphics::renderScene3DToCanvas(Canvas* canvas, Camera3D* camera) {
     pushValidationScope();
-    RenderSystem3D::renderToCanvas(*this, canvas, camera);
+    RenderSystem3D::renderToCanvas(*this, canvas, camera, 0xffffffffu, 1.f, true, true, nullptr, nullptr, 1.f, true);
+    popValidationScope();
+}
+
+void Graphics::renderScene3DWithShadowsToCanvas(Canvas* canvas, Camera3D* camera) {
+    if (!canvas || !camera) return;
+    pushValidationScope();
+    RenderSystem3D::renderWithShadowsToCanvas(*this, *canvas, *camera);
     popValidationScope();
 }
 
@@ -284,15 +299,7 @@ void Graphics::expose(ssq::Table& table) {
     exposeVegetationScriptBindings(table, cls);
     exposeCanvasScriptBindings(table);
 
-#ifndef EVENGINE_WEBGPU
-    auto fontCls =
-        table.addClass<Font>("GraphicsFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
-    fontCls.addFunc("getHeight", &Font::getHeight);
-    fontCls.addFunc("getAscent", &Font::getAscent);
-    fontCls.addFunc("getBaseline", &Font::getBaseline);
-    fontCls.addFunc("getWidth", &Font::getWidth);
-    fontCls.addFunc("hasGlyph", &Font::hasGlyph);
-#endif
+    exposeFontAndDamageNumberBindings(table, cls);
 
     auto maskCls = table.addClass<AlphaMask>("AlphaMask",
                                              std::function<AlphaMask*()>([]() -> AlphaMask* { return nullptr; }), true);
@@ -585,12 +592,47 @@ void Graphics::expose(ssq::Table& table) {
     material.addFunc("getNormalTexture", &Material::getNormalTexture);
     material.addFunc("setHeightTexture", &Material::setHeightTexture);
     material.addFunc("getHeightTexture", &Material::getHeightTexture);
-    material.addFunc("setVirtualTexture",
-                     [](Material* self, Texture* albedoAtlas, Texture* normalAtlas, Texture* pageTable, int pageCountX,
-                        int pageCountY, int atlasSlotsX, int atlasSlotsY, float borderFraction) {
-                         auto result = self->setVirtualTexture(albedoAtlas, normalAtlas, pageTable, pageCountX,
-                                                               pageCountY, atlasSlotsX, atlasSlotsY, borderFraction);
+    material.addFunc("enableVirtualTexture",
+                     [](Material* self, int width, int height, int tileSize, int borderSize, int residentCapacity,
+                        int maxDecodesPerUpdate) {
+                         if (!self) throw eve::Exception("Material.enableVirtualTexture: null self");
+                         VirtualTextureStreamingConfig config{};
+                         config.blend.width                = width;
+                         config.blend.height               = height;
+                         config.blend.tileSize             = tileSize;
+                         config.blend.borderSize           = borderSize;
+                         config.blend.residentPageCapacity = std::size_t(std::max(1, residentCapacity));
+                         config.maxDecodesPerUpdate        = std::size_t(std::max(1, maxDecodesPerUpdate));
+                         auto result                       = self->enableVirtualTexture(config);
                          if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+                     });
+    auto addMaterialVtLayer = [](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                 image::ImageData* weight, float uvScale, float constantWeight, float heightContrast) {
+        if (!self) throw eve::Exception("Material.addVirtualTextureLayer: null self");
+        if (!albedo) throw eve::Exception("Material.addVirtualTextureLayer: albedo is required");
+        VirtualTextureBlendLayer layer{};
+        layer.albedo = std::shared_ptr<image::ImageData>(albedo, [](image::ImageData*) {});
+        if (normal) layer.normal = std::shared_ptr<image::ImageData>(normal, [](image::ImageData*) {});
+        if (weight) layer.weight = std::shared_ptr<image::ImageData>(weight, [](image::ImageData*) {});
+        layer.uvScale        = uvScale;
+        layer.constantWeight = constantWeight;
+        layer.heightContrast = heightContrast;
+        auto result          = self->addVirtualTextureLayer(layer);
+        if (!result.ok()) throw eve::Exception("%s", result.status().describe().c_str());
+        return int(result.value());
+    };
+    material.addFunc("addVirtualTextureLayer",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          float uvScale, float constantWeight, float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, nullptr, uvScale, constantWeight,
+                                                   heightContrast);
+                     });
+    material.addFunc("addVirtualTextureLayerWeighted",
+                     [addMaterialVtLayer](Material* self, image::ImageData* albedo, image::ImageData* normal,
+                                          image::ImageData* weight, float uvScale, float constantWeight,
+                                          float heightContrast) {
+                         return addMaterialVtLayer(self, albedo, normal, weight, uvScale, constantWeight,
+                                                   heightContrast);
                      });
     material.addFunc("clearVirtualTexture", &Material::clearVirtualTexture);
     material.addFunc("usesVirtualTexture", [](Material* self) {
@@ -598,6 +640,11 @@ void Graphics::expose(ssq::Table& table) {
     });
     material.addFunc("setShader", &Material::setShader);
     material.addFunc("getShader", &Material::getShader);
+    // Script adapter for the canonical validated PbrSurface API. Only the descriptor
+    // is copied; referenced textures remain borrowed from their Graphics owner.
+    material.addFunc("copyPbrSurfaceFrom", [vm = table.getHandle()](Material* self, Material* source) {
+        return eve::script::projectResult(vm, self->setPbrSurface(source->pbrSurface()));
+    });
     material.addFunc("setTint", &Material::setTint);
     material.addFunc("setMetallic", &Material::setMetallic);
     material.addFunc("getMetallic", &Material::getMetallic);
@@ -1398,6 +1445,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setMesh3DView", std::function<void(Graphics*, ssq::Array)>(setMesh3DViewScript));
     cls.addFunc("setMesh3DCameraPos", std::function<void(Graphics*, float, float, float)>(setMesh3DCameraPosScript));
     cls.addFunc("renderScene3DToCanvas", &Graphics::renderScene3DToCanvas);
+    cls.addFunc("renderScene3DWithShadowsToCanvas", &Graphics::renderScene3DWithShadowsToCanvas);
     cls.addFunc("drawScene3DRGBA", &Graphics::drawScene3DRGBA);
     cls.addFunc("saveFramePng", &Graphics::saveFramePng);
     cls.addFunc("drawScene3D", &Graphics::drawScene3D);
@@ -1434,11 +1482,38 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("setShadowSchemeHysteresisBonus", [](Graphics*, float bonus) {
         ShadowSchemeSettings::current().hysteresisBonus = bonus;
     });
+    // Dynamic shadow atlas resolution + CSM coverage. GPU recreates on next
+    // shadow ensure when atlas size changes (@cost: full depth-array realloc).
+    cls.addFunc("setShadowSchemeDirectionalMapSize", [](Graphics*, int size) {
+        if (size > 0) (void)setShadowSchemeMapSizes(size, -1);
+    });
+    cls.addFunc("getShadowSchemeDirectionalMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMapSize; });
+    cls.addFunc("setShadowSchemeLocalMapSize", [](Graphics*, int size) {
+        if (size > 0) {
+            auto& s        = ShadowSchemeSettings::current();
+            s.localMapSize = clampShadowMapSize(size);
+        }
+    });
+    cls.addFunc("getShadowSchemeLocalMapSize", [](Graphics*) { return ShadowSchemeSettings::current().localMapSize; });
+    cls.addFunc("getShadowSchemeAtlasMapSize",
+                [](Graphics*) { return ShadowSchemeSettings::current().resolvedAtlasMapSize(); });
+    cls.addFunc("setShadowSchemeDirectionalMaxDistance",
+                [](Graphics*, float meters) { (void)setShadowSchemeDirectionalMaxDistance(meters); });
+    cls.addFunc("getShadowSchemeDirectionalMaxDistance",
+                [](Graphics*) { return ShadowSchemeSettings::current().directionalMaxDistance; });
+    cls.addFunc("setShadowSchemeAdaptiveCascadeResolution", [](Graphics*, bool enabled) {
+        ShadowSchemeSettings::current().enableAdaptiveCascadeResolution = enabled;
+    });
+    cls.addFunc("getShadowSchemeAdaptiveCascadeResolution",
+                [](Graphics*) { return ShadowSchemeSettings::current().enableAdaptiveCascadeResolution; });
     cls.addFunc("setCloudShadows", &Graphics::setCloudShadows);
     cls.addFunc("newMaterial", &Graphics::newMaterial);
     cls.addFunc("getRenderControl", &Graphics::getRenderControl);
     cls.addFunc("setMsaaSamples", &Graphics::setMsaaSamples);
     cls.addFunc("getMsaaSamples", &Graphics::getMsaaSamples);
+    cls.addFunc("setVSyncCount", &Graphics::setVSyncCount);
+    cls.addFunc("getVSyncCount", [](Graphics* self) { return self->getVSyncCount(); });
     cls.addFunc("getSceneColorTexture", &Graphics::getSceneColorTexture);
     cls.addFunc("newQuad", &Graphics::newQuad);
     cls.addFunc("newVolumetric", &Graphics::newVolumetric);
@@ -1538,6 +1613,7 @@ void Graphics::setSceneDepthOfField(float focusDistance, float maximumBlurPixels
     sceneDepthOfFieldFarPlane_          = farPlane;
 }
 Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
+    EV_PROFILE_MODULE("graphics", "PostProcess.Prepare");
     if (!scene) return nullptr;
     Texture*          resolved  = scene;
     AntiAliasing*     aa        = pipelineAntiAliasing();
@@ -1553,11 +1629,7 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
         aa->setMode("fxaa");
         const int width  = std::max(scene->getWidth(), 1);
         const int height = std::max(scene->getHeight(), 1);
-        if (!spatialAAResolve_ || spatialAAResolveWidth_ != width || spatialAAResolveHeight_ != height) {
-            spatialAAResolve_       = newHDRCanvas(width, height);
-            spatialAAResolveWidth_  = width;
-            spatialAAResolveHeight_ = height;
-        }
+        spatialAAResolve_ = &prepareFramePostTarget(FramePostTarget::SpatialAA, width, height);
         aa->applyTo(this, scene, spatialAAResolve_);
         resolved = spatialAAResolve_->getTexture();
     }
@@ -1579,6 +1651,13 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
                                      getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
                                      getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
                                      getSceneTransitionLensScale(), meterSource);
+}
+
+Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {
+    auto& canvas = sharedFramePostTargets_[static_cast<size_t>(target)];
+    if (!canvas || canvas->getWidth() != width || canvas->getHeight() != height) canvas = newHDRCanvas(width, height);
+    if (!canvas) throw Exception("Post-process target allocation failed");
+    return *canvas;
 }
 
 Canvas* Graphics::pipelineReflectionComposite(int width, int height) {

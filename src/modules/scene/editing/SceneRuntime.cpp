@@ -214,7 +214,19 @@ Result<void> SceneHostEditorTarget::commitDomainState(
     auto committed = SceneTargetBase::commitDomainState(std::move(candidate));
     if (!committed.ok()) return committed;
     // Observers run only after both published host and transaction baseline agree.
-    if (auto* live = host()) live->fireEvent("tree_changed", "");
+    try {
+        if (auto* live = host()) live->fireEvent("tree_changed", "");
+    } catch (const std::exception& error) {
+        // Publication already succeeded. An observer failure must not turn it
+        // into a rejected transaction or cause callers to replay the mutation.
+        return editing::applied<void>(
+            {editing::ruleDiagnostic(eve::DiagnosticCode::Failed, RuleId("scene.publication.observer"),
+                                     editing::DiagnosticSeverity::Warning, error.what())});
+    } catch (...) {
+        return editing::applied<void>(
+            {editing::ruleDiagnostic(eve::DiagnosticCode::Failed, RuleId("scene.publication.observer"),
+                                     editing::DiagnosticSeverity::Warning, "Scene observer threw after publication")});
+    }
     return editing::applied<void>();
 }
 

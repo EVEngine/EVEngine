@@ -1,0 +1,55 @@
+diff --git a/src/ECS.hpp b/src/ECS.hpp
+--- a/src/ECS.hpp
++++ b/src/ECS.hpp
+@@ -1396,9 +1396,14 @@
+ 
+     bool operator==(const ViewIterator &other) const
+     {
+-      bool reg = RegistryBufferIterator<B>::operator==(other);
+-      bool ts[] = {BufferIterator<Ts>::operator==(other)...};
+-      return reg && std::all_of(ts, ts + sizeof...(Ts), [](bool b) { return b; });
++      if constexpr (sizeof...(Ts) == 0)
++        return RegistryBufferIterator<B>::operator==(other);
++      else
++      {
++        bool reg = RegistryBufferIterator<B>::operator==(other);
++        bool ts[] = {BufferIterator<Ts>::operator==(other)...};
++        return reg && std::all_of(ts, ts + sizeof...(Ts), [](bool b) { return b; });
++      }
+     }
+ 
+     bool operator!=(const ViewIterator &other) const { return !(*this == other); }
+@@ -1468,12 +1473,30 @@
+   public:
+     View() : View(*current()) {}
+ 
++    /**
++     * @brief Prepares the component columns and defers structural changes.
++     * @ownership Borrows the Table; the Table continues to own all entities.
++     * @lifetime The Table must outlive the View and its borrowed component data.
++     * @thread Call on the Table owner thread; preparation may construct values.
++     * @reentrancy If preparation throws, only this View's defer level is released.
++     *              Successfully constructed slots remain available for retry.
++     * @cost Checks presence words and constructs missing default values per
++     *       component column; existing values are reused on repeated Views.
++     */
+     explicit View(Table &table) : table_(&table)
+     {
+       table_->begin_defer();
+-      auto *reg = table.template getOrCreateManager<B>()
+-                      .template getOrCreateRegistryComponentBuffer<B>();
+-      ensure_space(reg);
++      try
++      {
++        auto *reg = table.template getOrCreateManager<B>()
++                        .template getOrCreateRegistryComponentBuffer<B>();
++        ensure_space(reg);
++      }
++      catch (...)
++      {
++        table_->end_defer();
++        throw;
++      }
+     }
+ 
+     ~View() { table_->end_defer(); }

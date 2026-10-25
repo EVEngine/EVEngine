@@ -8,6 +8,7 @@
 - [share/eve/ai/eve-api.json](share/eve/ai/eve-api.json): this SDK build's Binding Contracts (`eve.binding-api`)
 - [share/eve/ai/eve-api.d.ts](share/eve/ai/eve-api.d.ts): TypeScript-shaped signatures (not a second runtime)
 - [share/eve/examples/basic/main.nut](share/eve/examples/basic/main.nut): gold example
+- [share/eve/styles/stylized-grass/README.md](share/eve/styles/stylized-grass/README.md): CPU-generated default grass with no external art or shader assets
 
 ## For runtime agents
 

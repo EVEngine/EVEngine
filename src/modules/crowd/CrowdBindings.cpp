@@ -33,8 +33,22 @@ Result<SpawnBatch> readSpawnBatch(ssq::Array agents, ssq::Table options) {
             request.y           = item.get<float>("y");
             request.heading     = item.get<float>("heading");
             request.radius      = item.get<float>("radius");
-            request.interaction = {item.get<float>("pushability"), item.get<bool>("holdPosition"),
-                                   item.get<int>("layer"), item.get<int>("mask")};
+            std::optional<ssq::Table> movement;
+            try {
+                movement = item.get<ssq::Table>("movement");
+            } catch (const ssq::NotFoundException &) {
+            }
+            if (movement) request.movement = parseMovementBinding(*movement);
+            std::optional<ssq::Table> policy;
+            try {
+                policy = item.get<ssq::Table>("policy");
+            } catch (const ssq::NotFoundException &) {
+            }
+            if (policy)
+                request.policy = parseInteractionPolicy(*policy);
+            else
+                request.interaction = {item.get<float>("pushability"), item.get<bool>("holdPosition"),
+                                       item.get<int>("layer"), item.get<int>("mask")};
             batch.agents.push_back(std::move(request));
         }
         return Result<SpawnBatch>::success(std::move(batch));
@@ -68,6 +82,8 @@ void Crowd::expose(ssq::Table &table) {
 }
 
 void Crowd::expose(ssq::Class &cls) {
+    exposeAgentBatches(cls);
+    exposeNavigationRequests(cls);
     cls.addFunc("getName", &Crowd::getName);
 
     // 流场
@@ -76,6 +92,25 @@ void Crowd::expose(ssq::Class &cls) {
     cls.addFunc("setCellCost", &Crowd::setCellCost);
     cls.addFunc("getCellCost", &Crowd::getCellCost);
     cls.addFunc("buildFlowField", &Crowd::buildFlowField);
+    cls.addFunc("getFieldStatus", [vm = cls.getHandle()](Crowd *crowd) {
+        return script::projectResult(
+            vm, Result<FieldObservation>::success(crowd->getFieldStatus()), [](FieldObservation field) {
+                constexpr const char *names[] = {"unconfigured", "unbuilt", "ready", "stale"};
+                return Value(
+                    Value::Object{{"state", Value(std::string(names[static_cast<int>(field.state)]))},
+                                  {"revision", Value(std::to_string(field.revision))},
+                                  {"builtRevision", Value(std::to_string(field.builtRevision))},
+                                  {"owner", Value(std::to_string(field.owner))},
+                                  {"inputRevision", Value(std::to_string(field.inputRevision))},
+                                  {"goals", Value(field.goals)},
+                                  {"surfaceId", Value(std::to_string(field.surface.surface.value()))},
+                                  {"surfaceRevision", Value(std::to_string(field.surface.surfaceRevision))},
+                                  {"movementClass", Value(std::to_string(field.surface.movement.value()))},
+                                  {"movementRevision", Value(std::to_string(field.surface.movementRevision))},
+                                  {"costModelRevision", Value(std::to_string(field.surface.costModelRevision))},
+                                  {"clearanceRadius", Value(field.surface.clearanceRadius)}});
+            });
+    });
     cls.addFunc("addFlowGoal", &Crowd::addFlowGoal);
     cls.addFunc("clearFlowGoals", &Crowd::clearFlowGoals);
     cls.addFunc("build", &Crowd::build);
@@ -128,19 +163,32 @@ void Crowd::expose(ssq::Class &cls) {
         });
     });
     cls.addFunc("setAgentPosition", &Crowd::setAgentPosition);
-    cls.addFunc("applySpawnBatch", [vm = cls.getHandle()](Crowd *crowd, ssq::Array agents, ssq::Table options) {
+    const auto createBatch = [vm = cls.getHandle()](Crowd *crowd, ssq::Array agents, ssq::Table options) {
         auto       batch   = readSpawnBatch(std::move(agents), std::move(options));
         const auto project = [](const SpawnReceipt &receipt) {
             Value::Array created;
             for (const auto &item : receipt.created)
-                created.emplace_back(
-                    Value::Object{{"stableId", Value(item.stableId)}, {"x", Value(item.x)}, {"y", Value(item.y)}});
+                created.emplace_back(Value::Object{
+                    {"stableId", Value(item.stableId)},
+                    {"x", Value(item.x)},
+                    {"y", Value(item.y)},
+                    {"reference",
+                     Value(Value::Object{
+                         {"owner", Value(static_cast<std::int64_t>(item.reference.owner))},
+                         {"index", Value(static_cast<std::int64_t>(item.reference.handle.index()))},
+                         {"generation", Value(static_cast<std::int64_t>(item.reference.handle.generation()))}})}});
             return Value(Value::Object{{"created", Value(std::move(created))},
                                        {"displacedAgents", Value(receipt.displacedAgents)},
                                        {"checks", Value(receipt.checks)}});
         };
         if (!batch) return script::projectResult(vm, Result<SpawnReceipt>::failure(batch.status()), project);
-        return script::projectResult(vm, crowd->applySpawnBatch(batch.value()), project);
+        return script::projectResult(vm, crowd->createAgents(batch.value()), project);
+    };
+    cls.addFunc("applySpawnBatch", [createBatch](Crowd *crowd, ssq::Array agents, ssq::Table options) {
+        return createBatch(crowd, std::move(agents), std::move(options));
+    });
+    cls.addFunc("createAgents", [createBatch](Crowd *crowd, ssq::Array agents, ssq::Table options) {
+        return createBatch(crowd, std::move(agents), std::move(options));
     });
     cls.addFunc("getAgentState", &Crowd::getAgentState);
 
@@ -189,7 +237,32 @@ void Crowd::expose(ssq::Class &cls) {
     cls.addFunc("step", &Crowd::step);
     cls.addFunc("advance", [vm = cls.getHandle()](Crowd *crowd, float dt) {
         return script::projectResult(vm, crowd->advance(dt), [](StepReport report) {
-            return Value(Value::Object{{"avoidanceChecks", Value(report.avoidanceChecks)},
+            return Value(Value::Object{{"tick", Value(std::to_string(report.tick.value()))},
+                                       {"elapsedNanoseconds", Value(report.elapsed.nanoseconds())},
+                                       {"quality", Value(static_cast<int>(report.quality))},
+                                       {"navigationState", Value(static_cast<int>(report.navigation.state))},
+                                       {"navigationRevision", Value(std::to_string(report.navigation.revision))},
+                                       {"navigationClassMismatches", Value(report.navigationClassMismatches)},
+                                       {"residualPairsChecked", Value(report.residualPairsChecked)},
+                                       {"avoidanceChecks", Value(report.avoidanceChecks)},
+                                       {"gridBuilds", Value(report.gridBuilds)},
+                                       {"gridCellsPeak", Value(report.gridCellsPeak)},
+                                       {"cellsVisited", Value(report.cellsVisited)},
+                                       {"gridEntriesPeak", Value(report.gridEntriesPeak)},
+                                       {"gridSortComparisons", Value(report.gridSortComparisons)},
+                                       {"spatialVisits", Value(report.spatialVisits)},
+                                       {"contactPairsPeak", Value(report.contactPairsPeak)},
+                                       {"pairVisits", Value(report.pairVisits)},
+                                       {"preferredNeighborsPeak", Value(report.preferredNeighborsPeak)},
+                                       {"preferredVisits", Value(report.preferredVisits)},
+                                       {"candidatesVisited", Value(report.candidatesVisited)},
+                                       {"contactPairsChecked", Value(report.contactPairsChecked)},
+                                       {"contactPasses", Value(report.contactPasses)},
+                                       {"gridNanoseconds", Value(report.gridNanoseconds)},
+                                       {"motionNanoseconds", Value(report.motionNanoseconds)},
+                                       {"contactNanoseconds", Value(report.contactNanoseconds)},
+                                       {"wallNanoseconds", Value(report.wallNanoseconds)},
+                                       {"residualNanoseconds", Value(report.residualNanoseconds)},
                                        {"avoidanceTruncations", Value(report.avoidanceTruncations)},
                                        {"substeps", Value(report.substeps)},
                                        {"unresolvedContacts", Value(report.unresolvedContacts)},

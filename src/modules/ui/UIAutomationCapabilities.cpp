@@ -34,12 +34,15 @@ const char* nodeTypeName(NodeType type) {
     switch (type) {
         case NodeType::Window: return "window";
         case NodeType::Text: return "text";
+        case NodeType::Link: return "link";
         case NodeType::Button: return "button";
         case NodeType::SameLine: return "sameLine";
         case NodeType::Group: return "group";
         case NodeType::Separator: return "separator";
         case NodeType::Checkbox: return "checkbox";
         case NodeType::Slider: return "slider";
+        case NodeType::FilledImage: return "filled-image";
+        case NodeType::RadialFill: return "radial-fill";
         case NodeType::Progress: return "progress";
         case NodeType::InputText: return "inputText";
         case NodeType::CollapsingHeader: return "collapsingHeader";
@@ -79,8 +82,9 @@ const char* nodeTypeName(NodeType type) {
 
 bool isClickable(const UINode& node) {
     if (!node.enabled || node.mouseFilter == MouseFilter::Ignore) return false;
-    return node.type == NodeType::Button || node.type == NodeType::ImageButton || node.type == NodeType::Switch ||
-           node.type == NodeType::MenuItem || node.type == NodeType::Tab || node.handlerClick != 0;
+    return node.type == NodeType::Link || node.type == NodeType::Button || node.type == NodeType::ImageButton ||
+           node.type == NodeType::Switch || node.type == NodeType::MenuItem || node.type == NodeType::Tab ||
+           node.handlerClick != 0;
 }
 
 const char* focusModeName(FocusMode mode) {
@@ -117,6 +121,7 @@ const char* accessibilityRoleName(AccessibilityRole role) {
         case AccessibilityRole::Checkbox: return "checkbox";
         case AccessibilityRole::Slider: return "slider";
         case AccessibilityRole::Text: return "text";
+        case AccessibilityRole::Link: return "link";
         case AccessibilityRole::TextInput: return "textInput";
         case AccessibilityRole::List: return "list";
         case AccessibilityRole::ListItem: return "listItem";
@@ -169,8 +174,8 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     if (node.type == NodeType::Checkbox || node.type == NodeType::Switch ||
         node.type == NodeType::MenuItem)
         out->set("checked", node.checked);
-    if (node.type == NodeType::Slider || node.type == NodeType::Progress ||
-        node.type == NodeType::Combo || node.type == NodeType::SplitPane) {
+    if (node.type == NodeType::Slider || node.type == NodeType::Progress || node.type == NodeType::FilledImage ||
+        node.type == NodeType::RadialFill || node.type == NodeType::Combo || node.type == NodeType::SplitPane) {
         out->set("value", node.value);
         out->set("min", node.minValue);
         out->set("max", node.maxValue);
@@ -186,6 +191,14 @@ Poco::JSON::Object::Ptr nodeJson(const UIHost::Tree& tree, int index) {
     if (node.type == NodeType::InputText || node.type == NodeType::SearchField ||
         node.type == NodeType::Combo || node.type == NodeType::MenuItem)
         out->set("valueText", node.valueText);
+    if (node.type == NodeType::Link) out->set("target", node.valueText);
+    if (node.type == NodeType::InputText) {
+        out->set("multiline", node.multiline);
+        out->set("readOnly", node.readOnly);
+        out->set("placeholder", node.placeholder);
+    }
+    if (!node.helpText.empty()) out->set("helpText", node.helpText);
+    if (!node.disabledReason.empty()) out->set("disabledReason", node.disabledReason);
     if (!node.tooltip.empty()) out->set("tooltip", node.tooltip);
 
     Poco::JSON::Array::Ptr children(new Poco::JSON::Array());

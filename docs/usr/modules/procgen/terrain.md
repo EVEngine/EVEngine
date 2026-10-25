@@ -137,7 +137,7 @@ MixHeight；本接口自身不创建编辑器撤销记录，事务历史由拥�
 - 带 `update(dt)` 的系统应在 `eve_update` 调用；绘制方法应在 `eve_render` 调用。
 
 **源码：** [`src/modules/procgen/`](../../../../src/modules/procgen/)
-**相关测试：** 在 [`test/`](../../../../test/) 中搜索 `procgen`；跨模块 hex 关卡见 [`test/hex_level_simulation.cpp`](../../../../test/hex_level_simulation.cpp)、[`test/hex_level_data.cpp`](../../../../test/hex_level_data.cpp)、[`examples/hex-levels/`](../../../../examples/hex-levels/)。
+**相关测试：** 在 [`test/`](../../../../test/) 中搜索 `procgen`；跨模块 hex 关卡见 [`test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp`](../../../../test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp)、[`test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp`](../../../../test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp)、[`examples/hex-levels/`](../../../../examples/hex-levels/)。
 
 ### Terrain contrast
 
@@ -1095,7 +1095,7 @@ tree PointSet 与 object PointSet。`create` 原子建立零高度世界；`stam
 只删除该层并返回发生变化的单元数；普通 `sample` 返回所有资源层之和。Splat 权重不属于 Pcg
 `ClearSpawns`，因此不会被该操作修改。
 
-查询 API 为 `getTileName(index)`、`getTileOriginX(index)`、`getTileOriginZ(index)`、`getTileCount()`、
+查询 API 为 `getTileName(index)`、`getTileOriginX(index)`、`getTileOriginZ(index)`、`getTileOriginY(index)`、`getTileCount()`、
 `getLastChangedSamples()`、`getLastAffectedTiles()`、`getOperationCount()` 与 `getAppliedCount()`。
 
 ### 有序 Spawner 计划
@@ -1398,3 +1398,71 @@ Created、1 为 Removed。新增项按本次扫描顺序排列，随后删除项
 spawner 计数，`updateRuleFraction` 更新当前规则的小数进度；`getProgress` 使用
 `(totalCompleted + fraction) / totalCount`。`getTitle`、`getSubtitle`、`getStatus` 提供 UI 所需快照，
 `requestCancel` 发布取消请求，`clear` 隐藏并清空状态。所有更新先验证候选，非法计数或进度不修改旧值。
+
+World 创建设置的 `originY`（默认0）是道路投影与地形相对树/对象/探针的世界高度基准。规则的 heightScale 继续显式控制高度缩放；SeaLevel/Custom 等绝对高度模式不额外叠加地形基准。创建后该基准在当前World历史内保持不变，重新create会原子替换World和历史。
+
+对象放置的碰撞中心只在至少一个子实例成功生成后占用；所有子实例越界或被过滤的空候选不阻挡后续候选。多地形流程在 nearest-even 像素查询前先检查连续子实例坐标是否属于该地形，避免小负坐标取整到像素0而漏出边界。
+
+道路地形写回的 C++ `RoadTerrainWriteOptions.splatOpacity` 默认1，必须为有限的[0,1]值。
+`RoadTerrainWorkspace::apply` 与 `TerrainWorldWorkspace::conformRoad` 使用覆盖权重乘以该强度，
+仅当覆盖权重乘opacity大于所选层当前权重时提高该层，并按其它层原比例分配剩余权重；
+不会以较弱绘制降低既有权重，0只保留纹理，不取消高度或所选植被操作。
+权重保持浮点精度，不模拟 Unity 的8位纹理量化。非法值原子拒绝，不改变历史/redo分支。
+完整写回结果由既有地形schema-v2快照保存与撤销；这个构建参数目前没有独立作者文档，脚本入口见下文；
+不代表已经支持编辑器纹理设置保存、texel expand/smooth或整个World跨进程保存。
+
+脚本可创建 `eve.RoadTerrainWriteOptions()`，以 `world.conformRoad(mesh, options)` 显式执行道路写回。
+`mesh` 是生产构建返回的 `ProcgenMeshBuild` 实例；World 仅在当前同步调用期间借用它与options，
+不保存脚本对象地址。options由VM拥有，字段与C++相同：`blendDistance`、`maxVerticalDelta`、
+`splatLayer`、`splatOpacity`、`clearDetails`、`clearTrees`、`cutTunnelHoles`、
+`tunnelHolesAtPortalsOnly`。`setMaximumWork(positiveInteger)` 返回标准Result，0/负数拒绝并保留原预算；
+`getMaximumWork()`只查询当前预算，默认16777216。浮点范围和纹理层有效性在原子写回边界检查。
+`conformRoad`返回标准Result表（`ok/value/status/diagnostics/checked`），失败保留全部地形通道、
+历史与redo分支；成功后沿用World的`undo()`/`redo()`。
+新增写回/洞遮罩读取入口显式验证实例类型（复用跨DLL的稳定类型标记）；
+null、数值/table或其它类实例返回结构化诊断，不依赖第三方裸指针参数转换。
+对于模块拥有的网格和Heightmap代理，调用前还会通过既有owner epoch/generation句柄重新解析，
+原生对象被释放后即使VM实例仍存有非空地址，也返回StaleHandle；不会解引用该旧地址。
+原生借用值和普通VM拥有的Heightmap仍由调用方保证其原生owner在当前同步调用内存活。
+`copyHoles(tileIndex, outputHeightmap)`将完整洞遮罩复制到调用方拥有的Heightmap，成功value为样本数；
+失败不修改输出。以上操作仅在VM/World所有者线程调用，不触发回调或隐式下一帧任务。
+写回成本与有界地形/三角形栅格工作及历史复制成正比，洞遮罩复制与样本数成正比，
+应在显式构建/发布阶段使用，不能每帧执行。脚本入口不增加作者文档保存或World跨进程保存能力。
+
+C++可用 `RoadTerrainWorkspace::applyBatch(writes, maximumWork)` 或
+`TerrainWorldWorkspace::conformRoadBatch(writes, maximumWork)` 一次提交不同道路的独立策略。
+`RoadTerrainWrite`持有当前调用内的只读mesh借用和按值options；span与所有mesh必须存活至返回，
+不会跨帧保存。非空批次最多4096项，按输入顺序执行；共享总工作预算之外，各项仍受自身预算约束。
+所有道路只产生一帧完整通道历史；任一项缺纹理层、参数无效或预算不足时全部不发布，保留redo。
+单道路入口也委托给这一实现。整个批次的结果沿用schema-v2历史保存；不序列化借用引用。
+成本为一次历史候选复制与所有道路栅格工作的总和，适用于显式构建。
+相交道路的参考优先级和作者预设策略持久化仍待对齐，不由调用顺序推断参考规则。
+
+脚本批次入口为 `world.conformRoadBatch(meshes, policies, maximumWork)`。
+两个数组长度必须相同且为1..4096；每个mesh是已构建的`ProcgenMeshBuild`实例，
+对应policy为`eve.RoadTerrainWriteOptions()`。例如将两个`buildMesh`结果的value组成
+`[first.value, second.value]`，与`[firstPolicy, secondPolicy]`一一对应。
+共享预算必须是正整数且能装入原生size_t；浮点数、bool、字符串和null返回标准TypeMismatch，
+不做隐式转换。每项策略保留自身工作预算。所有实例类型、所属owner/generation在调用World前验证，
+诊断路径标明`meshes[i]`或`policies[i]`。来源数组在同步调用期间维持VM强引用，策略按值复制，
+构建结束后不保留临时输入；输入数组不会被修改，不调用用户脚本回调。
+任一项失败保留World全部通道及redo；一次成功只产生一个历史帧。后续修改policy不会改变已有redo结果。
+这接通了脚本批次消费，仍未增加逐道路作者预设的策略保存或几何归属投影。
+
+### Actor slope traversal
+
+`eve.TerrainTraversalSettings()` contains `spacingX`, `spacingZ`, `heightScale`,
+`maxSlopeDegrees` (default 45) and `slopeCost` (default 0).
+Call `output.traversalCosts(heights, baseCosts, settings)` and check the standard
+Result table. Matching finite rasters are required. Nonpositive base costs remain
+blocked; positive base costs must be at least 1. A cell exceeding the slope limit
+gets cost zero. Otherwise its cost is `base * (1 + slopeCost * rise/run)`.
+
+Spacing and height scale convert samples to world units. The steepest adjacent
+difference on each axis prevents ridge cancellation; tile borders require a halo
+and crop. Validation and overflow failures leave output unchanged; inputs may
+alias output. Bake once per terrain/policy change and copy into a separate
+Pathfinder with `setCellCost`; rebuild from original base costs, not prior output.
+This cell policy does not account for capsule width, jumping or directional drops.
+Set the same maximum slope on the physical mover. The runnable
+`examples/terrain-navigation-lab` compares two policies using real collision.

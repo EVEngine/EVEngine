@@ -1,4 +1,5 @@
 #include "physics/destruction/Destruction.h"
+#include "physics/destruction/CollapseAnimation.h"
 
 #include "common/Exception.h"
 #include "common/Json.h"
@@ -256,6 +257,7 @@ void restoreSnapshotJsonScript(GeometryCollectionInstance* self, const std::stri
 }  // namespace
 
 void Destruction::expose(ssq::Table& table) {
+    exposeCollapseAnimation(table);
     auto cls = table.addClass(name, Destruction::create, false);
     expose(cls);
 

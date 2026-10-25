@@ -41,11 +41,28 @@ class AndroidLibraryStagingTests(unittest.TestCase):
         self.assertEqual((self.destination / "libSDL2.so").read_bytes(), b"sdl")
         self.assertEqual((self.destination / "libc++_shared.so").read_bytes(), b"cpp")
 
+    def test_prebuilt_package_uses_configured_install_prefix(self):
+        package = self.root / "build/third-party-releases/v0.1.0/android-arm64-Release"
+        library = package / "lib/libSDL2.so"
+        library.parent.mkdir(parents=True)
+        library.write_bytes(b"published sdl")
+        (self.build / "CMakeCache.txt").write_text(
+            f"EVENGINE_TP_INSTALL_PREFIX:INTERNAL={package.as_posix()}\n", encoding="utf-8")
+        result = self.stage()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.destination / "libSDL2.so").read_bytes(), b"published sdl")
+
     def test_make_target_stages_libraries_from_a_path_with_spaces(self):
         helper = self.root / "cmake/sync_android_libs.cmake"
         helper.parent.mkdir()
         shutil.copyfile(SCRIPT, helper)
+        for filename in ("native_arm64.mk", "native_macos.mk"):
+            shutil.copyfile(SCRIPT.parent / filename, helper.parent / filename)
         shutil.copyfile(SCRIPT.parent.parent / "Makefile", self.root / "Makefile")
+        # Stage the real recipe composition too: sync/android-libs now belongs
+        # to the Android fragment rather than the root Makefile.
+        for directory in ("platforms", "tasks"):
+            shutil.copytree(SCRIPT.parent / directory, helper.parent / directory)
         result = subprocess.run(
             ["make", "sync/android-libs", f"BUILD_DIR={self.build}",
              f"JNI_LIBS={self.destination}", f"ANDROID_NDK={self.ndk}", "ANDROID_ABI=arm64-v8a"],

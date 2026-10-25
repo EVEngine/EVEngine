@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "tactics/TacticsTypes.h"
 
 #include <algorithm>

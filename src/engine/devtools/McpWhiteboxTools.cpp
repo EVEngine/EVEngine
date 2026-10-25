@@ -1,4 +1,5 @@
 #include "devtools/McpWhiteboxTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "devtools/Debugger.hpp"
 #include "devtools/McpArgs.hpp"
@@ -27,6 +28,7 @@ std::string errorPayload(const std::string& message, const std::string& hint = {
     Poco::JSON::Object::Ptr out = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     out->set("ok", false);
     out->set("error", message);
+    if (message == "deferred-to-update") out->set("retryable", true);
     if (!hint.empty()) out->set("hint", hint);
     return textPayload(out, true);
 }
@@ -77,8 +79,14 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
     if (!vm) return errorPayload("no VM", "Attach a live eve run --mcp-port session first");
 
     std::string err;
-    if (!ensureSceneDirectorInstalled(vm, &err))
+    if (!ensureSceneDirectorInstalled(vm, &err, /*allowHeavyWork=*/false)) {
+        if (err == "deferred-to-update") {
+            return errorPayload(
+                "deferred-to-update",
+                "scene_director install was queued for the next eve.dev.poll; retry eve_whitebox_playtest");
+        }
         return errorPayload(err.empty() ? "scene_director kit unavailable" : err);
+    }
 
     Poco::JSON::Object::Ptr report = Poco::JSON::Object::Ptr(new Poco::JSON::Object());
     report->set("schemaId", "eve.whitebox.playtest-report");
@@ -88,8 +96,10 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
     if (doReset) {
         const std::string resetOut = callSceneDirectorReturn(vm, "return ::scene_director.reset();", &err);
         if (!err.empty()) return errorPayload(err);
-        if (auto resetObj = parseJsonObject(resetOut)) report->set("reset", resetObj);
-        else report->set("reset", resetOut);
+        if (auto resetObj = parseJsonObject(resetOut))
+            report->set("reset", resetObj);
+        else
+            report->set("reset", resetOut);
     }
 
     if (args->has("scene")) {
@@ -130,7 +140,8 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
         }
         if (args->has("waitFrames")) inputArgs->set("waitFrames", getArgInt(args, "waitFrames", 0));
         if (args->has("capture")) inputArgs->set("capture", getArgBool(args, "capture", false));
-        if (args->has("capturePath")) inputArgs->set("capturePath", getArgString(args, "capturePath", "wb_playtest.png"));
+        if (args->has("capturePath"))
+            inputArgs->set("capturePath", getArgString(args, "capturePath", "wb_playtest.png"));
         auto inputObj = parseToolTextObject(callMcpInputTool("eve_input_batch", inputArgs));
         if (!inputObj) return errorPayload("input batch returned an unexpected payload");
         report->set("input", inputObj);
@@ -175,8 +186,10 @@ std::string whiteboxPlaytest(Poco::JSON::Object::Ptr args) {
             return textPayload(report, true);
         }
         auto playObj = parseJsonObject(playResponse.value());
-        if (playObj) report->set("play", playObj);
-        else report->set("play", playResponse.value());
+        if (playObj)
+            report->set("play", playObj);
+        else
+            report->set("play", playResponse.value());
     }
 
     // Fresh scene truth for assertions / agent follow-up.
@@ -216,4 +229,8 @@ std::string_view mcpWhiteboxToolSchemas() {
     return R"json({"name":"eve_whitebox_playtest","description":"Fast white-box recipe: optional reset, batch scene_director actions (scene), inject playtest inputs, and optionally run an eve_play batch. Does not block the game loop — when input wait/capture is pending, poll with eve_input_poll. Returns {ok,status,scene,input,play,info}.","inputSchema":{"type":"object","properties":{"reset":{"type":"boolean","description":"Clear staged props first (default true)"},"scene":{"type":"array","items":{"type":"object","properties":{"action":{"type":"string"},"target":{"type":"string"},"params":{"type":"object"}},"required":["action"]},"description":"eve_scene_batch actions"},"stopOnError":{"type":"boolean"},"inputs":{"type":"array","items":{"type":"object"},"description":"eve_input_batch actions"},"waitFrames":{"type":"integer","minimum":0},"capture":{"type":"boolean"},"capturePath":{"type":"string"},"play":{"type":"array","items":{"type":"object"},"description":"eve_play request objects executed as one batch"}}}})json";
 }
 
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Whitebox, mcpWhiteboxToolSchemas, callMcpWhiteboxTool, ContentEnvelope)
 }  // namespace eve::dev

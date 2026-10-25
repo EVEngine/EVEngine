@@ -16,6 +16,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMoveNode(std::
         return reject<editing::DomainOperation>("editor.road.node", "Road node does not exist", EditorStatus::NotFound);
     if (!std::isfinite(x) || !std::isfinite(y) || !std::isfinite(z))
         return reject<editing::DomainOperation>("editor.road.position", "Road node position must be finite");
+    auto candidate = *network_;
+    auto changed   = candidate.setNodePosition(nodeId, x, y, z);
+    if (!changed.ok()) return roadFailure<editing::DomainOperation>(changed.status());
     editing::DomainOperation operation;
     operation.type        = kMoveNode;
     operation.inverseType = kMoveNode;
@@ -29,12 +32,12 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMoveNode(std::
     return editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetNodeJunctionRadius(
-    std::uint32_t nodeId, float junctionRadius) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetNodeJunctionRadius(std::uint32_t nodeId,
+                                                                                        float junctionRadius) const {
     auto node = network_->nodeResult(nodeId);
     if (!node.ok()) return roadFailure<editing::DomainOperation>(node.status());
     auto candidate = *network_;
-    auto changed = candidate.setNodeJunctionRadius(nodeId, junctionRadius);
+    auto changed   = candidate.setNodeJunctionRadius(nodeId, junctionRadius);
     if (!changed.ok()) return roadFailure<editing::DomainOperation>(changed.status());
     editing::DomainOperation operation;
     operation.type        = kSetNodeRadius;
@@ -54,7 +57,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetNodeJunctio
     auto node = network_->nodeResult(nodeId);
     if (!node.ok()) return roadFailure<editing::DomainOperation>(node.status());
     auto candidate = *network_;
-    auto changed = candidate.setNodeJunctionControl(nodeId, control);
+    auto changed   = candidate.setNodeJunctionControl(nodeId, control);
     if (!changed.ok()) return roadFailure<editing::DomainOperation>(changed.status());
     editing::DomainOperation operation;
     operation.type        = kSetNodeControl;
@@ -71,17 +74,20 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetNodeJunctio
 
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodes(std::uint32_t keepNodeId,
                                                                              std::uint32_t removeNodeId,
-                                                                             float maxDistance) const {
+                                                                             float         maxDistance) const {
     return makeMergeNodesImpl(keepNodeId, removeNodeId, maxDistance, false);
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesAndConnect(
-    std::uint32_t keepNodeId, std::uint32_t removeNodeId, float maxDistance) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesAndConnect(std::uint32_t keepNodeId,
+                                                                                       std::uint32_t removeNodeId,
+                                                                                       float maxDistance) const {
     return makeMergeNodesImpl(keepNodeId, removeNodeId, maxDistance, true);
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesImpl(
-    std::uint32_t keepNodeId, std::uint32_t removeNodeId, float maxDistance, bool connectTurns) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesImpl(std::uint32_t keepNodeId,
+                                                                                 std::uint32_t removeNodeId,
+                                                                                 float         maxDistance,
+                                                                                 bool          connectTurns) const {
     auto removedNode = network_->nodeResult(removeNodeId);
     if (!removedNode.ok()) return roadFailure<editing::DomainOperation>(removedNode.status());
     std::vector<procgen::road::RoadEdge> affectedEdges;
@@ -89,20 +95,20 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesImpl
         if (edge.from == removeNodeId || edge.to == removeNodeId) affectedEdges.push_back(edge);
     std::vector<procgen::road::RoadLaneConnection> affectedLinks;
     for (const auto& link : network_->laneLinks()) {
-        const bool referencesAffectedEdge = std::any_of(affectedEdges.begin(), affectedEdges.end(), [&](const auto& edge) {
-            return link.inEdge == edge.id || link.outEdge == edge.id;
-        });
+        const bool referencesAffectedEdge =
+            std::any_of(affectedEdges.begin(), affectedEdges.end(),
+                        [&](const auto& edge) { return link.inEdge == edge.id || link.outEdge == edge.id; });
         if (referencesAffectedEdge) affectedLinks.push_back(link);
     }
     std::vector<procgen::road::RoadLaneConnection> affectedBlockedLinks;
     for (const auto& link : network_->blockedLaneLinks()) {
-        const bool referencesAffectedEdge = std::any_of(affectedEdges.begin(), affectedEdges.end(), [&](const auto& edge) {
-            return link.inEdge == edge.id || link.outEdge == edge.id;
-        });
+        const bool referencesAffectedEdge =
+            std::any_of(affectedEdges.begin(), affectedEdges.end(),
+                        [&](const auto& edge) { return link.inEdge == edge.id || link.outEdge == edge.id; });
         if (referencesAffectedEdge) affectedBlockedLinks.push_back(link);
     }
     auto candidate = *network_;
-    auto merged = candidate.mergeNodes(keepNodeId, removeNodeId, maxDistance);
+    auto merged    = candidate.mergeNodes(keepNodeId, removeNodeId, maxDistance);
     if (!merged.ok()) return roadFailure<editing::DomainOperation>(merged.status());
     if (connectTurns) {
         auto connected = candidate.connectAllTurns(keepNodeId);
@@ -114,7 +120,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeMergeNodesImpl
     operation.inverseType = kUnmergeNodes;
     operation.target      = targetId();
     operation.payload     = encodeMergeNodes(keepNodeId, removeNodeId, maxDistance);
-    operation.inverse = encodeUnmergeNodes(removedNode.value(), affectedEdges, affectedLinks, affectedBlockedLinks);
+    operation.inverse     = encodeUnmergeNodes(removedNode.value(), affectedEdges, affectedLinks, affectedBlockedLinks);
     operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(keepNodeId));
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(removeNodeId));
@@ -166,8 +172,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetEdgeStyle(s
     return editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetEdgeLaneCounts(
-    std::uint32_t edgeId, int lanesForward, int lanesBackward) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetEdgeLaneCounts(std::uint32_t edgeId,
+                                                                                    int           lanesForward,
+                                                                                    int           lanesBackward) const {
     auto edge = network_->edgeResult(edgeId);
     if (!edge.ok()) return roadFailure<editing::DomainOperation>(edge.status());
     std::vector<procgen::road::RoadLaneConnection> removedLinks;
@@ -196,9 +203,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetEdgeLaneCou
     operation.type        = kSetEdgeLanes;
     operation.inverseType = kSetEdgeLanes;
     operation.target      = targetId();
-    operation.payload = encodeLaneCounts(edgeId, lanesForward, lanesBackward, {}, {});
-    operation.inverse = encodeLaneCounts(edgeId, edge.value().lanesForward, edge.value().lanesBackward, removedLinks,
-                                         removedBlockedLinks);
+    operation.payload     = encodeLaneCounts(edgeId, lanesForward, lanesBackward, {}, {});
+    operation.inverse    = encodeLaneCounts(edgeId, edge.value().lanesForward, edge.value().lanesBackward, removedLinks,
+                                            removedBlockedLinks);
     operation.hasInverse = true;
     operation.mergeKey   = "road-edge:" + std::to_string(edgeId) + ":lanes";
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
@@ -209,32 +216,33 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSetEdgeLaneCou
 }
 
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReverseEdge(std::uint32_t edgeId) const {
+    auto original = network_->edgeResult(edgeId);
+    if (!original.ok()) return roadFailure<editing::DomainOperation>(original.status());
     auto candidate = *network_;
-    auto reversed = candidate.reverseEdge(edgeId);
+    auto reversed  = candidate.reverseEdge(edgeId);
     if (!reversed.ok()) return roadFailure<editing::DomainOperation>(reversed.status());
     editing::DomainOperation operation;
     operation.type        = kReverseEdge;
     operation.inverseType = kReverseEdge;
     operation.target      = targetId();
     operation.payload     = EditorValue::Object{{"id", std::int64_t{edgeId}}};
-    operation.inverse     = operation.payload;
+    operation.inverse     = EditorValue::Object{{"id", std::int64_t{edgeId}},
+                                                {"restoreStyle", encodeStyle(edgeId, original.value().style)}};
     operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
     operation.affectedProperties.emplace_back("direction");
+    operation.affectedProperties.emplace_back("style");
     return editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReconnectEdgeEndpoint(
-    std::uint32_t edgeId, bool fromEndpoint, std::uint32_t nodeId) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReconnectEdgeEndpoint(std::uint32_t edgeId,
+                                                                                        bool          fromEndpoint,
+                                                                                        std::uint32_t nodeId) const {
     auto edge = network_->edgeResult(edgeId);
     if (!edge.ok()) return roadFailure<editing::DomainOperation>(edge.status());
     const std::uint32_t oldNodeId = fromEndpoint ? edge.value().from : edge.value().to;
-    if (oldNodeId == nodeId)
-        return reject<editing::DomainOperation>("editor.road.reconnect-noop",
-                                                "Road endpoint is already connected to that node",
-                                                EditorStatus::NoOp);
-    auto candidate = *network_;
-    auto changed = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
+    auto                candidate = *network_;
+    auto                changed   = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
     if (!changed.ok()) return roadFailure<editing::DomainOperation>(changed.status());
 
     std::vector<procgen::road::RoadLaneConnection> removedLinks;
@@ -255,14 +263,16 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReconnectEdgeE
     operation.inverseType = kReconnectEdgeEndpoint;
     operation.target      = targetId();
     operation.payload     = encodeReconnectEndpoint(edgeId, fromEndpoint, nodeId, {}, {});
-    operation.inverse = encodeReconnectEndpoint(edgeId, fromEndpoint, oldNodeId, removedLinks,
-                                                 removedBlockedLinks);
-    operation.hasInverse = true;
+    operation.inverse     = encodeReconnectEndpoint(edgeId, fromEndpoint, oldNodeId, removedLinks, removedBlockedLinks);
+    operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
     operation.affectedProperties.emplace_back(fromEndpoint ? "from" : "to");
     operation.affectedProperties.emplace_back("controlPoints");
     operation.affectedProperties.emplace_back("laneLinks");
     operation.affectedProperties.emplace_back("blockedLaneLinks");
+    if (oldNodeId == nodeId)
+        return EditorResult<editing::DomainOperation>::success(std::move(operation),
+                                                               eve::Status(EditorStatus::NoOp, {}));
     return editing::applied(std::move(operation));
 }
 
@@ -271,7 +281,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReconnectEdgeE
     auto planned = makeReconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
     if (!planned.ok()) return planned;
     auto candidate = *network_;
-    auto changed = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
+    auto changed   = candidate.reconnectEdgeEndpoint(edgeId, fromEndpoint, nodeId);
     if (!changed.ok()) return roadFailure<editing::DomainOperation>(changed.status());
     auto connected = candidate.connectAllTurns(nodeId);
     if (!connected.ok()) return roadFailure<editing::DomainOperation>(connected.status());
@@ -284,34 +294,44 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeReconnectEdgeE
             added.push_back(link);
     }
     planned.value().payload = encodeReconnectEndpoint(edgeId, fromEndpoint, nodeId, added, {});
+    if (!added.empty() && planned.code() == EditorStatus::NoOp) {
+        auto operation               = std::move(planned).takeValue();
+        operation.type               = kRestoreLaneLinks;
+        operation.inverseType        = kRemoveLaneLinks;
+        operation.payload            = encodeLinks(added);
+        operation.inverse            = encodeLinks(added);
+        operation.affectedProperties = {"laneLinks"};
+        return editing::applied(std::move(operation));
+    }
     return planned;
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSnapEdgeEndpoint(
-    std::uint32_t edgeId, bool fromEndpoint, float maxDistance, bool connectTurns) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSnapEdgeEndpoint(std::uint32_t edgeId,
+                                                                                   bool fromEndpoint, float maxDistance,
+                                                                                   bool connectTurns) const {
     if (!std::isfinite(maxDistance) || maxDistance < 0.f)
         return reject<editing::DomainOperation>("editor.road.snap-distance",
                                                 "Road endpoint snap distance must be finite and non-negative");
     auto edge = network_->edgeResult(edgeId);
     if (!edge.ok()) return roadFailure<editing::DomainOperation>(edge.status());
-    const std::uint32_t oldNodeId = fromEndpoint ? edge.value().from : edge.value().to;
+    const std::uint32_t oldNodeId   = fromEndpoint ? edge.value().from : edge.value().to;
     const std::uint32_t otherNodeId = fromEndpoint ? edge.value().to : edge.value().from;
-    auto endpoint = network_->nodeResult(oldNodeId);
+    auto                endpoint    = network_->nodeResult(oldNodeId);
     if (!endpoint.ok()) return roadFailure<editing::DomainOperation>(endpoint.status());
 
-    const float maximumSquared = maxDistance * maxDistance;
-    float bestSquared = std::numeric_limits<float>::max();
-    std::uint32_t bestNodeId = 0;
+    const float   maximumSquared = maxDistance * maxDistance;
+    float         bestSquared    = std::numeric_limits<float>::max();
+    std::uint32_t bestNodeId     = 0;
     for (const auto& node : network_->nodes()) {
         if (node.id == oldNodeId || node.id == otherNodeId) continue;
-        const float dx = node.x - endpoint.value().x;
-        const float dy = node.y - endpoint.value().y;
-        const float dz = node.z - endpoint.value().z;
+        const float dx              = node.x - endpoint.value().x;
+        const float dy              = node.y - endpoint.value().y;
+        const float dz              = node.z - endpoint.value().z;
         const float distanceSquared = dx * dx + dy * dy + dz * dz;
         if (distanceSquared > maximumSquared) continue;
         if (distanceSquared < bestSquared || (distanceSquared == bestSquared && node.id < bestNodeId)) {
             bestSquared = distanceSquared;
-            bestNodeId = node.id;
+            bestNodeId  = node.id;
         }
     }
     if (bestNodeId == 0)
@@ -322,13 +342,13 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSnapEdgeEndpoi
                         : makeReconnectEdgeEndpoint(edgeId, fromEndpoint, bestNodeId);
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeDetachEdgeEndpoint(
-    std::uint32_t edgeId, bool fromEndpoint) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeDetachEdgeEndpoint(std::uint32_t edgeId,
+                                                                                     bool          fromEndpoint) const {
     auto edge = network_->edgeResult(edgeId);
     if (!edge.ok()) return roadFailure<editing::DomainOperation>(edge.status());
     const std::uint32_t oldNodeId = fromEndpoint ? edge.value().from : edge.value().to;
-    auto candidate = *network_;
-    auto detached = candidate.detachEdgeEndpoint(edgeId, fromEndpoint);
+    auto                candidate = *network_;
+    auto                detached  = candidate.detachEdgeEndpoint(edgeId, fromEndpoint);
     if (!detached.ok()) return roadFailure<editing::DomainOperation>(detached.status());
 
     std::vector<procgen::road::RoadLaneConnection> removedLinks;
@@ -349,8 +369,8 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeDetachEdgeEndp
     operation.inverseType = kReattachEdgeEndpoint;
     operation.target      = targetId();
     operation.payload     = encodeDetachEndpoint(edgeId, fromEndpoint, detached.value());
-    operation.inverse = encodeReattachEndpoint(edgeId, fromEndpoint, oldNodeId, detached.value(), removedLinks,
-                                                removedBlockedLinks);
+    operation.inverse =
+        encodeReattachEndpoint(edgeId, fromEndpoint, oldNodeId, detached.value(), removedLinks, removedBlockedLinks);
     operation.hasInverse = true;
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(detached.value()));
@@ -361,8 +381,8 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeDetachEdgeEndp
 }
 
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSplitEdge(std::uint32_t edgeId,
-                                                                            std::size_t controlPointIndex,
-                                                                            float junctionRadius) const {
+                                                                            std::size_t   controlPointIndex,
+                                                                            float         junctionRadius) const {
     auto original = network_->edgeResult(edgeId);
     if (!original.ok()) return roadFailure<editing::DomainOperation>(original.status());
     std::vector<procgen::road::RoadLaneConnection> originalLinks;
@@ -380,9 +400,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSplitEdge(std:
     operation.inverseType = kUnsplitEdge;
     operation.target      = targetId();
     operation.payload     = encodeSplit(edgeId, controlPointIndex, junctionRadius, split.value());
-    operation.inverse = encodeUnsplit(original.value(), originalLinks, originalBlockedLinks, split.value().nodeId,
-                                      split.value().secondEdgeId);
-    operation.hasInverse = true;
+    operation.inverse     = encodeUnsplit(original.value(), originalLinks, originalBlockedLinks, split.value().nodeId,
+                                          split.value().secondEdgeId);
+    operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(split.value().secondEdgeId));
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(split.value().nodeId));
@@ -409,9 +429,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSplitEdgeAtPos
     operation.inverseType = kUnsplitEdge;
     operation.target      = targetId();
     operation.payload     = encodePositionSplit(edgeId, position, maxDistance, junctionRadius, split.value());
-    operation.inverse = encodeUnsplit(original.value(), originalLinks, originalBlockedLinks, split.value().nodeId,
-                                      split.value().secondEdgeId);
-    operation.hasInverse = true;
+    operation.inverse     = encodeUnsplit(original.value(), originalLinks, originalBlockedLinks, split.value().nodeId,
+                                          split.value().secondEdgeId);
+    operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(edgeId));
     operation.affectedObjects.emplace_back(targetId(), "edge/" + std::to_string(split.value().secondEdgeId));
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(split.value().nodeId));
@@ -420,9 +440,8 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeSplitEdgeAtPos
 }
 
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectNodeAtPosition(
-    std::uint32_t sourceNodeId, std::uint32_t edgeId, procgen::road::RoadControlPoint position,
-    float maxDistance, float junctionRadius, int lanesForward, int lanesBackward,
-    procgen::road::RoadStyle style) const {
+    std::uint32_t sourceNodeId, std::uint32_t edgeId, procgen::road::RoadControlPoint position, float maxDistance,
+    float junctionRadius, int lanesForward, int lanesBackward, procgen::road::RoadStyle style) const {
     auto source = network_->nodeResult(sourceNodeId);
     if (!source.ok()) return roadFailure<editing::DomainOperation>(source.status());
     auto original = network_->edgeResult(edgeId);
@@ -438,7 +457,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectNodeAtP
         if (link.inEdge == edgeId || link.outEdge == edgeId) originalBlockedLinks.push_back(link);
 
     auto candidate = *network_;
-    auto split = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius);
+    auto split     = candidate.splitEdgeAtPosition(edgeId, position, maxDistance, junctionRadius);
     if (!split.ok()) return roadFailure<editing::DomainOperation>(split.status());
     auto inserted = candidate.nodeResult(split.value().nodeId);
     if (!inserted.ok()) return roadFailure<editing::DomainOperation>(inserted.status());
@@ -457,11 +476,10 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectNodeAtP
     operation.type        = kConnectNodeAtPosition;
     operation.inverseType = kDisconnectNodeAtPosition;
     operation.target      = targetId();
-    operation.payload = encodeConnectAtPosition(edgeId, position, maxDistance, junctionRadius, split.value(),
-                                                branch.value());
-    operation.inverse = encodeDisconnectAtPosition(original.value(), originalLinks, originalBlockedLinks,
-                                                   split.value().nodeId, split.value().secondEdgeId,
-                                                   branch.value().id);
+    operation.payload =
+        encodeConnectAtPosition(edgeId, position, maxDistance, junctionRadius, split.value(), branch.value());
+    operation.inverse    = encodeDisconnectAtPosition(original.value(), originalLinks, originalBlockedLinks,
+                                                      split.value().nodeId, split.value().secondEdgeId, branch.value().id);
     operation.hasInverse = true;
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(sourceNodeId));
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(split.value().nodeId));
@@ -472,16 +490,17 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectNodeAtP
     return editing::applied(std::move(operation));
 }
 
-EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectEdgeIntersection(
-    std::uint32_t firstEdgeId, std::uint32_t secondEdgeId, float maximumHeightDelta,
-    float junctionRadius) const {
+EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectEdgeIntersection(std::uint32_t firstEdgeId,
+                                                                                          std::uint32_t secondEdgeId,
+                                                                                          float maximumHeightDelta,
+                                                                                          float junctionRadius) const {
     if (firstEdgeId == secondEdgeId)
         return reject<editing::DomainOperation>("editor.road.intersection-same-edge",
                                                 "Road intersection requires two distinct edges");
     if (!std::isfinite(maximumHeightDelta) || maximumHeightDelta < 0.f)
         return reject<editing::DomainOperation>("editor.road.intersection-height",
                                                 "Road intersection height tolerance is invalid");
-    auto first = network_->edgeResult(firstEdgeId);
+    auto first  = network_->edgeResult(firstEdgeId);
     auto second = network_->edgeResult(secondEdgeId);
     if (!first.ok()) return roadFailure<editing::DomainOperation>(first.status());
     if (!second.ok()) return roadFailure<editing::DomainOperation>(second.status());
@@ -505,11 +524,11 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectEdgeInt
             link.outEdge == secondEdgeId)
             originalBlockedLinks.push_back(link);
     auto candidate = *network_;
-    auto firstSplit = candidate.splitEdgeAtSplineParameter(firstEdgeId, intersection.value().firstParameter,
-                                                           junctionRadius);
+    auto firstSplit =
+        candidate.splitEdgeAtSplineParameter(firstEdgeId, intersection.value().firstParameter, junctionRadius);
     if (!firstSplit.ok()) return roadFailure<editing::DomainOperation>(firstSplit.status());
-    auto secondSplit = candidate.splitEdgeAtSplineParameter(secondEdgeId, intersection.value().secondParameter,
-                                                            junctionRadius);
+    auto secondSplit =
+        candidate.splitEdgeAtSplineParameter(secondEdgeId, intersection.value().secondParameter, junctionRadius);
     if (!secondSplit.ok()) return roadFailure<editing::DomainOperation>(secondSplit.status());
     const auto mergedPoint = intersection.value().mergedPoint;
     auto moved = candidate.setNodePosition(firstSplit.value().nodeId, mergedPoint.x, mergedPoint.y, mergedPoint.z);
@@ -525,12 +544,10 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectEdgeInt
     operation.type        = kConnectEdgeIntersection;
     operation.inverseType = kDisconnectEdgeIntersection;
     operation.target      = targetId();
-    operation.payload = encodeIntersectionConnect(firstEdgeId, secondEdgeId, intersection.value().firstParameter,
-                                                  intersection.value().secondParameter, mergedPoint,
-                                                  maximumHeightDelta, junctionRadius, firstSplit.value(),
-                                                  secondSplit.value());
-    operation.inverse = encodeIntersectionDisconnect(first.value(), second.value(), originalLinks,
-                                                     originalBlockedLinks,
+    operation.payload     = encodeIntersectionConnect(firstEdgeId, secondEdgeId, intersection.value().firstParameter,
+                                                      intersection.value().secondParameter, mergedPoint, maximumHeightDelta,
+                                                      junctionRadius, firstSplit.value(), secondSplit.value());
+    operation.inverse = encodeIntersectionDisconnect(first.value(), second.value(), originalLinks, originalBlockedLinks,
                                                      firstSplit.value().nodeId, firstSplit.value().secondEdgeId,
                                                      secondSplit.value().secondEdgeId);
     operation.hasInverse = true;
@@ -601,15 +618,15 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeAddEdgeAndConn
     auto planned = makeAddEdge(from, to, std::move(points), lanesForward, lanesBackward, style);
     if (!planned.ok()) return planned;
 
-    auto operation = std::move(planned).takeValue();
-    procgen::road::RoadEdge edge;
+    auto                                           operation = std::move(planned).takeValue();
+    procgen::road::RoadEdge                        edge;
     std::vector<procgen::road::RoadLaneConnection> ignored;
     if (!decodeEdgeRecord(operation.payload, edge, ignored))
         return reject<editing::DomainOperation>("editor.road.edge-connect-plan",
                                                 "Generated road edge payload is invalid", EditorStatus::Failed);
 
     auto candidate = *network_;
-    auto restored = candidate.restoreEdge(edge);
+    auto restored  = candidate.restoreEdge(edge);
     if (!restored.ok()) return roadFailure<editing::DomainOperation>(restored.status());
     for (const auto nodeId : {from, to}) {
         auto connected = candidate.connectAllTurns(nodeId);
@@ -687,7 +704,7 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeRemoveLaneLink
 EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeBlockLaneLink(
     procgen::road::RoadLaneConnection link) const {
     auto candidate = *network_;
-    auto blocked = candidate.blockLaneLink(link);
+    auto blocked   = candidate.blockLaneLink(link);
     if (!blocked.ok()) return roadFailure<editing::DomainOperation>(blocked.status());
     editing::DomainOperation operation;
     operation.type        = kBlockLaneLink;
@@ -724,9 +741,6 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectAllTurn
     auto candidate = *network_;
     auto connected = candidate.connectAllTurns(nodeId);
     if (!connected.ok()) return roadFailure<editing::DomainOperation>(connected.status());
-    if (connected.value() == 0)
-        return reject<editing::DomainOperation>("editor.road.turns-noop", "Road node has no missing turn links",
-                                                EditorStatus::NoOp);
 
     std::vector<procgen::road::RoadLaneConnection> added;
     added.reserve(static_cast<std::size_t>(connected.value()));
@@ -744,6 +758,9 @@ EditorResult<editing::DomainOperation> RoadNetworkEditTarget::makeConnectAllTurn
     operation.hasInverse  = true;
     operation.affectedObjects.emplace_back(targetId(), "node/" + std::to_string(nodeId));
     operation.affectedProperties.emplace_back("laneLinks");
+    if (added.empty())
+        return EditorResult<editing::DomainOperation>::success(std::move(operation),
+                                                               eve::Status(EditorStatus::NoOp, {}));
     return editing::applied(std::move(operation));
 }
 

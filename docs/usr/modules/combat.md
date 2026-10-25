@@ -11,16 +11,11 @@ Combat 模块提供不依赖具体角色类的伤害、韧性、战斗属性、�
 runtime 内部复用下述 C++ 权威实现，不在脚本层复制生命值或移动状态。runtime 随脚本对象 GC 销毁，
 `ownership()` 返回 `owned`。
 
-同一个 runtime 还内建并注册 `standardCombatAbilities()` 的 20 个定义。`grantAbility`、
-`activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant` 和 `matchingAbilities` 直接投影
-`AbilityRuntime`；冷却与 Action phase 只使用调用者注入的 tick/delta，不读取墙钟。`advanceAbilities`
-推进所有活跃 execution、递减冷却并同步终态链接，脚本不应另外保存 active/cooldown 状态。
-`registerTimelineAbility` 接收 `ActionTimelineEditor.snapshotJson()` 的规范 schema，将 timeline 的 actionId、
-总时长和 physical split 映射为同一个 `ActionDefinition` 的 phase timing；同时显式设置 cooldown、
-instancing、activation group 和可选 gameplay-event trigger。注册失败不会留下部分 definition。
-`replaceTimelineAbility` 使用相同参数事务式热替换已有定义：grant、per-owner instance 与剩余冷却保持不变；
-已激活 execution 继续持有提交时的旧快照，下一次激活才读取新的 timeline 与 actionId。
-已有 grant 时不能热切换 instancing policy，避免悄悄改变 instance 身份语义。
+同一个 runtime 内嵌并复用 action 模块的 `ScriptActionRuntime`（不自建第二套 AbilityRuntime，也不复制
+timeline/step 投影）。启动时通过 `registerAbilityDefinition` 注册 `standardCombatAbilities()` 的 20 个定义。
+`grantAbility`、`activateAbility`、`advanceAbilities`、`cancelAbility`、`abilityGrant`、
+`matchingAbilities`、`registerTimelineAbility` / `replaceTimelineAbility` 均转发到该共享投影面；冷却与
+Action phase 只使用调用者注入的 tick/delta。脚本不应另外保存 active/cooldown 状态。
 
 ## 角色移动与导航
 
@@ -104,3 +99,23 @@ Timeline 新增内建窗口：`input:cancel-window`（payload `allows`，可选 
 移动状态应由表现层投射到 Scene/Physics，由 Ability Active 阶段决定冲刺、闪避等动作何时写入移动意图。
 Ability 生命周期仍由 `AbilityRuntime`/`ActionRuntime` 唯一拥有，伤害仍通过 `DamageRuntime` 或
 `CombatActionDamageSink` 提交；不要在角色 Controller 中复制冷却、动作阶段或生命值。
+
+## 通用结算接入
+
+`DamageRuntime` 的血量入账统一经过 `settlement::SettlementPipeline`，血量和韧性作为
+一次 PreparedApply 提交，事件写入失败时一起回滚。`previewSettlement` 执行隔离副本的同一流程，
+返回已限幅的实际伤害。`DamageOutcome.settlementResult` 包含 applied、critical、阶段解释和规范事件；
+`appliedHealthDamage` 是兼容输出投影，新显示代码读取 settlement.applied。
+
+脚本签名：
+
+```squirrel
+local result = arena.applyDamage(sourceUuid, targetUuid, "Damage.Physical.Slash",
+    amount, poiseAmount, knockbackX, knockbackY, knockbackZ, critical, tick);
+if (!result.ok) throw result.status.summary;
+local applied = result.value.settlement.applied;
+```
+
+`critical` 仅标记本次结果，amount 必须已经包含倍率；tick 是注入的非负仿真帧号。
+旧脚本调用需要添加这两个末尾参数。`applyTimelineDamage` 沿用原参数，使用最近一次
+`advance` 的 tick（尚未 advance 时为零）。

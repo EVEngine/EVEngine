@@ -3,7 +3,7 @@
 # Each SDK runs as its own parallel job (same split as ci.yml):
 #   windows → win32 SDK (+ usability test)
 #   android → android SDK
-#   macos   → macosx SDK (+ usability test)
+#   macos   → macosx-arm64 / macosx-x86_64 SDKs (+ usability tests)
 #   ios     → ios SDK
 #   linux   → linux SDK (+ usability test)
 #
@@ -37,7 +37,8 @@ permissions:
   contents: write
 
 env:
-  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF
+  # Reuse the pinned dependency release; build source only if transfer is unavailable.
+  CMAKE_EXTRA_ARGS: -DBUILD_TESTING=OFF -DEVENGINE_THIRD_PARTY_MODE=AUTO
   # Single source of truth: repository variables (Settings -> Secrets and
   # variables -> Actions -> Variables), falling back to these defaults.
   VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
@@ -72,7 +73,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -201,10 +202,25 @@ jobs:
           retention-days: 14
 
   macos:
-    name: macOS SDK
-    runs-on: macos-latest
+    name: macOS ${{ matrix.architecture }} SDK
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: arm64
+            runner: macos-latest
+          - architecture: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 180
+    env:
+      SDK_TARGET: macosx-${{ matrix.architecture }}
+      SDK_ARCHITECTURE: ${{ matrix.architecture }}
     steps:
+      - name: Verify native macOS architecture
+        timeout-minutes: 5
+        run: test "$(uname -m)" = "$SDK_ARCHITECTURE"
+
       - name: Checkout
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -221,7 +237,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK remains available.
@@ -236,13 +252,13 @@ jobs:
 
       - name: Build macosx SDK
         timeout-minutes: 90
-        run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
+        run: make "sdk/$SDK_TARGET" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS=4
 
       - name: Test macosx SDK usability
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/macosx macosx "${TAG#v}"
+        run: bash .github/scripts/test-sdk.sh "dist/eve-sdk/$SDK_TARGET" macosx "${TAG#v}" "$SDK_ARCHITECTURE"
 
       - name: Package SDK zip
         timeout-minutes: 10
@@ -250,14 +266,14 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           mkdir -p artifacts
-          python3 .github/scripts/zip-sdk.py macosx "$TAG"
+          python3 .github/scripts/zip-sdk.py "$SDK_TARGET" "$TAG"
           ls -lh artifacts/
 
       - name: Upload artifacts
         timeout-minutes: 10
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sdk-macosx
+          name: sdk-macosx-${{ matrix.architecture }}
           path: artifacts/*.zip
           if-no-files-found: error
           retention-days: 14
@@ -282,7 +298,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK + iOS)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           # Keep full macOS tree so MoltenVK / iOS xcframework remain available.
@@ -390,7 +406,7 @@ jobs:
 
       - name: Install Vulkan SDK
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true
@@ -430,17 +446,31 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+  arm64:
+    name: Native ARM64 SDKs
+    uses: ./.github/workflows/arm64-sdk.yml
+    with:
+      tag: ${{ inputs.tag }}
+      ref: ${{ inputs.ref }}
+    secrets: inherit
+
   publish:
     name: Attach SDKs
-    needs: [windows, android, macos, ios, linux]
+    needs: [windows, android, macos, ios, linux, arm64]
     runs-on: ubuntu-latest
     permissions:
       contents: write
       id-token: write
     steps:
+      - name: Checkout release validators
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Download all SDK artifacts
         timeout-minutes: 10
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: sdk-*
           path: artifacts
@@ -477,33 +507,11 @@ jobs:
         with:
           subject-path: artifacts/eve-sdk-*.zip
 
-      - name: Verify SDK versions match the release tag
+      - name: Verify complete SDK release set
         timeout-minutes: 5
         env:
           TAG: ${{ inputs.tag }}
-        run: |
-          set -euo pipefail
-          EXPECTED="${TAG#v}"
-          test -n "$EXPECTED"
-          python3 - "$EXPECTED" <<'PYEOF'
-          import pathlib
-          import sys
-          import zipfile
-
-          expected = sys.argv[1]
-          zips = sorted(pathlib.Path("artifacts").glob("eve-sdk-*.zip"))
-          if not zips:
-              sys.exit("no eve-sdk-*.zip found under artifacts/")
-          for zip_path in zips:
-              name = zip_path.name
-              plat = name[len("eve-sdk-"):name.rfind("-")]
-              entry = f"eve-sdk/{plat}/share/eve/VERSION"
-              with zipfile.ZipFile(zip_path) as zf:
-                  got = zf.read(entry).decode("utf-8").strip()
-              if got != expected:
-                  sys.exit(f"VERSION mismatch in {name}: '{got}' != expected '{expected}'")
-              print(f"OK: {name} VERSION={got}")
-          PYEOF
+        run: python3 scripts/verify_sdk_release.py artifacts "$TAG"
 
       - name: Upload to GitHub Release
         timeout-minutes: 15
@@ -516,11 +524,6 @@ jobs:
           test -n "$TAG"
           shopt -s nullglob
           zips=(artifacts/eve-sdk-*.zip)
-          if [ ${#zips[@]} -lt 5 ]; then
-            echo "Expected 5 SDK zips (win32/android/macosx/ios/linux), found ${#zips[@]}:" 
-            printf '  %s\n' "${zips[@]}"
-            exit 1
-          fi
           zips+=(artifacts/SHA256SUMS)
           gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
           echo "Attached SDKs to $TAG:"
@@ -533,6 +536,58 @@ jobs:
   # Cross-packaging (linux -> win32, macosx -> win32/linux) is exercised by
   # setting EVE_CROSS_TARGETS; combos that cannot cross-compile are simply not
   # listed (see run-*-cross jobs for the combos we promise).
+  consumer-arm64:
+    name: Native ARM64 released SDK consumer (${{ matrix.platform }})
+    needs: publish
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: win32
+            runner: windows-11-arm
+          - platform: linux
+            runner: ubuntu-24.04-arm
+    defaults:
+      run:
+        shell: bash
+    env:
+      TAG: ${{ inputs.tag }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      ALSOFT_DRIVERS: "null"
+    steps:
+      - name: Checkout consumer checks
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+      - name: Install Linux runtime dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -o Acquire::Retries=2
+          sudo apt-get install -y --no-install-recommends cmake build-essential \
+            mesa-vulkan-drivers libvulkan1 xvfb xauth libasound2t64 libx11-6 \
+            libxi6 libxcursor1 libxrandr2 libxinerama1 libxss1 libgl1
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+      - name: Download released SDK and checksums
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          REPO: ${{ github.repository }}
+        run: |
+          mkdir -p artifacts
+          gh release download "$TAG" --repo "$REPO" --dir artifacts \
+            --pattern "eve-sdk-$PLATFORM-arm64-$TAG.zip" --pattern SHA256SUMS
+          (cd artifacts && grep "eve-sdk-$PLATFORM-arm64-$TAG.zip$" SHA256SUMS | sha256sum --check --strict)
+      - name: Build consumer plugin and run packaged game from released SDK
+        timeout-minutes: 15
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          command=(bash .github/scripts/test-arm64-sdk.sh "artifacts/eve-sdk-$PLATFORM-arm64-$TAG.zip" "$PLATFORM" "${TAG#v}")
+          if [ "$PLATFORM" = linux ]; then xvfb-run -a "${command[@]}"; else "${command[@]}"; fi
+
   consumer-win32:
     name: Consumer win32 (get android + build + run)
     needs: publish
@@ -554,7 +609,7 @@ jobs:
 
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -675,14 +730,23 @@ jobs:
           retention-days: 7
 
   consumer-macosx:
-    name: Consumer macosx (get android + build + run + cross win32/linux)
+    name: Consumer macosx ${{ matrix.architecture }} (get + build + package + run)
     needs: publish
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: arm64
+            runner: macos-latest
+          - architecture: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     env:
       TAG: ${{ inputs.tag }}
       HOST: macosx
-      EVE_CROSS_TARGETS: "win32 linux"
+      EVE_SDK_ARCHITECTURE: ${{ matrix.architecture }}
+      EVE_CROSS_TARGETS: ${{ matrix.architecture == 'arm64' && 'win32 linux' || '' }}
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -694,13 +758,13 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.eve-ci/android-sdk
-          key: eve-android-toolchain-${{ runner.os }}-v1
+          key: eve-android-toolchain-${{ runner.os }}-${{ runner.arch }}-v1
 
       - name: Cache Gradle dependency cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.gradle/caches
-          key: eve-gradle-${{ runner.os }}-v1
+          key: eve-gradle-${{ runner.os }}-${{ runner.arch }}-v1
 
       - name: Resolve toolchain dirs (cacheable, absolute)
         run: |
@@ -714,12 +778,13 @@ jobs:
       - name: Upload android APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: android-apk-${{ env.HOST }}
-          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}.apk
+          name: android-apk-${{ env.HOST }}-${{ matrix.architecture }}
+          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}-${{ matrix.architecture }}.apk
           if-no-files-found: error
           retention-days: 7
 
       - name: Upload cross win32 package (produced on macosx)
+        if: ${{ matrix.architecture == 'arm64' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pkg-win32-from-macosx
@@ -728,6 +793,7 @@ jobs:
           retention-days: 7
 
       - name: Upload cross linux package (produced on macosx)
+        if: ${{ matrix.architecture == 'arm64' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pkg-linux-from-macosx
@@ -754,7 +820,7 @@ jobs:
 
       - name: Install Vulkan SDK (SwiftShader for the packaged-game run)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           install_runtime: true
@@ -768,7 +834,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Download cross win32 packages
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: pkg-win32-from-*
           path: packages
@@ -836,7 +902,7 @@ jobs:
         run: bash .github/scripts/setup-software-vulkan.sh
 
       - name: Download cross linux package
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: pkg-linux-from-macosx
           path: packages
@@ -877,12 +943,12 @@ jobs:
     timeout-minutes: 120
     steps:
       - name: Checkout
-        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v4.2.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4.2.2
         with:
           ref: ${{ inputs.ref }}
 
       - name: Download all consumer Android APKs
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           pattern: android-apk-*
           path: apk
@@ -914,7 +980,7 @@ jobs:
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
-          script: bash .github/scripts/run-consumer-apks.sh apk
+          script: bash .github/scripts/run-consumer-apks.sh apk 4
 
   # ---- iOS: engine runs a game on the simulator (release hard gate) ----------
   # The released ios SDK is a device app; the simulator cannot execute device
@@ -939,7 +1005,7 @@ jobs:
 
       - name: Install Vulkan SDK (MoltenVK for the simulator build)
         timeout-minutes: 20
-        uses: jakoch/install-vulkan-sdk-action@37effcfa045411f8bfbbda26df2fd1b3bf3436fa # v1
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
         with:
           vulkan_version: ${{ env.VULKAN_VERSION }}
           cache: true

@@ -20,6 +20,16 @@ struct WidgetDesc {
     std::string text;
     std::string valueText;
     std::string tooltip;
+    /** @brief Plain help shown beneath the control. */
+    std::string helpText;
+    /** @brief Explanation shown when interaction is disabled. */
+    std::string disabledReason;
+    /** @brief Empty-input hint; applies to single-line text inputs. */
+    std::string placeholder;
+    /** @brief Use a multiline plain-text editor. */
+    bool multiline = false;
+    /** @brief Allow selection and copying while preventing text edits. */
+    bool              readOnly    = false;
     bool visible = true;
     bool enabled = true;
     bool checked = false;
@@ -83,7 +93,15 @@ struct WidgetDesc {
     float borderT = 0.f;
     float borderR = 0.f;
     float borderB = 0.f;
+    FillDirection fillDirection    = FillDirection::Right;
+    bool          fillStretch      = false;
+    float         fillStartDegrees = -90.f;
+    bool          fillClockwise    = true;
+    float         fillInnerRadius  = 0.f;  // fraction of outer radius, [0,1]
     float cornerRadius = 0.f;
+    float         fontSize         = 0.f;  // zero inherits host font; positive values are logical UI units
+    float         textR = 1.f, textG = 1.f, textB = 1.f, textA = 1.f;
+    float         textAlignX = 0.f, textAlignY = 0.f;
     float wrapWidth = 0.f;
     float itemHeight = 0.f;  // ScrollList uniform row height
     FlexDirection flexDirection = FlexDirection::Row;
@@ -133,6 +151,19 @@ struct WidgetDesc {
     /** @brief With tooltip. */
     WidgetDesc &withTooltip(std::string v) {
         tooltip = std::move(v);
+        return *this;
+    }
+    /** @brief Configure plain text input and its empty-input hint. */
+    WidgetDesc &withTextInput(bool multi, bool locked = false, std::string hint = {}) {
+        multiline   = multi;
+        readOnly    = locked;
+        placeholder = std::move(hint);
+        return *this;
+    }
+    /** @brief Set always-visible help and an optional disabled explanation. */
+    WidgetDesc &withHelp(std::string help, std::string reason = {}) {
+        helpText       = std::move(help);
+        disabledReason = std::move(reason);
         return *this;
     }
     /** @brief With visible. */
@@ -453,6 +484,24 @@ EVENGINE_API_WORLD WidgetDesc image(std::string id = "", float width = 0.f, floa
 /** @brief Stretchable textured container with asset-defined content padding. */
 WidgetDesc ninePatchPanel(std::vector<WidgetDesc> children = {}, std::string id = "",
                           uint64_t textureId = 0);
+/**
+ * @brief Linear filled image; value is a fraction, layout retains width/height at zero fill.
+ * @thread UI thread. @reentrancy Invokes no callbacks; returned description owns its data.
+ */
+EVENGINE_API_WORLD WidgetDesc filledImage(std::string id, float width, float height, float fraction);
+/**
+ * @brief Solid radial cooldown overlay; supports sectors and rings (no texture sampling).
+ * @thread UI thread. @reentrancy Invokes no callbacks; returned description owns its data.
+ */
+EVENGINE_API_WORLD WidgetDesc radialFill(std::string id, float width, float height, float fraction);
+/** @brief Composes a display-only resource bar; child IDs are /background, /trail, /value and /label.
+ * @thread UI thread. @reentrancy No callbacks. @return Owning widget description; values are presentation only. */
+EVENGINE_API_WORLD WidgetDesc resourceBar(std::string id, float width, float height, float fraction);
+/** @brief Composes an interactive skill slot; /activate emits clicks, /cooldown is a solid radial overlay.
+ * @thread UI thread. @reentrancy No callbacks. @return Owning widget description; caller retains registered icon
+ * texture. */
+EVENGINE_API_WORLD WidgetDesc skillSlot(std::string id, float size, uint64_t iconTexture, float cooldown,
+                                        std::string key);
 /** Clickable image (renders via ImGui ImageButton). */
 /** @brief Image button. */
 EVENGINE_API_WORLD WidgetDesc imageButton(std::string id, float width, float height,
@@ -465,6 +514,12 @@ EVENGINE_API_WORLD WidgetDesc viewport(std::string id = "", float width = 0.f, f
 EVENGINE_API_WORLD WidgetDesc inputText(std::string label, std::string value, std::string id = "",
                                         /** @brief Void. */
                                         std::function<void(const std::string &)> onChange = {});
+/** @brief Clickable text; caller handles URI activation through the UI-thread callback.
+ * @remarks No browser or process is launched by this widget.
+ */
+EVENGINE_API_WORLD WidgetDesc link(std::string label, std::string target, std::string id = "",
+                                   std::function<void()> onClick = {});
+
 /** @brief Compact search field with placeholder text and a bundled search icon. */
 EVENGINE_API_WORLD WidgetDesc searchField(std::string hint, std::string value = {}, std::string id = "",
                                           /** @brief Void. */

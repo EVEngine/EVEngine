@@ -313,6 +313,7 @@ private:
     friend class World3D;
     friend class Body3D;
     friend struct WorldSnapshotAccess;
+    friend struct PortableWorldSnapshotAccess;
 
     void recreate(bool sensor);
     void rebuildGeometry(const ShapeGeometry3D &geometry, bool sensor);

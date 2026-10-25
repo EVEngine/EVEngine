@@ -44,16 +44,20 @@ fi
 group "changed lines are clang-format clean" \
     bash .github/scripts/check-format.sh "$BASE"
 group "module dependency layering" \
-    python3 scripts/module_depgraph.py --check
+    python3 scripts/module_depgraph.py --check --check-layers --report
 group "script bindings have guide or generated API coverage" \
     python3 scripts/check_bindings.py --strict
-group "binding gap ownership metadata" \
-    python3 scripts/check_binding_gap_metadata.py
-group "declared module layers vs includes" \
-    python3 scripts/module_depgraph.py --check-layers
 group "test source manifest" \
     python3 scripts/check_test_manifest.py
-group "examples layout and overview registration" \
+group "test case source lines" \
+    python3 scripts/check_test_case_lines.py
+group "test case names" \
+    python3 scripts/check_test_case_names.py
+group "test assertion levels" \
+    python3 scripts/check_test_assert_level.py
+group "Squirrel call sites" \
+    python3 scripts/check_sq_call_sites.py
+group "examples layout and curated overview links" \
     python3 scripts/check_examples.py
 group "critical return-value diagnostics" \
     python3 scripts/check_nodiscard.py
@@ -67,8 +71,6 @@ group "profile matrix (source-only)" \
     python3 scripts/profile_matrix.py --check
 group "architecture contracts" \
     python3 scripts/check_architecture_contracts.py --base "$BASE"
-group "architecture contract fixtures" \
-    python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 group "ruff lint repository scripts" \
     python3 -m ruff check scripts
 group "repository script tests" \

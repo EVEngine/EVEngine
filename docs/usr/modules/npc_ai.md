@@ -98,3 +98,10 @@ must document their tolerance contract.
 The contract suite includes a 2,048-agent population advanced in 128-agent batches;
 every agent receives progress after one complete round. This is a deterministic budget
 proof, not a hardware performance benchmark.
+
+## DecisionContext（`eve.Decision()`）
+
+轻量黑板 / FSM / utility / 影响图工作区由本模块托管，脚本入口仍是 `eve.Decision()`
+（槽位 `decision`）。与层次状态树 / 感知记忆的 `NpcAiWorld` 互补：前者是显式
+workspace，后者是行为编排运行时。用法见 [决策](decision.md)。共享条件树见
+[条件树](condition.md)。

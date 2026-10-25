@@ -10,6 +10,7 @@ uint32_t g_anonHostSeq = 0;
 
 bool focusableType(NodeType type) {
     switch (type) {
+        case NodeType::Link:
         case NodeType::Button:
         case NodeType::Checkbox:
         case NodeType::Slider:
@@ -109,6 +110,23 @@ void UIHost::setSimplePanel(const std::string &title, const std::string &labelTe
                        button(buttonText, buttonId),
                    },
                    "root"));
+}
+
+std::optional<UINodeHandle> UIHost::nodeHandle(const std::string &id) {
+    if (id.empty()) return std::nullopt;
+    auto t = tree();
+    for (std::size_t i = 0; i < t->nodes.size(); ++i) {
+        if (t->nodes[i].id == id) return UINodeHandle{handle(), t->generation, i};
+    }
+    return std::nullopt;
+}
+
+eve::OptionalRef<UINode> UIHost::resolveNode(UINodeHandle handle) {
+    auto host = resolve(handle.host);
+    if (!host) return std::nullopt;
+    auto t = host->get().tree();
+    if (t->generation != handle.treeGeneration || handle.index >= t->nodes.size()) return std::nullopt;
+    return std::ref(t->nodes[handle.index]);
 }
 
 eve::OptionalRef<UINode> UIHost::findById(const std::string &id) {

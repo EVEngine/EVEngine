@@ -9,6 +9,7 @@ import importlib.util
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 ROOT = Path(__file__).parents[2]
@@ -48,6 +49,13 @@ class AssertLevelTests(unittest.TestCase):
         source = (
             "void requireReady() { REQUIRE(true); }\n"
             'TEST_CASE("a.delegates") { requireReady(); CHECK(true); }\n'
+        )
+        self.assertEqual(self.scan(source), [])
+
+    def test_unused_attribute_does_not_hide_a_require_helper(self):
+        source = (
+            "[[maybe_unused]] bool requireReady() { REQUIRE(true); return true; }\n"
+            'TEST_CASE("a.delegates") { CHECK(requireReady()); }\n'
         )
         self.assertEqual(self.scan(source), [])
 
@@ -167,6 +175,29 @@ class StrictFileTests(unittest.TestCase):
         # The rule is only useful while the checked-in list passes; a failure here means the
         # gate is red on the repository, not that this test is wrong.
         self.assertEqual(checker.strict_violations(), [])
+
+    def test_relocated_evidence_checks_only_its_origin_and_preserves_lines(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "merged.cpp"
+            source.write_text(
+                '#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_other)\n'
+                'TEST_CASE("other") { CHECK(false); }\n#endif\n'
+                '#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_strict)\n'
+                'void helper() { CHECK(false); }\n'
+                'TEST_CASE("evidence") { REQUIRE(true); CHECK(false); }\n#endif\n',
+                encoding="utf-8",
+            )
+            header = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"origins":["strict.cpp","other.cpp"]}\n'
+            source.write_text(header + source.read_text(encoding="utf-8"), encoding="utf-8")
+            with patch.object(checker, "SOURCE_ROOT", root):
+                self.assertEqual(checker.strict_violations([str(root / "strict.cpp")]), [
+                    f"{source.as_posix()}|<outside any case>|6",
+                    f"{source.as_posix()}|evidence|7",
+                ])
+                self.assertEqual(checker.relocated_baseline([
+                    f"{root}/strict.cpp|evidence|1", f"{root}/strict.cpp|new.case|1"
+                ]), {f"{source.as_posix()}|evidence|1", f"{root}/strict.cpp|new.case|1"})
 
 
 if __name__ == "__main__":

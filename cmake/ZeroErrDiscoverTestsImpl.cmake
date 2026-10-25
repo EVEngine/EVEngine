@@ -155,6 +155,7 @@ set(_bundle_files "")
 foreach(_entry IN LISTS _cases)
   string(REPLACE "|" ";" _parts "${_entry}")
   list(GET _parts 1 _basename)
+  list(APPEND "_eve_file_cases_${_basename}" "${_entry}")
   list(FIND _bundle_files "${_basename}" _found)
   if(_found EQUAL -1)
     list(APPEND _bundle_files "${_basename}")
@@ -167,16 +168,37 @@ endforeach()
 #      a single process (--file=<basename regex>, --quiet), as an opt-in.
 #      Default `make test` excludes bundles to preserve process isolation.
 #
-# Test names and source basenames only contain [A-Za-z0-9_.], so no regex
-# escaping is applied: backslash-escaping (e.g. \.) produced "Invalid escape
-# sequence" in CMake's quoted-string parser (CMP0010) on some CMake versions.
+# Escape regex punctuation and then escape the generated CMake string. A unit
+# case must not select an integration case with a similar name; a unit bundle
+# must not also select another file ending in its basename (data/metadata.cpp).
+if(NOT DEFINED ZEROERR_LEVEL_FILE OR NOT EXISTS "${ZEROERR_LEVEL_FILE}")
+  message(FATAL_ERROR "ZEROERR_LEVEL_FILE must name the configured test-level catalogue")
+endif()
+include("${ZEROERR_LEVEL_FILE}")
+include("${CMAKE_CURRENT_LIST_DIR}/TestLevels.cmake")
 set(_content "")
 foreach(_basename IN LISTS _bundle_files)
+  set(_bundle_metadata "")
+  foreach(_entry IN LISTS "_eve_file_cases_${_basename}")
+    string(REPLACE "|" ";" _parts "${_entry}")
+    list(GET _parts 0 _name)
+    list(GET _parts 1 _file)
+    if(_file STREQUAL _basename)
+      eve_test_metadata("${_file}" "${_name}" _metadata)
+      list(APPEND _bundle_metadata ${_metadata})
+    endif()
+  endforeach()
+  eve_merge_test_metadata(_bundle_metadata ${_bundle_metadata})
+  set(_bundle_labels "bundle;${ZEROERR_LABEL};${_bundle_metadata}")
   set(_bundle_name "${ZEROERR_NAME_PREFIX}bundle/${_basename}")
+  get_filename_component(_file_basename "${_basename}" NAME)
+  eve_test_regex_literal("${_file_basename}" _file_literal)
+  eve_test_cmake_string("(^|.*[/\\\\])${_file_literal}$" _file_filter)
+  eve_test_runtime_environment("${_bundle_metadata}" "${_eve_test_env_property}" _bundle_environment)
   string(APPEND _content
-    "add_test(\"${_bundle_name}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=.*${_basename}\")\n"
-    "set_tests_properties(\"${_bundle_name}\" PROPERTIES LABELS \"bundle;${ZEROERR_LABEL}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
-  foreach(_entry IN LISTS _cases)
+    "add_test(\"${_bundle_name}\" \"${ZEROERR_EXE}\" \"--quiet\" \"--file=${_file_filter}\")\n"
+    "set_tests_properties(\"${_bundle_name}\" PROPERTIES LABELS \"${_bundle_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_bundle_environment})\n")
+  foreach(_entry IN LISTS "_eve_file_cases_${_basename}")
     string(REPLACE "|" ";" _parts "${_entry}")
     list(GET _parts 0 _name)
     list(GET _parts 1 _file)
@@ -187,19 +209,23 @@ foreach(_basename IN LISTS _bundle_files)
       # conventions inside TEST_CASE strings. The link unit's own label is added
       # too, so `make test/<platform> DOMAIN=<domain>` and `ctest -L` can select
       # one domain; CTest labels are a list, so both coexist.
-      set(_labels "source:${_basename}")
+      eve_test_metadata("${_file}" "${_name}" _metadata)
+      set(_labels "source:${_basename};${_metadata}")
       if(DEFINED ZEROERR_LABEL AND NOT ZEROERR_LABEL STREQUAL "")
         list(APPEND _labels "${ZEROERR_LABEL}")
       endif()
-      if(_name STREQUAL "ClassicScenes.perf.maxFps")
+      if(_name STREQUAL "ClassicScenes.perf.maxFps" OR _name MATCHES "^physics\\.benchmark\\.")
         # Full FPS sweeps stay opt-in: the benchmark label lets `make test`
         # exclude them (CTEST_BENCHMARK_SEL) while -L benchmark still selects them.
         list(APPEND _labels "benchmark")
       endif()
       # CTest include files use classic add_test(name exe [args...]), not NAME/COMMAND keywords.
+      eve_test_regex_literal("${_name}" _case_literal)
+      eve_test_cmake_string("^${_case_literal}$" _case_filter)
+      eve_test_runtime_environment("${_metadata}" "${_eve_test_env_property}" _case_environment)
       string(APPEND _content
-        "add_test(\"${_ctest_name}\" \"${ZEROERR_EXE}\" \"--testcase=^${_name}$\")\n"
-        "set_tests_properties(\"${_ctest_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_eve_test_env_property})\n")
+        "add_test(\"${_ctest_name}\" \"${ZEROERR_EXE}\" \"--testcase=${_case_filter}\")\n"
+        "set_tests_properties(\"${_ctest_name}\" PROPERTIES LABELS \"${_labels}\" WORKING_DIRECTORY \"${ZEROERR_WORKING_DIRECTORY}\"${_case_environment})\n")
       if(_name MATCHES "^ClassicScenes[.]")
         # These asset-dependent cases already return early with these diagnostics.
         # Expose that outcome as skipped rather than a zero-assertion pass.

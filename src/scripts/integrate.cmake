@@ -27,7 +27,7 @@ endif()
 # guaranteed to be absent from the content (see eve_raw_string_literal).
 # The presentation helper only declares script types; it instantiates no optional
 # modules. Embed it before bootstrap so packaged games need no repository paths.
-set(load_content "${default_dialogue_ui_content}\n${load_content}")
+set(load_content "${default_dialogue_ui_content}\n${material_preview_geometry_content}\n${material_preview_scene_content}\n${material_studio_content}\n${load_content}")
 foreach(_eve_embedded IN ITEMS boot load module_list async scene_director demo vertex fragment)
     eve_raw_string_literal(${_eve_embedded}_content_literal "${${_eve_embedded}_content}")
 endforeach()

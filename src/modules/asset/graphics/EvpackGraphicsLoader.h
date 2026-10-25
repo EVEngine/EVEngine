@@ -4,6 +4,7 @@
 
 /** @file EvpackGraphicsLoader.h @brief Transactional graphics consumers for canonical runtime assets. */
 
+#include <array>
 #include "asset/CanonicalMesh.h"
 #include "asset/EvpackResourceReader.h"
 #include "graphics/IMeshResourceFactory.h"
@@ -29,6 +30,8 @@ struct LoadedGraphicsMesh {
      * values outlive archive staging and are not implicitly consumed by the PBR shader.
      */
     std::map<std::string, asset::CanonicalMeshAttribute> attributes;
+    /** @brief Owning min XYZ/max XYZ from admitted CPU vertices; independent of backend mesh lease. */
+    std::array<float, 6> localBounds{};
 };
 
 /** @brief Bounds applied before allocating canonical mesh staging arrays. */

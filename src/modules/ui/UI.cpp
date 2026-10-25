@@ -28,11 +28,11 @@
 #include "ui/Widget.h"
 
 #include "common/Capability.h"
-#include "common/Module.h"
 #include "common/Json.h"
-#include "common/Value.h"
+#include "common/Module.h"
 #include "common/SquirrelBinding.h"
 #include "common/SquirrelOwnership.h"
+#include "common/Value.h"
 #include "common/config.h"
 #include "graphics/Graphics.h"
 #include "image/Image.h"
@@ -53,6 +53,7 @@
 #endif
 
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iterator>
@@ -65,6 +66,14 @@ namespace detail {
 void injectUIComponentClass(ssq::Table &eveTable);
 }  // namespace detail
 namespace {
+
+bool validHudFields(const WidgetDesc &node) {
+    return int(node.fillDirection) <= 3 && std::isfinite(node.fillStartDegrees) &&
+           std::isfinite(node.fillInnerRadius) && node.fillInnerRadius >= 0.f && node.fillInnerRadius <= 1.f &&
+           std::isfinite(node.fontSize) && node.fontSize >= 0.f && std::isfinite(node.textAlignX) &&
+           node.textAlignX >= 0.f && node.textAlignX <= 1.f && std::isfinite(node.textAlignY) &&
+           node.textAlignY >= 0.f && node.textAlignY <= 1.f;
+}
 
 UI *uiFromStack(HSQUIRRELVM vm) {
     UI *self = nullptr;
@@ -142,6 +151,25 @@ SQInteger sqAnimateItemOpacity(HSQUIRRELVM vm) {
         return sq_throwerror(vm, "UI.animateItemOpacity expects (string id, float opacity, float durationMs)");
     self->animateItemOpacity(id ? id : "", float(opacity), float(durationMs), optionalEase(vm, 5, n),
                              optionalDelay(vm, 6, n));
+    return 0;
+}
+
+/** Script: animateItemValue(id, value, durationMs [, ease [, delayMs]]). */
+SQInteger sqAnimateItemValue(HSQUIRRELVM vm) {
+    const SQInteger n = sq_gettop(vm);
+    if (n < 4 || n > 6)
+        return sq_throwerror(vm, "UI.animateItemValue expects (id, value, durationMs [, ease [, delayMs]])");
+    UI *self = uiFromStack(vm);
+    if (!self) return sq_throwerror(vm, "invalid UI");
+    const SQChar *id    = nullptr;
+    SQFloat       value = 0.f, durationMs = 0.f;
+    if (SQ_FAILED(sq_getstring(vm, 2, &id)) || SQ_FAILED(sq_getfloat(vm, 3, &value)) ||
+        SQ_FAILED(sq_getfloat(vm, 4, &durationMs)))
+        return sq_throwerror(vm, "UI.animateItemValue expects (string id, float value, float durationMs)");
+    if (!std::isfinite(float(value)) || !std::isfinite(float(durationMs)) || !std::isfinite(optionalDelay(vm, 6, n)))
+        return sq_throwerror(vm, "UI.animateItemValue expects finite value/duration/delay");
+    self->animateItemValue(id ? id : "", float(value), float(durationMs), optionalEase(vm, 5, n),
+                           optionalDelay(vm, 6, n));
     return 0;
 }
 
@@ -638,6 +666,7 @@ AccessibilityRole parseAccessibilityRole(const std::string &role) {
     if (value == "checkbox") return AccessibilityRole::Checkbox;
     if (value == "slider") return AccessibilityRole::Slider;
     if (value == "text") return AccessibilityRole::Text;
+    if (value == "link") return AccessibilityRole::Link;
     if (value == "textinput" || value == "text-input") return AccessibilityRole::TextInput;
     if (value == "list") return AccessibilityRole::List;
     if (value == "listitem" || value == "list-item") return AccessibilityRole::ListItem;
@@ -756,6 +785,50 @@ void UI::addProgress(float fraction, const std::string &id, const std::string &o
     currentParent().children.push_back(progress(fraction, id, overlay));
 }
 
+void UI::addFilledImage(const std::string &id, float width, float height, float fraction) {
+    currentParent().children.push_back(filledImage(id, width, height, fraction));
+}
+
+void UI::addResourceBar(const std::string &id, float width, float height, float fraction) {
+    currentParent().children.push_back(resourceBar(id, width, height, fraction));
+}
+
+void UI::addSkillSlot(const std::string &id, float size, uint64_t iconTexture, float cooldown, const std::string &key) {
+    currentParent().children.push_back(skillSlot(id, size, iconTexture, cooldown, key));
+}
+
+void UI::addRadialFill(const std::string &id, float width, float height, float fraction) {
+    currentParent().children.push_back(radialFill(id, width, height, fraction));
+}
+
+void UI::setItemFillDirection(const std::string &direction, bool stretch) {
+    FillDirection value;
+    if (direction == "right")
+        value = FillDirection::Right;
+    else if (direction == "left")
+        value = FillDirection::Left;
+    else if (direction == "down")
+        value = FillDirection::Down;
+    else if (direction == "up")
+        value = FillDirection::Up;
+    else
+        throw std::invalid_argument("UI fill direction must be right, left, down or up");
+    if (currentParent().children.empty()) throw std::logic_error("UI fill options require a built item");
+    auto &item         = currentParent().children.back();
+    item.fillDirection = value;
+    item.fillStretch   = stretch;
+}
+
+void UI::setItemRadialFill(float startDegrees, bool clockwise, float innerRadius) {
+    if (!std::isfinite(startDegrees) || !std::isfinite(innerRadius) || innerRadius < 0.f || innerRadius > 1.f)
+        throw std::invalid_argument("UI radial fill requires finite degrees and inner radius in [0,1]");
+    if (currentParent().children.empty()) throw std::logic_error("UI fill options require a built item");
+    auto &item            = currentParent().children.back();
+    item.fillStartDegrees = startDegrees;
+    item.fillClockwise    = clockwise;
+    item.fillInnerRadius  = innerRadius;
+}
+
 void UI::addImage(const std::string &id, float width, float height) {
     currentParent().children.push_back(image(id, width, height));
 }
@@ -795,6 +868,20 @@ void UI::addCombo(const std::string &label, const std::string &options, int sele
         start = end + 1;
     }
     currentParent().children.push_back(combo(label, items, selected, id));
+}
+
+void UI::addLink(const std::string &label, const std::string &target, const std::string &id) {
+    currentParent().children.push_back(link(label, target, id));
+}
+
+void UI::setItemTextInput(bool multiline, bool readOnly, const std::string &placeholder) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withTextInput(multiline, readOnly, placeholder);
+}
+
+void UI::setItemHelp(const std::string &help, const std::string &disabledReason) {
+    auto &children = currentParent().children;
+    if (!children.empty()) children.back().withHelp(help, disabledReason);
 }
 
 void UI::addInputText(const std::string &label, const std::string &value, const std::string &id) {
@@ -1339,6 +1426,40 @@ void UI::setHostOverlay(bool overlay) {
     if (auto host = resolveSelected()) host->get().meta()->overlay = overlay;
 }
 
+void UI::setHostInputTransparent(bool transparent) {
+    if (auto host = resolveSelected()) host->get().meta()->inputTransparent = transparent;
+}
+
+void UI::setHostHudCanvas(float referenceWidth, float referenceHeight, float userScale) {
+    if (!std::isfinite(referenceWidth) || !std::isfinite(referenceHeight) || !std::isfinite(userScale) ||
+        referenceWidth <= 0.f || referenceHeight <= 0.f || userScale <= 0.f)
+        throw std::invalid_argument("HUD canvas dimensions and scale must be finite and positive");
+    if (auto host = resolveSelected()) {
+        auto &canvas           = host->get().meta()->canvas;
+        canvas.enabled         = true;
+        canvas.referenceWidth  = referenceWidth;
+        canvas.referenceHeight = referenceHeight;
+        canvas.userScale       = userScale;
+    }
+}
+
+void UI::clearHostHudCanvas() {
+    if (auto host = resolveSelected()) host->get().meta()->canvas.enabled = false;
+}
+
+void UI::setHostSafeArea(float left, float top, float right, float bottom) {
+    for (float margin : {left, top, right, bottom})
+        if (!std::isfinite(margin) || margin < 0.f)
+            throw std::invalid_argument("HUD safe margins must be finite and nonnegative");
+    if (auto host = resolveSelected()) {
+        auto &canvas      = host->get().meta()->canvas;
+        canvas.safeLeft   = left;
+        canvas.safeTop    = top;
+        canvas.safeRight  = right;
+        canvas.safeBottom = bottom;
+    }
+}
+
 void UI::setHostOverlayAlpha(float alpha) {
     if (auto host = resolveSelected()) host->get().meta()->overlayBgAlpha = std::max(0.f, std::min(1.f, alpha));
 }
@@ -1518,6 +1639,16 @@ void UI::animateItemOpacity(const std::string &id, float opacity, float duration
         .ignore("UI.animateItemOpacity: host/node unavailable");
 }
 
+void UI::animateItemValue(const std::string &id, float value, float durationMs, const std::string &ease,
+                          float delayMs) {
+    if (!std::isfinite(value) || !std::isfinite(durationMs) || !std::isfinite(delayMs))
+        throw std::invalid_argument("HUD value tween inputs must be finite");
+    if (!resolveSelected()) return;
+    // Script-facing facade: missing hosts/nodes are no-ops (same as other UI setters).
+    tweens_.animateItemValue(selected_, id, value, durationMs, ease, delayMs, uiTweenWallClockMs())
+        .ignore("UI.animateItemValue: host/node unavailable");
+}
+
 void UI::animateItemPos(const std::string &id, float x, float y, float durationMs, const std::string &ease,
                         float delayMs) {
     if (!resolveSelected()) return;
@@ -1627,7 +1758,7 @@ std::string UI::saveTreeJson() const {
     auto               t = host->get().tree();
     Poco::JSON::Object root;
     root.set("schema", "eve.ui.tree");
-    root.set("version", 4);
+    root.set("version", 5);
     root.set("host", host->get().getName());
     if (t->root >= 0) nodeToJson(*t, t->nodes[size_t(t->root)], root);
     std::ostringstream oss;
@@ -1646,7 +1777,7 @@ bool UI::loadTreeJson(const std::string &json) {
         if (obj->has("schema") && obj->getValue<std::string>("schema") != "eve.ui.tree")
             return false;
         const int version = obj->optValue<int>("version", 1);
-        if (version < 1 || version > 4) return false;
+        if (version < 1 || version > 5) return false;
         WidgetDesc root = descFromJson(*obj);
         host->get().setTree(std::move(root));
         return true;
@@ -1660,24 +1791,66 @@ bool UI::loadTreeJson(const std::string &json) {
 std::string UI::saveTreeJson() const {
     auto host = resolveSelected();
     if (!host) return "{}";
-    static const char *types[] = {
-        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
-        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
-        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
-        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
-        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
-    const auto tree = host->get().tree();
-    std::function<eve::Value(int)> encode = [&](int index) -> eve::Value {
-        const UINode &n = tree->nodes[size_t(index)];
-        eve::Value node = eve::Value::object({});
-        const int typeIndex = static_cast<int>(n.type);
-        node.set("type", typeIndex >= 0 && typeIndex < int(std::size(types)) ? types[typeIndex]
-                                                                            : "text");
+    static const char             *types[] = {"window",
+                                              "text",
+                                              "button",
+                                              "sameLine",
+                                              "group",
+                                              "separator",
+                                              "checkbox",
+                                              "slider",
+                                              "progress",
+                                              "inputText",
+                                              "collapsingHeader",
+                                              "child",
+                                              "flex",
+                                              "spacer",
+                                              "image",
+                                              "imageButton",
+                                              "combo",
+                                              "scrollList",
+                                              "viewport",
+                                              "searchField",
+                                              "switch",
+                                              "badge",
+                                              "card",
+                                              "sectionHeader",
+                                              "menuBar",
+                                              "menu",
+                                              "menuItem",
+                                              "toolbar",
+                                              "toolbox",
+                                              "sidebar",
+                                              "statusBar",
+                                              "splitPane",
+                                              "ninePatchPanel",
+                                              "colorPalette",
+                                              "grid",
+                                              "tab",
+                                              "tabBar",
+                                              "tabContainer",
+                                              "panelFrame",
+                                              "dockArea",
+                                              "appFrame",
+                                              "link",
+                                              "filled-image",
+                                              "radial-fill"};
+    const auto                     tree    = host->get().tree();
+    std::function<eve::Value(int)> encode  = [&](int index) -> eve::Value {
+        const UINode &n         = tree->nodes[size_t(index)];
+        eve::Value    node      = eve::Value::object({});
+        const int     typeIndex = static_cast<int>(n.type);
+        node.set("type", typeIndex >= 0 && typeIndex < int(std::size(types)) ? types[typeIndex] : "text");
         if (!n.id.empty()) node.set("id", n.id);
         if (!n.key.empty()) node.set("key", n.key);
         if (!n.text.empty()) node.set("text", n.text);
         if (!n.valueText.empty()) node.set("valueText", n.valueText);
         if (!n.tooltip.empty()) node.set("tooltip", n.tooltip);
+        if (n.readOnly) node.set("readOnly", n.readOnly);
+        if (n.multiline) node.set("multiline", n.multiline);
+        if (!n.placeholder.empty()) node.set("placeholder", n.placeholder);
+        if (!n.disabledReason.empty()) node.set("disabledReason", n.disabledReason);
+        if (!n.helpText.empty()) node.set("helpText", n.helpText);
         if (!n.styleClass.empty()) node.set("styleClass", n.styleClass);
         node.set("visible", n.visible);
         node.set("enabled", n.enabled);
@@ -1687,6 +1860,27 @@ std::string UI::saveTreeJson() const {
         node.set("maxValue", n.maxValue);
         node.set("sizeX", n.sizeX);
         node.set("sizeY", n.sizeY);
+        node.set("absolute", n.absolute);
+        node.set("anchorX", n.anchorX);
+        node.set("anchorY", n.anchorY);
+        node.set("posX", n.posX);
+        node.set("posY", n.posY);
+        node.set("fillDirection", int(n.fillDirection));
+        node.set("fillStretch", n.fillStretch);
+        node.set("fillClockwise", n.fillClockwise);
+        node.set("fillStartDegrees", n.fillStartDegrees);
+        node.set("fillInnerRadius", n.fillInnerRadius);
+        node.set("fontSize", n.fontSize);
+        node.set("textColor", eve::Value::array({n.textR, n.textG, n.textB, n.textA}));
+        node.set("textAlignX", n.textAlignX);
+        node.set("textAlignY", n.textAlignY);
+        node.set("tint", eve::Value::array({n.tintR, n.tintG, n.tintB, n.tintA}));
+        node.set("uv", eve::Value::array({n.uv0x, n.uv0y, n.uv1x, n.uv1y}));
+        node.set("mouseFilter", n.mouseFilter == MouseFilter::Ignore
+                                     ? "ignore"
+                                     : (n.mouseFilter == MouseFilter::Pass ? "pass" : "stop"));
+        node.set("focusMode",
+                 n.focusMode == FocusMode::None ? "none" : (n.focusMode == FocusMode::Click ? "click" : "all"));
         node.set("flexDirection", n.flexDirection == FlexDirection::Column ? "column" : "row");
         node.set("alignItems", int(n.alignItems));
         node.set("justifyContent", int(n.justifyContent));
@@ -1714,7 +1908,7 @@ std::string UI::saveTreeJson() const {
     };
     eve::Value root = tree->root >= 0 ? encode(tree->root) : eve::Value::object({});
     root.set("schema", "eve.ui.tree");
-    root.set("version", 4);
+    root.set("version", 5);
     root.set("host", host->get().getName());
     auto encoded = eve::json::stringify(root);
     return encoded.ok() ? std::move(encoded).takeValue() : "{}";
@@ -1729,57 +1923,145 @@ bool UI::loadTreeJson(const std::string &text) {
     if (!document.valid() || !root.isObject()) return false;
     if (root.has("schema") && root.getString("schema") != "eve.ui.tree") return false;
     const int version = root.getInt("version", 1);
-    if (version < 1 || version > 4) return false;
-    static const char *types[] = {
-        "window", "text", "button", "sameLine", "group", "separator", "checkbox",
-        "slider", "progress", "inputText", "collapsingHeader", "child", "flex", "spacer",
-        "image", "imageButton", "combo", "scrollList", "viewport", "searchField", "switch",
-        "badge", "card", "sectionHeader", "menuBar", "menu", "menuItem", "toolbar", "toolbox",
-        "sidebar", "statusBar", "splitPane", "ninePatchPanel", "colorPalette", "grid"};
-    std::function<WidgetDesc(eve::json::Value)> decode = [&](eve::json::Value value) {
-        WidgetDesc node;
+    if (version < 1 || version > 5) return false;
+    static const char                          *types[] = {"window",
+                                                           "text",
+                                                           "button",
+                                                           "sameLine",
+                                                           "group",
+                                                           "separator",
+                                                           "checkbox",
+                                                           "slider",
+                                                           "progress",
+                                                           "inputText",
+                                                           "collapsingHeader",
+                                                           "child",
+                                                           "flex",
+                                                           "spacer",
+                                                           "image",
+                                                           "imageButton",
+                                                           "combo",
+                                                           "scrollList",
+                                                           "viewport",
+                                                           "searchField",
+                                                           "switch",
+                                                           "badge",
+                                                           "card",
+                                                           "sectionHeader",
+                                                           "menuBar",
+                                                           "menu",
+                                                           "menuItem",
+                                                           "toolbar",
+                                                           "toolbox",
+                                                           "sidebar",
+                                                           "statusBar",
+                                                           "splitPane",
+                                                           "ninePatchPanel",
+                                                           "colorPalette",
+                                                           "grid",
+                                                           "tab",
+                                                           "tabBar",
+                                                           "tabContainer",
+                                                           "panelFrame",
+                                                           "dockArea",
+                                                           "appFrame",
+                                                           "link",
+                                                           "filled-image",
+                                                           "radial-fill"};
+    bool                                        valid   = true;
+    std::function<WidgetDesc(eve::json::Value)> decode  = [&](eve::json::Value value) {
+        WidgetDesc        node;
         const std::string type = value.getString("type", "text");
         for (int i = 0; i < int(std::size(types)); ++i)
             if (type == types[i]) node.type = static_cast<NodeType>(i);
-        node.id = value.getString("id");
-        node.key = value.getString("key");
-        node.text = value.getString("text");
-        node.valueText = value.getString("valueText");
-        node.tooltip = value.getString("tooltip");
-        node.styleClass = value.getString("styleClass");
-        node.visible = value.getBool("visible", true);
-        node.enabled = value.getBool("enabled", true);
-        node.checked = value.getBool("checked", false);
-        node.value = value.getFloat("value");
-        node.minValue = value.getFloat("minValue");
-        node.maxValue = value.getFloat("maxValue", 1.f);
-        node.sizeX = value.getFloat("sizeX");
-        node.sizeY = value.getFloat("sizeY");
-        node.flexDirection = value.getString("flexDirection") == "column" ? FlexDirection::Column
-                                                                           : FlexDirection::Row;
-        node.alignItems = static_cast<FlexAlign>(value.getInt("alignItems"));
-        node.justifyContent = static_cast<FlexJustify>(value.getInt("justifyContent"));
-        node.gap = value.getFloat("gap", -1.f);
-        node.columnGap = value.getFloat("columnGap", -1.f);
-        node.rowGap = value.getFloat("rowGap", -1.f);
-        node.flexGrow = value.getFloat("flexGrow");
-        node.flexShrink = value.getFloat("flexShrink", 1.f);
-        node.flexBasis = value.getFloat("flexBasis", -1.f);
-        node.alignSelf = value.getInt("alignSelf", -1);
-        node.aspectRatio = value.getFloat("aspectRatio");
-        node.flexWrap = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
-        node.overflow = static_cast<OverflowMode>(value.getInt("overflow"));
-        node.gridColumns = std::max(1, value.getInt("gridColumns", 1));
-        node.gridColumnSpan = std::max(1, value.getInt("gridColumnSpan", 1));
+        node.id             = value.getString("id");
+        node.key            = value.getString("key");
+        node.text           = value.getString("text");
+        node.valueText      = value.getString("valueText");
+        node.tooltip        = value.getString("tooltip");
+        node.readOnly       = value.getBool("readOnly", false);
+        node.multiline      = value.getBool("multiline", false);
+        node.placeholder    = value.getString("placeholder");
+        node.disabledReason = value.getString("disabledReason");
+        node.helpText       = value.getString("helpText");
+        node.styleClass     = value.getString("styleClass");
+        node.visible        = value.getBool("visible", true);
+        node.enabled        = value.getBool("enabled", true);
+        node.checked        = value.getBool("checked", false);
+        node.value          = value.getFloat("value");
+        node.minValue       = value.getFloat("minValue");
+        node.maxValue       = value.getFloat("maxValue", 1.f);
+        node.sizeX          = value.getFloat("sizeX");
+        node.sizeY          = value.getFloat("sizeY");
+        node.absolute       = value.getBool("absolute");
+        node.anchorX        = value.getFloat("anchorX");
+        node.anchorY        = value.getFloat("anchorY");
+        node.posX           = value.getFloat("posX");
+        node.posY           = value.getFloat("posY");
+        const int direction = value.getInt("fillDirection");
+        if (direction < 0 || direction > 3) valid = false;
+        node.fillDirection    = FillDirection(direction);
+        node.fillStretch      = value.getBool("fillStretch");
+        node.fillClockwise    = value.getBool("fillClockwise", true);
+        node.fillStartDegrees = value.getFloat("fillStartDegrees", -90.f);
+        node.fillInnerRadius  = value.getFloat("fillInnerRadius");
+        node.fontSize         = value.getFloat("fontSize");
+        node.textAlignX       = value.getFloat("textAlignX");
+        node.textAlignY       = value.getFloat("textAlignY");
+        const auto textColor  = value.get("textColor");
+        if (textColor.size() >= 4) {
+            node.textR = textColor.at(0).asFloat(1.f);
+            node.textG = textColor.at(1).asFloat(1.f);
+            node.textB = textColor.at(2).asFloat(1.f);
+            node.textA = textColor.at(3).asFloat(1.f);
+        }
+        const auto tint = value.get("tint");
+        if (tint.size() >= 4) {
+            node.tintR = tint.at(0).asFloat(1.f);
+            node.tintG = tint.at(1).asFloat(1.f);
+            node.tintB = tint.at(2).asFloat(1.f);
+            node.tintA = tint.at(3).asFloat(1.f);
+        }
+        const auto uv = value.get("uv");
+        if (uv.size() >= 4) {
+            node.uv0x = uv.at(0).asFloat();
+            node.uv0y = uv.at(1).asFloat();
+            node.uv1x = uv.at(2).asFloat(1.f);
+            node.uv1y = uv.at(3).asFloat(1.f);
+        }
+        const auto filter = value.getString("mouseFilter", "stop");
+        node.mouseFilter =
+            filter == "ignore" ? MouseFilter::Ignore : (filter == "pass" ? MouseFilter::Pass : MouseFilter::Stop);
+        const auto focus   = value.getString("focusMode", "all");
+        node.focusMode     = focus == "none" ? FocusMode::None : (focus == "click" ? FocusMode::Click : FocusMode::All);
+        node.flexDirection = value.getString("flexDirection") == "column" ? FlexDirection::Column : FlexDirection::Row;
+        node.alignItems    = static_cast<FlexAlign>(value.getInt("alignItems"));
+        node.justifyContent    = static_cast<FlexJustify>(value.getInt("justifyContent"));
+        node.gap               = value.getFloat("gap", -1.f);
+        node.columnGap         = value.getFloat("columnGap", -1.f);
+        node.rowGap            = value.getFloat("rowGap", -1.f);
+        node.flexGrow          = value.getFloat("flexGrow");
+        node.flexShrink        = value.getFloat("flexShrink", 1.f);
+        node.flexBasis         = value.getFloat("flexBasis", -1.f);
+        node.alignSelf         = value.getInt("alignSelf", -1);
+        node.aspectRatio       = value.getFloat("aspectRatio");
+        node.flexWrap          = value.getString("flexWrap") == "wrap" ? FlexWrap::Wrap : FlexWrap::NoWrap;
+        node.overflow          = static_cast<OverflowMode>(value.getInt("overflow"));
+        node.gridColumns       = std::max(1, value.getInt("gridColumns", 1));
+        node.gridColumnSpan    = std::max(1, value.getInt("gridColumnSpan", 1));
         node.accessibilityRole = static_cast<AccessibilityRole>(value.getInt("accessibilityRole"));
         node.accessibilityName = value.getString("accessibilityName");
+        if (node.type == NodeType::Link) node.accessibilityRole = AccessibilityRole::Link;
         node.accessibilityDescription = value.getString("accessibilityDescription");
+        if (!validHudFields(node)) valid = false;
         const eve::json::Value children = value.get("children");
         for (size_t i = 0; i < children.size(); ++i)
             if (children.at(i).isObject()) node.children.push_back(decode(children.at(i)));
         return node;
     };
-    host->get().setTree(decode(root));
+    auto description = decode(root);
+    if (!valid) return false;
+    host->get().setTree(std::move(description));
     return true;
 }
 #endif
@@ -1848,47 +2130,50 @@ namespace {
 
 const char *nodeTypeName(NodeType t) {
     switch (t) {
-    case NodeType::Window: return "window";
-    case NodeType::Text: return "text";
-    case NodeType::Button: return "button";
-    case NodeType::SameLine: return "sameLine";
-    case NodeType::Group: return "group";
-    case NodeType::Separator: return "separator";
-    case NodeType::Checkbox: return "checkbox";
-    case NodeType::Slider: return "slider";
-    case NodeType::Progress: return "progress";
-    case NodeType::InputText: return "inputText";
-    case NodeType::CollapsingHeader: return "collapsingHeader";
-    case NodeType::Child: return "child";
-    case NodeType::Flex: return "flex";
-    case NodeType::Spacer: return "spacer";
-    case NodeType::Image: return "image";
-    case NodeType::ImageButton: return "imageButton";
-    case NodeType::Combo: return "combo";
-    case NodeType::ScrollList: return "scrollList";
-    case NodeType::Viewport: return "viewport";
-    case NodeType::SearchField: return "searchField";
-    case NodeType::Switch: return "switch";
-    case NodeType::Badge: return "badge";
-    case NodeType::Card: return "card";
-    case NodeType::NinePatchPanel: return "ninePatchPanel";
-    case NodeType::ColorPalette: return "colorPalette";
-    case NodeType::Grid: return "grid";
-    case NodeType::SectionHeader: return "sectionHeader";
-    case NodeType::MenuBar: return "menuBar";
-    case NodeType::Menu: return "menu";
-    case NodeType::MenuItem: return "menuItem";
-    case NodeType::Toolbar: return "toolbar";
-    case NodeType::Toolbox: return "toolbox";
-    case NodeType::Sidebar: return "sidebar";
-    case NodeType::StatusBar: return "statusBar";
-    case NodeType::SplitPane: return "splitPane";
-    case NodeType::Tab: return "tab";
-    case NodeType::TabBar: return "tabBar";
-    case NodeType::TabContainer: return "tabContainer";
-    case NodeType::PanelFrame: return "panelFrame";
-    case NodeType::DockArea: return "dockArea";
-    case NodeType::AppFrame: return "appFrame";
+        case NodeType::Link: return "link";
+        case NodeType::Window: return "window";
+        case NodeType::Text: return "text";
+        case NodeType::Button: return "button";
+        case NodeType::SameLine: return "sameLine";
+        case NodeType::Group: return "group";
+        case NodeType::Separator: return "separator";
+        case NodeType::Checkbox: return "checkbox";
+        case NodeType::Slider: return "slider";
+        case NodeType::FilledImage: return "filled-image";
+        case NodeType::RadialFill: return "radial-fill";
+        case NodeType::Progress: return "progress";
+        case NodeType::InputText: return "inputText";
+        case NodeType::CollapsingHeader: return "collapsingHeader";
+        case NodeType::Child: return "child";
+        case NodeType::Flex: return "flex";
+        case NodeType::Spacer: return "spacer";
+        case NodeType::Image: return "image";
+        case NodeType::ImageButton: return "imageButton";
+        case NodeType::Combo: return "combo";
+        case NodeType::ScrollList: return "scrollList";
+        case NodeType::Viewport: return "viewport";
+        case NodeType::SearchField: return "searchField";
+        case NodeType::Switch: return "switch";
+        case NodeType::Badge: return "badge";
+        case NodeType::Card: return "card";
+        case NodeType::NinePatchPanel: return "ninePatchPanel";
+        case NodeType::ColorPalette: return "colorPalette";
+        case NodeType::Grid: return "grid";
+        case NodeType::SectionHeader: return "sectionHeader";
+        case NodeType::MenuBar: return "menuBar";
+        case NodeType::Menu: return "menu";
+        case NodeType::MenuItem: return "menuItem";
+        case NodeType::Toolbar: return "toolbar";
+        case NodeType::Toolbox: return "toolbox";
+        case NodeType::Sidebar: return "sidebar";
+        case NodeType::StatusBar: return "statusBar";
+        case NodeType::SplitPane: return "splitPane";
+        case NodeType::Tab: return "tab";
+        case NodeType::TabBar: return "tabBar";
+        case NodeType::TabContainer: return "tabContainer";
+        case NodeType::PanelFrame: return "panelFrame";
+        case NodeType::DockArea: return "dockArea";
+        case NodeType::AppFrame: return "appFrame";
     }
     return "text";
 }
@@ -1901,7 +2186,10 @@ NodeType nodeTypeFromName(const std::string &s) {
     if (s == "separator") return NodeType::Separator;
     if (s == "checkbox") return NodeType::Checkbox;
     if (s == "slider") return NodeType::Slider;
+    if (s == "filled-image") return NodeType::FilledImage;
+    if (s == "radial-fill") return NodeType::RadialFill;
     if (s == "progress") return NodeType::Progress;
+    if (s == "link") return NodeType::Link;
     if (s == "inputText") return NodeType::InputText;
     if (s == "collapsingHeader") return NodeType::CollapsingHeader;
     if (s == "child") return NodeType::Child;
@@ -1944,6 +2232,11 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
     if (!n.text.empty()) o.set("text", n.text);
     if (!n.valueText.empty()) o.set("valueText", n.valueText);
     if (!n.tooltip.empty()) o.set("tooltip", n.tooltip);
+    if (n.readOnly) o.set("readOnly", n.readOnly);
+    if (n.multiline) o.set("multiline", n.multiline);
+    if (!n.placeholder.empty()) o.set("placeholder", n.placeholder);
+    if (!n.disabledReason.empty()) o.set("disabledReason", n.disabledReason);
+    if (!n.helpText.empty()) o.set("helpText", n.helpText);
     if (!n.visible) o.set("visible", false);
     if (!n.enabled) o.set("enabled", false);
     if (n.focusMode != FocusMode::All)
@@ -1967,6 +2260,7 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
             case AccessibilityRole::Checkbox: role = "checkbox"; break;
             case AccessibilityRole::Slider: role = "slider"; break;
             case AccessibilityRole::Text: role = "text"; break;
+            case AccessibilityRole::Link: role = "link"; break;
             case AccessibilityRole::TextInput: role = "text-input"; break;
             case AccessibilityRole::List: role = "list"; break;
             case AccessibilityRole::ListItem: role = "list-item"; break;
@@ -2038,6 +2332,19 @@ void nodeToJson(const UIHost::Tree &tree, const UINode &n, Poco::JSON::Object &o
         o.set("tint", Poco::Dynamic::Array({n.tintR, n.tintG, n.tintB, n.tintA}));
     if (n.borderL != 0.f || n.borderT != 0.f || n.borderR != 0.f || n.borderB != 0.f)
         o.set("border", Poco::Dynamic::Array({n.borderL, n.borderT, n.borderR, n.borderB}));
+    if (n.type == NodeType::FilledImage || n.type == NodeType::RadialFill) {
+        o.set("fillDirection", int(n.fillDirection));
+        o.set("fillStretch", n.fillStretch);
+        o.set("fillStartDegrees", n.fillStartDegrees);
+        o.set("fillClockwise", n.fillClockwise);
+        o.set("fillInnerRadius", n.fillInnerRadius);
+    }
+    if (n.fontSize > 0.f) {
+        o.set("fontSize", n.fontSize);
+        o.set("textColor", Poco::Dynamic::Array({n.textR, n.textG, n.textB, n.textA}));
+        o.set("textAlignX", n.textAlignX);
+        o.set("textAlignY", n.textAlignY);
+    }
     if (n.cornerRadius != 0.f) o.set("cornerRadius", n.cornerRadius);
     if (n.uv0x != 0.f || n.uv0y != 0.f || n.uv1x != 1.f || n.uv1y != 1.f)
         o.set("uv", Poco::Dynamic::Array({n.uv0x, n.uv0y, n.uv1x, n.uv1y}));
@@ -2060,10 +2367,16 @@ float fnum(const Poco::Dynamic::Var &v, float def = 0.f) {
 }
 
 void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
+    if (d.type == NodeType::Link) d.accessibilityRole = AccessibilityRole::Link;
     if (o.has("id")) d.id = o.getValue<std::string>("id");
     if (o.has("key")) d.key = o.getValue<std::string>("key");
     if (o.has("text")) d.text = o.getValue<std::string>("text");
     if (o.has("valueText")) d.valueText = o.getValue<std::string>("valueText");
+    if (o.has("helpText")) d.helpText = o.getValue<std::string>("helpText");
+    if (o.has("disabledReason")) d.disabledReason = o.getValue<std::string>("disabledReason");
+    if (o.has("placeholder")) d.placeholder = o.getValue<std::string>("placeholder");
+    if (o.has("multiline")) d.multiline = o.getValue<bool>("multiline");
+    if (o.has("readOnly")) d.readOnly = o.getValue<bool>("readOnly");
     if (o.has("tooltip")) d.tooltip = o.getValue<std::string>("tooltip");
     if (o.has("visible")) d.visible = o.getValue<bool>("visible");
     if (o.has("enabled")) d.enabled = o.getValue<bool>("enabled");
@@ -2175,6 +2488,27 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
             d.borderB = fnum(a->get(3));
         }
     }
+    if (o.has("fillDirection")) {
+        const int direction = int(fnum(o.get("fillDirection")));
+        if (direction < 0 || direction > 3) throw std::invalid_argument("Invalid HUD fill direction");
+        d.fillDirection = FillDirection(direction);
+    }
+    if (o.has("fillStretch")) d.fillStretch = o.getValue<bool>("fillStretch");
+    if (o.has("fillStartDegrees")) d.fillStartDegrees = fnum(o.get("fillStartDegrees"), -90.f);
+    if (o.has("fillClockwise")) d.fillClockwise = o.getValue<bool>("fillClockwise");
+    if (o.has("fillInnerRadius")) d.fillInnerRadius = fnum(o.get("fillInnerRadius"));
+    if (o.has("fontSize")) d.fontSize = fnum(o.get("fontSize"));
+    if (o.has("textAlignX")) d.textAlignX = fnum(o.get("textAlignX"));
+    if (o.has("textAlignY")) d.textAlignY = fnum(o.get("textAlignY"));
+    if (o.has("textColor")) {
+        const auto color = o.getArray("textColor");
+        if (color && color->size() >= 4) {
+            d.textR = fnum(color->get(0), 1.f);
+            d.textG = fnum(color->get(1), 1.f);
+            d.textB = fnum(color->get(2), 1.f);
+            d.textA = fnum(color->get(3), 1.f);
+        }
+    }
     if (o.has("cornerRadius")) d.cornerRadius = fnum(o.get("cornerRadius"));
     if (o.has("uv")) {
         const Poco::JSON::Array::Ptr a = o.getArray("uv");
@@ -2185,6 +2519,7 @@ void applyCommonFields(WidgetDesc &d, const Poco::JSON::Object &o) {
             d.uv1y = fnum(a->get(3), 1.f);
         }
     }
+    if (!validHudFields(d)) throw std::invalid_argument("Invalid HUD fill or text style");
 }
 
 WidgetDesc descFromJson(const Poco::JSON::Object &o) {
@@ -2587,6 +2922,9 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("imageButton", &UI::addImageButton);
     cls.addFunc("viewport", &UI::addViewport);
     cls.addFunc("combo", &UI::addCombo);
+    cls.addFunc("link", &UI::addLink);
+    cls.addFunc("setItemTextInput", &UI::setItemTextInput);
+    cls.addFunc("setItemHelp", &UI::setItemHelp);
     cls.addFunc("inputText", &UI::addInputText);
     cls.addFunc("searchField", &UI::addSearchField);
     cls.addFunc("switch", &UI::addSwitch);
@@ -2660,6 +2998,16 @@ void UI::expose(ssq::Class &cls) {
     cls.addFunc("setHostLayer", &UI::setHostLayer);
     cls.addFunc("setHostModal", &UI::setHostModal);
     cls.addFunc("setHostOverlay", &UI::setHostOverlay);
+    cls.addFunc("setHostInputTransparent", &UI::setHostInputTransparent);
+    cls.addFunc("setHostHudCanvas", &UI::setHostHudCanvas);
+    cls.addFunc("clearHostHudCanvas", &UI::clearHostHudCanvas);
+    cls.addFunc("setHostSafeArea", &UI::setHostSafeArea);
+    cls.addFunc("resourceBar", &UI::addResourceBar);
+    cls.addFunc("skillSlot", &UI::addSkillSlot);
+    cls.addFunc("filledImage", &UI::addFilledImage);
+    cls.addFunc("radialFill", &UI::addRadialFill);
+    cls.addFunc("setItemFillDirection", &UI::setItemFillDirection);
+    cls.addFunc("setItemRadialFill", &UI::setItemRadialFill);
     cls.addFunc("setHostOverlayAlpha", &UI::setHostOverlayAlpha);
     cls.addFunc("setHostMovable", &UI::setHostMovable);
     cls.addFunc("setHostResizable", &UI::setHostResizable);
@@ -2680,6 +3028,7 @@ void UI::expose(ssq::Class &cls) {
     addOptionalTweenFunc(cls, "animateHostPos", sqAnimateHostPos, 4, _SC("xfffsf"));
     addOptionalTweenFunc(cls, "animateHostSize", sqAnimateHostSize, 4, _SC("xfffsf"));
     addOptionalTweenFunc(cls, "animateHostOverlayAlpha", sqAnimateHostOverlayAlpha, 3, _SC("xffsf"));
+    addOptionalTweenFunc(cls, "animateItemValue", sqAnimateItemValue, 4, _SC("xsffsf"));
     addOptionalTweenFunc(cls, "animateItemOpacity", sqAnimateItemOpacity, 4, _SC("xsffsf"));
     addOptionalTweenFunc(cls, "animateItemPos", sqAnimateItemPos, 5, _SC("xsfffsf"));
     cls.addFunc("cancelHostTweens", &UI::cancelHostTweens);

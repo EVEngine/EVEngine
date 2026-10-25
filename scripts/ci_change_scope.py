@@ -10,8 +10,8 @@ from pathlib import Path
 import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
-BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu")
-SCOPES = (*BUILD_SCOPES, "tools", "dawn_metal")
+BUILD_SCOPES = ("windows", "android", "macos", "ios", "linux", "asan", "fuzz", "webgpu", "dawn")
+SCOPES = (*BUILD_SCOPES, "tools")
 ALL = frozenset(SCOPES)
 TEST_CASE_RE = re.compile(r"\bTEST_CASE(?:_FIXTURE)?\s*\(")
 
@@ -23,10 +23,10 @@ def classify_path(path: str) -> set[str]:
     if path.startswith("platform/ios/"):
         return {"ios"}
     if path.startswith("platform/macos"):
-        return {"macos", "dawn_metal"}
+        return {"macos"}
     if path.startswith(("web/", "platform/web", "cmake/webgpu")) or "webgpu" in path.lower():
-        # WebGPU source changes also need the native test host, including Metal.
-        return {"webgpu", "windows", "macos", "dawn_metal"}
+        # WebGPU source changes also select the independent native Dawn smoke job.
+        return {"webgpu", "dawn"}
     if path.startswith("tools/"):
         return {"tools"}
     if path.startswith(".github/"):
@@ -46,26 +46,6 @@ def classify_path(path: str) -> set[str]:
 
 def classify(paths: list[str], force_all: bool = False) -> dict[str, bool]:
     selected = set(ALL) if force_all else set().union(*(classify_path(path) for path in paths))
-    # Metal is a targeted secondary backend, not a second full parity host.
-    # Shared graphics/GPU code, native lifecycle and test/build infrastructure
-    # can affect it even when the changed path does not contain "webgpu".
-    if any(
-        path.replace("\\", "/").startswith(
-            (
-                "src/modules/graphics/",
-                "src/modules/gpgpu/",
-                "src/modules/tensor/",
-                "src/engine/",
-                "test/",
-                "cmake/",
-                "external/",
-                "third-party/",
-            )
-        )
-        or path in {"CMakeLists.txt", "Makefile"}
-        for path in paths
-    ):
-        selected.update({"macos", "dawn_metal"})
     return {scope: scope in selected for scope in SCOPES}
 
 

@@ -40,21 +40,29 @@ trap 'rm -f "$DIFF_FILE"' EXIT
 
 # Compare against the working tree (not only HEAD) so a dirty local tree is
 # checked the same way CI checks a pushed commit.
-CHANGED_FILES="$(git diff --name-only "$MERGE_BASE" -- '*.cpp' '*.h' '*.hpp')"
+# Deleted files have no changed lines to format. In a source reorganization,
+# invoking git-clang-format separately for hundreds of deletions only repeats
+# empty work (and can hand a submodule directory to the formatter).
+CHANGED_FILES="$(git diff --name-only --diff-filter=ACMR "$MERGE_BASE" -- '*.cpp' '*.h' '*.hpp')"
 if [ -z "$CHANGED_FILES" ]; then
     echo "ok: no C/C++ files changed"
     exit 0
 fi
 
+EXISTING_FILES=()
 for file in $CHANGED_FILES; do
     if ! git cat-file -e "$MERGE_BASE:$file" 2>/dev/null; then
         echo "warning: new file '$file' is not checked (format it by hand)"
         continue
     fi
-    # --diff exits non-zero when differences are found; keep going so we can
-    # print the diff as the failure message.
-    git clang-format --quiet --diff "$MERGE_BASE" -- "$file" >>"$DIFF_FILE" || true
+    EXISTING_FILES+=("$file")
 done
+
+# One invocation preserves changed-line semantics while avoiding a fresh Git
+# temporary index and Python startup for every file in a mechanical migration.
+if [ "${#EXISTING_FILES[@]}" -gt 0 ]; then
+    git clang-format --quiet --diff "$MERGE_BASE" -- "${EXISTING_FILES[@]}" >"$DIFF_FILE" || true
+fi
 
 if [ -s "$DIFF_FILE" ]; then
     echo "error: changed lines are not clang-format clean (see .clang-format):" >&2

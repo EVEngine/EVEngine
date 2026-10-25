@@ -4,6 +4,7 @@
 #include <imgui.h>
 
 #include <algorithm>
+#include <cfloat>
 
 namespace eve::ui {
 namespace {
@@ -375,6 +376,12 @@ void measureNode(UIHost::Tree &tree, int index) {
 
     switch (n.type) {
     case NodeType::Text: {
+        if (n.fontSize > 0.f) {
+            const ImVec2 textSize = ImGui::GetFont()->CalcTextSizeA(n.fontSize, FLT_MAX, n.wrapWidth, n.text.c_str());
+            n.measuredW           = textSize.x;
+            n.measuredH           = textSize.y;
+            break;
+        }
         const ImVec2 t = n.wrapWidth > 0.f
                              ? ImGui::CalcTextSize(n.text.c_str(), nullptr, false, n.wrapWidth)
                              : ImGui::CalcTextSize(n.text.c_str());
@@ -386,6 +393,12 @@ void measureNode(UIHost::Tree &tree, int index) {
     case NodeType::SearchField: {
         n.measuredW = globalTheme().layout.searchMinWidth * themeUiScale();
         n.measuredH = ImGui::GetFrameHeight();
+        break;
+    }
+    case NodeType::Link: {
+        const ImVec2 t = ImGui::CalcTextSize(n.text.empty() ? "Link" : n.text.c_str());
+        n.measuredW    = t.x;
+        n.measuredH    = t.y;
         break;
     }
     case NodeType::Button: {
@@ -415,8 +428,11 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredH = t.y + 6.f;
         break;
     }
-    case NodeType::Slider:
     case NodeType::InputText:
+        n.measuredW = 120.f;
+        n.measuredH = n.multiline ? 96.f : ImGui::GetFrameHeight();
+        break;
+    case NodeType::Slider:
         n.measuredW = 120.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
@@ -444,6 +460,8 @@ void measureNode(UIHost::Tree &tree, int index) {
         n.measuredW = 100.f;
         n.measuredH = ImGui::GetFrameHeight();
         break;
+    case NodeType::FilledImage:
+    case NodeType::RadialFill:
     case NodeType::Image:
     case NodeType::ImageButton:
         n.measuredW = n.sizeX > 0.f ? n.sizeX : 32.f;
@@ -696,6 +714,11 @@ void measureNode(UIHost::Tree &tree, int index) {
     if (n.aspectRatio > 0.f) {
         if (n.sizeX > 0.f && n.sizeY <= 0.f) n.measuredH = n.measuredW / n.aspectRatio;
         else if (n.sizeY > 0.f && n.sizeX <= 0.f) n.measuredW = n.measuredH * n.aspectRatio;
+    }
+    if (!n.helpText.empty()) {
+        const ImVec2 help = ImGui::CalcTextSize(n.helpText.c_str());
+        n.measuredW       = std::max(n.measuredW, help.x);
+        n.measuredH += style.ItemSpacing.y + help.y;
     }
     if (n.minSizeX > 0.f) n.measuredW = std::max(n.measuredW, n.minSizeX);
     if (n.minSizeY > 0.f) n.measuredH = std::max(n.measuredH, n.minSizeY);

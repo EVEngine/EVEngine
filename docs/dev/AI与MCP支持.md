@@ -10,6 +10,25 @@
 
 ## 目标
 
+### 原生工具家族的扩展与组合
+
+在 provider 自己的 `.cpp` 中声明
+`EVE_MCP_TOOL_FAMILY(Id, schemasFunction, handlerFunction, PayloadMode)`；
+两个函数分别返回逗号分隔的完整 schema 对象和工具调用结果。
+`PayloadMode` 为 `TextValue`（普通文本）或 `ContentEnvelope`（完整 MCP content）。
+处理函数可接收 `(name, args)` 或 `(McpServer&, name, args)`，不得保留请求参数引用。
+无需修改 `McpServer.cpp` 的目录或分发列表。
+
+CMake 从实际编译的 `EVDevTools` 源文件生成类型化 factory 引用，链接器不会丢弃 provider。
+未编译的 provider 不出现在目录或路由中；目录构造拒绝重复家族 ID、重复工具名和无效 schema。
+schema 与路由属于同一不可变进程快照；provider 回调由二进制拥有，不能用于可卸载插件。
+构造时无锁调用 schema 函数，schema 函数不可重入目录构造；请求 handler 在目录查找后调用。
+脚本工具继续使用原有热重载路径，注册时也拒绝与已编译工具重名。
+
+独立原生契约检查：`make check/mcp-families MCP_DEPENDENCIES=<预编译依赖目录>`。
+通过 `MCP_CMAKE_ARGS=-DMCP_SHARED=ON` 检查 DLL 边界，
+`-DMCP_WITH_PROVIDER=OFF` 检查 provider 缺席；完整宿主测试还验证每个实际列出的工具均有唯一路由。
+
 让 EVEngine 对 **AI 生成游戏** 与 **AI 辅助开发** 提供底层可测接口：
 
 1. 运行时嵌入 **MCP 服务器**（与 DAP 同级），供 Agent 驱动暂停 / 求值 / 快照 / 错误切片。
@@ -74,13 +93,15 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_stack` / `eve_locals` | 栈与局部变量 |
 | `eve_set_breakpoint` / `eve_list_breakpoints` | 断点 |
 | `eve_watch_*` | Watch |
-| `eve_snapshot_*` | 脚本状态快照（AI 测试可复位） |
+| `eve_snapshot_*` | 脚本状态快照：v3 保留共享表、共享数组和循环引用，兼容读取 v1/v2 |
 | `eve_error_slice` | 最近错误后向切片 |
 | `eve_run_script` | 在活 VM 上跑短片段 |
 | `eve_restart` | **软重启**：不杀掉进程、不卸载 `ResourceManager` 缓存，重新跑 `eve_init`（可选 `args` → `eve.restartArgs`）；AI 调试时优先用它而不是反复 `eve run` |
 | `eve_ai_note` / `eve_ai_log` | 写入 / 读取 DevTools AI 日志 |
 | `eve_scene_status` / `eve_scene_nodes` / `eve_scene_node_get` / `eve_scene_node_set` | 运行时场景 / 实体查询与变换 |
 | `eve_scene_director_install` / `eve_scene_director_status` / `eve_scene_reset` / `eve_scene_modify` / `eve_scene_batch` / `eve_scene_info` / `eve_camera_generate` / `eve_whitebox_playtest` | AI 场景导演：搭台 kit / 单步与批量摆物 / 快速白盒游玩测试（见 [AI 场景导演](AI场景导演.md)、[`tools/whitebox-playtest`](../../tools/whitebox-playtest/)） |
+| `eve_recipe_list` / `eve_recipe_apply` | 内容 recipe：注册表 id + 少量 params → 一次 `scene_director.batch` 事务（`content.scene` / workshop 转发） |
+| `eve_workshop` | 工坊窄 facade：`status` / `set_mode` / `recipe.apply` / `map.brush` / `play.observe` / `play.submit`（仅 `workshop.rpg`） |
 | `eve_procgen_recipes` / `eve_procgen_map` / `eve_procgen_mesh` | 程序化生成：算法/配方枚举、生成地图网格、构建网格 |
 | `eve_physics_new_world` / `eve_physics_list_worlds` / `eve_physics_raycast` / `eve_physics_remove_world` | 2D 物理世界与射线检测 |
 | `eve_render_status` / `eve_screenshot` | 渲染状态、当前帧截图（PNG）；相对路径按项目根解析并返回绝对路径与字节数 |
@@ -99,6 +120,23 @@ MCP listening on 127.0.0.1:7529 (newline JSON-RPC; use tools/eve-mcp for Cursor 
 | `eve_sensing_last_query` | 感知模块最近一次查询结果（谁看见了什么，便于排查 AI/视线问题） |
 | `eve_gameplay` | 共享玩法协议：`domains` / `instances` 发现 + `observe` / `actions` / `submit` / `advance` / `events` 驱动玩家的背包、经济账本、对话与手牌（见「玩法域」） |
 | `eve_input_status` / `eve_input_batch` / `eve_input_poll` | Playtest 输入闭环：经 `IInputInjection` 注入键鼠/滚轮/文本，经 `IUIAutomation` 语义点击；`wait`/`waitFrames`/`capture` 跨 `poll` 完成，不阻塞主线程（对齐 Godot MCP runtime） |
+
+### 快照引用与失败语义
+
+`eve_snapshot_capture` / `eve_snapshot_save` 输出 v3 对象图：每个表、数组有独立 ID，
+根和成员通过 `{ "$ref": ID }` 引用它。同一个对象只保存一次；跨根共享、自引用和
+相互循环都能恢复，恢复后通过任一别名修改对象，其他别名会观察到同一修改。
+用户表中的 `$ref`、`type`、`value` 字段仍是普通数据，不会被当作格式元数据。
+
+`eve_snapshot_restore` / `eve_snapshot_load` 先验证整个图并构造全部容器，再提交脚本根。
+悬空引用、非法节点、未知版本等错误会明确返回失败，保留恢复前的脚本值和引用关系。
+原生 provider 恢复失败时回滚本次操作；provider 必须能恢复自己刚捕获的状态，回滚失败
+会单独报告。热重载合并新默认字段时也保留对象身份；已有值和数组内容以捕获状态为准。
+
+旧 v1/v2 树格式仍可读取，但旧文件中已被写成 `null` 的引用无法补回。当前支持字符串键的
+表和数组；非字符串表键会明确拒绝。捕获最多 65536 个容器，首次遍历的嵌套深度最多 32
+条边；重复引用立即终止展开，循环不会导致无限递归。类实例、函数等活对象仍按原有
+`skipped` 规则处理。
 
 ### Resources
 
@@ -159,6 +197,8 @@ eve_console_read { "sinceSeq": 0, "limit": 200, "level": "error" }
 等一帧后重试即可——这是可重试状态而不是失败，无人值守循环应继续轮询。`eve_screenshot`
 的相对路径按项目根解析，响应返回绝对路径、字节数、像素尺寸；`eve_screenshot_image` 直接
 返回 MCP image content（`maxBytes` 默认 2 MiB，超出时返回 `image-too-large` 而不截断图片）。
+
+需要同时检查深度、法线、材质和阴影时，使用[同帧附件捕获工具](mcp-frame-capture.md)：一次请求生成不可变快照，再按 token 获取预览、原始像素或导出文件。
 
 ### 软重启（AI 调试不要反复杀进程）
 
@@ -583,10 +623,14 @@ Agent 上下文塞满 130+ schema 会伤命中率。引擎在 `tools/list` 与 `
 | 环境变量 | 含义 |
 |----------|------|
 | `EVE_MCP_TOOLSET` | 逗号分隔标签，默认 `all`；可选 `core,debug,play,editor,host,scene,input,domain,agent` |
+| `EVE_MCP_PROFILE` | 命名任务剖面（`verify.play` / `content.scene` / …）；与 toolset 叠加，并与 `eve_agent_session_start` 的 session 剖面叠加。`tools/eve-mcp --profile=` 可写入此项 |
 | `EVE_MCP_READONLY` | `1` 时隐藏/拒绝会改状态的工具 |
 | `EVE_MCP_EXCLUDE` | 逗号分隔的精确工具名黑名单 |
 
-被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`。
+被过滤的 `tools/call` 返回 `{ok:false, filtered:true, hint, nextTools, tags, mutates}`；
+任务剖面拒绝时另带 `profile` 与可选 `escalate:{to,reason,errorCode}`。
+`eve_agent_session_start` 可传 `taskKind` / `profile`（省略时默认 `verify` / `verify.play`），
+并用 `eve_agent_session_escalate` 沿合法边换剖面。
 
 ## `tools/eve-mcp` 生命周期
 

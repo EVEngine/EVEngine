@@ -146,7 +146,6 @@ set(EVE_TEST_MODULE_DOMAIN
     "attributes;rpg"
     "definitions;rpg"
     "authority;rpg"
-    "decision;rpg"
     "emergence;rpg"
     "production;rpg"
     "orders;rpg"
@@ -253,6 +252,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "squirrel_binding;scripts"
 
     "SkyScriptBindings;weather"
+    "=weather_lightning_runtime;weather"
     "decal_script;graphics"
     "graphic;graphics"
     "graphics_primitive_script;graphics"
@@ -271,6 +271,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "state_value;rpg"
 
     "climbing_playground;climbing"
+    "=climbing_contact_presentation;climbing"
     "crowd_script;npc_ai"
     "dialogue_proc_script;dialogue"
     "rts_;tactics_rts"
@@ -281,6 +282,7 @@ set(EVE_TEST_PREFIX_DOMAIN
     "window;platform"
 
     "agent_development_session;devtools"
+    "devtools_;devtools"
     "callgraph;devtools"
     "console;devtools"
     "frame_stats;devtools"

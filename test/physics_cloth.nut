@@ -176,3 +176,18 @@ function basic() {
     check(rope.removeCollider(sphereId), "rope remove collider");
     return true;
 }
+
+function layered() {
+    local clothModule = eve.Cloth();
+    local layered = eve.LayeredCloth3D(3, 3, 3, 0.25, 0.08, 0.0, 2.0, 0.0);
+    check(layered.getLayerCount() == 3, "layer count");
+    layered.setSolver(2, 2);
+    layered.setWindVelocity(0.5, 0.2, 0.0);
+    layered.update(1.0 / 120.0);
+    layered.setInterCollision(false);
+    check(!layered.getInterCollision(), "inter collision toggle");
+    layered.reset();
+    check(layered.getContactCount() == 0, "reset contact count");
+
+    return true;
+}

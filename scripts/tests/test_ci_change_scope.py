@@ -35,29 +35,14 @@ class CiChangeScopeTests(unittest.TestCase):
     def test_webgpu_change_selects_webgpu(self):
         scopes = ci_change_scope.classify(["src/modules/graphics/WebGPUDevice.cpp"])
         self.assertTrue(scopes["webgpu"])
-        self.assertTrue(scopes["windows"])
+        self.assertTrue(scopes["dawn"])
+        self.assertFalse(scopes["macos"])
+        self.assertFalse(scopes["windows"])
+
+    def test_macos_only_change_does_not_select_dawn(self):
+        scopes = ci_change_scope.classify(["platform/macosx/Window.mm"])
         self.assertTrue(scopes["macos"])
-        self.assertTrue(scopes["dawn_metal"])
-
-    def test_gameplay_change_does_not_build_secondary_dawn_host(self):
-        scopes = ci_change_scope.classify(["src/modules/scene/Scene.cpp"])
-        self.assertFalse(scopes["dawn_metal"])
-
-    def test_metal_host_and_shared_renderer_changes_select_metal(self):
-        for path in (
-            "platform/macosx/Window.mm",
-            "src/modules/graphics/Graphics.h",
-            "src/modules/gpgpu/Sequence.cpp",
-            "src/modules/tensor/Gpu.cpp",
-            "src/engine/main.cpp",
-            "test/graphics_backend_parity.cpp",
-            "cmake/module_manifest.cmake",
-            "CMakeLists.txt",
-        ):
-            with self.subTest(path=path):
-                scopes = ci_change_scope.classify([path])
-                self.assertTrue(scopes["macos"])
-                self.assertTrue(scopes["dawn_metal"])
+        self.assertFalse(scopes["dawn"])
 
     def test_native_source_change_is_conservatively_full(self):
         scopes = ci_change_scope.classify(["src/modules/scene/Scene.cpp"])
@@ -79,10 +64,10 @@ class CiChangeScopeTests(unittest.TestCase):
 
     def test_changed_zeroerr_sources_select_their_source_labels(self):
         mode, label = ci_change_scope.classify_tests(
-            ["test/math.cpp", "test/procgen.cpp"]
+            ["test/unit/math/math_tests.cpp", "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp"]
         )
         self.assertEqual("selected", mode)
-        self.assertEqual(r"^source:(math[.]cpp|procgen[.]cpp)$", label)
+        self.assertEqual(r"^source:(math_tests[.]cpp|render_presentation_graphics_procgen_tests[.]cpp)$", label)
 
     def test_production_change_runs_full_test_suite(self):
         mode, label = ci_change_scope.classify_tests(

@@ -1,0 +1,124 @@
+{
+  "schema": "evengine.optimization-summary",
+  "version": 1,
+  "statistic": "median of three independent 600-frame runs",
+  "cases": {
+    "low-shadow": {
+      "before": {
+        "fps_median": 480.311,
+        "avg_ms_median": 2.08199,
+        "fps_range": [
+          479.136,
+          483.944
+        ],
+        "p95_ms_median": 2.5445,
+        "gpu_p50_ms_median": 0.6008
+      },
+      "after": {
+        "fps_median": 1005.58,
+        "avg_ms_median": 0.994454,
+        "fps_range": [
+          983.156,
+          1173.86
+        ],
+        "p95_ms_median": 1.1688,
+        "gpu_p50_ms_median": 0.5922
+      },
+      "fps_change_percent": 109.3601853798893
+    },
+    "high-shadow": {
+      "before": {
+        "fps_median": 71.2996,
+        "avg_ms_median": 14.0253,
+        "fps_range": [
+          69.6588,
+          75.3063
+        ],
+        "p95_ms_median": 14.4099,
+        "gpu_p50_ms_median": 13.9577
+      },
+      "after": {
+        "fps_median": 70.2952,
+        "avg_ms_median": 14.2257,
+        "fps_range": [
+          67.2723,
+          77.0337
+        ],
+        "p95_ms_median": 15.6191,
+        "gpu_p50_ms_median": 13.9204
+      },
+      "fps_change_percent": -1.408703555139168
+    },
+    "high64": {
+      "before": {
+        "fps_median": 68.4304,
+        "avg_ms_median": 14.6134,
+        "fps_range": [
+          68.3499,
+          71.4948
+        ],
+        "p95_ms_median": 15.2322,
+        "gpu_p50_ms_median": 14.4031
+      },
+      "after": {
+        "fps_median": 67.7056,
+        "avg_ms_median": 14.7698,
+        "fps_range": [
+          67.1408,
+          71.3293
+        ],
+        "p95_ms_median": 16.0183,
+        "gpu_p50_ms_median": 14.4629
+      },
+      "fps_change_percent": -1.0591783768617469
+    }
+  },
+  "environment": {
+    "gpu": "AMD Radeon AI PRO R9700",
+    "backend": "Vulkan",
+    "build_type": "Release",
+    "resolution": [
+      1920,
+      1080
+    ],
+    "vsync": false,
+    "window": "hidden SDL surface with production swapchain",
+    "warmup_frames": 60,
+    "measured_frames_per_run": 600,
+    "independent_runs": 3,
+    "profiling": false,
+    "validation": false,
+    "source_head": "e0dffef0adb063d36e198e3ca2b913580ac9c8e7",
+    "source_state": "Pre-PR development snapshot; results are not a measurement of the rebased PR head."
+  },
+  "provenance": {
+    "before": {
+      "binary_sha256": "5313b2aca3f6d305ebe73bdd4afacaef03b9adf62a2f1a9563d9ab9457d47167",
+      "engine_libraries": {
+        "EVBackends.dll": "01e3033f829854a177c612b84eb95c0e12ab6e6593be29671aa596b0d9b6dc44",
+        "eve_imgui.dll": "d14f6eba424c8f750d38a87ae556abe3bd1906c8743cfc7c4df834572eea7321",
+        "EVFoundation.dll": "b1ca2a13cb9382bbc84b50af61bdc2820c7daf508eaee921cdcc2f1898e4066b",
+        "EVPlatform.dll": "0efa4c4b49981921d503ecddbe853a2625576219bea0365c14afbdeb4ec39311",
+        "EVWorld.dll": "b6b550548a9bad4840d7d9c536fd55693f7eeacce7bb120b76a1ed3ac2fd3840"
+      },
+      "recording": "parallel"
+    },
+    "after": {
+      "binary_sha256": "cdcc49ecc06ec57bdd47358be6b5b24eca2fbccdf3952f64004850c287b02e02",
+      "engine_libraries": {
+        "EVBackends.dll": "993e742f4e5ea21fb446b39c856fe19c38da4251dd6690bdfe5f79da008ac0bc",
+        "eve_imgui.dll": "d14f6eba424c8f750d38a87ae556abe3bd1906c8743cfc7c4df834572eea7321",
+        "EVFoundation.dll": "11a52fc08d35a3c8f63aa37f4c8033f0838b179ae34f7452c212ca1e2a78b99a",
+        "EVPlatform.dll": "0efa4c4b49981921d503ecddbe853a2625576219bea0365c14afbdeb4ec39311",
+        "EVWorld.dll": "02697253008d9031ca8e546c41b9df334f836c12c0276ebb6ee6e07a0a30a7b1"
+      },
+      "recording": "auto"
+    }
+  },
+  "limitations": [
+    "Static shared meshes, one simple material; not unique textured/skinned/animated assets or gameplay.",
+    "GPU timing is a delayed graphics-queue span, not exclusive shader busy time.",
+    "High-poly throughput and p95 latency did not improve in these runs.",
+    "Run spread is reported; no statistical significance is claimed."
+  ]
+}

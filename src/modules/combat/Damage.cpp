@@ -1,5 +1,7 @@
+// eve-hot-path
 #include "combat/Damage.h"
 
+#include "common/Profile.h"
 #include "tags/GameplayTag.h"
 
 #include <algorithm>
@@ -35,6 +37,7 @@ public:
     }
 
     Result<void> sourceModifiers(settlement::SettlementContext& context) override {
+        context.setCritical(request_.critical);
         return context.setMagnitude(amounts_.healthDamage);
     }
     Result<void> targetMitigation(settlement::SettlementContext& context) override {
@@ -55,6 +58,11 @@ public:
     Result<void> clamp(settlement::SettlementContext& context) override { return context.setClampMax(target_.health); }
 
     Result<settlement::PreparedApply> prepareApply(const settlement::SettlementContext& context) override {
+        if (!std::isfinite(request_.knockback.x * amounts_.knockbackScale) ||
+            !std::isfinite(request_.knockback.y * amounts_.knockbackScale) ||
+            !std::isfinite(request_.knockback.z * amounts_.knockbackScale))
+            return Result<settlement::PreparedApply>::failure(
+                Diagnostic::error(DiagnosticCode::InvalidArgument, "Knockback overflow", "knockback"));
         CombatState candidate    = target_;
         candidate.health         = std::max(0.0, candidate.health - context.magnitude());
         candidate.poise          = std::max(0.0, candidate.poise - amounts_.poiseDamage);
@@ -198,7 +206,16 @@ Result<DamageAmounts> DamageRuntime::preview(const CombatState& target, const Da
 }
 
 Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request) const {
-    auto previewed = preview(target, request);
+    return apply(target, request, settlement_);
+}
+
+Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequest& request,
+                                           const settlement::SettlementPipeline& pipeline,
+                                           OptionalRef<game_event::GameEventLog> events) const {
+    auto previewed = [&] {
+        EV_PROFILE_MODULE("combat", "DamageRuntime::preview");
+        return preview(target, request);
+    }();
     if (!previewed) return Result<DamageOutcome>::failure(previewed.status());
     const CombatState             before = target;
     DamageSettlementPolicy        adapter(target, request, std::move(previewed).takeValue(), policy_);
@@ -208,6 +225,7 @@ Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequ
     settlementRequest.kind      = "damage";
     settlementRequest.magnitude = request.healthDamage;
     settlementRequest.tags      = {request.damageType};
+    settlementRequest.tick      = request.tick;
     Value::Object context;
     context["damage_type"]               = request.damageType;
     context["poise_damage"]              = request.poiseDamage;
@@ -217,7 +235,10 @@ Result<DamageOutcome> DamageRuntime::apply(CombatState& target, const DamageRequ
         target.maxHealth > 0.0 ? target.health / target.maxHealth : 0.0;
     context["target_poise_ratio"] = target.maxPoise > 0.0 ? target.poise / target.maxPoise : 0.0;
     settlementRequest.context = Value(std::move(context));
-    auto settled              = settlement_.settle(settlementRequest, adapter);
+    auto settled                  = [&] {
+        EV_PROFILE_MODULE("combat", "DamageRuntime::settle");
+        return pipeline.settle(settlementRequest, adapter, events ? &events->get() : nullptr);
+    }();
     if (!settled) return Result<DamageOutcome>::failure(settled.status());
     const auto          settlementResult = std::move(settled).takeValue();
     const DamageAmounts amounts          = adapter.amounts();

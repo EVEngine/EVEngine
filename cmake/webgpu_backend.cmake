@@ -12,6 +12,10 @@ function(load_webgpu_backend)
 
     message(STATUS "WebGPU (native): fetching Google Dawn")
     include(FetchContent)
+    # EVEngine consumes Dawn's headers, not its optional C++ module interface.
+    # Dawn's -fmodules-ts probe succeeds on GCC 13 even though CMake's Ninja
+    # module dependency scanning requires GCC 14; suppress that unused target.
+    set(DAWN_SUPPORTS_CXX_MODULES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_SAMPLES OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(DAWN_BUILD_WGPU_TESTS OFF CACHE BOOL "" FORCE)
@@ -25,6 +29,9 @@ function(load_webgpu_backend)
     set(TINT_BUILD_TESTS OFF CACHE BOOL "" FORCE)
     set(TINT_BUILD_CMD_TOOLS OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_NULL OFF CACHE BOOL "" FORCE)
+    # The pinned OpenGL compute pipeline uses the null writer for reflection
+    # even when Dawn's Null backend is disabled.
+    set(TINT_BUILD_NULL_WRITER ON CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_D3D11 OFF CACHE BOOL "" FORCE)
     set(DAWN_ENABLE_OPENGLES OFF CACHE BOOL "" FORCE)
     set(DAWN_USE_XCODE OFF CACHE BOOL "" FORCE)
@@ -45,8 +52,16 @@ function(load_webgpu_backend)
     FetchContent_Declare(dawn
         URL "https://github.com/google/dawn/archive/${EVENGINE_DAWN_TAG}.tar.gz"
         DOWNLOAD_EXTRACT_TIMESTAMP FALSE
+        # Populate first so we can resolve Dawn's exact SPIRV-Headers pin
+        # before its third_party/CMakeLists.txt configures SPIRV-Tools.
+        SOURCE_SUBDIR eve-populate-only
     )
     FetchContent_MakeAvailable(dawn)
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dawn_spirv_headers.cmake")
+    eve_prepare_dawn_spirv_headers("${dawn_SOURCE_DIR}")
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/dawn_support_dependencies.cmake")
+    eve_prepare_dawn_support_dependencies("${dawn_SOURCE_DIR}")
+    add_subdirectory("${dawn_SOURCE_DIR}" "${dawn_BINARY_DIR}")
 
     if(TARGET dawn::webgpu_dawn)
         set(_eve_dawn_target dawn::webgpu_dawn)

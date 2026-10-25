@@ -1,7 +1,8 @@
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
-#include "procgen/ProcgenScriptSupport.h"
 #include "procgen/ProcgenOwnership.h"
+#include "procgen/ProcgenScriptSupport.h"
+#include "procgen/road/BridgeGenerator.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"
@@ -1363,6 +1364,7 @@ eve::Result<void> Procgen::applyMeshRecipeDefaults(const std::string& recipeId, 
         return eve::Result<void>::failure(eve::Diagnostic::error(eve::DiagnosticCode::StaleHandle,
                                                                  "mesh default parameters handle is stale", "params",
                                                                  {}, "procgen.squirrel"));
+    if (recipeId == "mesh.autoBridge") return road::applyBridgeRecipeDefaults(*view);
     MeshRecipeRegistry::instance().registerBuiltins();
     if (!MeshRecipeRegistry::instance().applyDefaults(recipeId, *view))
         return eve::Result<void>::failure(eve::Diagnostic::error(

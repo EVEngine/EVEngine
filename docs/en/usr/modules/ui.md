@@ -81,8 +81,37 @@ Discontinuous stretch regions are deliberately unsupported: the call returns fal
 
 ## Persisted trees and troubleshooting
 
-`saveTreeJson()` currently writes `schema: "eve.ui.tree"`, version 4. Loading treats unversioned documents as version 1, accepts versions 1–4 and rejects unknown schemas/future versions. Unknown fields are ignored; newer fields have compatible defaults.
+`saveTreeJson()` currently writes `schema: "eve.ui.tree"`, version 5. Loading treats unversioned documents as version 1, accepts versions 1–5 and rejects unknown schemas/future versions. Unknown fields are ignored; newer fields have compatible defaults.
 
 If changes do not appear, check the selected Host and the control ID. If clicks affect gameplay too, check input capture. Rebuilding everything with unstable IDs loses retained control state. Use the source examples [ui_demo.nut](../../../../examples/basic/ui_demo.nut) and [ui_component.nut](../../../../examples/basic/ui_component.nut) as starting points.
 
 For complete contracts, use [API conventions](../API-CONVENTIONS.md), your SDK's bindings and the [Chinese UI guide](../../../usr/modules/ui.md).
+
+
+## Game HUD canvas and fills
+
+The [HUD gallery](../../../../examples/hud-gallery/README.md) demonstrates a resource bar,
+damage trail, skill cooldowns and separate display-only/interactive hosts.
+`setHostHudCanvas(referenceWidth, referenceHeight, userScale)` opts a screen host into
+isotropic fit scaling. `setHostSafeArea(left, top, right, bottom)` uses display logical
+pixels; anchors follow the safe viewport. `clearHostHudCanvas()` restores pixel mode.
+DPI remains backend-owned. World anchors continue using their existing projection.
+
+`filledImage` supports four directions and cropped/stretched UVs; `radialFill` draws
+solid sectors/rings. `resourceBar` exposes `/value`, `/trail`, `/label` children;
+`skillSlot` exposes `/activate`, `/cooldown`, `/key`. Callers own gameplay values and
+texture registrations. `setHostInputTransparent(true)` disables input for the entire
+host; put interactive controls in separate hosts fitted to their contents.
+
+Document snapshots write schemaVersion 3 and migrate versions 1/2. Runtime publication
+supports fill values and default-font text styling, rejecting unsupported font/texture
+assets or non-stretch image fitting before replacing the live tree. Full authoring
+preview parity and resource resolution remain follow-up work.
+
+### HUD value transitions and node tokens
+
+`ui.animateItemValue(id, value, durationMs [, ease [, delayMs]])` animates a selected-host node's normalized value, including resource trails and radial cooldowns. Call when the target changes; replacing a tween starts from the current sample. Targets and samples clamp to `[0,1]`. Gameplay retains the authoritative health or cooldown value.
+
+Native callers can resolve an id once with `UIHost::nodeHandle(id)`, then use `UIHost::resolveNode(token)` in constant time on the UI thread. Tokens survive property reconciliation and expire after tree replacement or host destruction. Returned references must not survive tree mutation. Item tweens use these checks and never retarget a replacement node with the same id.
+
+Document publishing accepts an optional `UiTextureResolver`, mapping `textureAsset` keys to existing nonzero UI texture registrations for image, image-button, filled-image and nine-patch nodes. Each asset is resolved once per publication. The caller owns textures and registrations and must republish after backend recreation. Resolution failure preserves the previous tree. Font assets and non-stretch image fitting remain unsupported.

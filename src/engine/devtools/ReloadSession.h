@@ -22,7 +22,7 @@ namespace eve::dev {
  * 2. (scripts are re-dofile'd in between)
  * 3. commit(): restore the captured state on top of the new definitions —
  *    captured root values win, fields the new script added are kept, native
- *    providers are restored (falling back to resetToDefaults() on failure).
+ *    providers are restored (rolling back the restore attempt on failure).
  * 4. abort(): restore the captured state unchanged and clear the session.
  */
 class EVENGINE_API_FOUNDATION ReloadSession {

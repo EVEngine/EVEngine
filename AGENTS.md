@@ -356,10 +356,22 @@ composed dependency contract, see
 - **Tests stay per-module.** New tests go into their own file under `test/`
   (zeroerr cases; each case is process-isolated via CTest). Do not grow a
   shared test main.
+  Ordinary `test/unit/<module>/` C++ files are discovered without registration;
+  exceptional classifications and integration ownership belong in source-local
+  `eve-test-policy` comments. There is no central Test Levels JSON; see `test/README.md`.
+- **Native MCP tools own their family.** Declare `EVE_MCP_TOOL_FAMILY` beside
+  a provider's schema and handler. Composition is generated from compiled sources;
+  do not append new families to `McpServer.cpp` schema arrays or dispatch chains.
+  The protocol host keeps lifecycle and filtering. See `docs/dev/AI与MCP支持.md`.
+- **Build rules and guides have owners.** Platform recipes live under
+  `cmake/platforms/`, feature checks under `cmake/tasks/`, and module-specific
+  settings beside their sources in `BuildSettings.cmake`. Keep declaration and
+  dependency wiring in the existing module manifest. Extend graphics topic
+  pages under `docs/usr/modules/graphics/` rather than growing the overview.
 - **Examples are a tested surface.** A new `examples/<name>/` must be runnable
   (`main.nut` + a `config.nut` that assigns the engine `config` table), or be
   listed with a reason in `scripts/check_examples.py`'s `NON_RUNNABLE_EXAMPLES`;
-  it must own a `README.md` and a row in `examples/README.md`. `make check/examples`
+  it must own a `README.md`; overview rows are optional documentation maintenance. `make check/examples`
   (source-quality) enforces that layout, and `scripts/smoke_examples.sh` launches
   every runnable example in CI for at least `MIN_RUN_SECONDS` (2s) — dying early,
   exiting non-zero, or printing an error marker fails the job. Run
@@ -462,7 +474,7 @@ Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA
 (`scripts/check_architecture_contracts.py`: api-shape, raw-pointer lifetime
 tags, runtime `getModInst` ban, hot-path primitive ban, `@cost`). There is no
 JSON contract catalogue — do not reintroduce hand-copied `provides`/`requires`/
-`systems` lists. Hot-path files live in `HOT_PATH_GLOBS` inside that script.
+`systems` lists. Hot-path files declare `// eve-hot-path` in leading comments. Directory policies live in a local `.eve-hot-path` file containing `eve.hot-path-directory/v1:*.cpp`.
 See `docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`.
 A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical

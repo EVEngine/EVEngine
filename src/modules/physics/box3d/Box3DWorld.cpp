@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/box3d/Box3DWorld.h"
 #include <algorithm>
 #include <cfloat>
@@ -9,6 +10,12 @@
 #include "physics/box3d/Box3DWorldFactory.h"
 #include "physics/box3d/Box3DWorldInternal.h"
 namespace eve::physics::box3d {
+b3WorldId Access::worldId(const World3D &world) {
+    auto *native = dynamic_cast<WorldBackend *>(world.rigidBackend_.get());
+    if (!native) throw eve::Exception("Box3D world access requires a Box3D backend");
+    return native->worldId_;
+}
+
 using namespace world3d_detail;
 namespace {
 constexpr uint64_t combineModeMask      = 0x7ull;

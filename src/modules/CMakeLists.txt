@@ -132,7 +132,7 @@ endif()
 # to real runtime clips and state machines.
 eve_module_enabled(animation _has_animation_editor_bridge)
 if(NOT _has_animation_editor_bridge)
-  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp)
+  list(APPEND EVENGINE_EXCLUDED_MODULE_FILES AnimationGraphRuntime.cpp AnimationClipRuntime.cpp SkeletonOverlayRuntime.cpp ControlRigDocument.cpp)
 endif()
 
 # UI document style/layout preview stays standalone. Runtime publication is
@@ -250,17 +250,16 @@ endif()
 # Jolt symbols; its static archive is pulled into EVWorld once in SHARED builds.
 eve_module_enabled(physics _eve_jolt_physics)
 if(EVENGINE_BUILD_JOLT AND (_eve_jolt_physics OR EVENGINE_BUILD_PHYSICS_CORE_CHECK OR EVENGINE_PROFILE STREQUAL "physics-core-only"))
-  # This source-built target must use the same solved-contact ABI as its provider.
-  set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    ${CMAKE_SOURCE_DIR}/cmake/patches/jolt-solved-contacts-rolling.patch)
-  execute_process(COMMAND ${CMAKE_COMMAND}
-    -DPATCH=${CMAKE_SOURCE_DIR}/cmake/patches/jolt-solved-contacts-rolling.patch
-    -DPATCH_DIR=${CMAKE_SOURCE_DIR}/third-party/jolt
-    -P ${CMAKE_SOURCE_DIR}/cmake/patch_third_party.cmake
-    COMMAND_ERROR_IS_FATAL ANY)
-  include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
-  eve_add_jolt()
-  set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  if(EVENGINE_THIRD_PARTY_BINARY_DIR)
+    find_package(Jolt CONFIG REQUIRED PATHS "${EVENGINE_THIRD_PARTY_BINARY_DIR}"
+      NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+    # Link groups and tests are assembled in parent/sibling directories.
+    set_property(TARGET Jolt::Jolt PROPERTY IMPORTED_GLOBAL TRUE)
+  else()
+    include(${CMAKE_SOURCE_DIR}/third-party/cmake/Jolt.cmake)
+    eve_add_jolt()
+    set_target_properties(Jolt PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  endif()
   # This private native subclass must match Jolt's default no-RTTI ABI. Keep
   # RTTI enabled for engine-facing provider types in the other translation units.
   if(NOT MSVC AND NOT CPP_RTTI_ENABLED)
@@ -282,8 +281,7 @@ endforeach()
 
 if(TARGET EVPhysics)
   target_compile_definitions(EVPhysics PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
-  if(TARGET Jolt)
-    target_include_directories(EVPhysics BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/third-party/jolt)
+  if(TARGET Jolt::Jolt)
     target_link_libraries(EVPhysics PRIVATE Jolt::Jolt)
   endif()
 endif()
@@ -311,6 +309,9 @@ if(_has_vehicle)
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "VehiclePhysicsAbsent\\.cpp$")
   else()
     list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehiclePhysics\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires2D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTires3D\\.cpp$")
+    list(FILTER _eve_vehicle_srcs EXCLUDE REGEX "/VehicleTireRuntime\\.cpp$")
   endif()
   set_target_properties(EVVehicle PROPERTIES SOURCES "${_eve_vehicle_srcs}")
 endif()
@@ -368,65 +369,7 @@ if(_has_asset)
   target_link_libraries(EVAsset PRIVATE ${EVENGINE_ASSET_ZSTD_TARGET} ${EVENGINE_ASSET_UTF8PROC_TARGET})
 endif()
 
-# In-process GLSL -> SPIR-V through the Vulkan SDK's shaderc archive (glslang +
-# SPIRV-Tools). Every runtime GLSL compile in the engine goes through
-# graphics/vulkan/GlslCompiler.cpp, so enabling this on EVGraphics also covers the
-# modules above it: gpgpu's compute codegen inherits the INTERFACE link through its
-# dependency on graphics. Linking the archive removes the external glslc.exe
-# dependency from Windows builds — players do not install the Vulkan SDK.
-function(eve_enable_inprocess_shaderc target)
-  if(NOT WIN32 OR NOT DEFINED ENV{VULKAN_SDK} OR "$ENV{VULKAN_SDK}" STREQUAL "")
-    return()
-  endif()
-  set(_eve_shaderc_libnames shaderc_combined)
-  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(_eve_shaderc_libnames shaderc_combinedd)
-  endif()
-  find_library(EVE_SHADERC_LIB NAMES ${_eve_shaderc_libnames}
-    HINTS "$ENV{VULKAN_SDK}/Lib" "$ENV{VULKAN_SDK}/lib")
-  unset(_eve_shaderc_libnames)
-  if(NOT EVE_SHADERC_LIB)
-    message(STATUS "${target}: shaderc lib not found; runtime GLSL compilation will spawn glslc")
-    return()
-  endif()
-  # INTERFACE: module libraries are OBJECT libraries, so their private link deps
-  # would not reach the final executable.
-  target_link_libraries(${target} INTERFACE ${EVE_SHADERC_LIB})
-  # PRIVATE: GlslCompiler.cpp selects shaderc at compile time; INTERFACE would only
-  # define the macro for consumers and silently leave the target spawning glslc.
-  target_compile_definitions(${target} PRIVATE EVE_HAS_SHADERC=1)
-  message(STATUS "${target}: in-process shaderc compiler: ${EVE_SHADERC_LIB}")
-endfunction()
-
-eve_module_enabled(graphics _has_graphics)
-if(_has_graphics)
-  # Header-only VKBuilder: prefer the source tree over a stale third-party install.
-  target_include_directories(EVGraphics BEFORE PUBLIC
-    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
-  # Graphics.h includes <assimp/matrix4x4.h> (header-only usage). On WASM the
-  # vendored assimp library is skipped but the header tree is still present.
-  target_include_directories(EVGraphics BEFORE PUBLIC
-    ${CMAKE_SOURCE_DIR}/third-party/medialoader/model-libs/assimp/include)
-
-  if(BUILD_PLATFORM STREQUAL "webgpu")
-    # Regenerate WGSL .inc arrays from the GLSL shader sources when tooling
-    # (glslc + tint) is available; committed .inc files keep the build going
-    # otherwise.
-    find_package(Python3 COMPONENTS Interpreter QUIET)
-    if(Python3_Interpreter_FOUND)
-      add_custom_target(webgpu_shaders
-        COMMAND ${Python3_EXECUTABLE}
-          ${CMAKE_SOURCE_DIR}/scripts/compile_webgpu_shaders.py
-          --shaders-dir ${CMAKE_SOURCE_DIR}/src/modules/graphics/shaders
-        COMMENT "Generating WGSL shader .inc files for the WebGPU backend"
-        VERBATIM)
-      add_dependencies(EVGraphics webgpu_shaders)
-    endif()
-  endif()
-
-  # Runtime GLSL compilation (newShader / newMeshShader / gpgpu compute codegen).
-  eve_enable_inprocess_shaderc(EVGraphics)
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/graphics/BuildSettings.cmake")
 
 eve_module_enabled(ik _has_ik)
 if(_has_ik)
@@ -481,111 +424,7 @@ if(_has_stylize_action AND _has_audio AND _has_sound)
   target_compile_definitions(EVStylize_action PRIVATE EVE_STYLIZE_ACTION_AUDIO=1)
 endif()
 
-eve_module_enabled(physics _has_physics)
-option(EVENGINE_BUILD_PHYSICS_CORE_CHECK
-  "Compile the physics domain core without graphics/gpgpu presentation paths" OFF)
-set(_eve_physics_core_profile FALSE)
-if(EVENGINE_PROFILE STREQUAL "physics-core-only")
-  set(_eve_physics_core_profile TRUE)
-endif()
-if(_has_physics OR _eve_physics_core_profile OR EVENGINE_BUILD_PHYSICS_CORE_CHECK)
-  # Box2D headers use <Box2D/Common/...>; prefer source tree over flattened install.
-  # Box3D (Erin Catto) is a compiled library linked by name from the manifest.
-  if(_has_physics)
-    target_include_directories(EVPhysics PUBLIC ${CMAKE_SOURCE_DIR}/third-party)
-  endif()
-
-  # World/Body/Shape/Joint/query/fixed-step are the physics domain boundary.
-  # Keep its source list explicit so this check cannot accidentally pull in the
-  # graphics debug bridge, ClothGPU, or another presentation/accelerator TU.
-  set(_eve_physics_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DJoint.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DBody.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShape.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShapeCook.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorld.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldJoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldQueries.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldMover.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldContacts.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DJoints.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DQueries.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DMover.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DContacts.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshot.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshotParsing.cpp)
-  if(TARGET Jolt)
-    file(GLOB _eve_jolt_core_sources CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/physics/jolt/*.cpp")
-    list(APPEND _eve_physics_core_sources ${_eve_jolt_core_sources})
-  endif()
-  set(_eve_physics_core_boundary_files ${_eve_physics_core_sources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Body3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Fixture.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Joint3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsHandles.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/PhysicsLink.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/Shape3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/SimulationBackend.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/WorldSnapshotParsing.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/World3DInternal.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/RigidTypes3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/BodyBackend3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/ShapeBackend3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/backend/JointBackend3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/rigid/WorldBackend3D.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/rigid/World3DTypes.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DBody.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DJoint.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShape.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DShapeCook.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorld.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldFactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/physics/box3d/Box3DWorldInternal.h)
-  foreach(_eve_physics_core_file IN LISTS _eve_physics_core_boundary_files)
-    if(NOT EXISTS "${_eve_physics_core_file}")
-      message(FATAL_ERROR "Physics core source is missing: ${_eve_physics_core_file}")
-    endif()
-    file(READ "${_eve_physics_core_file}" _eve_physics_core_content)
-    if(_eve_physics_core_content MATCHES "include[ \t]*[\"<](graphics|gpgpu)/")
-      message(FATAL_ERROR
-        "Physics core source must not include graphics/gpgpu: ${_eve_physics_core_file}")
-    endif()
-  endforeach()
-  if(EVENGINE_BUILD_PHYSICS_CORE_CHECK OR _eve_physics_core_profile)
-    add_library(EVPhysicsCoreCheck OBJECT ${_eve_physics_core_sources})
-    target_link_libraries(EVPhysicsCoreCheck PRIVATE eve_engine_includes)
-    target_compile_definitions(EVPhysicsCoreCheck PRIVATE EVENGINE_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>)
-    if(TARGET Jolt)
-      target_include_directories(EVPhysicsCoreCheck BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/third-party/jolt)
-      target_link_libraries(EVPhysicsCoreCheck PRIVATE Jolt::Jolt)
-    endif()
-    # This compile-only target defines World and Backends implementations; it
-    # is not a DLL consumer. Match their defining-side annotations in SHARED
-    # builds so MSVC does not diagnose definitions of dllimport declarations.
-    if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-      target_compile_definitions(EVPhysicsCoreCheck PRIVATE
-        EVENGINE_ENGINE_EXPORTS EVENGINE_EXPORTS_WORLD EVENGINE_EXPORTS_BACKENDS)
-    endif()
-    target_include_directories(EVPhysicsCoreCheck PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/modules
-      ${CMAKE_SOURCE_DIR}/third-party
-      ${CMAKE_SOURCE_DIR}/third-party/box3d/include)
-    set_target_properties(EVPhysicsCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  endif()
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/physics/BuildSettings.cmake")
 
 # vehicle 在 physics 开启时会包含 physics 头文件（Body3D.h -> <box3d/id.h>），
 # 需要与 EVPhysics 相同的第三方头文件路径。
@@ -625,110 +464,7 @@ if(_has_font)
   endif()
 endif()
 
-eve_module_enabled(procgen _has_procgen)
-option(EVENGINE_BUILD_PROCGEN_CORE_CHECK
-  "Compile procgen CPU core sources without graphics/map/scene adapters" OFF)
-set(_eve_procgen_core_profile FALSE)
-if(EVENGINE_PROFILE STREQUAL "procgen-core-only")
-  set(_eve_procgen_core_profile TRUE)
-endif()
-if(_has_procgen OR _eve_procgen_core_profile OR EVENGINE_BUILD_PROCGEN_CORE_CHECK)
-  if(_has_procgen)
-    # Compat shims first (Apple Clang: missing drawOperatorArray in upstream DTL),
-    # then DTL. BEFORE must precede the visibility keyword so -I dtl_compat wins
-    # over the submodule.
-    target_include_directories(EVProcgen BEFORE PRIVATE
-      ${CMAKE_CURRENT_SOURCE_DIR}/procgen/dtl_compat)
-    target_include_directories(EVProcgen PUBLIC
-      ${CMAKE_SOURCE_DIR}/third-party/DungeonTemplateLibrary/include)
-  endif()
-
-  # Procgen's CPU data and recipe path is compiled separately as a dependency
-  # boundary check. This is intentionally an OBJECT target: it proves that the
-  # selected core translation units compile without linking graphics, map or
-  # scene adapters, while the normal EVProcgen target keeps the public facade
-  # and all compatibility implementations unchanged.
-  set(_eve_procgen_core_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PcgSpawnProgress.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/AttributeTable.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainStamp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMeshStamp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainDetailLayer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainTreePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlan.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSpawnPlanCodec.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePreset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainBiomePresetCodec.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainCollisionMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainPolygonMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainProbePlacement.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainNoiseMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSplatmap.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWorldWorkspace.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainGenerationSession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/PcgRuntimeStamper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainImageMask.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainEffect.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainErosion.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyHydraulic.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainLegacyThermal.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainSediment.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/heightmap/TerrainWaterField.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratorRegistry.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Grid2D.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/JsonExport.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/MeshBuild.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshContactBlend.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshMerge.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshAdhereLive.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Palette.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ParamSchema.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Params.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointSet.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/PointDelta.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ProcgenSystem.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGeneration.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/RuntimeGenerationAsset.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/Semantic.cpp)
-  set(_eve_procgen_core_boundary_files ${_eve_procgen_core_sources}
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/ArtifactPublish.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/GeneratedArtifact.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshDeformationSession.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshBoolean.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshContactBlend.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshMerge.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshAdhereLive.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshModifierGraph.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/mesh/MeshUvProjection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/spline/SplinePath.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/procgen/core/ProcgenCore.h)
-  foreach(_eve_procgen_core_file IN LISTS _eve_procgen_core_boundary_files)
-    if(NOT EXISTS "${_eve_procgen_core_file}")
-      message(FATAL_ERROR "Procgen core source is missing: ${_eve_procgen_core_file}")
-    endif()
-    file(READ "${_eve_procgen_core_file}" _eve_procgen_core_content)
-    if(_eve_procgen_core_content MATCHES "include[ \t]*[\"<](graphics|map|scene)/")
-      message(FATAL_ERROR
-        "Procgen core source must not include a presentation adapter: ${_eve_procgen_core_file}")
-    endif()
-  endforeach()
-  if(EVENGINE_BUILD_PROCGEN_CORE_CHECK OR _eve_procgen_core_profile)
-    add_library(EVProcgenCoreCheck OBJECT ${_eve_procgen_core_sources})
-    target_link_libraries(EVProcgenCoreCheck PRIVATE eve_engine_includes)
-    target_include_directories(EVProcgenCoreCheck PRIVATE
-      ${CMAKE_SOURCE_DIR}/src/modules)
-    set_target_properties(EVProcgenCoreCheck PROPERTIES POSITION_INDEPENDENT_CODE ON)
-  endif()
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/procgen/BuildSettings.cmake")
 
 if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   # Scene serialization needs Poco JSON; the browser build has no Poco headers,
@@ -736,145 +472,7 @@ if(_has_scene AND NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
   target_compile_definitions(EVScene PUBLIC EVENGINE_SCENE_JSON=1)
 endif()
 
-# --- Dear ImGui --------------------------------------------------------------
-
-eve_module_enabled(ui _has_ui)
-if(_has_ui)
-  # Stage the editor icon font beside other runtime shared data. The backend
-  # resolves this from SDL_GetBasePath, so games may run from any working dir.
-  file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/share/eve/fonts")
-  configure_file(
-    "${CMAKE_SOURCE_DIR}/src/modules/ui/fonts/FontAwesome.ttf"
-    "${CMAKE_BINARY_DIR}/share/eve/fonts/FontAwesome.ttf" COPYONLY)
-  if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
-    # ImGui keeps its context in the process-wide GImGui. Linking the archive
-    # into every link group and every test executable gives each of them its own
-    # copy, so a context the test creates is invisible to the ui module and the
-    # six ui cases abort with "No current context" (spec section 7.3). Compile
-    # the vendored sources into one shared library instead: the state then has a
-    # single owner, exactly as it does in the archive-only OBJECT route where
-    # everything lands in one executable.
-    set(_eve_imgui_sources
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-    )
-    add_library(eve_imgui SHARED ${_eve_imgui_sources})
-    # GImGui is a data symbol, and an import library only carries __imp_<data>,
-    # so consumers must see the declaration as dllimport rather than redeclare it.
-    # Passed through SHELL: with the quotes intact: cmd.exe treats the
-    # parentheses of __declspec(...) as separators, which turns a plain
-    # -DIMGUI_API=__declspec(dllimport) into a stray token and breaks every
-    # consumer TU (C2054 in imgui.h). ELF exports default-visibility symbols from
-    # a shared object anyway, so the flag is Windows-only.
-    if(WIN32)
-      target_compile_options(eve_imgui PRIVATE "SHELL:/D\"IMGUI_API=__declspec(dllexport)\"")
-      target_compile_options(eve_imgui INTERFACE "SHELL:/D\"IMGUI_API=__declspec(dllimport)\"")
-    endif()
-    set_target_properties(eve_imgui PROPERTIES
-      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
-      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
-    # Vendored sources: the engine's strict set (/W4 /WX, or -Wall -Wextra
-    # -Werror) targets our own code, and the ExternalProject path compiles this
-    # library without it. Downgrade errors to warnings for this target only.
-    if(MSVC)
-      target_compile_options(eve_imgui PRIVATE /WX-)
-    else()
-      target_compile_options(eve_imgui PRIVATE -Wno-error)
-    endif()
-    if(NOT MSVC AND EVENGINE_ENABLE_STRICT_WARNINGS)
-      target_compile_options(eve_imgui PRIVATE -Wno-deprecated-enum-enum-conversion)
-    endif()
-    target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-    target_include_directories(eve_imgui PRIVATE
-      ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
-      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
-      ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
-    )
-    target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
-    # The archive form left these references to whoever linked it; a shared
-    # library has to resolve them itself: the SDL backend calls into SDL2 (and
-    # therefore the OS libraries SDL2 needs), the Vulkan backend into the loader.
-    eve_thirdparty_libs(_eve_imgui_third_party sdl2)
-    eve_append_system_libraries(_eve_imgui_system_libs)
-    target_link_libraries(eve_imgui PRIVATE
-      ${_eve_imgui_third_party} ${_eve_imgui_system_libs} ${EVENGINE_VULKAN_LIB})
-    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
-    # The SDL import library this target links comes from the third-party install
-    # tree, and nothing else in its dependency graph waits for that install: on a
-    # cold build (no third-party cache) ninja may reach this link first and fail
-    # with LNK1104 "cannot open file 'SDL2d.lib'". create_module() adds the same
-    # dependency for every module target.
-    if(NOT EVENGINE_PROFILE_HOSTLESS)
-      add_dependencies(eve_imgui third-party)
-    endif()
-    # The host, the tests and the group libraries all load this library, so the
-    # dynamic SDK has to ship it beside them, exactly like the link groups.
-    install(TARGETS eve_imgui
-      RUNTIME DESTINATION bin
-      LIBRARY DESTINATION lib
-      ARCHIVE DESTINATION lib)
-  elseif(EVENGINE_THIRD_PARTY_BINARY_ONLY AND NOT BUILD_PLATFORM STREQUAL "webgpu")
-    # The shared prefix already contains ImGui and its SDL/Vulkan backends.
-    add_library(eve_imgui INTERFACE)
-    if(WIN32 AND CMAKE_BUILD_TYPE STREQUAL "Debug")
-      target_link_libraries(eve_imgui INTERFACE imguimdd)
-    elseif(WIN32)
-      target_link_libraries(eve_imgui INTERFACE imguimd)
-    else()
-      target_link_libraries(eve_imgui INTERFACE imgui)
-    endif()
-    # INTERFACE library: only propagate the shared include set to consumers.
-    target_link_libraries(eve_imgui INTERFACE eve_engine_includes)
-  else()
-    # Compiled from third-party sources (also installed by the ExternalProject).
-    set(_eve_imgui_sources
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_draw.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_tables.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_widgets.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_sdl.cpp
-      ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp
-    )
-    if(BUILD_PLATFORM STREQUAL "webgpu")
-      # Vulkan renderer is compiled out; the WebGPU backend is compiled by EVUI.
-      list(REMOVE_ITEM _eve_imgui_sources
-        ${CMAKE_SOURCE_DIR}/third-party/imgui/imgui_impl_vulkan.cpp)
-    endif()
-    add_library(eve_imgui STATIC ${_eve_imgui_sources})
-    # Vendored third-party imgui mixes public/private enums (input-text/tree
-    # flags); GCC 15's -Wdeprecated-enum-enum-conversion is noise for this
-    # bundled library. Engine call sites that mix enums are fixed at the
-    # source instead (only relevant when strict warnings are enabled).
-    if(NOT MSVC AND EVENGINE_ENABLE_STRICT_WARNINGS)
-      target_compile_options(eve_imgui PRIVATE -Wno-deprecated-enum-enum-conversion)
-    endif()
-    target_include_directories(eve_imgui PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-    # On Emscripten SDL2 headers come from the port sysroot.
-    if(CMAKE_SYSTEM_NAME STREQUAL "Emscripten")
-      target_include_directories(eve_imgui PRIVATE ${EMSCRIPTEN_SYSROOT}/include)
-    else()
-      target_include_directories(eve_imgui PRIVATE
-        ${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/SDL2
-        ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}-debug/include/SDL2
-        ${CMAKE_SOURCE_DIR}/build/third-party-binary/${BUILD_PLATFORM}/include/SDL2
-      )
-    endif()
-    target_compile_definitions(eve_imgui PUBLIC IMGUI_DISABLE_DEMO_WINDOWS)
-    # STATIC library: PUBLIC so eve_imgui's own TUs (imgui_impl_vulkan.cpp /
-    # imgui_impl_sdl.cpp) compile against the shared include set (Vulkan SDK,
-    # SDL2, engine headers) and consumers inherit it transitively.
-    target_link_libraries(eve_imgui PUBLIC eve_engine_includes)
-  endif()
-
-  target_link_libraries(EVUI PUBLIC eve_imgui)
-  target_include_directories(EVUI PUBLIC ${CMAKE_SOURCE_DIR}/third-party/imgui)
-  target_include_directories(EVUI BEFORE PUBLIC
-    ${EVENGINE_VKBUILDER_INCLUDE_DIR})
-endif()
+include("${CMAKE_CURRENT_SOURCE_DIR}/ui/BuildSettings.cmake")
 
 # WebP headers remain private to the image codec implementation.
 if(TARGET EVImage)
