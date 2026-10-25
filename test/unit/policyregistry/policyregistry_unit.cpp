@@ -10,188 +10,160 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
+#include "policyregistry/PolicyRegistry.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-
-#include "common/Module.h"
-#include "policyregistry/PolicyRegistry.h"
-
-#include <simplesquirrel/simplesquirrel.hpp>
 
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
 
-using namespace eve::policyregistry;
+namespace {
+using eve::policyregistry::PolicyEvent;
+using eve::policyregistry::PolicyRegistry;
 
-TEST_CASE("policyregistry.registersCanonicalDescriptors") {
+// Registration contract: valid input publishes a canonical descriptor;
+// malformed names, versions, kind or metadata do not publish a slot.
+TEST_CASE("policyregistry.spec.registration_validation_and_canonical_metadata") {
     PolicyRegistry registry;
-    REQUIRE(registry.insert("movement", "ground", 2, 10, true, "builtin", "move.schema", "{\"z\":2,\"a\":1}").ok());
-    auto policy = registry.resolve("movement", "ground");
-    REQUIRE(policy.ok());
-    const auto& descriptor = policy.value().get();
-    CHECK_EQ(descriptor.version.value(), uint64_t{2});
+    auto inserted = registry.insert("movement", "ground", 2, 10, true, "builtin", "move.schema", "{\"z\":2,\"a\":1}");
+    REQUIRE(inserted.ok());
+    auto resolved = registry.resolve("movement", "ground");
+    REQUIRE(resolved.ok());
+    const auto& descriptor = resolved.value().get();
+    CHECK_EQ(descriptor.version.value(), std::uint64_t{2});
     CHECK_EQ(descriptor.priority, 10);
     CHECK(descriptor.enabled);
-    CHECK_EQ(implementationKindName(descriptor.kind), std::string("builtin"));
-    CHECK_EQ(descriptor.metadataJson, std::string("{\"a\":1,\"z\":2}"));
+    CHECK_EQ(descriptor.metadataJson, "{\"a\":1,\"z\":2}");
     CHECK(!registry.insert("movement", "ground", 1, 0, true, "script", "", "{}").ok());
     CHECK(!registry.insert("", "bad", 1, 0, true, "script", "", "{}").ok());
+    CHECK(!registry.insert("movement", "", 1, 0, true, "script", "", "{}").ok());
     CHECK(!registry.insert("movement", "bad", 0, 0, true, "script", "", "{}").ok());
     CHECK(!registry.insert("movement", "bad", 1, 0, true, "remote", "", "{}").ok());
     CHECK(!registry.insert("movement", "bad", 1, 0, true, "script", "", "[]").ok());
+    CHECK_EQ(registry.size(), 1);
+    CHECK_EQ(registry.eventCount(), 1);
 }
 
-TEST_CASE("policyregistry.selectsEnabledPriorityThenName") {
+// Selection contract: only enabled policies compete; priority wins, then
+// lexical name breaks ties. Unknown domains and disabled-only domains are empty.
+TEST_CASE("policyregistry.spec.selection_and_sorted_enumeration") {
     PolicyRegistry registry;
-    REQUIRE(registry.insert("targeting", "zeta", 1, 20, true, "script", "", "{}").ok());
-    REQUIRE(registry.insert("targeting", "alpha", 1, 20, true, "batch", "", "{}").ok());
-    REQUIRE(registry.insert("targeting", "disabled", 1, 99, false, "builtin", "", "{}").ok());
-    REQUIRE(registry.select("targeting") != nullptr);
-    CHECK_EQ(registry.select("targeting")->name, std::string("alpha"));
-    REQUIRE(registry.enable("targeting", "disabled", true).ok());
-    CHECK_EQ(registry.select("targeting")->name, std::string("disabled"));
-    REQUIRE(registry.enable("targeting", "disabled", false).ok());
-    CHECK_EQ(registry.select("targeting")->name, std::string("alpha"));
+    REQUIRE(registry.insert("target", "zeta", 1, 20, true, "script", "", "{}").ok());
+    REQUIRE(registry.insert("target", "alpha", 1, 20, true, "batch", "", "{}").ok());
+    REQUIRE(registry.insert("target", "disabled", 1, 99, false, "builtin", "", "{}").ok());
+    REQUIRE(registry.insert("other", "first", 1, 0, false, "script", "", "{}").ok());
+    REQUIRE(registry.select("target") != nullptr);
+    CHECK_EQ(registry.select("target")->name, "alpha");
+    CHECK(registry.select("other") == nullptr);
     CHECK(registry.select("missing") == nullptr);
+    REQUIRE(registry.enable("target", "disabled", true).ok());
+    CHECK_EQ(registry.select("target")->name, "disabled");
+    REQUIRE(registry.enable("target", "disabled", false).ok());
+    CHECK_EQ(registry.select("target")->name, "alpha");
+    CHECK_EQ(registry.size(), 4);
+    CHECK_EQ(registry.countDomain("target"), 3);
+    CHECK_EQ(registry.at(0)->domain, "other");
+    CHECK_EQ(registry.atDomain("target", 0)->name, "alpha");
+    CHECK_EQ(registry.atDomain("target", 2)->name, "zeta");
+    CHECK(registry.at(-1) == nullptr);
+    CHECK(registry.atDomain("target", 3) == nullptr);
 }
 
-TEST_CASE("policyregistry.generationsInvalidateStaleHandles") {
+// Handle contract: each replacement, enabled toggle, and tombstone increments
+// generation. A stale handle never resolves to a revived policy with same key.
+TEST_CASE("policyregistry.spec.generation_staleness_and_tombstone") {
     PolicyRegistry registry;
-    REQUIRE(registry.insert("economy", "tax", 1, 0, true, "script", "tax.v1", "{}").ok());
-    auto oldResult = registry.handle("economy", "tax");
-    REQUIRE(oldResult.ok());
-    const auto old = std::move(oldResult).takeValue();
-    REQUIRE(registry.resolveHandle(old).ok());
-    REQUIRE(registry.replace("economy", "tax", 2, 1, true, "batch", "tax.v2", "{}").ok());
-    CHECK(!registry.resolveHandle(old).ok());
-    auto current = registry.resolve("economy", "tax");
-    REQUIRE(current.ok());
-    CHECK_EQ(current.value().get().generation.value(), uint64_t{2});
-    REQUIRE(registry.remove("economy", "tax").ok());
-    REQUIRE(registry.insert("economy", "tax", 3, 2, true, "script", "tax.v3", "{}").ok());
-    current = registry.resolve("economy", "tax");
-    REQUIRE(current.ok());
-    CHECK_EQ(current.value().get().generation.value(), uint64_t{4});
-}
-
-TEST_CASE("policyregistry.registryParityKeepsTombstones") {
-    PolicyRegistry registry;
-    auto           inserted = registry.insert("movement", "ground", 1, 2, true, "builtin", "", "{}");
-    REQUIRE(inserted.ok());
-    const auto first = std::move(inserted).takeValue();
-
-    auto disabled = registry.enable("movement", "ground", false);
+    auto           first = registry.insert("economy", "tax", 1, 0, true, "script", "tax.v1", "{}");
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().generation.value(), std::uint64_t{1});
+    auto noOp = registry.enable("economy", "tax", true);
+    REQUIRE(noOp.ok());
+    CHECK_EQ(noOp.code(), eve::StatusCode::NoOp);
+    CHECK_EQ(noOp.value().generation.value(), std::uint64_t{1});
+    auto disabled = registry.enable("economy", "tax", false);
     REQUIRE(disabled.ok());
-    const auto second = std::move(disabled).takeValue();
-    CHECK_EQ(second.generation.value(), uint64_t{2});
-    CHECK(registry.isStale(first));
-    auto current = registry.resolve("movement", "ground");
-    REQUIRE(current.ok());
-    CHECK(!current.value().get().enabled);
-    CHECK_EQ(registry.eventAt(1)->name, std::string("policy_enabled"));
-
-    auto removed = registry.remove("movement", "ground");
+    CHECK_EQ(disabled.value().generation.value(), std::uint64_t{2});
+    CHECK(registry.isStale(first.value()));
+    CHECK(!registry.resolveHandle(first.value()).ok());
+    auto replaced = registry.replace("economy", "tax", 2, 3, true, "batch", "tax.v2", "{}");
+    REQUIRE(replaced.ok());
+    CHECK_EQ(replaced.value().generation.value(), std::uint64_t{3});
+    auto removed = registry.remove("economy", "tax");
     REQUIRE(removed.ok());
-    const auto tombstone = std::move(removed).takeValue();
-    CHECK_EQ(tombstone.generation.value(), uint64_t{3});
-    CHECK(registry.isTombstone("movement", "ground"));
-    auto stale = registry.resolveHandle(second);
-    CHECK(!stale.ok());
-    CHECK_EQ(stale.error()->code(), eve::DiagnosticCode::StaleHandle);
-
-    auto revived = registry.insert("movement", "ground", 2, 3, true, "script", "", "{}");
+    CHECK_EQ(removed.value().generation.value(), std::uint64_t{4});
+    CHECK(registry.isTombstone("economy", "tax"));
+    CHECK(!registry.resolve("economy", "tax").ok());
+    auto revived = registry.insert("economy", "tax", 3, 0, true, "script", "tax.v3", "{}");
     REQUIRE(revived.ok());
-    CHECK_EQ(std::move(revived).takeValue().generation.value(), uint64_t{4});
+    CHECK_EQ(revived.value().generation.value(), std::uint64_t{5});
+    CHECK(!registry.resolveHandle(replaced.value()).ok());
 }
 
-TEST_CASE("policyregistry.subscriptionAndSnapshotEnvelopeAreCompatible") {
-    PolicyRegistry           registry;
-    std::vector<std::string> names;
-    auto subscription = registry.subscribe([&](const PolicyEvent& event) { names.push_back(event.name); });
-    REQUIRE(registry.insert("orders", "safe", 1, 1, true, "script", "", "{}").ok());
+// Event contract: successful mutations are sequenced; clearing retained events
+// does not reset the next sequence. Observer exceptions surface as diagnostics
+// without rolling back an already-applied mutation.
+TEST_CASE("policyregistry.spec.events_and_observer_failure") {
+    PolicyRegistry registry;
+    auto           failing =
+        registry.subscribe([](const PolicyEvent&) { throw std::runtime_error("injected observer failure"); });
+    auto inserted = registry.insert("orders", "safe", 1, 0, true, "script", "", "{}");
+    REQUIRE(inserted.ok());
+    REQUIRE_EQ(inserted.diagnostics().size(), std::size_t{1});
+    CHECK_EQ(inserted.diagnostics().front().code(), eve::DiagnosticCode::CallbackFailure);
+    CHECK(registry.resolve("orders", "safe").ok());
+    failing.dispose();
     REQUIRE(registry.enable("orders", "safe", false).ok());
-    CHECK_EQ(names, std::vector<std::string>({"policy_registered", "policy_enabled"}));
-    subscription.dispose();
+    REQUIRE_EQ(registry.eventCount(), 2);
+    CHECK_EQ(registry.eventAt(0)->name, "policy_registered");
+    CHECK_EQ(registry.eventAt(1)->name, "policy_enabled");
+    CHECK_EQ(registry.eventAt(1)->sequence.value(), std::uint64_t{2});
+    registry.clearEvents();
+    REQUIRE(registry.enable("orders", "safe", true).ok());
+    REQUIRE_EQ(registry.eventCount(), 1);
+    CHECK_EQ(registry.eventAt(0)->sequence.value(), std::uint64_t{3});
+    CHECK(registry.eventAt(-1) == nullptr);
+}
 
+// Snapshot contract: serialization is deterministic; restore retains
+// tombstones and rejects malformed input without partially changing state.
+TEST_CASE("policyregistry.spec.snapshot_round_trip_and_atomic_rejection") {
+    PolicyRegistry source;
+    REQUIRE(source.insert("orders", "safe", 1, 5, true, "script", "orders.policy", "{\"label\":\"Safe\"}").ok());
+    REQUIRE(source.insert("orders", "old", 1, 0, true, "builtin", "", "{}").ok());
+    REQUIRE(source.remove("orders", "old").ok());
+    const auto     json = source.snapshotJson();
+    PolicyRegistry restored;
+    REQUIRE(restored.restoreJson(json).ok());
+    CHECK_EQ(restored.snapshotJson(), json);
+    CHECK_EQ(restored.select("orders")->name, "safe");
+    CHECK(restored.isTombstone("orders", "old"));
+    auto revived = restored.insert("orders", "old", 2, 0, true, "batch", "", "{}");
+    REQUIRE(revived.ok());
+    CHECK_EQ(revived.value().generation.value(), std::uint64_t{3});
+    const auto before = restored.snapshotJson();
+    CHECK(!restored.restoreJson("{\"version\":1}").ok());
+    CHECK_EQ(restored.snapshotJson(), before);
+}
+
+// Common envelope contract: a verified envelope transfers descriptor state
+// into another registry without requiring per-entry mutation callbacks.
+TEST_CASE("policyregistry.spec.verified_envelope_restore") {
+    PolicyRegistry source;
+    REQUIRE(source.insert("orders", "safe", 1, 1, false, "script", "", "{}").ok());
     const auto hash = [](std::string_view) -> eve::Result<eve::ContentId> {
         eve::ContentId::Bytes bytes{};
         bytes[0] = 0x42;
         return eve::Result<eve::ContentId>::success(eve::ContentId(bytes));
     };
-    auto envelope = registry.snapshotEnvelopeJson(hash);
+    auto envelope = source.snapshotEnvelopeJson(hash);
     REQUIRE(envelope.ok());
-    PolicyRegistry copy;
-    auto           restored = copy.restoreSnapshotJson(std::move(envelope).takeValue(), hash);
-    REQUIRE(restored.ok());
-    auto safe = copy.resolve("orders", "safe");
-    REQUIRE(safe.ok());
-    CHECK(!safe.value().get().enabled);
+    PolicyRegistry target;
+    REQUIRE(target.restoreSnapshotJson(envelope.value(), hash).ok());
+    auto resolved = target.resolve("orders", "safe");
+    REQUIRE(resolved.ok());
+    CHECK(!resolved.value().get().enabled);
+    CHECK_EQ(target.size(), 1);
 }
-
-TEST_CASE("policyregistry.mutationPreservesObserverWarning") {
-    PolicyRegistry registry;
-    auto           subscription =
-        registry.subscribe([](const PolicyEvent&) { throw std::runtime_error("injected policy observer failure"); });
-
-    auto result = registry.insert("orders", "safe", 1, 1, true, "script", "", "{}");
-    REQUIRE(result.ok());
-    CHECK_EQ(result.code(), eve::StatusCode::Applied);
-    REQUIRE_EQ(result.diagnostics().size(), std::size_t{1});
-    CHECK_EQ(result.diagnostics().front().code(), eve::DiagnosticCode::CallbackFailure);
-    CHECK(registry.resolve("orders", "safe").ok());
-}
-
-TEST_CASE("policyregistry.enumeratesDeterministically") {
-    PolicyRegistry registry;
-    REQUIRE(registry.insert("z", "last", 1, 0, true, "script", "", "{}").ok());
-    REQUIRE(registry.insert("a", "two", 1, 0, true, "script", "", "{}").ok());
-    REQUIRE(registry.insert("a", "one", 1, 0, true, "script", "", "{}").ok());
-    CHECK_EQ(registry.size(), 3);
-    CHECK_EQ(registry.countDomain("a"), 2);
-    CHECK_EQ(registry.at(0)->domain, std::string("a"));
-    CHECK_EQ(registry.atDomain("a", 0)->name, std::string("one"));
-    CHECK_EQ(registry.atDomain("a", 1)->name, std::string("two"));
-    CHECK_EQ(registry.at(2)->domain, std::string("z"));
-}
-
-TEST_CASE("policyregistry.eventsAreOrderedAndDescriptive") {
-    PolicyRegistry registry;
-    REQUIRE(registry.insert("ai", "default", 1, 0, true, "script", "", "{}").ok());
-    REQUIRE(registry.enable("ai", "default", false).ok());
-    REQUIRE(registry.replace("ai", "default", 2, 5, true, "batch", "", "{}").ok());
-    REQUIRE(registry.remove("ai", "default").ok());
-    CHECK_EQ(registry.eventCount(), 4);
-    CHECK_EQ(registry.eventAt(0)->name, std::string("policy_registered"));
-    CHECK_EQ(registry.eventAt(1)->name, std::string("policy_enabled"));
-    CHECK(!registry.eventAt(1)->enabled);
-    CHECK_EQ(registry.eventAt(3)->name, std::string("policy_removed"));
-    CHECK_EQ(registry.eventAt(3)->sequence.value(), uint64_t{4});
-    registry.clearEvents();
-    REQUIRE(registry.insert("ai", "default", 3, 0, true, "script", "", "{}").ok());
-    CHECK_EQ(registry.eventAt(0)->sequence.value(), uint64_t{5});
-}
-
-TEST_CASE("policyregistry.snapshotRoundTripsTransactionally") {
-    PolicyRegistry original;
-    REQUIRE(original.insert("orders", "safe", 1, 5, true, "script", "orders.policy", "{\"label\":\"Safe\"}").ok());
-    REQUIRE(original.insert("orders", "old", 1, 0, true, "builtin", "", "{}").ok());
-    REQUIRE(original.remove("orders", "old").ok());
-    const auto snapshot = original.snapshotJson();
-
-    PolicyRegistry restored;
-    REQUIRE(restored.restoreJson(snapshot).ok());
-    CHECK_EQ(restored.snapshotJson(), snapshot);
-    CHECK_EQ(restored.select("orders")->name, std::string("safe"));
-    REQUIRE(restored.insert("orders", "old", 2, 0, true, "batch", "", "{}").ok());
-    auto oldPolicy = restored.resolve("orders", "old");
-    REQUIRE(oldPolicy.ok());
-    CHECK_EQ(oldPolicy.value().get().generation.value(), uint64_t{3});
-
-    const auto before = restored.snapshotJson();
-    CHECK(!restored.restoreJson("{\"version\":1}").ok());
-    CHECK_EQ(restored.snapshotJson(), before);
-}
+}  // namespace

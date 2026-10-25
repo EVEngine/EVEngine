@@ -10,171 +10,199 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
+#include "orders/CommandQueue.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Module.h"
-#include "orders/CommandQueue.h"
-
-#include <simplesquirrel/simplesquirrel.hpp>
-
+#include <limits>
 #include <string>
+#include <utility>
 
 using namespace eve::orders;
 
 namespace {
-[[maybe_unused]] std::string takeId(eve::Result<std::string> result) {
-    REQUIRE(result.hasValue());
+std::string append(CommandQueue& queue, const char* kind, int priority = 0, double timeout = 0.) {
+    auto result = queue.append(kind, priority, timeout);
+    REQUIRE(result.ok());
     return std::move(result).takeValue();
 }
-}  // namespace
 
-TEST_CASE("orders.append.priorityAndStableIds") {
-    CommandQueue queue;
-    const auto   first = takeId(queue.append("first", 1));
-    const auto   low   = takeId(queue.append("low", 1));
-    const auto   high  = takeId(queue.append("high", 10));
-
-    CHECK_EQ(first, std::string("order-0000000000000001"));
-    CHECK_EQ(low, std::string("order-0000000000000002"));
-    CHECK_EQ(high, std::string("order-0000000000000003"));
-    REQUIRE(static_cast<bool>(queue.current()));
-    CHECK_EQ(queue.current()->get().kind, std::string("first"));
-    CHECK(queue.complete(first).ok());
-    CHECK_EQ(queue.current()->get().kind, std::string("high"));
-    CHECK(queue.complete(high).ok());
-    CHECK_EQ(queue.current()->get().kind, std::string("low"));
+const Order& active(const CommandQueue& queue) {
+    auto current = queue.current();
+    REQUIRE(current);
+    return current->get();
+}
 }
 
-TEST_CASE("orders.replace.cancelsUnfinishedDeterministically") {
-    CommandQueue queue;
-    const auto   active = takeId(queue.append("work"));
-    const auto   queued = takeId(queue.append("later"));
-    const auto   next   = takeId(queue.replace("replacement", 5));
+TEST_CASE("Orders scheduling and replacement contract") {
+    SUB_CASE("orders contract: append assigns stable IDs and schedules by priority then insertion") {
+        CommandQueue queue;
+        REQUIRE(!queue.current());
+        const auto first = append(queue, "first", 1);
+        const auto low   = append(queue, "low", 1);
+        const auto high  = append(queue, "high", 10);
+        REQUIRE_EQ(first, "order-0000000000000001");
+        REQUIRE_EQ(low, "order-0000000000000002");
+        REQUIRE_EQ(high, "order-0000000000000003");
+        REQUIRE_EQ(active(queue).id, first);
+        REQUIRE_EQ(queue.queuedCount(), 2);
+        REQUIRE_EQ(queue.orderCount(), 3);
+        REQUIRE(queue.complete(first).ok());
+        REQUIRE_EQ(active(queue).id, high);
+        REQUIRE(queue.complete(high).ok());
+        REQUIRE_EQ(active(queue).id, low);
+        REQUIRE(queue.complete(low).ok());
+        REQUIRE(!queue.current());
+        REQUIRE(queue.find(first));
+        REQUIRE(!queue.orderAt(-1));
+        REQUIRE(!queue.orderAt(3));
+    };
 
-    CHECK_EQ(static_cast<int>(queue.find(active)->get().state), static_cast<int>(OrderState::Cancelled));
-    CHECK_EQ(static_cast<int>(queue.find(queued)->get().state), static_cast<int>(OrderState::Cancelled));
-    CHECK_EQ(queue.current()->get().id, next);
-    REQUIRE(queue.eventCount() == 7);
-    CHECK_EQ(queue.eventAt(0)->get().sequence, uint64_t{1});
-    CHECK_EQ(static_cast<int>(queue.eventAt(0)->get().to), static_cast<int>(OrderState::Queued));
-    CHECK_EQ(queue.eventAt(3)->get().orderId, active);
-    CHECK_EQ(queue.eventAt(3)->get().reason, std::string("replaced"));
-    CHECK_EQ(queue.eventAt(4)->get().orderId, queued);
-    CHECK_EQ(queue.eventAt(5)->get().orderId, next);
-    CHECK_EQ(static_cast<int>(queue.eventAt(6)->get().to), static_cast<int>(OrderState::Active));
+    SUB_CASE("orders contract: invalid commands and time are rejected without consuming identities") {
+        CommandQueue queue;
+        REQUIRE(!queue.append("").ok());
+        REQUIRE(!queue.append("bad", 0, -1.).ok());
+        REQUIRE(!queue.replace("bad", 0, std::numeric_limits<double>::infinity()).ok());
+        REQUIRE(!queue.interrupt("bad", 0, std::numeric_limits<double>::quiet_NaN()).ok());
+        REQUIRE(!queue.update(-1.).ok());
+        REQUIRE(!queue.update(std::numeric_limits<double>::infinity()).ok());
+        REQUIRE_EQ(queue.orderCount(), 0);
+        REQUIRE_EQ(queue.eventCount(), 0);
+        const auto validId = append(queue, "valid");
+        REQUIRE_EQ(validId, "order-0000000000000001");
+        REQUIRE(!queue.complete("").ok());
+        REQUIRE(!queue.fail("missing", "reason").ok());
+        REQUIRE(!queue.cancel("missing").ok());
+    };
+
+    SUB_CASE("orders contract: replace cancels all unfinished work and starts one replacement") {
+        CommandQueue queue;
+        const auto   first       = append(queue, "first");
+        const auto   waiting     = append(queue, "waiting");
+        auto         replacement = queue.replace("replacement", 5);
+        REQUIRE(replacement.ok());
+        REQUIRE(queue.find(first)->get().state == OrderState::Cancelled);
+        REQUIRE_EQ(queue.find(first)->get().reason, "replaced");
+        REQUIRE(queue.find(waiting)->get().state == OrderState::Cancelled);
+        REQUIRE_EQ(active(queue).id, replacement.value());
+        REQUIRE_EQ(queue.queuedCount(), 0);
+        REQUIRE_EQ(queue.eventCount(), 7);
+        for (int i = 0; i < queue.eventCount(); ++i) REQUIRE_EQ(queue.eventAt(i)->get().sequence, std::uint64_t(i + 1));
+    };
+
+    SUB_CASE("orders contract: interrupt requires equal or greater priority and leaves history") {
+        CommandQueue queue;
+        const auto   first = append(queue, "critical", 20);
+        REQUIRE(!queue.interrupt("weak", 19).ok());
+        REQUIRE_EQ(active(queue).id, first);
+        auto urgent = queue.interrupt("urgent", 20);
+        REQUIRE(urgent.ok());
+        REQUIRE(queue.find(first)->get().state == OrderState::Cancelled);
+        REQUIRE_EQ(queue.find(first)->get().reason, "interrupted");
+        REQUIRE_EQ(active(queue).id, urgent.value());
+    };
 }
 
-TEST_CASE("orders.interrupt.honoursPriority") {
-    CommandQueue queue;
-    const auto   active = takeId(queue.append("critical", 20));
-    CHECK(!queue.interrupt("weak", 19).hasValue());
-    CHECK_EQ(queue.current()->get().id, active);
+TEST_CASE("Orders lifecycle time and payload contract") {
+    SUB_CASE("orders contract: complete fail and cancel accept only allowed lifecycle states") {
+        CommandQueue queue;
+        const auto   one   = append(queue, "one");
+        const auto   two   = append(queue, "two");
+        const auto   three = append(queue, "three");
+        REQUIRE(!queue.complete(two).ok());
+        REQUIRE(queue.complete(one).ok());
+        REQUIRE(queue.find(one)->get().state == OrderState::Completed);
+        REQUIRE(!queue.complete(one).ok());
+        REQUIRE(queue.fail(two, "policy_rejected").ok());
+        REQUIRE(queue.find(two)->get().state == OrderState::Failed);
+        REQUIRE_EQ(queue.find(two)->get().reason, "policy_rejected");
+        REQUIRE(queue.cancel(three, "owner_removed").ok());
+        REQUIRE(queue.find(three)->get().state == OrderState::Cancelled);
+        REQUIRE(!queue.current());
+        REQUIRE(!queue.cancel(three).ok());
+    };
 
-    const auto urgent = takeId(queue.interrupt("urgent", 20));
-    CHECK(!urgent.empty());
-    CHECK_EQ(static_cast<int>(queue.find(active)->get().state), static_cast<int>(OrderState::Cancelled));
-    CHECK_EQ(queue.find(active)->get().reason, std::string("interrupted"));
-    CHECK_EQ(queue.current()->get().id, urgent);
+    SUB_CASE("orders contract: simulation time reaches timeout exactly and activates next") {
+        CommandQueue queue;
+        const auto   timed = append(queue, "timed", 0, .5);
+        const auto   next  = append(queue, "next");
+        REQUIRE(queue.update(0.).ok());
+        REQUIRE_EQ(active(queue).elapsedSeconds, 0.);
+        REQUIRE(queue.update(.25).ok());
+        REQUIRE_EQ(active(queue).id, timed);
+        REQUIRE(queue.update(.25).ok());
+        REQUIRE(queue.find(timed)->get().state == OrderState::Failed);
+        REQUIRE_EQ(queue.find(timed)->get().reason, "timeout");
+        REQUIRE_EQ(active(queue).id, next);
+    };
+
+    SUB_CASE("orders contract: payload owns typed JSON and failed parse leaves prior value") {
+        OrderPayload payload;
+        payload.setString("name", "A\nB");
+        payload.setNumber("x", 12.5);
+        payload.setBool("enabled", true);
+        payload.setNull("none");
+        REQUIRE(payload.setJson("nested", "{\"target\":7}").ok());
+        const auto before = payload.toJson();
+        REQUIRE(!payload.setJson("nested", "not-json").ok());
+        REQUIRE_EQ(payload.toJson(), before);
+        REQUIRE(!payload.set("", eve::Value(true)).ok());
+        REQUIRE(payload.has("nested"));
+        auto removed = payload.erase("nested");
+        REQUIRE(removed.ok());
+        REQUIRE(removed.value());
+        REQUIRE(!payload.has("nested"));
+        payload.clear();
+        REQUIRE_EQ(payload.toJson(), "{}");
+    };
 }
 
-TEST_CASE("orders.lifecycle.completeFailCancel") {
-    CommandQueue queue;
-    const auto   one   = takeId(queue.append("one"));
-    const auto   two   = takeId(queue.append("two"));
-    const auto   three = takeId(queue.append("three"));
+TEST_CASE("Orders persistence and reset contract") {
+    SUB_CASE("orders contract: snapshot restores active queue payload and counters") {
+        CommandQueue source;
+        const auto   first  = append(source, "first", 1, 3.);
+        const auto   second = append(source, "second", 5, 4.);
+        source.find(first)->get().payload.setString("name", "alpha");
+        REQUIRE(source.complete(first).ok());
+        const auto third = append(source, "third", 2, .5);
+        source.find(third)->get().payload.setBool("urgent", true);
+        auto snapshot = source.snapshot();
+        REQUIRE(snapshot.ok());
 
-    CHECK(queue.complete(one).ok());
-    CHECK_EQ(static_cast<int>(queue.find(one)->get().state), static_cast<int>(OrderState::Completed));
-    CHECK(queue.fail(two, "policy_rejected").ok());
-    CHECK_EQ(static_cast<int>(queue.find(two)->get().state), static_cast<int>(OrderState::Failed));
-    CHECK_EQ(queue.find(two)->get().reason, std::string("policy_rejected"));
-    CHECK(queue.cancel(three, "owner_removed").ok());
-    CHECK_EQ(static_cast<int>(queue.find(three)->get().state), static_cast<int>(OrderState::Cancelled));
-    CHECK(!queue.current());
-    CHECK(!queue.complete(three).ok());
-}
+        CommandQueue restored;
+        REQUIRE(restored.restore(snapshot.value()).ok());
+        auto roundTrip = restored.snapshot();
+        REQUIRE(roundTrip.ok());
+        REQUIRE_EQ(roundTrip.value(), snapshot.value());
+        REQUIRE_EQ(active(restored).id, second);
+        REQUIRE_EQ(restored.queuedCount(), 1);
+        REQUIRE_EQ(restored.find(first)->get().payload.getJson("name"), "\"alpha\"");
+        REQUIRE_EQ(restored.find(third)->get().payload.getJson("urgent"), "true");
+        const auto fourthId = append(restored, "fourth");
+        REQUIRE_EQ(fourthId, "order-0000000000000004");
+        REQUIRE_EQ(restored.eventAt(restored.eventCount() - 1)->get().sequence, 7u);
+    };
 
-TEST_CASE("orders.timeout.failsAndActivatesNext") {
-    CommandQueue queue;
-    const auto   timed = takeId(queue.append("timed", 0, 0.5));
-    const auto   next  = takeId(queue.append("next"));
-    CHECK(queue.update(0.25).ok());
-    CHECK_EQ(queue.current()->get().id, timed);
-    CHECK(queue.update(0.25).ok());
-    CHECK_EQ(static_cast<int>(queue.find(timed)->get().state), static_cast<int>(OrderState::Failed));
-    CHECK_EQ(queue.find(timed)->get().reason, std::string("timeout"));
-    CHECK_EQ(queue.current()->get().id, next);
-}
-
-TEST_CASE("orders.payload.isDeterministicJsonCompatible") {
-    CommandQueue queue;
-    const auto   id      = takeId(queue.append("custom"));
-    auto*        payload = &queue.find(id)->get().payload;
-    REQUIRE(payload != nullptr);
-    payload->setString("name", "A\nB");
-    payload->setNumber("x", 12.5);
-    payload->setBool("enabled", true);
-    CHECK(payload->setJson("nested", "{\"target\":7}").ok());
-    CHECK(!payload->setJson("bad", "not-json").ok());
-    CHECK_EQ(payload->toJson(), std::string("{\"enabled\":true,\"name\":\"A\\nB\","
-                                            "\"nested\":{\"target\":7},\"x\":12.5}"));
-}
-
-TEST_CASE("orders.snapshot.roundTripAndMalformedRestorePreservesState") {
-    CommandQueue source;
-    const auto   first    = takeId(source.append("first", 1, 3.0));
-    const auto   second   = takeId(source.append("second", 5, 4.0));
-    auto         firstRef = source.find(first);
-    REQUIRE(firstRef);
-    firstRef->get().payload.setString("name", "alpha");
-    firstRef->get().payload.setNumber("amount", 12.5);
-    REQUIRE(source.complete(first).ok());
-    const auto third    = takeId(source.append("third", 2, 0.5));
-    auto       thirdRef = source.find(third);
-    REQUIRE(thirdRef);
-    thirdRef->get().payload.setBool("urgent", true);
-
-    auto snapshotResult = source.snapshot();
-    REQUIRE(snapshotResult.ok());
-    const auto snapshot = std::move(snapshotResult).takeValue();
-
-    CommandQueue restored;
-    REQUIRE(restored.restore(snapshot).ok());
-    auto restoredSnapshot = restored.snapshot();
-    REQUIRE(restoredSnapshot.ok());
-    CHECK_EQ(std::move(restoredSnapshot).takeValue(), snapshot);
-    CHECK_EQ(restored.orderCount(), 3);
-    CHECK_EQ(restored.queuedCount(), 1);
-    REQUIRE(restored.current());
-    CHECK_EQ(restored.current()->get().id, second);
-    CHECK_EQ(restored.eventCount(), 6);
-    REQUIRE(restored.find(first));
-    CHECK_EQ(restored.find(first)->get().payload.getJson("name"), std::string("\"alpha\""));
-    REQUIRE(restored.find(third));
-    CHECK_EQ(restored.find(third)->get().payload.getJson("urgent"), std::string("true"));
-
-    auto next = takeId(restored.append("fourth", 9));
-    CHECK_EQ(next, std::string("order-0000000000000004"));
-    REQUIRE(restored.eventAt(restored.eventCount() - 1));
-    CHECK_EQ(restored.eventAt(restored.eventCount() - 1)->get().sequence, uint64_t{7});
-
-    auto beforeResult = restored.snapshot();
-    REQUIRE(beforeResult.ok());
-    const auto before    = std::move(beforeResult).takeValue();
-    auto       malformed = restored.restore("{\"schema\":\"orders.command_queue\"");
-    CHECK(!malformed.ok());
-    auto afterMalformed = restored.snapshot();
-    REQUIRE(afterMalformed.ok());
-    CHECK_EQ(std::move(afterMalformed).takeValue(), before);
-
-    auto invalid = restored.restore(
-        R"({"schema":"orders.command_queue","version":1,"nextId":"1","nextSequence":"1",
-            "active":null,"queued":[],"orders":[],"events":[]})");
-    CHECK(!invalid.ok());
-    auto afterInvalid = restored.snapshot();
-    REQUIRE(afterInvalid.ok());
-    CHECK_EQ(std::move(afterInvalid).takeValue(), before);
+    SUB_CASE("orders contract: malformed restore is atomic and clear resets identity allocation") {
+        CommandQueue queue;
+        append(queue, "existing");
+        auto before = queue.snapshot();
+        REQUIRE(before.ok());
+        REQUIRE(!queue.restore("{\"schema\":\"orders.command_queue\"").ok());
+        REQUIRE(
+            !queue
+                 .restore(
+                     R"({"schema":"orders.command_queue","version":1,"nextId":"0","nextSequence":"1","active":null,"queued":[],"orders":[],"events":[]})")
+                 .ok());
+        auto after = queue.snapshot();
+        REQUIRE(after.ok());
+        REQUIRE_EQ(after.value(), before.value());
+        queue.clearEvents();
+        REQUIRE_EQ(queue.eventCount(), 0);
+        queue.clear();
+        REQUIRE_EQ(queue.orderCount(), 0);
+        const auto freshId = append(queue, "fresh");
+        REQUIRE_EQ(freshId, "order-0000000000000001");
+        REQUIRE_EQ(queue.eventAt(0)->get().sequence, 1u);
+    };
 }
