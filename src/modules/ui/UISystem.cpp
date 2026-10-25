@@ -15,6 +15,7 @@
 #include "graphics/ClipSpace.h"
 #include "graphics/RenderSystem3D.h"
 
+#include <glm/mat4x4.hpp>
 #include <imgui.h>
 #include <imgui_internal.h>
 

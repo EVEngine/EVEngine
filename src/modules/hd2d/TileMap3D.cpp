@@ -1,3 +1,4 @@
+#include "graphics/Texture.h"
 #include "hd2d/Hd2d.h"
 
 #include "common/Exception.h"

@@ -1,3 +1,5 @@
+#include "graphics/Material.h"
+#include "graphics/Texture.h"
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_material_target)

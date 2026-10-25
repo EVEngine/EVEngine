@@ -1,3 +1,4 @@
+#include "graphics/Texture.h"
 #include "map/TileSystem.h"
 #include "map/TileLayer.h"
 #include "map/TileConfig.h"

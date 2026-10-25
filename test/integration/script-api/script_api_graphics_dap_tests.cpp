@@ -1,3 +1,4 @@
+#include "graphics/Shader.h"
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dap)

@@ -1,3 +1,4 @@
+#include "graphics/Mesh.h"
 #include "model3d/ModelRenderer.h"
 
 #include "model3d/ModelData.h"

@@ -1,3 +1,4 @@
+#include "graphics/Texture.h"
 #include "procgen/house/HouseComponentLibrary.h"
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>

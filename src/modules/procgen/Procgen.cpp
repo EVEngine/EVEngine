@@ -1,3 +1,4 @@
+#include "graphics/Shader.h"
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
 #include "procgen/ProcgenOwnership.h"
