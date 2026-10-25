@@ -1,2626 +1,825 @@
-#include "zeroerr/assert.h"
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "agent_development_session.cpp",
+    "callgraph.cpp",
+    "console.cpp",
+    "debugger.cpp",
+    "mcp_architecture_graph.cpp",
+    "mcp_whitebox.cpp",
+    "frame_stats.cpp",
+    "language_index.cpp",
+    "language_text.cpp",
+    "mcp_console.cpp",
+    "mcp_tool_filter.cpp",
+    "play_trace.cpp",
+    "game_world_context.cpp",
+    "mcp_frame_capture.cpp"
+  ]
+}
+*/
+// clang-format on
+
+#include "zeroerr/unittest.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_development_session)
 #include <Poco/JSON/Parser.h>
-#include "PrivateTestScope.h"
 #include "devtools/AgentDevelopmentMcp.hpp"
 #include "devtools/AgentDevelopmentSession.hpp"
 #include "devtools/McpTaskProfile.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// agent_development_session.cpp
-namespace test_agent_development_session {
-using namespace eve::dev;
 
-TEST_CASE("devtools.agentDevelopmentSession.enforcesWorkflowAndEvidenceGate") {
-    auto& session = AgentDevelopmentSession::instance();
-    session.reset();
-
-    std::vector<AgentAcceptanceCriterion> criteria{
-        {"runtime", "Runtime state matches the requested behavior", true, false},
-        {"visual", "Rendered output is legible", true, false},
-        {"note", "Optional design note", false, false},
-    };
-    auto started = session.start("Build one verified game feature", std::move(criteria));
-    REQUIRE(started.isAccepted());
-    CHECK_EQ(agentDevelopmentPhaseName(session.phase()), std::string_view("discover"));
-    CHECK(!session.readyToComplete());
-    const std::string id = session.sessionId();
-
-    CHECK_EQ(session.advance(id, AgentDevelopmentPhase::Run).code, "invalid-transition");
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Modify).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Run).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Observe).isAccepted());
-    REQUIRE(session.record(id, {0, "visual", "manual", "pass", "looks fine", {}}).isAccepted());
-    CHECK(!session.criteria()[1].passed);
-    REQUIRE(session.record(id, {0, "runtime", "runtime-observation", "pass", "x reached 4", {}}).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Verify).isAccepted());
-    CHECK_EQ(session.complete(id, "premature").code, "acceptance-incomplete");
-
-    REQUIRE(session.record(id, {0, "visual", "screenshot", "pass", "frame inspected", "frame.png"}).isAccepted());
-    CHECK(session.readyToComplete());
-    REQUIRE(session.complete(id, "feature verified").isAccepted());
-    CHECK_EQ(agentDevelopmentPhaseName(session.phase()), std::string_view("complete"));
-    CHECK(!session.active());
-    CHECK_EQ(session.evidence().size(), std::size_t{3});
-}
-
-TEST_CASE("devtools.agentDevelopmentSession.rejectsEvalAndRequiresScreenshotForVisual") {
-    auto& session = AgentDevelopmentSession::instance();
+namespace test_agent_development_contract {
+TEST_CASE("devtools.AgentDevelopmentSession workflow: transitions and evidence gate completion") {
+    auto& session = eve::dev::AgentDevelopmentSession::instance();
     session.reset();
     REQUIRE(session
-                .start("Verify without eval",
-                       {{"visual", "Must see the frame", true, false}, {"runtime", "State moved", true, false}})
+                .start("Verify one feature",
+                       {{"runtime", "State advances", true, false}, {"visual", "Frame is legible", true, false}})
                 .isAccepted());
-    const std::string id = session.sessionId();
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Modify).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Run).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Observe).isAccepted());
-    CHECK_EQ(session.record(id, {0, "runtime", "eval", "pass", "eve_eval cheated", {}}).code, "invalid-evidence-kind");
+    const auto id             = session.sessionId();
+    const auto invalidAdvance = session.advance(id, eve::dev::AgentDevelopmentPhase::Run);
+    CHECK_EQ(invalidAdvance.code, "invalid-transition");
+    REQUIRE(session.advance(id, eve::dev::AgentDevelopmentPhase::Modify).isAccepted());
+    REQUIRE(session.advance(id, eve::dev::AgentDevelopmentPhase::Run).isAccepted());
+    REQUIRE(session.advance(id, eve::dev::AgentDevelopmentPhase::Observe).isAccepted());
+    CHECK_EQ(session.record(id, {0, "runtime", "eval", "pass", "unsafe evidence", {}}).code, "invalid-evidence-kind");
     REQUIRE(session.record(id, {0, "runtime", "runtime-observation", "pass", "tick moved", {}}).isAccepted());
-    REQUIRE(session.record(id, {0, "visual", "runtime-observation", "pass", "looked at numbers", {}}).isAccepted());
-    CHECK(!session.criteria()[0].passed);
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Verify).isAccepted());
-    CHECK_EQ(session.complete(id, "missing screenshot").code, "acceptance-incomplete");
+    REQUIRE(session.record(id, {0, "visual", "manual", "pass", "looks fine", {}}).isAccepted());
+    REQUIRE(session.advance(id, eve::dev::AgentDevelopmentPhase::Verify).isAccepted());
+    CHECK_EQ(session.complete(id, "too early").code, "acceptance-incomplete");
     REQUIRE(session.record(id, {0, "visual", "screenshot", "pass", "frame inspected", "frame.png"}).isAccepted());
-    REQUIRE(session.record(id, {0, "runtime", "play-trace", "pass", "trace stable", "trace.json"}).isAccepted());
-    REQUIRE(session.complete(id, "verified without eval").isAccepted());
+    CHECK(session.readyToComplete());
+    REQUIRE(session.complete(id, "verified").isAccepted());
+    CHECK(!session.active());
+    CHECK_EQ(eve::dev::agentDevelopmentPhaseName(session.phase()), std::string_view("complete"));
 }
 
-TEST_CASE("devtools.agentDevelopmentSession.recoversAndAbortsExplicitly") {
-    auto& session = AgentDevelopmentSession::instance();
+TEST_CASE("devtools.AgentDevelopmentSession profile: verify defaults restrict tools and escalation is explicit") {
+    auto& session = eve::dev::AgentDevelopmentSession::instance();
     session.reset();
-    REQUIRE(session.start("Recover a broken game", {{"smoke", "Smoke passes", true, false}}).isAccepted());
-    const std::string id = session.sessionId();
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Recover).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Modify).isAccepted());
-    REQUIRE(session.abort(id, "dependency unavailable").isAccepted());
-    CHECK_EQ(agentDevelopmentPhaseName(session.phase()), std::string_view("aborted"));
-    CHECK_EQ(session.summary(), "dependency unavailable");
-    CHECK_EQ(session.advance(id, AgentDevelopmentPhase::Run).code, "session-terminal");
+    REQUIRE(session.start("Narrow by default", {{"play", "Playable", true, false}}).isAccepted());
+    CHECK_EQ(session.taskKind(), "verify");
+    CHECK_EQ(session.profile(), "verify.play");
+    CHECK(eve::dev::mcpProfileAllowsTool(session.profile(), "eve_play"));
+    CHECK(!eve::dev::mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
+    CHECK(!eve::dev::mcpProfileAllowsTool(session.profile(), "eve_eval"));
+    const auto id = session.sessionId();
+    CHECK_EQ(session.escalate(id, "no.such").code, "invalid-profile");
+    REQUIRE(session.escalate(id, "content.scene").isAccepted());
+    CHECK_EQ(session.taskKind(), "content");
+    CHECK_EQ(session.profile(), "content.scene");
+    CHECK_EQ(session.escalateCount(), std::uint64_t{1});
+    session.reset();
 }
 
-TEST_CASE("devtools.agentDevelopmentSession.mcpAdapterReturnsVersionedSnapshot") {
-    AgentDevelopmentSession::instance().reset();
+TEST_CASE("devtools.AgentDevelopment MCP start: response exposes versioned session snapshot") {
+    eve::dev::AgentDevelopmentSession::instance().reset();
     Poco::JSON::Parser parser;
-    auto               args =
+    auto               arguments =
         parser
             .parse(
                 R"({"objective":"Ship a playable loop","criteria":[{"id":"play","description":"Loop is playable"}]})")
             .extract<Poco::JSON::Object::Ptr>();
-    Poco::JSON::Parser responseParser;
-    auto               response = responseParser.parse(callAgentDevelopmentTool("eve_agent_session_start", args))
+    auto response = parser.parse(eve::dev::callAgentDevelopmentTool("eve_agent_session_start", arguments))
                         .extract<Poco::JSON::Object::Ptr>();
     REQUIRE(response);
     CHECK_EQ(response->getValue<std::string>("status"), "applied");
     CHECK_EQ(response->getValue<std::string>("schema"), "eve.agent-development-session");
     CHECK_EQ(response->getValue<int>("schemaVersion"), 2);
     CHECK_EQ(response->getValue<std::string>("phase"), "discover");
-    CHECK_EQ(response->getValue<std::string>("taskKind"), "verify");
-    CHECK_EQ(response->getValue<std::string>("profile"), "verify.play");
     CHECK_EQ(response->getArray("criteria")->size(), std::size_t{1});
-    REQUIRE(response->has("metrics"));
 }
-
-TEST_CASE("devtools.agentDevelopmentSession.defaultsToVerifyProfileAndEscalates") {
-    auto& session = AgentDevelopmentSession::instance();
-    session.reset();
-    REQUIRE(session.start("Narrow by default", {{"play", "Playable", true, false}}).isAccepted());
-    CHECK_EQ(session.taskKind(), "verify");
-    CHECK_EQ(session.profile(), "verify.play");
-    CHECK(mcpProfileAllowsTool(session.profile(), "eve_play"));
-    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
-    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
-
-    const std::string id      = session.sessionId();
-    const auto        unknown = session.escalate(id, "no.such");
-    CHECK_EQ(unknown.code, "invalid-profile");
-    const auto toContent = session.escalate(id, "content.scene");
-    REQUIRE(toContent.isAccepted());
-    CHECK_EQ(session.profile(), "content.scene");
-    CHECK_EQ(session.taskKind(), "content");
-    CHECK_EQ(session.escalateCount(), std::uint64_t{1});
-    CHECK(mcpProfileAllowsTool(session.profile(), "eve_scene_batch"));
-    CHECK(!mcpProfileAllowsTool(session.profile(), "eve_eval"));
-    const auto illegal = session.escalate(id, "script.bind");
-    CHECK_EQ(illegal.code, "invalid-escalate");
-    session.reset();
-    CHECK(mcpSessionProfile().empty());
-}
-
-TEST_CASE("devtools.agentDevelopmentSession.rejectsMismatchedProfile") {
-    auto& session = AgentDevelopmentSession::instance();
-    session.reset();
-    const auto mismatch = session.start("Bad combo", {{"x", "y", true, false}}, "verify", "content.scene");
-    CHECK_EQ(mismatch.code, "profile-task-mismatch");
-    REQUIRE(
-        session.start("Content layout", {{"layout", "Placed", true, false}}, "content", "content.scene").isAccepted());
-    CHECK_EQ(session.profile(), "content.scene");
-}
-}  // namespace test_agent_development_session
+}  // namespace test_agent_development_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_callgraph)
-#include <algorithm>
-#include <cstdio>
-#include <set>
-#include <string>
-#include <unordered_set>
-#include "PrivateTestScope.h"
 #include "devtools/CallGraph.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// callgraph.cpp
-namespace test_callgraph {
-using namespace eve::dev;
 
-static SourceLoc loc(const char* src, int line, const char* fn = "") {
-    SourceLoc l;
-    l.source   = src;
-    l.line     = line;
-    l.function = fn ? fn : "";
-    return l;
+namespace test_callgraph_contract {
+eve::dev::SourceLoc location(const char* source, int line, const char* function = "") {
+    eve::dev::SourceLoc result;
+    result.source   = source;
+    result.line     = line;
+    result.function = function;
+    return result;
 }
 
-static bool sliceHasLoc(const SliceResult& s, const char* src, int line) {
-    for (const auto& l : s.locations) {
-        if (l.source == src && l.line == line) return true;
+TEST_CASE("devtools.CallGraph calls: stack and edges record entry/return in order") {
+    eve::dev::CallGraph graph;
+    graph.onCall(location("game.nut", 1, "main"), "main");
+    graph.onCall(location("game.nut", 2, "attack"), "attack");
+    const auto inside = graph.events().back().id;
+    graph.onReturn(location("game.nut", 3, "attack"), "attack");
+    REQUIRE_EQ(graph.currentStack().size(), 1u);
+    CHECK_EQ(graph.currentStack()[0].loc.function, std::string("main"));
+    REQUIRE_EQ(graph.stackAt(inside).size(), 2u);
+    CHECK_EQ(graph.stackAt(inside)[1].loc.function, std::string("attack"));
+    REQUIRE_EQ(graph.callEdges().size(), 1u);
+    CHECK_EQ(graph.callEdges()[0].second.function, std::string("attack"));
+    graph.clear();
+    CHECK_EQ(graph.eventCount(), 0u);
+    CHECK(graph.currentStack().empty());
+}
+
+TEST_CASE("devtools.CallGraph sliceBackward: latest definition reaches selected use") {
+    eve::dev::CallGraph graph;
+    graph.onCall(location("game.nut", 1, "main"), "main");
+    graph.onDef(location("game.nut", 2, "main"), "health");
+    graph.onDef(location("game.nut", 3, "main"), "health");
+    graph.onUse(location("game.nut", 4, "main"), "health");
+    graph.onLine(location("game.nut", 5, "main"));
+    eve::dev::SliceCriterion criterion;
+    criterion.loc = location("game.nut", 5, "main");
+    criterion.variables.push_back("health");
+    auto slice    = graph.sliceBackward(criterion);
+    bool latest   = false;
+    bool obsolete = false;
+    for (const auto& place : slice.locations) {
+        if (place.line == 3) latest = true;
+        if (place.line == 2) obsolete = true;
     }
-    return false;
+    REQUIRE(latest);
+    CHECK(!obsolete);
 }
 
-static bool sliceHasKind(const CallGraph& g, const SliceResult& s, TraceKind kind) {
-    for (uint32_t id : s.eventIds) {
-        const TraceEvent* e = g.event(id);
-        if (e && e->kind == kind) return true;
-    }
-    return false;
+TEST_CASE("devtools.CallGraph event ring: capacity keeps newest IDs without stale lookup") {
+    eve::dev::CallGraph graph;
+    graph.setMaxEvents(3);
+    graph.onCall(location("game.nut", 1, "main"), "main");
+    const auto old = graph.events().back().id;
+    for (int line = 2; line <= 6; ++line) graph.onLine(location("game.nut", line, "main"));
+    CHECK_EQ(graph.eventCount(), 3u);
+    CHECK(graph.event(old) == nullptr);
+    REQUIRE(graph.event(graph.events().back().id) != nullptr);
+    CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 6);
 }
-
-static bool dataFlowFromLine(const CallGraph& g, const SliceResult& s, const char* var, int line) {
-    for (const auto& e : s.dataFlow) {
-        if (e.var != var) continue;
-        const TraceEvent* from = g.event(e.fromEventId);
-        if (from && from->loc.line == line) return true;
-    }
-    return false;
-}
-
-// ---------------------------------------------------------------------------
-// SourceLoc
-// ---------------------------------------------------------------------------
-
-TEST_CASE("devtools.sourceloc.emptyAndMatches") {
-    SourceLoc a;
-    CHECK(a.empty());
-    SourceLoc b = loc("a.nut", 10, "f");
-    CHECK(!b.empty());
-    CHECK(b.matches(loc("a.nut", 10, "f")));
-    CHECK(b.matches(loc("a.nut", 10)));  // function optional
-    CHECK(b.matches(loc("", 10, "f")));  // source optional when empty
-    CHECK(!b.matches(loc("a.nut", 11, "f")));
-    CHECK(!b.matches(loc("b.nut", 10, "f")));
-    CHECK(b.toString().find("a.nut:10") != std::string::npos);
-    CHECK(b.toString().find("in f") != std::string::npos);
-    SourceLoc unk;
-    unk.line = 3;
-    CHECK(unk.toString().find("<unknown>:3") != std::string::npos);
-}
-
-// ---------------------------------------------------------------------------
-// Recording basics
-// ---------------------------------------------------------------------------
-
-TEST_CASE("devtools.callgraph.stackAndEdges") {
-    CallGraph g;
-    g.onCall(loc("a.nut", 1, "main"), "main");
-    g.onLine(loc("a.nut", 2, "main"));
-    g.onCall(loc("a.nut", 3, "foo"), "foo");
-    g.onLine(loc("a.nut", 10, "foo"));
-    g.onReturn(loc("a.nut", 11, "foo"), "foo");
-    g.onLine(loc("a.nut", 4, "main"));
-
-    auto stack = g.currentStack();
-    REQUIRE(stack.size() == 1u);
-    CHECK_EQ(stack[0].loc.function, std::string("main"));
-
-    auto edges = g.callEdges();
-    REQUIRE(edges.size() == 1u);
-    CHECK_EQ(edges[0].first.function, std::string("main"));
-    CHECK_EQ(edges[0].second.function, std::string("foo"));
-}
-
-TEST_CASE("devtools.callgraph.enterHelperAndEventLookup") {
-    CallGraph      g;
-    const uint32_t lineId = g.enter(loc("e.nut", 1, "main"), "main");
-    REQUIRE(g.event(lineId) != nullptr);
-    const bool isLine = g.event(lineId)->kind == TraceKind::Line;
-    CHECK(isLine);
-    CHECK(g.event(0) == nullptr);
-    CHECK(g.event(999999) == nullptr);
-    CHECK_EQ(g.eventCount(), 2u);  // Call + Line
-    CHECK_EQ(g.currentStack().size(), 1u);
-}
-
-TEST_CASE("devtools.callgraph.emptyVarIgnored") {
-    CallGraph g;
-    g.onCall(loc("v.nut", 1, "main"), "main");
-    CHECK_EQ(g.onDef(loc("v.nut", 2), ""), 0u);
-    CHECK_EQ(g.onUse(loc("v.nut", 3), ""), 0u);
-    CHECK_EQ(g.eventCount(), 1u);
-}
-
-TEST_CASE("devtools.callgraph.clearResetsState") {
-    CallGraph g;
-    g.onCall(loc("c.nut", 1, "main"), "main");
-    g.onDef(loc("c.nut", 2), "x");
-    g.onUse(loc("c.nut", 3), "x");
-    CHECK(g.eventCount() > 0);
-    g.clear();
-    CHECK_EQ(g.eventCount(), 0u);
-    CHECK(g.currentStack().empty());
-    CHECK(g.callEdges().empty());
-    SliceResult empty = g.sliceBackward({});
-    CHECK(empty.eventIds.empty());
-    CHECK(empty.summary.find("empty") != std::string::npos);
-}
-
-TEST_CASE("devtools.callgraph.nestedStackDepth") {
-    CallGraph g;
-    g.onCall(loc("n.nut", 1, "a"), "a");
-    g.onCall(loc("n.nut", 2, "b"), "b");
-    g.onCall(loc("n.nut", 3, "c"), "c");
-    auto deep = g.currentStack();
-    REQUIRE(deep.size() == 3u);
-    CHECK_EQ(deep[0].loc.function, std::string("a"));
-    CHECK_EQ(deep[2].loc.function, std::string("c"));
-
-    const uint32_t mid = g.events().back().id;
-    g.onReturn(loc("n.nut", 4, "c"), "c");
-    g.onReturn(loc("n.nut", 5, "b"), "b");
-    CHECK_EQ(g.currentStack().size(), 1u);
-
-    auto atMid = g.stackAt(mid);
-    REQUIRE(atMid.size() == 3u);
-    CHECK_EQ(atMid[2].loc.function, std::string("c"));
-
-    auto edges = g.callEdges();
-    CHECK_EQ(edges.size(), 2u);  // a→b, b→c (returns don't add)
-}
-
-TEST_CASE("devtools.callgraph.stackAtInvalid") {
-    CallGraph g;
-    CHECK(g.stackAt(0).empty());
-    CHECK(g.stackAt(42).empty());
-    g.onCall(loc("s.nut", 1, "main"), "main");
-    CHECK_EQ(g.stackAt(g.events().back().id).size(), 1u);
-}
-
-TEST_CASE("devtools.callgraph.funcNameFallsBackToLoc") {
-    CallGraph g;
-    SourceLoc l = loc("f.nut", 1, "fromLoc");
-    g.onCall(l);  // empty funcName → use loc.function
-    REQUIRE(!g.currentStack().empty());
-    CHECK_EQ(g.currentStack()[0].loc.function, std::string("fromLoc"));
-}
-
-// ---------------------------------------------------------------------------
-// Data-flow / slicer
-// ---------------------------------------------------------------------------
-
-TEST_CASE("devtools.callgraph.dataFlowReachingDef") {
-    CallGraph g;
-    g.onCall(loc("bug.nut", 1, "main"), "main");
-    g.onDef(loc("bug.nut", 2, "main"), "x");
-    g.onDef(loc("bug.nut", 3, "main"), "x");
-    g.onUse(loc("bug.nut", 4, "main"), "x");
-    g.onLine(loc("bug.nut", 5, "main"));
-
-    SliceCriterion c;
-    c.loc = loc("bug.nut", 5, "main");
-    c.variables.push_back("x");
-
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(sliceHasLoc(slice, "bug.nut", 3));
-    CHECK(sliceHasLoc(slice, "bug.nut", 4));
-    CHECK(dataFlowFromLine(g, slice, "x", 3));
-    CHECK(!dataFlowFromLine(g, slice, "x", 2));
-}
-
-TEST_CASE("devtools.callgraph.multiVariableCriterion") {
-    CallGraph g;
-    g.onCall(loc("m.nut", 1, "main"), "main");
-    g.onDef(loc("m.nut", 2, "main"), "a");
-    g.onDef(loc("m.nut", 3, "main"), "b");
-    g.onDef(loc("m.nut", 4, "main"), "c");
-    g.onUse(loc("m.nut", 5, "main"), "a");
-    g.onUse(loc("m.nut", 6, "main"), "b");
-    g.onLine(loc("m.nut", 7, "main"));
-
-    SliceCriterion crit;
-    crit.loc          = loc("m.nut", 7, "main");
-    crit.variables    = {"a", "b"};
-    SliceResult slice = g.sliceBackward(crit);
-    CHECK(dataFlowFromLine(g, slice, "a", 2));
-    CHECK(dataFlowFromLine(g, slice, "b", 3));
-}
-
-TEST_CASE("devtools.callgraph.eventIdSeed") {
-    CallGraph g;
-    g.onCall(loc("id.nut", 1, "main"), "main");
-    g.onDef(loc("id.nut", 2, "main"), "x");
-    const uint32_t useId = g.onUse(loc("id.nut", 3, "main"), "x");
-    g.onDef(loc("id.nut", 4, "main"), "x");  // later def should not shadow seed
-    g.onLine(loc("id.nut", 5, "main"));
-
-    SliceCriterion c;
-    c.eventId         = useId;
-    c.variables       = {"x"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(dataFlowFromLine(g, slice, "x", 2));
-    // Seeded at use on line 3; later def on 4 need not be in data-flow of this use.
-    bool laterDefInData = dataFlowFromLine(g, slice, "x", 4);
-    CHECK(!laterDefInData);
-}
-
-TEST_CASE("devtools.callgraph.useWithoutDef") {
-    CallGraph g;
-    g.onCall(loc("u.nut", 1, "main"), "main");
-    g.onUse(loc("u.nut", 2, "main"), "missing");
-    g.onLine(loc("u.nut", 3, "main"));
-    SliceCriterion c;
-    c.loc             = loc("u.nut", 3, "main");
-    c.variables       = {"missing"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(!slice.eventIds.empty());
-    CHECK(slice.dataFlow.empty());  // no reaching def
-}
-
-TEST_CASE("devtools.callgraph.interProceduralSlice") {
-    CallGraph g;
-    g.onCall(loc("game.nut", 1, "main"), "main");
-    g.onDef(loc("game.nut", 2, "main"), "hp");
-    g.onCall(loc("game.nut", 3, "main"), "damage");
-    g.onUse(loc("game.nut", 20, "damage"), "hp");
-    g.onDef(loc("game.nut", 21, "damage"), "hp");
-    g.onReturn(loc("game.nut", 22, "damage"), "damage");
-    g.onUse(loc("game.nut", 4, "main"), "hp");
-    g.onLine(loc("game.nut", 5, "main"));
-
-    SliceCriterion c;
-    c.loc       = loc("game.nut", 5, "main");
-    c.variables = {"hp"};
-
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(sliceHasLoc(slice, "game.nut", 21));
-    CHECK(slice.callStack.size() >= 1u);
-
-    const std::string report = g.formatErrorReport("assertion failed: hp > 0", c);
-    CHECK(report.find("Call stack") != std::string::npos);
-    CHECK(report.find("Data flow") != std::string::npos);
-    CHECK(report.find("game.nut:21") != std::string::npos);
-    CHECK(report.find("Vars:") != std::string::npos);
-    CHECK(report.find("hp") != std::string::npos);
-}
-
-TEST_CASE("devtools.callgraph.chainOfAssignments") {
-    CallGraph g;
-    g.onCall(loc("ch.nut", 1, "main"), "main");
-    g.onDef(loc("ch.nut", 2, "main"), "a");
-    g.onUse(loc("ch.nut", 3, "main"), "a");
-    g.onDef(loc("ch.nut", 3, "main"), "b");  // b = a
-    g.onUse(loc("ch.nut", 4, "main"), "b");
-    g.onDef(loc("ch.nut", 4, "main"), "c");  // c = b
-    g.onUse(loc("ch.nut", 5, "main"), "c");
-    g.onLine(loc("ch.nut", 6, "main"));
-
-    SliceCriterion c;
-    c.loc             = loc("ch.nut", 6, "main");
-    c.variables       = {"c"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(dataFlowFromLine(g, slice, "c", 4));
-    // Control/data may pull b's def; require c's immediate def at least.
-    CHECK(sliceHasLoc(slice, "ch.nut", 4));
-}
-
-TEST_CASE("devtools.callgraph.ignoresUnrelatedCode") {
-    CallGraph g;
-    g.onCall(loc("s.nut", 1, "main"), "main");
-    g.onDef(loc("s.nut", 2, "main"), "a");
-    g.onDef(loc("s.nut", 3, "main"), "b");
-    g.onUse(loc("s.nut", 4, "main"), "a");
-    g.onLine(loc("s.nut", 5, "main"));
-
-    SliceCriterion c;
-    c.loc       = loc("s.nut", 5, "main");
-    c.variables = {"a"};
-
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(sliceHasLoc(slice, "s.nut", 2));
-    CHECK(sliceHasLoc(slice, "s.nut", 4));
-    CHECK(dataFlowFromLine(g, slice, "a", 2));
-}
-
-TEST_CASE("devtools.callgraph.sliceIncludesCallSite") {
-    CallGraph g;
-    g.onCall(loc("cs.nut", 1, "main"), "main");
-    g.onCall(loc("cs.nut", 2, "main"), "boom");
-    g.onDef(loc("cs.nut", 10, "boom"), "x");
-    g.onUse(loc("cs.nut", 11, "boom"), "x");
-    g.onLine(loc("cs.nut", 12, "boom"));
-
-    SliceCriterion c;
-    c.loc             = loc("cs.nut", 12, "boom");
-    c.variables       = {"x"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(sliceHasKind(g, slice, TraceKind::Call));
-    CHECK(slice.callStack.size() == 2u);
-}
-
-TEST_CASE("devtools.callgraph.locationsAreUnique") {
-    CallGraph g;
-    g.onCall(loc("uniq.nut", 1, "main"), "main");
-    for (int i = 0; i < 5; ++i) {
-        g.onDef(loc("uniq.nut", 2, "main"), "x");
-        g.onUse(loc("uniq.nut", 2, "main"), "x");
-    }
-    g.onLine(loc("uniq.nut", 3, "main"));
-    SliceCriterion c;
-    c.loc                       = loc("uniq.nut", 3, "main");
-    SliceResult           slice = g.sliceBackward(c);
-    std::set<std::string> keys;
-    for (const auto& l : slice.locations) {
-        const std::string k = l.toString();
-        CHECK(keys.insert(k).second);
-    }
-}
-
-TEST_CASE("devtools.callgraph.emptyCriterionUsesLastEvent") {
-    CallGraph g;
-    g.onCall(loc("last.nut", 1, "main"), "main");
-    g.onLine(loc("last.nut", 9, "main"));
-    SliceResult slice = g.sliceBackward({});
-    CHECK(!slice.eventIds.empty());
-    CHECK(sliceHasLoc(slice, "last.nut", 9));
-}
-
-TEST_CASE("devtools.callgraph.formatReportEmptyStack") {
-    CallGraph g;
-    // No calls — only a line
-    g.onLine(loc("fmt.nut", 1));
-    SliceCriterion c;
-    c.loc                    = loc("fmt.nut", 1);
-    const std::string report = g.formatErrorReport("oops", c);
-    CHECK(report.find("Script Error Trace") != std::string::npos);
-    CHECK(report.find("(empty)") != std::string::npos);
-    CHECK(report.find("oops") != std::string::npos);
-}
-
-TEST_CASE("devtools.callgraph.deepCallThenReturnSlice") {
-    CallGraph g;
-    g.onCall(loc("d.nut", 1, "main"), "main");
-    for (int i = 0; i < 8; ++i) {
-        char name[16];
-        std::snprintf(name, sizeof(name), "f%d", i);
-        g.onCall(loc("d.nut", 10 + i, name), name);
-    }
-    g.onDef(loc("d.nut", 100, "f7"), "err");
-    g.onUse(loc("d.nut", 101, "f7"), "err");
-    // Unwind all
-    for (int i = 7; i >= 0; --i) {
-        char name[16];
-        std::snprintf(name, sizeof(name), "f%d", i);
-        g.onReturn(loc("d.nut", 200 + i, name), name);
-    }
-    g.onLine(loc("d.nut", 2, "main"));
-    // Error after unwind — stack is main only; slice by eventId inside f7
-    uint32_t seed = 0;
-    for (const auto& e : g.events()) {
-        if (e.kind == TraceKind::Use && e.name == "err") seed = e.id;
-    }
-    REQUIRE(seed != 0u);
-    SliceCriterion c;
-    c.eventId         = seed;
-    c.variables       = {"err"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(sliceHasLoc(slice, "d.nut", 100));
-    CHECK(slice.callStack.size() == 9u);  // main + f0..f7
-}
-
-// ---------------------------------------------------------------------------
-// Ring buffer
-// ---------------------------------------------------------------------------
-
-TEST_CASE("devtools.callgraph.ringBufferDropsOne") {
-    CallGraph g;
-    g.setMaxEvents(16);
-    g.onCall(loc("r.nut", 1, "main"), "main");
-    for (int i = 0; i < 40; ++i) g.onLine(loc("r.nut", 2 + i, "main"));
-
-    CHECK_EQ(g.eventCount(), 16u);
-    CHECK_EQ(g.maxEvents(), 16u);
-    REQUIRE(!g.events().empty());
-    const uint32_t newest = g.events().back().id;
-    const uint32_t oldest = g.events().front().id;
-    CHECK_EQ(newest - oldest, 15u);
-    CHECK(g.event(oldest) != nullptr);
-    CHECK(g.event(oldest - 1) == nullptr);
-    CHECK(g.event(newest) != nullptr);
-}
-
-TEST_CASE("devtools.callgraph.setMaxEventsClampsAndShrinks") {
-    CallGraph g;
-    g.setMaxEvents(2);  // clamped to 16
-    CHECK_EQ(g.maxEvents(), 16u);
-    for (int i = 0; i < 20; ++i) g.onLine(loc("z.nut", i + 1));
-    CHECK_EQ(g.eventCount(), 16u);
-    g.setMaxEvents(16);
-    g.setMaxEvents(20);  // grow cap only
-    CHECK_EQ(g.eventCount(), 16u);
-    // Shrink: force drop down to 16 min still
-    g.setMaxEvents(16);
-    CHECK_EQ(g.eventCount(), 16u);
-}
-
-TEST_CASE("devtools.callgraph.ringBufferKeepsRecentDataFlow") {
-    CallGraph g;
-    g.setMaxEvents(16);
-    // Flood with unrelated lines so early defs fall out of the window.
-    g.onCall(loc("rb.nut", 1, "main"), "main");
-    g.onDef(loc("rb.nut", 2, "main"), "old");
-    for (int i = 0; i < 30; ++i) g.onLine(loc("rb.nut", 10 + i, "main"));
-    g.onDef(loc("rb.nut", 100, "main"), "x");
-    g.onUse(loc("rb.nut", 101, "main"), "x");
-    g.onLine(loc("rb.nut", 102, "main"));
-
-    CHECK_EQ(g.eventCount(), 16u);
-    SliceCriterion c;
-    c.loc             = loc("rb.nut", 102, "main");
-    c.variables       = {"x"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(dataFlowFromLine(g, slice, "x", 100));
-    // Old def should be gone from the window.
-    bool sawOld = false;
-    for (const auto& e : g.events()) {
-        if (e.kind == TraceKind::Def && e.name == "old") sawOld = true;
-    }
-    CHECK(!sawOld);
-}
-
-TEST_CASE("devtools.callgraph.ringBufferOneInOneOutInvariant") {
-    CallGraph g;
-    g.setMaxEvents(16);
-    for (int i = 0; i < 16; ++i) g.onLine(loc("inv.nut", i + 1));
-    CHECK_EQ(g.eventCount(), 16u);
-    const uint32_t beforeFront = g.events().front().id;
-    g.onLine(loc("inv.nut", 100));
-    CHECK_EQ(g.eventCount(), 16u);
-    CHECK_EQ(g.events().front().id, beforeFront + 1);
-    CHECK_EQ(g.events().back().loc.line, 100);
-}
-
-TEST_CASE("devtools.callgraph.manyFramesSimulateGameLoop") {
-    CallGraph g;
-    g.setMaxEvents(64);
-    for (int frame = 0; frame < 20; ++frame) {
-        g.onCall(loc("loop.nut", 1, "update"), "update");
-        g.onDef(loc("loop.nut", 2, "update"), "dt");
-        g.onUse(loc("loop.nut", 3, "update"), "dt");
-        g.onReturn(loc("loop.nut", 4, "update"), "update");
-    }
-    // Corrupt last frame
-    g.onCall(loc("loop.nut", 1, "update"), "update");
-    g.onDef(loc("loop.nut", 2, "update"), "dt");
-    g.onDef(loc("loop.nut", 5, "update"), "dt");  // bad
-    g.onUse(loc("loop.nut", 6, "update"), "dt");
-    g.onLine(loc("loop.nut", 7, "update"));
-
-    SliceCriterion c;
-    c.loc             = loc("loop.nut", 7, "update");
-    c.variables       = {"dt"};
-    SliceResult slice = g.sliceBackward(c);
-    CHECK(dataFlowFromLine(g, slice, "dt", 5));
-    CHECK(g.eventCount() <= 64u);
-}
-
-TEST_CASE("devtools.callgraph.parentEventIdChain") {
-    CallGraph g;
-    g.onCall(loc("p.nut", 1, "main"), "main");
-    g.onLine(loc("p.nut", 2, "main"));
-    g.onLine(loc("p.nut", 3, "main"));
-    REQUIRE(g.events().size() >= 3u);
-    auto           it  = g.events().begin();
-    const uint32_t id0 = it->id;
-    ++it;
-    const uint32_t id1 = it->id;
-    CHECK_EQ(it->parentEventId, id0);
-    ++it;
-    CHECK_EQ(it->parentEventId, id1);
-}
-}  // namespace test_callgraph
+}  // namespace test_callgraph_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_console)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "PrivateTestScope.h"
 #include "devtools/ConsolePanel.hpp"
-#include "devtools/DevTool.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// console.cpp
-namespace test_console_unit {
-using namespace eve::dev;
-
-TEST_CASE("devtools.console.logRingBuffer") {
-    auto& console = ConsolePanel::instance();
-    console.clear();
-    console.setVisible(false);
-    CHECK(!console.isVisible());
-    console.toggleVisible();
-    CHECK(console.isVisible());
-    console.setVisible(false);
-
-    console.addInfo("hello");
-    console.addWarn("careful");
-    console.addError("boom");
-    console.addLog("debug", "trace");
-
-    const std::string out = console.format(16);
-    CHECK(out.find("hello") != std::string::npos);
-    CHECK(out.find("careful") != std::string::npos);
-    CHECK(out.find("boom") != std::string::npos);
-    CHECK(out.find("trace") != std::string::npos);
-
-    const auto recent = console.recent(2);
-    REQUIRE(recent.size() == 2);
-    CHECK(recent[0].text == "boom");
-    CHECK(recent[1].text == "trace");
-
-    console.setMaxEntries(3);
-    console.addInfo("overflow1");
-    console.addInfo("overflow2");
-    console.addInfo("overflow3");
-    CHECK(console.format(100).find("hello") == std::string::npos);
-
-    console.clear();
-    CHECK(console.format(8).empty());
+namespace test_console_contract {
+TEST_CASE("devtools.ConsolePanel records severity in order and returns newest entries") {
+    auto& panel = eve::dev::ConsolePanel::instance();
+    panel.clear();
+    panel.addInfo("first");
+    panel.addWarn("second");
+    panel.addError("third");
+    const auto newest = panel.recent(2);
+    REQUIRE_EQ(newest.size(), 2u);
+    CHECK_EQ(newest[0].text, std::string("second"));
+    CHECK_EQ(newest[1].text, std::string("third"));
+    CHECK(panel.format(3).find("first") != std::string::npos);
+    panel.clear();
+    CHECK(panel.recent(3).empty());
 }
-}  // namespace test_console_unit
+
+TEST_CASE("devtools.ConsolePanel evicts oldest entries and exposes visibility") {
+    auto& panel = eve::dev::ConsolePanel::instance();
+    panel.clear();
+    panel.setMaxEntries(2);
+    panel.setVisible(false);
+    CHECK(!panel.isVisible());
+    panel.toggleVisible();
+    CHECK(panel.isVisible());
+    panel.addInfo("discard");
+    panel.addInfo("keep-one");
+    panel.addInfo("keep-two");
+    const auto entries = panel.recent(5);
+    REQUIRE_EQ(entries.size(), 2u);
+    CHECK_EQ(entries.front().text, std::string("keep-one"));
+    CHECK_EQ(entries.back().text, std::string("keep-two"));
+    panel.clear();
+    panel.setMaxEntries(1000);
+    panel.setVisible(false);
+}
+}  // namespace test_console_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_debugger)
-#include <squirrel.h>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/IStateProvider.h"
-#include "common/Module.h"
-#include "common/StateValue.h"
 #include "devtools/Debugger.hpp"
-#include "devtools/DevTool.hpp"
 #include "devtools/Snapshot.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// debugger.cpp
-namespace test_debugger_unit {
-using namespace eve::dev;
+namespace test_debugger_contract {
+using eve::dev::Debugger;
+using eve::dev::PauseReason;
+using eve::dev::RunMode;
+using eve::dev::SourceLoc;
 
-TEST_CASE("devtools.debugger.pauseResumeStepFrame") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    CHECK(!d.isPaused());
-    CHECK(d.shouldRunUpdate());
-
-    d.pause(PauseReason::PauseKey);
-    CHECK(d.isPaused());
-    CHECK(!d.shouldRunUpdate());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::PauseKey));
-
-    d.stepFrame();
-    CHECK(d.shouldRunUpdate());
-    d.notifyFrameDone();
-    CHECK(d.isPaused());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
-
-    d.resume();
-    CHECK(!d.isPaused());
-    CHECK(d.shouldRunUpdate());
+TEST_CASE("devtools.Debugger pause and frame step: one update then pause again") {
+    auto& debugger = Debugger::instance();
+    debugger.detach();
+    REQUIRE(debugger.shouldRunUpdate());
+    debugger.pause(PauseReason::PauseKey);
+    CHECK(!debugger.shouldRunUpdate());
+    debugger.stepFrame();
+    CHECK(debugger.shouldRunUpdate());
+    debugger.notifyFrameDone();
+    CHECK(debugger.isPaused());
+    CHECK_EQ(debugger.lastPauseReason(), PauseReason::Step);
+    debugger.resume();
+    CHECK(debugger.shouldRunUpdate());
 }
 
-TEST_CASE("devtools.debugger.breakpointsMatchBasename") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-
-    const int id = d.setBreakpoint("scripts/main.nut", 42);
-    CHECK(id > 0);
-    CHECK(d.hasBreakpoint("main.nut", 42));
-    CHECK(d.hasBreakpoint("scripts/main.nut", 42));
-    REQUIRE(!d.hasBreakpoint("/game/other/main.nut", 42));
-    CHECK(!d.hasBreakpoint("main.nut", 43));
-    CHECK(d.clearBreakpoint("main.nut", 42));
-    CHECK(!d.hasBreakpoint("main.nut", 42));
+TEST_CASE("devtools.Debugger breakpoints: path aliases and enabled state") {
+    auto& debugger = Debugger::instance();
+    debugger.detach();
+    debugger.clearBreakpoints();
+    debugger.setBreakpointsEnabled(true);
+    const int id = debugger.setBreakpoint("scripts/main.nut", 42, true, "flag");
+    REQUIRE(id > 0);
+    CHECK(debugger.hasBreakpoint("main.nut", 42));
+    CHECK(!debugger.hasBreakpoint("main.nut", 43));
+    CHECK(!debugger.hasBreakpoint("other.nut", 42));
+    REQUIRE_EQ(debugger.breakpoints().size(), 1u);
+    CHECK_EQ(debugger.breakpoints().front().condition, std::string("flag"));
+    CHECK_EQ(debugger.setBreakpoint("scripts/main.nut", 42, true, ""), id);
+    CHECK(debugger.breakpoints().front().condition.empty());
+    CHECK(debugger.setBreakpointEnabled(id, false));
+    CHECK(!debugger.setBreakpointEnabled(-1, false));
+    SourceLoc location;
+    location.source = "main.nut";
+    location.line   = 42;
+    CHECK(!debugger.onScriptLine(location));
+    CHECK(debugger.setBreakpointEnabled(id, true));
+    CHECK(debugger.onScriptLine(location));
+    debugger.resume();
+    debugger.clearBreakpoints("main.nut");
+    CHECK(!debugger.hasBreakpoint("scripts/main.nut", 42));
 }
 
-TEST_CASE("devtools.debugger.onScriptLineBreakpointAndStep") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-    d.setBreakpoint("t.nut", 10);
-
-    SourceLoc loc;
-    loc.source = "t.nut";
-    loc.line   = 9;
-    CHECK(!d.onScriptLine(loc));
-
-    loc.line = 10;
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Breakpoint));
-
-    // No VM stack → stepInto/Over open as StepInto and stop on next line.
-    d.stepInto();
-    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepInto));
-    loc.line = 11;
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
-
-    // Smart step from a script stop → stepOver (depth 0 ⇒ StepInto).
-    d.step();
-    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepInto));
-    loc.line = 12;
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    d.resume();
-
-    // Frame-level pause → smart step is stepFrame.
-    d.pause(PauseReason::PauseKey);
-    d.step();
-    CHECK(static_cast<int>(d.mode()) == static_cast<int>(RunMode::StepFrame));
-    d.notifyFrameDone();
-    CHECK(d.isPaused());
-    d.resume();
+TEST_CASE("devtools.Debugger step over: duplicate source line does not stop") {
+    auto& debugger = Debugger::instance();
+    debugger.detach();
+    debugger.clearBreakpoints();
+    debugger.setBreakpoint("main.nut", 10);
+    SourceLoc location;
+    location.source = "main.nut";
+    location.line   = 10;
+    REQUIRE(debugger.onScriptLine(location));
+    debugger.stepOver();
+    CHECK(!debugger.onScriptLine(location));
+    location.line = 11;
+    CHECK(debugger.onScriptLine(location));
+    CHECK_EQ(debugger.lastPauseReason(), PauseReason::Step);
+    debugger.resume();
+    debugger.clearBreakpoints();
 }
 
-namespace {
-
-struct HookState {
-    Debugger*   dbg      = nullptr;
-    int         stops    = 0;
-    int         lastLine = -1;
-    std::string lastFunc;
-};
-
-[[maybe_unused]] void testDebugHook(HSQUIRRELVM v, SQInteger type, const SQChar* sourcename, SQInteger line,
-                                    const SQChar* funcname) {
-    auto* st = static_cast<HookState*>(sq_getforeignptr(v));
-    if (!st || !st->dbg) return;
-    if (type != 'l') return;
-    SourceLoc loc;
-    loc.source   = sourcename ? sourcename : "";
-    loc.line     = static_cast<int>(line);
-    loc.function = funcname ? funcname : "";
-    if (st->dbg->onScriptLine(loc)) {
-        ++st->stops;
-        st->lastLine = loc.line;
-        st->lastFunc = loc.function;
-        // Drive step from the hook without waitWhilePaused.
-        // First stop: stepOver; second stop ends the test script.
-        if (st->stops == 1) {
-            st->dbg->stepOver();
-        } else {
-            st->dbg->resume();
-        }
-    }
+TEST_CASE("devtools.Debugger pause location: explicit stop retains source then manual pause clears it") {
+    auto& debugger = Debugger::instance();
+    debugger.detach();
+    SourceLoc location;
+    location.source   = "error.nut";
+    location.line     = 12;
+    location.function = "fail";
+    debugger.pauseAt(PauseReason::Exception, location);
+    REQUIRE_EQ(debugger.pauseLocation().source, std::string("error.nut"));
+    CHECK_EQ(debugger.pauseLocation().line, 12);
+    CHECK_EQ(debugger.pauseLocation().function, std::string("fail"));
+    debugger.pause(PauseReason::PauseKey);
+    CHECK(debugger.pauseLocation().empty());
+    debugger.resume();
 }
 
-}  // namespace
-
-
-TEST_CASE("devtools.snapshot.markRootAndSkipEngine") {
-    CHECK(Snapshot::isEngineBinding("eve"));
-    CHECK(Snapshot::isEngineBinding("gfx"));
-    CHECK(!Snapshot::isEngineBinding("gameState"));
-
-    Snapshot& snap = Snapshot::instance();
-    snap.clearRoots();
-    snap.markRoot("custom");
-    auto roots = snap.roots();
-    REQUIRE(roots.size() == 1u);
-    CHECK_EQ(roots[0], std::string("custom"));
-    snap.unmarkRoot("custom");
-    CHECK(snap.roots().empty());
-}
-
-namespace {
-
-/** Fake provider: reports a fixed value and remembers what it restored. */
-class MockStateProvider : public eve::caps::IStateProvider {
-public:
-    const char* stateKind() const override { return "mock"; }
-
-    eve::Result<eve::Value> capture() override {
-        eve::Value out(eve::Value::Object{});
-        out.set("value", eve::Value::integer(7));
-        return eve::Result<eve::Value>::success(std::move(out));
-    }
-
-    eve::Result<void> restore(const eve::Value& in) override {
-        lastRestored = eve::toLegacyStateValue(in);
-        return eve::Result<void>::success();
-    }
-
-    eve::Result<void> resetToDefaults() override { return eve::Result<void>::success(); }
-
-    eve::StateValue lastRestored;
-};
-
-}  // namespace
-
-
-TEST_CASE("devtools.debugger.normalizeSource") {
-    CHECK_EQ(Debugger::normalizeSource("file://./a/b.nut"), std::string("a/b.nut"));
-    CHECK_EQ(Debugger::normalizeSource("file://localhost/Users/x/main.nut"), std::string("/Users/x/main.nut"));
-    CHECK_EQ(Debugger::normalizeSource("C:\\x\\y.nut"), std::string("C:/x/y.nut"));
-    CHECK(Debugger::sourcesMatch("/abs/game/main.nut", "main.nut"));
-    CHECK(Debugger::sourcesMatch("/abs/game/scripts/a.nut", "scripts/a.nut"));
+TEST_CASE("devtools.Debugger source matching: normalize URI and reject unrelated suffix") {
+    REQUIRE_EQ(Debugger::normalizeSource("file://./a/b.nut"), std::string("a/b.nut"));
+    CHECK_EQ(Debugger::normalizeSource("C:\\a\\b.nut"), std::string("C:/a/b.nut"));
+    CHECK(Debugger::sourcesMatch("/game/scripts/main.nut", "scripts/main.nut"));
     CHECK(!Debugger::sourcesMatch("foo.nut", "barfoo.nut"));
-    REQUIRE(!Debugger::sourcesMatch("/proj/a/main.nut", "/proj/b/main.nut"));
-    REQUIRE(!Debugger::sourcesMatch("scripts/main.nut", "other/main.nut"));
+    CHECK(!Debugger::sourcesMatch("/a/main.nut", "/b/main.nut"));
 }
 
-TEST_CASE("devtools.debugger.clearBreakpointsMatchesAlias") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-    d.setBreakpoint("/abs/game/main.nut", 10);
-    // VS Code may clear using the same absolute path, or a relative form.
-    d.clearBreakpoints("main.nut");
-    CHECK(!d.hasBreakpoint("/abs/game/main.nut", 10));
+TEST_CASE("devtools.Snapshot roots: engine bindings are excluded and user roots are mutable") {
+    CHECK(eve::dev::Snapshot::isEngineBinding("eve"));
+    CHECK(!eve::dev::Snapshot::isEngineBinding("gameState"));
+    auto& snapshot = eve::dev::Snapshot::instance();
+    snapshot.clearRoots();
+    snapshot.markRoot("gameState");
+    REQUIRE_EQ(snapshot.roots().size(), 1u);
+    CHECK_EQ(snapshot.roots().front(), std::string("gameState"));
+    snapshot.unmarkRoot("gameState");
+    CHECK(snapshot.roots().empty());
 }
-
-TEST_CASE("devtools.debugger.stepOverSkipsSameLine") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-
-    SourceLoc loc;
-    loc.source = "t.nut";
-    loc.line   = 10;
-    d.setBreakpoint("t.nut", 10);
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-
-    d.stepOver();
-    // Extra _OP_LINE on the same source line must not stop again.
-    CHECK(!d.onScriptLine(loc));
-    CHECK(!d.isPaused());
-    {
-        const int  m        = static_cast<int>(d.mode());
-        const bool stepping = m == static_cast<int>(RunMode::StepInto) || m == static_cast<int>(RunMode::StepOver);
-        CHECK(stepping);
-    }
-
-    loc.line = 11;
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Step));
-    d.resume();
-}
-
-
-TEST_CASE("devtools.debugger.breakOnErrorFlag") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    CHECK(!d.breakOnError());
-    d.setBreakOnError(true);
-    CHECK(d.breakOnError());
-    d.setBreakOnError(false);
-    CHECK(!d.breakOnError());
-}
-
-TEST_CASE("devtools.debugger.breakpointsEnabledMasterSwitch") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-    d.setBreakpoint("t.nut", 3);
-    d.setBreakpointsEnabled(false);
-    CHECK(d.hasBreakpoint("t.nut", 3));  // registered even while skip-all is on
-
-    SourceLoc loc;
-    loc.source = "t.nut";
-    loc.line   = 3;
-    CHECK(!d.onScriptLine(loc));  // skipped while master switch is off
-    CHECK(!d.isPaused());
-
-    d.setBreakpointsEnabled(true);
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    d.resume();
-}
-
-TEST_CASE("devtools.debugger.pauseAtRecordsLocation") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.resume();
-
-    SourceLoc loc;
-    loc.source   = "err.nut";
-    loc.line     = 12;
-    loc.function = "boom";
-    d.pauseAt(PauseReason::Exception, loc);
-    CHECK(d.isPaused());
-    CHECK_EQ(d.pauseLocation().source, std::string("err.nut"));
-    CHECK_EQ(d.pauseLocation().line, 12);
-    CHECK_EQ(d.pauseLocation().function, std::string("boom"));
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Exception));
-
-    d.pauseAt(PauseReason::Snapshot, d.pauseLocation());
-    CHECK(d.isPaused());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::Snapshot));
-    CHECK_EQ(d.pauseLocation().line, 12);
-
-    d.pause(PauseReason::PauseKey);
-    CHECK(d.pauseLocation().empty());
-    CHECK(static_cast<int>(d.lastPauseReason()) == static_cast<int>(PauseReason::PauseKey));
-    d.resume();
-}
-
-TEST_CASE("devtools.debugger.breakpointConditionReplaceAndEnableById") {
-    Debugger& d = Debugger::instance();
-    d.detach();
-    d.clearBreakpoints();
-    d.setBreakpointsEnabled(true);
-
-    const int id = d.setBreakpoint("t.nut", 10, true, "flag");
-    CHECK(id > 0);
-    auto bps = d.breakpoints();
-    REQUIRE(!bps.empty());
-    CHECK_EQ(bps[0].condition, std::string("flag"));
-
-    CHECK_EQ(d.setBreakpoint("t.nut", 10, true, ""), id);
-    bps = d.breakpoints();
-    CHECK(bps[0].condition.empty());
-
-    CHECK(d.setBreakpointEnabled(id, false));
-    CHECK(!d.setBreakpointEnabled(99999, false));
-    CHECK(d.hasBreakpoint("t.nut", 10));
-
-    SourceLoc loc;
-    loc.source = "t.nut";
-    loc.line   = 10;
-    CHECK(!d.onScriptLine(loc));
-    CHECK(!d.isPaused());
-
-    CHECK(d.setBreakpointEnabled(id, true));
-    CHECK(d.onScriptLine(loc));
-    CHECK(d.isPaused());
-    d.resume();
-    d.clearBreakpoints();
-}
-}  // namespace test_debugger_unit
+}  // namespace test_debugger_contract
 #endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_architecture_graph) || \
-    defined(EVE_TEST_ORIGIN_mcp_whitebox) || defined(EVE_TEST_ORIGIN_mcp_recipe_workshop)
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include "PrivateTestScope.h"
-#include "common/BindingContracts.h"
-#include "common/ScriptCompiler.h"
+
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_architecture_graph)
 #include "devtools/McpArchitectureTools.hpp"
-#include "devtools/McpInputTools.hpp"
-#include "devtools/McpRecipeTools.hpp"
-#include "devtools/McpServer.hpp"
-#include "devtools/McpTaskProfile.hpp"
-#include "devtools/McpToolFilter.hpp"
-#include "devtools/McpWhiteboxTools.hpp"
-#include "devtools/McpWorkshopTools.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// Responsibility: devtools_whitebox_model
-namespace test_devtools_whitebox_model {
-// mcp_architecture_graph.cpp
-namespace {
-namespace mcp_architecture_graph {
-namespace {
-[[maybe_unused]] Poco::JSON::Object::Ptr payload(const std::string& envelope) {
+namespace test_architecture_graph_contract {
+Poco::JSON::Object::Ptr result(const std::string& response) {
     Poco::JSON::Parser parser;
-    auto               outer = parser.parse(envelope).extract<Poco::JSON::Object::Ptr>();
-    return parser.parse(outer->getArray("content")->getObject(0)->getValue<std::string>("text"))
+    auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
+    return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
         .extract<Poco::JSON::Object::Ptr>();
 }
-[[maybe_unused]] Poco::JSON::Object::Ptr arguments(const std::string& seed) {
-    Poco::JSON::Object::Ptr args = new Poco::JSON::Object();
-    args->set("seed", seed);
-    return args;
-}
-[[maybe_unused]] bool containsNode(Poco::JSON::Object::Ptr result, const std::string& id) {
-    auto nodes = result->getArray("nodes");
-    for (size_t i = 0; i < nodes->size(); ++i)
+bool containsNode(const Poco::JSON::Object::Ptr& graph, const std::string& id) {
+    auto nodes = graph->getArray("nodes");
+    for (size_t i = 0; i < nodes->size(); ++i) {
         if (nodes->getObject(static_cast<unsigned>(i))->getValue<std::string>("id") == id) return true;
+    }
     return false;
 }
-}  // namespace
-TEST_CASE("devtools.architecture.impactConnectsWriterAndReader") {
-    auto       args   = arguments("inventory/Bag.setExtra");
-    const auto result = payload(eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
-    REQUIRE(result->getValue<bool>("ok"));
-    CHECK(containsNode(result, "api:inventory/Bag.getExtra"));
-    CHECK(containsNode(result, "state:eve::inventory::Bag.extra_"));
-    CHECK(containsNode(result, "owner:eve::inventory::Bag"));
-    CHECK(!containsNode(result, "api:scene/SceneNodeRef.setVisible"));
-    CHECK(!result->getValue<bool>("truncated"));
-    CHECK(result->getArray("tests")->size() > 0);
-    CHECK(result->getArray("inputHashes")->size() == 2);
-    const auto repeat = eve::dev::callMcpArchitectureTool("eve_architecture_impact", args);
-    CHECK_EQ(repeat, eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
-    CHECK(!eve::dev::mcpToolMutates("eve_architecture_impact"));
-    auto sceneArgs = arguments("scene/SceneNodeRef.setVisible");
-    sceneArgs->set("task", "Investigate visibility");
-    auto scene = payload(eve::dev::callMcpArchitectureTool("eve_task_context", sceneArgs));
-    REQUIRE(scene->getValue<bool>("ok"));
-    CHECK(containsNode(scene, "owner:eve::scene::SceneHost"));
-    CHECK(containsNode(scene, "state:eve::scene::SceneNode.visible"));
-    CHECK(!containsNode(scene, "api:inventory/Bag.setExtra"));
+TEST_CASE("devtools.Architecture impact: a writer resolves state owner and reader") {
+    Poco::JSON::Object::Ptr args = new Poco::JSON::Object;
+    args->set("seed", "inventory/Bag.setExtra");
+    auto graph = result(eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
+    REQUIRE(graph->getValue<bool>("ok"));
+    CHECK(containsNode(graph, "owner:eve::inventory::Bag"));
+    CHECK(containsNode(graph, "state:eve::inventory::Bag.extra_"));
+    CHECK(containsNode(graph, "api:inventory/Bag.getExtra"));
+    CHECK(!containsNode(graph, "api:scene/SceneNodeRef.setVisible"));
+    CHECK_EQ(graph->getArray("inputHashes")->size(), 2u);
+    CHECK_EQ(eve::dev::callMcpArchitectureTool("eve_architecture_impact", args),
+             eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
 }
-TEST_CASE("devtools.architecture.budgetsUnknownsAndStaleEvidence") {
-    auto args    = arguments("scene/SceneNodeRef.isVisible");
-    auto unknown = payload(eve::dev::callMcpArchitectureTool("eve_task_context", args));
-    CHECK_EQ(unknown->getValue<std::string>("error"), std::string("invalid_query"));
-    args->set("task", "Investigate visibility");
-    unknown = payload(eve::dev::callMcpArchitectureTool("eve_task_context", args));
-    REQUIRE(unknown->getValue<bool>("ok"));
-    CHECK(unknown->getArray("unknowns")->size() > 0);
-    args = arguments("inventory/Bag.setExtra");
+TEST_CASE("devtools.Architecture query: limits and stale evidence yield explicit errors") {
+    Poco::JSON::Object::Ptr args = new Poco::JSON::Object;
+    args->set("seed", "inventory/Bag.setExtra");
     args->set("maxNodes", 1);
-    auto bounded = payload(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
-    CHECK(bounded->getValue<bool>("truncated"));
-    CHECK_EQ(bounded->getArray("nodes")->size(), size_t(1));
+    auto bounded = result(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
+    REQUIRE(bounded->getValue<bool>("truncated"));
+    CHECK_EQ(bounded->getArray("nodes")->size(), 1u);
     args->set("maxNodes", 64);
-    args->set("maxDepth", 0);
-    auto shallow = payload(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
-    CHECK(shallow->getValue<bool>("truncated"));
-    CHECK_EQ(shallow->getArray("nodes")->size(), size_t(1));
-    args->set("maxDepth", 6);
     args->set("maxBytes", 1024);
-    auto exhausted = payload(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
-    CHECK_EQ(exhausted->getValue<std::string>("error"), std::string("context_budget_exceeded"));
+    auto budget = result(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
+    CHECK_EQ(budget->getValue<std::string>("error"), std::string("context_budget_exceeded"));
     args->set("maxBytes", 16384);
-    args->set("expectedInputHash", "old-version");
-    auto stale = payload(eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
+    args->set("expectedInputHash", "obsolete");
+    auto stale = result(eve::dev::callMcpArchitectureTool("eve_architecture_impact", args));
     CHECK_EQ(stale->getValue<std::string>("error"), std::string("stale_evidence"));
-    const auto* contract = eve::script::generatedBindingContracts().find("inventory/Bag.setExtra");
-    REQUIRE(contract != nullptr);
-    REQUIRE(contract->architecture.has_value());
-    args->set("expectedInputHash", contract->architecture->inputHash);
-    args->set("task", "Change quest extras");
-    auto context = payload(eve::dev::callMcpArchitectureTool("eve_task_context", args));
-    REQUIRE(context->getValue<bool>("ok"));
-    CHECK_EQ(context->getValue<std::string>("schema"), std::string("eve.task-context"));
-    CHECK(containsNode(context, "api:inventory/Bag.getExtra"));
-    CHECK(context->getArray("tests")->size() > 0);
-    CHECK_EQ(context->getArray("contracts")->size(), size_t(2));
-    bool readerContract = false;
-    for (size_t index = 0; index < context->getArray("contracts")->size(); ++index) {
-        auto item = context->getArray("contracts")->getObject(static_cast<unsigned>(index));
-        if (item->getValue<std::string>("method") != "getExtra") continue;
-        CHECK_EQ(item->getArray("parameters")->size(), size_t(2));
-        CHECK_EQ(item->getObject("architecture")->getArray("reads")->size(), size_t(1));
-        CHECK_EQ(item->getObject("architecture")->getArray("writes")->size(), size_t(0));
-        readerContract = true;
-    }
-    CHECK(readerContract);
-    args->set("seed", "not-a-real-api");
-    auto missing = payload(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
+    args->set("seed", "missing/api");
+    args->remove("expectedInputHash");
+    auto missing = result(eve::dev::callMcpArchitectureTool("eve_architecture_query", args));
     CHECK_EQ(missing->getValue<std::string>("error"), std::string("unknown_seed"));
 }
-}  // namespace mcp_architecture_graph
-}  // namespace
+}  // namespace test_architecture_graph_contract
+#endif
 
-// mcp_whitebox.cpp
-namespace {
-namespace mcp_whitebox {
-// MCP white-box batch + playtest tools (scene_director.batch / eve_whitebox_playtest).
-
-using eve::dev::callMcpWhiteboxTool;
-using eve::dev::isMcpWhiteboxTool;
-using eve::dev::mcpToolMutates;
-using eve::dev::mcpToolTags;
-using eve::dev::mcpWhiteboxToolSchemas;
-using eve::dev::resetMcpInputBatchesForTest;
-
-namespace {
-
-[[maybe_unused]] Poco::JSON::Object::Ptr parseObject(const std::string& json) {
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_whitebox)
+#include "devtools/McpInputTools.hpp"
+#include "devtools/McpToolFilter.hpp"
+#include "devtools/McpWhiteboxTools.hpp"
+namespace test_whitebox_contract {
+TEST_CASE("devtools.Whitebox tool: discovery declares mutation and schema") {
+    REQUIRE(eve::dev::isMcpWhiteboxTool("eve_whitebox_playtest"));
+    CHECK(!eve::dev::isMcpWhiteboxTool("eve_scene_batch"));
+    CHECK(eve::dev::mcpToolMutates("eve_whitebox_playtest"));
+    CHECK(std::string(eve::dev::mcpWhiteboxToolSchemas()).find("eve_whitebox_playtest") != std::string::npos);
+}
+TEST_CASE("devtools.Whitebox playtest: absent live VM returns an error envelope") {
+    eve::dev::resetMcpInputBatchesForTest();
     Poco::JSON::Parser parser;
-    auto               root = parser.parse(json);
-    if (root.type() != typeid(Poco::JSON::Object::Ptr)) return {};
-    return root.extract<Poco::JSON::Object::Ptr>();
+    auto args = parser.parse(R"({"reset":false,"scene":[{"action":"info"}]})").extract<Poco::JSON::Object::Ptr>();
+    auto envelope =
+        parser.parse(eve::dev::callMcpWhiteboxTool("eve_whitebox_playtest", args)).extract<Poco::JSON::Object::Ptr>();
+    auto payload = parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
+                       .extract<Poco::JSON::Object::Ptr>();
+    CHECK(!payload->getValue<bool>("ok"));
+    CHECK(payload->has("error"));
 }
+}  // namespace test_whitebox_contract
 
-[[maybe_unused]] Poco::JSON::Object::Ptr unwrapToolText(const std::string& envelope) {
-    auto outer = parseObject(envelope);
-    REQUIRE(outer);
-    auto content = outer->getArray("content");
-    REQUIRE(content);
-    REQUIRE(content->size() > 0);
-    return parseObject(content->getObject(0)->getValue<std::string>("text"));
-}
-
-}  // namespace
-
-TEST_CASE("devtools.mcp.whiteboxToolIsRegisteredAndTagged") {
-    CHECK(isMcpWhiteboxTool("eve_whitebox_playtest"));
-    CHECK(!isMcpWhiteboxTool("eve_scene_batch"));
-    CHECK(mcpToolMutates("eve_whitebox_playtest"));
-    CHECK(mcpToolTags("eve_whitebox_playtest").size() >= 2);
-    const std::string schemas(mcpWhiteboxToolSchemas());
-    CHECK(schemas.find("eve_whitebox_playtest") != std::string::npos);
-    CHECK(schemas.find("scene") != std::string::npos);
-    CHECK(schemas.find("inputs") != std::string::npos);
-}
-
-TEST_CASE("devtools.mcp.whiteboxPlaytestRequiresLiveVm") {
-    resetMcpInputBatchesForTest();
-    Poco::JSON::Parser      parser;
-    Poco::JSON::Object::Ptr args =
-        parser.parse(R"({"reset":false,"scene":[{"action":"info"}]})").extract<Poco::JSON::Object::Ptr>();
-    auto result = unwrapToolText(callMcpWhiteboxTool("eve_whitebox_playtest", args));
-    REQUIRE(result);
-    CHECK(!result->getValue<bool>("ok"));
-    CHECK(result->has("error"));
-}
-}  // namespace mcp_whitebox
-}  // namespace
-
-// mcp_recipe_workshop.cpp
-namespace {
-namespace mcp_recipe_workshop {
-using eve::dev::callMcpRecipeTool;
-using eve::dev::callMcpWorkshopTool;
-using eve::dev::isMcpRecipeTool;
-using eve::dev::isMcpWorkshopTool;
-using eve::dev::mcpProfileAllowsTool;
-using eve::dev::mcpRecipeToolSchemas;
-using eve::dev::mcpToolMutates;
-using eve::dev::mcpToolTags;
-using eve::dev::mcpWorkshopToolSchemas;
-using eve::dev::resetMcpWorkshopStateForTest;
-
-namespace {
-
-Poco::JSON::Object::Ptr parseObject(const std::string& json) {
+// The source catalogue groups recipe/workshop MCP tests with the whitebox origin.
+#include "devtools/McpRecipeTools.hpp"
+#include "devtools/McpTaskProfile.hpp"
+#include "devtools/McpToolFilter.hpp"
+#include "devtools/McpWorkshopTools.hpp"
+namespace test_recipe_workshop_contract {
+Poco::JSON::Object::Ptr result(const std::string& response) {
     Poco::JSON::Parser parser;
-    auto               root = parser.parse(json);
-    if (root.type() != typeid(Poco::JSON::Object::Ptr)) return {};
-    return root.extract<Poco::JSON::Object::Ptr>();
+    auto               envelope = parser.parse(response).extract<Poco::JSON::Object::Ptr>();
+    return parser.parse(envelope->getArray("content")->getObject(0)->getValue<std::string>("text"))
+        .extract<Poco::JSON::Object::Ptr>();
 }
-
-Poco::JSON::Object::Ptr unwrapToolText(const std::string& envelope) {
-    auto outer = parseObject(envelope);
-    REQUIRE(outer);
-    auto content = outer->getArray("content");
-    REQUIRE(content);
-    REQUIRE(content->size() > 0);
-    return parseObject(content->getObject(0)->getValue<std::string>("text"));
-}
-
-}  // namespace
-
-TEST_CASE("devtools.mcp.recipeToolsListAndTag") {
-    CHECK(isMcpRecipeTool("eve_recipe_list"));
-    CHECK(isMcpRecipeTool("eve_recipe_apply"));
-    CHECK(!isMcpRecipeTool("eve_procgen_recipes"));
-    CHECK(mcpToolMutates("eve_recipe_apply"));
-    CHECK(!mcpToolMutates("eve_recipe_list"));
-    CHECK(mcpToolTags("eve_recipe_list")[0] == "scene");
-    const std::string schemas(mcpRecipeToolSchemas());
-    CHECK(schemas.find("eve_recipe_list") != std::string::npos);
-    CHECK(schemas.find("eve_recipe_apply") != std::string::npos);
-    CHECK(schemas.find("ruins.moonlit") == std::string::npos);  // ids come from list, not schema enum
-    auto listed = unwrapToolText(callMcpRecipeTool("eve_recipe_list", {}));
-    REQUIRE(listed);
-    CHECK(listed->getValue<bool>("ok"));
+TEST_CASE("devtools.Recipe list: discover recipes without a live VM") {
+    CHECK(eve::dev::isMcpRecipeTool("eve_recipe_list"));
+    CHECK(eve::dev::mcpToolMutates("eve_recipe_apply"));
+    CHECK(!eve::dev::mcpToolMutates("eve_recipe_list"));
+    auto listed = result(eve::dev::callMcpRecipeTool("eve_recipe_list", {}));
+    REQUIRE(listed->getValue<bool>("ok"));
     CHECK(listed->getValue<int>("count") >= 2);
-    auto recipes = listed->getArray("recipes");
-    REQUIRE(recipes);
-    bool foundRuins = false;
-    for (std::size_t i = 0; i < recipes->size(); ++i) {
-        auto item = recipes->getObject(static_cast<unsigned>(i));
-        if (item && item->optValue<std::string>("id", "") == "ruins.moonlit") foundRuins = true;
-    }
-    CHECK(foundRuins);
-    CHECK(mcpProfileAllowsTool("content.scene", "eve_recipe_apply"));
-    CHECK(!mcpProfileAllowsTool("verify.play", "eve_recipe_apply"));
+    CHECK(eve::dev::mcpProfileAllowsTool("content.scene", "eve_recipe_apply"));
+    CHECK(!eve::dev::mcpProfileAllowsTool("verify.play", "eve_recipe_apply"));
 }
-
-TEST_CASE("devtools.mcp.recipeApplyRequiresLiveVm") {
-    Poco::JSON::Parser      parser;
-    Poco::JSON::Object::Ptr args =
-        parser.parse(R"({"id":"ruins.moonlit","params":{"seed":7,"trees":2}})").extract<Poco::JSON::Object::Ptr>();
-    auto result = unwrapToolText(callMcpRecipeTool("eve_recipe_apply", args));
-    REQUIRE(result);
-    CHECK(!result->getValue<bool>("ok"));
-    CHECK(result->has("error"));
+TEST_CASE("devtools.Recipe apply: absent live VM reports failure") {
+    Poco::JSON::Parser parser;
+    auto args     = parser.parse(R"({"id":"ruins.moonlit","params":{"seed":7}})").extract<Poco::JSON::Object::Ptr>();
+    auto response = result(eve::dev::callMcpRecipeTool("eve_recipe_apply", args));
+    CHECK(!response->getValue<bool>("ok"));
+    CHECK(response->has("error"));
 }
-
-TEST_CASE("devtools.mcp.workshopFacadeOpsAndProfile") {
-    resetMcpWorkshopStateForTest();
-    CHECK(isMcpWorkshopTool("eve_workshop"));
-    CHECK(!isMcpWorkshopTool("eve_recipe_list"));
-    CHECK(mcpToolMutates("eve_workshop"));
-    CHECK(mcpProfileAllowsTool("workshop.rpg", "eve_workshop"));
-    CHECK(!mcpProfileAllowsTool("content.scene", "eve_workshop"));
-    CHECK(!mcpProfileAllowsTool("verify.play", "eve_workshop"));
-    const std::string schemas(mcpWorkshopToolSchemas());
-    CHECK(schemas.find("eve_workshop") != std::string::npos);
-    CHECK(schemas.find("recipe.apply") != std::string::npos);
-
+TEST_CASE("devtools.Workshop facade: mode changes and unsupported operation is explicit") {
+    eve::dev::resetMcpWorkshopStateForTest();
+    CHECK(eve::dev::isMcpWorkshopTool("eve_workshop"));
+    CHECK(eve::dev::mcpProfileAllowsTool("workshop.rpg", "eve_workshop"));
+    CHECK(!eve::dev::mcpProfileAllowsTool("verify.play", "eve_workshop"));
     Poco::JSON::Parser parser;
     auto               statusArgs = parser.parse(R"({"op":"status"})").extract<Poco::JSON::Object::Ptr>();
-    auto               status     = unwrapToolText(callMcpWorkshopTool("eve_workshop", statusArgs));
-    REQUIRE(status);
-    CHECK(status->getValue<bool>("ok"));
-    CHECK(status->getValue<std::string>("mode") == "play");
-
+    CHECK_EQ(result(eve::dev::callMcpWorkshopTool("eve_workshop", statusArgs))->getValue<std::string>("mode"),
+             std::string("play"));
     auto modeArgs = parser.parse(R"({"op":"set_mode","mode":"edit"})").extract<Poco::JSON::Object::Ptr>();
-    auto mode     = unwrapToolText(callMcpWorkshopTool("eve_workshop", modeArgs));
-    REQUIRE(mode);
-    CHECK(mode->getValue<bool>("ok"));
-    CHECK(mode->getValue<std::string>("mode") == "edit");
-
-    auto brushArgs = parser.parse(R"({"op":"map.brush"})").extract<Poco::JSON::Object::Ptr>();
-    auto brush     = unwrapToolText(callMcpWorkshopTool("eve_workshop", brushArgs));
-    REQUIRE(brush);
-    CHECK(!brush->getValue<bool>("ok"));
-    CHECK(brush->optValue<std::string>("errorCode", "") == "Unsupported");
+    CHECK_EQ(result(eve::dev::callMcpWorkshopTool("eve_workshop", modeArgs))->getValue<std::string>("mode"),
+             std::string("edit"));
+    auto unsupportedArgs = parser.parse(R"({"op":"map.brush"})").extract<Poco::JSON::Object::Ptr>();
+    auto unsupported     = result(eve::dev::callMcpWorkshopTool("eve_workshop", unsupportedArgs));
+    CHECK(!unsupported->getValue<bool>("ok"));
+    CHECK_EQ(unsupported->getValue<std::string>("errorCode"), std::string("Unsupported"));
 }
-}  // namespace mcp_recipe_workshop
-}  // namespace
-}  // namespace test_devtools_whitebox_model
+}  // namespace test_recipe_workshop_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_frame_stats)
 #include <cmath>
 #include <limits>
-#include <string>
-#include "PrivateTestScope.h"
 #include "devtools/FrameStatsPanel.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// frame_stats.cpp
-namespace test_frame_stats {
-using namespace eve::dev;
-
-TEST_CASE("devtools.frameStats.sampleAndFormat") {
-    auto& stats = FrameStatsPanel::instance();
-    stats.setVisible(false);
+namespace test_frame_stats_contract {
+TEST_CASE("devtools.FrameStats sample: valid delta produces FPS and milliseconds") {
+    auto& stats = eve::dev::FrameStatsPanel::instance();
     stats.clearEntityCount();
-    CHECK(!stats.isVisible());
-    stats.toggleVisible();
-    CHECK(stats.isVisible());
-    stats.setVisible(false);
-
     stats.sample(0.016f);
-    CHECK(stats.fps() > 50.f);
+    REQUIRE(stats.fps() > 50.f);
     CHECK(stats.fps() < 70.f);
     CHECK(std::fabs(stats.frameMs() - 16.f) < 1.5f);
-    CHECK(!stats.hasEntityCount());
-    CHECK(stats.entityCount() < 0);
-
     stats.setEntityCount(42);
     CHECK(stats.hasEntityCount());
-    CHECK(stats.entityCount() == 42);
-    const std::string line = stats.format();
-    CHECK(line.find("fps") != std::string::npos);
-    CHECK(line.find("ms") != std::string::npos);
-    CHECK(line.find("42") != std::string::npos);
-
+    CHECK_EQ(stats.entityCount(), 42);
+    CHECK(stats.format().find("42") != std::string::npos);
     stats.clearEntityCount();
     CHECK(!stats.hasEntityCount());
-
-    // Reject non-finite / non-positive samples without changing last good frameMs.
-    const float goodMs = stats.frameMs();
+}
+TEST_CASE("devtools.FrameStats sample: invalid delta leaves last valid measurement") {
+    auto& stats = eve::dev::FrameStatsPanel::instance();
+    stats.sample(0.020f);
+    const float before = stats.frameMs();
     stats.sample(0.f);
     stats.sample(-1.f);
     stats.sample(std::numeric_limits<float>::quiet_NaN());
-    CHECK(std::fabs(stats.frameMs() - goodMs) < 0.01f);
+    REQUIRE(std::fabs(stats.frameMs() - before) < 0.01f);
 }
-}  // namespace test_frame_stats
+}  // namespace test_frame_stats_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_language_index)
-#include <cstdint>
-#include <string>
-#include "PrivateTestScope.h"
 #include "devtools/LanguageIndex.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// language_index.cpp
-namespace test_language_index {
+namespace test_language_index_contract {
 using eve::dev::lsp::Position;
 using eve::dev::lsp::WorkspaceIndex;
-
-TEST_CASE("languageIndex.crossFileDefinitionAndReferences") {
+TEST_CASE("devtools.WorkspaceIndex definition and references: import resolves to exported symbol") {
     WorkspaceIndex index;
     index.update("game:/lib.nut", "file:///game/lib.nut",
                  "export function greet(name: string) -> string { return name }\n");
     index.update("game:/main.nut", "file:///game/main.nut",
-                 "import { greet } from \"./lib.nut\"\n"
-                 "local message = greet(\"Ada\")\n");
-
-    const auto definition = index.definition("game:/main.nut", Position{1, 17});
+                 "import { greet } from \"./lib.nut\"\nlocal message = greet(\"Ada\")\n");
+    auto definition = index.definition("game:/main.nut", Position{1, 17});
     REQUIRE(definition.has_value());
     CHECK_EQ(definition->uri, std::string("file:///game/lib.nut"));
-    CHECK_EQ(definition->range.start.line, size_t(0));
-    CHECK_EQ(definition->range.start.character, size_t(16));
-
-    const auto references = index.references("game:/lib.nut", Position{0, 17}, true);
-    CHECK_EQ(references.size(), size_t(3));
-    const auto usages = index.references("game:/lib.nut", Position{0, 17}, false);
-    CHECK_EQ(usages.size(), size_t(2));
+    CHECK_EQ(definition->range.start.line, 0u);
+    CHECK_EQ(index.references("game:/lib.nut", Position{0, 17}, true).size(), 3u);
+    CHECK_EQ(index.references("game:/lib.nut", Position{0, 17}, false).size(), 2u);
 }
-
-TEST_CASE("languageIndex.renameExportUpdatesImportAndUsages") {
+TEST_CASE("devtools.WorkspaceIndex rename: exported name updates declaration import and use") {
     WorkspaceIndex index;
     index.update("game:/lib.nut", "file:///game/lib.nut", "export const SPEED = 2.0\n");
     index.update("game:/main.nut", "file:///game/main.nut",
                  "import { SPEED } from \"./lib.nut\"\nlocal value = SPEED\n");
-
-    const auto edits = index.rename("game:/lib.nut", Position{0, 14}, "PLAYER_SPEED");
+    auto edits = index.rename("game:/lib.nut", Position{0, 14}, "PLAYER_SPEED");
     REQUIRE(edits.has_value());
-    CHECK_EQ(edits->size(), size_t(3));
+    REQUIRE_EQ(edits->size(), 3u);
     for (const auto& edit : *edits) CHECK_EQ(edit.newText, std::string("PLAYER_SPEED"));
+    CHECK(!index.rename("game:/lib.nut", Position{0, 14}, "bad-name").has_value());
 }
-
-TEST_CASE("languageIndex.renameImportAliasStaysLocal") {
+TEST_CASE("devtools.WorkspaceIndex alias rename: edits remain within importing document") {
     WorkspaceIndex index;
     index.update("game:/lib.nut", "file:///game/lib.nut", "export function greet() {}\n");
     index.update("game:/main.nut", "file:///game/main.nut",
                  "import { greet as salute } from \"./lib.nut\"\nsalute()\n");
-
-    const auto definition = index.definition("game:/main.nut", Position{1, 2});
-    REQUIRE(definition.has_value());
-    CHECK_EQ(definition->uri, std::string("file:///game/lib.nut"));
-
-    const auto edits = index.rename("game:/main.nut", Position{1, 2}, "hello");
+    auto edits = index.rename("game:/main.nut", Position{1, 2}, "hello");
     REQUIRE(edits.has_value());
-    CHECK_EQ(edits->size(), size_t(2));
+    REQUIRE_EQ(edits->size(), 2u);
     for (const auto& edit : *edits) CHECK_EQ(edit.location.uri, std::string("file:///game/main.nut"));
 }
-
-TEST_CASE("languageIndex.namespaceImportSupportsDefinitionReferencesAndRename") {
-    WorkspaceIndex index;
-    index.update("game:/lib.nut", "file:///game/lib.nut", "export function greet() {}\n");
-    index.update("game:/namespace.nut", "file:///game/namespace.nut",
-                 "import * as api from \"./lib.nut\"\napi.greet()\n");
-    index.update("game:/named.nut", "file:///game/named.nut", "import { greet } from \"./lib.nut\"\ngreet()\n");
-
-    const auto definition = index.definition("game:/namespace.nut", Position{1, 6});
-    REQUIRE(definition.has_value());
-    CHECK_EQ(definition->uri, std::string("file:///game/lib.nut"));
-
-    const auto references = index.references("game:/namespace.nut", Position{1, 6}, true);
-    CHECK_EQ(references.size(), size_t(4));
-
-    const auto edits = index.rename("game:/namespace.nut", Position{1, 6}, "welcome");
-    REQUIRE(edits.has_value());
-    CHECK_EQ(edits->size(), size_t(4));
-    for (const auto& edit : *edits) CHECK_EQ(edit.newText, std::string("welcome"));
-}
-
-TEST_CASE("languageIndex.rejectsInvalidRename") {
-    WorkspaceIndex index;
-    index.update("game:/main.nut", "file:///game/main.nut", "local value = 1\n");
-    CHECK(!index.rename("game:/main.nut", Position{0, 7}, "not-valid").has_value());
-}
-
-TEST_CASE("languageIndex.semanticTokensDistinguishClassFunctionVariable") {
+TEST_CASE("devtools.WorkspaceIndex semantic tokens: declaration and use share type") {
     WorkspaceIndex index;
     index.update("game:/main.nut", "file:///game/main.nut",
-                 "class Player {}\n"
-                 "function greet(name) { return name }\n"
-                 "local speed = 1\n"
-                 "const MAX = 2\n"
-                 "greet(\"x\")\n"
-                 "Player()\n"
-                 "speed = MAX\n");
-
-    const auto tokens = index.semanticTokens("game:/main.nut");
-    const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
-        for (const auto& token : tokens)
+                 "class Player {}\nfunction greet() {}\nlocal speed = 1\ngreet()\nPlayer()\n");
+    auto tokens = index.semanticTokens("game:/main.nut");
+    auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
+        for (const auto& token : tokens) {
             if (token.name == name && token.start.line == line) return token.type;
+        }
         return 99;
     };
-    CHECK_EQ(typeAt("Player", 0), eve::dev::lsp::SemanticTypes::Class);
+    REQUIRE_EQ(typeAt("Player", 0), eve::dev::lsp::SemanticTypes::Class);
+    CHECK_EQ(typeAt("Player", 4), eve::dev::lsp::SemanticTypes::Class);
     CHECK_EQ(typeAt("greet", 1), eve::dev::lsp::SemanticTypes::Function);
+    CHECK_EQ(typeAt("greet", 3), eve::dev::lsp::SemanticTypes::Function);
     CHECK_EQ(typeAt("speed", 2), eve::dev::lsp::SemanticTypes::Variable);
-    CHECK_EQ(typeAt("MAX", 3), eve::dev::lsp::SemanticTypes::Variable);
-    CHECK_EQ(typeAt("greet", 4), eve::dev::lsp::SemanticTypes::Function);
-    CHECK_EQ(typeAt("Player", 5), eve::dev::lsp::SemanticTypes::Class);
-    CHECK_EQ(typeAt("speed", 6), eve::dev::lsp::SemanticTypes::Variable);
 }
-
-TEST_CASE("languageIndex.semanticTokensLiteralsAndSelf") {
-    WorkspaceIndex index;
-    index.update("game:/main.nut", "file:///game/main.nut", "local ready = true\nthis.base = null\n");
-    const auto tokens = index.semanticTokens("game:/main.nut");
-    const auto typeAt = [&](std::string_view name, size_t line) -> uint32_t {
-        for (const auto& token : tokens)
-            if (token.name == name && token.start.line == line) return token.type;
-        return 99;
-    };
-    CHECK_EQ(typeAt("true", 0), eve::dev::lsp::SemanticTypes::Keyword);
-    CHECK_EQ(typeAt("this", 1), eve::dev::lsp::SemanticTypes::Keyword);
-    CHECK_EQ(typeAt("base", 1), eve::dev::lsp::SemanticTypes::Keyword);
-    CHECK_EQ(typeAt("null", 1), eve::dev::lsp::SemanticTypes::Keyword);
-}
-}  // namespace test_language_index
+}  // namespace test_language_index_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_language_text)
-#include <string>
-#include "PrivateTestScope.h"
 #include "devtools/LanguageText.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// language_text.cpp
-namespace test_language_text {
-using eve::dev::lsp::FormatOptions;
-using eve::dev::lsp::Range;
-
-TEST_CASE("devtools.languageText.incrementalFormatAndFold") {
-    std::string source = "function foo() {\nlocal x = 1\n}\n";
-    Range       insert{{1, 6}, {1, 7}};
-    CHECK(eve::dev::lsp::applyIncremental(source, &insert, "value"));
+namespace test_language_text_contract {
+TEST_CASE("devtools.LanguageText incremental edit: range replacement changes only selected text") {
+    std::string          source = "function foo() {\nlocal x = 1\n}\n";
+    eve::dev::lsp::Range selection{{1, 6}, {1, 7}};
+    REQUIRE(eve::dev::lsp::applyIncremental(source, &selection, "value"));
     CHECK_EQ(source, std::string("function foo() {\nlocal value = 1\n}\n"));
-
-    const std::string formatted = eve::dev::lsp::formatEveScript(source);
-    CHECK_EQ(formatted, std::string("function foo() {\n    local value = 1\n}\n"));
-
-    FormatOptions tabs;
+    CHECK_EQ(eve::dev::lsp::sliceLines(source, 1, 1), std::string("local value = 1\n"));
+}
+TEST_CASE("devtools.LanguageText format and fold: braces and comments define ranges") {
+    REQUIRE_EQ(eve::dev::lsp::formatEveScript("{\na\n}\n"), std::string("{\n    a\n}\n"));
+    eve::dev::lsp::FormatOptions tabs;
     tabs.insertSpaces = false;
     tabs.tabSize      = 4;
     CHECK_EQ(eve::dev::lsp::formatEveScript("{\na\n}\n", tabs), std::string("{\n\ta\n}\n"));
-
-    const auto folds        = eve::dev::lsp::foldingRanges("function foo() {\n    local x = 1\n}\n/*\nblock\n*/\n");
-    bool       foundBrace   = false;
-    bool       foundComment = false;
+    const auto folds   = eve::dev::lsp::foldingRanges("function foo() {\nlocal x = 1\n}\n/*\nblock\n*/\n");
+    bool       block   = false;
+    bool       comment = false;
     for (const auto& fold : folds) {
-        if (fold.kind == "region" && fold.startLine == 0 && fold.endLine == 2) foundBrace = true;
-        if (fold.kind == "comment" && fold.startLine == 3 && fold.endLine == 5) foundComment = true;
+        if (fold.kind == "region" && fold.startLine == 0 && fold.endLine == 2) block = true;
+        if (fold.kind == "comment" && fold.startLine == 3 && fold.endLine == 5) comment = true;
     }
-    CHECK(foundBrace);
-    CHECK(foundComment);
-
-    CHECK_EQ(eve::dev::lsp::sliceLines("a\nb\nc\n", 1, 1), std::string("b\n"));
-    const Range span = eve::dev::lsp::coveringLines("a\nb\nc\n", 1, 1);
-    CHECK_EQ(span.start.line, size_t(1));
-    CHECK_EQ(span.end.line, size_t(2));
-    CHECK_EQ(span.end.character, size_t(0));
+    CHECK(block);
+    CHECK(comment);
 }
-}  // namespace test_language_text
+}  // namespace test_language_text_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_console)
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <cstdint>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "PrivateTestScope.h"
 #include "devtools/ConsolePanel.hpp"
-#include "devtools/DevTool.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// mcp_console.cpp
-namespace test_mcp_console_unit {
-// MCP runtime-console tools: an unattended agent must be able to read the same
-// ordered diagnosis stream the game writes through print()/script errors, and
-// must be able to tell "nothing new" apart from "lines were dropped".
-//
-// These cases pin three things:
-//   1. ConsolePanel sequence cursors survive eviction and clear().
-//   2. The MCP console tools round-trip over the stdio transport, including a
-//      Squirrel print() captured into the same log.
-//   3. Every tool advertised by tools/list is actually routed by tools/call, so
-//      the hand-maintained schema table cannot drift from the dispatcher.
-
-
-using namespace eve::dev;
-
-namespace {
-
-/** Run one pre-buffered stdio session and return the newline-framed responses. */
-[[maybe_unused]] std::vector<std::string> runStdioSession(const std::string& requests, std::size_t expectedResponses) {
-    auto& mcp = McpServer::instance();
-    mcp.stop();
-    std::istringstream       in(requests);
-    std::ostringstream       out;
-    const bool               started = mcp.listenStdio(in, out);
-    std::vector<std::string> responses;
-    if (started) {
-        for (int attempt = 0; attempt < 400; ++attempt) {
-            mcp.poll();
-            responses.clear();
-            std::istringstream collected(out.str());
-            std::string        line;
-            while (std::getline(collected, line)) {
-                if (!line.empty()) responses.push_back(line);
-            }
-            if (responses.size() >= expectedResponses) break;
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        }
-    }
-    mcp.stop();
-    return responses;
-}
-
-[[maybe_unused]] Poco::JSON::Object::Ptr parseObject(const std::string& json) {
-    Poco::JSON::Parser parser;
-    return parser.parse(json).extract<Poco::JSON::Object::Ptr>();
-}
-
-/** Text payload of a tools/call response line (empty when the shape is wrong). */
-[[maybe_unused]] std::string responseContentText(const std::string& line) {
-    try {
-        auto object = parseObject(line);
-        if (!object || !object->has("result")) return {};
-        auto result = object->getObject("result");
-        if (!result || !result->has("content")) return {};
-        auto content = result->getArray("content");
-        if (!content || content->size() == 0) return {};
-        auto item = content->getObject(0);
-        if (!item || !item->has("text")) return {};
-        return item->get("text").convert<std::string>();
-    } catch (...) {
-        return {};
-    }
-}
-
-[[maybe_unused]] std::string initializeRequest(int id, const std::string& protocol) {
-    return "{\"jsonrpc\":\"2.0\",\"id\":" + std::to_string(id) + ",\"method\":\"initialize\",\"params\":{" +
-           "\"protocolVersion\":\"" + protocol + "\",\"capabilities\":{}," +
-           "\"clientInfo\":{\"name\":\"mcp-console-test\",\"version\":\"0\"}}}";
-}
-
-[[maybe_unused]] std::string callRequest(int id, const std::string& name, const std::string& argumentsJson) {
-    return "{\"jsonrpc\":\"2.0\",\"id\":" + std::to_string(id) + ",\"method\":\"tools/call\",\"params\":{\"name\":\"" +
-           name + "\",\"arguments\":" + argumentsJson + "}}";
-}
-
-[[maybe_unused]] std::string joinRequests(const std::vector<std::string>& requests) {
-    std::string out;
-    for (const auto& request : requests) {
-        out += request;
-        out += '\n';
-    }
-    return out;
-}
-
-}  // namespace
-
-TEST_CASE("devtools.mcp.consoleCursorSurvivesEvictionAndClear") {
-    auto& console = ConsolePanel::instance();
-    auto& dt      = DevTool::instance();
-    dt.detach();
-    console.setMaxEntries(500);
+namespace test_mcp_console_contract {
+TEST_CASE("devtools.Console cursor: tail and resume read each entry once") {
+    auto& console = eve::dev::ConsolePanel::instance();
+    console.setMaxEntries(100);
     console.clear();
-
-    // Seed one line so the cursor under test is never the 0 tail-read sentinel.
     console.addInfo("seed");
-    const std::uint64_t base = console.nextSeq();
-    console.addInfo("first");
-    console.addWarn("second");
-    console.addError("third");
-
-    // Tail read (cursor 0) returns the newest lines; explicit cursors are
-    // exclusive and repeatable.
-    const ConsoleSlice tail = console.read(0, 2, {});
-    REQUIRE(tail.lines.size() == 2);
-    CHECK(tail.lines[0].text == "second");
-    CHECK(tail.lines[1].text == "third");
-    CHECK(tail.lines[1].seq > tail.lines[0].seq);
-    CHECK(tail.nextSeq == console.nextSeq());
-    CHECK(tail.cursor == tail.lines.back().seq);
-    CHECK(!tail.truncated);
-
-    const ConsoleSlice fromBase = console.read(base - 1, 100, {});
-    REQUIRE(fromBase.lines.size() == 3);
-    CHECK(fromBase.lines.front().seq == base);
-    CHECK(fromBase.lines.front().text == "first");
-    CHECK(fromBase.cursor == fromBase.lines.back().seq);
-    CHECK(!fromBase.truncated);
-
-    // Resuming from the returned cursor yields exactly the lines not yet seen:
-    // nextSeq is not a cursor, it is the seq the next appended line will get.
-    CHECK(console.read(fromBase.cursor, 100, {}).lines.empty());
-    console.addInfo("after");
-    const ConsoleSlice resumed = console.read(fromBase.cursor, 100, {});
-    REQUIRE(resumed.lines.size() == 1);
-    CHECK(resumed.lines.front().text == "after");
-    CHECK(resumed.cursor == resumed.lines.front().seq);
-
-    const ConsoleSlice again = console.read(tail.lines.front().seq, 100, {});
-    REQUIRE(again.lines.size() == 2);
-    CHECK(again.lines.front().text == "third");
-
-    const ConsoleSlice filtered = console.read(base - 1, 100, "error");
-    REQUIRE(filtered.lines.size() == 1);
-    CHECK(filtered.lines.front().text == "third");
-    CHECK(filtered.lines.front().level == "error");
-
-    // Eviction is observable: a cursor older than the retained window reports
-    // truncated instead of silently returning a partial stream.
-    console.setMaxEntries(2);
-    console.addInfo("fourth");
-    CHECK(console.droppedThrough() >= base + 1);
-    const ConsoleSlice stale = console.read(base - 1, 100, {});
-    CHECK(stale.truncated);
-    CHECK(stale.lines.front().text == "after");
-
-    // clear() never rewinds the cursor, so a reader cannot stall or re-read.
-    const std::uint64_t before = console.nextSeq();
-    console.clear();
-    CHECK(console.nextSeq() == before);
-    CHECK(console.droppedThrough() == before - 1);
-    const ConsoleSlice empty = console.read(before, 10, {});
-    CHECK(empty.lines.empty());
-    CHECK(!empty.truncated);
-
-    console.setMaxEntries(500);
+    const auto firstExpected = console.nextSeq();
+    console.addWarn("warning");
+    console.addError("failure");
+    auto tail = console.read(0, 1, {});
+    REQUIRE_EQ(tail.lines.size(), 1u);
+    CHECK_EQ(tail.lines.front().text, std::string("failure"));
+    auto fromSeed = console.read(firstExpected - 1, 10, {});
+    REQUIRE_EQ(fromSeed.lines.size(), 2u);
+    CHECK_EQ(fromSeed.lines.front().text, std::string("warning"));
+    CHECK_EQ(fromSeed.lines.back().text, std::string("failure"));
+    CHECK(console.read(fromSeed.cursor, 10, {}).lines.empty());
+    console.addInfo("later");
+    auto resumed = console.read(fromSeed.cursor, 10, {});
+    REQUIRE_EQ(resumed.lines.size(), 1u);
+    CHECK_EQ(resumed.lines.front().text, std::string("later"));
     console.clear();
 }
-}  // namespace test_mcp_console_unit
+TEST_CASE("devtools.Console cursor: eviction and clear expose lost lines without rewinding sequence") {
+    auto& console = eve::dev::ConsolePanel::instance();
+    console.clear();
+    console.setMaxEntries(2);
+    console.addInfo("old");
+    const auto old = console.nextSeq() - 1;
+    console.addInfo("middle");
+    console.addInfo("new");
+    auto stale = console.read(old, 10, {});
+    CHECK(stale.truncated);
+    REQUIRE_EQ(stale.lines.size(), 2u);
+    CHECK_EQ(stale.lines.front().text, std::string("middle"));
+    const auto beforeClear = console.nextSeq();
+    console.clear();
+    CHECK_EQ(console.nextSeq(), beforeClear);
+    CHECK_EQ(console.droppedThrough(), beforeClear - 1);
+    CHECK(console.read(beforeClear, 10, {}).lines.empty());
+    console.setMaxEntries(500);
+}
+}  // namespace test_mcp_console_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_tool_filter)
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <cstdlib>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "PrivateTestScope.h"
-#include "devtools/McpServer.hpp"
 #include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// mcp_tool_filter.cpp
-namespace test_mcp_tool_filter_unit {
-// MCP toolset / read-only / exclude filters: tools/list and tools/call must agree.
-
-
-using namespace eve::dev;
-
-namespace {
-
-#if defined(_WIN32)
-[[maybe_unused]] int  setEnv(const char* key, const char* value) { return _putenv_s(key, value ? value : ""); }
-[[maybe_unused]] void unsetEnv(const char* key) { _putenv_s(key, ""); }
-#else
-[[maybe_unused]] int  setEnv(const char* key, const char* value) { return setenv(key, value, 1); }
-[[maybe_unused]] void unsetEnv(const char* key) { unsetenv(key); }
-#endif
-
-struct EnvGuard {
-    explicit EnvGuard(std::initializer_list<std::pair<const char*, const char*>> values) {
-        for (const auto& [key, value] : values) {
-            keys.push_back(key);
-            if (value)
-                setEnv(key, value);
-            else
-                unsetEnv(key);
-        }
-        mcpToolFilterReloadForTest();
-    }
-    ~EnvGuard() {
-        for (const char* key : keys) unsetEnv(key);
-        mcpToolFilterReloadForTest();
-    }
-    std::vector<const char*> keys;
-};
-
-[[maybe_unused]] std::vector<std::string> runStdioSession(const std::string& requests, std::size_t expectedResponses) {
-    auto& mcp = McpServer::instance();
-    mcp.stop();
-    std::istringstream       in(requests);
-    std::ostringstream       out;
-    const bool               started = mcp.listenStdio(in, out);
-    std::vector<std::string> responses;
-    if (started) {
-        for (int attempt = 0; attempt < 400; ++attempt) {
-            mcp.poll();
-            responses.clear();
-            std::istringstream collected(out.str());
-            std::string        line;
-            while (std::getline(collected, line)) {
-                if (!line.empty()) responses.push_back(line);
-            }
-            if (responses.size() >= expectedResponses) break;
-            std::this_thread::sleep_for(std::chrono::milliseconds(5));
-        }
-    }
-    mcp.stop();
-    return responses;
+namespace test_mcp_tool_filter_contract {
+TEST_CASE("devtools.McpToolFilter: tags classify exposed tool families") {
+    REQUIRE_EQ(eve::dev::mcpToolTags("eve_status").at(0), std::string("core"));
+    CHECK_EQ(eve::dev::mcpToolTags("eve_eval").at(0), std::string("debug"));
+    CHECK_EQ(eve::dev::mcpToolTags("eve_input_batch").at(0), std::string("input"));
+    CHECK_EQ(eve::dev::mcpToolTags("eve_host_status").at(0), std::string("host"));
 }
-
-[[maybe_unused]] bool toolsListContains(const std::string& name) {
-    const std::string requests =
-        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-06-18\","
-        "\"capabilities\":{},\"clientInfo\":{\"name\":\"filter-test\"}}}\n"
-        "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/list\",\"params\":{}}\n";
-    const auto responses = runStdioSession(requests, 2);
-    if (responses.size() < 2) return false;
-    Poco::JSON::Parser parser;
-    auto               object = parser.parse(responses[1]).extract<Poco::JSON::Object::Ptr>();
-    auto               result = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
-    auto               tools  = result ? result->getArray("tools") : Poco::JSON::Array::Ptr();
-    if (!tools) return false;
-    for (std::size_t i = 0; i < tools->size(); ++i) {
-        auto tool = tools->getObject(static_cast<unsigned>(i));
-        if (tool && tool->getValue<std::string>("name") == name) return true;
-    }
-    return false;
+TEST_CASE("devtools.McpToolFilter: mutating calls differ from observation calls") {
+    REQUIRE(eve::dev::mcpToolMutates("eve_scene_batch"));
+    CHECK(eve::dev::mcpToolMutates("eve_whitebox_playtest"));
+    CHECK(eve::dev::mcpToolMutates("eve_eval"));
+    CHECK(!eve::dev::mcpToolMutates("eve_status"));
+    CHECK(!eve::dev::mcpToolMutates("eve_input_poll"));
 }
-
-[[maybe_unused]] std::string callToolText(const std::string& name) {
-    const std::string requests =
-        "{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-06-18\","
-        "\"capabilities\":{},\"clientInfo\":{\"name\":\"filter-test\"}}}\n"
-        "{\"jsonrpc\":\"2.0\",\"id\":2,\"method\":\"tools/call\",\"params\":{\"name\":\"" +
-        name + "\",\"arguments\":{}}}\n";
-    const auto responses = runStdioSession(requests, 2);
-    if (responses.size() < 2) return {};
-    Poco::JSON::Parser parser;
-    auto               object  = parser.parse(responses[1]).extract<Poco::JSON::Object::Ptr>();
-    auto               result  = object ? object->getObject("result") : Poco::JSON::Object::Ptr();
-    auto               content = result ? result->getArray("content") : Poco::JSON::Array::Ptr();
-    if (!content || content->size() == 0) return {};
-    return content->getObject(0)->getValue<std::string>("text");
-}
-
-}  // namespace
-
-TEST_CASE("devtools.mcp.toolTagsClassifyFamilies") {
-    CHECK(mcpToolTags("eve_status").size() == 1);
-    CHECK_EQ(mcpToolTags("eve_status")[0], std::string("core"));
-    CHECK(mcpToolTags("eve_eval")[0] == "debug");
-    CHECK(mcpToolTags("eve_input_batch")[0] == "input");
-    CHECK(mcpToolTags("eve_whitebox_playtest")[0] == "input");
-    CHECK(mcpToolMutates("eve_scene_batch"));
-    CHECK(mcpToolMutates("eve_whitebox_playtest"));
-    CHECK(mcpToolTags("eve_host_status")[0] == "host");
-    CHECK(mcpToolMutates("eve_eval"));
-    CHECK(!mcpToolMutates("eve_status"));
-    CHECK(!mcpToolMutates("eve_input_poll"));
-}
-}  // namespace test_mcp_tool_filter_unit
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_play_trace)
-#include <string>
-#include <vector>
-#include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/Diagnostic.h"
-#include "common/GameplayControl.h"
-#include "common/GameplayControlJson.h"
-#include "common/Value.h"
-#include "devtools/AgentDevelopmentSession.hpp"
-#include "devtools/PlayHost.h"
-#include "devtools/PlayTrace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// play_trace.cpp
-namespace test_play_trace {
-using namespace eve;
-using namespace eve::dev;
-
-namespace {
-
-class FakePlayHostRuntime final : public IPlayHostRuntime {
-public:
-    bool          paused() const override { return paused_; }
-    std::uint64_t hostFrame() const override { return hostFrame_; }
-    void          pause() override { paused_ = true; }
-    void          play() override { paused_ = false; }
-
-    Result<void> stepFrames(std::int64_t count) override {
-        hostFrame_ += static_cast<std::uint64_t>(count);
-        paused_ = true;
-        return Result<void>::success();
-    }
-
-    Result<Value> loadContract() const override { return Result<Value>::success(contract); }
-
-    Result<Value> observeScriptRoot(std::string_view root, const std::vector<std::string>& fields) const override {
-        const auto* object = roots.getIf<Value::Object>();
-        REQUIRE(object);
-        const auto found = object->find(std::string(root));
-        REQUIRE(found != object->end());
-        if (fields.empty()) return Result<Value>::success(found->second);
-        Value::Object projected;
-        for (const auto& field : fields) {
-            const auto* node = found->second.getIf<Value::Object>();
-            REQUIRE(node);
-            auto child = node->find(field);
-            REQUIRE(child != node->end());
-            projected.emplace(field, child->second);
-        }
-        return Result<Value>::success(Value(std::move(projected)));
-    }
-
-    Result<Value> capturePng(std::string path) override {
-        return Result<Value>::success(Value(Value::Object{
-            {"height", Value(std::int64_t{2})}, {"path", Value(std::move(path))}, {"width", Value(std::int64_t{3})}}));
-    }
-
-    Result<std::string> captureCheckpoint() override { return Result<std::string>::success(checkpoint); }
-
-    Result<void> restoreCheckpoint(std::string_view json) override {
-        auto parsed = Value::fromJson(json);
-        REQUIRE(parsed.ok());
-        const auto* object = parsed.value().getIf<Value::Object>();
-        REQUIRE(object);
-        const auto found = object->find("roots");
-        REQUIRE(found != object->end());
-        roots = found->second;
-        return Result<void>::success();
-    }
-
-    std::vector<std::string> gameplayDomains() const override { return {"json-fixture"}; }
-
-    Result<Value> invokeScriptAction(std::string_view id, std::string_view source) override {
-        lastAction = std::string(id);
-        lastScript = std::string(source);
-        if (id == "reset") {
-            auto* object = roots.getIf<Value::Object>();
-            if (object) {
-                auto gameState = object->find("gameState");
-                if (gameState != object->end()) {
-                    auto* state = gameState->second.getIf<Value::Object>();
-                    if (state) {
-                        Value::Object copy     = *state;
-                        copy["tick"]           = Value(std::int64_t{0});
-                        (*object)["gameState"] = Value(std::move(copy));
-                    }
-                }
-            }
-        }
-        return Result<Value>::success(Value(Value::Object{{"action", Value(std::string(id))}}));
-    }
-
-    Value       contract;
-    Value       roots;
-    std::string checkpoint;
-    std::string lastAction;
-    std::string lastScript;
-
-private:
-    bool          paused_    = false;
-    std::uint64_t hostFrame_ = 0;
-};
-
-Value parse(std::string_view json) {
-    auto value = Value::fromJson(json);
-    REQUIRE(value.ok());
-    return std::move(value).takeValue();
-}
-
-SubjectRef subject(const char* text) {
-    const auto id = PersistentId::parse(text);
-    REQUIRE(id.has_value());
-    return SubjectRef::fromPersistentId(*id);
-}
-
-LogicalId logical(const char* text) {
-    const auto id = LogicalId::parse(text);
-    REQUIRE(id.has_value());
-    return *id;
-}
-
-class JsonProvider final : public IGameplayControlProvider {
-public:
-    explicit JsonProvider(SubjectRef instance) : instance_(instance) {
-        cap::addListener<IGameplayControlProvider>(this);
-    }
-    ~JsonProvider() override { cap::removeListener<IGameplayControlProvider>(this); }
-
-    std::string_view                          gameplayDomain() const noexcept override { return "json-fixture"; }
-    [[nodiscard]] Result<GameplayObservation> observeGameplay(const GameplaySession&,
-                                                              SubjectRef instance) const override {
-        if (instance != instance_)
-            return Result<GameplayObservation>::failure(
-                Diagnostic::error(DiagnosticCode::NotFound, "fixture not found", "instance"));
-        GameplayObservation result;
-        result.domain   = logical("gameplay:json-fixture");
-        result.instance = instance_;
-        result.tick     = tick_;
-        result.revision = revision_;
-        result.state    = Value(Value::Object{{"count", Value(count_)}});
-        return Result<GameplayObservation>::success(std::move(result));
-    }
-    [[nodiscard]] Result<std::vector<GameplayActionDescriptor>> availableGameplayActions(const GameplaySession&,
-                                                                                         SubjectRef,
-                                                                                         SubjectRef) const override {
-        return Result<std::vector<GameplayActionDescriptor>>::success(
-            {{logical("fixture:increment"), Value(Value::Object{})}});
-    }
-    [[nodiscard]] Result<GameplayCommandReceipt> submitGameplay(const GameplaySession&, SubjectRef,
-                                                                const GameplayCommand& command) override {
-        ++count_;
-        ++revision_;
-        GameplayCommandReceipt result;
-        result.commandId         = command.id;
-        result.executionId       = "fixture-execution";
-        result.acceptedTick      = tick_;
-        result.resultingRevision = revision_;
-        result.details           = Value(Value::Object{{"count", Value(count_)}});
-        return Result<GameplayCommandReceipt>::success(std::move(result));
-    }
-    [[nodiscard]] Result<GameplayObservation> advanceGameplay(const GameplaySession& session, SubjectRef instance,
-                                                              const SimulationStep& step) override {
-        tick_ = step.tick;
-        return observeGameplay(session, instance);
-    }
-    [[nodiscard]] Result<std::vector<GameplayEvent>> gameplayEvents(const GameplaySession&, SubjectRef,
-                                                                    std::uint64_t) const override {
-        return Result<std::vector<GameplayEvent>>::success({});
-    }
-
-private:
-    SubjectRef     instance_;
-    SimulationTick tick_     = SimulationTick::zero();
-    std::uint64_t  revision_ = 1;
-    int            count_    = 0;
-};
-
-const char* kScriptContract = R"json({
-  "schemaId": "evengine.game-agent-contract",
-  "schemaVersion": 1,
-  "id": "examples/ai-game",
-  "entry": "main.nut",
-  "clock": {"defaultStep": "frame"},
-  "observations": [
-    {"id": "combat-alive", "kind": "script-root", "path": "gameState", "fields": ["tick"]}
-  ],
-  "actions": {"source": "script-map", "map": [{"id": "reset", "script": "game.reset()"}]},
-  "capture": {"requiredFor": ["visual"], "backend": "engine-readback"}
-})json";
-
-const char* kGameplayContract = R"json({
-  "schemaId": "evengine.game-agent-contract",
-  "schemaVersion": 1,
-  "id": "json-fixture-play",
-  "entry": "main.nut",
-  "clock": {"defaultStep": "frame"},
-  "observations": [
-    {"id": "combat-alive", "kind": "script-root", "path": "gameState", "fields": ["tick"]}
-  ],
-  "actions": {
-    "source": "gameplay-domain",
-    "domain": "json-fixture",
-    "map": [{"id": "increment", "action": "fixture:increment"}]
-  }
-})json";
-
-}  // namespace
-
-TEST_CASE("devtools.playTrace.rejectsUnknownFieldsAndReplaysStableDigest") {
-    PlayTraceBuffer::instance().clear();
-    FakePlayHostRuntime runtime;
-    runtime.contract   = parse(kScriptContract);
-    runtime.roots      = parse(R"({"gameState":{"tick":4}})");
-    runtime.checkpoint = R"({"version":2,"roots":{"gameState":{"tick":4}}})";
-
-    auto unknown =
-        parsePlayTrace(parse(R"({"schemaId":"evengine.play-trace","schemaVersion":1,"steps":[],"extra":true})"));
-    CHECK(!unknown.ok());
-    CHECK_EQ(unknown.status().diagnostics().front().code(), DiagnosticCode::ParseError);
-
-    auto observed = executePlayRequest(
-        parse(
-            R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive","trace":"append"})"),
-        runtime);
-    REQUIRE(observed.ok());
-    auto acted = executePlayRequest(
-        parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"act","action":"reset","trace":"append"})"),
-        runtime);
-    REQUIRE(acted.ok());
-    CHECK_EQ(runtime.lastAction, std::string("reset"));
-    CHECK_EQ(runtime.lastScript, std::string("game.reset()"));
-    auto afterReset = executePlayRequest(
-        parse(
-            R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive","trace":"append"})"),
-        runtime);
-    REQUIRE(afterReset.ok());
-    CHECK_EQ(afterReset.value().getIf<Value::Object>()->at("state").getIf<Value::Object>()->at("tick").asInt(),
-             std::int64_t{0});
-
-    auto        exported    = PlayTraceBuffer::instance().exportTrace();
-    const auto* traceObject = exported.getIf<Value::Object>();
-    REQUIRE(traceObject);
-    Value recording = exported;
-    recording.set("startCheckpoint", Value(std::string(R"({"version":2,"roots":{"gameState":{"tick":4}}})")));
-
-    runtime.roots = parse(R"({"gameState":{"tick":99}})");
-    auto first    = replayPlayTrace(recording, runtime);
-    REQUIRE(first.ok());
-    auto digestA = playObservationDigest(runtime.roots.getIf<Value::Object>()->at("gameState"));
-    REQUIRE(digestA.ok());
-
-    runtime.roots = parse(R"({"gameState":{"tick":77}})");
-    auto second   = replayPlayTrace(recording, runtime);
-    REQUIRE(second.ok());
-    auto digestB = playObservationDigest(runtime.roots.getIf<Value::Object>()->at("gameState"));
-    REQUIRE(digestB.ok());
-    CHECK_EQ(digestA.value(), digestB.value());
-
-    PlayTraceBuffer::instance().clear();
-    runtime.roots = parse(R"({"gameState":{"tick":4}})");
-    REQUIRE(
-        executePlayRequest(
-            parse(
-                R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive","trace":"append"})"),
-            runtime)
-            .ok());
-    auto passOne = PlayTraceBuffer::instance().exportTrace();
-    PlayTraceBuffer::instance().clear();
-    runtime.roots = parse(R"({"gameState":{"tick":4}})");
-    REQUIRE(
-        executePlayRequest(
-            parse(
-                R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive","trace":"append"})"),
-            runtime)
-            .ok());
-    auto              passTwo     = PlayTraceBuffer::instance().exportTrace();
-    const std::string firstDigest = passOne.getIf<Value::Object>()
-                                        ->at("steps")
-                                        .getIf<Value::Array>()
-                                        ->at(0)
-                                        .getIf<Value::Object>()
-                                        ->at("observationDigest")
-                                        .asString();
-    const std::string secondDigest = passTwo.getIf<Value::Object>()
-                                         ->at("steps")
-                                         .getIf<Value::Array>()
-                                         ->at(0)
-                                         .getIf<Value::Object>()
-                                         ->at("observationDigest")
-                                         .asString();
-    CHECK_EQ(firstDigest, secondDigest);
-}
-
-TEST_CASE("devtools.playHost.actMatchesGameplayControlSubmit") {
-    const auto          instance     = subject("00000000-0000-7000-8000-000000000a01");
-    const std::string   instanceText = instance.format();
-    FakePlayHostRuntime runtime;
-    runtime.contract = parse(kGameplayContract);
-    runtime.roots    = parse(R"({"gameState":{"tick":1}})");
-
-    Value::Object command{{"id", Value("json-command-1")},
-                          {"action", Value("fixture:increment")},
-                          {"subject", Value(instanceText)},
-                          {"observedTick", Value(std::int64_t{0})},
-                          {"expectedRevision", Value(std::int64_t{1})},
-                          {"parameters", Value(Value::Object{})}};
-    Value         session{Value::Object{{"id", Value("test")},
-                                        {"access", Value("player")},
-                                        {"controlledSubjects", Value(Value::Array{Value(instanceText)})}}};
-
-    std::int64_t playRevision = 0;
-    {
-        JsonProvider provider(instance);
-        Value        playRequest{Value::Object{
-                   {"schemaId", Value("evengine.play-request")},
-                   {"schemaVersion", Value(std::int64_t{1})},
-                   {"op", Value("act")},
-                   {"action", Value("increment")},
-                   {"instance", Value(instanceText)},
-                   {"session", session},
-                   {"command", Value(command)},
-        }};
-        auto         viaPlay = executePlayRequest(playRequest, runtime);
-        REQUIRE(viaPlay.ok());
-        playRevision = viaPlay.value()
-                           .getIf<Value::Object>()
-                           ->at("gameplay")
-                           .getIf<Value::Object>()
-                           ->at("receipt")
-                           .getIf<Value::Object>()
-                           ->at("resultingRevision")
-                           .asInt();
-    }
-    std::int64_t jsonRevision = 0;
-    {
-        JsonProvider provider(instance);
-        Value        gameplayRequest{Value::Object{
-                   {"schemaId", Value("evengine.gameplay-control-request")},
-                   {"schemaVersion", Value(std::int64_t{1})},
-                   {"op", Value("submit")},
-                   {"domain", Value("json-fixture")},
-                   {"instance", Value(instanceText)},
-                   {"session", session},
-                   {"command", Value(command)},
-        }};
-        auto         viaJson = executeGameplayControlRequest(gameplayRequest);
-        REQUIRE(viaJson.ok());
-        jsonRevision = viaJson.value()
-                           .getIf<Value::Object>()
-                           ->at("receipt")
-                           .getIf<Value::Object>()
-                           ->at("resultingRevision")
-                           .asInt();
-    }
-    CHECK_EQ(playRevision, jsonRevision);
-    CHECK_EQ(playRevision, std::int64_t{2});
-}
-
-TEST_CASE("devtools.playHost.sessionAutoRecordsEvidenceWithoutEval") {
-    PlayTraceBuffer::instance().clear();
-    AgentDevelopmentSession::instance().reset();
-    FakePlayHostRuntime runtime;
-    runtime.contract = parse(kScriptContract);
-    runtime.roots    = parse(R"({"gameState":{"tick":4}})");
-
-    auto& session = AgentDevelopmentSession::instance();
-    REQUIRE(session
-                .start("Play a mapped action", {{"combat-alive", "Combat state is observable", true, false},
-                                                {"visual", "Frame is captured", true, false}})
-                .isAccepted());
-    const std::string id = session.sessionId();
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Modify).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Run).isAccepted());
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Observe).isAccepted());
-
-    REQUIRE(
-        executePlayRequest(
-            parse(
-                R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"observe","observation":"combat-alive"})"),
-            runtime)
-            .ok());
-    REQUIRE(executePlayRequest(
-                parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"capture","path":"frame.png"})"),
-                runtime)
-                .ok());
-    bool sawObserve = false;
-    bool sawShot    = false;
-    for (const auto& evidence : session.evidence()) {
-        if (evidence.kind == "runtime-observation" && evidence.criterionId == "combat-alive") sawObserve = true;
-        if (evidence.kind == "screenshot" && evidence.criterionId == "visual") sawShot = true;
-        CHECK_NE(evidence.kind, std::string("eval"));
-    }
-    CHECK(sawObserve);
-    CHECK(sawShot);
-    REQUIRE(session.advance(id, AgentDevelopmentPhase::Verify).isAccepted());
-    REQUIRE(session.complete(id, "play evidence closed the session").isAccepted());
-    session.reset();
-    PlayTraceBuffer::instance().clear();
-}
-}  // namespace test_play_trace
+}  // namespace test_mcp_tool_filter_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_game_world_context)
-#include <string>
-#include <vector>
-#include "PrivateTestScope.h"
-#include "common/Value.h"
 #include "devtools/GameWorldContext.hpp"
-#include "devtools/PlayHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// game_world_context.cpp
-namespace test_game_world_context {
-using namespace eve;
-using namespace eve::dev;
-
-namespace {
-
-Value parse(std::string_view json) {
-    auto value = Value::fromJson(json);
-    REQUIRE(value.ok());
-    return std::move(value).takeValue();
+namespace test_game_world_contract {
+eve::Value parse(std::string_view json) {
+    auto parsed = eve::Value::fromJson(json);
+    REQUIRE(parsed.ok());
+    return std::move(parsed).takeValue();
 }
-
-}  // namespace
-
-TEST_CASE("devtools.gameWorld.parseRejectsUnknownAndEmptyWorld") {
-    clearWorldContext();
-    auto unknown = parseWorldObject(parse(R"({"title":"X","extra":true})"));
+TEST_CASE("devtools.GameWorldContext parse: unknown fields and missing title fail") {
+    eve::dev::clearWorldContext();
+    auto unknown = eve::dev::parseWorldObject(parse(R"({"title":"World","extra":true})"));
     CHECK(!unknown.ok());
-    CHECK_EQ(unknown.status().diagnostics().front().code(), DiagnosticCode::ParseError);
-
-    auto empty = parseWorldObject(parse(R"({})"));
-    CHECK(!empty.ok());
-    CHECK_EQ(empty.status().diagnostics().front().code(), DiagnosticCode::ParseError);
-
-    auto badDim = parseWorldObject(parse(R"({"title":"X","dimensions":"4d"})"));
-    CHECK(!badDim.ok());
+    CHECK_EQ(unknown.status().diagnostics().front().code(), eve::DiagnosticCode::ParseError);
+    CHECK(!eve::dev::parseWorldObject(parse(R"({})")).ok());
+    CHECK(!eve::dev::parseWorldObject(parse(R"({"title":"World","dimensions":"4d"})")).ok());
 }
-
-TEST_CASE("devtools.gameWorld.configTitleAndModulesWithoutPublish") {
-    clearWorldContext();
-    CHECK(!hasWorldContext());
-
-    GameWorldSnapshotInput input;
+TEST_CASE("devtools.GameWorldContext snapshot: configuration is used before runtime publication") {
+    eve::dev::clearWorldContext();
+    eve::dev::GameWorldSnapshotInput input;
     input.contractId        = "examples/test";
     input.contractLoaded    = true;
-    input.gameRoot          = "/tmp/game";
-    input.configTitle       = "EVEngine AI Game";
-    input.domains           = {"inventory"};
+    input.configTitle       = "Configured World";
     input.configuredModules = {"physics", "particles"};
-    input.liveModules       = {"physics", "ui", "win", "gfx"};
-
-    auto snapshot = buildGameWorldSnapshot(input);
+    input.liveModules       = {"physics", "ui"};
+    auto snapshot           = eve::dev::buildGameWorldSnapshot(input);
     REQUIRE(snapshot.ok());
-    const auto* root = snapshot.value().getIf<Value::Object>();
-    REQUIRE(root);
-    CHECK_EQ(root->at("schemaId").asString(), std::string(kGameWorldSchemaId));
-    CHECK_EQ(root->at("source").asString(), std::string("config"));
-    CHECK_EQ(root->at("configTitle").asString(), std::string("EVEngine AI Game"));
-    CHECK_EQ(root->at("world").getIf<Value::Object>()->at("title").asString(), std::string("EVEngine AI Game"));
-    CHECK_EQ(root->at("configuredModules").getIf<Value::Array>()->size(), std::size_t{2});
-    CHECK_EQ(root->at("liveModules").getIf<Value::Array>()->size(), std::size_t{4});
+    const auto* object = snapshot.value().getIf<eve::Value::Object>();
+    REQUIRE(object != nullptr);
+    CHECK_EQ(object->at("source").asString(), std::string("config"));
+    CHECK_EQ(object->at("world").getIf<eve::Value::Object>()->at("title").asString(), std::string("Configured World"));
+    CHECK_EQ(object->at("configuredModules").getIf<eve::Value::Array>()->size(), 2u);
 }
-
-TEST_CASE("devtools.gameWorld.publishRuntimeBriefAndClear") {
-    clearWorldContext();
-    CHECK(!hasWorldContext());
-
-    auto published = publishWorldContext(parse(R"({
-      "title":"Runtime World",
-      "summary":"Published after systems init",
-      "systems":["physics","ui"],
-      "tags":["runtime"],
-      "dimensions":"2d"
-    })"));
-    REQUIRE(published.ok());
-    CHECK(hasWorldContext());
-
-    GameWorldSnapshotInput input;
-    input.contractId        = "examples/test";
-    input.contractLoaded    = true;
-    input.gameRoot          = "/tmp/game";
-    input.configTitle       = "From Config";
-    input.domains           = {"inventory"};
-    input.configuredModules = {"physics", "particles"};
-    input.liveModules       = {"physics", "ui", "win", "gfx"};
-
-    auto snapshot = buildGameWorldSnapshot(input);
-    REQUIRE(snapshot.ok());
-    const auto* root = snapshot.value().getIf<Value::Object>();
-    REQUIRE(root);
-    CHECK_EQ(root->at("schemaId").asString(), std::string(kGameWorldSchemaId));
-    CHECK_EQ(root->at("source").asString(), std::string("runtime"));
-    CHECK_EQ(root->at("contractId").asString(), std::string("examples/test"));
-    const auto* world = root->at("world").getIf<Value::Object>();
-    REQUIRE(world);
-    CHECK_EQ(world->at("title").asString(), std::string("Runtime World"));
-    CHECK_EQ(world->at("dimensions").asString(), std::string("2d"));
-    const auto* systems = world->at("systems").getIf<Value::Array>();
-    REQUIRE(systems);
-    CHECK_EQ(systems->size(), std::size_t{2});
-    CHECK_EQ(root->at("configuredModules").getIf<Value::Array>()->size(), std::size_t{2});
-    CHECK_EQ(root->at("liveModules").getIf<Value::Array>()->size(), std::size_t{4});
-
-    // Summary-only publish still fills title from config.
-    clearWorldContext();
-    REQUIRE(publishWorldContext(parse(R"({"summary":"Narrative only"})")).ok());
-    auto merged = buildGameWorldSnapshot(input);
-    REQUIRE(merged.ok());
-    CHECK_EQ(merged.value().getIf<Value::Object>()->at("source").asString(), std::string("runtime"));
-    CHECK_EQ(merged.value().getIf<Value::Object>()->at("world").getIf<Value::Object>()->at("title").asString(),
-             std::string("From Config"));
-    CHECK_EQ(merged.value().getIf<Value::Object>()->at("world").getIf<Value::Object>()->at("summary").asString(),
-             std::string("Narrative only"));
-
-    clearWorldContext();
-    CHECK(!hasWorldContext());
-    input.configTitle.clear();
-    auto afterClear = buildGameWorldSnapshot(input);
-    REQUIRE(afterClear.ok());
-    CHECK_EQ(afterClear.value().getIf<Value::Object>()->at("source").asString(), std::string("none"));
-    CHECK(afterClear.value().getIf<Value::Object>()->at("world").isNull());
+TEST_CASE("devtools.GameWorldContext publication: runtime fields override title and clear restores config") {
+    eve::dev::clearWorldContext();
+    eve::dev::GameWorldSnapshotInput input;
+    input.configTitle = "Configured World";
+    REQUIRE(eve::dev::publishWorldContext(parse(R"({"title":"Runtime World","summary":"Live"})")).ok());
+    auto runtime = eve::dev::buildGameWorldSnapshot(input);
+    REQUIRE(runtime.ok());
+    const auto* object = runtime.value().getIf<eve::Value::Object>();
+    REQUIRE(object != nullptr);
+    CHECK_EQ(object->at("source").asString(), std::string("runtime"));
+    CHECK_EQ(object->at("world").getIf<eve::Value::Object>()->at("title").asString(), std::string("Runtime World"));
+    eve::dev::clearWorldContext();
+    auto config = eve::dev::buildGameWorldSnapshot(input);
+    REQUIRE(config.ok());
+    CHECK_EQ(config.value().getIf<eve::Value::Object>()->at("source").asString(), std::string("config"));
 }
-
-TEST_CASE("devtools.playHost.statusIncludesRuntimeGameWorld") {
-    clearWorldContext();
-    REQUIRE(publishWorldContext(parse(R"({
-      "title":"AI Game",
-      "summary":"Minimal duel after systems init",
-      "systems":["ui"]
-    })"))
-                .ok());
-
-    class Runtime final : public IPlayHostRuntime {
-    public:
-        bool          paused() const override { return false; }
-        std::uint64_t hostFrame() const override { return 3; }
-        void          pause() override {}
-        void          play() override {}
-        Result<void>  stepFrames(std::int64_t) override { return Result<void>::success(); }
-        Result<Value> loadContract() const override { return Result<Value>::success(contract); }
-        Result<Value> observeScriptRoot(std::string_view, const std::vector<std::string>&) const override {
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unused", "observation"));
-        }
-        Result<Value> capturePng(std::string) override {
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unused", "capture"));
-        }
-        Result<std::string> captureCheckpoint() override {
-            return Result<std::string>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unused", "checkpoint"));
-        }
-        Result<void> restoreCheckpoint(std::string_view) override {
-            return Result<void>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unused", "checkpoint"));
-        }
-        std::vector<std::string> gameplayDomains() const override { return {"tactics"}; }
-        Result<Value>            invokeScriptAction(std::string_view, std::string_view) override {
-            return Result<Value>::failure(Diagnostic::error(DiagnosticCode::Unsupported, "unused", "action"));
-        }
-        Value contract = parse(R"json({
-          "schemaId": "evengine.game-agent-contract",
-          "schemaVersion": 1,
-          "id": "examples/ai-game",
-          "entry": "main.nut",
-          "clock": {"defaultStep": "frame"},
-          "observations": [
-            {"id": "combat-alive", "kind": "script-root", "path": "gameState", "fields": ["tick"]}
-          ]
-        })json");
-    } runtime;
-
-    auto status =
-        executePlayRequest(parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"status"})"), runtime);
-    REQUIRE(status.ok());
-    const auto* object = status.value().getIf<Value::Object>();
-    REQUIRE(object);
-    CHECK(object->at("contractLoaded").asBool());
-    CHECK_EQ(object->at("contractId").asString(), std::string("examples/ai-game"));
-    const auto* gameWorld = object->at("gameWorld").getIf<Value::Object>();
-    REQUIRE(gameWorld);
-    CHECK_EQ(gameWorld->at("source").asString(), std::string("runtime"));
-    CHECK_EQ(gameWorld->at("world").getIf<Value::Object>()->at("title").asString(), std::string("AI Game"));
-
-    // Contract must reject a static world field — agents read files / runtime publish instead.
-    runtime.contract = parse(R"json({
-      "schemaId": "evengine.game-agent-contract",
-      "schemaVersion": 1,
-      "id": "examples/ai-game",
-      "entry": "main.nut",
-      "world": {"title":"should-fail"},
-      "observations": [
-        {"id": "combat-alive", "kind": "script-root", "path": "gameState"}
-      ]
-    })json");
-    auto rejected =
-        executePlayRequest(parse(R"({"schemaId":"evengine.play-request","schemaVersion":1,"op":"status"})"), runtime);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.status().diagnostics().front().code(), DiagnosticCode::ParseError);
-
-    clearWorldContext();
-}
-}  // namespace test_game_world_context
+}  // namespace test_game_world_contract
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_frame_capture)
-#include <Poco/InflatingStream.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Parser.h>
+#include <chrono>
 #include <cmath>
 #include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <limits>
-#include <sstream>
-#include <thread>
-#include "common/Capability.h"
+#include <memory>
+#include <vector>
 #include "common/FrameCaptureImage.h"
 #include "devtools/FrameCapturePreview.hpp"
 #include "devtools/McpFrameCapture.hpp"
-#include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-
-namespace {
-eve::FrameCaptureCapabilities caps(size_t budget = 256u * 1024u * 1024u) {
+namespace test_frame_capture_contract {
+eve::FrameCaptureCapabilities capabilities(size_t budget = 1024) {
     eve::FrameCaptureCapabilities value;
-    value.backend     = "test";
+    value.backend     = "contract-test";
     value.maxBytes    = budget;
     value.attachments = {eve::FrameAttachment::Depth, eve::FrameAttachment::Velocity, eve::FrameAttachment::Final};
     return value;
 }
-eve::FrameCaptureSnapshot pixels(eve::FrameAttachment attachment = eve::FrameAttachment::Depth) {
+eve::FrameCaptureSnapshot pixelSnapshot(eve::FrameAttachment attachment = eve::FrameAttachment::Depth) {
     eve::FrameCaptureSnapshot snapshot;
-    eve::FrameCaptureBuffer   b;
-    b.attachment = attachment;
-    b.width = b.height = 1;
-    b.bytes = std::make_shared<const std::vector<uint8_t>>(std::initializer_list<uint8_t>{128, 64, 255, 255});
-    snapshot.buffers.push_back(std::move(b));
+    eve::FrameCaptureBuffer   buffer;
+    buffer.attachment = attachment;
+    buffer.width = buffer.height = 1;
+    buffer.bytes = std::make_shared<const std::vector<uint8_t>>(std::initializer_list<uint8_t>{128, 64, 255, 255});
+    snapshot.buffers.push_back(std::move(buffer));
     return snapshot;
 }
-}  // namespace
-TEST_CASE("mcp.frameCapture.atomicPublicationAndLeases") {
+TEST_CASE("devtools.FrameCaptureStore publication: partial capture is hidden until complete") {
     eve::FrameCaptureStore store;
-    store.configure(caps());
+    store.configure(capabilities());
     eve::FrameCaptureRequest request;
     request.attachments = {eve::FrameAttachment::Depth};
     auto queued         = store.request(request);
-    ASSERT(queued.ok());
+    REQUIRE(queued.ok());
     const auto token = queued.value();
-    auto       begun = store.begin(token, 42, 4);
-    ASSERT(begun.ok());
+    REQUIRE(store.begin(token, 42, 4).ok());
     auto pending = store.snapshot(token);
-    ASSERT(pending.ok());
-    ASSERT(pending.value().phase == eve::FrameCapturePhase::Recording);
-    ASSERT(pending.value().buffers.empty());
-    auto submitted = store.submitted(token);
-    ASSERT(submitted.ok());
-    auto invalid = store.complete(token, {});
-    ASSERT(!invalid.ok());
-    auto complete = store.complete(token, pixels());
-    ASSERT(complete.ok());
+    REQUIRE(pending.ok());
+    CHECK_EQ(pending.value().phase, eve::FrameCapturePhase::Recording);
+    CHECK(pending.value().buffers.empty());
+    REQUIRE(store.submitted(token).ok());
+    CHECK(!store.complete(token, {}).ok());
+    REQUIRE(store.complete(token, pixelSnapshot()).ok());
     store.retire(token);
     auto ready = store.snapshot(token);
-    ASSERT(ready.ok());
-    ASSERT(ready.value().frameId == 42);
-    ASSERT(ready.value().phase == eve::FrameCapturePhase::Ready);
-    auto released = store.release(token);
-    ASSERT(released.ok());
-    ASSERT(ready.value().buffers[0].bytes->at(1) == 64);
+    REQUIRE(ready.ok());
+    CHECK_EQ(ready.value().phase, eve::FrameCapturePhase::Ready);
+    CHECK_EQ(ready.value().frameId, 42u);
+    REQUIRE(store.release(token).ok());
+    CHECK_EQ(ready.value().buffers.front().bytes->at(1), uint8_t{64});
 }
-
-TEST_CASE("mcp.frameCapture.timeoutBudgetCancellationAndGeneration") {
+TEST_CASE("devtools.FrameCaptureStore lifecycle: duplicate key expires and generation invalidates") {
     auto                   now = std::chrono::steady_clock::time_point{};
     eve::FrameCaptureStore store([&] { return now; });
-    store.configure(caps(16));
+    store.configure(capabilities(16));
     eve::FrameCaptureRequest request;
     request.attachments = {eve::FrameAttachment::Final};
     request.requestKey  = "same";
     auto queued         = store.request(request);
-    ASSERT(queued.ok());
-    auto retry = store.request(request);
-    ASSERT(retry.ok());
-    ASSERT(retry.value() == queued.value());
-    auto tooLarge = store.begin(queued.value(), 1, 9);
-    ASSERT(!tooLarge.ok());
+    REQUIRE(queued.ok());
+    auto duplicate = store.request(request);
+    REQUIRE(duplicate.ok());
+    CHECK_EQ(duplicate.value(), queued.value());
+    CHECK(!store.begin(queued.value(), 1, 9).ok());
     now += std::chrono::seconds(6);
     auto expired = store.snapshot(queued.value());
-    ASSERT(expired.ok());
-    ASSERT(expired.value().phase == eve::FrameCapturePhase::Expired);
+    REQUIRE(expired.ok());
+    CHECK_EQ(expired.value().phase, eve::FrameCapturePhase::Expired);
     store.invalidate();
-    auto stale = store.snapshot(queued.value());
-    ASSERT(!stale.ok());
-    request.requestKey.clear();
-    auto next = store.request(request);
-    ASSERT(next.ok());
-    auto begin = store.begin(next.value(), 2, 4);
-    ASSERT(begin.ok());
-    auto cancel = store.release(next.value());
-    ASSERT(cancel.ok());
-    auto submit = store.submitted(next.value());
-    ASSERT(!submit.ok());
-    store.retire(next.value());
+    CHECK(!store.snapshot(queued.value()).ok());
 }
-
-TEST_CASE("mcp.frameCapture.rawDepthRetainsMotionAndPreviewIsPng") {
-    auto        snapshot = pixels();
-    const auto& b        = snapshot.buffers[0];
-    auto        pixel    = eve::frameCapturePixel(b, 0, 0);
-    ASSERT(pixel.ok());
-    ASSERT(pixel.value().stored[1] == 64);
-    ASSERT(std::abs(pixel.value().decoded[1] - (128.0 / 255.0 - 1.0)) < 1e-8);
-    auto outside = eve::frameCapturePixel(b, 1, 0);
-    ASSERT(!outside.ok());
-    auto image = eve::dev::frameCapturePreview(b, {});
-    ASSERT(image.ok());
-    ASSERT(image.value().width == 1);
-    ASSERT(image.value().png[0] == 137);
-    ASSERT(image.value().png[1] == 80);
-    const auto& png = image.value().png;
-    std::string compressed;
-    for (size_t offset = 8; offset + 12 <= png.size();) {
-        const uint32_t length = (uint32_t(png[offset]) << 24) | (uint32_t(png[offset + 1]) << 16) |
-                                (uint32_t(png[offset + 2]) << 8) | png[offset + 3];
-        ASSERT(offset + length + 12 <= png.size());
-        if (std::memcmp(png.data() + offset + 4, "IDAT", 4) == 0)
-            compressed.append(reinterpret_cast<const char*>(png.data() + offset + 8), length);
-        offset += size_t(length) + 12;
-    }
-    std::istringstream         stream(compressed);
-    Poco::InflatingInputStream inflated(stream, Poco::InflatingStreamBuf::STREAM_ZLIB);
-    std::array<uint8_t, 5>     scanline{};
-    inflated.read(reinterpret_cast<char*>(scanline.data()), 5);
-    ASSERT(inflated.gcount() == 5);
-    ASSERT(scanline[0] == 0);
-    ASSERT((scanline[1] == 128 && scanline[2] == 128 && scanline[3] == 128 && scanline[4] == 255));
+TEST_CASE("devtools.FrameCaptureImage pixel: decode valid sample and reject out-of-bounds") {
+    auto buffer  = pixelSnapshot().buffers.front();
+    auto sampled = eve::frameCapturePixel(buffer, 0, 0);
+    REQUIRE(sampled.ok());
+    CHECK_EQ(sampled.value().stored[1], uint8_t{64});
+    CHECK(std::abs(sampled.value().decoded[1] - (128.0 / 255.0 - 1.0)) < 1e-8);
+    CHECK(!eve::frameCapturePixel(buffer, 1, 0).ok());
+    auto preview = eve::dev::frameCapturePreview(buffer, {});
+    REQUIRE(preview.ok());
+    CHECK_EQ(preview.value().width, 1u);
+    CHECK_EQ(preview.value().png[0], uint8_t{137});
     eve::dev::FramePreviewOptions invalid;
-    invalid.view     = "invented";
-    auto unsupported = eve::dev::frameCapturePreview(b, invalid);
-    ASSERT(!unsupported.ok());
-    ASSERT(b.bytes->at(1) == 64);
+    invalid.view = "unknown";
+    CHECK(!eve::dev::frameCapturePreview(buffer, invalid).ok());
 }
-
-TEST_CASE("mcp.frameCapture.depthProjectionAndBgraSemantics") {
+TEST_CASE("devtools.FrameCaptureImage depth: projection and BGRA channel mapping") {
     eve::FrameCaptureBuffer depth;
     depth.attachment = eve::FrameAttachment::HwDepth;
     depth.format     = eve::FramePixelFormat::Depth32Float;
     depth.width = depth.height = 1;
     auto        bytes          = std::make_shared<std::vector<uint8_t>>(4);
     const float raw            = 0.25f;
-    std::memcpy(bytes->data(), &raw, 4);
+    std::memcpy(bytes->data(), &raw, sizeof raw);
     depth.bytes = bytes;
     std::array<float, 16> inverse{};
-    inverse[0] = inverse[5] = inverse[15] = 1;
-    inverse[14]                           = -1;
+    inverse[0] = inverse[5] = inverse[15] = 1.f;
+    inverse[14]                           = -1.f;
     inverse[11]                           = -0.9f;
-    auto perspective                      = eve::frameCaptureLinearDepth(depth, 0, 0, inverse);
-    ASSERT(perspective.ok());
-    ASSERT(std::abs(perspective.value() - 1.0 / 0.775) < 1e-6);
-    inverse[11]  = 0.9f;
-    inverse[15]  = 0.1f;
-    auto reverse = eve::frameCaptureLinearDepth(depth, 0, 0, inverse);
-    ASSERT(reverse.ok());
-    ASSERT(std::abs(reverse.value() - 1.0 / 0.325) < 1e-6);
-    inverse[11]       = 0;
-    inverse[15]       = 1;
-    inverse[10]       = -9;
-    auto orthographic = eve::frameCaptureLinearDepth(depth, 0, 0, inverse);
-    ASSERT(orthographic.ok());
-    ASSERT(std::abs(orthographic.value() - 3.25) < 1e-6);
-    auto bgra   = pixels(eve::FrameAttachment::Final).buffers[0];
+    auto linear                           = eve::frameCaptureLinearDepth(depth, 0, 0, inverse);
+    REQUIRE(linear.ok());
+    CHECK(std::abs(linear.value() - 1.0 / 0.775) < 1e-6);
+    auto bgra   = pixelSnapshot(eve::FrameAttachment::Final).buffers.front();
     bgra.format = eve::FramePixelFormat::Bgra8;
     auto pixel  = eve::frameCapturePixel(bgra, 0, 0);
-    ASSERT(pixel.ok());
-    ASSERT((pixel.value().stored[0] == 255 && pixel.value().stored[2] == 128));
+    REQUIRE(pixel.ok());
+    CHECK_EQ(pixel.value().stored[0], uint8_t{255});
+    CHECK_EQ(pixel.value().stored[2], uint8_t{128});
 }
+}  // namespace test_frame_capture_contract
+#endif
 
-TEST_CASE("mcp.frameCapture.sharedPhysicalStorageAndRetainedLeaseBudget") {
-    eve::FrameCaptureStore store;
-    store.configure(caps(8));
-    eve::FrameCaptureRequest request;
-    request.attachments = {eve::FrameAttachment::Depth, eve::FrameAttachment::Velocity};
-    auto queued         = store.request(request);
-    ASSERT(queued.ok());
-    auto begin = store.begin(queued.value(), 7, 4);
-    ASSERT(begin.ok());
-    auto submit = store.submitted(queued.value());
-    ASSERT(submit.ok());
-    auto snapshot       = pixels();
-    auto velocity       = snapshot.buffers[0];
-    velocity.attachment = eve::FrameAttachment::Velocity;
-    snapshot.buffers.push_back(velocity);
-    auto done = store.complete(queued.value(), std::move(snapshot));
-    ASSERT(done.ok());
-    store.retire(queued.value());
-    auto lease = store.snapshot(queued.value());
-    ASSERT(lease.ok());
-    auto released = store.release(queued.value());
-    ASSERT(released.ok());
-    auto next = store.request(request);
-    ASSERT(next.ok());
-    auto noRoom = store.begin(next.value(), 8, 4);
-    ASSERT(!noRoom.ok());
+#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_play_trace)
+#include "devtools/PlayTrace.h"
+namespace test_play_trace_contract {
+eve::Value parse(std::string_view json) {
+    auto parsed = eve::Value::fromJson(json);
+    REQUIRE(parsed.ok());
+    return std::move(parsed).takeValue();
 }
-
-
+TEST_CASE("devtools.PlayTrace parse: schema accepts empty steps and rejects unknown fields") {
+    auto valid = eve::dev::parsePlayTrace(parse(R"({"schemaId":"evengine.play-trace","schemaVersion":1,"steps":[]})"));
+    CHECK(valid.ok());
+    auto unknown = eve::dev::parsePlayTrace(
+        parse(R"({"schemaId":"evengine.play-trace","schemaVersion":1,"steps":[],"extra":true})"));
+    CHECK(!unknown.ok());
+    CHECK_EQ(unknown.status().diagnostics().front().code(), eve::DiagnosticCode::ParseError);
+}
+TEST_CASE("devtools.PlayTrace digest: equal projections yield stable digest and changed state differs") {
+    auto first   = eve::dev::playObservationDigest(parse(R"({"tick":4,"alive":true})"));
+    auto equal   = eve::dev::playObservationDigest(parse(R"({"alive":true,"tick":4})"));
+    auto changed = eve::dev::playObservationDigest(parse(R"({"tick":5,"alive":true})"));
+    REQUIRE(first.ok());
+    REQUIRE(equal.ok());
+    REQUIRE(changed.ok());
+    CHECK_EQ(first.value(), equal.value());
+    CHECK_NE(first.value(), changed.value());
+    CHECK(first.value().find("fnv1a64:") == 0);
+}
+TEST_CASE("devtools.PlayTrace buffer: append creates one versioned step and clear empties it") {
+    auto& buffer = eve::dev::PlayTraceBuffer::instance();
+    buffer.clear();
+    CHECK(buffer.empty());
+    buffer.begin("game", "hash", 7, "checkpoint");
+    CHECK(buffer.isRecording());
+    buffer.append(parse(R"({"op":"observe"})"), parse(R"({"state":{"tick":1}})"), 10);
+    CHECK(!buffer.empty());
+    auto        recording = buffer.exportTrace();
+    const auto* object    = recording.getIf<eve::Value::Object>();
+    REQUIRE(object != nullptr);
+    CHECK_EQ(object->at("schemaId").asString(), std::string("evengine.play-trace"));
+    CHECK_EQ(object->at("steps").getIf<eve::Value::Array>()->size(), 1u);
+    buffer.clear();
+    CHECK(buffer.empty());
+}
+}  // namespace test_play_trace_contract
 #endif

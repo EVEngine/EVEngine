@@ -1,3 +1,62 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "devtools",
+  "modules": [
+    "decal",
+    "definitions",
+    "devtools",
+    "dialogue",
+    "economy",
+    "editor",
+    "effects",
+    "filesystem",
+    "game_event",
+    "graphics",
+    "hexmap",
+    "i18n",
+    "image",
+    "inventory",
+    "joystick"
+  ],
+  "origins": [
+    "dap.cpp",
+    "debugger.cpp",
+    "debugger_audit.cpp",
+    "decal_script.cpp",
+    "definitions.cpp",
+    "dialogue_authoring.cpp",
+    "dialogue_proc_script.cpp",
+    "economy.cpp",
+    "editor_voxel_catalog_script.cpp",
+    "effects.cpp",
+    "eventstream.cpp",
+    "filesystem.cpp",
+    "graphics_shader_spv_script.cpp",
+    "graphics_vegetation_script.cpp",
+    "grass_wind.cpp",
+    "hexmap_sphere_script.cpp",
+    "i18n_script.cpp",
+    "image_script.cpp",
+    "inventory_binding_architecture.cpp",
+    "inventory_gameplay_control.cpp",
+    "joystick_script.cpp"
+  ],
+  "cases": {
+    "platform-network": [
+      "devtools.dap.breakpointVerificationEvent",
+      "devtools.dap.exceptionBreakpoints",
+      "devtools.dap.setBreakpointsStoresCondition",
+      "devtools.dap.stopOnEntry"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: dap
@@ -1611,7 +1670,11 @@ TEST_CASE("devtools.snapshot.skipsFunctionInsideRootAndNamesIt") {
 
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    const eve::StateValue* state = roots->find("gameState");
+    const eve::StateValue* root = roots->find("gameState");
+    REQUIRE(root != nullptr);
+    const auto* objects = out.find("objects");
+    REQUIRE(objects != nullptr);
+    const auto* state = objects->at(static_cast<size_t>(root->find("$ref")->asInt())).find("value");
     REQUIRE(state != nullptr);
     REQUIRE(state->find("level") != nullptr);
     REQUIRE(state->find("tick") == nullptr);
@@ -1648,7 +1711,11 @@ TEST_CASE("devtools.snapshot.skipsInstanceInsideContainerAndNamesIt") {
 
     const eve::StateValue* roots = out.find("roots");
     REQUIRE(roots != nullptr);
-    const eve::StateValue* state = roots->find("progress");
+    const eve::StateValue* root = roots->find("progress");
+    REQUIRE(root != nullptr);
+    const auto* objects = out.find("objects");
+    REQUIRE(objects != nullptr);
+    const auto* state = objects->at(static_cast<size_t>(root->find("$ref")->asInt())).find("value");
     REQUIRE(state != nullptr);
     REQUIRE(state->find("level") != nullptr);
     REQUIRE(state->find("leader") == nullptr);

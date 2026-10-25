@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "hexmap/HexSphereTopology.h"
 #include <algorithm>
 #include <cmath>

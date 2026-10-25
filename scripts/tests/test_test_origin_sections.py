@@ -90,7 +90,7 @@ TEST_CASE("first.extra") {}
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "combined.cpp").write_text(TEXT, encoding="utf-8")
-            with patch.object(levels, "CATALOGUE", root / "test_levels.json"):
+            with patch.object(levels, "TEST_DIR", root):
                 levels.emit_cmake(data, root / "metadata.cmake")
             rendered = (root / "metadata.cmake").read_text(encoding="utf-8")
         self.assertIn('set("EVE_TEST_ALWAYS_CASE_NAMES_combined.cpp" "always.before;always.between;always.after")',
@@ -113,7 +113,7 @@ TEST_CASE("first.extra") {}
             physical.write_text('TEST_CASE("physical.case") {}', encoding="utf-8")
             merged.write_text('TEST_CASE("legacy.case") {}', encoding="utf-8")
             metadata = root / "metadata.cmake"
-            with patch.object(levels, "CATALOGUE", root / "test_levels.json"):
+            with patch.object(levels, "TEST_DIR", root):
                 levels.emit_cmake(data, metadata)
             rendered = metadata.read_text(encoding="utf-8")
             self.assertEqual(rendered.count('set("EVE_TEST_CASE_NAMES_same.cpp"'), 1)

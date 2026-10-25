@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "physics_cloth",
+  "origins": [
+    "physics_layered_cloth_gpu.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <algorithm>
 #include <array>
 #include <cmath>

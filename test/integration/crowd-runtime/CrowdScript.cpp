@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "crowd",
+  "origins": [
+    "CrowdScript.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <functional>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "crowd/Crowd.h"

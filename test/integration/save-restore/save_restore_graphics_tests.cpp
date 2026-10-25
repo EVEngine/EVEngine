@@ -1,3 +1,42 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "runtime-lifecycle",
+  "module": "common",
+  "modules": [
+    "common",
+    "dialogue",
+    "graphics",
+    "rpg"
+  ],
+  "origins": [
+    "common_game_save_session.cpp",
+    "dialogue_persistence.cpp",
+    "graphics_canvas_persistence.cpp",
+    "rpg_save_session.cpp"
+  ],
+  "cases": {
+    "module-composition": [
+      "dialoguePersistence.jsonRoundtrip",
+      "dialoguePersistence.migratesCurrentAndCallFrames",
+      "dialoguePersistence.rejectsLegacyUnversionedState",
+      "rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidation",
+      "rpg.saveSession.explicitQuestAdditionMigrationPreservesOldProgress",
+      "rpg.saveSession.explicitSingleActorPartyMigrationPreservesCompanionBaseline",
+      "rpg.saveSession.partyRoundTripIsAtomic",
+      "rpg.saveSession.roundTripAndCrossParticipantRollback",
+      "rpg.saveSession.unboundOperationsFailStructurally"
+    ],
+    "render-offscreen": [
+      "graphics.canvas.separateSubmissionsPreserveAndClearRGBA8"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: common game save session

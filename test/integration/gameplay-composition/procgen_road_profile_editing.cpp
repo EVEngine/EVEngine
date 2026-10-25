@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_profile_editing.cpp",
+    "procgen_road_editing.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include "editing/EditingAuthority.h"
 #include "procgen/editing/RoadNetworkEditTarget.h"
 #include "zeroerr/assert.h"

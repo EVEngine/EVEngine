@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "action_editor",
+  "modules": [
+    "action",
+    "action_editor",
+    "animation"
+  ],
+  "origins": [
+    "action_preview_profile.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "action/editor/ActionPreviewProfile.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

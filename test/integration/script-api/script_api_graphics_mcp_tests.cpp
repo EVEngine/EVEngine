@@ -1,3 +1,86 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "devtools",
+  "modules": [
+    "common",
+    "devtools",
+    "mouse",
+    "npc_ai",
+    "orders",
+    "physics_cloth",
+    "policyregistry",
+    "procgen",
+    "procgen_animation",
+    "production",
+    "profiler",
+    "rpg",
+    "ui"
+  ],
+  "origins": [
+    "mcp.cpp",
+    "mcp_agent_export.cpp",
+    "mcp_hot_reload.cpp",
+    "mcp_scene_literal.cpp",
+    "mcp_soft_restart.cpp",
+    "model.cpp",
+    "module_lazy_bind.cpp",
+    "mouse.cpp",
+    "npc_ai_script.cpp",
+    "orders.cpp",
+    "pcg_biome_controller.cpp",
+    "pcg_color_preview_sync.cpp",
+    "pcg_terrain_watcher.cpp",
+    "physics_cloth.cpp",
+    "policyregistry.cpp",
+    "procgen_module_assembly.cpp",
+    "procgen_runtime_generation.cpp",
+    "procgen_scene_sink.cpp",
+    "production.cpp",
+    "profiler.cpp",
+    "reload_script.cpp",
+    "rpg_classic_semantic_index.cpp",
+    "rpg_dnut_script.cpp",
+    "rpg_script.cpp",
+    "rpg_world_state_script.cpp",
+    "simplesquirrel.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "devtools.mcp.crashReportExplainsPreviousRun",
+      "procgen.runtimeGeneration.movesValueJobsAcrossWorkerBoundary",
+      "procgen.runtimeGeneration.rejectsWorkerThreadSchedulerMutation",
+      "procgen.worker.legacyIssueRejectsWrongThread"
+    ],
+    "platform-network": [
+      "devtools.mcp.executeObserveCorrelatesEditorTransactionWithLiveRuntime",
+      "devtools.mcp.executeObserveCorrelatesSceneEditorWithNamedHost",
+      "devtools.mcp.rxObservationSessionTracksChangesDeduplicatesAndCloses"
+    ],
+    "render-offscreen": [
+      "moduleExpose.allBindingsPreserveProcgenRockSurface"
+    ],
+    "render-window": [
+      "procgen.animation.pcgSkinnedMesh.realGraphicsAcceptsCombinedSkinStreams"
+    ],
+    "runtime-lifecycle": [
+      "ModuleManager.RegistryConflictPreservesCommittedInstance",
+      "ModuleManager.RegistryRollbackOwnsCreatedInstance",
+      "SimpleSquirrelTest.RemovingAClassFieldFallsThroughToTheMetamethods",
+      "devtools.ai.panelLog",
+      "devtools.mcp.engineLineDropsScriptEchoOnly",
+      "devtools.procgenQuery.generateMapReportsStructuredFailure",
+      "devtools.renderCapture.savePngReportsStructuredFailure",
+      "devtools.sceneQuery.getSetReportStructuredFailure"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: mcp
@@ -4043,17 +4126,17 @@ TEST_CASE("reloadScript.failedCommitCanStillAbort") {
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
     REQUIRE(!session.commit(vm.getHandle(), &err));
-    REQUIRE_EQ(provider.restoreCount, 1);
+    REQUIRE_EQ(provider.restoreCount, 2);  // Failed restore plus rollback.
 
     err.clear();
     REQUIRE(session.abort(vm.getHandle(), &err));
     REQUIRE(err.empty());
-    REQUIRE_EQ(provider.restoreCount, 2);
+    REQUIRE_EQ(provider.restoreCount, 3);
 
     eve::cap::removeListener<eve::caps::IStateProvider>(&provider);
 }
 
-TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
+TEST_CASE("reloadScript.nativeResetPolicyBacksUpBeforeReset") {
     ssq::VM vm(2048, ssq::Libs::ALL);
     eve::dev::Snapshot::instance().clearRoots();
 
@@ -4064,7 +4147,7 @@ TEST_CASE("reloadScript.nativeResetPolicySkipsCaptureAndResets") {
     std::string err;
     REQUIRE(session.begin(vm.getHandle(), &err));
     REQUIRE(session.commit(vm.getHandle(), &err));
-    REQUIRE_EQ(provider.captureCount, 0);
+    REQUIRE_EQ(provider.captureCount, 1);  // Backup at commit; begin still skips Reset providers.
     REQUIRE_EQ(provider.restoreCount, 0);
     REQUIRE_EQ(provider.resetCount, 1);
 

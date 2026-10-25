@@ -1,3 +1,52 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "stylize",
+  "modules": [
+    "animation",
+    "avatar",
+    "decal",
+    "dialogue",
+    "gpgpu",
+    "graphics",
+    "stylize"
+  ],
+  "origins": [
+    "Xray.cpp",
+    "animation_sprite_spine.cpp",
+    "avatar_vrm_vulkan.cpp",
+    "decal.cpp",
+    "dialogue.cpp",
+    "gpu_driven.cpp",
+    "gpu_driven_parity.cpp",
+    "graphics_deferred_lifetime.cpp",
+    "graphics_deferred_targets.cpp",
+    "graphics_font.cpp",
+    "graphics_resource_reuse.cpp",
+    "graphics_vegetation_render.cpp",
+    "hair.cpp"
+  ],
+  "cases": {
+    "platform-file": [
+      "decal.proceduralImportsReferenceSubstanceMaterialPresets",
+      "decal.renderImportedPresetContactSheet"
+    ],
+    "render-offscreen": [
+      "decal.gpuHeadlessProjectionReadback",
+      "decal.proceduralFacadeUploadsAllRuntimeChannels",
+      "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
+    ],
+    "render-window": [
+      "graphics.lighting.boundedFrameSlotSubmission"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: Xray

@@ -1,3 +1,56 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-offscreen",
+  "module": "action",
+  "modules": [
+    "action",
+    "asset_graphics",
+    "fluids",
+    "gpgpu",
+    "graphics",
+    "graphics_fog",
+    "graphics_raytracing"
+  ],
+  "origins": [
+    "action_prefab_runtime.cpp",
+    "asset_graphics_vegetation_scene.cpp",
+    "diffuse_light_probe.cpp",
+    "fluids.cpp",
+    "gpgpu.cpp",
+    "graphics_backend_parity.cpp",
+    "graphics_display_output.cpp",
+    "graphics_fog.cpp",
+    "graphics_gbuffer_depth.cpp",
+    "graphics_headless.cpp",
+    "graphics_map_fog.cpp",
+    "graphics_pbr_surface.cpp",
+    "graphics_raytracing_alignment.cpp",
+    "graphics_skin_palette_render.cpp",
+    "graphics_texture_mips.cpp"
+  ],
+  "cases": {
+    "runtime-lifecycle": [
+      "gpgpu.module.create",
+      "gpgpu.procgen.transformChainRejectsInvalidLength"
+    ],
+    "script-binding": [
+      "gpgpu.buffer.readFloat32sReturnsAnArrayToScript",
+      "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip",
+      "gpgpu.ecsPack.scriptEcsComponentsRoundTrip"
+    ],
+    "script-render": [
+      "gpgpu.ecsPack.contiguousRange",
+      "gpgpu.ecsPack.errors",
+      "gpgpu.ecsPack.roundTrip"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: action prefab runtime

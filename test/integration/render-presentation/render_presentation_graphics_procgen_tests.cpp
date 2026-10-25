@@ -1,3 +1,43 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "particles",
+  "modules": [
+    "image",
+    "particles",
+    "procgen",
+    "rpg"
+  ],
+  "origins": [
+    "particles_gpu_resident.cpp",
+    "particles_p2_p3.cpp",
+    "particles_playback.cpp",
+    "particles_reference_effects.cpp",
+    "particles_scalability.cpp",
+    "procgen.cpp",
+    "procgen_lsystem.cpp",
+    "procgen_preview.cpp",
+    "resource_lifetime.cpp",
+    "rpg_simulation.cpp",
+    "procgen_pointset.cpp"
+  ],
+  "cases": {
+    "render-offscreen": [
+      "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
+      "procgen.terrain.waterShaderShipsEmbeddedSpirv"
+    ],
+    "script-binding": [
+      "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+      "procgen.script.pointsetPolygonAndBatchApiAreBound"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: particles gpu resident

@@ -1,3 +1,62 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-file",
+  "module": "daynight",
+  "modules": [
+    "animation",
+    "avatar",
+    "cmdline",
+    "common",
+    "database",
+    "daynight",
+    "editor",
+    "filesystem",
+    "i18n",
+    "joystick",
+    "map",
+    "particles"
+  ],
+  "origins": [
+    "SkyProfile.cpp",
+    "SkyWispsAsset.cpp",
+    "animation_skinned.cpp",
+    "avatar_vrm.cpp",
+    "cmdline.cpp",
+    "crashlog.cpp",
+    "database.cpp",
+    "editor_tilemap_formats.cpp",
+    "filesystem_cpp.cpp",
+    "hex_level_data.cpp",
+    "hotreload.cpp",
+    "i18n.cpp",
+    "joystick_cpp.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "filesystem.watch.coalescesOverlappingRegistrations",
+      "filesystem.watch.dotResolvesToCwd",
+      "filesystem.watch.fileModified",
+      "hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath"
+    ],
+    "render-window": [
+      "animation.skinned.render.applyToMesh",
+      "animation.skinned.render.bindPose",
+      "animation.skinned.render.clipSampledMovesPixels",
+      "animation.skinned.render.playerDriven",
+      "avatar.vrm.graphicsBackendSupportIsExplicit"
+    ],
+    "script-binding": [
+      "hotreload.softScriptReloadPreservesState",
+      "hotreload.tryReloadParticleJson"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: SkyProfile

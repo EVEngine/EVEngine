@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "ui_editing",
+  "cases": {
+    "ui-render": [
+      "UI.hud.renderScalesHitRectAndRestoresDesignMetrics",
+      "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry"
+    ]
+  }
+}
+*/
+// clang-format on
+
 #include "ui/HudGeometry.h"
 #include "ui/UI.h"
 #include "ui/UIBackend.h"

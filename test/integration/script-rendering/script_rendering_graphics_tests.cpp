@@ -1,3 +1,27 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-render",
+  "module": "common",
+  "modules": [
+    "common",
+    "window"
+  ],
+  "origins": [
+    "graphic.cpp",
+    "window.cpp"
+  ],
+  "cases": {
+    "script-binding": [
+      "WindowTest.settingsFields"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: graphic

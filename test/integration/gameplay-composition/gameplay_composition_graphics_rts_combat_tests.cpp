@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "rts",
+  "origins": [
+    "rts_combat.cpp",
+    "rts_combat_3.cpp",
+    "rts_composition.cpp",
+    "rts_economy.cpp",
+    "rts_economy_2.cpp"
+  ]
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: rts combat

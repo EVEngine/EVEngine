@@ -3,7 +3,7 @@
 # Each SDK runs as its own parallel job (same split as ci.yml):
 #   windows → win32 SDK (+ usability test)
 #   android → android SDK
-#   macos   → macosx SDK (+ usability test)
+#   macos   → macosx-arm64 / macosx-x86_64 SDKs (+ usability tests)
 #   ios     → ios SDK
 #   linux   → linux SDK (+ usability test)
 #
@@ -202,10 +202,25 @@ jobs:
           retention-days: 14
 
   macos:
-    name: macOS SDK
-    runs-on: macos-latest
+    name: macOS ${{ matrix.architecture }} SDK
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: arm64
+            runner: macos-latest
+          - architecture: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 180
+    env:
+      SDK_TARGET: macosx-${{ matrix.architecture }}
+      SDK_ARCHITECTURE: ${{ matrix.architecture }}
     steps:
+      - name: Verify native macOS architecture
+        timeout-minutes: 5
+        run: test "$(uname -m)" = "$SDK_ARCHITECTURE"
+
       - name: Checkout
         timeout-minutes: 10
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -237,13 +252,13 @@ jobs:
 
       - name: Build macosx SDK
         timeout-minutes: 90
-        run: make sdk/macosx CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS="$(sysctl -n hw.ncpu)"
+        run: make "sdk/$SDK_TARGET" CMAKE_EXTRA_ARGS="$CMAKE_EXTRA_ARGS" JOBS=4
 
       - name: Test macosx SDK usability
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
-        run: bash .github/scripts/test-sdk.sh dist/eve-sdk/macosx macosx "${TAG#v}"
+        run: bash .github/scripts/test-sdk.sh "dist/eve-sdk/$SDK_TARGET" macosx "${TAG#v}" "$SDK_ARCHITECTURE"
 
       - name: Package SDK zip
         timeout-minutes: 10
@@ -251,14 +266,14 @@ jobs:
           TAG: ${{ inputs.tag }}
         run: |
           mkdir -p artifacts
-          python3 .github/scripts/zip-sdk.py macosx "$TAG"
+          python3 .github/scripts/zip-sdk.py "$SDK_TARGET" "$TAG"
           ls -lh artifacts/
 
       - name: Upload artifacts
         timeout-minutes: 10
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: sdk-macosx
+          name: sdk-macosx-${{ matrix.architecture }}
           path: artifacts/*.zip
           if-no-files-found: error
           retention-days: 14
@@ -447,6 +462,12 @@ jobs:
       contents: write
       id-token: write
     steps:
+      - name: Checkout release validators
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || inputs.tag }}
+
       - name: Download all SDK artifacts
         timeout-minutes: 10
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
@@ -486,37 +507,11 @@ jobs:
         with:
           subject-path: artifacts/eve-sdk-*.zip
 
-      - name: Verify SDK versions match the release tag
+      - name: Verify complete SDK release set
         timeout-minutes: 5
         env:
           TAG: ${{ inputs.tag }}
-        run: |
-          set -euo pipefail
-          EXPECTED="${TAG#v}"
-          test -n "$EXPECTED"
-          python3 - "$EXPECTED" <<'PYEOF'
-          import pathlib
-          import sys
-          import zipfile
-
-          expected = sys.argv[1]
-          zips = sorted(pathlib.Path("artifacts").glob("eve-sdk-*.zip"))
-          if not zips:
-              sys.exit("no eve-sdk-*.zip found under artifacts/")
-          required = {"win32", "linux", "macosx", "android", "ios", "win32-arm64", "linux-arm64"}
-          actual = {p.name[len("eve-sdk-"):p.name.rfind("-")] for p in zips}
-          if actual != required:
-              sys.exit(f"SDK platform set mismatch: {actual} != {required}")
-          for zip_path in zips:
-              name = zip_path.name
-              plat = name[len("eve-sdk-"):name.rfind("-")]
-              entry = f"eve-sdk/{plat}/share/eve/VERSION"
-              with zipfile.ZipFile(zip_path) as zf:
-                  got = zf.read(entry).decode("utf-8").strip()
-              if got != expected:
-                  sys.exit(f"VERSION mismatch in {name}: '{got}' != expected '{expected}'")
-              print(f"OK: {name} VERSION={got}")
-          PYEOF
+        run: python3 scripts/verify_sdk_release.py artifacts "$TAG"
 
       - name: Upload to GitHub Release
         timeout-minutes: 15
@@ -529,11 +524,6 @@ jobs:
           test -n "$TAG"
           shopt -s nullglob
           zips=(artifacts/eve-sdk-*.zip)
-          if [ ${#zips[@]} -lt 7 ]; then
-            echo "Expected 7 SDK zips (including win32-arm64/linux-arm64), found ${#zips[@]}:"
-            printf '  %s\n' "${zips[@]}"
-            exit 1
-          fi
           zips+=(artifacts/SHA256SUMS)
           gh release upload "$TAG" "${zips[@]}" --repo "$REPO" --clobber
           echo "Attached SDKs to $TAG:"
@@ -740,14 +730,23 @@ jobs:
           retention-days: 7
 
   consumer-macosx:
-    name: Consumer macosx (get android + build + run + cross win32/linux)
+    name: Consumer macosx ${{ matrix.architecture }} (get + build + package + run)
     needs: publish
-    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - architecture: arm64
+            runner: macos-latest
+          - architecture: x86_64
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 120
     env:
       TAG: ${{ inputs.tag }}
       HOST: macosx
-      EVE_CROSS_TARGETS: "win32 linux"
+      EVE_SDK_ARCHITECTURE: ${{ matrix.architecture }}
+      EVE_CROSS_TARGETS: ${{ matrix.architecture == 'arm64' && 'win32 linux' || '' }}
     steps:
       - name: Checkout
         timeout-minutes: 10
@@ -759,13 +758,13 @@ jobs:
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.eve-ci/android-sdk
-          key: eve-android-toolchain-${{ runner.os }}-v1
+          key: eve-android-toolchain-${{ runner.os }}-${{ runner.arch }}-v1
 
       - name: Cache Gradle dependency cache
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.gradle/caches
-          key: eve-gradle-${{ runner.os }}-v1
+          key: eve-gradle-${{ runner.os }}-${{ runner.arch }}-v1
 
       - name: Resolve toolchain dirs (cacheable, absolute)
         run: |
@@ -779,12 +778,13 @@ jobs:
       - name: Upload android APK
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: android-apk-${{ env.HOST }}
-          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}.apk
+          name: android-apk-${{ env.HOST }}-${{ matrix.architecture }}
+          path: ${{ runner.temp }}/consumer/eve-android-${{ env.HOST }}-${{ matrix.architecture }}.apk
           if-no-files-found: error
           retention-days: 7
 
       - name: Upload cross win32 package (produced on macosx)
+        if: ${{ matrix.architecture == 'arm64' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pkg-win32-from-macosx
@@ -793,6 +793,7 @@ jobs:
           retention-days: 7
 
       - name: Upload cross linux package (produced on macosx)
+        if: ${{ matrix.architecture == 'arm64' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pkg-linux-from-macosx
@@ -979,7 +980,7 @@ jobs:
             -accel on
           disable-linux-hw-accel: false
           disable-animations: true
-          script: bash .github/scripts/run-consumer-apks.sh apk
+          script: bash .github/scripts/run-consumer-apks.sh apk 4
 
   # ---- iOS: engine runs a game on the simulator (release hard gate) ----------
   # The released ios SDK is a device app; the simulator cannot execute device

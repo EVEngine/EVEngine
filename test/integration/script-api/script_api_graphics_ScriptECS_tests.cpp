@@ -1,3 +1,61 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "ui",
+  "modules": [
+    "action",
+    "agent",
+    "agent_tensor",
+    "animation",
+    "authority",
+    "avatar",
+    "buildingfx",
+    "card",
+    "climbing",
+    "combat",
+    "common",
+    "crowd",
+    "devtools",
+    "dialogue",
+    "platform_event",
+    "ui"
+  ],
+  "origins": [
+    "DatabasePanel.cpp",
+    "ECS.cpp",
+    "EditorShell.cpp",
+    "Inspector.cpp",
+    "ReflectScript.cpp",
+    "ScriptECS.cpp",
+    "action_ability_script.cpp",
+    "agent_script.cpp",
+    "agent_tensor_script.cpp",
+    "animation_clip_editing.cpp",
+    "async.cpp",
+    "authority.cpp",
+    "avatar.cpp",
+    "binding_selfcheck.cpp",
+    "building_placement_regression.cpp",
+    "card.cpp",
+    "card_gameplay_control.cpp",
+    "climbing_anchor_authoring.cpp",
+    "combat_carrier.cpp",
+    "combat_script.cpp",
+    "composable_gameplay.cpp",
+    "console.cpp",
+    "crowd_contacts.cpp",
+    "crowd_script.cpp",
+    "crowd_spawn.cpp",
+    "dialogue_state_script_provider.cpp",
+    "script_provider.cpp"
+  ]
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: DatabasePanel
@@ -3832,11 +3890,11 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         moved <- arena.setMoveIntent(player, 1.0, 0.0, 1.0);
         advanced <- arena.advance(1, 0.25);
         playerState <- arena.state(player);
-        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0);
+        damaged <- arena.applyDamage(player, enemy, "Damage.Physical.Slash", 18.0, 10.0, 0.0, 0.0, 0.0, false, 1);
         timelineDamage <- arena.applyTimelineDamage(player, enemy,
             "{\"damageType\":\"Damage.Physical.Slash\",\"amount\":7,\"poiseAmount\":2}");
         enemyState <- arena.state(enemy);
-        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0);
+        invalid <- arena.applyDamage("bad", enemy, "Damage.Physical.Slash", 1.0, 0.0, 0.0, 0.0, 0.0, false, 1);
         grantedAbility <- arena.grantAbility("fighter:player", "combat-ability:light-attack");
         grantId <- grantedAbility.value.grantId;
         activatedAbility <- arena.activateAbility(grantId, 2);

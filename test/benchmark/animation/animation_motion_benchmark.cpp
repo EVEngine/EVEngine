@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "performance",
+  "module": "animation"
+}
+*/
+// clang-format on
+
 #include "animation/Animation.h"
 #include "common/Time.h"
 #include "zeroerr/assert.h"

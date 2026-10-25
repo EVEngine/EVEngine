@@ -1,3 +1,44 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "editor",
+  "origins": [
+    "editor_material_target.cpp",
+    "editor_mesh_modifier_editor.cpp",
+    "editor_network_telemetry.cpp",
+    "editor_offscreen_preview.cpp",
+    "editor_particle_graph.cpp",
+    "editor_pcg_graph.cpp",
+    "editor_physics_asset.cpp",
+    "editor_procgen_script_editor.cpp",
+    "editor_property_model.cpp",
+    "editor_runtime_manifest_v2.cpp",
+    "editor_scene_component_payload.cpp",
+    "editor_scene_runtime.cpp",
+    "editor_scene_target_v2.cpp",
+    "editor_skeleton_overlay.cpp"
+  ],
+  "cases": {
+    "physics-backend": [
+      "editor.physics.live_2d_polygon_publication_swaps_after_build_and_undoes",
+      "editor.physics.live_shape_publication_rejection_preserves_old_shape_and_document",
+      "editor.physics.live_shape_publication_swaps_after_build_and_undoes"
+    ],
+    "script-binding": [
+      "editor.procgen.script_editor_script_loads_schema_and_keeps_failed_preview",
+      "editor.v2.runtime_builder_quick_add_click_executes_command",
+      "editor.v2.script_command_failure_is_not_silent",
+      "editor.v2.script_discovers_plans_and_executes_registered_command",
+      "editor.v2.script_game_injects_command_into_the_same_session_protocol",
+      "editor.v2.script_tool_failure_is_not_silent"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: editor material target

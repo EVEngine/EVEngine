@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "sensing",
+  "origins": [
+    "sensing_environment.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "common/Module.h"
 #include "sensing/Sensing.h"
 #include "simplesquirrel/simplesquirrel.hpp"

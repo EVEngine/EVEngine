@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "render-offscreen",
+  "module": "asset_stylize"
+}
+*/
+// clang-format on
+
 #include <cstring>
 #include <filesystem>
 #include <fstream>

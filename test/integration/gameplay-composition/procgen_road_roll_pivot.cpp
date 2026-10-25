@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_roll_pivot.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include "procgen/editing/RoadPresetDocument.h"

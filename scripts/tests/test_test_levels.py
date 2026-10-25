@@ -60,6 +60,103 @@ class TestLevelCatalogueTests(unittest.TestCase):
             labels = next(prop["value"] for prop in bundles["bundle/gpu.cpp"]["properties"]
                           if prop["name"] == "LABELS")
             self.assertTrue({"benchmark", "requires:graphics", "requires:window"}.issubset(labels))
+    def test_formatter_reflow_preserves_policy(self):
+        policy = '// eve-test-policy:\n// {"schema":"evengine.test-policy",\n// "version":1,"default":"local-format"}\n'
+        self.assertEqual(levels.source_header_policy(policy + '#include "x.h"'), {"default": "local-format"})
+        self.assertEqual(levels.source_header_policy('/* eve-test-policy:\n{"schema":"evengine.test-policy","version":1,"module":"rules"}\n*/'), {"module": "rules"})
+
+    def test_v3_discovers_unit_sources_without_catalogue_entries(self):
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        text = 'TEST_CASE("rules.added") { CHECK(true); }'
+        inventory = {"unit/rules/new_rule.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()},
+                     "unit/rules/helper.cpp": {"text": "int helper() { return 1; }", "cases": {}, "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        expanded = levels.expanded_catalogue(data, inventory)
+        self.assertEqual(expanded["sources"]["unit/rules/new_rule.cpp"]["module"], "rules")
+        self.assertEqual(expanded["sources"]["unit/rules/helper.cpp"]["role"], "helper")
+        self.assertEqual(levels.classified_cases(expanded["sources"]["unit/rules/new_rule.cpp"]),
+                         {"rules.added": "local-logic"})
+        self.assertEqual(data["sources"], {})
+        inventory["unit/rules/new_rule.cpp"]["text"] = 'TEST_CASE("rules.added") { openHeadlessGfx(gfx); }'
+        inventory["unit/rules/new_rule.cpp"]["cases"] = levels.cases_in(inventory["unit/rules/new_rule.cpp"]["text"])
+        self.assertTrue(any("external setup" in error for error in levels.catalogue_errors(data, inventory)))
+
+    def test_v3_local_integration_semantics_and_resource_labels(self):
+        from unittest.mock import patch
+
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        policy = {"schema": "evengine.test-policy", "version": 1, "module": "graphics", "default": "render-window"}
+        text = '// eve-test-policy: ' + json.dumps(policy) + '\nTEST_CASE("new.render") { CHECK(true); }'
+        inventory = {"integration/rendering/new_render.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "integration/rendering/new_render.cpp"
+            source.parent.mkdir(parents=True)
+            source.write_text(text, encoding="utf-8")
+            output = root / "levels.cmake"
+            with patch.object(levels, "TEST_DIR", root):
+                levels.emit_cmake(data, output)
+            rendered = output.read_text(encoding="utf-8")
+            self.assertIn("integration;reason:render-window;requires:graphics;requires:window", rendered)
+            self.assertIn(source.as_posix(), rendered)
+        no_owner = text.replace(', "module": "graphics"', '')
+        inventory["integration/rendering/new_render.cpp"]["text"] = no_owner
+        self.assertTrue(any("semantic module ownership" in error for error in levels.catalogue_errors(data, inventory)))
+
+    def test_v3_header_policy_rejects_invalid_and_duplicate_authorities(self):
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        declaration = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"default":"local-format"}\n'
+        body = 'TEST_CASE("rules.case") { CHECK(true); }'
+        def inventory(text):
+            return {"unit/rules/rules.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory(declaration + body)), [])
+        for header in ('// eve-test-policy: not-json\n', declaration + declaration,
+                       declaration.replace('"version":1', '"version":999'),
+                       declaration.replace('"version":1', '"version":true'),
+                       declaration.replace('"default":"local-format"', '"unknown":"value"'),
+                       declaration.replace('"default":"local-format"', '"default":[]'),
+                       declaration.replace('"default":"local-format"', '"module":{}'),
+                       declaration.replace('"default":"local-format"', '"generated":[1]'),
+                       declaration.replace('"default":"local-format"', '"cases":{"local-logic":[1]}'),
+                       declaration.replace('"default":"local-format"', '"cases":[]')):
+            with self.subTest(header=header):
+                self.assertTrue(levels.catalogue_errors(data, inventory(header + body)))
+        data["sources"]["unit/rules/rules.cpp"] = {"default": "local-format"}
+        self.assertTrue(any("both source and catalogue" in e for e in levels.catalogue_errors(data, inventory(declaration + body))))
+        self.assertEqual(levels.source_header_policy('const char* s = R"x(\n' + declaration + ')x";'), {})
+        self.assertEqual(levels.source_header_policy('int value;\n' + declaration), {})
+
+    def test_v3_new_source_addition_and_removal_refresh_cmake(self):
+        import shutil
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for folder in ("cmake", "scripts", "test/unit/rules"):
+                (root / folder).mkdir(parents=True)
+            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/cpp_source.py", "scripts/utf8_stdio.py"):
+                shutil.copyfile(levels.ROOT / relative, root / relative)
+            (root / "test/unit/rules/first.cpp").write_text('TEST_CASE("first.case") { CHECK(true); }', encoding="utf-8")
+            (root / "CMakeLists.txt").write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(SourceDiscovery NONE)\n'
+                'include(cmake/TestLevels.cmake)\neve_configure_test_levels(metadata)\n', encoding="utf-8")
+            build = root / "build"
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(root), "-B", str(build)],
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            # No catalogue or existing .cpp changes: a new nested directory and
+            # source alone must refresh the CTest metadata on the next build.
+            added = root / "test/unit/rules/extra/added.cpp"
+            added.parent.mkdir()
+            added.write_text('TEST_CASE("added.case") { CHECK(true); }', encoding="utf-8")
+            def rebuild():
+                result = subprocess.run(["cmake", "--build", str(build)], capture_output=True,
+                                        text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return (build / "test_levels.cmake").read_text(encoding="utf-8")
+            self.assertIn('EVE_TEST_LEVEL_added.cpp|added.case', rebuild())
+            added.unlink()
+            self.assertNotIn('EVE_TEST_LEVEL_added.cpp|added.case', rebuild())
 
     def fixture(self, text='TEST_CASE("local.case") { CHECK(1 == 1); }'):
         inventory = {"fixture.cpp": {"text": text, "cases": levels.cases_in(text),
@@ -113,7 +210,7 @@ class TestLevelCatalogueTests(unittest.TestCase):
             root = Path(directory)
             (root / "fixture.cpp").write_text(text, encoding="utf-8")
             before, after = root / "before.cmake", root / "after.cmake"
-            with patch.object(levels, "CATALOGUE", root / "test_levels.json"):
+            with patch.object(levels, "TEST_DIR", root):
                 levels.emit_cmake(data, before)
                 levels.emit_cmake(compact, after)
             self.assertEqual(before.read_text(encoding="utf-8"), after.read_text(encoding="utf-8"))
@@ -126,14 +223,14 @@ class TestLevelCatalogueTests(unittest.TestCase):
             root = Path(directory)
             for folder in ("cmake", "scripts", "test"):
                 (root / folder).mkdir()
-            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/utf8_stdio.py"):
+            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/cpp_source.py", "scripts/utf8_stdio.py"):
                 shutil.copyfile(levels.ROOT / relative, root / relative)
             data, _ = self.fixture()
             data["version"] = 2
             del data["sources"]["fixture.cpp"]["cases"]
-            (root / "test/test_levels.json").write_text(json.dumps(data), encoding="utf-8")
             source = root / "test/fixture.cpp"
-            source.write_text('TEST_CASE("local.case") { CHECK(true); }', encoding="utf-8")
+            header = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"role":"tests","default":"local-logic"}\n'
+            source.write_text(header + 'TEST_CASE("local.case") { CHECK(true); }', encoding="utf-8")
             (root / "CMakeLists.txt").write_text(
                 'cmake_minimum_required(VERSION 3.21)\nproject(LevelRefresh NONE)\n'
                 'include(cmake/TestLevels.cmake)\neve_configure_test_levels(metadata)\n', encoding="utf-8")
@@ -246,7 +343,7 @@ TEST_CASE("same.case") { CHECK(true); }
             self.assertIn("unit;reason:local-logic;no-render", output.read_text(encoding="utf-8"))
 
     def test_repository_catalogue_covers_every_source_and_case(self):
-        data = json.loads(levels.CATALOGUE.read_text(encoding="utf-8"))
+        data = levels.source_catalogue()
         inventory = levels.source_inventory(levels.ROOT / "test")
         self.assertEqual(levels.catalogue_errors(data, inventory), [])
 

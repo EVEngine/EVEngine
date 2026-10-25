@@ -1,3 +1,46 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-file",
+  "module": "devtools",
+  "modules": [
+    "devtools",
+    "filesystem",
+    "graphics",
+    "map",
+    "rpg",
+    "tensor",
+    "ui"
+  ],
+  "origins": [
+    "language_server.cpp",
+    "map_dual_grid_masks.cpp",
+    "mcp_project_index.cpp",
+    "pcg_photo_mode_session.cpp",
+    "reflection_probe_culling.cpp",
+    "remotesync.cpp",
+    "rpg_classic.cpp",
+    "rpg_classic_playthrough.cpp",
+    "tensor_llm.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "devtools.projectIndex.stdioDiscoveryAndTaskContext",
+      "hotreload.remoteSyncUnreachableRecovers"
+    ],
+    "platform-network": [
+      "hotreload.remoteSyncDownload"
+    ],
+    "script-binding": [
+      "rpg.classic.mainScriptCompilesThroughEveScriptFrontend"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: language server

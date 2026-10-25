@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "card",
+  "origins": [
+    "card_rts_production_integration.cpp",
+    "card_rts_script_composition.cpp"
+  ],
+  "cases": {
+    "platform-file": [
+      "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard"
+    ],
+    "script-binding": [
+      "card.genericBatchComposesWithEconomyWithoutRts",
+      "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
+      "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
+      "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+      "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff",
+      "card.rtsScriptShortCollectionConstructionAndAtomicPlayContract"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: card rts production integration

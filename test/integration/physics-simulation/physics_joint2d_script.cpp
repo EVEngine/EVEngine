@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "cases": {
+    "script-binding": [
+      "physics.joint2d.scriptResultAndOwningRelease"
+    ]
+  },
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <Box2D/Box2D.h>
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>

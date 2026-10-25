@@ -39,72 +39,9 @@ import utf8_stdio
 
 ROOT = Path(__file__).resolve().parent.parent
 
-# Files that must not grow getModInst / ModuleManager / cap::query|forEach*
-# primitives on changed lines. Migrated once from the retired JSON catalogue;
-# edit this list (not a parallel JSON) when marking a new hot path.
-HOT_PATH_GLOBS: tuple[str, ...] = (
-    "src/modules/climbing/ClimbingExecution.cpp",
-    "src/modules/climbing/ClimbingInput.cpp",
-    "src/modules/climbing/ClimbingECS.cpp",
-    "src/modules/climbing/ClimbingServices.cpp",
-    "src/modules/weapon/CombatCarrier.cpp",
-    "src/modules/physics/WorldSphereSweep.cpp",
-    "src/modules/physics/World3DQueries.cpp",
-    "src/modules/physics/forces/*.cpp",
-    "src/modules/physics/mechanics/*.cpp",
-    "src/modules/vehicle/VehicleTires2D.cpp",
-    "src/modules/vehicle/VehicleTires3D.cpp",
-    "src/modules/vehicle/VehicleTireRuntime.cpp",
-    "src/engine/common/SmoothMax.h",
-    "src/modules/audio/EventSink.cpp",
-    "src/modules/audio/PcmStream.cpp",
-    "src/modules/crowd/CrowdAvoidance.cpp",
-    "src/modules/sensing/EnvironmentQuery.cpp",
-    "src/modules/crowd/CrowdInternal.h",
-    "src/modules/crowd/CrowdSimulation.cpp",
-    "src/modules/crowd/CrowdStep.cpp",
-    "src/modules/graphics/RenderSystem3D.cpp",
-    "src/modules/graphics/hair/GroomAsset.cpp",
-    "src/modules/graphics/raytracing/vulkan/VulkanRayTracing.cpp",
-    "src/modules/graphics/vulkan/GraphicsSampler.cpp",
-    "src/modules/graphics/webgpu/GraphicsSampler.cpp",
-    "src/modules/hexmap/HexSphereMap.cpp",
-    "src/modules/hexmap/HexSphereTopology.cpp",
-    "src/modules/joystick/sdl/EventSink.cpp",
-    "src/modules/keyboard/sdl/EventSink.cpp",
-    "src/modules/model3d/ModelRenderer.cpp",
-    "src/modules/particles/ParticleSystem.cpp",
-    "src/modules/physics/World3DContacts.cpp",
-    "src/modules/physics/box3d/Box3DWorld.cpp",
-    "src/modules/physics/box3d/Box3DWorldContacts.cpp",
-    "src/modules/physics/box3d/Box3DWorldMover.cpp",
-    "src/modules/physics/box3d/Box3DWorldQueries.cpp",
-    "src/modules/physics/DistanceField3D.cpp",
-    "src/modules/physics/jolt/JoltContactPolicy.cpp",
-    "src/modules/physics/jolt/JoltExplosion.cpp",
-    "src/modules/physics/jolt/JoltGeometryQueries.cpp",
-    "src/modules/physics/jolt/JoltMesh.cpp",
-    "src/modules/physics/jolt/JoltSolvedContacts.cpp",
-    "src/modules/physics/jolt/JoltState.cpp",
-    "src/modules/physics/jolt/JoltWorld.cpp",
-    "src/modules/physics/jolt/JoltWorldJoints.cpp",
-    "src/modules/physics/jolt/JoltWorldMover.cpp",
-    "src/modules/procgen/heightmap/TerrainMeshStamp.cpp",
-    "src/modules/procgen/heightmap/TerrainStamp.cpp",
-    "src/modules/profiler/Profiler.cpp",
-    "src/modules/rts/RTSFormationClearance.cpp",
-    "src/modules/rts/RTSMovementGroups.cpp",
-    "src/modules/scene/TransformSystem.cpp",
-    "src/modules/tactics/TacticsBattle.cpp",
-    "src/modules/tactics/TacticsPath.cpp",
-    "src/modules/tactics/TacticsTypes.cpp",
-    "src/modules/touch/sdl/EventSink.cpp",
-    "src/modules/ui/Component.cpp",
-    "src/modules/ui/EventSink.cpp",
-    "src/modules/ui/UISystem.cpp",
-    "src/modules/weather/Lightning.cpp",
-    "src/modules/window/sdl/EventSink.cpp",
-)
+# A hot source declares // eve-hot-path in its leading comments. A directory
+# marker retains wildcard ownership for new .cpp files without a central list.
+HOT_PATH_DIRECTORY_POLICY = "eve.hot-path-directory/v1:*.cpp"
 
 HOT_PATH_PRIMITIVE = re.compile(
     r"\b(?:getModInst|requireModInst)\s*\(|ModuleManager::getInstance|"
@@ -238,8 +175,27 @@ def _is_runtime_module_path(path: str) -> bool:
 
 
 def _is_hot_path(path: str) -> bool:
-    normalized = path.replace("\\", "/")
-    return any(path_matches(normalized, glob) for glob in HOT_PATH_GLOBS)
+    source = (ROOT / path.replace("\\", "/")).resolve()
+    if not source.is_relative_to(ROOT.resolve()):
+        return False
+    if source.suffix == ".cpp":
+        for directory in source.parents:
+            if not directory.is_relative_to(ROOT.resolve()):
+                break
+            marker = directory / ".eve-hot-path"
+            if marker.is_file():
+                if marker.read_text(encoding="utf-8").strip() != HOT_PATH_DIRECTORY_POLICY:
+                    raise ValueError(f"{marker}: unsupported hot-path directory policy")
+                return True
+    if not source.is_file():
+        return False
+    text = source.read_text(encoding="utf-8")
+    cursor = 0
+    while match := re.match(r"\s*(//[^\n]*|/\*.*?\*/)", text[cursor:], re.DOTALL):
+        if match[1].strip() == "// eve-hot-path":
+            return True
+        cursor += match.end()
+    return False
 
 
 def _git(args: list[str]) -> str:
@@ -445,6 +401,7 @@ def lint_runtime_guards(lines: list[SourceLine]) -> list[Finding]:
     """Enforce G-3 / G-4 / G-5 on changed lines (no JSON catalogue)."""
 
     findings: list[Finding] = []
+    hot_paths = {path: _is_hot_path(path) for path in {item.path for item in lines}}
     for index, item in enumerate(lines):
         text = item.text
         context = _context(lines, index)
@@ -461,7 +418,7 @@ def lint_runtime_guards(lines: list[SourceLine]) -> list[Finding]:
                 )
             )
 
-        if _is_hot_path(item.path) and HOT_PATH_PRIMITIVE.search(text):
+        if hot_paths[item.path] and HOT_PATH_PRIMITIVE.search(text):
             findings.append(
                 Finding(
                     "module-interface",

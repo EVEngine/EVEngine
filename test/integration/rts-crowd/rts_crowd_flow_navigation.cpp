@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "rts.crowd.scriptSharedFlowConfigurationHasExactQuotas"
+    ]
+  },
+  "module": "rts",
+  "origins": [
+    "rts_crowd_flow_navigation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "RtsCompositionFixtures.h"
 #include "rts/RTSCrowdFlowNavigationInternal.h"

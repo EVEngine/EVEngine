@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen",
+    "procgen_editing"
+  ],
+  "origins": [
+    "procgen_road_sampling_defaults.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include "procgen/editing/RoadPresetDocument.h"
 #include "procgen/road/RoadNetworkCodec.h"
 #include "procgen/road/RoadRecipes.h"

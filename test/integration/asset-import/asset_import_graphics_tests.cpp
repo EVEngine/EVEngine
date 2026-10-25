@@ -1,3 +1,84 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-files",
+  "module": "filesystem",
+  "modules": [
+    "animation",
+    "editor",
+    "filesystem",
+    "font",
+    "map",
+    "model3d",
+    "particles",
+    "sceneloader",
+    "sound",
+    "spritestack"
+  ],
+  "origins": [
+    "ModelPrefetch.cpp",
+    "PreparedFile.cpp",
+    "animation_mixamo.cpp",
+    "editor_disk_asset_catalog_v2.cpp",
+    "font.cpp",
+    "map.cpp",
+    "model3d.cpp",
+    "particles.cpp",
+    "resource.cpp",
+    "resource_decoder_lifetime.cpp",
+    "resource_format_model.cpp",
+    "resource_format_sound.cpp",
+    "sceneloader.cpp",
+    "spritestack.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "SceneLoader.prewarmAsync.reusesDecodedScene",
+      "resource.asyncLoadFailureSurfacesInWaitFor",
+      "resource.getJoinsInFlightRequest",
+      "resource.requestAsyncThenWaitFor",
+      "thread.resource executor bounds concurrent decoding"
+    ],
+    "physics-backend": [
+      "particles.groundCulling.filtersVisitorAndControlsPlayback"
+    ],
+    "platform-file": [
+      "animation.mixamo.anim.txtFixturesPresent",
+      "font.newFontData.invalidSize",
+      "font.newFontData.ttf",
+      "font.newFontDataFromFile.cached",
+      "model3d.materialApi.gltf",
+      "model3d.materialApi.objMtl",
+      "model3d.newModelData.rock1Fbx",
+      "model3d.newModelDataFromFile.cached",
+      "model3d.newModelDataFromFile.sofaObjMtl",
+      "spritestack.render.batchUses2DStacks",
+      "spritestack.render.pure2DStack"
+    ],
+    "render-window": [
+      "SceneLoader.load.buildsGameObjectTreeWithRenderables",
+      "SceneLoader.load.gltfCesiumManPbrAndAnimation",
+      "SceneLoader.load.pbrMaterialAndLightsAndCamera",
+      "SceneLoader.load.pbrTextureCacheReusesTexture",
+      "SceneLoader.loadAsync.mountsOnPoll",
+      "SceneLoader.loadAsync.precodesTextures",
+      "animation.mixamo.skeletonIdleRunJumpPreview",
+      "map.render.orthoAndIsoPreview",
+      "model3d.buildRenderable.objMtl",
+      "model3d.render.cesiumManGltf",
+      "model3d.render.gltfEmbeddedUvOrientation",
+      "model3d.render.rock1Fbx",
+      "model3d.render.rock1ToonShader",
+      "model3d.render.sofaObjMtl",
+      "particles.render.fireAndSmokePreview"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: ModelPrefetch
@@ -2504,6 +2585,9 @@ class DelayedResourceExecutor final : public eve::caps::IAsyncWorkExecutor {
 public:
     ~DelayedResourceExecutor() override {
         release();
+        for (auto &worker : workers_) {
+            if (worker.joinable()) worker.join();
+        }
         workers_.clear();
         eve::cap::revoke<eve::caps::IAsyncWorkExecutor>(this);
     }
@@ -2523,7 +2607,7 @@ public:
 private:
     std::mutex                   gate_;
     std::unique_lock<std::mutex> hold_{gate_};
-    std::vector<std::jthread>    workers_;
+    std::vector<std::thread>     workers_;
 };
 
 }  // namespace

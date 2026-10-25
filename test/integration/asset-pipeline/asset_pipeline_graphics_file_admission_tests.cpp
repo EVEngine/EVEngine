@@ -1,3 +1,33 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-pipeline",
+  "module": "asset",
+  "modules": [
+    "asset",
+    "asset_import",
+    "data"
+  ],
+  "origins": [
+    "asset_import_gltf_animation.cpp",
+    "asset_import_gltf_material.cpp",
+    "asset_import_tga.cpp",
+    "asset_import_tiff.cpp",
+    "asset_mesh_attributes.cpp",
+    "asset_mesh_uv.cpp",
+    "asset_migration.cpp"
+  ],
+  "cases": {
+    "render-offscreen": [
+      "asset.mesh.unityV11AuthoringChannelsSurviveCookAndRuntimeLoad"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Cohesive asset workflow contracts share one physical translation unit.
 
 // Contract section: asset import gltf animation

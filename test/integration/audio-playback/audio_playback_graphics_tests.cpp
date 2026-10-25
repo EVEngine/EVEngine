@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-audio",
+  "module": "demo",
+  "modules": [
+    "demo",
+    "sound"
+  ],
+  "origins": [
+    "demo.cpp",
+    "sound.cpp"
+  ],
+  "cases": {
+    "platform-file": [
+      "sound.modplug.midi.decode"
+    ],
+    "render-window": [
+      "demo.newPlanetTexture"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: demo

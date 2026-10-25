@@ -1,6 +1,6 @@
-import json
 import sys
 import unittest
+import tempfile
 from pathlib import Path
 
 # check_test_manifest imports its sibling utf8_stdio by flat name, so scripts/ has
@@ -11,11 +11,14 @@ SCRIPTS_DIR = Path(__file__).resolve().parent.parent
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
+import test_levels  # noqa: E402
+
 from check_test_manifest import (  # noqa: E402
     DOMAIN_TABLE,
     SHARED_SOURCES,
     TEST_DIR,
     classify,
+    composed_makefile,
     discovery_contract_errors,
     domain_wiring_errors,
     parse_domain_table,
@@ -68,6 +71,16 @@ set(EVE_TEST_PREFIX_DOMAIN
 
 
 class CheckTestManifestTest(unittest.TestCase):
+    def test_platform_recipe_composition_retains_discovery_audit(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "cmake").mkdir()
+            (root / "Makefile").write_text("include cmake/windows.mk\n", encoding="utf-8")
+            (root / "cmake/windows.mk").write_text(VALID_MAKEFILE + "\ninclude cmake/windows.mk\n", encoding="utf-8")
+            self.assertEqual(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")), [])
+            (root / "cmake/windows.mk").write_text("# accidentally removed ensure-built source discovery\n", encoding="utf-8")
+            self.assertTrue(discovery_contract_errors(VALID_CMAKE, composed_makefile(root / "Makefile")))
+
     def test_accepts_src_list_discovery(self):
         self.assertEqual(discovery_contract_errors(VALID_CMAKE, VALID_MAKEFILE), [])
 
@@ -200,7 +213,9 @@ class CheckTestManifestTest(unittest.TestCase):
         # semantic asset module label must not duplicate their importer/renderer
         # closure in unit_test_asset after a physical source regrouping.
         tables = parse_domain_table(DOMAIN_TABLE.read_text(encoding="utf-8"))
-        policies = json.loads((TEST_DIR / "test_levels.json").read_text(encoding="utf-8"))["sources"]
+        policies = test_levels.resolved_source_policies(
+            test_levels.source_catalogue(), test_levels.source_inventory(TEST_DIR)
+        )
         for filename, semantic_module in (
             ("asset_pipeline_graphics_file_admission_tests.cpp", "asset"),
             ("asset_pipeline_graphics_import_workflows_tests.cpp", "asset_graphics"),

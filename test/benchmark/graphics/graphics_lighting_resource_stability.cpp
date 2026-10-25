@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "render-window",
+  "module": "graphics"
+}
+*/
+// clang-format on
+
 // Opt-in long-duration GPU resource stability workloads. Short integration
 // frame-slot tests do not reproduce reference-count overflow or pool exhaustion.
 #include <glm/glm.hpp>

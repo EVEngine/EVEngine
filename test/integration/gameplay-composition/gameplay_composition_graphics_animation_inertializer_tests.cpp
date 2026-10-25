@@ -1,3 +1,56 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "action_editor",
+  "modules": [
+    "action_editor",
+    "action_game_event",
+    "agent",
+    "agent_tensor",
+    "animation",
+    "animation_editing",
+    "animation_tensor",
+    "attributes",
+    "audio_editing",
+    "card"
+  ],
+  "origins": [
+    "action_editor_adapter.cpp",
+    "action_game_event.cpp",
+    "action_montage.cpp",
+    "action_preview_controller.cpp",
+    "action_timeline.cpp",
+    "action_timeline_payload_editor.cpp",
+    "action_timeline_widget.cpp",
+    "agent_composition.cpp",
+    "agent_tensor.cpp",
+    "animation_action_preview.cpp",
+    "animation_inertializer.cpp",
+    "animation_smr_neural_retarget.cpp",
+    "attribute_domain_adapters.cpp",
+    "attributes_rpg_unification.cpp",
+    "audio.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "audio.modplug.midi.play",
+      "audio.source.seekTell",
+      "audio.streamSource.pump"
+    ],
+    "platform-file": [
+      "animClip.reloadPathRefreshesRegisteredClips",
+      "animClip.reloadUnknownOrBrokenPathIsNoop"
+    ],
+    "script-binding": [
+      "audio.pcgZone.squirrelContract"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: action editor adapter

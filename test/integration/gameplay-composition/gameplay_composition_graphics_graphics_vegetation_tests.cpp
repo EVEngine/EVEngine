@@ -1,3 +1,63 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "graphics",
+  "modules": [
+    "animation",
+    "effects",
+    "graphics",
+    "graphics_editing",
+    "graphics_raytracing",
+    "map_editing",
+    "npc_ai",
+    "particles"
+  ],
+  "origins": [
+    "graphics_authoring_projection.cpp",
+    "graphics_primitive_cache.cpp",
+    "graphics_raytracing.cpp",
+    "graphics_vegetation.cpp",
+    "graphics_vegetation_gizmo.cpp",
+    "kaykit_combat_assets.cpp",
+    "map_tile_editing.cpp",
+    "npc_ai_navigation.cpp",
+    "particles_attach_extra.cpp",
+    "particles_attach_more.cpp",
+    "particles_attach_skin.cpp"
+  ],
+  "cases": {
+    "platform-file": [
+      "particles.attach.cesiumManBoneByNameIfPresent",
+      "particles.attach.clipSampleMovesEmitter",
+      "particles.skin.clearRestoresBoneOriginSpawn",
+      "particles.skin.emitFromSkinRespectsBuffer",
+      "particles.skin.emptyBoneFilterFallsBack",
+      "particles.skin.filterByIndexAndClearFilter",
+      "particles.skin.planeXzYzCesiumMan",
+      "particles.skin.surfaceEmitCesiumMan"
+    ],
+    "render-offscreen": [
+      "graphics.backendParity.primitive2DAnd3DReadback",
+      "graphics.backendParity.vegetationFieldGizmoReadback",
+      "graphics.raytracing.probeAndUnsupportedOps",
+      "graphics.vegetation.color_mask_remaps_after_gpu_filtering",
+      "graphics.vegetation.detail_layer_matches_tve_replace_formula",
+      "graphics.vegetation.extras_gpu_atlas_tracks_revision_and_rejects_half_overflow",
+      "graphics.vegetation.global_colors_matches_tve_linear_fragment_formula",
+      "graphics.vegetation.gpu_field_binding_is_coherent_stale_safe_and_atomic",
+      "graphics.vegetation.normal_gpu_matches_filtered_cpu_reference",
+      "graphics.vegetation.prebaked_layers_upload_bind_and_release_atomically"
+    ],
+    "script-binding": [
+      "GraphicsPrimitives.scriptSpatialShapesAndReleasedProxy"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: graphics authoring projection

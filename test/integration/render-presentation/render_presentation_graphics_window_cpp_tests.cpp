@@ -1,3 +1,23 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "window",
+  "origins": [
+    "window_cpp.cpp",
+    "window_lifecycle.cpp"
+  ],
+  "cases": {
+    "render-window": [
+      "window.lifecycle.desktopEventContract"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: window cpp
@@ -438,12 +458,12 @@ TEST_CASE("graphics.lifecycle.appBackgroundForegroundResume") {
     cleanup.window = window;
     for (int cycle = 0; cycle < 2; ++cycle) {
         SDL_Event event{};
-        event.type = SDL_APP_DIDENTERBACKGROUND;
+        event.type            = SDL_APP_DIDENTERBACKGROUND;
         const auto background = SDL_PushEvent(&event);
         REQUIRE_EQ(background, 1);
         REQUIRE(!graphics->isActive());
         graphics->present();
-        event.type = SDL_APP_DIDENTERFOREGROUND;
+        event.type            = SDL_APP_DIDENTERFOREGROUND;
         const auto foreground = SDL_PushEvent(&event);
         REQUIRE_EQ(foreground, 1);
         verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);

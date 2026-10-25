@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "performance",
+  "module": "card"
+}
+*/
+// clang-format on
+
 // Opt-in full-match scenario: sustained collection, combat, and victory belong to benchmarking.
 #include <filesystem>
 #include <fstream>

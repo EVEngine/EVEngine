@@ -1,3 +1,52 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "filesystem",
+  "modules": [
+    "filesystem",
+    "graphics",
+    "physics",
+    "physics_softbody",
+    "stylize",
+    "ui",
+    "voxel",
+    "weather"
+  ],
+  "origins": [
+    "shader.cpp",
+    "shader_reload.cpp",
+    "shader_reload_vulkan.cpp",
+    "softbody.cpp",
+    "stylize.cpp",
+    "stylize_anime.cpp",
+    "stylize_mesh_particles.cpp",
+    "ui_texture_bridge.cpp",
+    "voxel_face_dir.cpp",
+    "voxel_render_atlas.cpp",
+    "water_mesh.cpp",
+    "weather.cpp"
+  ],
+  "cases": {
+    "physics-backend": [
+      "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+      "softbody.cloth.collidesWithWorld",
+      "softbody.cloth.momentumExchangeScalesWithMass",
+      "softbody.cloth3d.collidesWithWorld3D",
+      "softbody.cloth3d.momentumExchangeScalesWithMass",
+      "softbody.fluid.emitAndSettle",
+      "softbody.fluid.interactRepels"
+    ],
+    "script-binding": [
+      "graphics.waterReflectionMasker.bindsRealVm"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: shader

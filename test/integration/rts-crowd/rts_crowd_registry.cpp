@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "rts.crowd.scriptRelocationUsesCheckedOwnerPlacement"
+    ]
+  },
+  "module": "rts",
+  "origins": [
+    "rts_crowd_registry.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "RtsCompositionFixtures.h"
 #include "rts/RTSCrowdSurfaceInternal.h"
 #include "zeroerr/assert.h"

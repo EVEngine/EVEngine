@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "script-binding",
+  "module": "avatar",
+  "origins": [
+    "avatar_appearance.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "avatar/Appearance.h"
 #include "common/Module.h"
 #include "zeroerr/unittest.h"

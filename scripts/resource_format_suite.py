@@ -54,15 +54,22 @@ def source_sections(root, name, catalogue):
 
 def inventory(root=ROOT):
     result = {}
-    catalogue = json.loads((root / "test/test_levels.json").read_text(encoding="utf-8"))
+    catalogue = test_levels.source_catalogue()
+    catalogue = test_levels.expanded_catalogue(catalogue, test_levels.source_inventory(root / "test"))
     for family, files in FAMILIES.items():
         if family == "asset":
             files = sorted({origin for source, policy in catalogue["sources"].items()
                             for origin in policy.get("origins", [source])
                             if Path(origin).name.startswith("asset_") and origin.endswith(".cpp")})
         cases = {}
+        seen_sections = set()
         for name in files:
             for physical, source in source_sections(root, name, catalogue):
+                # Multiple legacy origins may now share one rewritten source.
+                section = (physical, source)
+                if section in seen_sections:
+                    continue
+                seen_sections.add(section)
                 for case in test_levels.cases_in(source):
                     if case in cases:
                         raise ValueError("duplicate test: " + case)

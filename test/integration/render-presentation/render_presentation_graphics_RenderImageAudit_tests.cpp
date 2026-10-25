@@ -1,3 +1,22 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "animation",
+  "modules": [
+    "animation",
+    "graphics"
+  ],
+  "origins": [
+    "RenderImageAudit.cpp",
+    "RenderSceneEffects.cpp"
+  ]
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: RenderImageAudit

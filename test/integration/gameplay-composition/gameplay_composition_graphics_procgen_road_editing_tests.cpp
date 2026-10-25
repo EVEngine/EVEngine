@@ -1,3 +1,34 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "procgen_editing",
+  "modules": [
+    "card",
+    "procgen",
+    "procgen_editing",
+    "rpg"
+  ],
+  "origins": [
+    "procgen_simulation.cpp",
+    "resource_account.cpp",
+    "rpg_crafting.cpp",
+    "rpg_equipment.cpp",
+    "rpg_quest_reward.cpp",
+    "rpg_save_prepare.cpp",
+    "rpg_shop_transaction.cpp",
+    "rpg_world_interaction.cpp"
+  ],
+  "cases": {
+    "render-window": [
+      "procgen.simulation.crystalCave"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: procgen simulation

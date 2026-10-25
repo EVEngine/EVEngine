@@ -1,3 +1,19 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "cases": {
+    "script-binding": [
+      "fluids.ocean.sprayScriptBuildersSurviveGc"
+    ]
+  },
+  "module": "fluids"
+}
+*/
+// clang-format on
+
 #include <array>
 #include <glm/gtc/matrix_transform.hpp>
 #include <limits>

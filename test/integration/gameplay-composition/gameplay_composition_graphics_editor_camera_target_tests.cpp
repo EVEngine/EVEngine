@@ -1,3 +1,41 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "editor",
+  "modules": [
+    "domain_gizmo_editing",
+    "editor",
+    "queue_editing"
+  ],
+  "origins": [
+    "editor_behavior_graph.cpp",
+    "editor_biome_rules_editor.cpp",
+    "editor_building_target.cpp",
+    "editor_building_tool.cpp",
+    "editor_camera_target.cpp",
+    "editor_core_v2.cpp",
+    "editor_definition_target.cpp",
+    "editor_dialogue_graph.cpp",
+    "editor_extension_v2.cpp",
+    "editor_fluid_target.cpp",
+    "editor_gpuagents.cpp",
+    "editor_housegen_target.cpp",
+    "editor_localization.cpp",
+    "editor_map.cpp",
+    "editor_map_document.cpp",
+    "editor_material_batch_target.cpp"
+  ],
+  "cases": {
+    "script-binding": [
+      "editor.script.composes_heightmap_target_field_tool_and_transaction"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: editor behavior graph

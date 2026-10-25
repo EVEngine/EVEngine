@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "module": "climbing"
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 

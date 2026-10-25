@@ -1,12 +1,36 @@
 # C++ test levels
 
-The source policy is [test_levels.json](test_levels.json). It covers every
-C++ source under `test/`, including standalone projects, profile checks, fuzzing,
-helpers and manual probes. Literal case names come from C++ declarations; file
-defaults classify them unless an explicit case override applies.
-The six existing script-test generator macros have bounded name-prefix policies.
-Unknown sources still require an explicit file policy. The full per-case catalogue
-and CTest labels are generated in the build directory, not maintained in Git.
+Every C++ source under `test/` is discovered from disk. Literal case names come
+from C++ declarations. A normal source under `unit/<module>/` needs no registration:
+its module comes from the path, cases default to `local-logic`, and a file without
+cases is a helper. Files under `integration/<task>/` derive their task and default
+to `module-composition`; their semantic module owner must be declared locally.
+
+There is no central Test Levels JSON. CMake generates the full per-case catalogue
+and CTest labels in the build directory. Source creation/removal triggers CMake
+regeneration. Existing classifications, resource labels and relocation origins
+are preserved in their owning source files.
+
+For semantics the path cannot provide, put one policy in the leading comments,
+before includes or other C++ code:
+
+```cpp
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"graphics","default":"render-window"}
+```
+
+The source policy supports `role`, `default`, `cases`, `generated`, `module`,
+`modules`, `task`, and legacy relocation `origins`. Large policies use a leading
+`/* eve-test-policy: { ... } */` block, protected with clang-format off/on comments.
+Ordinary new files need no origins. Unknown fields or versions, duplicate headers,
+and stale case overrides are errors. Policy-looking strings in test bodies do
+not change classification. Helpers and probes outside conventional directories
+can declare their role, module and default locally.
+
+Unit safety checks still reject rendering, VM, file, worker and wall-clock setup,
+including reachable helpers. Macro-generated names still require explicit bounded
+prefixes, which new sources can declare with `generated` in their local policy.
+Module ownership, resource classifications and stale overrides remain validated;
+automatic discovery does not relax those contracts.
 
 ## Running
 

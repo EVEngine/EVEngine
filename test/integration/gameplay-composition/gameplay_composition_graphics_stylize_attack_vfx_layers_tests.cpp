@@ -1,3 +1,48 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "stylize_action",
+  "modules": [
+    "animation",
+    "stylize",
+    "stylize_action",
+    "tactics",
+    "ui",
+    "vehicle"
+  ],
+  "origins": [
+    "stylize_attack_vfx_audio_decal.cpp",
+    "stylize_attack_vfx_layers.cpp",
+    "tactics_action.cpp",
+    "tactics_rpg_integration.cpp",
+    "tactics_settlement.cpp",
+    "time_subscription_consumers.cpp",
+    "ui_motion_bind.cpp",
+    "ui_presentation.cpp",
+    "vehicle_physics.cpp"
+  ],
+  "cases": {
+    "physics-backend": [
+      "vehicle.physics2d.trackRotatesInPlace",
+      "vehicle.physics2d.wheelDrivesAndSteers",
+      "vehicle.physics3d.suspensionDrives"
+    ],
+    "render-offscreen": [
+      "stylize.ysa.skinnedMeshFollowsPalette",
+      "stylize.ysa.vertexColorFeedsMaterialColor"
+    ],
+    "render-window": [
+      "stylize.effects.gpu.meshShaders",
+      "stylize.effects.gpu.postPasses",
+      "stylize.ysa.realGpuPipeline"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: stylize attack vfx audio decal

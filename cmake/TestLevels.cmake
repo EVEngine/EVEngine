@@ -9,8 +9,18 @@ function(eve_configure_test_levels OUTPUT)
   # Literal identities now come from C++; editing a test must refresh discovery
   # even when its file default needs no policy change.
   file(GLOB_RECURSE _level_sources "${_root}/test/*.cpp")
+  # Watch source directories as well: creating/removing a .cpp must refresh
+  # policy and discovery without a central catalogue edit or a glob verifier.
+  set(_level_directories "${_root}/test")
+  file(GLOB_RECURSE _level_entries LIST_DIRECTORIES true "${_root}/test/*")
+  foreach(_entry IN LISTS _level_entries)
+    if(IS_DIRECTORY "${_entry}")
+      list(APPEND _level_directories "${_entry}")
+    endif()
+  endforeach()
   set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${_root}/test/test_levels.json" "${_root}/scripts/test_levels.py" ${_level_sources})
+    "${_root}/scripts/test_levels.py" "${_root}/scripts/cpp_source.py"
+    ${_level_sources} ${_level_directories})
   execute_process(
     COMMAND "${Python3_EXECUTABLE}" -X utf8 "${_root}/scripts/test_levels.py"
             --emit-cmake "${_metadata}"
@@ -175,7 +185,7 @@ function(eve_test_metadata SOURCE NAME OUTPUT)
       return()
     endif()
   endforeach()
-  message(FATAL_ERROR "unclassified C++ test: ${SOURCE}:${NAME}; update test/test_levels.json and reconfigure")
+  message(FATAL_ERROR "unclassified C++ test: ${SOURCE}:${NAME}; check source policy and reconfigure")
 endfunction()
 
 # Static CTest registrations in focused CPU/profile projects consume the same

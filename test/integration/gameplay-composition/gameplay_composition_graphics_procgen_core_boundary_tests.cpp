@@ -1,3 +1,56 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "particles",
+  "modules": [
+    "camera",
+    "daynight",
+    "particles",
+    "physics_backend",
+    "physics_destruction_graphics",
+    "physics_editor",
+    "physics_softbody",
+    "pixelworld_editor",
+    "procgen"
+  ],
+  "origins": [
+    "particles_dynamic_bones.cpp",
+    "particles_effect_asset.cpp",
+    "pcg_car_camera.cpp",
+    "pcg_photo_mode_apply.cpp",
+    "physics_accelerator_domains.cpp",
+    "physics_destruction_graphics.cpp",
+    "physics_editor_boot.cpp",
+    "physics_simulation_backend_satellites.cpp",
+    "pixelworld_editor.cpp",
+    "procgen_artifact_publish.cpp",
+    "procgen_core_boundary.cpp"
+  ],
+  "cases": {
+    "asset-files": [
+      "particles.effectAsset.playbackLabAssetIsConsumable"
+    ],
+    "physics-backend": [
+      "physics_destruction_graphics.staleWorldRejectsDraw"
+    ],
+    "render-offscreen": [
+      "graphics.pcgMeshLod.speedTreeFadeUsesComplementaryOpaqueCoverage"
+    ],
+    "render-window": [
+      "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones"
+    ],
+    "script-binding": [
+      "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel",
+      "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam",
+      "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: particles dynamic bones

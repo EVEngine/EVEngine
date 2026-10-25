@@ -220,7 +220,7 @@ class SquadBossSimulation {
             // Mirror companion bolts through native DamageRuntime so GAS/combat
             // and the raid simulation stay on one boss health ledger.
             local hit = sbRequire(combat.applyDamage(u.subject, bossSubject,
-                "Damage.Physical.Bolt", s.power, 4.0, 0.0, 0.0, 0.0), "companion bolt");
+                "Damage.Physical.Bolt", s.power, 4.0, 0.0, 0.0, 0.0, false, tick), "companion bolt");
             local dealt = damage(u.id, t.id, hit.appliedHealthDamage);
             if (dealt > 0.0) stats.hits += 1;
         } else {
@@ -323,7 +323,7 @@ class SquadBossSimulation {
         local amount = playerStats.getFinal("Attribute.Attack", 0.0) * s.damage
             * bossStats.getFinal("Attribute.DamageTaken", 1.0);
         local hit = sbRequire(combat.applyDamage(playerSubject, bossSubject, "Damage.Physical.Slash",
-            amount, 8.0, 0.0, 0.0, 0.0), "apply GAS damage");
+            amount, 8.0, 0.0, 0.0, 0.0, false, tick), "apply GAS damage");
         lastDamage = hit.appliedHealthDamage;
         stats.gas_hits += 1;
         // Simulation remains HP authority for the raid; CombatRuntime records the native hit.

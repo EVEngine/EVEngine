@@ -1,3 +1,60 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "buildingfx",
+  "modules": [
+    "buildingfx",
+    "card",
+    "climbing",
+    "combat",
+    "combat_navigation",
+    "common",
+    "definitions",
+    "dialogue",
+    "inventory",
+    "rpg"
+  ],
+  "origins": [
+    "buildingfx.cpp",
+    "card_payment_composition.cpp",
+    "climbing_animation.cpp",
+    "combat_action_damage.cpp",
+    "combat_action_windows.cpp",
+    "combat_arena_foundation.cpp",
+    "combat_cancel_resolver.cpp",
+    "combat_damage.cpp",
+    "combat_feel_cancel_guard.cpp",
+    "combat_framework_composition.cpp",
+    "combat_loop.cpp",
+    "combat_navigation.cpp",
+    "combat_target_enemy_ai.cpp",
+    "container_transfer.cpp",
+    "definition_runtime.cpp",
+    "definition_runtime_skill_vehicle.cpp",
+    "definition_runtime_weapon.cpp",
+    "dialogue_localization.cpp",
+    "dialogue_payment.cpp",
+    "dialogue_proc.cpp"
+  ],
+  "cases": {
+    "physics-backend": [
+      "climbing.vault.destroyedTargetCancelsWithStaleEvidence",
+      "climbing.vault.runningJumpUsesLowVaultAndProducesStableConstrainedLanding",
+      "container.zoneUsesStrongCoordinateSpacesAndValidatesShapes"
+    ],
+    "platform-file": [
+      "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips"
+    ],
+    "script-binding": [
+      "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: buildingfx

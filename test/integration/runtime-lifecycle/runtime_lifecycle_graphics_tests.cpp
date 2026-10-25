@@ -1,3 +1,57 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "runtime-lifecycle",
+  "module": "mouse",
+  "modules": [
+    "devtools",
+    "keyboard",
+    "mouse",
+    "os",
+    "platform_event",
+    "plugins",
+    "scene",
+    "timer",
+    "touch",
+    "ui"
+  ],
+  "origins": [
+    "MouseWheel.cpp",
+    "ScenePanel.cpp",
+    "event.cpp",
+    "gameplay_control_json.cpp",
+    "keyboard_cpp.cpp",
+    "os.cpp",
+    "pcg_build_config.cpp",
+    "play_host.cpp",
+    "plugins.cpp",
+    "renderflow.cpp",
+    "scene_component_scheduling.cpp",
+    "service_mocks.cpp",
+    "timer_cpp.cpp",
+    "touch.cpp"
+  ],
+  "cases": {
+    "concurrency": [
+      "event.workerPushWakesWait",
+      "timer.step.deltaPositiveAfterSleep"
+    ],
+    "render-window": [
+      "keyboard.keyScancodeRoundTrip",
+      "keyboard.textInput"
+    ],
+    "script-binding": [
+      "Scene.componentScheduling.scriptCoalescingAndFailureRecovery",
+      "devtools.playHost.liveObservationProjectsBeforeSerializing",
+      "gameplay.control.squirrelFacadeUsesTheSharedJsonRouter"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: MouseWheel

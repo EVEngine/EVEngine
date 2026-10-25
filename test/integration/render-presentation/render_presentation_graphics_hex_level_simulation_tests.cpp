@@ -1,3 +1,47 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "hd2d",
+  "modules": [
+    "hd2d",
+    "hexmap",
+    "ik",
+    "inventory",
+    "map",
+    "mouse",
+    "procgen"
+  ],
+  "origins": [
+    "hd2d.cpp",
+    "hex_level_simulation.cpp",
+    "hexmap_module.cpp",
+    "housegen_render.cpp",
+    "ik.cpp",
+    "inventory.cpp",
+    "map_fov.cpp",
+    "mouse_cpp.cpp"
+  ],
+  "cases": {
+    "module-composition": [
+      "hd2d.look.miniatureWritesCameraDofAndBloom",
+      "hd2d.look.rejectsInvalidFocusRange",
+      "hd2d.sprite.dopFixMaterialDefaults",
+      "hd2d.sprite.gridReplacementStopsOldClip",
+      "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+      "hd2d.sprite.largeTimeRemainsInClip"
+    ],
+    "runtime-lifecycle": [
+      "mouse.isCursorSupported",
+      "mouse.isDownEmptySafe"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: hd2d

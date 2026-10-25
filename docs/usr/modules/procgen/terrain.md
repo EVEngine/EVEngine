@@ -1448,3 +1448,21 @@ C++可用 `RoadTerrainWorkspace::applyBatch(writes, maximumWork)` 或
 构建结束后不保留临时输入；输入数组不会被修改，不调用用户脚本回调。
 任一项失败保留World全部通道及redo；一次成功只产生一个历史帧。后续修改policy不会改变已有redo结果。
 这接通了脚本批次消费，仍未增加逐道路作者预设的策略保存或几何归属投影。
+
+### Actor slope traversal
+
+`eve.TerrainTraversalSettings()` contains `spacingX`, `spacingZ`, `heightScale`,
+`maxSlopeDegrees` (default 45) and `slopeCost` (default 0).
+Call `output.traversalCosts(heights, baseCosts, settings)` and check the standard
+Result table. Matching finite rasters are required. Nonpositive base costs remain
+blocked; positive base costs must be at least 1. A cell exceeding the slope limit
+gets cost zero. Otherwise its cost is `base * (1 + slopeCost * rise/run)`.
+
+Spacing and height scale convert samples to world units. The steepest adjacent
+difference on each axis prevents ridge cancellation; tile borders require a halo
+and crop. Validation and overflow failures leave output unchanged; inputs may
+alias output. Bake once per terrain/policy change and copy into a separate
+Pathfinder with `setCellCost`; rebuild from original base costs, not prior output.
+This cell policy does not account for capsule width, jumping or directional drops.
+Set the same maximum slope on the physical mover. The runnable
+`examples/terrain-navigation-lab` compares two policies using real collision.

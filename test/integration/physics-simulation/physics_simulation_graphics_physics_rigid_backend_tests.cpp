@@ -1,3 +1,62 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "module": "climbing",
+  "modules": [
+    "building",
+    "climbing",
+    "fluids",
+    "physics",
+    "physics_backend",
+    "physics_destruction",
+    "physics_rope",
+    "physics_trajectory",
+    "pixelworld_physics"
+  ],
+  "origins": [
+    "climbing_prediction.cpp",
+    "climbing_reload.cpp",
+    "climbing_services.cpp",
+    "climbing_snapshot.cpp",
+    "container_adapters.cpp",
+    "fluids_volume_coupling.cpp",
+    "gameplay_control_climbing.cpp",
+    "gts_terrain_collider.cpp",
+    "physics_artifact_provider.cpp",
+    "physics_consumer_integration.cpp",
+    "physics_contact_query.cpp",
+    "physics_core_boundary.cpp",
+    "physics_destruction.cpp",
+    "physics_destruction_p3.cpp",
+    "physics_joint_frames.cpp",
+    "physics_jolt_cooking.cpp",
+    "physics_mechanism.cpp",
+    "physics_mechanism2d.cpp",
+    "physics_rigid_backend.cpp",
+    "physics_rope.cpp",
+    "physics_trajectory_collision.cpp",
+    "physics_world_snapshot_topology.cpp",
+    "pixelworld_physics.cpp",
+    "targeting.cpp"
+  ],
+  "cases": {
+    "module-composition": [
+      "container.adaptersFailureInjectionLeavesMembershipUnchanged",
+      "pixelworld_physics.character_probe_and_sweep_query_authoritative_material",
+      "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams"
+    ],
+    "script-binding": [
+      "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed",
+      "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: climbing prediction

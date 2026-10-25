@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "ui-render",
+  "module": "ui",
+  "origins": [
+    "UIComponentScheduling.cpp",
+    "UIEditorKit.cpp",
+    "UIPhaseAdv.cpp",
+    "UIPhaseB.cpp",
+    "UISystem.cpp",
+    "ui_overlay_chrome.cpp",
+    "ui_progress_size.cpp"
+  ],
+  "cases": {
+    "script-binding": [
+      "UI.adv.scriptUIComponent",
+      "UI.componentScheduling.scriptCoalescingAndFailureRecovery",
+      "UI.p0.scriptEventCallbacks"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: UIComponentScheduling

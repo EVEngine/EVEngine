@@ -5,6 +5,7 @@
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include <Poco/Base64Encoder.h>
 #include <Poco/JSON/Array.h>
@@ -534,4 +535,8 @@ std::string_view mcpFrameCaptureSchemas() {
     }();
     return schemas;
 }
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(FrameCapture, mcpFrameCaptureSchemas, callMcpFrameCaptureTool, ContentEnvelope)
 }  // namespace eve::dev

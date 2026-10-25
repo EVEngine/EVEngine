@@ -1,3 +1,63 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "asset-pipeline",
+  "module": "asset_graphics",
+  "modules": [
+    "asset",
+    "asset_graphics",
+    "asset_import",
+    "asset_procgen",
+    "asset_scene",
+    "common",
+    "graphics"
+  ],
+  "origins": [
+    "asset_cooker.cpp",
+    "asset_graphics_image_mips.cpp",
+    "asset_graphics_loader.cpp",
+    "asset_image_mips.cpp",
+    "asset_import.cpp",
+    "asset_import_animation.cpp",
+    "asset_import_structured_models.cpp",
+    "asset_import_unity_collection.cpp",
+    "asset_import_unity_fbx.cpp",
+    "asset_import_unity_native.cpp",
+    "asset_import_unity_package.cpp",
+    "asset_import_unity_sprite.cpp",
+    "asset_import_unity_vegetation_material.cpp",
+    "asset_procgen_terrain_detail_render.cpp",
+    "asset_scene_bindings.cpp",
+    "asset_shader.cpp",
+    "graphics_vegetation_translucency.cpp"
+  ],
+  "cases": {
+    "asset-files": [
+      "asset.import.unityTerrainPrefabUsesGuidFileIdAndCanonicalCoordinates",
+      "asset.packageStore.reopensBeforeAtomicPublishAndFailureKeepsOldEvpack",
+      "asset.packageStore.publishesAndReopensEva",
+      "asset.import.realGlbDecodesCanonicalMeshAndTraversesRuntimePack",
+      "asset.import.animationFixtureBecomesCanonicalEvaAndTwoRuntimeTargets",
+      "asset.import.animationFixtureRejectsDeclaredKeyCountMismatch",
+      "asset.import.structuredModelsScadCompilerAbsent",
+      "asset.import.structuredModelsScadCompilerTimeout",
+      "asset.import.unityFbxCharacterProducesSkinAndAnimation"
+    ],
+    "render-offscreen": [
+      "asset.import.unityTexture3dSurvivesCookAndVulkanUpload",
+      "graphics.vegetation.translucency_gpu_backlight_and_ambient"
+    ],
+    "render-window": [
+      "asset.import.unityStaticPrefabRendersOwnedEcsInstances",
+      "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Cohesive asset workflow contracts share one physical translation unit.
 
 // Contract section: asset cooker

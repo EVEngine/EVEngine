@@ -1,3 +1,40 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "physics-backend",
+  "module": "action",
+  "modules": [
+    "action",
+    "climbing",
+    "physics"
+  ],
+  "origins": [
+    "action_collision_ignore.cpp",
+    "box2d.cpp",
+    "box3d.cpp",
+    "climbing.cpp",
+    "climbing_anchor_execution.cpp",
+    "climbing_anchor_graph.cpp",
+    "climbing_anchor_route.cpp",
+    "climbing_definition_policy.cpp",
+    "climbing_ecs.cpp",
+    "climbing_events.cpp",
+    "climbing_input.cpp",
+    "climbing_parkour.cpp",
+    "climbing_performance.cpp",
+    "climbing_physics_policy.cpp"
+  ],
+  "cases": {
+    "render-window": [
+      "box2d.render.fallingStackPreview"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: action collision ignore

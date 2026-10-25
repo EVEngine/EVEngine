@@ -1,3 +1,30 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "performance",
+  "module": "animation",
+  "modules": [
+    "animation",
+    "emergence",
+    "settlement",
+    "stylize"
+  ],
+  "origins": [
+    "emergence_perf.cpp",
+    "settlement_benchmark.cpp",
+    "stylize_mesh_vfx_benchmark.cpp"
+  ],
+  "cases": {
+    "render-window": [
+      "stylize.meshVfx.sceneColorRefractionSamplesBoundTexture"
+    ]
+  }
+}
+*/
+// clang-format on
+
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: emergence perf
