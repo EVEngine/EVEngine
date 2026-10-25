@@ -3522,7 +3522,7 @@ VirtualTextureStreamingConfig config(std::size_t capacity = 2, std::size_t budge
     return value;
 }
 
-std::unique_ptr<VirtualTextureStreaming> session(std::size_t capacity = 2, std::size_t budget = 2) {
+std::unique_ptr<VirtualTextureStreaming> virtualTextureSession(std::size_t capacity = 2, std::size_t budget = 2) {
     auto created = VirtualTextureStreaming::create(config(capacity, budget));
     REQUIRE(created.ok());
     auto                     result = std::move(created).takeValue();
@@ -3573,7 +3573,7 @@ TEST_CASE("Virtual texture streaming feedback validation contract") {
                                                              decoded.value().mipLevel),
                        sample);
         }
-        auto streaming = session();
+        auto streaming = virtualTextureSession();
         REQUIRE(streaming->recordFeedback(0, 0).ok());
         REQUIRE(!streaming->recordFeedback(-1, 0).ok());
         REQUIRE(!streaming->recordFeedback(streaming->pageCountX(), 0).ok());
@@ -3586,7 +3586,7 @@ TEST_CASE("Virtual texture streaming feedback validation contract") {
 
 TEST_CASE("Virtual texture streaming publication eviction and invalidation contract") {
     SUB_CASE("virtual texture contract: duplicate feedback produces one published mapping") {
-        auto streaming = session();
+        auto streaming = virtualTextureSession();
         REQUIRE(streaming->recordFeedback(0, 0).ok());
         REQUIRE(streaming->recordFeedback(0, 0).ok());
         REQUIRE_EQ(streaming->stats().pendingFeedback, 2u);
@@ -3606,7 +3606,7 @@ TEST_CASE("Virtual texture streaming publication eviction and invalidation contr
     };
 
     SUB_CASE("virtual texture contract: abandon restores published mapping and eviction clears the victim") {
-        auto streaming = session(1, 1);
+        auto streaming = virtualTextureSession(1, 1);
         REQUIRE(streaming->recordFeedback(0, 0).ok());
         publish(*streaming);
         REQUIRE(streaming->recordFeedback(1, 0).ok());
@@ -3626,7 +3626,7 @@ TEST_CASE("Virtual texture streaming publication eviction and invalidation contr
     };
 
     SUB_CASE("virtual texture contract: invalidation redecodes published pages on the next update") {
-        auto streaming = session();
+        auto streaming = virtualTextureSession();
         REQUIRE(streaming->recordFeedback(0, 0).ok());
         publish(*streaming);
         const auto decoded = streaming->stats().pagesDecoded;
@@ -3638,7 +3638,7 @@ TEST_CASE("Virtual texture streaming publication eviction and invalidation contr
     };
 
     SUB_CASE("virtual texture contract: higher mip feedback collapses to a mip-zero parent") {
-        auto       streaming = session();
+        auto       streaming = virtualTextureSession();
         const auto word      = VirtualTextureStreaming::packFeedback(1, 1, 1);
         REQUIRE(streaming->ingestPackedFeedback(std::span<const std::uint32_t>(&word, 1)).ok());
         publish(*streaming);

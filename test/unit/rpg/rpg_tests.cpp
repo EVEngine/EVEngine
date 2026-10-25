@@ -427,6 +427,7 @@ TEST_CASE("Battle resolves legal actions into damage victory and life state") {
     battle.startRound();
     REQUIRE(battle.executeNextAction());
     REQUIRE_EQ(VitalsSystem::getCurrent(enemy, "hp"), 0.0);
+    CHECK_EQ(VitalsSystem::getMax(enemy, "hp"), 20.0);
     CHECK(battle.isFinished());
     CHECK(battle.isVictory());
     CHECK(!battle.isActorAlive(enemy));

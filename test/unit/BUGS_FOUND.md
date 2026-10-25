@@ -9,14 +9,14 @@ Record input, expected behavior, observed behavior, source location, and reprodu
 - Input: create a hero with 30 attack and an enemy with 20 current/max HP, queue one ordinary attack, then execute its first action.
 - Expected: lethal damage sets the enemy's current HP to 0, marks the enemy dead, and finishes the battle in victory.
 - Observed: `VitalsSystem::getCurrent(enemy, "hp")` remains 20; the focused Windows CTest fails at `20 == 0`. The event stream nevertheless ends with `kill`. `RPGSettlementAdapter::prepareApply` writes `target_.attributes()->values` (`src/modules/rpg/SettlementAdapter.cpp:428-485`), while `VitalsSystem::getCurrent` and `isDead` read `actor->vitals()->current` (`src/modules/rpg/VitalsSystem.cpp:27-40`, `src/modules/rpg/Battle.cpp:125-127`). `publishSettledChange` only emits events, so the two HP stores diverge.
-- Status: reproduced by `Battle resolves legal actions into damage victory and life state` on Windows after promoting its outcome to a failing assertion. The regression expectation remains red; implementation repair is pending.
+- Resolution: the settlement adapter now reads and commits current health in Vitals, keeps the maximum in AttributeSet, and rolls both stores back together. The battle and mitigation regressions plus the settlement replay integration case pass locally on Windows.
 
 ### Melee stage transition emits duplicate `fire` events
 
 - Input: register a melee `sword` with `windup=0.25`, `active=0.10`, `recover=0.35`; call `attack`, `update(0.3f)`, then `update(0.2f)`.
 - Expected: one attack produces `windup_start`, one `fire`, then `attack_end` (3 events).
 - Observed: 4 events; `weapon.spec.meleeStagesAndResource` fails with `getEventCount() == 3` expanding to `4 == 3`. `WeaponSystem::updateStage` calls `spawnPellets`, whose `MeleeLogic::fire` publishes `fire`, then publishes another `fire` directly (`src/modules/weapon/WeaponSystem.cpp:67-75,136-145,349-351`). Event consumers can apply a melee hit or cue twice.
-- Status: reproduced by targeted Windows CTest after the weapon test rebuild (test 4907). The one-fire regression expectation remains in the test; implementation repair is pending. Details are also in `bugs-worker5.md`.
+- Resolution: the staged attack publishes the single fire event; `MeleeLogic::fire` no longer publishes a second one. The one-fire regression expectation remains in the test. Details are also in `bugs-worker5.md`.
 
 ### Spatial index header contracts disagree with implemented mutations
 

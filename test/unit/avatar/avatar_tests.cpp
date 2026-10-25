@@ -161,10 +161,10 @@ TEST_CASE("avatar.equipment.layerOcclusionChangesVisibleRenderStack") {
     eve::inventory::EquipmentSet equipment;
     equipment.defineSlot("shirt");
     equipment.defineSlot("outerwear");
+    REQUIRE(avatar->defineEquipmentLayer("shirt", 0) == EquipmentVisualChange::Applied);
+    REQUIRE(avatar->defineEquipmentLayer("outerwear", 1) == EquipmentVisualChange::Applied);
     REQUIRE(avatar->defineEquipmentVisual2D("linen", "shirt", "shirt", nullptr, 0) == EquipmentVisualChange::Applied);
     REQUIRE(avatar->defineEquipmentVisual2D("coat", "outerwear", "coat", nullptr, 0) == EquipmentVisualChange::Applied);
-    REQUIRE(avatar->setEquipmentVisualLayer("linen", "shirt", "shirt", 0) == EquipmentVisualChange::Applied);
-    REQUIRE(avatar->setEquipmentVisualLayer("coat", "outerwear", "outerwear", 0) == EquipmentVisualChange::Applied);
     equipment.stackAt("shirt")->itemId       = "linen";
     equipment.stackAt("shirt")->quantity     = 1;
     equipment.stackAt("outerwear")->itemId   = "coat";

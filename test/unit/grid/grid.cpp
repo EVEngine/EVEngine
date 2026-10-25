@@ -41,7 +41,7 @@ TEST_CASE("grid.spec.coordinateProjection") {
         expectWorld(cfg, 0, 0, 10.f, 20.f);
         expectWorld(cfg, 3, 2, 118.f, 56.f);
         int col = 99, row = 99;
-        for (const auto [x, y, expectedCol, expectedRow] :
+        for (const auto& [x, y, expectedCol, expectedRow] :
              {std::tuple{10.f, 20.f, 0, 0}, std::tuple{45.9f, 37.9f, 0, 0}, std::tuple{46.f, 38.f, 1, 1},
               std::tuple{9.9f, 19.9f, -1, -1}}) {
             worldToCell(cfg, x, y, col, row, 8, 8);
@@ -134,7 +134,7 @@ TEST_CASE("grid.spec.footprintRotation") {
 }
 
 TEST_CASE("grid.spec.layoutAndPlaneNameContracts") {
-    for (const auto [name, layout] :
+    for (const auto& [name, layout] :
          {std::pair{"rectangle", GridLayout::Rectangle}, std::pair{"isometric", GridLayout::Isometric},
           std::pair{"hexagon", GridLayout::Hexagon}, std::pair{"staggered", GridLayout::Staggered},
           std::pair{"isometric-z-as-y", GridLayout::IsometricZAsY}}) {
