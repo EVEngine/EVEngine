@@ -821,14 +821,16 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        // Post-processing samples the allocated target in pixel coordinates.
+        // Logical window dimensions can differ during resize or DPI scaling.
+        gpu.width        = uiW;
+        gpu.height       = uiH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width       = uiW;
+        tex.height      = uiH;
+        tex.pixelWidth  = uiW;
+        tex.pixelHeight = uiH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : uiColorSlots)
@@ -1463,14 +1465,16 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        // Post-processing samples the allocated target in pixel coordinates.
+        // Logical window dimensions can differ during resize or DPI scaling.
+        gpu.width        = sceneW;
+        gpu.height       = sceneH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width       = sceneW;
+        tex.height      = sceneH;
+        tex.pixelWidth  = sceneW;
+        tex.pixelHeight = sceneH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.color.imageView());

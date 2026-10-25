@@ -29,6 +29,7 @@
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "image/ImageData.h"
 #include "window/Window.h"
@@ -122,6 +123,10 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         }
         entity->setTexture(frame % 2 ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);
+        auto *sceneTexture = gfx->getSceneColorTexture();
+        REQUIRE(sceneTexture != nullptr);
+        REQUIRE_EQ(sceneTexture->getWidth(), gfx->getPixelWidth());
+        REQUIRE_EQ(sceneTexture->getHeight(), gfx->getPixelHeight());
         RenderSystem::render(*gfx);
         std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
         REQUIRE(image != nullptr);
@@ -170,6 +175,36 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         REQUIRE(image != nullptr);
         REQUIRE_EQ(image->getSize(), size_t(gfx->getWidth() * gfx->getHeight() * 4));
     }
+}
+
+TEST_CASE("graphics.frameRecording.sceneTextureUsesDrawableExtent") {
+    using namespace eve::graphics;
+    auto                       *win = eve::window::Window::create();
+    auto                       *gfx = Graphics::create();
+    eve::window::WindowSettings settings;
+    settings.width    = 128;
+    settings.height   = 96;
+    settings.high_dpi = false;
+    REQUIRE(win->setWindowSettings(settings));
+    struct Cleanup {
+        eve::window::Window *win;
+        ~Cleanup() { win->close(); }
+    } cleanup{win};
+    int pixelWidth = 0, pixelHeight = 0;
+    SDL_Vulkan_GetDrawableSize(static_cast<SDL_Window *>(win->getHandle()), &pixelWidth, &pixelHeight);
+    REQUIRE_GT(pixelWidth, 0);
+    REQUIRE_GT(pixelHeight, 0);
+    // Model a scaled viewport without requiring a particular desktop DPI.
+    // Offscreen texture dimensions must describe the allocation, not logical UI coordinates.
+    gfx->setViewportSize(pixelWidth / 2, pixelHeight / 2, pixelWidth, pixelHeight);
+    gfx->begin3DFrame();
+    auto *scene = gfx->getSceneColorTexture();
+    REQUIRE(scene != nullptr);
+    REQUIRE_EQ(scene->getWidth(), pixelWidth);
+    REQUIRE_EQ(scene->getHeight(), pixelHeight);
+    REQUIRE_EQ(scene->getPixelWidth(), pixelWidth);
+    REQUIRE_EQ(scene->getPixelHeight(), pixelHeight);
+    RenderSystem::render(*gfx);
 }
 
 #endif
