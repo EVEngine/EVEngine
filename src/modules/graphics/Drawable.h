@@ -1,6 +1,8 @@
 #pragma once
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters; .cpp files that
+// read matrix elements include <glm/mat4x4.hpp> (or get it via Graphics.h).
+#include <glm/fwd.hpp>
 
 namespace eve::graphics {
 
