@@ -2926,9 +2926,10 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
 
 #include "graphics/ClusteredLight.h"
 #include "graphics/Color.h"
+#include "image/ImageData.h"
 // graphics_deferred_lifetime.cpp
 namespace test_graphics_deferred_lifetime {
-TEST_CASE("graphics.lighting.frameSlotResourceReuse") {
+TEST_CASE("graphics.lighting.boundedFrameSlotSubmission") {
     auto *window   = eve::window::Window::create();
     auto *graphics = eve::graphics::Graphics::create();
     REQUIRE(window != nullptr);
@@ -2942,9 +2943,10 @@ TEST_CASE("graphics.lighting.frameSlotResourceReuse") {
     settings.height = 48;
     settings.vsync  = 0;
     REQUIRE(window->setWindowSettings(settings));
-    // Eight presents revisit the current two/three backend frame slots. This
-    // bounded contract does not reproduce VMA overflow or descriptor exhaustion.
-    SUB_CASE("deferred lighting completion and reuse") {
+    graphics->setScreenReadbackEnabled(false);
+    // Eight presents revisit the current two/three backend frame slots. Public
+    // observations prove bounded submission/output, not internal allocation reuse.
+    SUB_CASE("deferred lighting across frame slots") {
         if (graphics->supportsDeferredLighting()) {
             for (int frame = 0; frame < 8; ++frame) {
                 graphics->beginGBufferPass(64, 48);
@@ -2957,16 +2959,25 @@ TEST_CASE("graphics.lighting.frameSlotResourceReuse") {
                 graphics->drawDeferredLighting();
                 graphics->present();
             }
+            std::unique_ptr<eve::image::ImageData> depth(graphics->readGBufferToImageData("depth"));
+            REQUIRE((depth != nullptr && depth->getWidth() == 64 && depth->getHeight() == 48 &&
+                     depth->getData() != nullptr && depth->getSize() >= size_t(64 * 48 * 4)));
+            const auto *pixels = static_cast<const uint8_t *>(depth->getData());
+            // Empty geometry must retain the cleared depth after all slot submissions.
+            REQUIRE_EQ(pixels[(24 * 64 + 32) * 4], uint8_t(255));
         } else {
             REQUIRE(!graphics->getRenderControl()->isDeferredLightingAvailable());
         }
     };
-    SUB_CASE("unchanged clustered storage bindings") {
+    SUB_CASE("unchanged clustered lighting submissions") {
         auto *mesh = graphics->newMeshSphere(8, 4);
         REQUIRE(mesh != nullptr);
         const auto lighting =
             eve::graphics::buildClusteredLighting({}, {}, glm::mat4(1), 0.1f, 100.f, 64, 48, 1.f, glm::vec4(0.2f));
+        graphics->setBackgroundColorRGBA(0.f, 0.f, 0.f, 1.f);
         for (int frame = 0; frame < 8; ++frame) {
+            // Read back only the final submitted frame, rather than synchronizing every frame.
+            if (frame == 7) graphics->setScreenReadbackEnabled(true);
             graphics->begin3DFrame();
             REQUIRE(graphics->had3DThisFrame());
             graphics->setMesh3DViewProj(glm::mat4(1));
@@ -2974,6 +2985,8 @@ TEST_CASE("graphics.lighting.frameSlotResourceReuse") {
             graphics->drawMesh(mesh, glm::mat4(1), nullptr, eve::graphics::Color(1.f, 1.f, 1.f, 1.f));
             graphics->present();
         }
+        const auto center = graphics->getPixel(32, 24);
+        REQUIRE(center.r + center.g + center.b > 0.05f);
     };
 }
 }  // namespace test_graphics_deferred_lifetime
@@ -3337,16 +3350,34 @@ TEST_CASE("graphics.drawText.rendersGlyphPixelsOnCanvas") {
 #if !defined(EVENGINE_WEBGPU)
 #include "graphics/vulkan/Graphics.h"
 #endif
+#include "common/Resource.h"
 // graphics_resource_reuse.cpp
 namespace test_graphics_resource_reuse {
-#if !defined(EVENGINE_WEBGPU)
-
-#endif
-
 using namespace eve::graphics;
+
+namespace {
+void requireReadyFixture(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const GfxFixture &fixture) {
+    REQUIRE((fixture.win != nullptr && fixture.win->isOpen() && fixture.gfx != nullptr));
+}
+
+void requireTextureIdentity(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const Texture *texture,
+                            const void *gpuIdentity) {
+    REQUIRE((texture != nullptr && gpuIdentity != nullptr && texture->gpuHandle == gpuIdentity));
+}
+
+void requireGroomIdentity(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const hair::GroomInstance &groom,
+                          const Mesh *mesh, const void *gpuIdentity, bool visible = true) {
+    REQUIRE((groom.getMesh() == (visible ? mesh : nullptr) && mesh->gpuHandle == gpuIdentity));
+}
+
+void prepareGroomResources(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics &graphics) {
+    REQUIRE(detail::prepareViewResources(graphics, glm::mat4(1.f), glm::vec3(0.f)).ok());
+}
+}  // namespace
 
 TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
     auto      *gfx = parity_test::headlessGraphics();
+    REQUIRE((gfx != nullptr && gfx->isHeadless()));
     TempDir    files;
     const auto path       = files.path() / "eve-resource-reuse.png";
     auto      *filesystem = eve::filesystem::Filesystem::create();
@@ -3368,37 +3399,37 @@ TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
     gfx->setTextureSampler(texture, desired);  // Must survive deferred first upload.
     gfx->ensureFileTexturesReady();
     REQUIRE(texture->gpuHandle != nullptr);
-    CHECK(texture->sampler == desired);
+    REQUIRE(texture->sampler == desired);
     auto loaded = gfx->loadTexture(texturePath);
-    REQUIRE(loaded.ok());
-    CHECK(&loaded.value().get() == texture);
-    CHECK(gfx->newTextureFromFile("./" + texturePath) == texture);
+    REQUIRE((loaded.ok() && &loaded.value().get() == texture));
+    REQUIRE(gfx->newTextureFromFile("./" + texturePath) == texture);
     void *const original = texture->gpuHandle;
-    std::filesystem::remove(path);
-    for (int i = 0; i < 20; ++i) {
-        CHECK(gfx->newTextureFromFile(texturePath) == texture);
-        CHECK(texture->gpuHandle == original);
+    REQUIRE(std::filesystem::remove(path));
+    REQUIRE(!std::filesystem::exists(path));
+    // Remove the decoded-image cache too: deleting a file alone does not
+    // make reload fail while ResourceManager can still provide its pixels.
+    eve::ResourceManager::getInstance().unloadPath(texturePath);
+    for (int i = 0; i < 3; ++i) {
+        REQUIRE(gfx->newTextureFromFile(texturePath) == texture);
+        requireTextureIdentity(_ZEROERR_TEST_CONTEXT, texture, original);
     }
-    CHECK(!gfx->reloadTextureFromFile(texturePath));
-    CHECK(texture->gpuHandle == original);
+    REQUIRE(!gfx->reloadTextureFromFile(texturePath));
+    requireTextureIdentity(_ZEROERR_TEST_CONTEXT, texture, original);
     auto cached = gfx->loadTexture(texturePath);
-    REQUIRE(cached.ok());
-    CHECK(&cached.value().get() == texture);
+    REQUIRE((cached.ok() && &cached.value().get() == texture));
     REQUIRE(gfx->releaseTexture(texture));
     delete texture;
-    CHECK(!gfx->loadTexture(texturePath).ok());
+    REQUIRE(!gfx->loadTexture(texturePath).ok());
     std::filesystem::copy_file("test/assets/resource_reuse.png", path,
                                std::filesystem::copy_options::overwrite_existing);
     auto firstReady = gfx->loadTexture(texturePath);
     REQUIRE(firstReady.ok());
     auto &ready = firstReady.value().get();
-    CHECK(!ready.hasDeferredFilePixels());
-    CHECK(ready.gpuHandle != nullptr);
-    CHECK_EQ(ready.getWidth(), 2);
-    CHECK_EQ(ready.getHeight(), 2);
+    REQUIRE((!ready.hasDeferredFilePixels() && ready.gpuHandle != nullptr && ready.getWidth() == 2 &&
+             ready.getHeight() == 2));
     auto absent = gfx->IResourceFactory::loadTexture(texturePath);
-    REQUIRE(!absent.ok());
-    CHECK_EQ(absent.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+    REQUIRE((!absent.ok() && absent.status().primaryDiagnostic() != nullptr &&
+             absent.status().primaryDiagnostic()->code() == eve::DiagnosticCode::Unsupported));
     REQUIRE(gfx->releaseTexture(&ready));
     delete &ready;
     REQUIRE(filesystem->unmount(files.path().string()));
@@ -3406,21 +3437,23 @@ TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
 
 TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     GfxFixture    fixture(64, 64);
+    requireReadyFixture(_ZEROERR_TEST_CONTEXT, fixture);
     auto         *gfx     = fixture.gfx;
     const uint8_t rgba[]  = {255, 0, 0, 255};
     auto         *texture = gfx->newTexture(1, 1, rgba);
     REQUIRE(texture != nullptr);
     auto      *second  = gfx->newTexture(1, 1, rgba);
+    REQUIRE((second != nullptr && texture->gpuHandle != nullptr && second->gpuHandle != nullptr));
     const auto initial = texture->sampler;
     auto       nearest = TextureSampler::nearest();
-    for (int i = 0; i < 50; ++i) gfx->setTextureSampler(texture, nearest);
+    for (int i = 0; i < 3; ++i) gfx->setTextureSampler(texture, nearest);
 #if !defined(EVENGINE_WEBGPU)
     auto      *gpu      = static_cast<vulkan::GpuTexture *>(texture->gpuHandle);
     const auto original = gpu->sampler;
-    CHECK(gpu->samplerState == initial);  // Setter has not executed backend work.
+    REQUIRE((bool(original) && gpu->samplerState == initial));  // Setter has not executed backend work.
     gfx->setTextureSampler(texture, initial);
     gfx->begin3DFrame();
-    CHECK(gpu->sampler == original);  // Reverted batch does no work.
+    REQUIRE(gpu->sampler == original);  // Reverted batch does no work.
     gfx->present();
     gfx->setTextureSampler(texture, nearest);
 #endif
@@ -3428,8 +3461,8 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     gfx->begin3DFrame();
 #if !defined(EVENGINE_WEBGPU)
     const auto cached = gpu->sampler;
-    CHECK(gpu->samplerState == nearest);
-    CHECK(cached == static_cast<vulkan::GpuTexture *>(second->gpuHandle)->sampler);
+    REQUIRE((bool(cached) && gpu->samplerState == nearest &&
+             cached == static_cast<vulkan::GpuTexture *>(second->gpuHandle)->sampler));
 #endif
     gfx->present();
     gfx->setTextureSampler(texture, initial);
@@ -3438,7 +3471,7 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     gfx->setTextureSampler(texture, nearest);
     gfx->begin3DFrame();
 #if !defined(EVENGINE_WEBGPU)
-    CHECK(gpu->sampler == cached);
+    REQUIRE(gpu->sampler == cached);
 #endif
     gfx->present();
     gfx->setTextureSampler(second, initial);  // Release cancels pending publication.
@@ -3452,6 +3485,7 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
 
 TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     GfxFixture             fixture(64, 64);
+    requireReadyFixture(_ZEROERR_TEST_CONTEXT, fixture);
     auto                  *gfx = fixture.gfx;
     hair::GroomInstance    groom(gfx);
     hair::ProceduralParams params;
@@ -3462,6 +3496,7 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     auto *const mesh = groom.getMesh();
     REQUIRE(mesh != nullptr);
     void *const          gpuIdentity = mesh->gpuHandle;
+    REQUIRE(gpuIdentity != nullptr);
     hair::GuideSimParams simulation;
     REQUIRE(groom.enableGuideSimulation(simulation).ok());
     for (int i = 0; i < 3; ++i) REQUIRE(groom.update(1.f / 60.f).ok());
@@ -3471,26 +3506,20 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     auto      *gpu    = static_cast<vulkan::GpuMesh *>(mesh->gpuHandle);
     const auto before = gpu->dynamicWriteCount;
 #endif
-    auto prepare = [&] { return detail::prepareViewResources(*gfx, glm::mat4(1.f), glm::vec3(0.f)); };
-    REQUIRE(prepare().ok());
-    CHECK(groom.getMesh() == mesh);
-    CHECK(mesh->gpuHandle == gpuIdentity);
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+    requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity);
 #if !defined(EVENGINE_WEBGPU)
-    CHECK_EQ(gpu->dynamicWriteCount, before + 1);
+    REQUIRE_EQ(gpu->dynamicWriteCount, before + 1);
 #endif
-    REQUIRE(prepare().ok());
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
 #if !defined(EVENGINE_WEBGPU)
-    CHECK_EQ(gpu->dynamicWriteCount, before + 1);
+    REQUIRE_EQ(gpu->dynamicWriteCount, before + 1);
 #endif
     REQUIRE(groom.disableGuideSimulation().ok());
     for (int lod : {1, 2, 0, 1, 0}) {
         groom.setForcedLod(lod);
-        REQUIRE(prepare().ok());
-        if (lod == 2)
-            CHECK(groom.getMesh() == nullptr);
-        else
-            CHECK(groom.getMesh() == mesh);
-        CHECK(mesh->gpuHandle == gpuIdentity);
+        prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+        requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity, lod != 2);
     }
 
     hair::GroomGroup unsupported;
@@ -3504,13 +3533,12 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     hair::GroomAsset candidate;
     REQUIRE(candidate.addGroup(std::move(unsupported)).ok());
     const auto curveCount = groom.getCurveCount();
-    CHECK(!groom.setAsset(candidate).ok());
-    CHECK_EQ(groom.getCurveCount(), curveCount);
-    CHECK(groom.getMesh() == mesh);
-    CHECK(mesh->gpuHandle == gpuIdentity);
+    REQUIRE(!groom.setAsset(candidate).ok());
+    REQUIRE_EQ(groom.getCurveCount(), curveCount);
+    requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity);
     groom.setWidthScale(4.f);
-    REQUIRE(prepare().ok());
-    CHECK(groom.getMesh() == mesh);
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+    REQUIRE(groom.getMesh() == mesh);
     gfx->begin3DFrame();
     groom.draw();
     gfx->present();

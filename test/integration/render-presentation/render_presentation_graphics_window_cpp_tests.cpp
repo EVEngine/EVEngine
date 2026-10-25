@@ -48,130 +48,113 @@ WindowSettings makeSettings(int w, int h) {
 
 void checkCoreSettings(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const WindowSettings& expected,
                        const WindowSettings& actual) {
-    CHECK_EQ(actual.width, expected.width);
-    CHECK_EQ(actual.height, expected.height);
-    CHECK_EQ(actual.centered, expected.centered);
-    CHECK_EQ(actual.fullscreen, expected.fullscreen);
-    CHECK_EQ(actual.desktop_mode, expected.desktop_mode);
-    CHECK_EQ(actual.resizable, expected.resizable);
-    CHECK_EQ(actual.borderless, expected.borderless);
-    CHECK_EQ(actual.vsync, expected.vsync);
-    CHECK_EQ(actual.minwidth, expected.minwidth);
-    CHECK_EQ(actual.minheight, expected.minheight);
+    const bool dimensionsMatch     = actual.width == expected.width && actual.height == expected.height;
+    const bool placementFlagsMatch = actual.centered == expected.centered && actual.fullscreen == expected.fullscreen &&
+                                     actual.desktop_mode == expected.desktop_mode;
+    const bool frameFlagsMatch = actual.resizable == expected.resizable && actual.borderless == expected.borderless;
+    const bool minimumDimensionsMatch = actual.minwidth == expected.minwidth && actual.minheight == expected.minheight;
+    REQUIRE(dimensionsMatch);
+    REQUIRE(placementFlagsMatch);
+    REQUIRE(frameFlagsMatch);
+    REQUIRE_EQ(actual.vsync, expected.vsync);
+    REQUIRE(minimumDimensionsMatch);
 }
+
+void requireOpenState(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::Window* window, bool expectedOpen) {
+    REQUIRE_EQ(window->getHandle() != nullptr, expectedOpen);
+    REQUIRE_EQ(window->isOpen(), expectedOpen);
+}
+
+void requireDimensions(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::Window* window, int expectedWidth,
+                       int expectedHeight) {
+    REQUIRE_EQ(window->getWidth(), expectedWidth);
+    REQUIRE_EQ(window->getHeight(), expectedHeight);
+}
+
+struct WindowCleanup {
+    eve::window::Window*& window;
+    ~WindowCleanup() {
+        if (window) window->close();
+    }
+};
 
 }  // namespace
 
-TEST_CASE("window.setWindowSettingsRoundTrip") {
+TEST_CASE("window.settingsAndSizeContract") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
+    WindowCleanup            cleanup{win};
     openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-
-    WindowSettings s = makeSettings(320, 240);
-    REQUIRE(win->setWindowSettings(s));
-    checkCoreSettings(_ZEROERR_TEST_CONTEXT, s, win->getWindowSettings());
-    CHECK(win->getHandle() != nullptr);
-
-    win->close();
+    SUB_CASE("window.setWindowSettingsRoundTrip") {
+        WindowSettings settings = makeSettings(320, 240);
+        REQUIRE(win->setWindowSettings(settings));
+        checkCoreSettings(_ZEROERR_TEST_CONTEXT, settings, win->getWindowSettings());
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, true);
+    };
+    SUB_CASE("window.setSizeGetDimensions") {
+        win->setSize(400, 300);
+        requireDimensions(_ZEROERR_TEST_CONTEXT, win, 400, 300);
+        REQUIRE_EQ(win->getWindowSettings().width, 400u);
+        REQUIRE_EQ(win->getWindowSettings().height, 300u);
+        win->setSize(128, 96);
+        requireDimensions(_ZEROERR_TEST_CONTEXT, win, 128, 96);
+    };
 }
 
-TEST_CASE("window.setSizeGetDimensions") {
+TEST_CASE("window.fullscreenDesktopContract") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
+    WindowCleanup            cleanup{win};
     openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-
-    win->setSize(400, 300);
-    CHECK_EQ(win->getWidth(), 400);
-    CHECK_EQ(win->getHeight(), 300);
-    CHECK_EQ(win->getWindowSettings().width, 400u);
-    CHECK_EQ(win->getWindowSettings().height, 300u);
-
-    win->setSize(128, 96);
-    CHECK_EQ(win->getWidth(), 128);
-    CHECK_EQ(win->getHeight(), 96);
-
-    win->close();
+    SUB_CASE("window.setFullscreenDesktopRoundTripUsesSettings") {
+        WindowSettings settings = win->getWindowSettings();
+        settings.desktop_mode   = true;
+        REQUIRE(win->setWindowSettings(settings));
+        REQUIRE(win->getWindowSettings().desktop_mode);
+        REQUIRE(!win->getWindowSettings().fullscreen);
+    };
+    SUB_CASE("window.setFullscreenDesktopRoundTrip") {
+        REQUIRE(!win->getWindowSettings().fullscreen);
+        // Preserve the host-dependent fullscreen refusal branch; never repeat
+        // the same native transition merely to recheck cached settings.
+        if (!win->setFullscreenDesktop(true)) {
+            REQUIRE(!win->getWindowSettings().fullscreen);
+            return;
+        }
+        REQUIRE(win->getWindowSettings().fullscreen);
+        REQUIRE(win->getWindowSettings().desktop_mode);
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, true);
+        REQUIRE(win->setFullscreenDesktop(false));
+        REQUIRE(!win->getWindowSettings().fullscreen);
+        requireDimensions(_ZEROERR_TEST_CONTEXT, win, 320, 240);
+    };
 }
 
-TEST_CASE("window.setFullscreenDesktopRoundTrip") {
+TEST_CASE("window.closeAndRecreateContract") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
+    WindowCleanup            cleanup{win};
     openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-
-    CHECK(!win->getWindowSettings().fullscreen);
-
-    // GitHub macOS runners (and some headless hosts) intermittently refuse
-    // SDL_WINDOW_FULLSCREEN_DESKTOP; treat that as an environment skip.
-    if (!win->setFullscreenDesktop(true)) {
-        CHECK(!win->getWindowSettings().fullscreen);
+    SUB_CASE("window.isOpenAfterCreateAndClose") {
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, true);
         win->close();
-        return;
-    }
-    CHECK(win->getWindowSettings().fullscreen);
-    CHECK(win->getWindowSettings().desktop_mode);
-    CHECK(win->getHandle() != nullptr);
-
-    REQUIRE(win->setFullscreenDesktop(false));
-    CHECK(!win->getWindowSettings().fullscreen);
-    CHECK_EQ(win->getWidth(), 320);
-    CHECK_EQ(win->getHeight(), 240);
-
-    win->close();
-}
-
-TEST_CASE("window.setFullscreenDesktopRoundTripUsesSettings") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-
-    WindowSettings s = win->getWindowSettings();
-    s.desktop_mode   = true;
-    REQUIRE(win->setWindowSettings(s));
-
-    if (!win->setFullscreenDesktop(true)) {
-        CHECK(!win->getWindowSettings().fullscreen);
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, false);
+    };
+    SUB_CASE("window.closeClearsHandleAndBlocksFullscreen") {
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, false);
+        REQUIRE(!win->setFullscreenDesktop(true));
+        REQUIRE(!win->setFullscreenExclusive(false));
+    };
+    SUB_CASE("window.setWindowSettingsRecreatesAfterClose") {
+        const WindowSettings settings = makeSettings(320, 240);
+        REQUIRE(win->setWindowSettings(settings));
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, true);
+        checkCoreSettings(_ZEROERR_TEST_CONTEXT, settings, win->getWindowSettings());
+        requireDimensions(_ZEROERR_TEST_CONTEXT, win, 320, 240);
         win->close();
-        return;
-    }
-    CHECK(win->getWindowSettings().fullscreen);
-    CHECK(win->getWindowSettings().desktop_mode);
-
-    REQUIRE(win->setFullscreenDesktop(false));
-    CHECK(!win->getWindowSettings().fullscreen);
-
-    win->close();
+        requireOpenState(_ZEROERR_TEST_CONTEXT, win, false);
+    };
 }
-
-TEST_CASE("window.closeClearsHandleAndBlocksFullscreen") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-    REQUIRE(win->getHandle() != nullptr);
-
-    win->close();
-    CHECK(win->getHandle() == nullptr);
-    CHECK(!win->setFullscreenDesktop(true));
-    CHECK(!win->setFullscreenExclusive(false));
-}
-
-TEST_CASE("window.setWindowSettingsRecreatesAfterClose") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-
-    win->close();
-    CHECK(win->getHandle() == nullptr);
-
-    WindowSettings s = makeSettings(320, 240);
-    REQUIRE(win->setWindowSettings(s));
-    CHECK(win->getHandle() != nullptr);
-    checkCoreSettings(_ZEROERR_TEST_CONTEXT, s, win->getWindowSettings());
-    CHECK_EQ(win->getWidth(), 320);
-    CHECK_EQ(win->getHeight(), 240);
-
-    win->close();
-}
-
 TEST_CASE("window.zeroSizeUsesDesktopDimensions") {
     eve::window::Window*     win = nullptr;
     eve::graphics::Graphics* gfx = nullptr;
@@ -188,15 +171,6 @@ TEST_CASE("window.zeroSizeUsesDesktopDimensions") {
     CHECK_GT(win->getWindowSettings().height, 0u);
 
     win->close();
-}
-
-TEST_CASE("window.isOpenAfterCreateAndClose") {
-    eve::window::Window*     win = nullptr;
-    eve::graphics::Graphics* gfx = nullptr;
-    openWindow(_ZEROERR_TEST_CONTEXT, win, gfx, 320, 240);
-    CHECK(win->isOpen());
-    win->close();
-    CHECK(!win->isOpen());
 }
 
 TEST_CASE("window.titleAndPositionAndVSync") {
@@ -353,7 +327,6 @@ TEST_CASE("window.showMessageBoxOptional") {
     win->close();
 }
 }  // namespace test_window_cpp
-
 // Contract section: window lifecycle
 #include "PrivateTestScope.h"
 
@@ -396,7 +369,8 @@ void pushWindowEvent(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::window::W
     event.type            = SDL_WINDOWEVENT;
     event.window.windowID = SDL_GetWindowID(static_cast<SDL_Window*>(window->getHandle()));
     event.window.event    = type;
-    REQUIRE_EQ(SDL_PushEvent(&event), 1);
+    const auto pushed     = SDL_PushEvent(&event);
+    REQUIRE_EQ(pushed, 1);
 }
 
 void verifyResumedFrame(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::graphics::Graphics* graphics) {
@@ -408,10 +382,15 @@ void verifyResumedFrame(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, eve::graphi
     REQUIRE(image != nullptr);
     REQUIRE_GT(graphics->getWidth(), 0);
     REQUIRE_GT(graphics->getHeight(), 0);
-    REQUIRE_EQ(image->getSize(), size_t(graphics->getWidth() * graphics->getHeight() * 4));
+    REQUIRE_EQ(image->getWidth(), graphics->getPixelWidth());
+    REQUIRE_EQ(image->getHeight(), graphics->getPixelHeight());
+    REQUIRE_GT(image->getWidth(), 0);
+    REQUIRE_GT(image->getHeight(), 0);
+    REQUIRE_EQ(image->getSize(), size_t(image->getWidth()) * size_t(image->getHeight()) * 4);
     const auto* pixels = static_cast<const uint8_t*>(image->getData());
     REQUIRE(pixels != nullptr);
-    const size_t center = size_t((graphics->getHeight() / 2 * graphics->getWidth() + graphics->getWidth() / 2) * 4);
+    const size_t center =
+        (size_t(image->getHeight() / 2) * size_t(image->getWidth()) + size_t(image->getWidth() / 2)) * 4;
     REQUIRE_GT(pixels[center + 2], pixels[center + 1]);
     REQUIRE_GT(pixels[center + 1], pixels[center]);
 }
@@ -460,11 +439,13 @@ TEST_CASE("graphics.lifecycle.appBackgroundForegroundResume") {
     for (int cycle = 0; cycle < 2; ++cycle) {
         SDL_Event event{};
         event.type = SDL_APP_DIDENTERBACKGROUND;
-        REQUIRE_EQ(SDL_PushEvent(&event), 1);
+        const auto background = SDL_PushEvent(&event);
+        REQUIRE_EQ(background, 1);
         REQUIRE(!graphics->isActive());
         graphics->present();
         event.type = SDL_APP_DIDENTERFOREGROUND;
-        REQUIRE_EQ(SDL_PushEvent(&event), 1);
+        const auto foreground = SDL_PushEvent(&event);
+        REQUIRE_EQ(foreground, 1);
         verifyResumedFrame(_ZEROERR_TEST_CONTEXT, graphics);
     }
 }

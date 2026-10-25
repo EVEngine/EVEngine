@@ -3387,7 +3387,7 @@
           "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
         ],
         "render-window": [
-          "graphics.lighting.frameSlotResourceReuse"
+          "graphics.lighting.boundedFrameSlotSubmission"
         ]
       }
     },

@@ -1,0 +1,1068 @@
+{
+  "date": "2026-10-26",
+  "baseline_commit": "76bd8dd53",
+  "scope": "Cloth and window integration source cases plus the four lighting/resource reuse cases in their existing merged graphics CPP; no full-suite timing this pass.",
+  "environment": {
+    "platform": "Windows x64 MSVC Debug SHARED",
+    "windows": "private background desktop",
+    "jobs": 4,
+    "timeout_seconds": 120,
+    "EVENGINE_VIEW_SECONDS": "0.3",
+    "EVENGINE_PERF_FRAMES": "30"
+  },
+  "rounds": {
+    "before": [
+      {
+        "round": 1,
+        "wall_seconds": 11.19993370003067,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 2.04941,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 2.88563,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.50091,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.58677,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 2.6486,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+            "seconds": 1.36786,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+            "seconds": 1.98272,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+            "seconds": 1.59271,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+            "seconds": 1.43559,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+            "seconds": 1.31824,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.54605,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 2.21392,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.frameSlotResourceReuse",
+            "seconds": 1.13092,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.578258,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 0.736812,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.983713,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRoundTrip",
+            "seconds": 1.03965,
+            "status": "passed"
+          },
+          {
+            "name": "window.setSizeGetDimensions",
+            "seconds": 1.10213,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTrip",
+            "seconds": 0.828231,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTripUsesSettings",
+            "seconds": 0.754746,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeClearsHandleAndBlocksFullscreen",
+            "seconds": 0.9008,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRecreatesAfterClose",
+            "seconds": 0.688863,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 1.17823,
+            "status": "passed"
+          },
+          {
+            "name": "window.isOpenAfterCreateAndClose",
+            "seconds": 0.91685,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 1.24957,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.095946,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.14862,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.693653,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.785556,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 1.18411,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.191946,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.10312,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 0.78016,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 0.862456,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 1.05415,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 12.378046200145036,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 3.14041,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 3.79859,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.49992,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.41402,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 2.34274,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+            "seconds": 1.59985,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+            "seconds": 2.69371,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+            "seconds": 1.44826,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+            "seconds": 1.37812,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+            "seconds": 1.49141,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.71454,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 3.21108,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.frameSlotResourceReuse",
+            "seconds": 1.21132,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.566285,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 1.00902,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.902617,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRoundTrip",
+            "seconds": 1.18483,
+            "status": "passed"
+          },
+          {
+            "name": "window.setSizeGetDimensions",
+            "seconds": 0.812508,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTrip",
+            "seconds": 0.717666,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTripUsesSettings",
+            "seconds": 0.804557,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeClearsHandleAndBlocksFullscreen",
+            "seconds": 1.27637,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRecreatesAfterClose",
+            "seconds": 1.07833,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 1.06547,
+            "status": "passed"
+          },
+          {
+            "name": "window.isOpenAfterCreateAndClose",
+            "seconds": 0.918013,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 0.728242,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.276315,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.310155,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.859214,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.682512,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 1.05867,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.392026,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.586426,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 0.945504,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 1.07743,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 0.826891,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 10.403174200095236,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 1.59544,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 2.65759,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.4292,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.51219,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 2.47724,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide",
+            "seconds": 1.466,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy",
+            "seconds": 1.55319,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace",
+            "seconds": 1.39908,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+            "seconds": 1.49258,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+            "seconds": 1.30559,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.32819,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 1.90218,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.frameSlotResourceReuse",
+            "seconds": 1.10824,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.54302,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 0.787386,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.842069,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRoundTrip",
+            "seconds": 0.928535,
+            "status": "passed"
+          },
+          {
+            "name": "window.setSizeGetDimensions",
+            "seconds": 0.905461,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTrip",
+            "seconds": 0.925793,
+            "status": "passed"
+          },
+          {
+            "name": "window.setFullscreenDesktopRoundTripUsesSettings",
+            "seconds": 0.88322,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeClearsHandleAndBlocksFullscreen",
+            "seconds": 0.946541,
+            "status": "passed"
+          },
+          {
+            "name": "window.setWindowSettingsRecreatesAfterClose",
+            "seconds": 0.987962,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 0.649421,
+            "status": "passed"
+          },
+          {
+            "name": "window.isOpenAfterCreateAndClose",
+            "seconds": 0.886203,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 0.864472,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.0939436,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.242596,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.941848,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.755858,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 0.893547,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.0998909,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.0902122,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 1.07123,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 0.877925,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 0.782474,
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "round": 1,
+        "wall_seconds": 8.972425200045109,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 1.78374,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 2.52646,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.56332,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.70545,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 3.05687,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactNarrowPhaseContract",
+            "seconds": 1.73703,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptContactSolverContract",
+            "seconds": 1.83049,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.51629,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 1.91736,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.boundedFrameSlotSubmission",
+            "seconds": 0.969352,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.380613,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 0.822117,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.741068,
+            "status": "passed"
+          },
+          {
+            "name": "window.settingsAndSizeContract",
+            "seconds": 0.824074,
+            "status": "passed"
+          },
+          {
+            "name": "window.fullscreenDesktopContract",
+            "seconds": 0.693015,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeAndRecreateContract",
+            "seconds": 0.683471,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 0.778114,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 0.628122,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.0997448,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.151654,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.670823,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.581459,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 0.611386,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.100828,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.0985992,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 2.80926,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 0.790118,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 0.69891,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 8.28914160002023,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 1.66919,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 2.45161,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.63176,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.41376,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 2.67353,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactNarrowPhaseContract",
+            "seconds": 1.22524,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptContactSolverContract",
+            "seconds": 1.50783,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.60875,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 1.72076,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.boundedFrameSlotSubmission",
+            "seconds": 0.988188,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.393012,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 0.708637,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.728078,
+            "status": "passed"
+          },
+          {
+            "name": "window.settingsAndSizeContract",
+            "seconds": 0.812434,
+            "status": "passed"
+          },
+          {
+            "name": "window.fullscreenDesktopContract",
+            "seconds": 0.910648,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeAndRecreateContract",
+            "seconds": 0.540673,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 0.743377,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 0.495197,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.0960634,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.332825,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.594804,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.522655,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 0.523823,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.0917743,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.0881157,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 2.6899,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 0.822979,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 0.684002,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 8.706371800042689,
+        "exit_code": 0,
+        "cases": [
+          {
+            "name": "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState",
+            "seconds": 1.61135,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+            "seconds": 2.43382,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled",
+            "seconds": 1.54839,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan",
+            "seconds": 1.28039,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+            "seconds": 2.70738,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.contactNarrowPhaseContract",
+            "seconds": 1.29505,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.sweptContactSolverContract",
+            "seconds": 1.40934,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre",
+            "seconds": 1.55968,
+            "status": "passed"
+          },
+          {
+            "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+            "seconds": 1.80841,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lighting.boundedFrameSlotSubmission",
+            "seconds": 0.882403,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+            "seconds": 0.327914,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+            "seconds": 0.827241,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+            "seconds": 0.887416,
+            "status": "passed"
+          },
+          {
+            "name": "window.settingsAndSizeContract",
+            "seconds": 1.24565,
+            "status": "passed"
+          },
+          {
+            "name": "window.fullscreenDesktopContract",
+            "seconds": 1.03638,
+            "status": "passed"
+          },
+          {
+            "name": "window.closeAndRecreateContract",
+            "seconds": 0.87914,
+            "status": "passed"
+          },
+          {
+            "name": "window.zeroSizeUsesDesktopDimensions",
+            "seconds": 0.764305,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleAndPositionAndVSync",
+            "seconds": 0.613738,
+            "status": "passed"
+          },
+          {
+            "name": "window.titleCachesBeforeOpen",
+            "seconds": 0.0997661,
+            "status": "passed"
+          },
+          {
+            "name": "window.displayQueries",
+            "seconds": 0.329852,
+            "status": "passed"
+          },
+          {
+            "name": "window.pixelSizeAndDpiRoundTrip",
+            "seconds": 0.726241,
+            "status": "passed"
+          },
+          {
+            "name": "window.requestAttentionNoCrash",
+            "seconds": 0.825166,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBA",
+            "seconds": 0.609447,
+            "status": "passed"
+          },
+          {
+            "name": "window.setIconRGBANullFails",
+            "seconds": 0.199851,
+            "status": "passed"
+          },
+          {
+            "name": "window.showMessageBoxOptional",
+            "seconds": 0.0979098,
+            "status": "passed"
+          },
+          {
+            "name": "window.lifecycle.desktopEventContract",
+            "seconds": 2.75439,
+            "status": "passed"
+          },
+          {
+            "name": "graphics.lifecycle.appBackgroundForegroundResume",
+            "seconds": 0.904554,
+            "status": "passed"
+          },
+          {
+            "name": "window.maximizeRestoreRoundTrip",
+            "seconds": 0.628409,
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "median_wall_seconds": {
+    "before": 11.19993370003067,
+    "after": 8.706371800042689,
+    "saved": 2.4935618999879807,
+    "reduction_percent": 22.26407733093234
+  },
+  "source_median_process_seconds": {
+    "before": {
+      "physics_layered_cloth_gpu.cpp": 22.128410000000002,
+      "render_presentation_graphics_gpu_driven_tests.cpp": 3.429703,
+      "render_presentation_graphics_window_cpp_tests.cpp": 14.558786999999999
+    },
+    "after": {
+      "physics_layered_cloth_gpu.cpp": 15.90243,
+      "render_presentation_graphics_gpu_driven_tests.cpp": 2.91315,
+      "render_presentation_graphics_window_cpp_tests.cpp": 10.219578
+    }
+  },
+  "warnings_in_junit": {
+    "before": [
+      2,
+      2,
+      2
+    ],
+    "after": [
+      0,
+      0,
+      0
+    ]
+  },
+  "before_false_green": "Resident texture reload remained successful after source deletion because decoded pixels were still cached. Explicitly unloadPath before failure injection; do not weaken the fatal reload-failure oracle.",
+  "artifacts": {
+    "before_bytes": {
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\layered-cloth\\physics_layered_cloth_gpu.cpp.obj": 3771685,
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\render-presentation\\render_presentation_graphics_gpu_driven_tests.cpp.obj": 27994929,
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\render-presentation\\render_presentation_graphics_window_cpp_tests.cpp.obj": 3546302,
+      "build\\win32-debug\\test\\unit_test_graphics.pdb": 500748288
+    },
+    "after_bytes": {
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\layered-cloth\\physics_layered_cloth_gpu.cpp.obj": 3639135,
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\render-presentation\\render_presentation_graphics_gpu_driven_tests.cpp.obj": 27883459,
+      "build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\render-presentation\\render_presentation_graphics_window_cpp_tests.cpp.obj": 3611096,
+      "build\\win32-debug\\test\\unit_test_graphics.pdb": 484077568
+    },
+    "obj_sum_before": 35312916,
+    "obj_sum_after": 35133690,
+    "pdb_limit": "Baseline PDB was pre-existing incremental state. PDB/EXE/ILK were reset and relinked during verification, followed by a final incremental source-format relink. Actual storage is recorded; this is not an isolated source-change saving."
+  },
+  "final_executable_sha256": "b5b9652fd7a77c4ef2b2924dd9c3582b6e224b6c39536c8d3227375ff3064633",
+  "validation": {
+    "source_gate": "make check CI_BASE=76bd8dd53",
+    "script_tests": 527,
+    "script_skips": 3,
+    "historical_identities": 3792,
+    "unresolved": 0
+  },
+  "limits": [
+    "Three before rounds followed by three after rounds; not alternating ABBA or a cross-platform benchmark.",
+    "The baseline reports passing test statuses while its resident-cache case contains warning-level failed assertions; the final run corrects failure-injection preconditions and makes assertions fatal.",
+    "No new full 138-source runtime sweep or controlled cold-compilation time comparison was performed.",
+    "All three existing merged CPP/OBJ units remain; no Unity, selector macro, production API or benchmark changes."
+  ]
+}

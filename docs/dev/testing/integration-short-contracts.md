@@ -1,5 +1,9 @@
 # Short integration contracts and explicit long-running workloads
 
+The subsequent [shared-fixture review](integration-shared-contracts.md) further
+reduces cloth/window parent counts and strengthens resource assertions. Counts
+and timings below record this earlier pass rather than the latest working tree.
+
 This pass separates bounded interaction contracts from long-running stability, timing, full-match and interactive-preview workloads. The four existing integration translation units remain ordinary merged CPPs; no Unity source, source-selection macro, shared test main or whole-file runtime bundle was added. Related alternatives share initialization only within a contract parent. Benchmark CPPs belong to the explicit `EVENGINE_BUILD_TEST_BENCHMARKS` lane and are outside the normal integration workload.
 
 Short tests do not provide equivalent coverage of the removed long durations. This document records both retained behavior and the resulting limits. Earlier integration build/runtime measurements must not be presented as measurements of these new changes.
