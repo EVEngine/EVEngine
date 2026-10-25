@@ -6,6 +6,7 @@ Use --module network to measure Network.cpp (also requires Poco and zeroerr head
 Current headers are shared by both sides of the comparison.
 Requires initialized Squirrel/simplesquirrel headers, no full engine build.
 """
+import utf8_stdio
 import argparse
 from pathlib import Path
 import subprocess
@@ -43,4 +44,5 @@ def main():
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     main()

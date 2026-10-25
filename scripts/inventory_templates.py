@@ -6,6 +6,7 @@ explicit template introducers, generic lambdas and auto-parameter candidates.
 Does not expand macros or load uninitialized submodules / downloaded dependencies.
 Run from any directory; output is JSON on stdout.
 """
+import utf8_stdio
 import json
 from pathlib import Path
 import re
@@ -66,4 +67,5 @@ def inventory():
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     print(json.dumps(inventory(), ensure_ascii=False, indent=2))

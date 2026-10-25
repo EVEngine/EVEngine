@@ -4,6 +4,7 @@
 Usage: python3 scripts/check_template_codegen.py [--baseline HEAD] [--cxx c++]
 Sizes include debug information and are compiler/platform specific, not engine totals.
 """
+import utf8_stdio
 import argparse
 import os
 from pathlib import Path
@@ -130,12 +131,12 @@ def main():
             path.write_bytes((args.baseline_dir / local).read_bytes() if args.baseline_dir else
                              subprocess.check_output(['git', 'show', f'{args.baseline}:{repo}'], cwd=ROOT))
         probes = [('module', MODULE), ('rx', RX),
-                  ('rx-ops', (ROOT / 'scripts/tests/template_rx_operators.cpp').read_text())]
+                  ('rx-ops', (ROOT / 'scripts/tests/template_rx_operators.cpp').read_text(encoding='utf-8'))]
         for name, code in probes:
             if args.probe not in ['all', name]:
                 continue
             src = tmp / f'{name}.cpp'
-            src.write_text(code)
+            src.write_text(code, encoding='utf-8')
             for opt in ['-O0', '-O2']:
                 sizes = []
                 texts = []
@@ -158,4 +159,5 @@ def main():
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     main()

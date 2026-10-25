@@ -7,6 +7,7 @@ against real Poco static libraries (Foundation and JSON). Decoder behavior tests
 always use the real medialoader Decoder/Exception implementations. Codegen uses
 four real decoder classes; Mpg123 needs a generated config header and is excluded.
 """
+import utf8_stdio
 import argparse
 import os
 from pathlib import Path
@@ -70,17 +71,17 @@ def main():
         tmp = Path(tmp)
         for name, repo, extract, headers, wrappers, incname, testname in tasks:
             before = subprocess.check_output(['git', 'show', f'{args.baseline}:{repo}'], cwd=ROOT, text=True)
-            after = (ROOT / repo).read_text()
+            after = (ROOT / repo).read_text(encoding='utf-8')
             for opt in ['-O0', '-O2']:
                 measurements = []
                 for label, source in [('before', before), ('after', after)]:
                     body = extract(source)
                     src = tmp / f'{name}-{label}.cpp'
                     obj = src.with_suffix('.o')
-                    src.write_text(headers + body + '\n' + wrappers)
+                    src.write_text(headers + body + '\n' + wrappers, encoding='utf-8')
                     run(flags + [opt, '-c', src, '-o', obj])
                     measurements.append((obj.stat().st_size, text_size(obj)))
-                    (tmp / incname).write_text(body)
+                    (tmp / incname).write_text(body, encoding='utf-8')
                     exe = tmp / f'{name}-{label}-test'
                     test = ROOT / 'scripts/tests' / testname
                     link = flags + [opt, '-I', tmp, test]
@@ -101,4 +102,5 @@ def main():
 
 
 if __name__ == '__main__':
+    utf8_stdio.enable_utf8_stdio()
     main()
