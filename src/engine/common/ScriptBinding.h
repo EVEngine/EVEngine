@@ -1,49 +1,49 @@
 #pragma once
 
-#include "common/Export.h"
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <cstring>
-#include <type_traits>
+#include <simplesquirrel/simplesquirrel.hpp>
 #include <tuple>
+#include <type_traits>
 #include <utility>
 #include <vector>
+#include "common/Export.h"
 
 namespace eve::script {
 namespace detail {
 
-EVENGINE_API_FOUNDATION void bindPointer(ssq::Class& cls, const char* name, const void* pointer,
-                             size_t size, SQFUNCTION invoke, SQInteger arity,
-                             const char* params, bool isStatic);
+EVENGINE_API_FOUNDATION void bindPointer(ssq::Class& cls, const char* name, const void* pointer, size_t size,
+                                         SQFUNCTION invoke, SQInteger arity, const char* params, bool isStatic);
 
-template <class Pointer> struct Call;
+template <class Pointer>
+struct Call;
 
 template <class R, class... Args>
 struct Call<R (*)(Args...)> {
-    using Result = R;
+    using Result                  = R;
     static constexpr size_t arity = sizeof...(Args);
-    static void params(char* out) { ssq::detail::paramPacker<Args...>(out); }
+    static void             params(char* out) { ssq::detail::paramPacker<Args...>(out); }
     template <size_t... I>
     static R invoke(HSQUIRRELVM vm, R (*fn)(Args...), std::index_sequence<I...>) {
         return fn(ssq::detail::pop<std::remove_reference_t<Args>>(vm, I + 1)...);
     }
-    static R invoke(HSQUIRRELVM vm, R (*fn)(Args...)) {
-        return invoke(vm, fn, std::index_sequence_for<Args...>{});
-    }
+    static R invoke(HSQUIRRELVM vm, R (*fn)(Args...)) { return invoke(vm, fn, std::index_sequence_for<Args...>{}); }
 };
 
 template <class Pointer, class R, class C, class... Args>
 struct MemberCall {
-    using Result = R;
+    using Result                  = R;
     static constexpr size_t arity = sizeof...(Args) + 1;
-    static void params(char* out) { ssq::detail::paramPacker<C*, Args...>(out); }
+    static void             params(char* out) { ssq::detail::paramPacker<C*, Args...>(out); }
     template <size_t... I>
     static R invoke(HSQUIRRELVM vm, Pointer fn, std::index_sequence<I...>) {
+        /** @brief Borrows the receiver from the active VM stack.
+         * @ownership Borrowed; instance ownership remains with its existing owner.
+         * @lifetime Used only during this synchronous invocation; never retained.
+         */
         auto* self = ssq::detail::pop<C*>(vm, 1);
         return (self->*fn)(ssq::detail::pop<std::remove_reference_t<Args>>(vm, I + 2)...);
     }
-    static R invoke(HSQUIRRELVM vm, Pointer fn) {
-        return invoke(vm, fn, std::index_sequence_for<Args...>{});
-    }
+    static R invoke(HSQUIRRELVM vm, Pointer fn) { return invoke(vm, fn, std::index_sequence_for<Args...>{}); }
 };
 
 template <class R, class C, class... Args>
@@ -52,16 +52,19 @@ template <class R, class C, class... Args>
 struct Call<R (C::*)(Args...) const> : MemberCall<R (C::*)(Args...) const, R, C, Args...> {};
 
 // Keep simplesquirrel's vector/tuple-to-array return convention as well.
-template <class R> struct PushResult {
+template <class R>
+struct PushResult {
     static void push(HSQUIRRELVM vm, const R& value) { ssq::detail::push(vm, value); }
 };
-template <class T, class Alloc> struct PushResult<std::vector<T, Alloc>> {
+template <class T, class Alloc>
+struct PushResult<std::vector<T, Alloc>> {
     static void push(HSQUIRRELVM vm, std::vector<T, Alloc> value) {
         ssq::Array array(vm, std::move(value));
         ssq::detail::push(vm, array);
     }
 };
-template <class... T> struct PushResult<std::tuple<T...>> {
+template <class... T>
+struct PushResult<std::tuple<T...>> {
     static void push(HSQUIRRELVM vm, std::tuple<T...> value) {
         ssq::Array array(vm, std::move(value));
         ssq::detail::push(vm, array);
@@ -110,13 +113,13 @@ SQInteger invokePointer(HSQUIRRELVM vm) {
  * Capturing callables and constructors continue to use the existing ssq API.
  */
 template <class Pointer>
-void bindMethod(ssq::Class& cls, const char* name, Pointer pointer, bool isStatic = false) {
+void bindPointerMethod(ssq::Class& cls, const char* name, Pointer pointer, bool isStatic = false) {
     static_assert(std::is_trivially_copyable_v<Pointer>);
     using Call = detail::Call<Pointer>;
     char params[Call::arity + 1];
     Call::params(params);
-    detail::bindPointer(cls, name, &pointer, sizeof(pointer), &detail::invokePointer<Pointer>,
-                        Call::arity, params, isStatic);
+    detail::bindPointer(cls, name, &pointer, sizeof(pointer), &detail::invokePointer<Pointer>, Call::arity, params,
+                        isStatic);
 }
 
 }  // namespace eve::script

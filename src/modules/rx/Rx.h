@@ -190,13 +190,13 @@ namespace detail {
 template <typename T>
 struct ForwardError {
     Observer<T> out;
-    void operator()(const std::string& error) const { out.error(error); }
+    void        operator()(const std::string& error) const { out.error(error); }
 };
 
 template <typename T>
 struct ForwardCompleted {
     Observer<T> out;
-    void operator()() const { out.completed(); }
+    void        operator()() const { out.completed(); }
 };
 
 }  // namespace detail
@@ -482,8 +482,7 @@ private:
     // managers/invokers per T merely to select the observer method.
     enum class Notification { Next, Error, Completed };
 
-    void emit(Notification notification, const T* value = nullptr,
-              const std::string* error = nullptr) {
+    void emit(Notification notification, const T* value = nullptr, const std::string* error = nullptr) {
         std::vector<std::shared_ptr<Slot>> copy;
         {
             std::lock_guard<std::mutex> lock(mu_);

@@ -383,12 +383,12 @@ void bindCommon(ssq::Class& cls) {
             [](ObservableV* self, ssq::Object n, ssq::Object e, ssq::Object d) {
                 return doSubscribe(self, n, e, d);
             }));
-    eve::script::bindMethod(cls, "map", &doMap);
-    eve::script::bindMethod(cls, "filter", &doFilter);
-    eve::script::bindMethod(cls, "take", &doTake);
-    eve::script::bindMethod(cls, "skip", &doSkip);
-    eve::script::bindMethod(cls, "first", &doFirst);
-    eve::script::bindMethod(cls, "distinctUntilChanged", &doDistinctUntilChanged);
+    eve::script::bindPointerMethod(cls, "map", &doMap);
+    eve::script::bindPointerMethod(cls, "filter", &doFilter);
+    eve::script::bindPointerMethod(cls, "take", &doTake);
+    eve::script::bindPointerMethod(cls, "skip", &doSkip);
+    eve::script::bindPointerMethod(cls, "first", &doFirst);
+    eve::script::bindPointerMethod(cls, "distinctUntilChanged", &doDistinctUntilChanged);
 }
 
 }  // namespace
@@ -446,8 +446,8 @@ void Rx::expose(ssq::Table& table) {
 
     auto sub = table.addClass<Subscription>(
         "Subscription", std::function<Subscription*()>([]() -> Subscription* { return nullptr; }), true);
-    eve::script::bindMethod(sub, "dispose", &Subscription::dispose);
-    eve::script::bindMethod(sub, "isDisposed", &Subscription::isDisposed);
+    eve::script::bindPointerMethod(sub, "dispose", &Subscription::dispose);
+    eve::script::bindPointerMethod(sub, "isDisposed", &Subscription::isDisposed);
 }
 
 void Rx::expose(ssq::Class& cls) {

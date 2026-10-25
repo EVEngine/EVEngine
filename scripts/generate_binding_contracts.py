@@ -553,7 +553,7 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
     # are not scraped. Method names stay string literals in argument 1.
     call_pattern = re.compile(
-        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindNullSafe)\s*\()|"
+        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindPointerMethod|bindNullSafe)\s*\()|"
         r"(?:(?P<receiver>[A-Za-z_]\w*)\.addFunc\s*\()"
     )
     for path, source in sources.items():

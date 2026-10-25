@@ -1,3 +1,5 @@
+> PR 整合说明（2026-10-26）：本分支已变基到 dev `010c77ce2`。dev 已完成 Module registry 去模板化并替换 recipe 列表 API，因此 PR 不再改动 Module/McpServer。下文体积数值与 JSON 清单是旧基线上的实验快照，不是当前 dev 全仓统计。保留用于解释取舍；历史 recipe/SPIRV 探针需要对应旧基线。直接绑定入口现名为 `bindPointerMethod`，以避开 dev 已有的 `SquirrelBindContext::bindMethod`；文档生成器已同步支持。Network 测试从当前 NetHost.cpp 的明确 NetStream 段提取实际实现编译，未复制一份生产实现。变基后重新通过真实 VM 2/2、Rx/算子 O0/O2 对照测试和 Binding Contracts 10 项测试；尚未完成全引擎/MSVC 构建，旧体积数据不作为变基后的性能承诺。
+
 # 模板代码生成审计（2026-09-09）
 
 本轮先穷举、再逐项分析，然后测量候选。初始清单为 97 个位置；第二轮新增两个共用 functor 模板，第三轮消除一个泛型 lambda，下面更新为当前 98 个位置，行号对应当前代码。包含上一轮 ModuleManager / Subject 修改。

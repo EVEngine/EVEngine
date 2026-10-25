@@ -1,26 +1,28 @@
-#include "common/ScriptBinding.h"
-#include "network/NetStream.h"
 #include <iostream>
 #include <stdexcept>
+#include "common/ScriptBinding.h"
+#include "network/NetStream.h"
 using namespace eve::network;
 
 int main() {
     try {
         for (bool direct : {false, true}) {
             NetWriter initial;
-            initial.writeBool(true); initial.writeString("hello"); initial.writeString("");
+            initial.writeBool(true);
+            initial.writeString("hello");
+            initial.writeString("");
             const std::string payload = initial.toString();
-            ssq::VM vm(1024);
+            ssq::VM           vm(1024);
             vm.addFunc("expected", [&payload]() { return payload; });
             auto writer = vm.addClass("Writer", ssq::Class::Ctor<NetWriter()>());
             auto reader = vm.addClass("Reader", [&payload]() { return new NetReader(payload.data(), payload.size()); });
             if (direct) {
-                eve::script::bindMethod(writer, "writeBool", &NetWriter::writeBool);
-                eve::script::bindMethod(writer, "writeString", &NetWriter::writeString);
-                eve::script::bindMethod(writer, "toString", &NetWriter::toString);
-                eve::script::bindMethod(reader, "bool", &NetReader::b);
-                eve::script::bindMethod(reader, "str", &NetReader::str);
-                eve::script::bindMethod(reader, "ok", &NetReader::ok);
+                eve::script::bindPointerMethod(writer, "writeBool", &NetWriter::writeBool);
+                eve::script::bindPointerMethod(writer, "writeString", &NetWriter::writeString);
+                eve::script::bindPointerMethod(writer, "toString", &NetWriter::toString);
+                eve::script::bindPointerMethod(reader, "bool", &NetReader::b);
+                eve::script::bindPointerMethod(reader, "str", &NetReader::str);
+                eve::script::bindPointerMethod(reader, "ok", &NetReader::ok);
             } else {
                 writer.addFunc("writeBool", &NetWriter::writeBool);
                 writer.addFunc("writeString", &NetWriter::writeString);
@@ -45,5 +47,8 @@ int main() {
             )"));
         }
         std::cout << "PASS: network baseline/direct roundtrip and failures\n";
-    } catch(const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }
+    } catch (const std::exception& e) {
+        std::cerr << e.what() << '\n';
+        return 1;
+    }
 }

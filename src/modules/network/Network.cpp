@@ -1,7 +1,7 @@
 #include "network/Network.h"
+#include "common/ScriptBinding.h"
 #include "common/SquirrelBinding.h"
 #include "data/ByteData.h"
-#include "common/ScriptBinding.h"
 #include "network/Channel.h"
 #include "network/HttpRequest.h"
 #include "network/NetHost.h"
@@ -503,12 +503,12 @@ void Network::expose(ssq::Table& table) {
     writer.addFunc("writeI64", [](NetWriter* w, int64_t v) { w->writeI64(static_cast<int64_t>(v)); });
     writer.addFunc("writeF32", &NetWriter::writeF32);
     writer.addFunc("writeF64", &NetWriter::writeF64);
-    eve::script::bindMethod(writer, "writeBool", &NetWriter::writeBool);
-    eve::script::bindMethod(writer, "writeString", &NetWriter::writeString);
+    eve::script::bindPointerMethod(writer, "writeBool", &NetWriter::writeBool);
+    eve::script::bindPointerMethod(writer, "writeString", &NetWriter::writeString);
     writer.addFunc("writeBytes", [](NetWriter* w, eve::data::ByteData* d) {
         if (d) w->writeBytes(d->getData(), d->getSize());
     });
-    eve::script::bindMethod(writer, "toString", &NetWriter::toString);
+    eve::script::bindPointerMethod(writer, "toString", &NetWriter::toString);
     writer.addFunc("size", [](NetWriter* w) { return static_cast<int64_t>(w->size()); });
 
     auto reader = table.addClass<NetReader>(
@@ -527,15 +527,15 @@ void Network::expose(ssq::Table& table) {
     reader.addFunc("i64", [](NetReader* r) { return static_cast<int64_t>(r->i64()); });
     reader.addFunc("f32", &NetReader::f32);
     reader.addFunc("f64", &NetReader::f64);
-    eve::script::bindMethod(reader, "bool", &NetReader::b);
-    eve::script::bindMethod(reader, "str", &NetReader::str);
+    eve::script::bindPointerMethod(reader, "bool", &NetReader::b);
+    eve::script::bindPointerMethod(reader, "str", &NetReader::str);
     reader.addFunc("bytes", [](NetReader* r, int64_t n) {
         auto v = r->bytes(static_cast<size_t>(n));
         return std::string(v.data(), v.size());
     });
     reader.addFunc("remaining", [](NetReader* r) { return static_cast<int64_t>(r->remaining()); });
     reader.addFunc("pos", [](NetReader* r) { return static_cast<int64_t>(r->pos()); });
-    eve::script::bindMethod(reader, "ok", &NetReader::ok);
+    eve::script::bindPointerMethod(reader, "ok", &NetReader::ok);
 
     auto link = table.addClass<UdpLink>(
         "UdpLink",
