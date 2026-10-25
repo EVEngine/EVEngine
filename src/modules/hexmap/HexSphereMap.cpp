@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "hexmap/HexSphereMap.h"
 
 #include "common/Diagnostic.h"

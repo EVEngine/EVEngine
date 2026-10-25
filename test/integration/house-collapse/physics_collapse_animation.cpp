@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_destruction",
+  "origins": [
+    "physics_collapse_animation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <filesystem>
 #include <fstream>

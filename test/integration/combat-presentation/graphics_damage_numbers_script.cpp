@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "graphics",
+  "default": "script-binding"
+}
+*/
+// clang-format on
 #include "common/SquirrelOwnership.h"
 #include "graphics/DamageNumbers.h"
 #include "graphics/DamageNumbersBindings.h"

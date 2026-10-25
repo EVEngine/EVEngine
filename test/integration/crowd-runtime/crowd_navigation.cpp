@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "crowd",
+  "origins": [
+    "crowd_navigation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include "crowd/Crowd.h"
 #include "zeroerr/unittest.h"

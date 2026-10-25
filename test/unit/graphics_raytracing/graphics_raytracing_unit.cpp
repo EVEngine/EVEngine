@@ -1,30 +1,61 @@
-#include "zeroerr/assert.h"
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "graphics_raytracing.cpp"
+  ]
+}
+*/
+// clang-format on
 
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-#include "common/Capability.h"
-#include "common/Diagnostic.h"
-#include "common/Status.h"
-#include "graphics/Graphics.h"
-#include "graphics/IRayTracing.h"
-#include "graphics/RayTracingCaps.h"
 #include "graphics/RenderControl.h"
-#include "graphics/raytracing/RayTracingModule.h"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
+namespace {
+using eve::graphics::RenderControl;
 
-using namespace eve::graphics;
-
-
-TEST_CASE("graphics.raytracing.renderControlFeature") {
-    RenderControl rc;
-    CHECK(rc.supports("rtx"));
-    CHECK(!rc.isEnabled("rtx"));
-    rc.enable("rtx");
-    CHECK(rc.isEnabled("rtx"));
-    CHECK(rc.isEnabled("gbuffer"));  // rtx implies gbuffer
-    rc.disable("rtx");
-    CHECK(!rc.isEnabled("rtx"));
+// Feature contract: RTX is opt-in, recognized even without a Graphics backend,
+// and enabling it requests the depth and normal GBuffer dependency.
+TEST_CASE("graphics.raytracing.spec.rtx_feature_dependencies") {
+    RenderControl control;
+    CHECK(control.supports("rtx"));
+    CHECK(!control.isEnabled("rtx"));
+    control.disable("gbuffer");
+    CHECK(!control.isEnabled("gbuffer"));
+    control.enable("rtx");
+    CHECK(control.isEnabled("rtx"));
+    CHECK(control.isEnabled("gbuffer"));
+    control.disable("rtx");
+    CHECK(!control.isEnabled("rtx"));
+    REQUIRE(control.isEnabled("gbuffer"));
 }
+
+// Dependency contract: disabling GBuffer evicts RTX because the reflection
+// path cannot consume depth and normals; enabling RTX again restores it.
+TEST_CASE("graphics.raytracing.spec.gbuffer_disable_evicts_rtx") {
+    RenderControl control;
+    control.enable("rtx");
+    control.disable("gbuffer");
+    CHECK(!control.isEnabled("gbuffer"));
+    CHECK(!control.isEnabled("rtx"));
+    control.enable("rtx");
+    CHECK(control.isEnabled("gbuffer"));
+    REQUIRE(control.isEnabled("rtx"));
+}
+
+// Unknown feature names have no effect on the requested RTX state.
+TEST_CASE("graphics.raytracing.spec.unknown_features_do_not_mutate_rtx") {
+    RenderControl control;
+    CHECK(!control.supports("raytrace"));
+    control.enable("raytrace");
+    CHECK(!control.isEnabled("raytrace"));
+    CHECK(!control.isEnabled("rtx"));
+    control.enable("rtx");
+    control.disable("raytrace");
+    REQUIRE(control.isEnabled("rtx"));
+}
+}  // namespace

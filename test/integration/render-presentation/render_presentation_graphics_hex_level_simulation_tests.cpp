@@ -1,3 +1,52 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "cases": {
+    "module-composition": [
+      "hd2d.sprite.gridReplacementStopsOldClip",
+      "hd2d.sprite.invalidTimeDoesNotPoisonWalkClock",
+      "hd2d.sprite.largeTimeRemainsInClip",
+      "hd2d.look.miniatureWritesCameraDofAndBloom",
+      "hd2d.look.rejectsInvalidFocusRange",
+      "hd2d.sprite.dopFixMaterialDefaults",
+      "hex.level.pipeline.dungeonCrawl",
+      "hex.level.pipeline.fogRaid",
+      "hex.level.pipeline.torchEscort",
+      "hex.level.pipeline.catalogRaid",
+      "hex.level.pipeline.costlyFogPickup"
+    ],
+    "runtime-lifecycle": [
+      "mouse.isCursorSupported",
+      "mouse.isDownEmptySafe"
+    ]
+  },
+  "module": "hd2d",
+  "modules": [
+    "hd2d",
+    "hexmap",
+    "ik",
+    "inventory",
+    "map",
+    "mouse",
+    "procgen"
+  ],
+  "origins": [
+    "hd2d.cpp",
+    "hex_level_simulation.cpp",
+    "hexmap_module.cpp",
+    "housegen_render.cpp",
+    "ik.cpp",
+    "inventory.cpp",
+    "map_fov.cpp",
+    "mouse_cpp.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hd2d)

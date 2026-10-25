@@ -1339,25 +1339,8 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
 
     sceneColorSlots.resize(kAsyncResourceCopies);
     // Every scene slot can also be the destination of a same-frame snapshot.
-    struct CopyableSceneColor : vkb::ColorAttachmentImage {
-        CopyableSceneColor(vkb::Device &targetDevice, uint32_t width, uint32_t height, vk::Format format) {
-            vk::ImageCreateInfo info{};
-            info.imageType   = vk::ImageType::e2D;
-            info.format      = format;
-            info.extent      = vk::Extent3D{width, height, 1};
-            info.mipLevels   = 1;
-            info.arrayLayers = 1;
-            info.samples     = vk::SampleCountFlagBits::e1;
-            info.tiling      = vk::ImageTiling::eOptimal;
-            info.usage       = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled |
-                         vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
-            info.sharingMode   = vk::SharingMode::eExclusive;
-            info.initialLayout = vk::ImageLayout::eUndefined;
-            create(targetDevice, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
-        }
-    };
     for (auto &slot : sceneColorSlots) {
-        slot.color = CopyableSceneColor(device, w, h, colorFmt);
+        slot.color = device.createCopyableColorTarget(w, h, colorFmt);
         if (msaa) {
             slot.msaaColor = device.createColorTarget(w, h, colorFmt, samples);
             slot.depth = device.createDepthTarget(w, h, depthFmt, false, samples);

@@ -265,13 +265,12 @@ struct GpuTexture {
     vkb::TextureImage2D image;
     vkb::GenericImage arrayImage;
     vkb::TextureImageCube cubeImage;
+    /** @brief HDR probe cube (attachment + storage + transfer); empty when unused. */
+    vkb::CubemapRenderTarget hdrCube;
     bool isCube = false;
     bool isArray = false;
     bool isVolume = false;
-    bool isHDR = false;
-    vk::UniqueDeviceMemory rawCubeMemory;
-    vk::UniqueImage rawCubeImage;
-    vk::UniqueImageView rawCubeView;
+    bool                     isHDR    = false;
     vk::Sampler sampler;
     bool                   sharedSampler = false;
     vkb::BoundSet descriptorSet;
@@ -287,7 +286,7 @@ struct GpuTexture {
     /** @brief Image view. */
     vk::ImageView imageView() const {
         if (viewOverride) return viewOverride;
-        if (rawCubeView) return *rawCubeView;
+        if (isHDR && hdrCube.valid()) return hdrCube.cubeView();
         if (isArray || isVolume) return arrayImage.imageView();
         return isCube ? cubeImage.imageView() : image.imageView();
     }

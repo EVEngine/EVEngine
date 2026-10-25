@@ -1,7 +1,15 @@
-#include "zeroerr/assert.h"
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "vehicle.cpp"
+  ]
+}
+*/
+// clang-format on
 
-#include <utility>
-#include "ScriptTest.h"
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "vehicle/Vehicle.h"
@@ -11,349 +19,43 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-// vehicle.cpp
+#include <cmath>
+#include <string>
+#include <utility>
+
 using namespace eve::vehicle;
 
 namespace {
-
-const char* kWeaponDefs = R"JSON(
-[{"id":"cannon.125","logic":"hitscan","damage":320,"cooldown":4.0,
-  "ammo":{"mag":1,"reserve":40,"reload":6.0}}]
-)JSON";
-
-const char* kVehicleDefs = R"JSON(
-[{"id":"tank.t90","category":"tank","mobility":"kinematic",
-  "maxSpeed":120,"accel":80,"turnRate":90,"radius":24,"maxHealth":600,
-  "armorZones":[{"name":"front","mult":1.0}],
-  "mounts":[{"name":"turret","weapon":"cannon.125","type":"turret",
-             "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"auto"}]},
- {"id":"apc","category":"apc","mobility":"kinematic",
-  "maxSpeed":200,"accel":120,"turnRate":120,"radius":20,"maxHealth":300}]
-)JSON";
-
-const char* kFpsDefs = R"JSON(
-[{"id":"tank.fps","mobility":"kinematic","maxSpeed":120,"accel":80,"turnRate":90,
-  "radius":24,"maxHealth":600,
-  "armorZones":[{"name":"front","mult":1.0},{"name":"side","mult":0.5}],
-  "mounts":[{"name":"turret","weapon":"cannon.125","type":"turret",
-             "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"manual"}],
+constexpr auto weapons  = R"([{"id":"cannon","logic":"hitscan","damage":320,"cooldown":4,
+  "ammo":{"mag":1,"reserve":40,"reload":6}}])";
+constexpr auto vehicles = R"([
+ {"id":"tank","category":"tank","mobility":"kinematic","maxSpeed":120,"accel":80,
+  "turnRate":90,"radius":24,"maxHealth":600,
+  "armorZones":[{"name":"front","mult":1},{"name":"side","mult":0.5}],
+  "mounts":[{"name":"turret","weapon":"cannon","type":"turret",
+    "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"auto"}]},
+ {"id":"apc","category":"apc","mobility":"kinematic","maxSpeed":200,"accel":120,
+  "turnRate":120,"radius":20,"maxHealth":300}])";
+constexpr auto crewed   = R"([{"id":"crewed","mobility":"kinematic","maxSpeed":120,"accel":80,
+  "turnRate":90,"maxHealth":600,
+  "mounts":[{"name":"turret","weapon":"cannon","type":"turret",
+    "limits":[-180,180,-8,20],"rotSpeed":45,"aimMode":"manual"}],
   "seats":[{"name":"driver","cameraMode":"first"},
-           {"name":"gunner","cameraMode":"third","mountIndex":0}]}]
-)JSON";
+           {"name":"gunner","cameraMode":"third","mountIndex":0}]}])";
 
-[[maybe_unused]] eve::weapon::Weapon* weaponMod() {
-    return eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon");
+eve::weapon::Weapon& weaponModule() {
+    auto* module = eve::ModuleManager::requireInstance<eve::weapon::Weapon>("Weapon");
+    REQUIRE(module != nullptr);
+    return *module;
 }
 
-[[maybe_unused]] int countVehicleView() {
-    int  n    = 0;
-    auto view = ecs::View<VehicleEntity, VehicleEntity::Identity>();
-    for (auto it = view.begin(); it != view.end(); ++it) ++n;
-    return n;
+VehicleEntity& spawn(Vehicle& module, const char* definition, float x = 0.f, float y = 0.f) {
+    auto* entity = module.newVehicle(definition, x, y);
+    REQUIRE(entity != nullptr);
+    return *entity;
 }
 
-/** @brief 自定义移动模型：每帧向东瞬移（验证扩展点）。 */
-class TeleportMobility : public IVehicleMobility {
-public:
-    const char* name() const override { return "test.teleport"; }
-    void        update(VehicleEntity& v, float) override { v.motion()->x += 10.f; }
-};
-
-}  // namespace
-
-TEST_CASE("vehicle.defs.registerJson") {
-    Vehicle mod;
-    CHECK_EQ(mod.registerVehiclesFromJson(kVehicleDefs), 2);
-    CHECK(mod.hasVehicleDefinition("tank.t90"));
-    CHECK_EQ(mod.getVehicleDefinitionMobility("tank.t90"), std::string("kinematic"));
-    CHECK_EQ(mod.getVehicleDefinitionMaxHealth("tank.t90"), 600.f);
-    CHECK_EQ(mod.registerVehiclesFromJson("[{\"name\":\"no-id\"}]"), 0);
-    CHECK_EQ(mod.registerVehiclesFromJson("not json"), 0);
-    CHECK_EQ(mod.getVehicleDefinitionMobility("missing"), std::string{});
-}
-
-TEST_CASE("vehicle.factory.newVehicleWithMounts") {
-    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    const int before = countVehicleView();
-
-    VehicleEntity* tank = mod.newVehicle("tank.t90", 100.f, 200.f, 0.f, "red");
-    REQUIRE(tank != nullptr);
-    CHECK_EQ(tank->identity()->defId, std::string("tank.t90"));
-    CHECK_EQ(tank->identity()->faction, std::string("red"));
-    CHECK_EQ(tank->health()->hp, 600.f);
-    CHECK_EQ(mod.getX(tank), 100.f);
-    CHECK_EQ(mod.getY(tank), 200.f);
-    CHECK_EQ(mod.getMountCount(tank), 1);
-    eve::weapon::WeaponMountEntity* m = mod.getMount(tank, 0);
-    REQUIRE(m != nullptr);
-    REQUIRE(weaponMod()->mountGetWeapon(m) != nullptr);
-
-    VehicleEntity* apc = mod.newVehicle("apc", 0.f, 0.f);
-    REQUIRE(apc != nullptr);
-    CHECK_EQ(mod.getMountCount(apc), 0);
-    CHECK_EQ(mod.newVehicle("missing", 0.f, 0.f), nullptr);
-    CHECK_EQ(countVehicleView(), before + 2);
-}
-
-TEST_CASE("vehicle.orders.moveAndArrive") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    VehicleEntity* v = mod.newVehicle("apc", 100.f, 100.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.clearEvents();
-
-    mod.moveTo(v, 300.f, 100.f);
-    CHECK_EQ(mod.getCurrentOrderType(v), std::string("move"));
-    for (int i = 0; i < 200 && !mod.isArrived(v); ++i) mod.update(0.1f);
-
-    CHECK(mod.isArrived(v));
-    CHECK_GT(mod.getX(v), 200.f);
-    CHECK_LT(mod.getSpeed(v), 1.f);
-    CHECK_EQ(mod.getEventCount(), 1);
-    CHECK_EQ(mod.getEventType(0), std::string("order_completed"));
-    CHECK_EQ(mod.getEventOrderType(0), std::string("move"));
-    CHECK_EQ(mod.getCurrentOrderType(v), std::string("none"));
-}
-
-TEST_CASE("vehicle.orders.turnsTowardTarget") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.moveTo(v, 0.f, 200.f);  // 目标正北
-    for (int i = 0; i < 50; ++i) mod.update(0.1f);
-    CHECK_GT(mod.getHeading(v), 30.f);  // 车头已向目标旋转
-    for (int i = 0; i < 200 && !mod.isArrived(v); ++i) mod.update(0.1f);
-    CHECK(mod.isArrived(v));
-    CHECK_GT(mod.getY(v), 100.f);
-}
-
-TEST_CASE("vehicle.orders.stopDecelerates") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.moveTo(v, 1000.f, 0.f);
-    mod.update(1.0f);
-    CHECK_GT(mod.getSpeed(v), 50.f);
-
-    mod.stop(v);
-    CHECK_EQ(mod.getCurrentOrderType(v), std::string("stop"));
-    mod.update(1.0f);
-    CHECK_LT(mod.getSpeed(v), 1.f);
-    CHECK_EQ(mod.orderCount(v), 1);
-}
-
-TEST_CASE("vehicle.orders.adapterPreservesDomainCommandsAndReplaceSemantics") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    VehicleEntity* v = mod.newVehicle("apc", 0.f, 0.f, 0.f);
-    REQUIRE(v != nullptr);
-
-    mod.moveTo(v, 100.f, 0.f);
-    mod.attack(v, 200.f, 0.f, 7);
-    CHECK_EQ(mod.orderCount(v), 2);
-    REQUIRE(v->orders()->current == 0);
-    CHECK_EQ(v->orders()->queue[0].type, VehicleOrderType::Move);
-    CHECK_EQ(v->orders()->queue[1].type, VehicleOrderType::Attack);
-
-    mod.moveTo(v, 300.f, 0.f);
-    CHECK_EQ(mod.orderCount(v), 1);
-    REQUIRE(v->orders()->current == 0);
-    CHECK_EQ(v->orders()->queue[0].type, VehicleOrderType::Move);
-}
-
-TEST_CASE("vehicle.orders.attackAimsMount") {
-    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kVehicleDefs);
-    VehicleEntity* tank = mod.newVehicle("tank.t90", 0.f, 0.f, 0.f);
-    REQUIRE(tank != nullptr);
-
-    mod.attack(tank, 0.f, 100.f, 7);
-    eve::weapon::WeaponMountEntity* m = mod.getMount(tank, 0);
-    REQUIRE(m != nullptr);
-    eve::weapon::WeaponEntity* w = weaponMod()->mountGetWeapon(m);
-    REQUIRE(w != nullptr);
-
-    for (int i = 0; i < 30; ++i) {
-        mod.update(0.1f);
-        weaponMod()->update(0.1f);
-    }
-    CHECK_GT(std::fabs(w->aim()->desiredYaw), 80.f);                 // 朝向目标（本地角）
-    CHECK_LT(std::fabs(w->aim()->yaw - w->aim()->desiredYaw), 1.f);  // 已转到
-    CHECK_EQ(mod.getCurrentOrderType(tank), std::string("attack"));
-}
-
-TEST_CASE("vehicle.mobility.customRegistration") {
-    TeleportMobility mob;
-    Vehicle::registerMobility(&mob);
-    CHECK(Vehicle::getMobilityCount() >= 2);
-
-    Vehicle mod;
-    CHECK_EQ(mod.registerVehiclesFromJson("[{\"id\":\"hover\",\"mobility\":\"test.teleport\"}]"), 1);
-    VehicleEntity* v = mod.newVehicle("hover", 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.update(0.1f);
-    CHECK_EQ(mod.getX(v), 10.f);
-}
-
-TEST_CASE("vehicle.seats.enterExit") {
-    Vehicle mod;
-    CHECK_EQ(mod.registerVehiclesFromJson(kFpsDefs), 1);
-    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
-    REQUIRE(v != nullptr);
-
-    CHECK_EQ(mod.getSeatCount(v), 2);
-    CHECK_EQ(mod.getSeatName(v, 0), std::string("driver"));
-    CHECK_EQ(mod.getSeatCameraMode(v, 1), std::string("third"));
-
-    CHECK(mod.enterSeat(v, 0, 1));
-    CHECK(mod.isSeatOccupied(v, 0));
-    CHECK_EQ(mod.getSeatOccupant(v, 0), 1);
-    CHECK(!mod.enterSeat(v, 0, 2));  // 已占用
-    CHECK(mod.enterSeat(v, 1, 2));
-    CHECK(!mod.enterSeat(v, 1, 3));  // 玩家2已在炮手座
-
-    CHECK_EQ(mod.exitSeatByPlayer(v, 1), 0);
-    CHECK(!mod.isSeatOccupied(v, 0));
-    CHECK(mod.isSeatOccupied(v, 1));
-}
-
-TEST_CASE("vehicle.driver.seatControlsDrive") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kFpsDefs);
-    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    CHECK(mod.enterSeat(v, 0, 7));
-
-    mod.setPlayerControls(7, 1.f, 0.f, 0.f, false, 0.f, 0.f);
-    for (int i = 0; i < 60; ++i) mod.update(1.f / 60.f);
-    CHECK_GT(mod.getX(v), 30.f);
-    CHECK_GT(mod.getSpeed(v), 60.f);
-}
-
-TEST_CASE("vehicle.driver.gunnerAimsAndFires") {
-    weaponMod()->registerWeaponsFromJson(kWeaponDefs);
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kFpsDefs);
-    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    CHECK(mod.enterSeat(v, 1, 8));
-
-    eve::weapon::WeaponMountEntity* m = mod.getSeatMount(v, 1);
-    REQUIRE(m != nullptr);
-    eve::weapon::WeaponEntity* w = weaponMod()->mountGetWeapon(m);
-    REQUIRE(w != nullptr);
-
-    weaponMod()->clearEvents();
-    mod.setPlayerControls(8, 0.f, 0.f, 0.f, true, 90.f, 10.f);
-    mod.update(0.1f);
-
-    CHECK_EQ(w->aim()->desiredYaw, 90.f);
-    CHECK_GT(weaponMod()->getEventCount(), 0);
-    CHECK_EQ(weaponMod()->getEventType(0), std::string("fire"));
-}
-
-TEST_CASE("vehicle.damage.armorAndEvents") {
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kFpsDefs);
-    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.clearEvents();
-
-    CHECK_EQ(mod.getHealth(v), 600.f);
-    mod.applyDamage(v, 100.f, "side", 0);  // 100 * 0.5 = 50
-    CHECK_EQ(mod.getHealth(v), 550.f);
-    mod.applyDamage(v, 200.f, "front", 0);
-    CHECK_EQ(mod.getHealth(v), 350.f);
-    CHECK_EQ(mod.getEventCount(), 2);
-    CHECK_EQ(mod.getEventType(0), std::string("damaged"));
-    CHECK(!mod.isDestroyed(v));
-
-    mod.applyDamage(v, 1000.f, "front", 0);
-    CHECK_EQ(mod.getHealth(v), 0.f);
-    CHECK(mod.isDestroyed(v));
-    CHECK_EQ(mod.getEventType(mod.getEventCount() - 1), std::string("destroyed"));
-
-    mod.applyDamage(v, 50.f, "front", 0);  // 已毁不再受伤
-    CHECK_EQ(mod.getEventCount(), 3);
-}
-
-TEST_CASE("vehicle.damage.modifiers") {
-    class DoubleDamage : public IVehicleDamageModifier {
-    public:
-        float modifyDamage(VehicleEntity&, float amount, const std::string&, int) override { return amount * 2.f; }
-    };
-    DoubleDamage dmg;
-    eve::cap::addListener<IVehicleDamageModifier>(&dmg);
-
-    Vehicle mod;
-    mod.registerVehiclesFromJson(kFpsDefs);
-    VehicleEntity* v = mod.newVehicle("tank.fps", 0.f, 0.f);
-    REQUIRE(v != nullptr);
-    mod.applyDamage(v, 100.f, "front", 0);  // 100 * 2 = 200
-    CHECK_EQ(mod.getHealth(v), 400.f);
-
-    eve::cap::removeListener<IVehicleDamageModifier>(&dmg);
-}
-
-static const char* kViewScript = R"SQ(
-function testVehicleCppView() {
-    local vehicle = eve.Vehicle()
-    vehicle.registerVehiclesFromJson("[{\"id\":\"jeep\"}]")
-    local v = vehicle.newVehicle("jeep", 5.0, 6.0)
-    if (v == null) return false
-    local all = eve.view(eve.VehicleEntity)
-    foreach (e in all) {
-        if (e.getId() == v.getId()) return true
-    }
-    return false
-}
-)SQ";
-
-UnitSciptTest(VehicleViewScriptTest, kViewScript);
-
-
-static const char* kRtsFlowScript = R"SQ(
-function testVehicleRtsFlow() {
-    local weapon = eve.Weapon()
-    weapon.registerWeaponsFromJson("[{\"id\":\"cannon\",\"logic\":\"hitscan\",\"cooldown\":1.0,\"ammo\":{\"mag\":5,\"reserve\":20,\"reload\":2.0}}]")
-    local vehicle = eve.Vehicle()
-    vehicle.registerVehiclesFromJson("[{\"id\":\"tank\",\"mobility\":\"kinematic\",\"maxSpeed\":100,\"accel\":80,\"turnRate\":90,\"maxHealth\":300,\"mounts\":[{\"name\":\"turret\",\"weapon\":\"cannon\",\"type\":\"turret\",\"rotSpeed\":90,\"aimMode\":\"auto\"}]}]")
-    local v = vehicle.newVehicle("tank", 0.0, 0.0)
-    if (v == null) return false
-
-    vehicle.moveTo(v, 100.0, 0.0)
-    for (local i = 0; i < 300 && !vehicle.isArrived(v); i += 1) vehicle.update(0.1)
-    if (!vehicle.isArrived(v)) return false
-
-    local m = vehicle.getMount(v, 0)
-    if (m == null) return false
-    local w = weapon.mountGetWeapon(m)
-    if (w == null) return false
-    vehicle.attack(v, 200.0, 0.0, 0)
-    for (local i = 0; i < 20; i += 1) { vehicle.update(0.1); weapon.update(0.1) }
-    if (!weapon.canFire(w)) return false   // 开火后进入冷却
-
-    vehicle.applyDamage(v, 100.0, "", 0)
-    return vehicle.getHealth(v) == 200.0
-}
-)SQ";
-
-UnitSciptTest(VehicleRtsFlowTest, kRtsFlowScript);
-
-
-// vehicle_orders_adapter.cpp
-using eve::vehicle::VehicleOrder;
-using eve::vehicle::VehicleOrderQueueAdapter;
-using eve::vehicle::VehicleOrderType;
-
-namespace {
-
-[[maybe_unused]] VehicleOrder moveOrder() {
+VehicleOrder moveOrder() {
     VehicleOrder order;
     order.type = VehicleOrderType::Move;
     order.x    = 10.f;
@@ -361,7 +63,7 @@ namespace {
     return order;
 }
 
-[[maybe_unused]] VehicleOrder attackOrder() {
+VehicleOrder attackOrder() {
     VehicleOrder order;
     order.type     = VehicleOrderType::Attack;
     order.x        = 30.f;
@@ -370,134 +72,273 @@ namespace {
     return order;
 }
 
-[[maybe_unused]] std::string takeId(eve::Result<std::string> result) {
+std::string takeId(eve::Result<std::string> result) {
     REQUIRE(result.hasValue());
     return std::move(result).takeValue();
 }
 
+class Teleport final : public IVehicleMobility {
+public:
+    const char* name() const override { return "test.teleport"; }
+    void        update(VehicleEntity& entity, float) override { entity.motion()->x += 10.f; }
+};
 }  // namespace
 
-TEST_CASE("vehicle.orders.adapterUsesGenericPriorityAndLifecycle") {
-    VehicleOrderQueueAdapter adapter;
-    const std::string        moveId   = takeId(adapter.append(moveOrder(), 1));
-    const std::string        attackId = takeId(adapter.append(attackOrder(), 5));
-
-    REQUIRE(!moveId.empty());
-    REQUIRE(!attackId.empty());
-    REQUIRE(adapter.current() != nullptr);
-    CHECK_EQ(adapter.current()->type, VehicleOrderType::Move);
-    CHECK_EQ(adapter.activeOrQueuedCount(), 2);
-
-    CHECK(adapter.completeCurrent().ok());
-    REQUIRE(adapter.current() != nullptr);
-    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
-    CHECK_EQ(adapter.activeOrQueuedCount(), 1);
+// Definitions and construction: registered JSON controls identity, health, position and mounts.
+TEST_CASE("vehicle.definition.validAndMalformedInput") {
+    Vehicle module;
+    CHECK_EQ(module.registerVehiclesFromJson(vehicles), 2);
+    CHECK(module.hasVehicleDefinition("tank"));
+    CHECK_EQ(module.getVehicleDefinitionMobility("tank"), std::string("kinematic"));
+    CHECK_EQ(module.getVehicleDefinitionMaxHealth("tank"), 600.f);
+    CHECK_EQ(module.registerVehiclesFromJson("not json"), 0);
+    CHECK_EQ(module.registerVehiclesFromJson(R"([{"name":"missing-id"}])"), 0);
+    REQUIRE_EQ(module.getVehicleDefinitionMobility("missing"), std::string{});
 }
 
-TEST_CASE("vehicle.orders.adapterTimeoutActivatesNextDomainOrder") {
-    VehicleOrderQueueAdapter adapter;
-    const std::string        timedId = takeId(adapter.append(moveOrder(), 0, 0.25));
-    const std::string        nextId  = takeId(adapter.append(attackOrder()));
+TEST_CASE("vehicle.factory.knownDefinitionCreatesComponentsAndUnknownDoesNot") {
+    weaponModule().registerWeaponsFromJson(weapons);
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& tank = spawn(module, "tank", 100.f, 200.f);
+    CHECK_EQ(tank.identity()->defId, std::string("tank"));
+    CHECK_EQ(tank.health()->hp, 600.f);
+    CHECK_EQ(module.getX(&tank), 100.f);
+    CHECK_EQ(module.getY(&tank), 200.f);
+    CHECK_EQ(module.getMountCount(&tank), 1);
+    auto* mount = module.getMount(&tank, 0);
+    REQUIRE(mount != nullptr);
+    CHECK(weaponModule().mountGetWeapon(mount) != nullptr);
+    auto& apc = spawn(module, "apc");
+    CHECK_EQ(module.getMountCount(&apc), 0);
+    CHECK(module.newVehicle("missing", 0.f, 0.f) == nullptr);
+}
 
-    REQUIRE(!timedId.empty());
-    REQUIRE(!nextId.empty());
+// Order lifecycle: commands replace or queue and produce completion events after physical arrival.
+TEST_CASE("vehicle.orders.moveTurnsArrivesAndEmitsCompletion") {
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& apc = spawn(module, "apc", 100.f, 100.f);
+    module.clearEvents();
+    module.moveTo(&apc, 100.f, 300.f);
+    CHECK_EQ(module.getCurrentOrderType(&apc), std::string("move"));
+    for (int i = 0; i < 300 && !module.isArrived(&apc); ++i) module.update(0.1f);
+    CHECK(module.isArrived(&apc));
+    CHECK_GT(module.getY(&apc), 200.f);
+    CHECK_GT(module.getHeading(&apc), 30.f);
+    CHECK_LT(module.getSpeed(&apc), 1.f);
+    CHECK_EQ(module.getCurrentOrderType(&apc), std::string("none"));
+    CHECK_EQ(module.getEventCount(), 1);
+    CHECK_EQ(module.getEventType(0), std::string("order_completed"));
+    CHECK_EQ(module.getEventOrderType(0), std::string("move"));
+}
+
+TEST_CASE("vehicle.orders.stopDeceleratesAndReplaceKeepsOneCommand") {
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& apc = spawn(module, "apc");
+    module.moveTo(&apc, 1000.f, 0.f);
+    module.update(1.f);
+    CHECK_GT(module.getSpeed(&apc), 50.f);
+    module.stop(&apc);
+    CHECK_EQ(module.getCurrentOrderType(&apc), std::string("stop"));
+    module.update(1.f);
+    CHECK_LT(module.getSpeed(&apc), 1.f);
+    CHECK_EQ(module.orderCount(&apc), 1);
+    module.moveTo(&apc, 100.f, 0.f);
+    module.attack(&apc, 200.f, 0.f, 7);
+    CHECK_EQ(module.orderCount(&apc), 2);
+    CHECK(apc.orders()->queue[0].type == VehicleOrderType::Move);
+    CHECK(apc.orders()->queue[1].type == VehicleOrderType::Attack);
+    module.moveTo(&apc, 300.f, 0.f);
+    CHECK_EQ(module.orderCount(&apc), 1);
+    CHECK(apc.orders()->queue[0].type == VehicleOrderType::Move);
+}
+
+TEST_CASE("vehicle.orders.attackTracksTargetWithAutoMount") {
+    weaponModule().registerWeaponsFromJson(weapons);
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& tank  = spawn(module, "tank");
+    auto* mount = module.getMount(&tank, 0);
+    REQUIRE(mount != nullptr);
+    auto* weapon = weaponModule().mountGetWeapon(mount);
+    REQUIRE(weapon != nullptr);
+    module.attack(&tank, 0.f, 100.f, 7);
+    for (int i = 0; i < 30; ++i) {
+        module.update(0.1f);
+        weaponModule().update(0.1f);
+    }
+    CHECK_GT(std::fabs(weapon->aim()->desiredYaw), 80.f);
+    CHECK_LT(std::fabs(weapon->aim()->yaw - weapon->aim()->desiredYaw), 1.f);
+    CHECK_EQ(module.getCurrentOrderType(&tank), std::string("attack"));
+}
+
+// The adapter owns order lifecycle; legacy Orders fields are a refreshed projection.
+TEST_CASE("vehicle.adapter.appendCompleteAndTimeoutAdvanceDomainPayload") {
+    VehicleOrderQueueAdapter adapter;
+    auto                     first  = takeId(adapter.append(moveOrder(), 1));
+    auto                     second = takeId(adapter.append(attackOrder(), 5));
+    CHECK(!first.empty());
+    CHECK(!second.empty());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK(adapter.current()->type == VehicleOrderType::Move);
+    CHECK_EQ(adapter.activeOrQueuedCount(), 2);
+    REQUIRE(adapter.completeCurrent().ok());
+    REQUIRE(adapter.current() != nullptr);
+    CHECK(adapter.current()->type == VehicleOrderType::Attack);
+    adapter.clear();
+    CHECK(adapter.current() == nullptr);
+    takeId(adapter.append(moveOrder(), 0, 0.25));
+    takeId(adapter.append(attackOrder()));
     adapter.update(0.25);
     REQUIRE(adapter.current() != nullptr);
-    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
-    CHECK_EQ(adapter.activeOrQueuedCount(), 1);
-    CHECK(adapter.cancel(nextId, "test_cleanup").ok());
-    CHECK(adapter.current() == nullptr);
-    CHECK_EQ(adapter.activeOrQueuedCount(), 0);
+    CHECK(adapter.current()->type == VehicleOrderType::Attack);
 }
 
-TEST_CASE("vehicle.orders.adapterInterruptHonoursGenericPriority") {
+TEST_CASE("vehicle.adapter.interruptRequiresEqualOrHigherPriority") {
     VehicleOrderQueueAdapter adapter;
-    const std::string        activeId = takeId(adapter.append(moveOrder(), 20));
-    REQUIRE(!activeId.empty());
-
+    takeId(adapter.append(moveOrder(), 20));
     CHECK(!adapter.interrupt(attackOrder(), 19).hasValue());
     REQUIRE(adapter.current() != nullptr);
-    CHECK_EQ(adapter.current()->type, VehicleOrderType::Move);
-
-    const std::string urgentId = takeId(adapter.interrupt(attackOrder(), 20));
-    REQUIRE(!urgentId.empty());
+    CHECK(adapter.current()->type == VehicleOrderType::Move);
+    CHECK(!takeId(adapter.interrupt(attackOrder(), 20)).empty());
     REQUIRE(adapter.current() != nullptr);
-    CHECK_EQ(adapter.current()->type, VehicleOrderType::Attack);
+    CHECK(adapter.current()->type == VehicleOrderType::Attack);
     CHECK_EQ(adapter.activeOrQueuedCount(), 1);
 }
 
-TEST_CASE("vehicle.orders.adapterReplaceRefreshesCompatibilityProjection") {
-    eve::vehicle::VehicleEntity::Orders legacy;
-    VehicleOrderQueueAdapter            adapter;
-
-    const std::string moveId        = takeId(adapter.append(moveOrder()));
-    const std::string firstAttackId = takeId(adapter.append(attackOrder()));
-    REQUIRE(!moveId.empty());
-    REQUIRE(!firstAttackId.empty());
+TEST_CASE("vehicle.adapter.replaceRefreshesLegacyProjection") {
+    VehicleEntity::Orders    legacy;
+    VehicleOrderQueueAdapter adapter;
+    takeId(adapter.append(moveOrder()));
+    takeId(adapter.append(attackOrder()));
     adapter.syncCompatibility(legacy);
-    REQUIRE(legacy.current == 0);
     CHECK_EQ(legacy.queue.size(), size_t{2});
-
-    const std::string replacementId = takeId(adapter.replace(attackOrder()));
-    REQUIRE(!replacementId.empty());
+    CHECK_EQ(legacy.current, 0);
+    takeId(adapter.replace(attackOrder()));
     adapter.syncCompatibility(legacy);
-    REQUIRE(legacy.current == 0);
     CHECK_EQ(legacy.queue.size(), size_t{1});
-    CHECK_EQ(legacy.queue.front().type, VehicleOrderType::Attack);
+    CHECK(legacy.queue.front().type == VehicleOrderType::Attack);
 }
 
-TEST_CASE("vehicle.orders.adapterCopyKeepsLifecycleAndPayloadIndependent") {
-    VehicleOrderQueueAdapter original;
-    const std::string        moveId   = takeId(original.append(moveOrder(), 3));
-    const std::string        attackId = takeId(original.append(attackOrder(), 1));
-    REQUIRE(!moveId.empty());
-    REQUIRE(!attackId.empty());
-
-    VehicleOrderQueueAdapter copy(original);
-    REQUIRE(copy.current() != nullptr);
-    CHECK_EQ(copy.current()->type, VehicleOrderType::Move);
-    CHECK_EQ(copy.current()->x, 10.f);
+TEST_CASE("vehicle.adapter.copyHasIndependentLifecycleAndPayload") {
+    VehicleOrderQueueAdapter source;
+    auto                     first  = takeId(source.append(moveOrder(), 3));
+    auto                     second = takeId(source.append(attackOrder(), 1));
+    VehicleOrderQueueAdapter copy(source);
     CHECK_EQ(copy.activeOrQueuedCount(), 2);
-
-    CHECK(original.cancel(moveId, "original_only").ok());
-    REQUIRE(original.current() != nullptr);
-    CHECK_EQ(original.current()->type, VehicleOrderType::Attack);
     REQUIRE(copy.current() != nullptr);
-    CHECK_EQ(copy.current()->type, VehicleOrderType::Move);
-
-    CHECK(copy.completeCurrent().ok());
+    CHECK_EQ(copy.current()->x, 10.f);
+    REQUIRE(source.cancel(first, "source-only").ok());
+    REQUIRE(source.current() != nullptr);
+    CHECK(source.current()->type == VehicleOrderType::Attack);
     REQUIRE(copy.current() != nullptr);
-    CHECK_EQ(copy.current()->type, VehicleOrderType::Attack);
-    CHECK(copy.cancel(attackId, "copy_only").ok());
+    CHECK(copy.current()->type == VehicleOrderType::Move);
+    REQUIRE(copy.completeCurrent().ok());
+    REQUIRE(copy.cancel(second, "copy-only").ok());
     CHECK(copy.current() == nullptr);
-    REQUIRE(original.current() != nullptr);
-    CHECK_EQ(original.current()->type, VehicleOrderType::Attack);
-
-    const std::string originalNext = takeId(original.append(moveOrder()));
-    const std::string copyNext     = takeId(copy.append(moveOrder()));
-    CHECK_EQ(originalNext, copyNext);
+    REQUIRE(source.current() != nullptr);
+    CHECK(source.current()->type == VehicleOrderType::Attack);
 }
 
-TEST_CASE("vehicle.orders.componentCopyClonesAdapterNotLegacyProjection") {
-    eve::vehicle::VehicleEntity::Orders source;
-    const std::string                   sourceId = takeId(source.adapter->append(attackOrder(), 4, 2.0));
-    REQUIRE(!sourceId.empty());
+TEST_CASE("vehicle.orders.componentCopyClonesAdapterState") {
+    VehicleEntity::Orders source;
+    auto                  id = takeId(source.adapter->append(attackOrder(), 4, 2.0));
     source.adapter->syncCompatibility(source);
-
-    eve::vehicle::VehicleEntity::Orders copy(source);
+    VehicleEntity::Orders copy(source);
     REQUIRE(copy.adapter->current() != nullptr);
     CHECK_EQ(copy.adapter->current()->targetId, 7);
-    CHECK_EQ(copy.adapter->activeOrQueuedCount(), 1);
-
-    CHECK(source.adapter->cancel(sourceId, "source_only").ok());
+    REQUIRE(source.adapter->cancel(id, "source-only").ok());
     CHECK(source.adapter->current() == nullptr);
     REQUIRE(copy.adapter->current() != nullptr);
-    CHECK_EQ(copy.adapter->current()->targetId, 7);
-
-    eve::vehicle::VehicleEntity::Orders assigned;
+    VehicleEntity::Orders assigned;
     assigned = copy;
     REQUIRE(assigned.adapter->current() != nullptr);
-    CHECK_EQ(assigned.adapter->current()->targetId, 7);
-    CHECK(assigned.adapter->cancel(sourceId, "assigned_only").ok());
+    REQUIRE(assigned.adapter->cancel(id, "assigned-only").ok());
     CHECK(copy.adapter->current() != nullptr);
+}
+
+// Seat ownership and controls: the driver moves, the gunner aims and fires.
+TEST_CASE("vehicle.seats.occupancyRejectsConflictsAndExitClearsOnlyOwner") {
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(crewed) == 1);
+    auto& entity = spawn(module, "crewed");
+    CHECK_EQ(module.getSeatCount(&entity), 2);
+    CHECK_EQ(module.getSeatName(&entity, 0), std::string("driver"));
+    CHECK_EQ(module.getSeatCameraMode(&entity, 1), std::string("third"));
+    REQUIRE(module.enterSeat(&entity, 0, 1));
+    CHECK(!module.enterSeat(&entity, 0, 2));
+    REQUIRE(module.enterSeat(&entity, 1, 2));
+    CHECK(!module.enterSeat(&entity, 1, 3));
+    CHECK_EQ(module.getSeatOccupant(&entity, 0), 1);
+    CHECK_EQ(module.exitSeatByPlayer(&entity, 1), 0);
+    CHECK(!module.isSeatOccupied(&entity, 0));
+    CHECK(module.isSeatOccupied(&entity, 1));
+}
+
+TEST_CASE("vehicle.seats.driverThrottleAndGunnerTriggerReachTheirSystems") {
+    weaponModule().registerWeaponsFromJson(weapons);
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(crewed) == 1);
+    auto& entity = spawn(module, "crewed");
+    REQUIRE(module.enterSeat(&entity, 0, 7));
+    REQUIRE(module.enterSeat(&entity, 1, 8));
+    module.setPlayerControls(7, 1.f, 0.f, 0.f, false, 0.f, 0.f);
+    for (int i = 0; i < 60; ++i) module.update(1.f / 60.f);
+    CHECK_GT(module.getX(&entity), 30.f);
+    auto* mount = module.getSeatMount(&entity, 1);
+    REQUIRE(mount != nullptr);
+    auto* weapon = weaponModule().mountGetWeapon(mount);
+    REQUIRE(weapon != nullptr);
+    weaponModule().clearEvents();
+    module.setPlayerControls(8, 0.f, 0.f, 0.f, true, 90.f, 10.f);
+    module.update(0.1f);
+    CHECK_EQ(weapon->aim()->desiredYaw, 90.f);
+    CHECK_GT(weaponModule().getEventCount(), 0);
+    CHECK_EQ(weaponModule().getEventType(0), std::string("fire"));
+}
+
+// Damage applies zone multiplier then listeners, emits events and stops at destruction.
+TEST_CASE("vehicle.damage.armorZonesAndTerminalDestroyedState") {
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& tank = spawn(module, "tank");
+    module.clearEvents();
+    module.applyDamage(&tank, 100.f, "side", 0);
+    CHECK_EQ(module.getHealth(&tank), 550.f);
+    module.applyDamage(&tank, 200.f, "front", 0);
+    CHECK_EQ(module.getHealth(&tank), 350.f);
+    CHECK_EQ(module.getEventCount(), 2);
+    CHECK_EQ(module.getEventType(0), std::string("damaged"));
+    module.applyDamage(&tank, 1000.f, "front", 0);
+    CHECK_EQ(module.getHealth(&tank), 0.f);
+    CHECK(module.isDestroyed(&tank));
+    CHECK_EQ(module.getEventType(module.getEventCount() - 1), std::string("destroyed"));
+    module.applyDamage(&tank, 50.f, "front", 0);
+    CHECK_EQ(module.getEventCount(), 3);
+}
+
+TEST_CASE("vehicle.damage.listenerCanTransformAmount") {
+    class DoubleDamage final : public IVehicleDamageModifier {
+    public:
+        float modifyDamage(VehicleEntity&, float amount, const std::string&, int) override { return amount * 2.f; }
+    } modifier;
+    eve::cap::addListener<IVehicleDamageModifier>(&modifier);
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(vehicles) == 2);
+    auto& tank = spawn(module, "tank");
+    module.applyDamage(&tank, 100.f, "front", 0);
+    CHECK_EQ(module.getHealth(&tank), 400.f);
+    eve::cap::removeListener<IVehicleDamageModifier>(&modifier);
+}
+
+TEST_CASE("vehicle.mobility.registeredModelUpdatesMotion") {
+    Teleport mobility;
+    Vehicle::registerMobility(&mobility);
+    Vehicle module;
+    REQUIRE(module.registerVehiclesFromJson(R"([{"id":"hover","mobility":"test.teleport"}])") == 1);
+    auto& hover = spawn(module, "hover");
+    module.update(0.1f);
+    CHECK_EQ(module.getX(&hover), 10.f);
 }

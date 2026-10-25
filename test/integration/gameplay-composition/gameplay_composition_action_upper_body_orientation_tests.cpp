@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "animation",
+  "modules": [
+    "action",
+    "animation"
+  ],
+  "origins": [
+    "action_upper_body_orientation.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "action/ActionTimeline.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimLayerMixer.h"

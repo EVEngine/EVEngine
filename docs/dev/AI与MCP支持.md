@@ -10,6 +10,25 @@
 
 ## 目标
 
+### 原生工具家族的扩展与组合
+
+在 provider 自己的 `.cpp` 中声明
+`EVE_MCP_TOOL_FAMILY(Id, schemasFunction, handlerFunction, PayloadMode)`；
+两个函数分别返回逗号分隔的完整 schema 对象和工具调用结果。
+`PayloadMode` 为 `TextValue`（普通文本）或 `ContentEnvelope`（完整 MCP content）。
+处理函数可接收 `(name, args)` 或 `(McpServer&, name, args)`，不得保留请求参数引用。
+无需修改 `McpServer.cpp` 的目录或分发列表。
+
+CMake 从实际编译的 `EVDevTools` 源文件生成类型化 factory 引用，链接器不会丢弃 provider。
+未编译的 provider 不出现在目录或路由中；目录构造拒绝重复家族 ID、重复工具名和无效 schema。
+schema 与路由属于同一不可变进程快照；provider 回调由二进制拥有，不能用于可卸载插件。
+构造时无锁调用 schema 函数，schema 函数不可重入目录构造；请求 handler 在目录查找后调用。
+脚本工具继续使用原有热重载路径，注册时也拒绝与已编译工具重名。
+
+独立原生契约检查：`make check/mcp-families MCP_DEPENDENCIES=<预编译依赖目录>`。
+通过 `MCP_CMAKE_ARGS=-DMCP_SHARED=ON` 检查 DLL 边界，
+`-DMCP_WITH_PROVIDER=OFF` 检查 provider 缺席；完整宿主测试还验证每个实际列出的工具均有唯一路由。
+
 让 EVEngine 对 **AI 生成游戏** 与 **AI 辅助开发** 提供底层可测接口：
 
 1. 运行时嵌入 **MCP 服务器**（与 DAP 同级），供 Agent 驱动暂停 / 求值 / 快照 / 错误切片。

@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "ui/UISystem.h"
 #include "ui/Component.h"
 

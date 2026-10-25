@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "graphics/RenderSystem3D.h"
 #include "common/Assert.h"
 #include "common/Capability.h"

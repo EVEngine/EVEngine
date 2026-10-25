@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "combat",
+  "default": "script-binding"
+}
+*/
+// clang-format on
 #include "combat/Combat.h"
 #include "common/Module.h"
 #include "common/SquirrelBinding.h"

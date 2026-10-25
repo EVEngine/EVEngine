@@ -1,3 +1,33 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "ui-render",
+  "cases": {
+    "script-binding": [
+      "UI.componentScheduling.scriptCoalescingAndFailureRecovery",
+      "UI.adv.scriptUIComponent",
+      "UI.p0.scriptEventCallbacks"
+    ]
+  },
+  "module": "ui",
+  "modules": [
+    "ui"
+  ],
+  "origins": [
+    "UIComponentScheduling.cpp",
+    "UIEditorKit.cpp",
+    "UIPhaseAdv.cpp",
+    "UIPhaseB.cpp",
+    "UISystem.cpp",
+    "ui_overlay_chrome.cpp",
+    "ui_progress_size.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIComponentScheduling)

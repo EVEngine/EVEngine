@@ -1,3 +1,35 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "render-window": [
+      "procgen.simulation.crystalCave"
+    ]
+  },
+  "module": "procgen_editing",
+  "modules": [
+    "card",
+    "procgen",
+    "procgen_editing",
+    "rpg"
+  ],
+  "origins": [
+    "procgen_road_editing.cpp",
+    "procgen_simulation.cpp",
+    "resource_account.cpp",
+    "rpg_crafting.cpp",
+    "rpg_equipment.cpp",
+    "rpg_quest_reward.cpp",
+    "rpg_save_prepare.cpp",
+    "rpg_shop_transaction.cpp",
+    "rpg_world_interaction.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_road_editing)
