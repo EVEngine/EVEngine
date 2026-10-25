@@ -124,3 +124,5 @@ This work changes test placement/fixtures rather than production APIs, ECS owner
 Subsequent contract-driven reductions are recorded separately: [hex levels](hex-level-contract-reduction.md) retain one representative scenario, and [voxel rendering](voxel-contract-reduction.md) replaces 63 GPU parent cases with 10 contracts/21 subcases and removes four presentation-only previews. Their deliberate retirements are recorded in the historical ledger rather than described as equivalent scenario coverage. Both retain the existing physical compilation units; subsequent runtime measurements do not overwrite the earlier build or full-file timing snapshots.
 
 脚本场景后续按契约精简、共享初始化、明确退役范围与实际运行耗时见 [脚本场景契约精简](script-scene-contract-reduction.md)。
+
+精简后的完整 138 CPP / 4 并发实测及旧基线比较见 [全量最新测量](integration-full-runtime.md)。

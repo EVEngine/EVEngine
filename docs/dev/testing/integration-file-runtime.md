@@ -1005,3 +1005,5 @@
 - 用例累计耗时中位数：**0.058 秒**；范围 0.058–0.058 秒。
 - 各轮结果：{'passed': 1}。
 - 最慢用例（跨轮中位数）：`physics.joint2d.scriptResultAndOwningRelease` 0.058 秒。
+
+精简后的完整 138 CPP / 4 并发实测及旧基线比较见 [全量最新测量](integration-full-runtime.md)。
