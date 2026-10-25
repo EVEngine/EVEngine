@@ -11,17 +11,42 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
-#include <functional>
+#include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
 #include <map>
 #include <numeric>
 #include <optional>
+#include <vector>
 
 namespace eve::asset_graphics {
 namespace {
 using MaterialData = detail::CookedMaterial;
+
+// Compose Ry*Rx*Rz*S then write translation explicitly. Building via
+// glm::translate(...)*rotate*... under GCC aarch64 -O2 has been observed to
+// drop the Z translation component inside the large prefab load() body while
+// X/Y survive (Linux ARM64 CI: authored z=-3 → localBounds Z unshifted).
+// Keep this out-of-line so the translation stores are not reordered into the
+// register-pressure region of load()'s walk.
+#if defined(__GNUC__) && !defined(__clang__)
+__attribute__((noinline))
+#endif
+glm::mat4 nodeLocalTransform(const scene::NodeDesc& node) {
+    const float tx = node.x, ty = node.y, tz = node.z;
+    const float yaw = node.yaw, pitch = node.pitch, roll = node.roll;
+    const float sx = node.sx, sy = node.sy, sz = node.sz;
+    glm::mat4 local(1.f);
+    local = glm::rotate(local, glm::radians(yaw), glm::vec3(0.f, 1.f, 0.f));
+    local = glm::rotate(local, glm::radians(pitch), glm::vec3(1.f, 0.f, 0.f));
+    local = glm::rotate(local, glm::radians(roll), glm::vec3(0.f, 0.f, 1.f));
+    local = glm::scale(local, glm::vec3(sx, sy, sz));
+    local[3][0] = tx;
+    local[3][1] = ty;
+    local[3][2] = tz;
+    return local;
+}
 }  // namespace
 
 struct EvpackStaticPrefab::Impl {
@@ -301,26 +326,51 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         out->impl_->placementBounds[axis]     = std::numeric_limits<float>::max();
         out->impl_->placementBounds[axis + 3] = std::numeric_limits<float>::lowest();
     }
-    std::map<SceneObjectId, glm::mat4>                                      transforms;
-    std::map<SceneObjectId, glm::mat4>                                      placementTransforms;
-    std::function<void(const scene::NodeDesc&, glm::mat4, glm::mat4, bool)> walk =
-        [&](const scene::NodeDesc& node, glm::mat4 parent, glm::mat4 placedParent, bool root) {
-            if (!node.visible) return;
-            auto local = glm::translate(glm::mat4(1), glm::vec3(node.x, node.y, node.z));
-            local      = glm::rotate(local, glm::radians(node.yaw), glm::vec3(0, 1, 0));
-            local      = glm::rotate(local, glm::radians(node.pitch), glm::vec3(1, 0, 0));
-            local      = glm::rotate(local, glm::radians(node.roll), glm::vec3(0, 0, 1));
-            local      = glm::scale(local, glm::vec3(node.sx, node.sy, node.sz));
-            auto world = parent * local;
-            auto placed =
-                placedParent * (root ? glm::scale(glm::mat4(1), glm::vec3(node.sx, node.sy, node.sz)) : local);
-            transforms.emplace(node.persistentId, world);
-            placementTransforms.emplace(node.persistentId, placed);
-            for (const auto& child : node.children) walk(child, world, placed, false);
-        };
+    std::map<SceneObjectId, glm::mat4> transforms;
+    std::map<SceneObjectId, glm::mat4> placementTransforms;
+    // Iterative walk (no std::function / by-value mat4 recursion): under GCC
+    // aarch64 -O2 the prior recursive lambda + glm::translate path dropped Z.
+    struct WalkFrame {
+        const scene::NodeDesc* node;
+        glm::mat4              parent;
+        glm::mat4              placedParent;
+        bool                   root;
+    };
+    std::vector<WalkFrame> stack;
+    stack.reserve(scene.value().root.children.size());
     // The template decoder owns an identity-only synthetic container; its children
     // are the authored source roots whose poses the placement convention replaces.
-    for (const auto& sourceRoot : scene.value().root.children) walk(sourceRoot, glm::mat4(1), glm::mat4(1), true);
+    for (const auto& sourceRoot : scene.value().root.children)
+        stack.push_back(WalkFrame{&sourceRoot, glm::mat4(1.f), glm::mat4(1.f), true});
+    while (!stack.empty()) {
+        const WalkFrame frame = stack.back();
+        stack.pop_back();
+        const scene::NodeDesc& node = *frame.node;
+        if (!node.visible) continue;
+        const glm::mat4 local = nodeLocalTransform(node);
+        const glm::mat4 world = frame.parent * local;
+        const glm::mat4 placed =
+            frame.placedParent *
+            (frame.root ? glm::scale(glm::mat4(1.f), glm::vec3(node.sx, node.sy, node.sz)) : local);
+        // #region agent log
+        {
+            std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
+            if (agentLog) {
+                agentLog << "{\"hypothesisId\":\"A,B,C\",\"location\":\"EvpackStaticPrefab.cpp:walk\","
+                            "\"message\":\"node TRS and world translation\","
+                            "\"data\":{\"x\":"
+                         << node.x << ",\"y\":" << node.y << ",\"z\":" << node.z << ",\"localT\":[" << local[3][0]
+                         << "," << local[3][1] << "," << local[3][2] << "],\"worldT\":[" << world[3][0] << ","
+                         << world[3][1] << "," << world[3][2] << "],\"root\":" << (frame.root ? "true" : "false")
+                         << "},\"timestamp\":1}\n";
+            }
+        }
+        // #endregion
+        transforms.emplace(node.persistentId, world);
+        placementTransforms.emplace(node.persistentId, placed);
+        for (auto it = node.children.rbegin(); it != node.children.rend(); ++it)
+            stack.push_back(WalkFrame{&(*it), world, placed, false});
+    }
     EvpackGraphicsLoader meshLoader(reader, meshes);
     EvpackImageLoader    imageLoader(reader, images);
     for (const auto& binding : scene.value().renderers) {
@@ -370,6 +420,19 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
         const auto& bounds          = out->impl_->meshBounds.at(meshKey);
         const auto& matrix          = transforms.at(binding.object);
         const auto& placementMatrix = placementTransforms.at(binding.object);
+        // #region agent log
+        {
+            std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
+            if (agentLog) {
+                agentLog << "{\"hypothesisId\":\"D,E\",\"location\":\"EvpackStaticPrefab.cpp:bounds\","
+                            "\"message\":\"mesh bounds and binding world T\","
+                            "\"data\":{\"meshBounds\":["
+                         << bounds[0] << "," << bounds[1] << "," << bounds[2] << "," << bounds[3] << "," << bounds[4]
+                         << "," << bounds[5] << "],\"worldT\":[" << matrix[3][0] << "," << matrix[3][1] << ","
+                         << matrix[3][2] << "]},\"timestamp\":1}\n";
+            }
+        }
+        // #endregion
         for (unsigned corner = 0; corner < 8; ++corner) {
             const auto p      = matrix * glm::vec4(bounds[(corner & 1) ? 3 : 0], bounds[(corner & 2) ? 4 : 1],
                                                    bounds[(corner & 4) ? 5 : 2], 1.f);
@@ -391,6 +454,21 @@ Result<std::unique_ptr<EvpackStaticPrefab>> EvpackStaticPrefab::load(const asset
                                      out->impl_->meshLeases.at(meshKey), image, std::move(parameters).takeValue(),
                                      binding.castShadows, binding.receiveShadows});
     }
+    // #region agent log
+    {
+        std::ofstream agentLog("/opt/cursor/logs/debug.log", std::ios::app);
+        if (agentLog) {
+            const auto& b = out->impl_->localBounds;
+            agentLog << "{\"hypothesisId\":\"A,B,C,D,E\",\"location\":\"EvpackStaticPrefab.cpp:load-exit\","
+                        "\"message\":\"final localBounds\","
+                        "\"data\":{\"localBounds\":["
+                     << b[0] << "," << b[1] << "," << b[2] << "," << b[3] << "," << b[4] << "," << b[5]
+                     << "],\"hasLocalBounds\":" << (out->impl_->hasLocalBounds ? "true" : "false")
+                     << ",\"drawCount\":" << out->impl_->draws.size()
+                     << "},\"timestamp\":1,\"runId\":\"post-fix\"}\n";
+        }
+    }
+    // #endregion
     return Result<std::unique_ptr<EvpackStaticPrefab>>::success(std::move(out));
 }
 Result<void> EvpackStaticPrefab::draw(graphics::Graphics& gfx, const std::array<float, 16>& transform,
