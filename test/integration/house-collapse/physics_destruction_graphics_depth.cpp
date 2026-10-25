@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "physics_destruction_graphics",
+  "origins": [
+    "physics_destruction_graphics_depth.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <memory>
 #include "graphics/GBuffer.h"

@@ -1485,6 +1485,10 @@ Coupling3D 齿轮/滑轮耦合当前仅支持 Box3D，Jolt 创建时返回 Unsup
 Box3D 使用包含耦合与完整原生参数的 v3 快照；Jolt 保留上游 portable v2 快照。
 两种格式不承诺跨后端互换，也不保存求解器热启动缓存。
 
+Capsule mover slope limits also clip uphill intent at upward-facing contacts
+steeper than the configured limit. Downhill and lateral motion remain available.
+This applies to Box3D and Jolt movers; use the same slope policy for navigation.
+
 ### module-interface: World3D projectile sweep integration
 
 `World3D.queryToken()` returns an opaque process-local token for an optional projectile query binding.

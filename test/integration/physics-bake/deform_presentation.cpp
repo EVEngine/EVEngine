@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "render-window",
+  "module": "physics_bake_graphics"
+}
+*/
+// clang-format on
+
 #include <glm/gtc/matrix_transform.hpp>
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"

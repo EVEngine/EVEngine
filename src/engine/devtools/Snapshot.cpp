@@ -14,7 +14,10 @@
 #include <algorithm>
 #include <cstdint>
 #include <fstream>
+#include <set>
 #include <sstream>
+#include <stdexcept>
+#include <tuple>
 #include <typeinfo>
 #include <unordered_map>
 #include <unordered_set>
@@ -94,7 +97,25 @@ bool isEngineName(const std::string& name) {
     return kSkip.count(name) > 0;
 }
 
-using SeenSet = std::unordered_set<const void*>;
+constexpr size_t kMaxGraphObjects = 65536;
+
+StateValue objectReference(size_t id) {
+    StateValue ref = StateValue::object();
+    ref.set("$ref", StateValue::integer(static_cast<int64_t>(id)));
+    return ref;
+}
+
+struct CaptureGraph {
+    std::unordered_map<const void*, size_t> ids;
+    StateValue                              objects = StateValue::array();
+};
+
+struct StackGuard {
+    HSQUIRRELVM vm;
+    SQInteger   top;
+    explicit StackGuard(HSQUIRRELVM handle) : vm(handle), top(sq_gettop(handle)) {}
+    ~StackGuard() { sq_settop(vm, top); }
+};
 
 const void* objectId(HSQUIRRELVM vm, SQInteger idx) {
     HSQOBJECT obj;
@@ -146,12 +167,23 @@ struct SkippedValues {
     }
 };
 
-StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int depth, SkippedValues& skipped,
+StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, CaptureGraph& graph, int depth, SkippedValues& skipped,
                           const std::string& path) {
-    if (depth > 32) return StateValue::null();
     if (idx < 0) idx = sq_gettop(vm) + idx + 1;
 
     const SQObjectType t = sq_gettype(vm, idx);
+    size_t             nodeId = 0;
+    if (t == OT_TABLE || t == OT_ARRAY) {
+        const void* id = objectId(vm, idx);
+        if (auto found = graph.ids.find(id); found != graph.ids.end()) return objectReference(found->second);
+        if (graph.objects.arraySize() >= kMaxGraphObjects)
+            throw std::runtime_error("snapshot object limit exceeded at " + path);
+        nodeId = graph.objects.arraySize();
+        graph.ids.emplace(id, nodeId);
+        // Reserve identity before descending so back edges resolve immediately.
+        graph.objects.pushBack(StateValue::null());
+    }
+    if (depth > 32) throw std::runtime_error("snapshot depth limit exceeded at " + path);
     switch (t) {
         // Not state at any depth. Capturing a class instance's members as a plain object
         // looked harmless, but restore pushes a table, so the value came back with a
@@ -192,8 +224,6 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
             return StateValue::string(s ? std::string(s) : std::string{});
         }
         case OT_ARRAY: {
-            const void* id = objectId(vm, idx);
-            if (id && !seen.insert(id).second) return StateValue::null();  // cycle -> null
             StateValue      arr  = StateValue::array();
             const SQInteger top  = sq_gettop(vm);
             const SQInteger size = sq_getsize(vm, idx);
@@ -203,7 +233,7 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
                     const SQObjectType et        = sq_gettype(vm, -1);
                     const std::string  childPath = path + "[" + std::to_string(i) + "]";
                     if (isPlainDataType(et)) {
-                        arr.pushBack(sqToStateValue(vm, -1, seen, depth + 1, skipped, childPath));
+                        arr.pushBack(sqToStateValue(vm, -1, graph, depth + 1, skipped, childPath));
                     } else {
                         // Recorded and replaced by null so the remaining indices keep their
                         // position (the same reason a failed sq_get pushes null below).
@@ -216,11 +246,13 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
                 }
             }
             sq_settop(vm, top);
-            return arr;
+            StateValue node = StateValue::object();
+            node.set("type", StateValue::string("array"));
+            node.set("value", std::move(arr));
+            graph.objects.at(nodeId) = std::move(node);
+            return objectReference(nodeId);
         }
         case OT_TABLE: {
-            const void* id = objectId(vm, idx);
-            if (id && !seen.insert(id).second) return StateValue::null();
             StateValue      obj = StateValue::object();
             const SQInteger top = sq_gettop(vm);
             sq_pushnull(vm);
@@ -238,25 +270,28 @@ StateValue sqToStateValue(HSQUIRRELVM vm, SQInteger idx, SeenSet& seen, int dept
                             skipped.add(path.empty() ? std::string(key) : path + "." + key, vt);
                         } else {
                             obj.set(std::string(key),
-                                    sqToStateValue(vm, -1, seen, depth + 1, skipped,
+                                    sqToStateValue(vm, -1, graph, depth + 1, skipped,
                                                    path.empty() ? std::string(key) : path + "." + key));
                         }
                     }
+                } else {
+                    throw std::runtime_error("unsupported non-string table key at " + path);
                 }
                 sq_pop(vm, 2);
             }
             sq_settop(vm, top);
-            return obj;
+            StateValue node = StateValue::object();
+            node.set("type", StateValue::string("table"));
+            node.set("value", std::move(obj));
+            graph.objects.at(nodeId) = std::move(node);
+            return objectReference(nodeId);
         }
         default: return StateValue::null();
     }
 }
 
 bool pushStateValue(HSQUIRRELVM vm, const StateValue& var, int depth) {
-    if (depth > 32) {
-        sq_pushnull(vm);
-        return true;
-    }
+    if (depth > 32) return false;
     switch (var.kind()) {
         case StateValue::Kind::Null: sq_pushnull(vm); return true;
         case StateValue::Kind::Bool: sq_pushbool(vm, var.asBool() ? SQTrue : SQFalse); return true;
@@ -284,6 +319,93 @@ bool pushStateValue(HSQUIRRELVM vm, const StateValue& var, int depth) {
             return true;
     }
     return false;
+}
+
+// Encoded values are scalars or exact {"$ref": index} records. User tables
+// live inside node.value, so a user member named "$ref" never becomes metadata.
+size_t referenceId(const StateValue& value, size_t count) {
+    const StateValue* id = value.find("$ref");
+    if (!value.isObject() || value.keys().size() != 1 || !id || !id->isInt() || id->asInt() < 0 ||
+        static_cast<uint64_t>(id->asInt()) >= count)
+        throw std::runtime_error("invalid snapshot: malformed or dangling object reference");
+    return static_cast<size_t>(id->asInt());
+}
+
+void validateGraphValue(const StateValue& value, size_t count) {
+    if (value.isObject()) {
+        referenceId(value, count);
+    } else if (value.isArray()) {
+        throw std::runtime_error("invalid snapshot: inline graph container");
+    }
+}
+
+const StateValue& validateGraph(const StateValue& state) {
+    const StateValue* objects = state.find("objects");
+    const StateValue* roots   = state.find("roots");
+    if (!objects || !objects->isArray() || objects->arraySize() > kMaxGraphObjects || !roots || !roots->isObject())
+        throw std::runtime_error("invalid snapshot: expected roots and object graph");
+    const size_t count = objects->arraySize();
+    for (const auto& key : roots->keys()) validateGraphValue(*roots->find(key), count);
+    for (size_t i = 0; i < count; ++i) {
+        const auto& node  = objects->at(i);
+        const auto* type  = node.find("type");
+        const auto* value = node.find("value");
+        if (!node.isObject() || node.keys().size() != 2 || !type || !type->isString() || !value)
+            throw std::runtime_error("invalid snapshot: malformed object node " + std::to_string(i));
+        if (type->asString() == "table" && value->isObject()) {
+            for (const auto& key : value->keys()) validateGraphValue(*value->find(key), count);
+        } else if (type->asString() == "array" && value->isArray()) {
+            for (size_t j = 0; j < value->arraySize(); ++j) validateGraphValue(value->at(j), count);
+        } else {
+            throw std::runtime_error("invalid snapshot: object type/payload mismatch at " + std::to_string(i));
+        }
+    }
+    return *objects;
+}
+
+void pushGraphValue(HSQUIRRELVM vm, const StateValue& value, SQInteger registry, size_t count) {
+    if (value.isObject()) {
+        sq_pushinteger(vm, static_cast<SQInteger>(referenceId(value, count)));
+        if (SQ_FAILED(sq_rawget(vm, registry))) throw std::runtime_error("snapshot object lookup failed");
+    } else if (!pushStateValue(vm, value, 0)) {
+        throw std::runtime_error("invalid snapshot graph value");
+    }
+}
+
+// The registry is a VM-owned array: it keeps every allocated container alive
+// throughout both passes without borrowing raw object pointers across allocations.
+SQInteger stageGraph(HSQUIRRELVM vm, const StateValue& state) {
+    const auto& objects = validateGraph(state);
+    sq_newarray(vm, 0);
+    const SQInteger registry = sq_gettop(vm);
+    for (size_t i = 0; i < objects.arraySize(); ++i) {
+        if (objects.at(i).find("type")->asString() == "table")
+            sq_newtable(vm);
+        else
+            sq_newarray(vm, 0);
+        if (SQ_FAILED(sq_arrayappend(vm, registry))) throw std::runtime_error("snapshot object allocation failed");
+    }
+    for (size_t i = 0; i < objects.arraySize(); ++i) {
+        sq_pushinteger(vm, static_cast<SQInteger>(i));
+        if (SQ_FAILED(sq_rawget(vm, registry))) throw std::runtime_error("snapshot object lookup failed");
+        const SQInteger container = sq_gettop(vm);
+        const auto&     value     = *objects.at(i).find("value");
+        if (value.isObject()) {
+            for (const auto& key : value.keys()) {
+                sq_pushstring(vm, key.c_str(), static_cast<SQInteger>(key.size()));
+                pushGraphValue(vm, *value.find(key), registry, objects.arraySize());
+                if (SQ_FAILED(sq_rawset(vm, container))) throw std::runtime_error("snapshot table population failed");
+            }
+        } else {
+            for (size_t j = 0; j < value.arraySize(); ++j) {
+                pushGraphValue(vm, value.at(j), registry, objects.arraySize());
+                if (SQ_FAILED(sq_arrayappend(vm, container)))
+                    throw std::runtime_error("snapshot array population failed");
+            }
+        }
+        sq_poptop(vm);
+    }
+    return registry;
 }
 
 Poco::Dynamic::Var stateToVar(const StateValue& var) {
@@ -441,6 +563,7 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
         if (error) *error = "no vm";
         return false;
     }
+    StackGuard stack(vm);
     try {
         // The omissions travel inside the captured state (`skipped`), so callers and the
         // persisted file see them without a second out-parameter.
@@ -475,8 +598,8 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
         }
 
         StateValue roots = StateValue::object();
+        CaptureGraph graph;
         for (const auto& name : rootNames) {
-            SeenSet         seen;
             const SQInteger top = sq_gettop(vm);
             sq_pushroottable(vm);
             sq_pushstring(vm, name.c_str(), -1);
@@ -490,7 +613,7 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
                     // root refuse the whole reload.
                     skip.add(name, rt);
                 } else {
-                    roots.set(name, sqToStateValue(vm, -1, seen, 0, skip, name));
+                    roots.set(name, sqToStateValue(vm, -1, graph, 0, skip, name));
                 }
             }
             sq_settop(vm, top);
@@ -514,7 +637,8 @@ bool Snapshot::captureState(HSQUIRRELVM vm, StateValue& out, std::string* error)
         }
 
         out = StateValue::object();
-        out.set("version", StateValue::integer(2));
+        out.set("version", StateValue::integer(3));
+        out.set("objects", std::move(graph.objects));
         out.set("roots", std::move(roots));
         out.set("native", std::move(native));
         // Kept in the snapshot so the omission is visible to whoever reads it (the tool
@@ -549,57 +673,193 @@ std::string Snapshot::capture(HSQUIRRELVM vm, std::string* error) const {
     }
 }
 
+Result<StateValue> Snapshot::mergeDefaultsState(const StateValue& captured, const StateValue& defaults) const {
+    try {
+        const auto* oldVersion = captured.find("version");
+        const auto* newVersion = defaults.find("version");
+        if (!oldVersion || !oldVersion->isInt() || oldVersion->asInt() != 3 || !newVersion || !newVersion->isInt() ||
+            newVersion->asInt() != 3)
+            throw std::runtime_error("snapshot defaults merge requires version 3");
+        const auto& oldObjects = validateGraph(captured);
+        const auto& newObjects = validateGraph(defaults);
+        const auto& oldRoots   = *captured.find("roots");
+        const auto& newRoots   = *defaults.find("roots");
+        using Pair             = std::tuple<size_t, size_t, bool>;
+        std::vector<Pair>                  pairs;
+        std::set<Pair>                     visited;
+        std::unordered_map<size_t, size_t> mapping;
+        auto pairValues = [&](const StateValue& oldValue, const StateValue& newValue, bool mergeFields) {
+            if (!oldValue.isObject() || !newValue.isObject()) return;
+            const size_t oldId = referenceId(oldValue, oldObjects.arraySize());
+            const size_t newId = referenceId(newValue, newObjects.arraySize());
+            if (oldObjects.at(oldId).find("type")->asString() != newObjects.at(newId).find("type")->asString()) return;
+            // Captured identities win when new definitions have a different alias
+            // topology. New fields referring to an existing node use its first match.
+            mapping.emplace(newId, oldId);
+            if (visited.emplace(oldId, newId, mergeFields).second) {
+                if (pairs.size() >= kMaxGraphObjects)
+                    throw std::runtime_error("snapshot correspondence limit exceeded during merge");
+                pairs.emplace_back(oldId, newId, mergeFields);
+            }
+        };
+        for (const auto& name : oldRoots.keys()) {
+            if (const auto* value = newRoots.find(name)) pairValues(*oldRoots.find(name), *value, true);
+        }
+        // Establish correspondences before importing missing fields. Walk array
+        // items for identity matching too, but retain their entire captured content.
+        for (size_t i = 0; i < pairs.size(); ++i) {
+            const auto [oldId, newId, mergeFields] = pairs[i];
+            const auto& oldValue                   = *oldObjects.at(oldId).find("value");
+            const auto& newValue                   = *newObjects.at(newId).find("value");
+            if (oldValue.isObject()) {
+                for (const auto& key : oldValue.keys()) {
+                    if (const auto* value = newValue.find(key)) pairValues(*oldValue.find(key), *value, mergeFields);
+                }
+            } else {
+                for (size_t j = 0; j < std::min(oldValue.arraySize(), newValue.arraySize()); ++j)
+                    pairValues(oldValue.at(j), newValue.at(j), false);
+            }
+        }
+        StateValue          result  = captured;
+        StateValue&         objects = *result.find("objects");
+        std::vector<size_t> imported;
+        auto                remap = [&](const StateValue& value) {
+            if (!value.isObject()) return value;
+            const size_t id    = referenceId(value, newObjects.arraySize());
+            auto         found = mapping.find(id);
+            if (found == mapping.end()) {
+                if (objects.arraySize() >= kMaxGraphObjects)
+                    throw std::runtime_error("snapshot object limit exceeded during merge");
+                found = mapping.emplace(id, objects.arraySize()).first;
+                objects.pushBack(StateValue::null());
+                imported.push_back(id);
+            }
+            return objectReference(found->second);
+        };
+        for (const auto& [oldId, newId, mergeFields] : pairs) {
+            const auto& newValue = *newObjects.at(newId).find("value");
+            if (!mergeFields || !newValue.isObject()) continue;
+            for (const auto& key : newValue.keys()) {
+                if (!objects.at(oldId).find("value")->find(key)) {
+                    auto value = remap(*newValue.find(key));
+                    // remap can grow objects; reacquire the owning node afterwards.
+                    objects.at(oldId).find("value")->set(key, std::move(value));
+                }
+            }
+        }
+        // Import only nodes reachable from added fields. Reserve each identity
+        // before following its edges, preserving forward links and cycles.
+        for (size_t i = 0; i < imported.size(); ++i) {
+            const size_t id    = imported[i];
+            StateValue   node  = newObjects.at(id);
+            auto&        value = *node.find("value");
+            if (value.isObject()) {
+                for (const auto& key : value.keys()) value.set(key, remap(*value.find(key)));
+            } else {
+                for (size_t j = 0; j < value.arraySize(); ++j) value.at(j) = remap(value.at(j));
+            }
+            objects.at(mapping.at(id)) = std::move(node);
+        }
+        return Result<StateValue>::success(std::move(result));
+    } catch (const std::exception& error) {
+        return Result<StateValue>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument, error.what()));
+    }
+}
+
 bool Snapshot::restoreState(HSQUIRRELVM vm, const StateValue& state, std::string* error) const {
     if (!vm) {
         if (error) *error = "no vm";
         return false;
     }
+    StackGuard stack(vm);
     try {
         const StateValue* roots = state.find("roots");
         if (!roots || !roots->isObject()) {
             if (error) *error = "invalid snapshot: missing roots";
             return false;
         }
+        const StateValue* version = state.find("version");
+        if (version && (!version->isInt() || version->asInt() < 1 || version->asInt() > 3)) {
+            if (error) *error = "invalid snapshot: unsupported version";
+            return false;
+        }
+        const bool      graphFormat = version && version->asInt() == 3;
+        const SQInteger registry    = graphFormat ? stageGraph(vm, state) : 0;
+        // Build every root before touching live state. A late depth/type failure
+        // must not replace roots that happened to precede it in the document.
+        sq_newtable(vm);
+        const SQInteger staged = sq_gettop(vm);
         for (const auto& name : roots->keys()) {
-            const SQInteger top = sq_gettop(vm);
-            sq_pushroottable(vm);
             sq_pushstring(vm, name.c_str(), static_cast<SQInteger>(name.size()));
-            if (!pushStateValue(vm, *roots->find(name), 0)) {
-                sq_settop(vm, top);
-                if (error) *error = "failed to restore " + name;
+            if (graphFormat) {
+                pushGraphValue(vm, *roots->find(name), registry, state.find("objects")->arraySize());
+            } else if (!pushStateValue(vm, *roots->find(name), 0)) {
+                if (error) *error = "failed to restore " + name + ": snapshot depth limit exceeded";
                 return false;
             }
-            sq_newslot(vm, -3, SQFalse);
-            sq_settop(vm, top);
+            if (SQ_FAILED(sq_rawset(vm, staged))) {
+                if (error) *error = "failed to stage " + name;
+                return false;
+            }
         }
 
         const StateValue* native = state.find("native");
-        bool              failed = false;
-        std::string       nativeErr;
-        eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
-            if (p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset) {
-                auto reset = p->resetToDefaults();
-                if (!reset.ok()) {
-                    failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": " + reset.diagnostics().front().message() + "; ";
-                }
-                return;
-            }
-            if (native && native->isObject()) {
-                const StateValue* v = native->find(p->stateKind());
-                if (!v) return;  // provider not present in the snapshot
-                auto restored = p->restore(toCanonicalStateValue(*v));
-                if (!restored.ok()) {
-                    failed = true;
-                    nativeErr += std::string(p->stateKind()) + ": " + restored.diagnostics().front().message() + "; ";
-                    auto reset = p->resetToDefaults();
-                    if (!reset.ok()) nativeErr += "reset failed; ";
-                }
-            }
-        });
-        if (failed) {
-            if (error) *error = nativeErr;
+        if (native && !native->isObject()) {
+            if (error) *error = "invalid snapshot: native must be an object";
             return false;
+        }
+        struct ProviderState {
+            eve::caps::IStateProvider* provider;  // Borrowed for this synchronous restore.
+            Value                      before;
+            Value                      after;
+            bool                       reset;
+        };
+        std::vector<ProviderState> providers;
+        // Capture all affected providers before any provider mutates. Reset-policy
+        // providers need a backup too: reset itself can fail after changing state.
+        eve::cap::forEach<eve::caps::IStateProvider>([&](eve::caps::IStateProvider* p) {
+            const bool        reset = p->reloadPolicy() == eve::caps::StateReloadPolicy::Reset;
+            const StateValue* value = native ? native->find(p->stateKind()) : nullptr;
+            if (!reset && !value) return;
+            auto before = p->capture();
+            if (!before.ok())
+                throw std::runtime_error(std::string(p->stateKind()) +
+                                         ": backup failed: " + before.diagnostics().front().message());
+            providers.push_back(
+                {p, std::move(before).takeValue(), value ? toCanonicalStateValue(*value) : Value::null(), reset});
+        });
+        size_t attempted = 0;
+        try {
+            for (auto& entry : providers) {
+                ++attempted;
+                auto result = entry.reset ? entry.provider->resetToDefaults() : entry.provider->restore(entry.after);
+                if (!result.ok())
+                    throw std::runtime_error(std::string(entry.provider->stateKind()) + ": " +
+                                             result.diagnostics().front().message());
+            }
+        } catch (const std::exception& failure) {
+            std::string message = failure.what();
+            while (attempted > 0) {
+                auto& entry = providers[--attempted];
+                try {
+                    auto rollback = entry.provider->restore(entry.before);
+                    if (!rollback.ok())
+                        message += "; rollback failed for " + std::string(entry.provider->stateKind()) + ": " +
+                                   rollback.diagnostics().front().message();
+                } catch (const std::exception& rollback) {
+                    message +=
+                        "; rollback failed for " + std::string(entry.provider->stateKind()) + ": " + rollback.what();
+                }
+            }
+            if (error) *error = message;
+            return false;
+        }
+        sq_pushroottable(vm);
+        const SQInteger root = sq_gettop(vm);
+        sq_pushnull(vm);
+        while (SQ_SUCCEEDED(sq_next(vm, staged))) {
+            // Raw writes cannot invoke script metamethods during commit.
+            sq_rawset(vm, root);
         }
         return true;
     } catch (const std::exception& e) {

@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "particles/ParticleSystem.h"
 #include "common/Module.h"
 #include "filesystem/Filesystem.h"

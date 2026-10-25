@@ -1,4 +1,5 @@
 #include "devtools/McpRecipeTools.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include "devtools/Debugger.hpp"
 #include "devtools/McpArgs.hpp"
@@ -312,4 +313,8 @@ std::string_view mcpRecipeToolSchemas() {
     return R"json({"name":"eve_recipe_list","description":"List registered content recipes (id + params). Prefer recipe id over free-form prop scripts under content.scene.","inputSchema":{"type":"object","properties":{}}},{"name":"eve_recipe_apply","description":"Apply one registered content recipe as a single scene_director.batch transaction. Returns {ok,id,scene,revision?,info}. Retry when retryable deferred-to-update.","inputSchema":{"type":"object","properties":{"id":{"type":"string","description":"Recipe id from eve_recipe_list"},"params":{"type":"object","description":"Recipe parameters (seed, trees, …)"},"expectedRevision":{"type":"integer","description":"Optional optimistic concurrency check"},"stopOnError":{"type":"boolean"}},"required":["id"]}})json";
 }
 
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(Recipe, mcpRecipeToolSchemas, callMcpRecipeTool, ContentEnvelope)
 }  // namespace eve::dev

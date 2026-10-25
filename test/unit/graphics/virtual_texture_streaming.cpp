@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "virtual_texture_streaming.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "graphics/VirtualTextureStreaming.h"
 
 #include "image/ImageData.h"

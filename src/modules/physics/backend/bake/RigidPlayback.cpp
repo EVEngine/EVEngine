@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/backend/bake/RigidPlayback.h"
 #include <utility>
 namespace eve::physics {

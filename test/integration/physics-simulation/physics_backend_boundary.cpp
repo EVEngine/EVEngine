@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_backend",
+  "default": "module-composition",
+  "origins": [
+    "physics_core_boundary.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "physics/Box2DSimulationBackend.h"
 #include "zeroerr/assert.h"
 

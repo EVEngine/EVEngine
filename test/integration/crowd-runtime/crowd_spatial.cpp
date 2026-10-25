@@ -1,3 +1,21 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "crowd.spatial.scriptBudgetExtensionIsOptionalAndStrictInteger"
+    ]
+  },
+  "module": "crowd",
+  "origins": [
+    "crowd_spatial.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 #include <algorithm>
 #include <limits>

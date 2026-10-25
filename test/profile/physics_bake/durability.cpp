@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "platform-file",
+  "module": "physics_destruction",
+  "task": "house-collapse"
+}
+*/
+// clang-format on
+
 #include <fcntl.h>
 #include <signal.h>
 #include <sys/stat.h>

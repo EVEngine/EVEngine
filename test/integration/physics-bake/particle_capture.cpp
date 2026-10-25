@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "module-composition",
+  "module": "particles"
+}
+*/
+// clang-format on
+
 #include "particles/ParticleRecording.h"
 #include "particles/bake/capture/ParticleBakeCapture.h"
 #include "physics/backend/bake/BakeRecipe.h"

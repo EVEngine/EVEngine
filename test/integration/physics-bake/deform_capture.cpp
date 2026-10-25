@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "physics-backend",
+  "module": "physics_cloth"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <filesystem>
 #include <random>

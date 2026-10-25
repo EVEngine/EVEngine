@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_destruction_cook",
+  "origins": [
+    "physics_voronoi_fracture.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <array>
 #include <bit>
 #include <cmath>

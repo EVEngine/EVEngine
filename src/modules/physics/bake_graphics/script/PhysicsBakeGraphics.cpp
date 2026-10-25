@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/bake_graphics/script/PhysicsBakeGraphics.h"
 #include "common/BorrowedRef.h"
 #include "common/SquirrelBinding.h"

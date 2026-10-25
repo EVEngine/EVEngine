@@ -1,3 +1,56 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "asset-files": [
+      "particles.effectAsset.playbackLabAssetIsConsumable"
+    ],
+    "render-offscreen": [
+      "graphics.pcgMeshLod.speedTreeFadeUsesComplementaryOpaqueCoverage"
+    ],
+    "script-binding": [
+      "procgen.pcgMeshLod.realVmBuildsAndCopiesLevel",
+      "ui.pcgPhotoModeApply.scriptProviderAnswersTheSinkThroughTheSeam",
+      "ui.pcgPhotoModeApply.scriptRefusalDrivesThePlanRollback"
+    ],
+    "render-window": [
+      "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones"
+    ],
+    "physics-backend": [
+      "physics_destruction_graphics.staleWorldRejectsDraw"
+    ]
+  },
+  "module": "particles",
+  "modules": [
+    "camera",
+    "daynight",
+    "particles",
+    "physics_backend",
+    "physics_destruction_graphics",
+    "physics_editor",
+    "physics_softbody",
+    "pixelworld_editor",
+    "procgen"
+  ],
+  "origins": [
+    "particles_dynamic_bones.cpp",
+    "particles_effect_asset.cpp",
+    "pcg_car_camera.cpp",
+    "pcg_photo_mode_apply.cpp",
+    "physics_accelerator_domains.cpp",
+    "physics_destruction_graphics.cpp",
+    "physics_editor_boot.cpp",
+    "physics_simulation_backend_satellites.cpp",
+    "pixelworld_editor.cpp",
+    "procgen_artifact_publish.cpp",
+    "procgen_core_boundary.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_particles_dynamic_bones)

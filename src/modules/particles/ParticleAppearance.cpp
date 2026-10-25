@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "particles/ParticleAppearance.h"
 #include <algorithm>
 #include <cmath>

@@ -126,7 +126,7 @@ GAME ?=
 	build/android-debug-test \
 	build/ios-debug-test \
 	build/ios-sim-debug-test \
-	wsl/linux wsl/linux-debug show-targets stats/build \
+	wsl/linux wsl/linux-debug show-targets stats/build stats/headers \
 	debug release example devlab \
 	run run/win32 run/linux run/macosx \
 	run/win32-debug run/linux-debug run/macosx-debug \
@@ -185,7 +185,7 @@ check/test-manifest:
 
 # Verify the examples/ layout contract: runnable vs reviewed non-runnable
 # directories, config.nut assigning the engine config table, README.md presence
-# and registration in examples/README.md. Source-only; the runtime half of the
+# and optional curated overview links. Source-only; the runtime half of the
 # contract is scripts/smoke_examples.sh (MIN_RUN_SECONDS).
 check/examples:
 	python3 scripts/check_examples.py
@@ -248,22 +248,8 @@ check/architecture-contracts:
 	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
 	python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 
-# Focused CPU tests for format round trips and live tile editing; no GPU host.
-AGENT_TEST_BUILD ?= build/agent
-AGENT_CMAKE_ARGS ?=
-.PHONY: check/agent
-check/agent:
-	cmake -S test/agent -B "$(AGENT_TEST_BUILD)" -DCMAKE_BUILD_TYPE=Debug $(AGENT_CMAKE_ARGS)
-	cmake --build "$(AGENT_TEST_BUILD)" -j $(JOBS)
-	ctest --test-dir "$(AGENT_TEST_BUILD)" --output-on-failure
-
-TILEMAP_TEST_BUILD ?= build/tilemap-editor-tests
-TILEMAP_CMAKE_ARGS ?=
-.PHONY: check/tilemap-editor
-check/tilemap-editor:
-	cmake -S test/tilemap_editor -B "$(TILEMAP_TEST_BUILD)" -DCMAKE_BUILD_TYPE=Debug $(TILEMAP_CMAKE_ARGS)
-	cmake --build "$(TILEMAP_TEST_BUILD)" -j $(JOBS)
-	ctest --test-dir "$(TILEMAP_TEST_BUILD)" --output-on-failure
+# Feature-specific task recipes are owned by independent fragments.
+include $(sort $(wildcard cmake/tasks/*.mk))
 
 # Resolve all supported module profiles without a compiler or build tree.
 check/profile-matrix:
@@ -337,6 +323,18 @@ debug: build/$(PLATFORM)-debug
 BUILD_STATS_DIR ?= build/$(PLATFORM)-debug
 stats/build:
 	python3 scripts/analyze_build.py --source-dir . --build-dir "$(BUILD_STATS_DIR)"
+
+# Reverse-include report: which .h/.cpp files include each project header, ranked
+# by how much moving heavy #includes into a .cpp would shrink the compile cascade.
+# Expands system/third-party headers via compiler defaults, vendored roots, and
+# compile_commands.json -I/-isystem when present.
+# HEADER_STATS_ARGS forwards extra flags, e.g. HEADER_STATS_ARGS='--header graphics/Graphics.h'
+HEADER_STATS_ARGS ?=
+COMPILE_COMMANDS ?= build/$(PLATFORM)-debug/compile_commands.json
+stats/headers:
+	python3 scripts/analyze_header_includes.py --source-dir . \
+		$(if $(wildcard $(COMPILE_COMMANDS)),--compile-commands "$(COMPILE_COMMANDS)",) \
+		$(HEADER_STATS_ARGS)
 release: build/$(PLATFORM)
 
 # Windows host: build Linux targets inside WSL2 (same tree).
@@ -418,387 +416,23 @@ define reconfigure-if-args-changed
 	fi
 endef
 
-build/win32: build/win32/build.ninja
-	$(call reconfigure-if-args-changed,build/win32,$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS))
-	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
+include cmake/platforms/win32-release.mk
 
-build/win32/build.ninja:
-	$(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS)
+include cmake/platforms/linux-release.mk
 
-# Fast up-to-date check for repeated run/test loops: ninja's dry run costs
-# ~100ms and lists every pending edge, so vcvars + cmake only run when
-# something is actually stale. check_sources_* rescan targets run on every
-# build by design, so their lines are filtered out of the dry-run output.
-# Do not use `test/ -nt unit_test.exe`: PRE_BUILD asset scripts and any write
-# under test/ bump the directory mtime on Windows, which reconfigured CMake
-# and rebuilt every test TU.
-ensure-built/win32:
-	@stale=0; \
-	for f in build/win32/src/modules/*_src.txt build/win32/src/engine/*_src.txt; do \
-	  [ -f "$$f" ] || continue; \
-	  folder=$${f##*/}; folder=$${folder%_src.txt}; \
-	  for src in src/modules/$$folder src/engine/$$folder; do \
-	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
-	  done; \
-	done; \
-	if [ ! -f build/win32/test/test_src.txt ]; then stale=1; \
-	else \
-	  n_disk=0; \
-	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
-	    [ -f "$$cpp" ] || continue; \
-	    n_disk=$$((n_disk+1)); \
-	    if [ "$$cpp" -nt build/win32/test/test_src.txt ]; then stale=1; break; fi; \
-	  done; \
-	  n_list=$$(grep -c . build/win32/test/test_src.txt 2>/dev/null || echo 0); \
-	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
-	fi; \
-	if [ "$$stale" = 1 ] && [ -f build/win32/build.ninja ]; then \
-	  echo "source list stale; reconfiguring build/win32"; \
-	  $(WITH_MSVC) cmake.exe $(WIN32_CMAKE_ARGS); \
-	fi; \
-	if [ -f build/win32/build.ninja ] \
-	   && [ "$$(cat build/win32/.eve-config-args 2>/dev/null)" = "$(CMAKE_EXTRA_ARGS)" ] \
-	   && [ "$$stale" = 0 ] \
-	   && ! ninja -C build/win32 -n 2>&1 \
-	        | grep -v 'Entering directory' \
-	        | grep -v 'no work to do' \
-	        | grep -v 'rescan_source.cmake' \
-	        | grep -q .; then \
-	  echo "build/win32: up to date"; \
-	else \
-	  $(MAKE) build/win32; \
-	fi
+include cmake/platforms/macosx-release.mk
 
-build/linux: build/linux/Makefile
-	$(call reconfigure-if-args-changed,build/linux,cmake $(LINUX_CMAKE_ARGS))
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
+include cmake/platforms/android-release.mk
 
-build/linux/Makefile:
-	cmake $(LINUX_CMAKE_ARGS)
+include cmake/platforms/win32-debug.mk
 
-# Unix Makefiles cannot be dry-run reliably (cmake_check_build_system and the
-# ALL custom targets always report work), so linux/macosx just build; make's
-# own incremental check keeps the no-op case cheap.
-ensure-built/linux: build/linux
+include cmake/platforms/linux-debug.mk
 
-build/macosx: build/macosx/Makefile
-	$(call reconfigure-if-args-changed,build/macosx,cmake $(MACOSX_CMAKE_ARGS))
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
+include cmake/platforms/macosx-debug.mk
 
-build/macosx/Makefile:
-	cmake $(MACOSX_CMAKE_ARGS)
+include cmake/platforms/android-debug.mk
 
-ensure-built/macosx: build/macosx
-
-build/android: build/android/build.ninja
-	cmake --build $@ --target deps -j $(ANDROID_JOBS)
-	cmake --build $@ -j $(ANDROID_JOBS)
-	$(MAKE) sync/android-libs BUILD_DIR=build/android
-	$(MAKE) sync/android-assets
-	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleRelease
-
-build/android/build.ninja:
-	cmake -G Ninja \
-		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
-		-DANDROID_ABI=$(ANDROID_ABI) \
-		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
-		-DANDROID_STL=$(ANDROID_STL) \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DBUILD_PLATFORM=android \
-		-DBUILD_TESTING=OFF \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/android -S .
-
-build/win32-debug: build/win32-debug/build.ninja
-	$(call reconfigure-if-args-changed,build/win32-debug,$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS),$(WIN32_DEBUG_CONFIG_STAMP))
-	$(WITH_MSVC) cmake.exe --build $@ -j $(JOBS)
-
-build/win32-debug/build.ninja:
-	$(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS)
-
-ensure-built/win32-debug:
-	@stale=0; \
-	for f in build/win32-debug/src/modules/*_src.txt build/win32-debug/src/engine/*_src.txt; do \
-	  [ -f "$$f" ] || continue; \
-	  folder=$${f##*/}; folder=$${folder%_src.txt}; \
-	  for src in src/modules/$$folder src/engine/$$folder; do \
-	    if [ -d "$$src" ] && [ "$$src" -nt "$$f" ]; then stale=1; break 2; fi; \
-	  done; \
-	done; \
-	if [ ! -f build/win32-debug/test/test_src.txt ]; then stale=1; \
-	else \
-	  n_disk=0; \
-	  for cpp in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
-	    [ -f "$$cpp" ] || continue; \
-	    n_disk=$$((n_disk+1)); \
-	    if [ "$$cpp" -nt build/win32-debug/test/test_src.txt ]; then stale=1; break; fi; \
-	  done; \
-	  n_list=$$(grep -c . build/win32-debug/test/test_src.txt 2>/dev/null || echo 0); \
-	  if [ "$$stale" = 0 ] && [ "$$n_disk" != "$$n_list" ]; then stale=1; fi; \
-	fi; \
-	if [ "$$stale" = 1 ] && [ -f build/win32-debug/build.ninja ]; then \
-	  echo "source list stale; reconfiguring build/win32-debug"; \
-	  $(WITH_MSVC) cmake.exe $(WIN32_DEBUG_CMAKE_ARGS); \
-	fi; \
-	if [ -f build/win32-debug/build.ninja ] \
-	   && [ "$$(cat build/win32-debug/.eve-config-args 2>/dev/null)" = "$(WIN32_DEBUG_CONFIG_STAMP)" ] \
-	   && [ "$$stale" = 0 ] \
-	   && ! ninja -C build/win32-debug -n 2>&1 \
-	        | grep -v 'Entering directory' \
-	        | grep -v 'no work to do' \
-	        | grep -v 'rescan_source.cmake' \
-	        | grep -q .; then \
-	  echo "build/win32-debug: up to date"; \
-	else \
-	  $(MAKE) build/win32-debug; \
-	fi
-
-build/linux-debug: build/linux-debug/Makefile
-	$(call reconfigure-if-args-changed,build/linux-debug,cmake $(LINUX_DEBUG_CMAKE_ARGS),$(LINUX_DEBUG_CONFIG_STAMP))
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
-
-build/linux-debug/Makefile:
-	cmake $(LINUX_DEBUG_CMAKE_ARGS)
-
-ensure-built/linux-debug: build/linux-debug
-
-build/linux-asan: build/linux-asan/Makefile
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
-
-# Keep heap, stack and undefined-behavior instrumentation plus engine assertions,
-# but omit per-global ASan redzones: the monolithic unit_test has enough globals
-# for those redzones alone to exceed x86-64's PC-relative relocation range.
-# Disabling linker relaxation also avoids GOTPCREL overflows near that limit.
-build/linux-asan/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=RelWithDebInfo -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
-		-DCMAKE_CXX_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -fno-omit-frame-pointer --param=asan-globals=0" \
-		-DCMAKE_C_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
-		-DCMAKE_CXX_FLAGS_RELWITHDEBINFO="-O1 -g -DNDEBUG -fno-optimize-sibling-calls" \
-		-DCMAKE_EXE_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr -Wl,--no-relax" \
-		-DCMAKE_SHARED_LINKER_FLAGS="-fsanitize=address,undefined -fno-sanitize=vptr" \
-		-DEVENGINE_ENABLE_ASSERTS=ON \
-		$(CMAKE_EXTRA_ARGS) -B build/linux-asan -S .
-
-build/linux-coverage: build/linux-coverage/Makefile
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
-
-build/linux-coverage/Makefile:
-	cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug -DBUILD_PLATFORM=linux \
-		-DCMAKE_C_FLAGS="--coverage -O0" \
-		-DCMAKE_CXX_FLAGS="--coverage -O0" \
-		-DCMAKE_EXE_LINKER_FLAGS="--coverage" \
-		-DCMAKE_SHARED_LINKER_FLAGS="--coverage" \
-		$(CMAKE_EXTRA_ARGS) -B build/linux-coverage -S .
-
-# Coverage-guided parser fuzzing is intentionally a small standalone Clang
-# build. The engine's Linux build remains GCC, matching production CI.
-build/linux-fuzz: build/linux-fuzz/build.ninja
-	cmake --build build/linux-fuzz -j $(JOBS)
-
-build/linux-fuzz/build.ninja:
-	cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug \
-		-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/linux-fuzz -S test/fuzz
-
-fuzz/linux: build/linux-fuzz
-	cd build/linux-fuzz && ./evengine_json_fuzz --fuzz --testcase='^fuzz.json.document$$'
-
-build/macosx-debug: build/macosx-debug/Makefile
-	$(call reconfigure-if-args-changed,build/macosx-debug,cmake $(MACOSX_DEBUG_CMAKE_ARGS))
-	cmake --build $@ --target deps -j $(JOBS)
-	cmake --build $@ -j $(JOBS)
-
-build/macosx-debug/Makefile:
-	cmake $(MACOSX_DEBUG_CMAKE_ARGS)
-
-ensure-built/macosx-debug: build/macosx-debug
-
-build/android-debug: build/android-debug/build.ninja
-	cmake --build $@ --target deps -j $(ANDROID_JOBS)
-	cmake --build $@ -j $(ANDROID_JOBS)
-	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug
-	$(MAKE) sync/android-assets
-	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
-
-build/android-debug/build.ninja:
-	cmake -G Ninja \
-		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
-		-DANDROID_ABI=$(ANDROID_ABI) \
-		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
-		-DANDROID_STL=$(ANDROID_STL) \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=android \
-		-DBUILD_TESTING=OFF \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/android-debug -S .
-
-build/ios: build/ios/EVEngine.xcodeproj
-	cmake --build build/ios --target deps --config Release -j $(ANDROID_JOBS)
-	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
-		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
-		cd build/ios && xcodebuild -scheme eve -configuration Release \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-			build; \
-	else \
-		cd build/ios && xcodebuild -scheme eve -configuration Release \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-			CODE_SIGN_STYLE=Automatic \
-			-allowProvisioningUpdates \
-			build; \
-	fi
-
-build/ios/EVEngine.xcodeproj:
-	cmake -G Xcode \
-		-DCMAKE_SYSTEM_NAME=iOS \
-		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
-		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DCMAKE_OSX_SYSROOT=$(IOS_SDK) \
-		-DCMAKE_BUILD_TYPE=Release \
-		-DBUILD_PLATFORM=ios \
-		-DBUILD_TESTING=OFF \
-		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
-		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/ios -S .
-
-build/ios-debug: build/ios-debug/EVEngine.xcodeproj
-	cmake --build build/ios-debug --target deps --config Debug -j $(ANDROID_JOBS)
-	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
-		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
-		echo "  Xcode → Settings → Accounts → add Apple ID, then export IOS_DEVELOPMENT_TEAM=<TeamID>"; \
-		cd build/ios-debug && xcodebuild -scheme eve -configuration Debug \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-			build; \
-	else \
-		cd build/ios-debug && xcodebuild -scheme eve -configuration Debug \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-			CODE_SIGN_STYLE=Automatic \
-			-allowProvisioningUpdates \
-			build; \
-	fi
-
-build/ios-debug/EVEngine.xcodeproj:
-	cmake -G Xcode \
-		-DCMAKE_SYSTEM_NAME=iOS \
-		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
-		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DCMAKE_OSX_SYSROOT=$(IOS_SDK) \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=ios \
-		-DBUILD_TESTING=OFF \
-		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
-		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/ios-debug -S .
-
-# iOS game app for the simulator (no signing required). Uses its own
-# third-party tree (ios-simulator-debug) so the device deps are not clobbered.
-build/ios-sim-debug: build/ios-sim-debug/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug --target deps --config Debug -j $(ANDROID_JOBS)
-	cd build/ios-sim-debug && xcodebuild -scheme eve -configuration Debug \
-		-sdk iphonesimulator -arch $(IOS_ARCH) \
-		CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-		build
-
-build/ios-sim-debug/EVEngine.xcodeproj:
-	cmake -G Xcode \
-		-DCMAKE_SYSTEM_NAME=iOS \
-		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
-		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DCMAKE_OSX_SYSROOT=iphonesimulator \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=ios \
-		-DBUILD_TESTING=OFF \
-		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
-		-DEVENGINE_IOS_GAME=$(IOS_GAME) \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/ios-sim-debug -S .
-
-# ---- iOS test app (zeroerr suite as the eve.app executable) ----
-#   make build/ios-debug-test [IOS_DEVELOPMENT_TEAM=<TeamID>]
-#   make run/ios-test-debug [FILTER=math.*]   # install + launch on device
-#   make log/ios-test                          # stream test results
-build/ios-debug-test: build/ios-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
-	@if [ -z "$(IOS_DEVELOPMENT_TEAM)" ]; then \
-		echo "WARNING: IOS_DEVELOPMENT_TEAM unset; building unsigned (install will fail)"; \
-		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
-			build; \
-	else \
-		cd build/ios-debug-test && xcodebuild -scheme eve -configuration Debug \
-			-sdk $(IOS_SDK) -arch $(IOS_ARCH) \
-			DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-			CODE_SIGN_STYLE=Automatic \
-			-allowProvisioningUpdates \
-			build; \
-	fi
-
-build/ios-debug-test/EVEngine.xcodeproj:
-	cmake -G Xcode \
-		-DCMAKE_SYSTEM_NAME=iOS \
-		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
-		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DCMAKE_OSX_SYSROOT=$(IOS_SDK) \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=ios \
-		-DBUILD_TESTING=ON \
-		-DEVENGINE_IOS_TEST_APP=ON \
-		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DIOS_DEVELOPMENT_TEAM=$(IOS_DEVELOPMENT_TEAM) \
-		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
-		-DEVENGINE_IOS_TEST_BUNDLE_ID=$(IOS_TEST_BUNDLE_ID) \
-		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
-		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
-		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/ios-debug-test -S .
-
-# iOS test app for the simulator (no signing required). Uses its own
-# third-party tree (ios-simulator-debug) so the device deps are not clobbered.
-build/ios-sim-debug-test: build/ios-sim-debug-test/EVEngine.xcodeproj
-	cmake --build build/ios-sim-debug-test --target deps --config Debug -j $(ANDROID_JOBS)
-	cd build/ios-sim-debug-test && xcodebuild -scheme eve -configuration Debug \
-		-sdk iphonesimulator -arch $(IOS_ARCH) \
-		CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
-		build
-
-build/ios-sim-debug-test/EVEngine.xcodeproj:
-	cmake -G Xcode \
-		-DCMAKE_SYSTEM_NAME=iOS \
-		-DCMAKE_OSX_ARCHITECTURES=$(IOS_ARCH) \
-		-DCMAKE_OSX_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DCMAKE_OSX_SYSROOT=iphonesimulator \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=ios \
-		-DBUILD_TESTING=ON \
-		-DEVENGINE_IOS_TEST_APP=ON \
-		-DEVENGINE_IOS_DEPLOYMENT_TARGET=$(IOS_DEPLOYMENT_TARGET) \
-		-DEVENGINE_IOS_BUNDLE_ID=$(IOS_BUNDLE_ID) \
-		-DEVENGINE_IOS_TEST_BUNDLE_ID=$(IOS_TEST_BUNDLE_ID) \
-		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
-		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
-		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/ios-sim-debug-test -S .
+include cmake/platforms/ios-build.mk
 
 # Rebuild changed third-party sources and run install again without deleting
 # build/third-party or build/third-party-binary.
@@ -844,240 +478,10 @@ reinstall/third-party/ios-debug:
 	cmake --build build/third-party/ios-debug --target install -j 8
 	cmake -DPREFIX=build/third-party-binary/ios-debug -DTP_DIR=third-party -DPLATFORM=ios -DBUILD_TYPE=Debug -P cmake/write_third_party_version.cmake
 
-# Copy native shared libraries into the Gradle jniLibs tree.
-# In Android test-app mode the runner lives in test/libmain.so (zeroerr suite);
-# otherwise it is the engine's src/engine/libmain.so.
-sync/android-libs:
-	cmake -DBUILD_DIR="$(BUILD_DIR)" -DJNI_LIBS="$(JNI_LIBS)" -DANDROID_ABI="$(ANDROID_ABI)" -DANDROID_NDK="$(ANDROID_NDK)" -P cmake/sync_android_libs.cmake
+include cmake/platforms/android-run.mk
 
-# Populate APK assets/game from a source tree (do not hand-edit assets/game).
-#   make sync/android-assets                 # default: demo shell
-#   make sync/android-assets ANDROID_GAME=example
-sync/android-assets:
-	@rm -rf "$(ANDROID_ASSETS_GAME)"
-	@mkdir -p "$(ANDROID_ASSETS_GAME)"
-	@if [ "$(ANDROID_GAME)" = "example" ]; then \
-	  src="example"; \
-	elif [ "$(ANDROID_GAME)" = "demo" ]; then \
-	  src="platform/android/game-shell"; \
-	elif [ -d "$(ANDROID_GAME)" ]; then \
-	  src="$(ANDROID_GAME)"; \
-	else \
-	  echo "ANDROID_GAME must be 'demo', 'example', or a directory (got: $(ANDROID_GAME))"; \
-	  exit 1; \
-	fi; \
-	cp -R "$$src"/. "$(ANDROID_ASSETS_GAME)/"; \
-	touch "$(ANDROID_ASSETS_GAME)/.gitkeep"; \
-	echo "Synced Android game assets ($$src) -> $(ANDROID_ASSETS_GAME)"; \
-	ls -la "$(ANDROID_ASSETS_GAME)"
+include cmake/platforms/ios-run.mk
 
-# Populate APK assets/test + assets/examples for the Android test app
-# (EVTestActivity unpacks them to <files>/evengine_test at first launch).
-sync/android-test-assets:
-	@rm -rf "$(APK_DIR)/app/src/main/assets/test" "$(APK_DIR)/app/src/main/assets/examples" "$(APK_DIR)/app/src/main/assets/game"
-	@mkdir -p "$(APK_DIR)/app/src/main/assets/test" "$(APK_DIR)/app/src/main/assets/examples"
-	cp -R test/. "$(APK_DIR)/app/src/main/assets/test/"
-	cp -R examples/. "$(APK_DIR)/app/src/main/assets/examples/"
-	@echo "Synced Android test assets -> $(APK_DIR)/app/src/main/assets/{test,examples}"
-	ls -la "$(APK_DIR)/app/src/main/assets/test" | head -20
-
-install/android-debug:
-	$(ANDROID_SDK)/platform-tools/adb install -r \
-		$(APK_DIR)/app/build/outputs/apk/debug/app-debug.apk
-
-run/android-debug: install/android-debug
-	$(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVEngineActivity
-
-log/android:
-	$(ANDROID_SDK)/platform-tools/adb logcat -s EVEngineActivity:I SDL:V SDL/APP:V vulkan:V libc:F DEBUG:F
-
-# ---- Android test app (zeroerr suite as libmain.so) ----
-#   make build/android-debug-test        # configure + deps + engine/tests + APK
-#   make run/android-test-debug [FILTER=math.*]   # install + launch on device
-#   make log/android-test                # stream test results from logcat
-build/android-debug-test: build/android-debug-test/build.ninja
-	cmake --build $@ --target deps -j $(ANDROID_JOBS)
-	cmake --build $@ -j $(ANDROID_JOBS)
-	$(MAKE) sync/android-libs BUILD_DIR=build/android-debug-test
-	$(MAKE) sync/android-test-assets
-	cd $(APK_DIR) && JAVA_HOME="$(JAVA_HOME)" ANDROID_HOME="$(ANDROID_SDK)" ./gradlew assembleDebug
-
-build/android-debug-test/build.ninja:
-	cmake -G Ninja \
-		-DCMAKE_TOOLCHAIN_FILE=$(ANDROID_NDK)/build/cmake/android.toolchain.cmake \
-		-DANDROID_ABI=$(ANDROID_ABI) \
-		-DANDROID_PLATFORM=$(ANDROID_PLATFORM) \
-		-DANDROID_STL=$(ANDROID_STL) \
-		-DCMAKE_BUILD_TYPE=Debug \
-		-DBUILD_PLATFORM=android \
-		-DBUILD_TESTING=ON \
-		-DEVENGINE_ANDROID_TEST_APP=ON \
-		-DEVENGINE_DOWNLOAD_CLASSIC_SCENES=OFF \
-		-DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
-		-DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF \
-		$(CMAKE_EXTRA_ARGS) \
-		-B build/android-debug-test -S .
-
-# Convenience: reuse the game APK's install/run with the test filter extra.
-FILTER ?=
-run/android-test-debug: install/android-debug
-	@if [ -n "$(FILTER)" ]; then \
-	  $(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVTestActivity --es evengine.test.filter "$(FILTER)"; \
-	else \
-	  $(ANDROID_SDK)/platform-tools/adb shell am start -n com.evengine.example/.EVTestActivity; \
-	fi
-
-log/android-test:
-	$(ANDROID_SDK)/platform-tools/adb logcat -c
-	$(ANDROID_SDK)/platform-tools/adb logcat -s EVEngineTest:V SDL:V vulkan:V libc:F DEBUG:F
-
-# Install Debug .app to the first connected physical iOS/iPadOS device.
-install/ios-debug:
-	@test -n "$$(security find-identity -v -p codesigning 2>/dev/null | sed -n '/Apple Development/p')" \
-	  || (echo "No Apple Development signing identity. Open Xcode → Settings → Accounts, add Apple ID, then rebuild with IOS_DEVELOPMENT_TEAM=<TeamID>."; exit 1)
-	@APP="$(IOS_APP)"; \
-	  if [ ! -d "$$APP" ]; then \
-	    APP=$$(find build/ios-debug -name 'eve.app' -type d 2>/dev/null | head -1); \
-	  fi; \
-	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug first"; exit 1); \
-	  echo "Installing $$APP"; \
-	  if xcrun --find devicectl >/dev/null 2>&1; then \
-	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
-	    test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
-	    echo "Device $$DEV"; \
-	    xcrun devicectl device install app --device $$DEV "$$APP"; \
-	  elif command -v ios-deploy >/dev/null 2>&1; then \
-	    ios-deploy --bundle "$$APP"; \
-	  else \
-	    echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
-	  fi
-
-run/ios-debug: install/ios-debug
-	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
-	  xcrun devicectl device process launch --device $$DEV $(IOS_BUNDLE_ID); \
-	elif command -v ios-deploy >/dev/null 2>&1; then \
-	  ios-deploy --justlaunch --bundle "$$(find build/ios-debug -name 'eve.app' -type d | head -1)"; \
-	fi
-
-log/ios:
-	@echo "Streaming device logs (Ctrl-C to stop)..."
-	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  xcrun devicectl device info log --help >/dev/null 2>&1 || true; \
-	  log stream --predicate 'processImagePath CONTAINS "eve" OR process CONTAINS "EVEngine"' --style compact; \
-	else \
-	  log stream --predicate 'processImagePath CONTAINS "eve"' --style compact; \
-	fi
-
-# ---- iOS test app: install / launch / logs (mirrors run/android-test-debug) ----
-install/ios-test-debug:
-	@test -n "$$(security find-identity -v -p codesigning 2>/dev/null | sed -n '/Apple Development/p')" \
-	  || (echo "No Apple Development signing identity. Open Xcode → Settings → Accounts, add Apple ID, then rebuild with IOS_DEVELOPMENT_TEAM=<TeamID>."; exit 1)
-	@APP="$(IOS_TEST_APP)"; \
-	  if [ ! -d "$$APP" ]; then \
-	    APP=$$(find build/ios-debug-test -name 'eve.app' -type d 2>/dev/null | head -1); \
-	  fi; \
-	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-debug-test first"; exit 1); \
-	  echo "Installing $$APP"; \
-	  if xcrun --find devicectl >/dev/null 2>&1; then \
-	    DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
-	    test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
-	    echo "Device $$DEV"; \
-	    xcrun devicectl device install app --device $$DEV "$$APP"; \
-	  elif command -v ios-deploy >/dev/null 2>&1; then \
-	    ios-deploy --bundle "$$APP"; \
-	  else \
-	    echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
-	  fi
-
-run/ios-test-debug: install/ios-test-debug
-	@if xcrun --find devicectl >/dev/null 2>&1; then \
-	  DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
-	  if [ -n "$(FILTER)" ]; then \
-	    xcrun devicectl device process launch --terminate-existing --console --device $$DEV $(IOS_TEST_BUNDLE_ID) -- -evengine.test.filter "$(FILTER)"; \
-	  else \
-	    xcrun devicectl device process launch --terminate-existing --console --device $$DEV $(IOS_TEST_BUNDLE_ID); \
-	  fi; \
-	elif command -v ios-deploy >/dev/null 2>&1; then \
-	  if [ -n "$(FILTER)" ]; then \
-	    ios-deploy --justlaunch --bundle "$$(find build/ios-debug-test -name 'eve.app' -type d | head -1)" --args "-evengine.test.filter $(FILTER)"; \
-	  else \
-	    ios-deploy --justlaunch --bundle "$$(find build/ios-debug-test -name 'eve.app' -type d | head -1)"; \
-	  fi; \
-	else \
-	  echo "Need xcrun devicectl (Xcode 15+) or ios-deploy"; exit 1; \
-	fi
-
-# Run the full suite on a device, one test file per app launch. Per-file
-# process isolation mirrors CI's per-case CTest isolation: rapid window
-# create/destroy across hundreds of tests trips the iOS watchdog (SIGKILL), so
-# a crash in one file only loses that file's results.
-IOS_TEST_RESULTS ?= build/ios-test-results
-run/ios-test-all-debug: install/ios-test-debug
-	@mkdir -p "$(IOS_TEST_RESULTS)"; rm -f "$(IOS_TEST_RESULTS)"/*.log; \
-	DEV=$$(xcrun devicectl list devices 2>/dev/null | sed -nE '/connected|available/s/.*([0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}).*/\1/p' | head -1); \
-	test -n "$$DEV" || (echo "No connected/available iOS device found (devicectl)."; exit 1); \
-	ran=0; \
-	for f in test/*.cpp $$(find test/unit test/integration -name '*.cpp' -type f); do \
-	  b=$$(basename "$$f"); \
-	  [ "$$b" = "main.cpp" ] && continue; \
-	  ran=$$((ran+1)); \
-	  echo "== $$b =="; \
-	  xcrun devicectl --timeout 300 device process launch --terminate-existing --console --device "$$DEV" $(IOS_TEST_BUNDLE_ID) -- -evengine.test.file "$$b" > "$(IOS_TEST_RESULTS)/$${b%.cpp}.log" 2>&1 || true; \
-	done; \
-	echo "Ran $$ran test files; logs in $(IOS_TEST_RESULTS)/"; \
-	echo "--- per-file results ---"; \
-	passed=0; crashed=0; failed=0; \
-	for l in "$(IOS_TEST_RESULTS)"/*.log; do \
-	  b=$$(basename "$$l" .log); \
-	  if grep -aq "signal" "$$l"; then \
-	    echo "CRASH $$b ($$(grep -aoE 'signal [0-9]+' "$$l" | head -1))"; \
-	    crashed=$$((crashed+1)); \
-	  elif grep -aq "❌" "$$l"; then \
-	    echo "FAIL  $$b"; \
-	    failed=$$((failed+1)); \
-	  else \
-	    echo "PASS  $$b"; \
-	    passed=$$((passed+1)); \
-	  fi; \
-	done; \
-	echo "--- summary: PASS=$$passed FAIL=$$failed CRASH=$$crashed ---"
-
-log/ios-test:
-	@echo "Streaming iOS test logs (Ctrl-C to stop)..."
-	log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
-
-# ---- iOS simulator test app: install / launch / logs (no signing needed) ----
-install/ios-sim-test-debug:
-	@APP="$(IOS_SIM_TEST_APP)"; \
-	  if [ ! -d "$$APP" ]; then \
-	    APP=$$(find build/ios-sim-debug-test -name 'eve.app' -type d 2>/dev/null | head -1); \
-	  fi; \
-	  test -n "$$APP" -a -d "$$APP" || (echo "eve.app not found; run make build/ios-sim-debug-test first"; exit 1); \
-	  SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
-	  test -n "$$SIM" || (echo "No available iOS simulator"; exit 1); \
-	  xcrun simctl boot "$$SIM" 2>/dev/null || true; \
-	  xcrun simctl bootstatus "$$SIM" -b >/dev/null 2>&1; \
-	  echo "Installing $$APP on simulator $$SIM"; \
-	  xcrun simctl install "$$SIM" "$$APP"
-
-run/ios-sim-test-debug: install/ios-sim-test-debug
-	@SIM=$$(xcrun simctl list devices available 2>/dev/null | sed -n 's/.*(\([0-9A-Fa-f-]\{36\}\)).*/\1/p' | head -1); \
-	  if [ -n "$(FILTER)" ]; then \
-	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID) -evengine.test.filter "$(FILTER)"; \
-	  else \
-	    xcrun simctl launch "$$SIM" $(IOS_TEST_BUNDLE_ID); \
-	  fi
-
-log/ios-sim-test:
-	@echo "Streaming simulator test logs (Ctrl-C to stop)..."
-	xcrun simctl spawn booted log stream --predicate 'subsystem == "$(IOS_TEST_BUNDLE_ID)"' --style compact
-
-test: test/$(PLATFORM)-debug
-
-# Fetch large classic render scenes for ClassicScenes.* tests
-# (Sponza, DamagedHelmet, FlightHelmet, BoomBox, WaterBottle, Corset, …).
-# Cornell Box is committed under test/assets/classic/cornell/.
 download-classic-scenes:
 	bash scripts/download_classic_scenes.sh
 
@@ -1355,4 +759,11 @@ rpg-classic/skill:
 # 	docker build . --tag evengine
 # 	mkdir -p build && touch $@
 
+# CPU-only popup contracts: no graphics backend, font, combat or settlement linkage.
+.PHONY: check/damage-numbers
+check/damage-numbers:
+	cmake -S test/damage_numbers -B build/damage-number-core -DCMAKE_BUILD_TYPE=Debug
+	cmake --build build/damage-number-core -j $(JOBS)
+	ctest --test-dir build/damage-number-core --output-on-failure
 include cmake/native_arm64.mk
+include cmake/native_macos.mk

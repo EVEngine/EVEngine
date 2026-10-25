@@ -20,24 +20,8 @@ OffscreenCanvas::OffscreenCanvas(Graphics *owner, int width, int height, bool hd
     auto &device = owner->getDevice();
     const vk::Format format =
         hdr ? vk::Format::eR16G16B16A16Sfloat : vk::Format::eR8G8B8A8Unorm;
-    vk::ImageCreateInfo colorInfo{};
-    colorInfo.imageType   = vk::ImageType::e2D;
-    colorInfo.format      = format;
-    colorInfo.extent      = vk::Extent3D{uint32_t(width), uint32_t(height), 1};
-    colorInfo.mipLevels   = 1;
-    colorInfo.arrayLayers = 1;
-    colorInfo.samples     = vk::SampleCountFlagBits::e1;
-    colorInfo.tiling      = vk::ImageTiling::eOptimal;
-    colorInfo.usage       = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled |
-                      vk::ImageUsageFlagBits::eTransferSrc | vk::ImageUsageFlagBits::eTransferDst;
-    colorInfo.sharingMode   = vk::SharingMode::eExclusive;
-    colorInfo.initialLayout = vk::ImageLayout::eUndefined;
-    struct CopyDestination : vkb::ColorAttachmentImage {
-        CopyDestination(vkb::Device &targetDevice, const vk::ImageCreateInfo &info) {
-            create(targetDevice, info, vk::ImageViewType::e2D, vk::ImageAspectFlagBits::eColor, false);
-        }
-    };
-    color = CopyDestination(device, colorInfo);
+    // TransferDst so same-frame snapshots / blits can land on this canvas.
+    color = device.createCopyableColorTarget(uint32_t(width), uint32_t(height), format);
 
     fb = owner->getOffscreenRenderPass(hdr).createFramebuffer(
         device, uint32_t(width), uint32_t(height), {color.asAttachment()});

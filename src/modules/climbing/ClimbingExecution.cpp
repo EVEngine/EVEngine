@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "climbing/Climbing.h"
 #include "climbing/ClimbingRuntimeInternal.h"
 #include "climbing/ClimbingTrajectory.h"

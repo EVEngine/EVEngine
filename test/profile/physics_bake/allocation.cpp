@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "probe",
+  "default": "module-composition",
+  "module": "physics_backend",
+  "task": "physics-bake"
+}
+*/
+// clang-format on
+
 #include <cstdlib>
 #include <iostream>
 #include <new>

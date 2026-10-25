@@ -57,7 +57,7 @@ group "test assertion levels" \
     python3 scripts/check_test_assert_level.py
 group "Squirrel call sites" \
     python3 scripts/check_sq_call_sites.py
-group "examples layout and overview registration" \
+group "examples layout and curated overview links" \
     python3 scripts/check_examples.py
 group "critical return-value diagnostics" \
     python3 scripts/check_nodiscard.py

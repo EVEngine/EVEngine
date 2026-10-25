@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "procgen",
+  "modules": [
+    "procgen"
+  ],
+  "default": "script-binding"
+}
+*/
+// clang-format on
+
 #include "procgen/ProcgenScriptSupport.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

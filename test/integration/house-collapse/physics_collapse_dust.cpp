@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_destruction_dust",
+  "origins": [
+    "physics_collapse_dust.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <barrier>
 #include <chrono>
 #include <filesystem>

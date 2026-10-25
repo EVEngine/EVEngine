@@ -1,3 +1,4 @@
+// eve-hot-path
 #include <algorithm>
 #include <cmath>
 #include <utility>

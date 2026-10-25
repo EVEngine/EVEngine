@@ -1,3 +1,14 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "local-logic"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <limits>
 #include <string>

@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "script-binding",
+  "module": "physics"
+}
+*/
+// clang-format on
+
 #include <filesystem>
 #include <random>
 #include <simplesquirrel/simplesquirrel.hpp>

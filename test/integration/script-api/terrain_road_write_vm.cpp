@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "modules": [
+    "procgen"
+  ],
+  "default": "script-binding",
+  "origins": [
+    "terrain_road_write_vm.cpp"
+  ],
+  "module": "procgen"
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "common/Module.h"

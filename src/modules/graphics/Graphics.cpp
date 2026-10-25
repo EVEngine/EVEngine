@@ -28,13 +28,13 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/GrassWind.h"
 #include "graphics/Light.h"
-#include "graphics/ShadowScheme.h"
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -51,6 +51,7 @@
 #include "graphics/Renderable3DBindings.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/ShaderScriptBindings.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/VegetationScriptBindings.h"
 #include "graphics/Volumetric.h"
@@ -298,15 +299,7 @@ void Graphics::expose(ssq::Table& table) {
     exposeVegetationScriptBindings(table, cls);
     exposeCanvasScriptBindings(table);
 
-#ifndef EVENGINE_WEBGPU
-    auto fontCls =
-        table.addClass<Font>("GraphicsFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
-    fontCls.addFunc("getHeight", &Font::getHeight);
-    fontCls.addFunc("getAscent", &Font::getAscent);
-    fontCls.addFunc("getBaseline", &Font::getBaseline);
-    fontCls.addFunc("getWidth", &Font::getWidth);
-    fontCls.addFunc("hasGlyph", &Font::hasGlyph);
-#endif
+    exposeFontAndDamageNumberBindings(table, cls);
 
     auto maskCls = table.addClass<AlphaMask>("AlphaMask",
                                              std::function<AlphaMask*()>([]() -> AlphaMask* { return nullptr; }), true);

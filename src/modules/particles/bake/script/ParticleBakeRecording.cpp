@@ -11,8 +11,8 @@
 #include "physics/backend/bake/BakeRecipe.h"
 #include "physics/backend/bake/script/PhysicsBake.h"
 namespace eve::particles {
-using physics::BakeRecipe;
 using physics::BakeCoordinates;
+using physics::BakeRecipe;
 namespace {
 struct JournalData {
     float                                       duration = 0;

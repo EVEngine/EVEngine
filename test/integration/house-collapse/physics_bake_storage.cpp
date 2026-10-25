@@ -1,3 +1,20 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "platform-file",
+  "module": "physics_destruction",
+  "cases": {
+    "concurrency": [
+      "physics.bake.concurrentPublicationHasOneWinner"
+    ]
+  }
+}
+*/
+// clang-format on
+
 #include <atomic>
 #include <barrier>
 #include <bit>

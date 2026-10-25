@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "local-format"
+}
+*/
+// clang-format on
+
 #include "fluids/OceanInteractionCodec.h"
 #include "fluids/OceanSpectrumCodec.h"
 #include "zeroerr/assert.h"

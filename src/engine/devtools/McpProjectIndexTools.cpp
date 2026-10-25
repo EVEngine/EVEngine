@@ -7,6 +7,7 @@
 #include <set>
 #include <stdexcept>
 #include "devtools/McpJson.hpp"
+#include "devtools/McpToolFamilies.hpp"
 #include "devtools/ProjectIndexInternal.hpp"
 
 namespace eve::dev {
@@ -224,4 +225,8 @@ std::string_view mcpProjectIndexToolSchemas() {
     return R"JSON({"name":"eve_project_index_refresh","description":"Index current project source and checked semantic declarations without executing code. Reports revision, incremental parse stats and diagnostics.","inputSchema":{"type":"object","required":["projectDir"],"properties":{"projectDir":{"type":"string"},"maxNodes":{"type":"integer","minimum":1,"maximum":256},"maxBytes":{"type":"integer","minimum":1024,"maximum":65536}}}},
 {"name":"eve_project_index_query","description":"Query compiler-derived project semantics by seed, kind or text. includeCalls expands the full static call neighbourhood. Rejects stale expectedRevision; does not execute project code.","inputSchema":{"type":"object","required":["projectDir"],"properties":{"projectDir":{"type":"string"},"seed":{"type":"string"},"kind":{"type":"string"},"query":{"type":"string"},"includeCalls":{"type":"boolean"},"expectedRevision":{"type":"string"},"maxNodes":{"type":"integer","minimum":1,"maximum":256},"maxDepth":{"type":"integer","minimum":0,"maximum":8},"maxBytes":{"type":"integer","minimum":1024,"maximum":65536}}}})JSON";
 }
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(ProjectIndex, mcpProjectIndexToolSchemas, callMcpProjectIndexTool, ContentEnvelope)
 }  // namespace eve::dev

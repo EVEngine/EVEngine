@@ -1,3 +1,25 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "script-binding": [
+      "crowd.navigation.scriptTokensBoundWorkAndRejectWrongKindsOwnersAndGenerations",
+      "crowd.navigation.scriptRegistryCapacityIsRecoverableAfterRelease",
+      "crowd.navigation.scriptRequestsRemainValidAcrossOtherGoalPublications",
+      "crowd.navigation.scriptRequestOwnedLeaseSamplesAndReleasesSafely",
+      "crowd.navigation.scriptAgentsKeepLeaseAfterRequestReleaseAndRejectAtomicBadBindings"
+    ]
+  },
+  "module": "crowd",
+  "origins": [
+    "crowd_navigation_script.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "crowd/Crowd.h"
 #include "zeroerr/unittest.h"

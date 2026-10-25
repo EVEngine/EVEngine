@@ -27,6 +27,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -286,6 +287,15 @@ def resolve(profile: str, declared: list[ModuleContract] | None = None) -> tuple
     return ordered, groups
 
 
+def module_build_text(root: Path) -> str:
+    """Compose owner settings at their actual include sites for source-only audits."""
+    text = (root / "CMakeLists.txt").read_text(encoding="utf-8")
+    return re.sub(
+        r'^include\("\$\{CMAKE_CURRENT_SOURCE_DIR\}/([\w./-]+\.cmake)"\)',
+        lambda match: (root / match[1]).read_text(encoding="utf-8"), text, flags=re.MULTILINE,
+    )
+
+
 def check_contracts() -> int:
     declarations = manifest.parse_manifest()
     errors = manifest.validate(declarations, manifest.MODULES)
@@ -298,6 +308,7 @@ def check_contracts() -> int:
     if set(PROFILES) & names:
         errors.append("profile name collides with a module name")
 
+    module_cmake = module_build_text(ROOT / "src" / "modules")
     for profile in PROFILES:
         try:
             enabled, groups = resolve(profile, module_contracts)
@@ -319,18 +330,12 @@ def check_contracts() -> int:
             forbidden = {"physics", "physics_cloth", "physics_rope", "physics_destruction", "particles"}
             if enabled_set & forbidden or set(groups) & {"box2d", "box3d", "jolt"}:
                 errors.append("physics-bake-render: playback acquired live simulation dependencies")
-        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile == "procgen-core-only" and "EVProcgenCoreCheck" not in module_cmake:
             errors.append("procgen-core-only: EVProcgenCoreCheck target is not wired")
-        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in (
-            ROOT / "src" / "modules" / "CMakeLists.txt"
-        ).read_text(encoding="utf-8"):
+        if profile == "physics-core-only" and "EVPhysicsCoreCheck" not in module_cmake:
             errors.append("physics-core-only: EVPhysicsCoreCheck target is not wired")
         if profile == "physics-core-only":
-            physics_cmake = (ROOT / "src" / "modules" / "CMakeLists.txt").read_text(
-                encoding="utf-8"
-            )
+            physics_cmake = module_cmake
             missing_sources = [
                 source for source in PHYSICS_CORE_SOURCES if source not in physics_cmake
             ]

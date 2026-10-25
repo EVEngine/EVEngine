@@ -47,10 +47,12 @@ include("{(ROOT / 'cmake/native_arm64.cmake').as_posix()}")
                 self.assertIn("requires a native Windows/Linux ARM64", result.stderr)
 
     def test_dependency_trees_are_separate(self):
-        for platform in ("win32", "linux"):
+        for platform in ("win32", "linux", "macosx"):
             for build_type, suffix in (("Release", ""), ("Debug", "-debug")):
                 for native in ("ON", "OFF"):
-                    expected = platform + ("-arm64" if native == "ON" else "") + suffix
+                    architecture = "x86_64" if platform == "macosx" else "arm64"
+                    option = "EVENGINE_NATIVE_MACOS_X86_64" if platform == "macosx" else "EVENGINE_NATIVE_ARM64"
+                    expected = platform + (f"-{architecture}" if native == "ON" else "") + suffix
                     with self.subTest(expected=expected):
                         result = self.configure(
                             f"""
@@ -70,7 +72,10 @@ function(check_third_party_project name repo)
 endfunction()
 set(BUILD_PLATFORM {platform})
 set(CMAKE_BUILD_TYPE {build_type})
-set(EVENGINE_NATIVE_ARM64 {native})
+set({option} {native})
+if(BUILD_PLATFORM STREQUAL "macosx" AND {native})
+    set(CMAKE_OSX_ARCHITECTURES x86_64)
+endif()
 set(EVENGINE_THIRD_PARTY_PIN 0123456789abcdef)
 file(MAKE_DIRECTORY "${{CMAKE_SOURCE_DIR}}/cmake")
 configure_file("{(ROOT / 'cmake/third_party_release.cmake').as_posix()}"

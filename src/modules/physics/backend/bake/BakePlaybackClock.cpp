@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/backend/bake/BakePlaybackClock.h"
 #include <algorithm>
 #include <cmath>

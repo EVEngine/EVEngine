@@ -1,3 +1,23 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "climbing_anchor_authoring.cpp",
+    "climbing_authored_motion.cpp",
+    "climbing_anchor_graph.cpp",
+    "climbing_ecs.cpp",
+    "climbing_input.cpp",
+    "climbing_parkour.cpp",
+    "climbing_services.cpp",
+    "climbing.cpp",
+    "climbing_events.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_anchor_authoring)

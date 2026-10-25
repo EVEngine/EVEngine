@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "module-composition",
+  "module": "particles"
+}
+*/
+// clang-format on
+
 #include <limits>
 #include "particles/ParticleAppearance.h"
 #include "particles/ParticleEmitter.h"

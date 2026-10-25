@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "role": "tests",
+  "default": "platform-file",
+  "module": "physics_backend"
+}
+*/
+// clang-format on
+
 #include <bit>
 #include <filesystem>
 #include <fstream>

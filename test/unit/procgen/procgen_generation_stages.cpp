@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_generation_stages.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "procgen/GridGraph.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"

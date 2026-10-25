@@ -7,8 +7,8 @@
 namespace eve::particles {
 using physics::BakeRecipe;
 using physics::ParticleTrack;
-using physics::ParticleTrajectory;
 using physics::ParticleTrackKey;
+using physics::ParticleTrajectory;
 namespace {
 Result<std::vector<ParticleTrajectory>> convertEvents(PersistentId session, float duration,
                                                       std::span<const particles::ParticleRecordEvent> events) {

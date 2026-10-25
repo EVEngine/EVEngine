@@ -2,8 +2,8 @@
 
 Audit date: 2026-10-15. The current module manifest owns 193 declarations after
 `dev` removed 19 empty editor alias modules from the original 212-module baseline;
-Canonical test paths own unit modules and integration tasks; `test_levels.json`
-owns classification policy, integration module attribution and migration provenance.
+Canonical test paths own unit modules and integration tasks; source-local policy
+comments own classification exceptions, integration module attribution and migration provenance.
 Run `scripts/test_module_coverage.py --output build/reports/module-test-coverage.md`
 for current generated evidence for every module.
 

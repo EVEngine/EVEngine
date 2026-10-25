@@ -109,7 +109,7 @@ The existing main-thread Audio event-pump sink drives streams. The script is
 the known producer of bounded blocks, with one stream owner and atomic admission;
 direct typed calls fit this cardinality/frequency/atomicity without a capability
 lookup or callback on the sample path. The new pump path is declared in
-`HOT_PATH_GLOBS`. Stream state has one authoritative owner; Audio's weak reference
+source-local `// eve-hot-path` comments. Stream state has one authoritative owner; Audio's weak reference
 only permits pumping and teardown, and cannot extend resource lifetime.
 
 Local evidence: Windows Debug SHARED build with the minimal profile plus audio,
