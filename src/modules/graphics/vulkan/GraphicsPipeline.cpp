@@ -821,14 +821,16 @@ void Graphics::createUiColorResources(int uiW, int uiH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        // Stamp the actual UI target extent, not Graphics::width/height — those
+        // can diverge from the offscreen size for one frame around resize.
+        gpu.width = uiW;
+        gpu.height = uiH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width = uiW;
+        tex.height = uiH;
+        tex.pixelWidth = uiW;
+        tex.pixelHeight = uiH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : uiColorSlots)
@@ -876,8 +878,8 @@ void Graphics::queueUiResolve() {
     // ImGui directly). Never bind the opaque DisplayEncode path here — it would
     // replace transparent texels with the UI clear color.
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
-                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    // The overlay texture is physical pixels; the compositing batch uses logical coordinates.
+    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
     pendingUiResolve = std::move(resolve);
 }
 
@@ -1463,14 +1465,17 @@ void Graphics::createSceneColorResources(int sceneW, int sceneH) {
                         .layout(texSetLayout)
                         .build(device.instance, descriptorPool);
         gpu.descriptorSet = vkb::BoundSet{sets[0]};
-        gpu.width = width;
-        gpu.height = height;
+        // Stamp the actual scene-target extent, not Graphics::width/height —
+        // those can briefly disagree with swapchain.extent around a resize, and
+        // post (FXAA/bloom) sizes itself from Texture::getWidth/Height.
+        gpu.width = sceneW;
+        gpu.height = sceneH;
         gpu.viewOverride = view;
         writeCombinedImageDescriptor(&gpu);
-        tex.width = width;
-        tex.height = height;
-        tex.pixelWidth = width;
-        tex.pixelHeight = height;
+        tex.width = sceneW;
+        tex.height = sceneH;
+        tex.pixelWidth = sceneW;
+        tex.pixelHeight = sceneH;
         tex.gpuHandle = &gpu;
     };
     for (auto &slot : sceneColorSlots) makeSampleTex(slot.colorGpu, slot.colorTex, slot.color.imageView());

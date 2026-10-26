@@ -1,22 +1,24 @@
 #pragma once
 #include "common/Export.h"
 
-
-#include "ik.hpp"
+#include <memory>
 
 namespace eve::ik {
 
+class Solver2D;
+
 /**
- * @brief Script-facing 2D skeleton + pose state (ik::skeleton2d + ik::ecs2d).
+ * @brief Script-facing 2D skeleton + pose state.
  * Bone indices are stable after each createBone / topological refresh.
  * Root bone is always id 0.
+ * @note Public headers intentionally hide the underlying ik.hpp types (Pimpl).
  */
 class EVENGINE_API_FOUNDATION Skeleton2D {
 public:
     /** @brief Creates an empty 2D skeleton with a root bone. */
     Skeleton2D();
     /** @brief Releases skeleton and pose state. */
-    ~Skeleton2D() = default;
+    ~Skeleton2D();
 
     Skeleton2D(const Skeleton2D &)            = delete;
     Skeleton2D &operator=(const Skeleton2D &) = delete;
@@ -38,24 +40,24 @@ public:
     /** @brief Rest length of the bone. */
     float getLength(int boneId) const;
     /** @brief Sets the rest length of the bone. */
-    void  setLength(int boneId, float length);
+    void setLength(int boneId, float length);
 
     /** @brief Sets the world-space bone position. */
-    void  setPosition(int boneId, float x, float y);
+    void setPosition(int boneId, float x, float y);
     /** @brief World-space X of the bone (or component). */
     float getX(int boneId) const;
     /** @brief World-space Y of the bone (or component). */
     float getY(int boneId) const;
 
     /** @brief Sets the bone forward orientation vector. */
-    void  setOrientation(int boneId, float x, float y);
+    void setOrientation(int boneId, float x, float y);
     /** @brief Orientation vector X. */
     float getOrientationX(int boneId) const;
     /** @brief Orientation vector Y. */
     float getOrientationY(int boneId) const;
 
     /** @brief Local hinge angle (radians) relative to parent forward. */
-    void  setRotation(int boneId, float angle);
+    void setRotation(int boneId, float angle);
     /** @brief Local hinge angle in radians. */
     float getRotation(int boneId) const;
 
@@ -78,19 +80,12 @@ public:
     /** @brief Sum of bone lengths from root to boneId inclusive. */
     float totalLengthTo(int boneId) const;
 
-    ::ik::skeleton2d &native() { return sk_; }
-    ::ik::ecs2d      &state() { return state_; }
-    const ::ik::skeleton2d &native() const { return sk_; }
-    const ::ik::ecs2d      &state() const { return state_; }
-
 private:
-    void ensureSorted();
-    void ensureStateSize();
-    ::ik::bone2d *boneAt(int boneId) const;
-    void          requireBone(int boneId) const;
+    friend class Solver2D;
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
 
-    ::ik::skeleton2d sk_;
-    ::ik::ecs2d      state_;
+    void requireBone(int boneId) const;
 };
 
 }  // namespace eve::ik
