@@ -9,6 +9,9 @@
 #include <cmath>
 #include <limits>
 
+#include <glm/mat4x4.hpp>
+#include <glm/vec3.hpp>
+
 namespace eve::graphics {
 Result<void> Mesh::setTexcoordSet(uint32_t set, std::span<const float> values) {
     if (gpuVertexCount <= 0 || values.size() != size_t(gpuVertexCount) * 2 ||
@@ -148,7 +151,7 @@ Result<std::array<float, 6>> Mesh::localBounds() const {
     return Result<std::array<float, 6>>::success(localBounds_);
 }
 
-void Mesh::drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const {
+void Mesh::drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const {
     if (!gfx || !getCastOcclusion()) return;
     const float x = matrix[3][0];
     const float y = matrix[3][1];

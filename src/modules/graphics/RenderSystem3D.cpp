@@ -20,6 +20,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderTransformProjection.h"
 #include "graphics/RenderableInstances.h"

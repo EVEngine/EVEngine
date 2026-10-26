@@ -5,7 +5,8 @@
 
 #include <optional>
 
-#include <glm/glm.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics::webgpu {
 
@@ -41,9 +42,9 @@ public:
     image::ImageData *newHDRImageData() override;
 
     /** @brief Draws . */
-    void draw(Canvas *, const glm::mat4 &) const override {}
+    void draw(Canvas*, const glm::mat4&) const override {}
     /** @brief Draws . */
-    void draw(eve::graphics::Graphics *, const glm::mat4 &) const override {}
+    void draw(eve::graphics::Graphics*, const glm::mat4&) const override {}
 
     bool clearRequested = false;
     Color clearColor{0.f, 0.f, 0.f, 1.f};
