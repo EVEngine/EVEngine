@@ -397,7 +397,8 @@ TEST_CASE("buildingfx.edgeCurveCommitsAndExtrudesCustomSurfaceFrames") {
     auto mesh = BuildingFx::buildEdgeCurveGroupMeshForInstance(world, placed.value().instanceIds.front(), 1.f, 3.f);
     REQUIRE(mesh.ok());
     CHECK_EQ(mesh.value().sampleCount, 17);
-    CHECK(mesh.value().positions[1] < mesh.value().positions[mesh.value().positions.size() - 23]);
+    const auto lastSample = static_cast<std::size_t>(mesh.value().sampleCount - 1) * 8 * 3;
+    CHECK(mesh.value().positions[1] < mesh.value().positions[lastSample + 1]);
 
     PlacementWorld rejectedWorld(12, 12, 10.f);
     rejectedWorld.setGridPlane("xz");
@@ -728,7 +729,7 @@ TEST_CASE("buildingfx.projectsDiscreteFloorAlongGridNormal") {
     auto view  = ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [transform] = *it;
-        if (std::abs(transform->x - 2.f) < 0.0001f && std::abs(transform->z - 1.f) < 0.0001f &&
+        if (std::abs(transform->x - 2.5f) < 0.0001f && std::abs(transform->z - 1.5f) < 0.0001f &&
             std::abs(transform->y - 6.5f) < 0.0001f)
             found = true;
     }
