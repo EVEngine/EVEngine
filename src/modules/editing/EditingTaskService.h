@@ -74,6 +74,14 @@ public:
     [[nodiscard]] Result<TaskId> submit(std::string name, Work work);
     /** @brief Request cooperative cancellation of queued or running work. */
     [[nodiscard]] Result<void> cancel(const TaskId& task);
+    /**
+     * @brief Cancel and release an owned task, including already finished tasks.
+     * @ownership Caller relinquishes its task id; queued captures are released immediately, running captures after work
+     * returns.
+     * @thread Thread-safe; worker callbacks never execute under the service lock.
+     * @return Applied, or NotFound for an unknown/already discarded id.
+     */
+    [[nodiscard]] Result<void> discard(const TaskId& task);
     /** @brief Return a thread-safe task snapshot. */
     [[nodiscard]] Result<TaskSnapshot> snapshot(const TaskId& task) const;
     /** @brief Wait until no task is queued or running; intended for shutdown and tests. */

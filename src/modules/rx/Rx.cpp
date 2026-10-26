@@ -1,4 +1,5 @@
 #include "rx/Rx.h"
+#include "common/ScriptBinding.h"
 
 #include "common/SquirrelBinding.h"
 #include "platform_event/PlatformEvent.h"
@@ -219,8 +220,8 @@ ObservableV* doMap(ObservableV* self, ssq::Function fn) {
     return new AnonymousObservable<Value>([self, fn](Observer<Value> out) {
         Observer<Value> in;
         in.onNext = [out, fn](const Value& v) { out.next(callScript(fn, {v}, true)); };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -232,8 +233,8 @@ ObservableV* doFilter(ObservableV* self, ssq::Function pred) {
         in.onNext = [out, pred](const Value& v) {
             if (callScript(pred, {v}, true).toBool()) out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -249,8 +250,8 @@ ObservableV* doTake(ObservableV* self, int n) {
             out.next(v);
             if (*remaining == 0) out.completed();
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -267,8 +268,8 @@ ObservableV* doSkip(ObservableV* self, int n) {
             }
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -284,8 +285,8 @@ ObservableV* doFirst(ObservableV* self) {
             out.next(v);
             out.completed();
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -302,8 +303,8 @@ ObservableV* doDistinctUntilChanged(ObservableV* self) {
             *last = v;
             out.next(v);
         };
-        in.onError     = [out](const std::string& e) { out.error(e); };
-        in.onCompleted = [out]() { out.completed(); };
+        in.onError     = detail::ForwardError<Value>{out};
+        in.onCompleted = detail::ForwardCompleted<Value>{out};
         return self->subscribe(std::move(in));
     });
 }
@@ -382,23 +383,12 @@ void bindCommon(ssq::Class& cls) {
             [](ObservableV* self, ssq::Object n, ssq::Object e, ssq::Object d) {
                 return doSubscribe(self, n, e, d);
             }));
-    cls.addFunc("map",
-        std::function<ObservableV*(ObservableV*, ssq::Function)>(
-            [](ObservableV* self, ssq::Function f) { return doMap(self, f); }));
-    cls.addFunc("filter",
-        std::function<ObservableV*(ObservableV*, ssq::Function)>(
-            [](ObservableV* self, ssq::Function p) { return doFilter(self, p); }));
-    cls.addFunc("take",
-        std::function<ObservableV*(ObservableV*, int)>(
-            [](ObservableV* self, int n) { return doTake(self, n); }));
-    cls.addFunc("skip",
-        std::function<ObservableV*(ObservableV*, int)>(
-            [](ObservableV* self, int n) { return doSkip(self, n); }));
-    cls.addFunc("first",
-        std::function<ObservableV*(ObservableV*)>([](ObservableV* self) { return doFirst(self); }));
-    cls.addFunc("distinctUntilChanged",
-        std::function<ObservableV*(ObservableV*)>(
-            [](ObservableV* self) { return doDistinctUntilChanged(self); }));
+    eve::script::bindPointerMethod(cls, "map", &doMap);
+    eve::script::bindPointerMethod(cls, "filter", &doFilter);
+    eve::script::bindPointerMethod(cls, "take", &doTake);
+    eve::script::bindPointerMethod(cls, "skip", &doSkip);
+    eve::script::bindPointerMethod(cls, "first", &doFirst);
+    eve::script::bindPointerMethod(cls, "distinctUntilChanged", &doDistinctUntilChanged);
 }
 
 }  // namespace
@@ -456,8 +446,8 @@ void Rx::expose(ssq::Table& table) {
 
     auto sub = table.addClass<Subscription>(
         "Subscription", std::function<Subscription*()>([]() -> Subscription* { return nullptr; }), true);
-    sub.addFunc("dispose", &Subscription::dispose);
-    sub.addFunc("isDisposed", &Subscription::isDisposed);
+    eve::script::bindPointerMethod(sub, "dispose", &Subscription::dispose);
+    eve::script::bindPointerMethod(sub, "isDisposed", &Subscription::isDisposed);
 }
 
 void Rx::expose(ssq::Class& cls) {

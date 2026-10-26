@@ -14,6 +14,7 @@
 #include "editor/EditorWorkspace.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,12 @@ class AnimClip;
 class AnimSkeleton;
 }
 
+namespace eve::editor {
+struct PreviewState;
+}
+
 namespace eve::animation_editor {
+class IAnimationClipPreviewProvider;
 
 /**
  * @brief Timeline-style controller for one authored animation clip.
@@ -58,8 +64,36 @@ public:
     [[nodiscard]] animation_editing::Result<void> writeRuntimeClip(animation::AnimClip& clip,
                                                                          const animation::AnimSkeleton& skeleton) const;
 
+    /** @brief Cancel and join preview work before releasing domain state. */
+    ~AnimationClipEditor();
+
     AnimationClipEditor(const AnimationClipEditor&)            = delete;
     AnimationClipEditor& operator=(const AnimationClipEditor&) = delete;
+
+    /**
+     * @brief Replace the owned immutable preview provider and invalidate all previous work, even for the same instance.
+     * @ownership Retains shared ownership; null explicitly disables previews, preserving the last successful payload.
+     * @thread Owner thread; providers run on a worker with owning immutable inputs and must cooperate with
+     * cancellation.
+     * @reentrancy Provider callbacks never run under editor locks or access this editor.
+     */
+    [[nodiscard]] animation_editing::Result<void> setPreviewProvider(
+        std::shared_ptr<const IAnimationClipPreviewProvider> provider);
+    /**
+     * @brief Queue a preview of the current domain inputs; accepted work returns Pending.
+     * @cost Copies the PCM/clip input once per request; computation runs on the editing task worker, amortized over
+     * polls.
+     */
+    [[nodiscard]] animation_editing::Result<void> requestPreview();
+    /** @brief Publish the current completed preview atomically; Pending while work runs, NoOp when idle. Owner thread
+     * only. */
+    [[nodiscard]] animation_editing::Result<void> pollPreview();
+    /** @brief Cancel pending publication while keeping the last valid preview; a new explicit request may resume. */
+    [[nodiscard]] animation_editing::Result<void> cancelPreview();
+    /** @brief Permanently cancel and close preview publication; idempotent. Destruction joins cooperative work. */
+    void closePreview();
+    /** @brief Observe request sequence, provider generation and phase without copying preview payloads. */
+    editor::PreviewState previewState() const noexcept;
 
     /** @brief Borrow the authoritative clip document. */
     const animation_editing::AnimationClipDocumentTarget& target() const noexcept { return target_; }
@@ -142,7 +176,8 @@ public:
     float         playheadX() const noexcept;
     /** @brief Selected bone. */
     std::string   selectedBone() const { return selectedBone_; }
-    /** @brief Selected mask weight. */
+    /** @brief Owning stable identity of the selected key, or empty for a bone-only selection. */
+    animation_editing::StableId selectedKeyId() const { return selectedKeyId_; }
     double        selectedMaskWeight() const;
     /** @brief True when selected key. */
     bool          hasSelectedKey() const noexcept { return !selectedKeyId_.empty(); }
@@ -223,6 +258,12 @@ public:
     const animation_editing::AnimationClipPreview& preview() const noexcept { return preview_; }
 
 private:
+    struct PreviewSession;
+    struct PreviewSessionDeleter {
+        void operator()(PreviewSession*) const;
+    };
+    std::unique_ptr<PreviewSession, PreviewSessionDeleter> previewSession_;
+    void                                                   initializePreview();
     struct SkeletonBone {
         std::string name;
         std::string parent;
@@ -253,7 +294,6 @@ private:
     animation_editing::AnimationClipDocumentTarget target_;
     editor::LocalWorldAuthority                    authority_;
     editor::LocalTransactionBackend                transactions_;
-    animation_editing::SkeletonOverlayBuilder      overlayBuilder_;
     animation_editing::AnimationClipPreview        preview_;
     eve::editing::GizmoSnapshot                    overlay_;
     std::string                                    selectedBone_ = "Hips";
@@ -262,6 +302,7 @@ private:
     std::uint64_t                                  txSequence_       = 0;
     double                                         playhead_         = 0.0;
     bool                                           playing_          = false;
+    bool                                           previewDirty_     = false;
     float                                          viewportWidth_    = 800.0f;
     float                                          rowHeight_        = 36.0f;
     float                                          labelWidth_       = 120.0f;

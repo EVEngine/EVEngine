@@ -22,3 +22,7 @@ Controls:
 - Change **Duration**, **Sample rate**, **Loop**, or **Mask** in the clip section.
 - The center viewport draws `joint` / `bone-line` overlay primitives from
   `AnimationClipPreview`. No KayKit mesh is required: the example seeds a six-joint hierarchy.
+
+The shared `EditorWorkspacePresenter` mounts the workspace and generates Inspector fields from the native presentation schema. It routes history, shortcuts and diagnostics through the domain editor. Numeric drags commit once on release; Escape, focus loss and close cancel the draft. See [framework migration](../../docs/dev/2026-10-23-editor-ui-migration.md).
+
+预览在后台生成，由 `update()` 发布；等待期间保留上一份有效结果。Inspector 显示预览状态，关闭共享 presenter 会取消待处理结果。provider 重绑及 generation 契约见 `docs/dev/2026-10-24-async-editor-preview.md`。
