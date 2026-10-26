@@ -2004,6 +2004,7 @@ TEST_CASE("graphics.vegetationWind.packetUsesExplicitTimeAndBillboardFlags") {
     CHECK_EQ(disabled.value()[5], 0.f);
     profile.enabled   = true;
     profile.billboard = true;
+    profile.alphaTest = false;
     auto billboard    = packVegetationWind(state, profile, 2.0);
     REQUIRE(billboard.ok());
     const auto data = billboard.value();

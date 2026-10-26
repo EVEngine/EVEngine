@@ -1719,8 +1719,10 @@ TEST_CASE("ui.worldAnchor.overlapPriorityDisplacesLowerAndSuppressesBounded") {
     lower.maxDisplacement = 0.f;
     const auto bounded    = resolveWorldAnchorOverlaps({higher, lower}, 100.f, 100.f);
     REQUIRE_EQ(bounded.size(), std::size_t{2});
-    CHECK(bounded[0].render);
-    CHECK(!bounded[1].render);
+    CHECK_EQ(bounded[0].stableIndex, 2);
+    CHECK(!bounded[0].render);
+    CHECK_EQ(bounded[1].stableIndex, 7);
+    CHECK(bounded[1].render);
 }
 }  // namespace test_ui_world_anchor
 #endif

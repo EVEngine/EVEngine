@@ -4195,7 +4195,10 @@ TEST_CASE("devtools.console.attachEvalPrintCapture") {
     CHECK(console.eval("\"hi\"") == "\"hi\"");
 
     // REPL: compile error reported without crashing.
-    CHECK(console.eval("1 +") == "error: compile failed");
+    const auto compileError = console.eval("1 +");
+    CHECK(compileError.starts_with("error: "));
+    CHECK(compileError.find("console_repl.nut") != std::string::npos);
+    CHECK(compileError.find("expression expected") != std::string::npos);
 
     // print() from a script is captured into the log.
     {
