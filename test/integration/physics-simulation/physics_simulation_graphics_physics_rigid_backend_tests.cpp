@@ -2610,9 +2610,10 @@ TEST_CASE("physics.jolt.deferredDensityParity") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_mechanism)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
+#include <numbers>
+#include "PrivateTestScope.h"
 #include "physics/Body3D.h"
 #include "physics/Joint3D.h"
 #include "physics/Mechanism3D.h"
@@ -2697,16 +2698,24 @@ TEST_CASE("physics.mechanism.ratchetBlocksReverseSpin") {
 
     // Freewheel forward under drive.
     ratchet->setDrive(3.f, 80.f);
-    for (int i = 0; i < 90; ++i) world->updateFull(1.f / 60.f, 4);
-    const float forwardAngle = ratchet->getDriveAngle();
+    float      wrappedAngle = ratchet->getDriveAngle();
+    float      travel       = 0.f;
+    const auto advance      = [&] {
+        world->updateFull(1.f / 60.f, 4);
+        const float next = ratchet->getDriveAngle();
+        travel += std::remainder(next - wrappedAngle, 2.f * std::numbers::pi_v<float>);
+        wrappedAngle = next;
+    };
+    for (int i = 0; i < 90; ++i) advance();
+    const float forwardAngle = travel;
     CHECK_GT(forwardAngle, 0.5f);
 
     // Attempt reverse: engagement should hold near the freewheel peak.
     ratchet->clearDrive();
     ratchet->setRatchetEngagementTorque(500.f);
     wheel->setAngularVelocity(0.f, 0.f, -20.f);
-    for (int i = 0; i < 90; ++i) world->updateFull(1.f / 60.f, 4);
-    CHECK_GT(ratchet->getDriveAngle(), forwardAngle - 0.35f);
+    for (int i = 0; i < 90; ++i) advance();
+    CHECK_GT(travel, forwardAngle - 0.35f);
     CHECK_THROWS((world->newRatchet(frame, wheel, 0.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0, 10.f, false), false));
 }
 
@@ -2788,6 +2797,9 @@ TEST_CASE("physics.joint2d.distanceRevoluteWeldMotorAndGearAreUsable") {
     REQUIRE(revolute != nullptr);
     CHECK_EQ(revolute->getKind(), std::string("revolute"));
     revolute->setRevoluteMotor(true, 2.f, 50.f);
+    // Check the motor before the later gear and position motor load its shaft.
+    for (int i = 0; i < 60; ++i) world->updateFull(1.f / 60.f, 8, 3);
+    CHECK_GT(std::fabs(revolute->getRevoluteAngle()), 0.2f);
 
     Joint2D* weld = world->newWeldJoint(a, c, 90.f, 0.f, false);
     REQUIRE(weld != nullptr);
@@ -2810,7 +2822,7 @@ TEST_CASE("physics.joint2d.distanceRevoluteWeldMotorAndGearAreUsable") {
     CHECK(std::fabs(gear->getGearRatio() - 2.f) < 0.001f);
 
     for (int i = 0; i < 60; ++i) world->updateFull(1.f / 60.f, 8, 3);
-    CHECK_GT(std::fabs(revolute->getRevoluteAngle()), 0.2f);
+    CHECK(std::isfinite(revolute->getRevoluteAngle()));
     CHECK_THROWS((world->newPrismaticJoint(anchor, a, 0.f, 0.f, 0.f, 0.f, false), false));
     CHECK_THROWS((distance->setRevoluteMotor(true, 1.f, 1.f), false));
 }
