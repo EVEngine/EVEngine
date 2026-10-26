@@ -129,6 +129,8 @@ DomainOperation operation(const char* type, const char* inverseType, const std::
 }
 
 std::string normalized(std::string name) {
+    const auto separator = name.find_last_of(":|/");
+    if (separator != std::string::npos) name.erase(0, separator + 1);
     std::string result;
     for (unsigned char c : name)
         if (std::isalnum(c)) result.push_back(static_cast<char>(std::tolower(c)));

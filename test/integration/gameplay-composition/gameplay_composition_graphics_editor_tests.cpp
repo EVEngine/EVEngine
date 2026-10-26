@@ -1348,10 +1348,11 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     auto*            ints = base->query<IIntFieldTarget>();
     CHECK(ints != nullptr);
     CHECK(base->query<IScalarFieldTarget>() == nullptr);
+    const auto initialRevision = tiles.revision();
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Applied));
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Unchanged));
     CHECK_EQ(ints->readInt(2, 1), 9);
-    CHECK_EQ(tiles.revision(), 1ULL);
+    CHECK_EQ(tiles.revision(), initialRevision + 1);
     CHECK_EQ(tiles.dirtyRegion().minX, 2);
     tiles.clearDirtyRegion();
     CHECK(tiles.dirtyRegion().empty());
@@ -4043,11 +4044,19 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
         "execute",
         R"({"target":"material.player","command":"material.property.set.v1","payload":{"path":"shading.roughness","value":0.65}})");
     CHECK(changed.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") == EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") == EditorValue(0.65));
 
     const std::string undone = automation->invoke("undo", R"({"target":"material.player"})");
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") != EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") != EditorValue(0.65));
 
     CHECK(editor.unregisterEditingTarget(TargetId("material.player")).ok());
 }

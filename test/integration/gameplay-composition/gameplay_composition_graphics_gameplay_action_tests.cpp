@@ -2084,7 +2084,7 @@ TEST_CASE("editor.ui.multi_selection_layout_inspector_is_atomic_and_reports_mixe
         REQUIRE(commitUi(target, transactions, operation.value(), std::string("ui.create.") + id).ok());
     }
     const SelectionSnapshot selection = uiSelection(target, {"left", "right"});
-    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(25));
+    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(31));
     auto size = target.makeSet(selection, PropertyPath("layout.size"), EditorValue::Array{180.0, 42.0},
                                PropertySetMode::Absolute);
     REQUIRE(size.ok());
