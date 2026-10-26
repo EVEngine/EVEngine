@@ -2931,16 +2931,17 @@ TEST_CASE("procgen.cave.cellular.parallelJobsHaveIsolatedRandomStreams") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_render_graph)
-#include "PrivateTestScope.h"
 #include <algorithm>
 #include <atomic>
 #include <chrono>
+#include <condition_variable>
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "thread/JobSystem.h"
 #include "vkbuilder/framegraph.hpp"
@@ -3088,28 +3089,30 @@ TEST_CASE("render_graph.engineTopology") {
 }
 
 TEST_CASE("render_graph.jobSystemExecutorParallel") {
-    auto* jobs = eve::thread::createJobSystem(4);  // Matches the timing assumption below on every host.
+    auto* jobs = eve::thread::createJobSystem(4);
     REQUIRE(jobs != nullptr);
     jobs->beginFrame();
 
     std::mutex                   mu;
     std::vector<int>             recorded;
     std::vector<std::thread::id> threads;
+    std::condition_variable      overlap;
+    int                          active = 0, peakActive = 0;
+    const auto                   deadline  = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     const auto                   recordOne = [&](uint32_t order) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(8));
-        std::lock_guard<std::mutex> lk(mu);
+        std::unique_lock<std::mutex> lk(mu);
+        peakActive = std::max(peakActive, ++active);
+        overlap.notify_all();
+        overlap.wait_until(lk, deadline, [&] { return peakActive >= 2; });
         recorded.push_back(int(order));
         threads.push_back(std::this_thread::get_id());
+        --active;
     };
 
-    // One layer of 8 independent passes: serial recording would take >= 64 ms,
-    // parallel recording on 4 workers takes ~2-3 sleep periods.
+    // Independent passes must overlap, even when a busy CI host schedules workers late.
     std::vector<uint32_t> layer{0, 1, 2, 3, 4, 5, 6, 7};
-    const auto            t0       = std::chrono::steady_clock::now();
     auto                  executor = vulkan::jobSystemPassExecutor(jobs);
     executor(layer, recordOne);
-    const auto ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
 
     jobs->endFrame();
     delete jobs;
@@ -3119,7 +3122,7 @@ TEST_CASE("render_graph.jobSystemExecutorParallel") {
     for (size_t i = 0; i < recorded.size(); ++i) CHECK_EQ(recorded[i], int(i));
     // Every pass recorded exactly once (recorded already proves count; sort
     // check proves no duplicates and no gaps).
-    CHECK(ms < 40);
+    CHECK_GE(peakActive, 2);
     // At least two distinct threads participated -> the layer was truly
     // recorded in parallel, not just serialized through the executor.
     std::sort(threads.begin(), threads.end());
