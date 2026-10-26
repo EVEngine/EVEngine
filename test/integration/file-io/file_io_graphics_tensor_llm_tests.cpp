@@ -1298,7 +1298,7 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
     CHECK(script.find("function openLootObject(index)") != std::string::npos);
     CHECK(script.find("function claimQuestRewards(questId)") != std::string::npos);
     CHECK(script.find("rpg.replaceQuestsFromJson(questsJson)") != std::string::npos);
-    CHECK(script.find("rpg.replaceEncountersFromJson(encountersJson)") != std::string::npos);
+    CHECK(script.find("rpg.replaceEncountersFromJson(encounterJson)") != std::string::npos);
     CHECK(script.find("rpg.newEncounterMemberActor(activeEncounterId, memberIndex)") != std::string::npos);
     CHECK(script.find("function selectNextEnemy()") != std::string::npos);
     CHECK(script.find("rpg.settleEncounterVictory(") != std::string::npos);

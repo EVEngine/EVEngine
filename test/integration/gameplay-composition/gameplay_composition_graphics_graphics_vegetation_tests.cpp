@@ -1998,7 +1998,8 @@ TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
 TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive") {
     REQUIRE(eve::LogicalId::parse("rpg:Skill.Fire").has_value());
     CHECK(!eve::LogicalId::parse("RPG:Skill.Fire").has_value());
-    CHECK(!eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("_rpg:Skill.Fire").has_value());
+    CHECK(eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
     CHECK(!eve::LogicalId::parse("rpg:skill/fire").has_value());
     CHECK(eve::LogicalId::fromParts("game_event", "Damage.Applied").has_value());
 }

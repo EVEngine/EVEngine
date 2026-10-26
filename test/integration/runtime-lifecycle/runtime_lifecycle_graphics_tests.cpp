@@ -363,6 +363,8 @@ TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
     ev->push(std::make_unique<Message>("owned", args));
+    // Message copies share payload ownership; release the fixture's copy first.
+    args.clear();
 
     {
         auto message = ev->pollOwned();
@@ -380,6 +382,7 @@ TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
     ev->push(std::make_unique<Message>("unconsumed", args));
+    args.clear();
 
     ev->clear();
     CHECK_EQ(destructions, 1);
