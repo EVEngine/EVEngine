@@ -1051,8 +1051,10 @@ bool Graphics::rebuildSwapchainIfNeeded() {
         auto* window = static_cast<SDL_Window*>(sdlWindow);
         int   pw = 0, ph = 0;
         if (window) SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
-        const bool sizeMismatch = !swapchain || pw <= 0 || ph <= 0 || uint32_t(pw) != swapchain.extent.width ||
-                                  uint32_t(ph) != swapchain.extent.height;
+        // vkb::Swapchain's bool conversion is explicit; use extent as the live-
+        // chain probe (empty/destroyed swapchains keep extent at 0x0).
+        const bool sizeMismatch = swapchain.extent.width == 0 || swapchain.extent.height == 0 || pw <= 0 || ph <= 0 ||
+                                  uint32_t(pw) != swapchain.extent.width || uint32_t(ph) != swapchain.extent.height;
         if (sizeMismatch) swapchainDirty = true;
     }
     if (swapchainDirty) {
