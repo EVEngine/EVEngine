@@ -2195,7 +2195,7 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("animation.skeleton"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("animation.timeline"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("animation.clip"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));
@@ -2395,7 +2395,7 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 5);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("avatar.parameters"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
     CHECK_EQ(vm.find("ctx4").toString(), std::string("expressions"));
     CHECK(vm.find("selectParam").toTable().get<bool>("ok"));
@@ -2435,9 +2435,9 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.layers"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.assets"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("biome.rules"));
-    CHECK_EQ(vm.find("ctx3").toString(), std::string("assets"));
+    CHECK_EQ(vm.find("ctx3").toString(), std::string("inspector"));
     CHECK(vm.find("beforePoints").toInt() > 0);
     CHECK(vm.find("excluded").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("exclusions").toInt(), 1);
@@ -2557,12 +2557,12 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     EditorWorkspace     workspace("animation.preview", "Animation Clip Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("animation.skeleton"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("animation.timeline"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("animation.clip"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("timeline"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("timeline"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
 
     REQUIRE(editor.setViewport(640.0f, 36.0f, 120.0f).ok());
     CHECK_EQ(editor.trackCount(), 6);
@@ -3490,12 +3490,12 @@ TEST_CASE("editor.audio.source_editor_installs_workspace_and_reverses_volume") {
     EditorWorkspace   workspace("audio.preview", "Audio Source Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("audio.sources"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("audio.transport"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("audio.source"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("transport"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("transport"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
 
     REQUIRE(editor.setViewportWidth(320.0f).ok());
     CHECK(editor.bucketCount() > 8);
@@ -3578,7 +3578,7 @@ TEST_CASE("editor.audio.source_editor_script_composes_workspace_and_transactions
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("audio.sources"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("audio.transport"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("audio.source"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));
@@ -4350,12 +4350,12 @@ TEST_CASE("editor.avatar.document_editor_installs_workspace_and_reverses_layer_z
     EditorWorkspace      workspace("avatar.preview", "Avatar Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 5);
-    CHECK_EQ(workspace.getPanelId(0), std::string("avatar.layers"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("avatar.parameters"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("avatar.document"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("parameters"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("parameters"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
     CHECK_EQ(workspace.getPanelContext(4), std::string("expressions"));
     CHECK_EQ(editor.layerCount(), 2);
     CHECK_EQ(editor.parameterCount(), 1);

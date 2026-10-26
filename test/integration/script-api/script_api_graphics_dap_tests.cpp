@@ -3197,7 +3197,7 @@ TEST_CASE("editor.voxel.catalog_editor_script_composes_workspace_and_occupancy")
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("voxel.models"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("voxel.inspector"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("voxel.sculpt"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK_EQ(vm.find("cubeFill").toString(), std::string("partial"));

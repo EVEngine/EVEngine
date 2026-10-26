@@ -1077,9 +1077,9 @@ TEST_CASE("editor.procgen.script_editor_script_loads_schema_and_keeps_failed_pre
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("procgen.modules"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("procgen.stages"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("procgen.script"));
-    CHECK_EQ(vm.find("ctx3").toString(), std::string("stages"));
+    CHECK_EQ(vm.find("ctx3").toString(), std::string("inspector"));
     CHECK(vm.find("loaded").toTable().get<bool>("ok"));
     CHECK(vm.find("published").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("beforePoints").toInt(), 2);
@@ -2261,12 +2261,12 @@ TEST_CASE("editor.procgen.script_editor_installs_workspace_and_commits_params") 
     EditorWorkspace     workspace("procgen.preview", "Procgen Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("procgen.modules"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("procgen.stages"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("procgen.script"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("stages"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("stages"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
 
     REQUIRE(editor.loadModule(forestSpec()).ok());
     CHECK_EQ(editor.paramCount(), 3);

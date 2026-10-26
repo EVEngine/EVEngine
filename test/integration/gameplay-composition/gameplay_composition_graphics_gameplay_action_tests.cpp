@@ -2277,7 +2277,7 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 3);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("ui.themes"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("ui.preview"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("ui.theme"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("createdCustom").toTable().get<bool>("ok"));

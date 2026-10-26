@@ -235,12 +235,12 @@ TEST_CASE("editor.biome.rules_editor_installs_workspace_and_previews_determinist
     EditorWorkspace  workspace("biome.preview", "Biome Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("biome.layers"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("biome.assets"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("biome.rules"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("assets"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("assets"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
     CHECK(editor.pointCount() > 0);
     CHECK_EQ(editor.previewRevision(), editor.revision());
     const int first = editor.pointCount();
