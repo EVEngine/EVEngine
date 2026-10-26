@@ -17,6 +17,9 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_vulkan.h>
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+#include <vulkan/vulkan_beta.h>
+#endif
 
 #include <algorithm>
 #include <array>
@@ -666,6 +669,19 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        // Portability features are disabled unless explicitly enabled, even
+        // when the physical device supports updating comparison descriptors.
+        VkPhysicalDevicePortabilitySubsetFeaturesKHR portabilitySupported{};
+        portabilitySupported.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR;
+        vk::PhysicalDeviceFeatures2 portabilityQuery{};
+        portabilityQuery.pNext = &portabilitySupported;
+        phys->getFeatures2(&portabilityQuery);
+        VkPhysicalDevicePortabilitySubsetFeaturesKHR portabilityEnable{};
+        portabilityEnable.sType                     = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PORTABILITY_SUBSET_FEATURES_KHR;
+        portabilityEnable.mutableComparisonSamplers = portabilitySupported.mutableComparisonSamplers;
+        deviceBuilder.add_pNext(&portabilityEnable);
+#endif
         // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;

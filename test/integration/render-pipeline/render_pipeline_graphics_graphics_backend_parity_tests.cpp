@@ -3720,7 +3720,7 @@ TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
     const auto      projection = eve::graphics::perspectiveVulkanRH_ZO(glm::radians(55.f), 160.f / 120.f, 0.1f, 100.f);
     const auto      vp         = projection * view;
     gfx->beginGBufferPass(160, 120);
-    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), vp, 0.1f, 100.f);
+    gfx->drawMeshGBuffer(mesh, vp, glm::mat4(1.f), 0.1f, 100.f);
     gfx->endGBufferPass();
     std::unique_ptr<eve::image::ImageData> depth(gfx->readGBufferToImageData("depth"));
     REQUIRE(depth != nullptr);
