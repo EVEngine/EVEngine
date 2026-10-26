@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
+#include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <limits>
@@ -18,6 +19,15 @@
 #include <numeric>
 #include <optional>
 #include <vector>
+
+// Linux ARM64 CI (GCC aarch64 -O2 / EVENGINE_DEBUG_LEVEL=normal) miscompiles
+// transform+AABB math in this TU: worldT.z stays correct in the matrix, but
+// localBounds Z loses the root translation (mesh zmax=0 → AABB zmax=0 instead
+// of tz). Out-of-line helpers alone were not enough; cap this file at -O1 on
+// that toolchain. Windows ARM64 (MSVC) and Linux x86_64 are unaffected.
+#if defined(__GNUC__) && !defined(__clang__) && defined(__aarch64__)
+#pragma GCC optimize("O1")
+#endif
 
 namespace eve::asset_graphics {
 namespace {
@@ -27,10 +37,11 @@ using MaterialData = detail::CookedMaterial;
 // glm::translate(...)*rotate*... under GCC aarch64 -O2 has been observed to
 // drop the Z translation component inside the large prefab load() body while
 // X/Y survive (Linux ARM64 CI: authored z=-3 → localBounds Z unshifted).
-// Keep this out-of-line so the translation stores are not reordered into the
-// register-pressure region of load()'s walk.
 #if defined(__GNUC__) && !defined(__clang__)
 __attribute__((noinline))
+#if defined(__aarch64__)
+__attribute__((optimize("O1")))
+#endif
 #endif
 glm::mat4 nodeLocalTransform(const scene::NodeDesc& node) {
     const float tx = node.x, ty = node.y, tz = node.z;
@@ -48,22 +59,31 @@ glm::mat4 nodeLocalTransform(const scene::NodeDesc& node) {
 }
 
 // Expand an AABB by the eight corners of `mesh` after an affine transform.
-// Do not use glm::mat4 * glm::vec4 here: under GCC aarch64 -O2 inside load(),
-// that path kept worldT.z=-3 in the matrix but still produced localBounds
-// zmax=0 for mesh zmax=0 (translation term dropped on the zero-Z corners).
+// Copy the matrix through a plain float[16] and add translation in a second
+// statement so a zero mesh-axis component cannot fold away the translation
+// term under aggressive GCC scheduling (seen with glm::mat4 * glm::vec4).
 #if defined(__GNUC__) && !defined(__clang__)
 __attribute__((noinline))
+#if defined(__aarch64__)
+__attribute__((optimize("O1")))
+#endif
 #endif
 bool expandAabbByTransformedCorners(const glm::mat4& matrix, const std::array<float, 6>& mesh,
                                     std::array<float, 6>& aabb) {
-    const float tx = matrix[3][0], ty = matrix[3][1], tz = matrix[3][2];
+    alignas(16) float m[16];
+    std::memcpy(m, glm::value_ptr(matrix), sizeof(m));
+    // Column-major: translation is m[12], m[13], m[14].
+    const float tx = m[12], ty = m[13], tz = m[14];
     for (unsigned corner = 0; corner < 8; ++corner) {
         const float x = mesh[(corner & 1u) ? 3u : 0u];
         const float y = mesh[(corner & 2u) ? 4u : 1u];
         const float z = mesh[(corner & 4u) ? 5u : 2u];
-        const float px = matrix[0][0] * x + matrix[1][0] * y + matrix[2][0] * z + tx;
-        const float py = matrix[0][1] * x + matrix[1][1] * y + matrix[2][1] * z + ty;
-        const float pz = matrix[0][2] * x + matrix[1][2] * y + matrix[2][2] * z + tz;
+        float px = m[0] * x + m[4] * y + m[8] * z;
+        float py = m[1] * x + m[5] * y + m[9] * z;
+        float pz = m[2] * x + m[6] * y + m[10] * z;
+        px += tx;
+        py += ty;
+        pz += tz;
         if (!std::isfinite(px) || !std::isfinite(py) || !std::isfinite(pz)) return false;
         aabb[0] = std::min(aabb[0], px);
         aabb[1] = std::min(aabb[1], py);
