@@ -530,6 +530,8 @@ TEST_CASE("devtools.LanguageText incremental edit: range replacement changes onl
     REQUIRE(eve::dev::lsp::applyIncremental(source, &selection, "value"));
     CHECK_EQ(source, std::string("function foo() {\nlocal value = 1\n}\n"));
     CHECK_EQ(eve::dev::lsp::sliceLines(source, 1, 1), std::string("local value = 1\n"));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {0, 100}), size_t(3));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {1, 100}), size_t(8));
 }
 TEST_CASE("devtools.LanguageText format and fold: braces and comments define ranges") {
     REQUIRE_EQ(eve::dev::lsp::formatEveScript("{\na\n}\n"), std::string("{\n    a\n}\n"));

@@ -239,13 +239,8 @@ struct CursorWord {
     bool        memberAccess = false;
 };
 
-CursorWord wordAt(std::string_view source, size_t line, size_t character) {
-    size_t offset = 0;
-    for (size_t current = 0; current < line && offset < source.size(); ++current) {
-        const size_t newline = source.find('\n', offset);
-        offset               = newline == std::string_view::npos ? source.size() : newline + 1;
-    }
-    offset = std::min(offset + character, source.size());
+CursorWord wordAt(std::string_view source, size_t line, size_t character, bool prefix = false) {
+    const size_t offset = lsp::offsetAt(source, {line, character});
     size_t begin = offset;
     size_t end   = offset;
     while (begin > 0 && (std::isalnum(static_cast<unsigned char>(source[begin - 1])) != 0 || source[begin - 1] == '_'))
@@ -253,7 +248,7 @@ CursorWord wordAt(std::string_view source, size_t line, size_t character) {
     while (end < source.size() && (std::isalnum(static_cast<unsigned char>(source[end])) != 0 || source[end] == '_'))
         ++end;
     CursorWord result;
-    result.word = std::string(source.substr(begin, end - begin));
+    result.word = std::string(source.substr(begin, (prefix ? offset : end) - begin));
     size_t scan = begin;
     if (result.word.empty() && offset > 0 && source[offset - 1] == '.') scan = offset;
     while (scan > 0 && std::isspace(static_cast<unsigned char>(source[scan - 1])) != 0) --scan;
@@ -416,27 +411,41 @@ size_t skipCallTokens(const std::vector<ExprTok>& tokens, size_t index) {
 
 using SlotClassMap = std::unordered_map<std::string, std::string>;
 
+std::string moduleForType(std::string_view type, const SlotClassMap& slots) {
+    for (const auto& [slot, scriptClass] : slots)
+        if (scriptClass == type) return slot;
+    return {};
+}
+
+bool knownType(std::string_view type, const SlotClassMap& slots, const script::BindingContractRegistry& bindings) {
+    return bindings.hasScriptClass(type) || !moduleForType(type, slots).empty();
+}
+
 std::string applyRootIdent(std::string_view name, bool called, const SlotClassMap& slots,
                            const script::BindingContractRegistry& bindings,
                            const std::function<std::string(std::string_view)>& localType) {
     if (name == "eve") return called ? std::string{} : std::string{"eve"};
     const auto slot = slots.find(std::string(name));
     if (slot != slots.end()) return slot->second;
-    if (bindings.hasScriptClass(name)) return std::string(name);
+    if (knownType(name, slots, bindings)) return std::string(name);
     return localType(name);
 }
 
-std::string applyMember(std::string type, std::string_view name, bool called,
+std::string applyMember(std::string type, std::string_view name, bool called, const SlotClassMap& slots,
                         const script::BindingContractRegistry& bindings) {
     if (type == "eve") {
-        return bindings.hasScriptClass(name) ? std::string(name) : std::string{};
+        return knownType(name, slots, bindings) ? std::string(name) : std::string{};
     }
     if (isPrimitiveType(type)) return {};
     const script::BindingContract* contract = bindings.findMethod(type, name);
+    if (contract == nullptr) {
+        const auto module = moduleForType(type, slots);
+        if (!module.empty()) contract = bindings.find(module + "/" + std::string(name));
+    }
     if (contract == nullptr) return {};
     if (!called) return type;
     const std::string returned = trimTypeName(contract->returnType);
-    if (isPrimitiveType(returned) || !bindings.hasScriptClass(returned)) return {};
+    if (isPrimitiveType(returned) || !knownType(returned, slots, bindings)) return {};
     return returned;
 }
 
@@ -458,7 +467,7 @@ std::string typeOfTokens(const std::vector<ExprTok>& tokens, const SlotClassMap&
         const bool called = i < tokens.size() && tokens[i].kind == ExprTokKind::LParen;
         if (called) i = skipCallTokens(tokens, i);
         type = type.empty() ? applyRootIdent(name, called, slots, bindings, localType)
-                            : applyMember(std::move(type), name, called, bindings);
+                            : applyMember(std::move(type), name, called, slots, bindings);
         if (type.empty()) return {};
     }
     return type;
@@ -694,19 +703,13 @@ struct LanguageServer::Impl {
     std::vector<script::ScriptCompletion> complete(std::string_view uri, lsp::Position position) const {
         const std::string* source = sourceFor(uri);
         CursorWord         cursor;
-        if (source)
-            cursor = wordAt(*source, position.line, position.character);
+        if (source) cursor = wordAt(*source, position.line, position.character, true);
         const std::string ident = identity(uri);
         std::vector<script::ScriptCompletion> result;
         if (cursor.memberAccess) {
             size_t wordBegin = 0;
             if (source) {
-                size_t offset = 0;
-                for (size_t current = 0; current < position.line && offset < source->size(); ++current) {
-                    const size_t newline = source->find('\n', offset);
-                    offset               = newline == std::string_view::npos ? source->size() : newline + 1;
-                }
-                offset    = std::min(offset + position.character, source->size());
+                const size_t offset = lsp::offsetAt(*source, position);
                 wordBegin = offset;
                 while (wordBegin > 0 && identifierPart((*source)[wordBegin - 1])) --wordBegin;
             }
@@ -736,6 +739,10 @@ struct LanguageServer::Impl {
                                                                                         : cursor.qualifier);
             if (expectedClass == "eve") {
                 std::unordered_map<std::string, bool> seen;
+                for (const auto& [_, scriptClass] : slotClass_) {
+                    if (scriptClass.rfind(cursor.word, 0) != 0 || !seen.emplace(scriptClass, true).second) continue;
+                    result.push_back({scriptClass, "class", "eve." + scriptClass, scriptClass});
+                }
                 for (const script::BindingContract& contract : runtime_.scriptCompiler().bindings().snapshot()) {
                     if (contract.scriptClass.empty() || contract.scriptClass.rfind(cursor.word, 0) != 0) continue;
                     if (!seen.emplace(contract.scriptClass, true).second) continue;
@@ -743,8 +750,11 @@ struct LanguageServer::Impl {
                 }
                 return result;
             }
+            const auto expectedModule = moduleForType(expectedClass, slotClass_);
             for (const script::BindingContract& contract : runtime_.scriptCompiler().bindings().snapshot()) {
-                if (contract.scriptClass != expectedClass) continue;
+                if (contract.scriptClass != expectedClass &&
+                    !(contract.scriptClass.empty() && !expectedModule.empty() && contract.module == expectedModule))
+                    continue;
                 if (contract.method.rfind(cursor.word, 0) != 0) continue;
                 result.push_back(completionFromContract(contract));
             }

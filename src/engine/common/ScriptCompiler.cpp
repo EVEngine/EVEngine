@@ -652,7 +652,9 @@ std::vector<ScriptCompletion> ScriptCompiler::completions(std::string_view canon
             if (matches(symbol.name)) result.push_back({symbol.name, symbol.kind, symbol.erasedType, symbol.name});
         }
         for (const std::string& name : unit->get().exports) {
-            if (matches(name)) result.push_back({name, "export", "module export", name});
+            const bool described = std::any_of(result.begin(), result.end(),
+                                               [&](const ScriptCompletion& item) { return item.label == name; });
+            if (matches(name) && !described) result.push_back({name, "export", "module export", name});
         }
     }
     for (const BindingContract& contract : bindings_.snapshot()) {

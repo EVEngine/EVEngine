@@ -268,7 +268,7 @@ TEST_CASE("devtools.languageServer.formatFoldAndIncrementalEdit") {
     CHECK(server.handleMessage(
               std::string(
                   R"({"jsonrpc":"2.0","id":3,"method":"textDocument/formatting","params":{"textDocument":{"uri":")") +
-                  uri + R"(},"options":{"tabSize":4,"insertSpaces":true}}})",
+                  uri + R"("},"options":{"tabSize":4,"insertSpaces":true}}})",
               output) == LspDispatch::Continue);
     CHECK(output.str().find("local n = 1") != std::string::npos);
 

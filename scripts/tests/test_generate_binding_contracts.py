@@ -156,6 +156,40 @@ class LambdaCaptureTests(unittest.TestCase):
 
 
 class BindMethodScrapeTests(unittest.TestCase):
+    def test_factory_types_use_declared_script_class_aliases(self) -> None:
+        from generate_binding_contracts import extract_contracts
+
+        sources = {
+            ROOT / "src/modules/particles/Particles.h": (
+                "class ParticleEmitter {};\n"
+                "class Particles { public: ParticleEmitter* newEmitter(ParticleEmitter* copy); ssq::Object state(); };\n"
+            ),
+            ROOT / "src/modules/particles/Particles.cpp": (
+                "void bind(ssq::Table& table, ssq::Class& cls) {\n"
+                'auto emitter = table.addClass<ParticleEmitter>("Emitter");\n'
+                'auto object = table.addClass<ssq::Object>("ObjectProxy");\n'
+                'cls.addFunc("newEmitter", &Particles::newEmitter);\n'
+                'cls.addFunc("state", &Particles::state);\n'
+                "}\n"
+            ),
+        }
+        contracts, unresolved = extract_contracts(sources)
+        self.assertEqual(unresolved, [])
+        self.assertEqual(len(contracts), 2)
+        self.assertEqual(contracts[0].return_type, "Emitter")
+        self.assertEqual(contracts[0].parameters[0].script_type, "Emitter")
+        self.assertTrue(contracts[0].return_nullable)
+        self.assertEqual(contracts[0].parameters[0].cpp_type, "ParticleEmitter*")
+        self.assertEqual(contracts[1].return_type, "dynamic")
+
+        # Two script aliases provide no unique projection for the C++ type.
+        sources[ROOT / "src/modules/particles/Other.cpp"] = (
+            'auto other = table.addClass<ParticleEmitter>("OtherEmitter");\n'
+        )
+        contracts, unresolved = extract_contracts(sources)
+        self.assertEqual(unresolved, [])
+        self.assertEqual(contracts[0].return_type, "ParticleEmitter")
+
     def test_bind_method_literal_names_are_scraped(self) -> None:
         from generate_binding_contracts import extract_contracts
 
