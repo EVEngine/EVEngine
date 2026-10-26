@@ -147,6 +147,10 @@ TEST_CASE("VirtualGeometryBuilder validates input and publishes a bounded LOD hi
         int        roots = 0;
         for (std::size_t i = 0; i < asset.clusters.size(); ++i) {
             const auto& child = asset.clusters[i];
+            for (std::uint32_t j = 0; j < child.childCount; ++j) {
+                REQUIRE(child.children[j] < asset.clusters.size());
+                CHECK_EQ(asset.clusters[child.children[j]].parent, static_cast<std::uint32_t>(i));
+            }
             if (child.parent == 0xFFFFFFFFu) {
                 ++roots;
                 continue;
@@ -159,7 +163,7 @@ TEST_CASE("VirtualGeometryBuilder validates input and publishes a bounded LOD hi
             for (std::uint32_t j = 0; j < parent.childCount; ++j) listed |= parent.children[j] == i;
             CHECK(listed);
         }
-        CHECK(roots > 0);
+        CHECK_EQ(roots, 1);
     };
 
     SUB_CASE("successive LODs reduce triangle count and accumulate error") {
@@ -196,6 +200,9 @@ TEST_CASE("VirtualGeometry CPU LOD selection covers hierarchy under distance and
                 chosen[index] = true;
             }
             for (std::size_t i = 0; i < asset.clusters.size(); ++i) {
+                // A selected descendant covers an internal cluster. Coverage
+                // and exclusivity are measured on each source leaf's path.
+                if (asset.clusters[i].childCount != 0) continue;
                 int  representatives = chosen[i] ? 1 : 0;
                 auto parent          = asset.clusters[i].parent;
                 while (parent != 0xFFFFFFFFu) {
