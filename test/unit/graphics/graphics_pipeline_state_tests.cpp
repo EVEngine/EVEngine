@@ -21,6 +21,7 @@
     "depth_of_field_focus.cpp",
     "diffuse_light_probe.cpp",
     "graphics_camera_factory.cpp",
+    "graphics_damage_numbers.cpp",
     "graphics_display_output.cpp",
     "graphics_pbr_surface.cpp",
     "graphics_primitives.cpp",

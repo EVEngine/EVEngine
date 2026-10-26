@@ -190,7 +190,7 @@ TEST_CASE("data.compress lz4 round-trip owns independent compressed bytes") {
     CHECK_EQ(clone->getSize(), compressed->getSize());
     std::size_t             restoredSize = 0;
     std::unique_ptr<char[]> restored(eve::data::decompress(clone.get(), restoredSize));
-    REQUIRE(restored != nullptr);
+    REQUIRE(static_cast<bool>(restored));
     CHECK_EQ(restoredSize, size);
     CHECK(std::memcmp(restored.get(), source, size) == 0);
     CHECK(
