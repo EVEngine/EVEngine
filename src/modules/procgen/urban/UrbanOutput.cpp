@@ -114,7 +114,11 @@ bool parseUrbanOptions(const Params& params, UrbanOptions& opts, std::string& er
         }
     }
     ensureCCW(opts.land);
-    opts.minParcelArea = std::max(0.01, double(params.getFloat("minParcelArea", 4.f)));
+    opts.minParcelArea = double(params.getFloat("minParcelArea", 4.f));
+    if (!std::isfinite(opts.minParcelArea) || opts.minParcelArea <= 0.0) {
+        error = "urban: minParcelArea must be finite and positive";
+        return false;
+    }
     opts.targetParcels = std::max(0, params.getInt("targetParcels", 120));
     opts.maxLevels     = std::max(1, params.getInt("maxLevels", 10));
 
