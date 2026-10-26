@@ -244,7 +244,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
 # Replace CMake's stock Debug flags (-g /Od) with a two-tier profile:
-# normal (-g1 -O2) for daily CI/dev, detail (-g2 -O1) for triage.
+# normal (-g0 -O2 / MSVC /Od) for daily CI/dev, detail (-g2 -O1) for triage.
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/debug_profile.cmake")
 
 include(CTest)
