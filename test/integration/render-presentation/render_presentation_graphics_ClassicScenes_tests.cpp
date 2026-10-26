@@ -194,6 +194,9 @@ TEST_CASE("ao.ssaoDarkensCrease") {
     CornerDepth cd;
     cd.w           = 128;
     cd.h           = 96;
+    // Keep the wall/floor depth gap inside the AO radius; probe the floor beside the walls.
+    cd.wallDepth   = 0.10f;
+    cd.floorDepth  = 0.12f;
     Texture *depth = ao->newLinearDepthTexture(gfx, cd.w, cd.h, cornerDepth01, &cd);
     REQUIRE(depth != nullptr);
 
@@ -201,7 +204,7 @@ TEST_CASE("ao.ssaoDarkensCrease") {
     ao->computeTo(gfx, depth, out);
 
     // Crease center vs open floor corner.
-    const float crease = luma(out->getPixel(cd.w / 2, cd.h / 2));
+    const float crease = luma(out->getPixel(int(cd.w * 0.56f), int(cd.h * 0.56f)));
     const float open   = luma(out->getPixel(int(cd.w * 0.12f), int(cd.h * 0.12f)));
     CHECK(open > crease);
     CHECK(crease < 0.98f);
@@ -257,6 +260,45 @@ TEST_CASE("ao.blurPreservesMeanRoughly") {
     ao->setQuality("medium");
     ao->setCamera(0.f, 1.f, 3.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 60.f, 160.f / 120.f, 0.1f, 30.f);
 
+    auto *const sharedAo = ao.get();
+    SUB_CASE("data passes preserve AO and depth independently of the destination") {
+        // Zero intensity gives a known white AO payload, independent of each algorithm's sampling.
+        sharedAo->setIntensity(0.f);
+        Texture *flatDepth =
+            sharedAo->newLinearDepthTexture(gfx, 8, 8, [](int, int, void *) { return 0.25f; }, nullptr);
+        Canvas *computed = gfx->newCanvas(8, 8);
+        Canvas *filtered = gfx->newCanvas(8, 8);
+        REQUIRE(flatDepth != nullptr);
+        REQUIRE(computed != nullptr);
+        REQUIRE(filtered != nullptr);
+        for (const char *mode : {"ssao", "hbao", "gtao"}) {
+            sharedAo->setMode(mode);
+            for (const Color clear : {Color(1.f, 0.f, 0.f, 1.f), Color(0.f, 0.f, 1.f, 0.f)}) {
+                gfx->setCanvas(computed);
+                gfx->clear(clear, std::nullopt, std::nullopt);
+                gfx->setCanvas(nullptr);
+                sharedAo->computeTo(gfx, flatDepth, computed);
+                const Color data = computed->getPixel(4, 4);
+                REQUIRE(data.r > 0.98f);
+                REQUIRE(data.g > 0.98f);
+                REQUIRE(data.b > 0.98f);
+                REQUIRE(std::fabs(data.a - 0.25f) < 0.01f);
+
+                gfx->setCanvas(filtered);
+                gfx->clear(clear, std::nullopt, std::nullopt);
+                gfx->setCanvas(nullptr);
+                sharedAo->blurTo(gfx, computed->getTexture(), filtered);
+                const Color blurred = filtered->getPixel(4, 4);
+                REQUIRE(blurred.r > 0.98f);
+                REQUIRE(blurred.g > 0.98f);
+                REQUIRE(blurred.b > 0.98f);
+                REQUIRE(std::fabs(blurred.a - 0.25f) < 0.01f);
+            }
+        }
+    };
+    ao->setMode("ssao");
+    ao->setIntensity(1.f);
+
     CornerDepth cd;
     cd.w           = 80;
     cd.h           = 60;
@@ -298,18 +340,22 @@ TEST_CASE("ao.overlayDarkensLitScene") {
     CornerDepth cd;
     cd.w           = 80;
     cd.h           = 60;
+    cd.wallDepth   = 0.10f;
+    cd.floorDepth  = 0.12f;
     Texture *depth = ao->newLinearDepthTexture(gfx, cd.w, cd.h, cornerDepth01, &cd);
     Canvas  *aoMap = gfx->newCanvas(cd.w, cd.h);
     ao->computeTo(gfx, depth, aoMap);
 
     Canvas *scene = gfx->newCanvas(cd.w, cd.h);
     gfx->setCanvas(scene);
-    gfx->clear(Color(0.85f, 0.85f, 0.88f, 1.f), std::nullopt, std::nullopt);
-    const float before = luma(scene->getPixel(cd.w / 2, cd.h / 2));
-    ao->applyOverlay(gfx, aoMap->getTexture());
+    gfx->drawSolidRect(0.f, 0.f, float(cd.w), float(cd.h), Color(0.85f, 0.85f, 0.88f, 1.f));
     gfx->setCanvas(nullptr);
+    const int   creaseX = int(cd.w * 0.56f), creaseY = int(cd.h * 0.56f);
+    const float before = luma(scene->getPixel(creaseX, creaseY));
+    REQUIRE(before > 0.8f);
+    ao->applyOverlayTo(gfx, aoMap->getTexture(), scene);
 
-    const float after     = luma(scene->getPixel(cd.w / 2, cd.h / 2));
+    const float after     = luma(scene->getPixel(creaseX, creaseY));
     const float openAfter = luma(scene->getPixel(int(cd.w * 0.1f), int(cd.h * 0.1f)));
     CHECK(after < before);
     CHECK(openAfter + 0.02f >= after);
