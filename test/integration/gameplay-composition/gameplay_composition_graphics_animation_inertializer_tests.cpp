@@ -2696,10 +2696,10 @@ TEST_CASE("animation.lattice.cornerScaleTrilinear") {
     CHECK(approx(out[1], 1.f));
     CHECK(approx(out[2], 1.f));
 
-    // Center vertex: all 8 weights are 1/8 → scale x = 1 + 1/8.
+    // The box spans [-1,1]; at (0.5,0.5,0.5) the upper-corner weight is 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f * 1.125f));
+    CHECK(approx(out[0], 0.5f * (1.f + 0.75f * 0.75f * 0.75f)));
     CHECK(approx(out[1], 0.5f));
     CHECK(approx(out[2], 0.5f));
 }
@@ -2717,11 +2717,11 @@ TEST_CASE("animation.lattice.offsetBulge") {
     CHECK(approx(out[1], 0.8f));
     CHECK(approx(out[2], 1.f));
 
-    // Center: offset diluted by 1/8, position unchanged otherwise.
+    // Interior point: upper-corner offset weighted by 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f + 0.4f / 8.f));
-    CHECK(approx(out[1], 0.5f - 0.2f / 8.f));
+    CHECK(approx(out[0], 0.5f + 0.4f * 0.75f * 0.75f * 0.75f));
+    CHECK(approx(out[1], 0.5f - 0.2f * 0.75f * 0.75f * 0.75f));
     CHECK(approx(out[2], 0.5f));
 }
 
@@ -2729,7 +2729,8 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     AnimLattice lat(2, 2, 2);
     lat.setSize(2.f, 2.f, 2.f);
     lat.setOrigin(0.f, 0.f, 0.f);
-    lat.setPointScale(1, 0, 0, 2.f, 1.f, 1.f);
+    for (int y = 0; y < 2; ++y)
+        for (int z = 0; z < 2; ++z) lat.setPointScale(1, y, z, 2.f, 1.f, 1.f);
 
     // Vertex outside the box on +x: u = 1.5.
     std::vector<float> p = {2.f, 0.f, 0.f};
@@ -2742,6 +2743,9 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     lat.setClamp(false);
     REQUIRE(lat.deformPositionsTo(p, out));
     CHECK(approx(out[0], 5.f));  // linear extrapolation keeps growing
+    p[0] = -2.f;
+    REQUIRE(lat.deformPositionsTo(p, out));
+    CHECK(approx(out[0], -1.f));  // extrapolate from the lower boundary too
 }
 
 TEST_CASE("animation.lattice.normals") {

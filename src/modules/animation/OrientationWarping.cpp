@@ -201,7 +201,7 @@ eve::Result<void> OrientationWarping::apply(AnimPose& pose, float locomotionX, f
     if (planarSpeed(locomotionX, locomotionZ) >= impl_->minSpeed &&
         planarSpeed(animatedX, animatedZ) >= impl_->minSpeed) {
         const float angle = signedPlanarAngle(animatedX, animatedZ, locomotionX, locomotionZ);
-        if (std::fabs(angle) <= impl_->angleThreshold) target = angle;
+        if (std::fabs(angle) < impl_->angleThreshold) target = angle;
     }
     const float applied = interpTo(impl_->appliedAngle, target, dt, impl_->interpSpeed);
     if (!impl_->enabled) {

@@ -1246,7 +1246,14 @@ TEST_CASE("animation.motionSchema.invalidNormalizationRangePreservesLastConfigur
     database.bake();
     float sample = 0.f;
     database.getFeature(11, &sample, 1);
-    CHECK(std::abs(sample - 10.f) < 1e-5f);
+    MotionDatabase unchanged(&clips.skeleton);
+    clips.addTo(unchanged);
+    REQUIRE(unchanged.setFeatureLayout(positionLayout()).ok());
+    REQUIRE(unchanged.setFeatureNormalizationRanges(valid).ok());
+    unchanged.bake();
+    float expected = 0.f;
+    unchanged.getFeature(11, &expected, 1);
+    CHECK(std::abs(sample - expected) < 1e-5f);
 }
 
 TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialReplacement") {
@@ -1273,7 +1280,7 @@ TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialRepl
     database.addClip(&forward);
     database.addClip(&backward);
     database.bake();
-    CHECK_EQ(database.getFrameCount(), 42);
+    CHECK_EQ(database.getFrameCount(), 40);  // looping clips omit the duplicated endpoint
     CHECK(!database.setFeatureLayout(layout).ok());
     for (int direction : {-1, 1}) {
         MotionMatcher                          matcher(&skeleton, &database);
@@ -1431,7 +1438,10 @@ TEST_CASE("animation.motionMatcher.costBiasAndReplacementRangeSelectValidEntry")
     candidates = {{0, 0.f, 1.f, -2.f, false, {}, 10.f}, {0, 0.f, 1.f, -1.f, false, {}, -10.f}, {1, 0.f, 1.f, 0.f}};
     REQUIRE(matcher.setCandidateRanges(candidates).ok());
     matcher.search();
-    CHECK_EQ(matcher.getMatchedClipIndex(), 1);
+    // Clip 1 is now continuing. A fresh clip-0 candidate uses the winning
+    // range's -2 entry bias, without that range's continuing-only +10 bias.
+    CHECK_EQ(matcher.getMatchedClipIndex(), 0);
+    CHECK(std::abs(matcher.getLastSearchCost() + 2.f) < 1e-5f);
 }
 }  // namespace test_animation_motion_schema
 #endif
@@ -1780,6 +1790,7 @@ TEST_CASE("animation.motionMatcher.oneShotExhaustionHandsOffToLoop") {
     skeleton.addBone("pelvis", 0);
     AnimClip action("action"), loop("loop");
     action.setDuration(.2f);
+    action.setLoop(false);
     loop.setDuration(.4f);
     loop.setLoop(true);
     MotionDatabase database(&skeleton);
@@ -2014,6 +2025,11 @@ TEST_CASE("animation.rootMotion.crossFadePublishesBlendedDeltaWithoutRootOffset"
     CHECK(player.getRootMotionZ() > .05f);
     CHECK(player.getRootMotionZ() < .2f);
     close(player.getPose()->getLocalPositionZ(0), 0.f);
+    player.play(walking.get());
+    player.update(.95f);
+    player.crossFade(&idle, .2f);
+    player.update(.1f);
+    close(player.getRootMotionZ(), .1f, .02f);
 }
 
 TEST_CASE("animation.rootMotion.parseNamesAndRejectNonfiniteYaw") {
