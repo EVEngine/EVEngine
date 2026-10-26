@@ -2315,8 +2315,8 @@ TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
                 .ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK_EQ(editor.target().timeline().tracks[0].states.size(), 2u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 5u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 7u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 6u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 12u);
     CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).ok());
 }
 }  // namespace test_action_timeline_widget
@@ -3039,6 +3039,10 @@ TEST_CASE("animation.physicalBalance.recoilDeflectsHitBone") {
     REQUIRE(balance.setTargetPose(&target).ok());
     REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 1.8f, 0.1f).ok());
     balance.update(1.f / 60.f);
+    CHECK_EQ(balance.getPose()->getLocalRotationW(2), 1.f);
+    // An impulse through the bone center has no recoil torque; use an offset hit.
+    REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 2.2f, 0.1f).ok());
+    balance.update(1.f / 60.f);
     const float hitW = balance.getPose()->getLocalRotationW(2);
     CHECK(hitW < 0.999f);
     for (int i = 0; i < 180; ++i) balance.update(1.f / 60.f);
@@ -3190,13 +3194,13 @@ TEST_CASE("animation.procedural.dynamicBoneColliderModesAreRuntimeConfigurable")
     solver.addColliderSphere(0.f, -1.f, 0.f, 0.5f);
     solver.setColliderInside(0, true);
     solver.setColliderRadius(0, 0.25f);
-    solver.update(&pose, 0.1f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) <= 0.151f);
 
     skeleton.applyBindPose(&pose);
     solver.reset();
     solver.setColliderEnabled(0, false);
-    solver.update(&pose, 0.1f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) > 0.151f);
 }
 

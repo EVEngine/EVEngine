@@ -169,7 +169,8 @@ TEST_CASE("vehicle.orders.attackTracksTargetWithAutoMount") {
         module.update(0.1f);
         weaponModule().update(0.1f);
     }
-    CHECK_GT(std::fabs(weapon->aim()->desiredYaw), 80.f);
+    // The hull also turns toward the target; mount yaw is relative to the hull.
+    CHECK_LT(std::fabs(module.getHeading(&tank) + weapon->aim()->desiredYaw - 90.f), 1e-3f);
     CHECK_LT(std::fabs(weapon->aim()->yaw - weapon->aim()->desiredYaw), 1.f);
     CHECK_EQ(module.getCurrentOrderType(&tank), std::string("attack"));
 }

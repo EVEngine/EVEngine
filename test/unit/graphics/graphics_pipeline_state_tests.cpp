@@ -2711,7 +2711,9 @@ TEST_CASE("graphics.hair.simulation: roots stay pinned while tips fall and inval
     std::vector<StrandPoint> points;
     for (float rootX : {-0.1f, 0.1f}) {
         for (int index = 0; index < 4; ++index) {
-            points.push_back({glm::vec3(rootX, 0.5f + 0.04f * float(index), 0.f), 0.001f, float(index) / 3.f});
+            // A slight lean gives gravity a bending moment instead of an exactly axial load.
+            points.push_back({glm::vec3(rootX + 0.01f * float(index), 0.5f + 0.04f * float(index), 0.f), 0.001f,
+                              float(index) / 3.f});
         }
     }
     guides.setPoints(std::move(points));
