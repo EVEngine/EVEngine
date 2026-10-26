@@ -190,7 +190,7 @@ TEST_CASE("data.compress lz4 round-trip owns independent compressed bytes") {
     CHECK_EQ(clone->getSize(), compressed->getSize());
     std::size_t             restoredSize = 0;
     std::unique_ptr<char[]> restored(eve::data::decompress(clone.get(), restoredSize));
-    REQUIRE(restored != nullptr);
+    REQUIRE(static_cast<bool>(restored));
     CHECK_EQ(restoredSize, size);
     CHECK(std::memcmp(restored.get(), source, size) == 0);
     CHECK(
@@ -202,11 +202,11 @@ TEST_CASE("data.encode hex and base64 round-trip exact binary length") {
     for (const auto* format : {"hex", "base64"}) {
         std::size_t             encodedSize = 0;
         std::unique_ptr<char[]> encoded(eve::data::encode(format, source, sizeof(source), encodedSize));
-        REQUIRE(encoded != nullptr);
+        REQUIRE(static_cast<bool>(encoded));
         CHECK(encodedSize > sizeof(source));
         std::size_t             decodedSize = 0;
         std::unique_ptr<char[]> decoded(eve::data::decode(format, encoded.get(), encodedSize, decodedSize));
-        REQUIRE(decoded != nullptr);
+        REQUIRE(static_cast<bool>(decoded));
         CHECK_EQ(decodedSize, sizeof(source));
         CHECK(std::memcmp(decoded.get(), source, sizeof(source)) == 0);
     }
