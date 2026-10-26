@@ -168,6 +168,7 @@ void Graphics::markFrameCaptureSubmitted() {
 }
 
 void Graphics::pollFrameCapture() {
+    pollEntityInspection();
     frameCaptures().collect();
     if (!captureToken_.empty() && !captureSubmitted_ && device.instance) {
         // A new main-thread poll before submission means present threw. Drain
@@ -231,6 +232,7 @@ void Graphics::pollFrameCapture() {
 }
 
 void Graphics::destroyFrameCapture() {
+    destroyEntityInspection();
     ++captureTargetGeneration_;
     // Existing caller has retired the swapchain/device before destroying readback resources.
     if (!captureToken_.empty()) {

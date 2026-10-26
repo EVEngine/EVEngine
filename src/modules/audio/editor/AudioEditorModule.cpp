@@ -10,11 +10,13 @@
 #include "audio/editing/AudioTarget.h"
 #include "audio/editor/AudioSourceEditor.h"
 #include "audio/editor/AudioSourceEditorScriptBindings.h"
+#include "audio/editor/AudioSourcePresentation.h"
 #include "common/Capability.h"
 #include "editing/EditingCommandRegistry.h"
 #include "editor/EditorAutomationTargetFactory.h"
 #include "editor/EditorScriptProjection.h"
 #include "editor/EditorWorkspace.h"
+#include "editor/presentation/WorkspacePresentationBindings.h"
 
 // AudioEditorModule.cpp
 namespace eve::audio_editor {
@@ -72,11 +74,14 @@ class ScriptAudioSourceEditor {
 public:
     explicit ScriptAudioSourceEditor(std::string targetId) : editor_(std::move(targetId)) {}
 
+    editor::WorkspacePresentation& presentation() noexcept { return presentation_; }
+
     AudioSourceEditor&       editor() noexcept { return editor_; }
     const AudioSourceEditor& editor() const noexcept { return editor_; }
 
 private:
     AudioSourceEditor editor_;
+    editor::WorkspacePresentation presentation_;
 };
 
 const char* transportLabel(audio_editing::AudioTransportState state) {
@@ -94,6 +99,8 @@ void exposeAudioSourceEditorScriptBindings(ssq::Table& table, ssq::Class& module
     const editor::ScriptBind bind{table.getHandle(), kBindingSource};
     auto                     sourceEditor = editor::addScriptClass<ScriptAudioSourceEditor>(table, "AudioSourceEditor");
 
+    editor::exposeWorkspacePresentation<ScriptAudioSourceEditor, AudioSourcePresentation>(sourceEditor,
+                                                                                          table.getHandle());
     editor::registerEditorWorkspace<ScriptAudioSourceEditor>(sourceEditor, bind,
                                                              "audio source editor and workspace must not be null");
     sourceEditor.addFunc("setViewportWidth", [bind](ScriptAudioSourceEditor* self, float width) {
