@@ -4,109 +4,142 @@
 #include "zeroerr/unittest.h"
 
 #include <limits>
+#include <stdexcept>
 #include <type_traits>
 
-namespace {
 using eve::editing::Value;
 using eve::material_editor::MaterialEditor;
-static_assert(!std::is_copy_constructible_v<MaterialEditor>);
-static_assert(!std::is_move_constructible_v<MaterialEditor>);
 
-Value readMaterial(const MaterialEditor& editor, const std::string& path) {
-    auto value = editor.read(path);
-    REQUIRE(value.ok());
-    return value.value();
+namespace {
+Value property(const MaterialEditor& editor, const std::string& path) {
+    auto read = editor.read(path);
+    REQUIRE(read.ok());
+    return read.value();
 }
 }  // namespace
 
-TEST_CASE("editor.material.facade_patch_is_one_undo_record") {
-    MaterialEditor editor("gold");
-    const auto     original = editor.snapshot();
-    auto           patched  = editor.setProperties(
-        {{"shading.metallic", 1.0}, {"shading.roughness", 0.22}, {"shading.tint", Value::Array{1.0, 0.72, 0.22, 1.0}}});
-    REQUIRE(patched.ok());
-    const auto gold = editor.snapshot();
-    REQUIRE(editor.undo().ok());
-    CHECK(editor.snapshot() == original);
-    CHECK(!editor.canUndo());
-    REQUIRE(editor.redo().ok());
-    CHECK(editor.snapshot() == gold);
+TEST_CASE("Material editor document and transaction contract") {
+    SUB_CASE("material editor contract: a valid identity owns detached defaults and schema") {
+        static_assert(!std::is_copy_constructible_v<MaterialEditor>);
+        static_assert(!std::is_move_constructible_v<MaterialEditor>);
+        bool rejectedEmptyId = false;
+        try {
+            MaterialEditor invalid("");
+        } catch (const std::invalid_argument&) {
+            rejectedEmptyId = true;
+        }
+        REQUIRE(rejectedEmptyId);
+
+        MaterialEditor editor("material-a");
+        REQUIRE_EQ(property(editor, "shading.model"), Value("pbr"));
+        REQUIRE_EQ(property(editor, "shading.metallic"), Value(0.0));
+        REQUIRE(!editor.read("unknown.path").ok());
+        REQUIRE(!editor.canUndo());
+        REQUIRE(!editor.canRedo());
+
+        const auto  metadata = editor.schema();
+        const auto* root     = metadata.getIf<Value::Object>();
+        REQUIRE(root != nullptr);
+        const auto* fields = root->at("properties").getIf<Value::Array>();
+        REQUIRE(fields != nullptr);
+        REQUIRE(fields->size() > 50u);
+        auto detached = editor.snapshot();
+        detached.getIf<Value::Object>()->clear();
+        REQUIRE(editor.snapshot().getIf<Value::Object>()->contains("properties"));
+    };
+
+    SUB_CASE("material editor contract: one batch publishes one revision and one undo record") {
+        MaterialEditor editor("material-b");
+        const auto     initial  = editor.snapshot();
+        const auto     revision = editor.revision();
+        REQUIRE(editor
+                    .setProperties({{"shading.metallic", 1.0},
+                                    {"shading.roughness", .22},
+                                    {"shading.tint", Value::Array{1.0, .72, .22, 1.0}}})
+                    .ok());
+        REQUIRE_EQ(property(editor, "shading.metallic"), Value(1.0));
+        REQUIRE_EQ(property(editor, "shading.roughness"), Value(.22));
+        REQUIRE(editor.revision() > revision);
+        const auto changed = editor.snapshot();
+        REQUIRE(editor.canUndo());
+        REQUIRE(editor.undo().ok());
+        REQUIRE(editor.snapshot() == initial);
+        REQUIRE(!editor.canUndo());
+        REQUIRE(editor.canRedo());
+        REQUIRE(editor.redo().ok());
+        REQUIRE(editor.snapshot() == changed);
+    };
+
+    SUB_CASE("material editor contract: invalid candidate never changes document or history") {
+        MaterialEditor editor("material-c");
+        REQUIRE(editor.setProperty("shading.metallic", .7).ok());
+        REQUIRE(editor.undo().ok());
+        const auto before   = editor.snapshot();
+        const auto revision = editor.revision();
+        REQUIRE(!editor.setProperties({{"shading.metallic", .5}, {"shading.roughness", -1.0}}).ok());
+        REQUIRE(!editor.setProperty("shading.metallic", std::numeric_limits<double>::infinity()).ok());
+        REQUIRE(!editor.setProperty("unknown.path", true).ok());
+        REQUIRE(editor.snapshot() == before);
+        REQUIRE_EQ(editor.revision(), revision);
+        REQUIRE(!editor.canUndo());
+        REQUIRE(editor.canRedo());
+    };
+
+    SUB_CASE("material editor contract: cross-field validation sees all writes in a batch") {
+        MaterialEditor editor("material-d");
+        const auto     before = editor.snapshot();
+        REQUIRE(!editor.setProperty("shading.model", "custom").ok());
+        REQUIRE(editor.snapshot() == before);
+        REQUIRE(editor.setProperties({{"shading.model", "custom"}, {"textures.shader", "asset://shader/custom"}}).ok());
+        REQUIRE_EQ(property(editor, "shading.model"), Value("custom"));
+        REQUIRE(!editor.setProperty("textures.shader", "").ok());
+        REQUIRE_EQ(property(editor, "textures.shader"), Value("asset://shader/custom"));
+        REQUIRE(editor.undo().ok());
+        REQUIRE(editor.snapshot() == before);
+    };
+
+    SUB_CASE("material editor contract: no-op input preserves redo and revision") {
+        MaterialEditor editor("material-e");
+        REQUIRE(editor.setProperty("shading.metallic", 1.0).ok());
+        REQUIRE(editor.undo().ok());
+        const auto revision = editor.revision();
+        REQUIRE(editor.setProperty("shading.metallic", 0).ok());
+        REQUIRE(editor.setProperties({}).ok());
+        REQUIRE_EQ(editor.revision(), revision);
+        REQUIRE(editor.canRedo());
+        REQUIRE(!editor.canUndo());
+    };
 }
 
-TEST_CASE("editor.material.facade_invalid_patch_preserves_document_and_history") {
-    MaterialEditor editor("atomic");
-    REQUIRE(editor.setProperty("shading.metallic", 0.7).ok());
-    REQUIRE(editor.undo().ok());
-    const auto original = editor.snapshot();
-    const auto revision = editor.revision();
-    auto       invalid  = editor.setProperties({{"shading.metallic", 0.5}, {"shading.roughness", -1.0}});
-    CHECK(!invalid.ok());
-    CHECK(editor.snapshot() == original);
-    CHECK_EQ(editor.revision(), revision);
-    CHECK(editor.canRedo());
-    CHECK(!editor.canUndo());
-    CHECK(!editor.setProperty("shading.metallic", std::numeric_limits<double>::infinity()).ok());
-    CHECK(!editor.setProperty("unknown.property", true).ok());
-    CHECK(!editor.read("unknown.property").ok());
-}
+TEST_CASE("Material editor restore and workspace contract") {
+    SUB_CASE("material editor contract: versioned restore is atomic and undoable") {
+        MaterialEditor source("source");
+        REQUIRE(source.setProperty("shading.metallic", .8).ok());
+        auto json    = eve::editing::editorValueToJson(source.snapshot());
+        auto decoded = eve::editing::editorValueFromJson(json);
+        REQUIRE(decoded.ok());
 
-TEST_CASE("editor.material.facade_cross_field_validation_is_candidate_first") {
-    MaterialEditor editor("custom");
-    CHECK(!editor.setProperty("shading.model", "custom").ok());
-    CHECK(readMaterial(editor, "shading.model") == Value("pbr"));
-    CHECK(!editor.canUndo());
-    REQUIRE(editor.setProperties({{"shading.model", "custom"}, {"textures.shader", "asset://shader/custom"}}).ok());
-    CHECK(readMaterial(editor, "shading.model") == Value("custom"));
-    CHECK(!editor.setProperty("textures.shader", "").ok());
-    REQUIRE(editor.undo().ok());
-    CHECK(readMaterial(editor, "shading.model") == Value("pbr"));
-}
+        MaterialEditor target("target");
+        const auto     initial = target.snapshot();
+        REQUIRE(target.restore(decoded.value()).ok());
+        REQUIRE(target.snapshot() == source.snapshot());
+        const auto restored = target.snapshot();
+        REQUIRE(!target.restore(Value::Object{{"schemaVersion", 100}, {"properties", Value::Object{}}}).ok());
+        REQUIRE(target.snapshot() == restored);
+        REQUIRE(target.undo().ok());
+        REQUIRE(target.snapshot() == initial);
+        REQUIRE(target.redo().ok());
+        REQUIRE(target.snapshot() == restored);
+        REQUIRE(target.restore(Value::Object{{"schemaVersion", 1}, {"properties", Value::Object{}}}).ok());
+        REQUIRE(target.snapshot() == initial);
+    };
 
-TEST_CASE("editor.material.facade_snapshot_restore_is_undoable_and_migrates") {
-    MaterialEditor source("source");
-    REQUIRE(source.setProperty("shading.metallic", 0.8).ok());
-    const auto encoded = eve::editing::editorValueToJson(source.snapshot());
-    auto       parsed  = eve::editing::editorValueFromJson(encoded);
-    REQUIRE(parsed.ok());
-    MaterialEditor restored("restored");
-    const auto     original = restored.snapshot();
-    REQUIRE(restored.restore(parsed.value()).ok());
-    CHECK(restored.snapshot() == source.snapshot());
-    REQUIRE(restored.undo().ok());
-    CHECK(restored.snapshot() == original);
-    REQUIRE(restored.redo().ok());
-    const auto before = restored.snapshot();
-    CHECK(!restored.restore(Value::Object{{"schemaVersion", 100}, {"properties", Value::Object{}}}).ok());
-    CHECK(restored.snapshot() == before);
-    REQUIRE(restored.restore(Value::Object{{"schemaVersion", 1}, {"properties", Value::Object{}}}).ok());
-    CHECK(restored.snapshot() == original);
-}
-
-TEST_CASE("editor.material.facade_noop_preserves_redo_and_revision") {
-    MaterialEditor editor("noop");
-    REQUIRE(editor.setProperty("shading.metallic", 1.0).ok());
-    REQUIRE(editor.undo().ok());
-    const auto revision = editor.revision();
-    REQUIRE(editor.setProperty("shading.metallic", 0).ok());
-    REQUIRE(editor.setProperties({}).ok());
-    CHECK_EQ(editor.revision(), revision);
-    CHECK(editor.canRedo());
-    CHECK(!editor.canUndo());
-}
-
-TEST_CASE("editor.material.facade_schema_and_workspace_are_detached") {
-    MaterialEditor editor("schema");
-    const auto     metadata = editor.schema();
-    const auto*    root     = metadata.getIf<Value::Object>();
-    REQUIRE(root);
-    REQUIRE(root->at("properties").getIf<Value::Array>());
-    CHECK_GT(root->at("properties").getIf<Value::Array>()->size(), 50U);
-    eve::editor::EditorWorkspace workspace("material", "Material");
-    REQUIRE(editor.configureWorkspace(workspace).ok());
-    CHECK_EQ(workspace.getPanelCount(), 3);
-    CHECK(!editor.configureWorkspace(workspace).ok());
-    CHECK_EQ(workspace.getPanelCount(), 3);
-    auto detached = editor.snapshot();
-    detached.getIf<Value::Object>()->clear();
-    CHECK(editor.snapshot().getIf<Value::Object>()->contains("properties"));
+    SUB_CASE("material editor contract: workspace panels install once as an atomic group") {
+        MaterialEditor               editor("material-f");
+        eve::editor::EditorWorkspace workspace("material", "Material");
+        REQUIRE(editor.configureWorkspace(workspace).ok());
+        REQUIRE_EQ(workspace.getPanelCount(), 3);
+        REQUIRE(!editor.configureWorkspace(workspace).ok());
+        REQUIRE_EQ(workspace.getPanelCount(), 3);
+    };
 }

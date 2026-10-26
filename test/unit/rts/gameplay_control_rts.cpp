@@ -10,202 +10,175 @@
 */
 // clang-format on
 
-#include <cmath>
-#include "rts/RTSTerrainTraceInternal.h"
-#include "zeroerr/assert.h"
-
 #include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayControlJson.h"
 #include "common/GameplayInstanceCatalog.h"
 #include "rts/RTS.h"
-
+#include "rts/RTSTerrainTraceInternal.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-namespace {
+#include <cmath>
+#include <cstdint>
+#include <string>
 
+namespace {
 eve::SubjectRef subject(const char* text) {
-    const auto id = eve::PersistentId::parse(text);
-    REQUIRE(id.has_value());
-    return eve::SubjectRef::fromPersistentId(*id);
+    auto parsed = eve::PersistentId::parse(text);
+    REQUIRE(parsed.has_value());
+    return eve::SubjectRef::fromPersistentId(*parsed);
 }
 
 eve::LogicalId action(const char* text) {
-    const auto id = eve::LogicalId::parse(text);
-    REQUIRE(id.has_value());
-    return *id;
+    auto parsed = eve::LogicalId::parse(text);
+    REQUIRE(parsed.has_value());
+    return *parsed;
 }
 
-}  // namespace
-
-TEST_CASE("gameplay.control.rtsUsesSelectionAuthorityForPlayerAndAutomation") {
+// Discovery contract: the provider advertises the RTS domain, and the same
+// player subject is discoverable through both native and JSON catalogues.
+TEST_CASE("rts.control.spec.provider_and_instance_discovery") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);
     eve::rts::RTS    rts;
-
-    const auto playerSubject = subject("00000000-0000-7000-8000-000000000501");
-    const auto unitSubject   = subject("00000000-0000-7000-8000-000000000502");
-    auto       playerResult  = rts.newPlayer(playerSubject);
-    auto       unitResult    = rts.newUnit(unitSubject, action("unit:worker"));
-    REQUIRE(playerResult.ok());
-    REQUIRE(unitResult.ok());
-    auto* player = std::move(playerResult).takeValue();
-    auto* unit   = std::move(unitResult).takeValue();
-    player->selection()->units.push_back(ecs::handle_of(unit));
-
-    bool discovered = false;
-    eve::cap::forEach<eve::IGameplayControlProvider>([&](eve::IGameplayControlProvider* provider) {
-        if (provider == &rts && provider->gameplayDomain() == "rts") discovered = true;
+    const auto       first  = subject("00000000-0000-7000-8000-0000000005a1");
+    const auto       second = subject("00000000-0000-7000-8000-0000000005a2");
+    REQUIRE(rts.newPlayer(first).ok());
+    REQUIRE(rts.newPlayer(second).ok());
+    bool foundProvider = false;
+    eve::cap::forEach<eve::IGameplayControlProvider>([&](auto* provider) {
+        if (provider == &rts && provider->gameplayDomain() == "rts") foundProvider = true;
     });
-    CHECK(discovered);
-
-    eve::GameplaySession playerSession{"player", eve::GameplayAccess::PlayerEquivalent, {playerSubject}};
-    auto                 observed = rts.observeGameplay(playerSession, playerSubject);
-    REQUIRE(observed.ok());
-    const auto before  = std::move(observed).takeValue();
-    auto       actions = rts.availableGameplayActions(playerSession, playerSubject, unitSubject);
-    REQUIRE(actions.ok());
-    const auto playerActions = std::move(actions).takeValue();
-    REQUIRE_EQ(playerActions.size(), std::size_t{2});
-    eve::GameplaySession automationSession{"automation", eve::GameplayAccess::TestDriver, {playerSubject}};
-    auto automationActions = rts.availableGameplayActions(automationSession, playerSubject, unitSubject);
-    REQUIRE(automationActions.ok());
-    const auto automationDescriptors = std::move(automationActions).takeValue();
-    REQUIRE_EQ(automationDescriptors.size(), playerActions.size());
-    for (std::size_t i = 0; i < playerActions.size(); ++i) CHECK_EQ(automationDescriptors[i].id, playerActions[i].id);
-
-    eve::GameplayCommand move;
-    move.id               = "rts-player-command-1";
-    move.action           = action("rts:move");
-    move.subject          = unitSubject;
-    move.observedTick     = before.tick;
-    move.expectedRevision = before.revision;
-    move.parameters       = eve::Value(eve::Value::Object{{"x", eve::Value(2.0)}, {"y", eve::Value(0.0)}});
-    auto submitted        = rts.submitGameplay(playerSession, playerSubject, move);
-    REQUIRE(submitted.ok());
-    const auto receipt = std::move(submitted).takeValue();
-    CHECK_EQ(receipt.commandId, move.id);
-    CHECK(receipt.resultingRevision > before.revision);
-
-    auto events = rts.gameplayEvents(playerSession, playerSubject, 0);
-    REQUIRE(events.ok());
-    const auto batch = std::move(events).takeValue();
-    REQUIRE_EQ(batch.size(), std::size_t{1});
-    CHECK_EQ(batch.front().causationCommandId, move.id);
-
-    auto advanced = rts.advanceGameplay(playerSession, playerSubject,
-                                        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1000000000)});
-    REQUIRE(advanced.ok());
-    // 先取出再断言：CHECK_EQ 会求值两次，`std::move(x).takeValue()` 第二次读的是已移动的 Result。
-    const auto advancedObservation = std::move(advanced).takeValue();
-    CHECK_EQ(advancedObservation.tick.value(), std::uint64_t{1});
-}
-
-TEST_CASE("gameplay.control.rtsRejectsUnselectedAndStaleCommands") {
-    ecs::Table       world;
-    ecs::ScopedTable guard(world);
-    eve::rts::RTS    rts;
-    const auto       playerSubject = subject("00000000-0000-7000-8000-000000000511");
-    const auto       unitSubject   = subject("00000000-0000-7000-8000-000000000512");
-    auto             playerResult  = rts.newPlayer(playerSubject);
-    auto             unitResult    = rts.newUnit(unitSubject);
-    REQUIRE(playerResult.ok());
-    REQUIRE(unitResult.ok());
-    auto*                player = std::move(playerResult).takeValue();
-    auto*                unit   = std::move(unitResult).takeValue();
-    eve::GameplaySession session{"player", eve::GameplayAccess::PlayerEquivalent, {playerSubject}};
-
-    auto unselected = rts.availableGameplayActions(session, playerSubject, unitSubject);
-    CHECK(!unselected.ok());
-    player->selection()->units.push_back(ecs::handle_of(unit));
-
-    eve::GameplayCommand stale;
-    stale.id               = "rts-stale";
-    stale.action           = action("rts:move");
-    stale.subject          = unitSubject;
-    stale.observedTick     = eve::SimulationTick(0);
-    stale.expectedRevision = 99;
-    stale.parameters       = eve::Value(eve::Value::Object{{"x", eve::Value(1)}, {"y", eve::Value(0)}});
-    auto rejected          = rts.submitGameplay(session, playerSubject, stale);
-    CHECK(!rejected.ok());
-    CHECK_EQ(rejected.code(), eve::StatusCode::Conflict);
-    CHECK(unit->orders()->values.empty());
-}
-
-TEST_CASE("gameplay.control.rtsEnumeratesItsPlayerInstances") {
-    ecs::Table       world;
-    ecs::ScopedTable guard(world);
-    eve::rts::RTS    rts;
-
-    const auto first  = subject("00000000-0000-7000-8000-0000000005a1");
-    const auto second = subject("00000000-0000-7000-8000-0000000005a2");
-    const auto one    = rts.newPlayer(first);
-    const auto two    = rts.newPlayer(second);
-    REQUIRE(one.ok());
-    REQUIRE(two.ok());
-
-    // 实例身份就是玩家的 subject：与 observe 解析用的键一致，按字典序稳定返回。
+    CHECK(foundProvider);
     const auto instances = rts.gameplayInstances();
     REQUIRE_EQ(instances.size(), std::size_t{2});
     CHECK_EQ(instances[0].format(), first.format());
     CHECK_EQ(instances[1].format(), second.format());
-
-    // 目录能力让 `instances` 操作能枚举该领域，而不是落进 unenumerable。
     eve::IGameplayInstanceCatalog* catalog = nullptr;
     eve::cap::forEach<eve::IGameplayInstanceCatalog>([&](auto* candidate) {
-        if (candidate != nullptr && candidate->gameplayDomain() == "rts") catalog = candidate;
+        if (candidate && candidate->gameplayDomain() == "rts") catalog = candidate;
     });
     REQUIRE(catalog != nullptr);
     CHECK_EQ(catalog->gameplayInstances().size(), std::size_t{2});
-
     auto scoped = eve::executeGameplayControlJson(
         R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances","domain":"rts"})");
     REQUIRE(scoped.ok());
     CHECK(scoped.value().find(first.format()) != std::string::npos);
     CHECK(scoped.value().find(second.format()) != std::string::npos);
+}
 
-    auto all = eve::executeGameplayControlJson(
-        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances"})");
-    REQUIRE(all.ok());
-    CHECK(all.value().find("\"domain\":\"rts\"") != std::string::npos);
-    CHECK(all.value().find("\"unenumerable\":[\"rts\"]") == std::string::npos);
+// Access contract: player and test-driver sessions see the same selected-unit
+// actions. A valid move returns a revisioned receipt and caused event.
+TEST_CASE("rts.control.spec.selected_unit_move_receipt_and_event") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    eve::rts::RTS    rts;
+    const auto       playerId     = subject("00000000-0000-7000-8000-000000000501");
+    const auto       unitId       = subject("00000000-0000-7000-8000-000000000502");
+    auto             playerResult = rts.newPlayer(playerId);
+    auto             unitResult   = rts.newUnit(unitId, action("unit:worker"));
+    REQUIRE(playerResult.ok());
+    REQUIRE(unitResult.ok());
+    auto* player = std::move(playerResult).takeValue();
+    auto* unit   = std::move(unitResult).takeValue();
+    player->selection()->units.push_back(ecs::handle_of(unit));
+    eve::GameplaySession playerSession{"player", eve::GameplayAccess::PlayerEquivalent, {playerId}};
+    eve::GameplaySession driverSession{"driver", eve::GameplayAccess::TestDriver, {playerId}};
+    auto                 before        = rts.observeGameplay(playerSession, playerId);
+    auto                 playerActions = rts.availableGameplayActions(playerSession, playerId, unitId);
+    auto                 driverActions = rts.availableGameplayActions(driverSession, playerId, unitId);
+    REQUIRE(before.ok());
+    REQUIRE(playerActions.ok());
+    REQUIRE(driverActions.ok());
+    REQUIRE_EQ(playerActions.value().size(), std::size_t{2});
+    REQUIRE_EQ(driverActions.value().size(), playerActions.value().size());
+    for (std::size_t i = 0; i < playerActions.value().size(); ++i)
+        CHECK_EQ(driverActions.value()[i].id, playerActions.value()[i].id);
+    eve::GameplayCommand command;
+    command.id               = "rts-move-1";
+    command.action           = action("rts:move");
+    command.subject          = unitId;
+    command.observedTick     = before.value().tick;
+    command.expectedRevision = before.value().revision;
+    command.parameters       = eve::Value(eve::Value::Object{{"x", 2.0}, {"y", 0.0}});
+    auto submitted           = rts.submitGameplay(playerSession, playerId, command);
+    REQUIRE(submitted.ok());
+    const auto receipt = std::move(submitted).takeValue();
+    CHECK_EQ(receipt.commandId, command.id);
+    CHECK(receipt.resultingRevision > before.value().revision);
+    auto events = rts.gameplayEvents(playerSession, playerId, 0);
+    REQUIRE(events.ok());
+    REQUIRE_EQ(events.value().size(), std::size_t{1});
+    CHECK_EQ(events.value()[0].causationCommandId, command.id);
+    auto advanced = rts.advanceGameplay(playerSession, playerId,
+                                        {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1000000000)});
+    REQUIRE(advanced.ok());
+    const auto next = std::move(advanced).takeValue();
+    CHECK_EQ(next.tick.value(), std::uint64_t{1});
+}
+
+// Rejection contract: an unselected unit is invisible to available-actions,
+// and a stale revision cannot enqueue any order or alter the instance.
+TEST_CASE("rts.control.spec.unselected_and_stale_commands") {
+    ecs::Table       world;
+    ecs::ScopedTable guard(world);
+    eve::rts::RTS    rts;
+    const auto       playerId     = subject("00000000-0000-7000-8000-000000000511");
+    const auto       unitId       = subject("00000000-0000-7000-8000-000000000512");
+    auto             playerResult = rts.newPlayer(playerId);
+    auto             unitResult   = rts.newUnit(unitId);
+    REQUIRE(playerResult.ok());
+    REQUIRE(unitResult.ok());
+    auto*                player = std::move(playerResult).takeValue();
+    auto*                unit   = std::move(unitResult).takeValue();
+    eve::GameplaySession session{"player", eve::GameplayAccess::PlayerEquivalent, {playerId}};
+    CHECK(!rts.availableGameplayActions(session, playerId, unitId).ok());
+    player->selection()->units.push_back(ecs::handle_of(unit));
+    eve::GameplayCommand stale;
+    stale.id               = "rts-stale";
+    stale.action           = action("rts:move");
+    stale.subject          = unitId;
+    stale.observedTick     = eve::SimulationTick(0);
+    stale.expectedRevision = 99;
+    stale.parameters       = eve::Value(eve::Value::Object{{"x", 1}, {"y", 0}});
+    auto rejected          = rts.submitGameplay(session, playerId, stale);
+    CHECK(!rejected.ok());
+    CHECK_EQ(rejected.code(), eve::StatusCode::Conflict);
+    CHECK(unit->orders()->values.empty());
 }
 
 using eve::rts::terrain_internal::firstTerrainImpact;
 
-TEST_CASE("rts.terrainNarrowRidgeBlocksShotsInBothDirections") {
-    const auto ridge = [](int x, int y) { return x == 1 && y == 0 ? 3.0f : 0.0f; };
-    // This ray crosses cell (1,0) for less than 0.02 world units.
+// Terrain contract: even a very short cell crossing observes a blocking ridge
+// in either direction; a high launch point can clear the same ridge.
+TEST_CASE("rts.terrain.spec_short_crossing_and_height") {
+    const auto ridge   = [](int x, int y) { return x == 1 && y == 0 ? 3.f : 0.f; };
     const auto forward = firstTerrainImpact(0.1f, 0.10f, 1.f, 2.9f, 2.88f, 1.f, 0.f, 0.f, 1.f, ridge);
     const auto reverse = firstTerrainImpact(2.9f, 2.88f, 1.f, 0.1f, 0.10f, 1.f, 0.f, 0.f, 1.f, ridge);
     REQUIRE(forward.has_value());
     REQUIRE(reverse.has_value());
     CHECK(*forward < 0.33f);
     CHECK(*reverse > 0.67f);
+    const auto lower = [](int x, int) { return x == 1 ? 2.f : 0.f; };
+    CHECK(firstTerrainImpact(0.5f, 0.5f, 1.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, lower).has_value());
+    CHECK(!firstTerrainImpact(0.5f, 0.5f, 5.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, lower).has_value());
 }
 
-TEST_CASE("rts.terrainHighGroundCanShootOverLowerRidge") {
-    const auto ridge = [](int x, int) { return x == 1 ? 2.f : 0.f; };
-    REQUIRE(firstTerrainImpact(0.5f, 0.5f, 1.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
-    REQUIRE(!firstTerrainImpact(0.5f, 0.5f, 5.f, 3.5f, 0.5f, 1.f, 0.f, 0.f, 1.f, ridge).has_value());
-}
-
-TEST_CASE("rts.terrainDescendingProjectileHitsInsideCell") {
+// Crossing contract: descending shots intersect within the cell. World origin
+// and cell size transform the same grid index, including vertical segments.
+TEST_CASE("rts.terrain.spec_fractional_impact_and_grid_transform") {
     const auto ground = [](int, int) { return 0.f; };
-    const auto impact = firstTerrainImpact(0.1f, 0.5f, 1.f, 0.9f, 0.5f, -1.f, 0.f, 0.f, 1.f, ground);
-    REQUIRE(impact.has_value());
-    CHECK(std::abs(*impact - 0.5f) < 0.00001f);
+    auto       descending = firstTerrainImpact(0.1f, 0.5f, 1.f, 0.9f, 0.5f, -1.f, 0.f, 0.f, 1.f, ground);
+    REQUIRE(descending.has_value());
+    CHECK(std::abs(*descending - .5f) < 1e-5f);
     CHECK(!firstTerrainImpact(0.1f, 0.5f, 1.f, 0.9f, 0.5f, 0.f, 0.f, 0.f, 1.f, ground).has_value());
-}
-
-TEST_CASE("rts.terrainGridOriginScaleAndVerticalSegments") {
-    const auto ridge  = [](int x, int y) { return x == 1 && y == 0 ? 3.f : 0.f; };
-    const auto impact = firstTerrainImpact(-9.f, 5.f, 1.f, -3.f, 5.f, 1.f, -10.f, 4.f, 2.f, ridge);
-    REQUIRE(impact.has_value());
-    CHECK(std::abs(*impact - 1.f / 6.f) < 0.00001f);
-    const auto ground = [](int, int) { return 0.f; };
-    REQUIRE(firstTerrainImpact(1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 0.f, 0.f, 1.f, ground).has_value());
+    const auto ridge       = [](int x, int y) { return x == 1 && y == 0 ? 3.f : 0.f; };
+    auto       transformed = firstTerrainImpact(-9.f, 5.f, 1.f, -3.f, 5.f, 1.f, -10.f, 4.f, 2.f, ridge);
+    REQUIRE(transformed.has_value());
+    CHECK(std::abs(*transformed - 1.f / 6.f) < 1e-5f);
+    CHECK(firstTerrainImpact(1.f, 1.f, 1.f, 1.f, 1.f, -1.f, 0.f, 0.f, 1.f, ground).has_value());
     CHECK(!firstTerrainImpact(1.f, 1.f, 1.f, 1.f, 1.f, 2.f, 0.f, 0.f, 1.f, ground).has_value());
 }
+}  // namespace

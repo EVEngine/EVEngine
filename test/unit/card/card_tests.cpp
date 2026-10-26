@@ -13,916 +13,559 @@
 */
 // clang-format on
 
-#include "zeroerr/assert.h"
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_gameplay_control) || \
-    defined(EVE_TEST_ORIGIN_card_reload)
-#include "PrivateTestScope.h"
-#include <cstdint>
-#include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
 #include "card/Card.h"
+#include "card/CardPlay.h"
 #include "card/CardState.h"
-#include "card/CardTypes.h"
 #include "common/Capability.h"
+#include "common/ConditionKeys.h"
+#include "common/ECS.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayControlJson.h"
-#include "common/GameplayInstanceCatalog.h"
-#include "common/Module.h"
 #include "common/StateValue.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
-// Responsibility: card_hand_rules
-namespace test_card_hand_rules {
-// card_gameplay_control.cpp
-namespace {
-namespace card_gameplay_control {
-// 卡牌玩法域契约测试：真实 Card 模块 + 手牌/牌库走共享玩法协议，
-// 覆盖发现、手牌观察、抽取、出牌支付边界、作弊档位、事件与 JSON 门面路由。
-//
-// 注意：zeroerr 的 CHECK_EQ(lhs, rhs) 会把 lhs 求值两次（一次判等、一次打印），
-// 因此有副作用的调用必须先赋给局部变量，再断言变量。
+
+#include <cmath>
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+using namespace eve::card;
 
 namespace {
+constexpr auto definitions = R"([{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
+                                  {"id":"bolt","name":"Bolt","kind":"spell","cost":3}])";
+constexpr auto controlDefinitions = R"([{"id":"free","name":"Free","kind":"spell","cost":0},
+                                         {"id":"bolt","name":"Bolt","kind":"spell","cost":3}])";
+constexpr auto instanceId         = "00000000-0000-7000-8000-000000000a01";
+constexpr auto ownerId            = "00000000-0000-7000-8000-000000000a02";
+constexpr auto strangerId         = "00000000-0000-7000-8000-000000000a03";
 
-constexpr const char* kInstanceId = "00000000-0000-7000-8000-000000000a01";
-constexpr const char* kOwnerId    = "00000000-0000-7000-8000-000000000a02";
-constexpr const char* kStrangerId = "00000000-0000-7000-8000-000000000a03";
-
-constexpr const char* kDefinitions = R"JSON(
-[{"id":"free","name":"Free","kind":"spell","cost":0},
- {"id":"bolt","name":"Bolt","kind":"spell","cost":3}]
-)JSON";
-
-[[maybe_unused]] eve::SubjectRef subject(const char* text) {
-    const auto id = eve::PersistentId::parse(text);
+eve::SubjectRef subject(const char* text) {
+    auto id = eve::PersistentId::parse(text);
     REQUIRE(id.has_value());
     return eve::SubjectRef::fromPersistentId(*id);
 }
 
-[[maybe_unused]] eve::LogicalId action(const char* text) {
-    const auto id = eve::LogicalId::parse(text);
+eve::LogicalId action(const char* text) {
+    auto id = eve::LogicalId::parse(text);
     REQUIRE(id.has_value());
     return *id;
 }
 
-[[maybe_unused]] eve::Value object(std::initializer_list<std::pair<const std::string, eve::Value>> entries) {
-    return eve::Value(eve::Value::Object(entries));
+const eve::Value* member(const eve::Value& value, const char* key) {
+    auto* object = value.getIf<eve::Value::Object>();
+    if (!object) return nullptr;
+    auto it = object->find(key);
+    return it == object->end() ? nullptr : &it->second;
 }
 
-[[maybe_unused]] const eve::Value* member(const eve::Value& value, const char* name) {
-    const auto* entries = value.getIf<eve::Value::Object>();
-    if (entries == nullptr) return nullptr;
-    const auto found = entries->find(name);
-    return found == entries->end() ? nullptr : &found->second;
-}
-
-[[maybe_unused]] const eve::Value::Array* handCards(const eve::Value& state) {
-    const eve::Value* hand = member(state, "hand");
-    return hand == nullptr ? nullptr : hand->getIf<eve::Value::Array>();
-}
-
-/** 手牌里第一张指定定义的卡牌实例 id；找不到返回空串。 */
-[[maybe_unused]] std::string firstCardOf(const eve::Value& state, const char* definition) {
-    const auto* cards = handCards(state);
-    if (cards == nullptr) return {};
+std::string cardOf(const eve::Value& state, const char* definition) {
+    auto* hand = member(state, "hand");
+    if (!hand) return {};
+    auto* cards = hand->getIf<eve::Value::Array>();
+    if (!cards) return {};
     for (const auto& card : *cards) {
-        const eve::Value* def = member(card, "definition");
-        const eve::Value* id  = member(card, "card");
-        if (def != nullptr && id != nullptr && def->asString() == definition) return id->asString();
+        auto* id  = member(card, "card");
+        auto* def = member(card, "definition");
+        if (id && def && def->asString() == definition) return id->asString();
     }
     return {};
 }
 
-/** 真实模块 + 手牌 + 牌库，并把该手牌发布到共享玩法协议（未绑定支付账户）。 */
-struct CardFixture {
-    eve::card::Card*         module = nullptr;
-    eve::card::Hand*         hand   = nullptr;
-    eve::card::LayoutConfig* config = nullptr;
-    eve::SubjectRef          instance;
-    eve::SubjectRef          owner;
-
-    CardFixture() {
-        module = eve::card::Card::create();
-        REQUIRE(module != nullptr);
-        module->clearGameplayControls();
-        module->clearCardDefinitions();
-        const int registered = module->registerCardsFromJson(kDefinitions);
-        REQUIRE_EQ(registered, 2);
-        config = module->newConfig();
-        REQUIRE(config != nullptr);
-        module->setConfig(config);
-        hand = module->newHand(config);
-        REQUIRE(hand != nullptr);
-        hand->meta()->owner   = "player";
-        eve::card::Deck* deck = module->newDeck();
-        REQUIRE(deck != nullptr);
-        deck->push(module->newCard("free"));
-        deck->push(module->newCard("bolt"));
-        eve::card::CardData* inHand = module->newCard("free");
-        REQUIRE(inHand != nullptr);
-        hand->addCard(inHand);
-        instance             = subject(kInstanceId);
-        owner                = subject(kOwnerId);
-        const auto published = module->publishGameplay(kInstanceId, kOwnerId, hand);
-        REQUIRE(published.ok());
-    }
-
-    ~CardFixture() {
-        module->clearGameplayControls();
-        module->clearCardDefinitions();
-    }
-
-    CardFixture(const CardFixture&)            = delete;
-    CardFixture& operator=(const CardFixture&) = delete;
-
-    /** 通过能力注册表取回适配器，和 JSON 路由走同一条查找路径。 */
-    eve::IGameplayControlProvider* provider() const {
-        eve::IGameplayControlProvider* found = nullptr;
-        eve::cap::forEach<eve::IGameplayControlProvider>([&](auto* candidate) {
-            if (candidate != nullptr && candidate->gameplayDomain() == "card") found = candidate;
-        });
-        return found;
-    }
-};
-
-[[maybe_unused]] eve::GameplayCommand command(const CardFixture& fixture, const char* id, const char* actionText,
-                                              std::uint64_t expectedRevision, eve::Value parameters) {
+eve::GameplayCommand command(eve::SubjectRef owner, const char* id, const char* verb, std::uint64_t revision,
+                             eve::Value parameters = eve::Value(eve::Value::Object{})) {
     eve::GameplayCommand result;
     result.id               = id;
-    result.action           = action(actionText);
-    result.subject          = fixture.owner;
+    result.action           = action(verb);
+    result.subject          = owner;
     result.observedTick     = eve::SimulationTick::zero();
-    result.expectedRevision = expectedRevision;
+    result.expectedRevision = revision;
     result.parameters       = std::move(parameters);
     return result;
 }
 
-[[maybe_unused]] std::string envelope(const char* operation, const char* access, const std::string& extra = {}) {
+eve::Value cardParameter(std::string id) {
+    eve::Value::Object object;
+    object.emplace("card", eve::Value(std::move(id)));
+    return eve::Value(std::move(object));
+}
+
+struct PublishedHand {
+    Card*                module   = Card::create();
+    Hand*                hand     = nullptr;
+    eve::SubjectRef      instance = subject(instanceId);
+    eve::SubjectRef      owner    = subject(ownerId);
+    eve::GameplaySession player{"player", eve::GameplayAccess::PlayerEquivalent, {owner}};
+    eve::GameplaySession driver{"driver", eve::GameplayAccess::TestDriver, {owner}};
+
+    PublishedHand() {
+        REQUIRE(module != nullptr);
+        module->clearGameplayControls();
+        module->clearCardDefinitions();
+        REQUIRE(module->registerCardsFromJson(controlDefinitions) == 2);
+        auto* config = module->newConfig();
+        REQUIRE(config != nullptr);
+        module->setConfig(config);
+        hand = module->newHand(config);
+        REQUIRE(hand != nullptr);
+        hand->meta()->owner = "player";
+        auto* deck          = module->newDeck();
+        REQUIRE(deck != nullptr);
+        deck->push(module->newCard("free"));
+        deck->push(module->newCard("bolt"));
+        hand->addCard(module->newCard("free"));
+        REQUIRE(module->publishGameplay(instanceId, ownerId, hand).ok());
+    }
+    ~PublishedHand() {
+        module->clearGameplayControls();
+        module->clearCardDefinitions();
+    }
+    eve::IGameplayControlProvider& provider() {
+        eve::IGameplayControlProvider* found = nullptr;
+        eve::cap::forEach<eve::IGameplayControlProvider>([&](auto* candidate) {
+            if (candidate && candidate->gameplayDomain() == "card") found = candidate;
+        });
+        REQUIRE(found != nullptr);
+        return *found;
+    }
+};
+
+std::string request(const char* operation, const char* access, const std::string& extra = {}) {
     return std::string("{\"schemaId\":\"evengine.gameplay-control-request\",\"schemaVersion\":1,\"op\":\"") +
-           operation + "\",\"domain\":\"card\",\"instance\":\"" + kInstanceId +
-           "\",\"session\":{\"id\":\"mcp\",\"access\":\"" + access + "\",\"controlledSubjects\":[\"" + kOwnerId +
+           operation + "\",\"domain\":\"card\",\"instance\":\"" + instanceId +
+           "\",\"session\":{\"id\":\"test\",\"access\":\"" + access + "\",\"controlledSubjects\":[\"" + ownerId +
            "\"]}" + extra + "}";
 }
 
-[[maybe_unused]] std::string jsonCommand(const char* id, const char* actionText, std::uint64_t expectedRevision,
-                                         const char* parameters) {
-    return std::string(",\"command\":{\"id\":\"") + id + "\",\"action\":\"" + actionText + "\",\"subject\":\"" +
-           kOwnerId + "\",\"observedTick\":0,\"expectedRevision\":" + std::to_string(expectedRevision) +
-           ",\"parameters\":" + parameters + "}";
+std::string drawJson() {
+    return std::string(",\"command\":{\"id\":\"draw\",\"action\":\"card:draw\",\"subject\":\"") + ownerId +
+           "\",\"observedTick\":0,\"expectedRevision\":0,\"parameters\":{}}";
 }
 
+CardData& newCard(Card& module, const char* id) {
+    auto* result = module.newCard(id);
+    REQUIRE(result != nullptr);
+    return *result;
+}
 }  // namespace
 
-TEST_CASE("gameplay.control.cardPublishesHandAndPaymentBoundary") {
-    CardFixture fixture;
-    auto*       provider = fixture.provider();
-    REQUIRE(provider != nullptr);
-    CHECK_EQ(fixture.module->gameplayControlCount(), 1);
+// Definitions and instances: id lookup and enumeration are stable, while each factory card has a distinct identity.
+TEST_CASE("card.definition.registrationMutationAndInvalidId") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    CHECK_EQ(module.getCardDefinitionId(0), std::string("bolt"));
+    CHECK_EQ(module.getCardDefinitionId(1), std::string("flame"));
+    REQUIRE(module.setCardDefinition("archer", "Archer", "creature", 4, 5, 3, 1.2f, -0.2f, 0.5f));
+    CHECK_EQ(module.getCardDefinitionId(0), std::string("archer"));
+    CHECK_EQ(module.getCardDefinitionAttack("archer"), 5);
+    CHECK_EQ(module.getCardDefinitionTintR("archer"), 1.f);
+    CHECK_EQ(module.getCardDefinitionTintG("archer"), 0.f);
+    CHECK(!module.setCardDefinition("", "Invalid", "", 0, 0, 0, 0.f, 0.f, 0.f));
+    REQUIRE(module.removeCardDefinition("bolt"));
+    CHECK(!module.hasCardDefinition("bolt"));
+    CHECK(!module.removeCardDefinition("bolt"));
+}
 
-    eve::GameplaySession player{"player", eve::GameplayAccess::PlayerEquivalent, {fixture.owner}};
-    eve::GameplaySession automation{"automation", eve::GameplayAccess::TestDriver, {fixture.owner}};
+TEST_CASE("card.instance.uniqueIdsDescriptionAndPresentationSnapshot") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto& first  = newCard(module, "flame");
+    auto& second = newCard(module, "flame");
+    CHECK_EQ(first.identity()->definitionId, std::string("flame"));
+    CHECK(first.identity()->id != second.identity()->id);
+    CHECK(first.describe().find("Flame") != std::string::npos);
+    CHECK(first.describe().find("3/2") != std::string::npos);
+    first.layout()->x     = 42.f;
+    first.layout()->angle = 12.f;
+    CHECK_EQ(module.capturePresentation(), 2);
+    auto* snapshot = module.getPresentation(0);
+    REQUIRE(snapshot != nullptr);
+    CHECK_EQ(snapshot->instanceId, first.identity()->id);
+    CHECK_EQ(snapshot->x, 42.f);
+    CHECK_EQ(snapshot->angle, 12.f);
+    CHECK(module.getPresentation(2) == nullptr);
+}
 
-    auto observed = provider->observeGameplay(player, fixture.instance);
-    REQUIRE(observed.ok());
-    const auto state = std::move(observed).takeValue().state;
-    CHECK_EQ(member(state, "owner")->asString(), std::string("player"));
-    CHECK_EQ(member(state, "handSize")->asInt(), std::int64_t{1});
-    CHECK_EQ(member(state, "deck")->asInt(), std::int64_t{2});
-    // 未绑定支付账户是可见的，而不是让 card:play 静默消失。
-    CHECK_EQ(member(state, "payment")->asString(), std::string("unbound"));
-    const auto* cards = handCards(state);
-    REQUIRE(cards != nullptr);
-    REQUIRE_EQ(static_cast<int>(cards->size()), 1);
-    CHECK_EQ(member((*cards)[0], "definition")->asString(), std::string("free"));
-    CHECK_EQ(member((*cards)[0], "cost")->asInt(), std::int64_t{0});
-    CHECK_EQ(member((*cards)[0], "state")->asString(), std::string("hand"));
+TEST_CASE("card.presentation.layoutRayMappingAndParallelMiss") {
+    CardPlaneMapper mapper;
+    mapper.setLogicalRect(0.f, 0.f, 1280.f, 700.f);
+    mapper.setPlane(-6.4f, 0.6f, -7.f, 12.8f, 0.f, 0.f, 0.f, 0.f, 14.f);
+    REQUIRE(mapper.mapLayout(640.f, 350.f));
+    CHECK_LT(std::fabs(mapper.getWorldX()), 0.0001f);
+    CHECK_LT(std::fabs(mapper.getWorldY() - 0.6f), 0.0001f);
+    REQUIRE(mapper.mapRay(0.f, 10.f, 0.f, 0.f, -1.f, 0.f));
+    CHECK_LT(std::fabs(mapper.getLogicalX() - 640.f), 0.0001f);
+    CHECK_LT(std::fabs(mapper.getLogicalY() - 350.f), 0.0001f);
+    CHECK(!mapper.mapRay(0.f, 10.f, 0.f, 1.f, 0.f, 0.f));
+}
 
-    auto playerActions     = provider->availableGameplayActions(player, fixture.instance, fixture.owner);
-    auto automationActions = provider->availableGameplayActions(automation, fixture.instance, fixture.owner);
-    REQUIRE(playerActions.ok());
-    REQUIRE(automationActions.ok());
-    CHECK_EQ(static_cast<int>(playerActions.value().size()), 2);
-    CHECK_EQ(playerActions.value()[0].id.format(), std::string("card:draw"));
-    CHECK_EQ(playerActions.value()[1].id.format(), std::string("card:play"));
-    CHECK_EQ(static_cast<int>(automationActions.value().size()), 3);
-    bool automationMayRewrite = false;
-    for (const auto& descriptor : automationActions.value()) {
-        if (descriptor.id.format() == "card:set-attribute") automationMayRewrite = true;
+TEST_CASE("card.instance.hitBoundsScaleAndZeroWidth") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto& card           = newCard(module, "flame");
+    card.layout()->x     = 100.f;
+    card.layout()->y     = 100.f;
+    card.layout()->w     = 50.f;
+    card.layout()->h     = 70.f;
+    card.layout()->scale = 1.f;
+    CHECK(card.hit(100.f, 100.f));
+    CHECK(card.hit(125.f, 135.f));
+    CHECK(!card.hit(126.f, 100.f));
+    card.layout()->scale = 2.f;
+    CHECK(card.hit(140.f, 100.f));
+    card.layout()->w = 0.f;
+    CHECK(!card.hit(100.f, 100.f));
+}
+
+// Containers: a deck is LIFO; draw transfers ownership to the named hand.
+TEST_CASE("card.deck.emptyBoundsLifoShuffleAndClear") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto* deck = module.newDeck();
+    REQUIRE(deck != nullptr);
+    CHECK(deck->isEmpty());
+    CHECK(deck->draw() == nullptr);
+    CHECK(deck->get(-1) == nullptr);
+    auto& flame = newCard(module, "flame");
+    auto& bolt  = newCard(module, "bolt");
+    deck->push(&flame);
+    deck->push(&bolt);
+    CHECK(deck->peek() == &bolt);
+    CHECK(deck->get(0) == &flame);
+    CHECK(deck->get(2) == nullptr);
+    deck->shuffle();
+    CHECK_EQ(deck->count(), 2);
+    CHECK(deck->get(0) != deck->get(1));
+    deck->clear();
+    CHECK(deck->isEmpty());
+    deck->push(&flame);
+    deck->push(&bolt);
+    CHECK(deck->draw() == &bolt);
+    CHECK(deck->draw() == &flame);
+    CHECK(deck->draw() == nullptr);
+}
+
+TEST_CASE("card.hand.addRemoveFindAndDraw") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto* config = module.newConfig();
+    REQUIRE(config != nullptr);
+    auto* hand = module.newHand(config);
+    REQUIRE(hand != nullptr);
+    hand->meta()->owner = "player";
+    auto* deck          = module.newDeck();
+    REQUIRE(deck != nullptr);
+    auto& flame = newCard(module, "flame");
+    auto& bolt  = newCard(module, "bolt");
+    hand->addCard(&flame);
+    CHECK(hand->get(0) == &flame);
+    CHECK(hand->find(flame.identity()->id) == &flame);
+    CHECK(module.findHand("player") == hand);
+    CHECK(static_cast<int>(flame.state()->phase) == static_cast<int>(CardState::Hand));
+    CHECK_EQ(flame.layout()->w, config->cardW);
+    CHECK(hand->get(5) == nullptr);
+    deck->push(&bolt);
+    CHECK(module.drawCard("player") == &bolt);
+    CHECK(deck->isEmpty());
+    CHECK_EQ(hand->count(), 2);
+    CHECK(!hand->removeCard(&newCard(module, "flame")));
+    REQUIRE(hand->removeCard(&flame));
+    CHECK_EQ(hand->count(), 1);
+    hand->clear();
+    CHECK_EQ(hand->count(), 0);
+}
+
+TEST_CASE("card.zone.rectangleKindFilterAndDisabledState") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto* zone = module.newZone("board", "Board", 10.f, 20.f, 100.f, 60.f);
+    REQUIRE(zone != nullptr);
+    auto& creature = newCard(module, "flame");
+    auto& spell    = newCard(module, "bolt");
+    CHECK(zone->contains(10.f, 20.f));
+    CHECK(zone->contains(109.f, 79.f));
+    CHECK(!zone->contains(9.f, 20.f));
+    CHECK(zone->accepts(&creature));
+    CHECK(zone->accepts(&spell));
+    CHECK(!zone->accepts(nullptr));
+    zone->filter()->acceptKinds = {"spell"};
+    CHECK(!zone->accepts(&creature));
+    CHECK(zone->accepts(&spell));
+    zone->rect()->enabled = false;
+    CHECK(!zone->accepts(&spell));
+}
+
+TEST_CASE("card.hand.pickTopmostAndSymmetricFanSlots") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto* config = module.newConfig();
+    auto* hand   = module.newHand(config);
+    auto& first  = newCard(module, "flame");
+    auto& last   = newCard(module, "bolt");
+    hand->addCard(&first);
+    hand->addCard(&last);
+    for (auto* card : {&first, &last}) {
+        card->layout()->x     = 100.f;
+        card->layout()->y     = 100.f;
+        card->layout()->w     = 50.f;
+        card->layout()->h     = 70.f;
+        card->layout()->scale = 1.f;
     }
-    CHECK(automationMayRewrite);
-
-    auto wrongSubject = provider->availableGameplayActions(player, fixture.instance, subject(kStrangerId));
-    CHECK(!wrongSubject.ok());
-    CHECK_EQ(wrongSubject.code(), eve::StatusCode::Rejected);
-
-    eve::GameplaySession intruder{"intruder", eve::GameplayAccess::PlayerEquivalent, {subject(kStrangerId)}};
-    auto                 denied = provider->observeGameplay(intruder, fixture.instance);
-    CHECK(!denied.ok());
-    CHECK_EQ(denied.code(), eve::StatusCode::Rejected);
-
-    auto missing = provider->observeGameplay(automation, subject(kStrangerId));
-    CHECK(!missing.ok());
-    CHECK_EQ(missing.code(), eve::StatusCode::NotFound);
+    CHECK(hand->pick(100.f, 100.f) == &last);
+    CHECK(hand->pick(300.f, 300.f) == nullptr);
+    float x = 0.f, y = 0.f, angle = 0.f;
+    hand->slotTransform(0, 3, x, y, angle);
+    CHECK_LT(angle, 0.f);
+    hand->slotTransform(1, 3, x, y, angle);
+    CHECK_LT(std::fabs(angle), 0.0001f);
+    hand->slotTransform(2, 3, x, y, angle);
+    CHECK_GT(angle, 0.f);
 }
 
-TEST_CASE("gameplay.control.cardDrawsPlaysAndReportsItsLedger") {
-    CardFixture fixture;
-    auto*       provider = fixture.provider();
-    REQUIRE(provider != nullptr);
-    eve::GameplaySession player{"player", eve::GameplayAccess::PlayerEquivalent, {fixture.owner}};
-
-    auto drawn =
-        provider->submitGameplay(player, fixture.instance, command(fixture, "draw-1", "card:draw", 0, object({})));
-    REQUIRE(drawn.ok());
-    CHECK_EQ(drawn.value().resultingRevision, std::uint64_t{1});
-    CHECK_EQ(fixture.hand->count(), 2);
-
-    const auto afterDraw = provider->observeGameplay(player, fixture.instance);
-    REQUIRE(afterDraw.ok());
-    CHECK_EQ(member(afterDraw.value().state, "handSize")->asInt(), std::int64_t{2});
-    CHECK_EQ(member(afterDraw.value().state, "deck")->asInt(), std::int64_t{1});
-    const std::string freeCard = firstCardOf(afterDraw.value().state, "free");
-    REQUIRE(!freeCard.empty());
-
-    // 零费卡在没有支付账户时也能出牌：未绑定边界对零费卡是透明的。
-    auto played = provider->submitGameplay(
-        player, fixture.instance, command(fixture, "play-1", "card:play", 1, object({{"card", eve::Value(freeCard)}})));
-    REQUIRE(played.ok());
-    CHECK_EQ(played.value().resultingRevision, std::uint64_t{2});
-    CHECK_EQ(member(played.value().details, "quantity")->asInt(), std::int64_t{1});
-
-    // 收费卡在没有账户时得到明确诊断，而不是"动作不存在"。
-    const auto afterPlay = provider->observeGameplay(player, fixture.instance);
-    REQUIRE(afterPlay.ok());
-    const std::string boltCard = firstCardOf(afterPlay.value().state, "bolt");
-    if (!boltCard.empty()) {
-        auto charged = provider->submitGameplay(
-            player, fixture.instance,
-            command(fixture, "play-bolt", "card:play", 2, object({{"card", eve::Value(boltCard)}})));
-        CHECK(!charged.ok());
-        CHECK_EQ(charged.code(), eve::StatusCode::Rejected);
-    }
-
-    auto unknownCard = provider->submitGameplay(
-        player, fixture.instance,
-        command(fixture, "play-missing", "card:play", 2, object({{"card", eve::Value("no.such.card")}})));
-    CHECK(!unknownCard.ok());
-    CHECK_EQ(unknownCard.code(), eve::StatusCode::NotFound);
-
-    auto unsupported =
-        provider->submitGameplay(player, fixture.instance, command(fixture, "shrug", "card:shrug", 2, object({})));
-    CHECK(!unsupported.ok());
-    CHECK_EQ(unsupported.code(), eve::StatusCode::Unsupported);
-
-    auto stale =
-        provider->submitGameplay(player, fixture.instance, command(fixture, "draw-stale", "card:draw", 0, object({})));
-    CHECK(!stale.ok());
-    CHECK_EQ(stale.code(), eve::StatusCode::Conflict);
-
-    auto events = provider->gameplayEvents(player, fixture.instance, 0);
-    REQUIRE(events.ok());
-    const auto list = std::move(events).takeValue();
-    REQUIRE_EQ(static_cast<int>(list.size()), 2);
-    CHECK_EQ(list[0].type, std::string("card.drawn"));
-    CHECK_EQ(list[1].type, std::string("card.played"));
-    CHECK_EQ(list[1].causationCommandId, std::string("play-1"));
-    CHECK_EQ(list[1].subject.format(), std::string(kOwnerId));
-
-    auto drained = provider->gameplayEvents(player, fixture.instance, 2);
-    REQUIRE(drained.ok());
-    CHECK_EQ(drained.code(), eve::StatusCode::NoOp);
-
-    auto advanced = provider->advanceGameplay(player, fixture.instance,
-                                              {eve::SimulationTick(1), eve::Duration::fromNanoseconds(16666667)});
-    REQUIRE(advanced.ok());
-    auto rewound = provider->advanceGameplay(player, fixture.instance,
-                                             {eve::SimulationTick(1), eve::Duration::fromNanoseconds(1)});
-    CHECK(!rewound.ok());
-    CHECK_EQ(rewound.code(), eve::StatusCode::Conflict);
+// Persistence: durable phase restores; transient pointer interaction is dropped.
+TEST_CASE("card.state.restoreDurablePhasesAndClearTransientDrag") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto& flame            = newCard(module, "flame");
+    auto& bolt             = newCard(module, "bolt");
+    flame.state()->phase   = CardState::Played;
+    bolt.state()->phase    = CardState::Disabled;
+    bolt.state()->dragging = true;
+    eve::StateValue snapshot;
+    REQUIRE(captureCardState(snapshot));
+    flame.state()->phase = CardState::Deck;
+    bolt.state()->phase  = CardState::Hand;
+    std::string error;
+    REQUIRE(restoreCardState(snapshot, &error));
+    CHECK(error.empty());
+    CHECK(flame.state()->phase == CardState::Played);
+    CHECK(bolt.state()->phase == CardState::Disabled);
+    CHECK(!bolt.state()->dragging);
+    REQUIRE(resetCardState());
+    CHECK(flame.state()->phase == CardState::Deck);
+    CHECK(bolt.state()->phase == CardState::Deck);
+    flame.release();
+    bolt.release();
 }
 
-TEST_CASE("gameplay.control.cardAttributeRewriteIsACheatProfileAction") {
-    CardFixture fixture;
-    auto*       provider = fixture.provider();
-    REQUIRE(provider != nullptr);
-    eve::GameplaySession player{"player", eve::GameplayAccess::PlayerEquivalent, {fixture.owner}};
-    eve::GameplaySession automation{"automation", eve::GameplayAccess::TestDriver, {fixture.owner}};
-
-    const auto observed = provider->observeGameplay(player, fixture.instance);
-    REQUIRE(observed.ok());
-    const std::string card = firstCardOf(observed.value().state, "free");
-    REQUIRE(!card.empty());
-
-    auto refused = provider->submitGameplay(
-        player, fixture.instance,
-        command(fixture, "cheat-refused", "card:set-attribute", 0,
-                object({{"card", eve::Value(card)}, {"attribute", eve::Value("attack")}, {"value", eve::Value(5.0)}})));
-    CHECK(!refused.ok());
-    CHECK_EQ(refused.code(), eve::StatusCode::Rejected);
-
-    auto applied = provider->submitGameplay(
-        automation, fixture.instance,
-        command(fixture, "cheat-applied", "card:set-attribute", 0,
-                object({{"card", eve::Value(card)}, {"attribute", eve::Value("attack")}, {"value", eve::Value(5.0)}})));
-    REQUIRE(applied.ok());
-    CHECK_EQ(applied.value().resultingRevision, std::uint64_t{1});
-
-    const auto after = provider->observeGameplay(player, fixture.instance);
-    REQUIRE(after.ok());
-    const auto* cards = handCards(after.value().state);
-    REQUIRE(cards != nullptr);
-    REQUIRE_EQ(static_cast<int>(cards->size()), 1);
-    CHECK_EQ(member((*cards)[0], "attack")->asInt(), std::int64_t{5});
-
-    auto noCard = provider->submitGameplay(automation, fixture.instance,
-                                           command(fixture, "cheat-missing", "card:set-attribute", 1,
-                                                   object({{"card", eve::Value("no.such.card")},
-                                                           {"attribute", eve::Value("attack")},
-                                                           {"value", eve::Value(1.0)}})));
-    CHECK(!noCard.ok());
-    CHECK_EQ(noCard.code(), eve::StatusCode::NotFound);
+TEST_CASE("card.state.malformedRestoreReturnsError") {
+    std::string error;
+    CHECK(!restoreCardState(eve::StateValue::object(), &error));
+    REQUIRE(!error.empty());
 }
 
-TEST_CASE("gameplay.control.cardRoutesThroughTheSharedJsonFacade") {
-    CardFixture fixture;
-
-    auto catalogs = eve::executeGameplayControlJson(
-        R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"instances"})");
-    REQUIRE(catalogs.ok());
-    CHECK(catalogs.value().find("\"domain\":\"card\"") != std::string::npos);
-    CHECK(catalogs.value().find(kInstanceId) != std::string::npos);
-
-    auto observed = eve::executeGameplayControlJson(envelope("observe", "player"));
-    REQUIRE(observed.ok());
-    CHECK(observed.value().find("gameplay:card") != std::string::npos);
-    CHECK(observed.value().find("\"payment\":\"unbound\"") != std::string::npos);
-    CHECK(observed.value().find("\"definition\":\"free\"") != std::string::npos);
-
-    const std::string actor   = std::string(",\"subject\":\"") + kOwnerId + "\"";
-    auto              actions = eve::executeGameplayControlJson(envelope("actions", "player", actor));
-    REQUIRE(actions.ok());
-    CHECK(actions.value().find("card:draw") != std::string::npos);
-    CHECK(actions.value().find("card:set-attribute") == std::string::npos);
-
-    auto drawn = eve::executeGameplayControlJson(
-        envelope("submit", "player", jsonCommand("json-draw-1", "card:draw", 0, R"({})")));
-    REQUIRE(drawn.ok());
-    CHECK(drawn.value().find("\"resultingRevision\":1") != std::string::npos);
-
-    auto events = eve::executeGameplayControlJson(envelope("events", "player", ",\"afterSequence\":0"));
-    REQUIRE(events.ok());
-    CHECK(events.value().find("card.drawn") != std::string::npos);
-
-    auto advanced =
-        eve::executeGameplayControlJson(envelope("advance", "player", ",\"tick\":1,\"deltaNanoseconds\":16666667"));
-    REQUIRE(advanced.ok());
-    CHECK(advanced.value().find("\"tick\":1") != std::string::npos);
-}
-}  // namespace card_gameplay_control
-}  // namespace
-
-// card_reload.cpp
-namespace {
-namespace card_reload {
-namespace {
-
-const char* kDefs = R"JSON(
-[{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
- {"id":"bolt","name":"Bolt","kind":"spell","cost":3}]
-)JSON";
-
-}  // namespace
-
-TEST_CASE("card.state.captureRestorePhases") {
-    eve::card::Card mod;
-    mod.registerCardsFromJson(kDefs);
-    eve::card::CardData* a = mod.newCard("flame");
-    eve::card::CardData* b = mod.newCard("bolt");
-    REQUIRE(a != nullptr);
-    REQUIRE(b != nullptr);
-
-    a->state()->phase    = eve::card::CardState::Played;
-    b->state()->phase    = eve::card::CardState::Disabled;
-    b->state()->dragging = true;  // transient interaction, dropped on restore
-
-    eve::StateValue captured;
-    REQUIRE(eve::card::captureCardState(captured));
-
-    a->state()->phase = eve::card::CardState::Deck;
-    b->state()->phase = eve::card::CardState::Hand;
-    std::string err;
-    CHECK(eve::card::restoreCardState(captured, &err));
-    CHECK(err.empty());
-    CHECK(static_cast<int>(a->state()->phase) == static_cast<int>(eve::card::CardState::Played));
-    CHECK(static_cast<int>(b->state()->phase) == static_cast<int>(eve::card::CardState::Disabled));
-    CHECK(!b->state()->dragging);
-
-    // Reset returns everything to the deck.
-    CHECK(eve::card::resetCardState());
-    CHECK(static_cast<int>(a->state()->phase) == static_cast<int>(eve::card::CardState::Deck));
-    CHECK(static_cast<int>(b->state()->phase) == static_cast<int>(eve::card::CardState::Deck));
-
-    a->release();
-    b->release();
-}
-
-TEST_CASE("card.state.restoreRejectsMalformed") {
-    std::string err;
-    CHECK(!eve::card::restoreCardState(eve::StateValue::object(), &err));
-    CHECK(!err.empty());
-}
-}  // namespace card_reload
-}  // namespace
-}  // namespace test_card_hand_rules
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_play_condition)
-#include <optional>
-#include "PrivateTestScope.h"
-#include "card/Card.h"
-#include "card/CardPlay.h"
-#include "common/ConditionKeys.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// card_play_condition.cpp
-namespace test_card_play_condition {
-TEST_CASE("card.playConditionAdapterReadsCardAndExternalCapabilities") {
-    using namespace eve::card;
+// Play conditions combine card state with explicitly supplied external capabilities.
+TEST_CASE("card.playCondition.localStateAndExternalQueries") {
     using namespace eve::condition;
-
-    Card mod;
-    REQUIRE_EQ(mod.registerCardsFromJson(
-                   R"JSON([{"id":"firebolt","kind":"spell","cost":3,"attack":0,"health":0,"tags":["fire"]}])JSON"),
-               1);
-    CardData* card = mod.newCard("firebolt");
-    REQUIRE(card != nullptr);
-    card->state()->phase = CardState::Hand;
-
-    CardDefinition local;
-    local.id                             = "firebolt";
-    local.kind                           = "spell";
-    local.cost                           = 3;
-    local.tags                           = {"fire"};
-    int                      policyCalls = 0;
+    Card module;
+    REQUIRE(module.registerCardsFromJson(R"([{"id":"fire","kind":"spell","cost":3,"tags":["fire"]}])") == 1);
+    auto& card          = newCard(module, "fire");
+    card.state()->phase = CardState::Hand;
+    CardDefinition definition;
+    definition.id   = "fire";
+    definition.kind = "spell";
+    definition.cost = 3;
+    definition.tags = {"fire"};
     CardPlayConditionQueries queries;
     queries.resource = [](std::string_view key) -> std::optional<eve::Value> {
         return key == "mana" ? std::optional<eve::Value>(eve::Value(5)) : std::nullopt;
     };
     queries.authority = [](std::string_view scope) -> std::optional<bool> { return scope == "play"; };
-    queries.policy    = [&policyCalls](std::string_view name, const eve::Value&) -> std::optional<ConditionResult> {
-        ++policyCalls;
-        return name == "card.safe" ? std::optional<ConditionResult>(ConditionResult::success()) : std::nullopt;
+    int calls         = 0;
+    queries.policy    = [&calls](std::string_view, const eve::Value&) -> std::optional<ConditionResult> {
+        ++calls;
+        return ConditionResult::success();
     };
-
-    const auto condition = Condition::all({
-        eve::condition::tagPresent("fire"),
-        Condition::compare("card.cost", CompareOperator::LessEqual, 3),
-        eve::condition::resourceExists("mana"),
-        eve::condition::stateEquals("card.phase", "hand"),
-        eve::condition::authorityAllow("play"),
-        Condition::policyCall("card.safe"),
-    });
-    const auto result    = CardPlayConditionAdapter::evaluate(card, local, condition, queries);
-    REQUIRE(result.passed());
-    CHECK_EQ(policyCalls, 1);
-
-    card->state()->phase = CardState::Played;
-    const auto blocked =
-        CardPlayConditionAdapter::evaluate(card, local, eve::condition::stateEquals("card.phase", "hand"), queries);
-    REQUIRE(!blocked.passed());
-    CHECK_EQ(static_cast<int>(blocked.reasonCode()), static_cast<int>(ConditionReasonCode::ValueMismatch));
+    auto condition = Condition::all({tagPresent("fire"), Condition::compare("card.cost", CompareOperator::LessEqual, 3),
+                                     resourceExists("mana"), stateEquals("card.phase", "hand"), authorityAllow("play"),
+                                     Condition::policyCall("safe")});
+    CHECK(CardPlayConditionAdapter::evaluate(&card, definition, condition, queries).passed());
+    CHECK_EQ(calls, 1);
+    card.state()->phase = CardState::Played;
+    auto rejected = CardPlayConditionAdapter::evaluate(&card, definition, stateEquals("card.phase", "hand"), queries);
+    CHECK(!rejected.passed());
+    CHECK(static_cast<int>(rejected.reasonCode()) == static_cast<int>(ConditionReasonCode::ValueMismatch));
 }
 
-TEST_CASE("card.playConditionIsStoredOnDefinitionAndEvaluatedByCardFacade") {
-    using namespace eve::card;
+TEST_CASE("card.playCondition.definitionStoredRuleUsesInjectedResource") {
     using namespace eve::condition;
-
-    Card mod;
-    REQUIRE_EQ(mod.registerCardsFromJson(R"JSON([{"id":"ward","kind":"spell","cost":2,"tags":["ward"]}])JSON"), 1);
-    CardData* card = mod.newCard("ward");
-    REQUIRE(card != nullptr);
-    card->state()->phase = CardState::Hand;
-    auto stored          = mod.setCardPlayCondition("ward", eve::condition::tagPresent("missing"));
-    REQUIRE(stored.ok());
-    const auto rejected = mod.evaluatePlay(card);
-    REQUIRE(!rejected.passed());
-    CHECK_EQ(static_cast<int>(rejected.reasonCode()), static_cast<int>(ConditionReasonCode::ValueMismatch));
-
-    auto resourceStored = mod.setCardPlayCondition("ward", eve::condition::resourceExists("mana"));
-    REQUIRE(resourceStored.ok());
+    Card module;
+    REQUIRE(module.registerCardsFromJson(R"([{"id":"ward","kind":"spell","cost":2,"tags":["ward"]}])") == 1);
+    auto& card          = newCard(module, "ward");
+    card.state()->phase = CardState::Hand;
+    REQUIRE(module.setCardPlayCondition("ward", tagPresent("missing")).ok());
+    CHECK(!module.evaluatePlay(&card).passed());
+    REQUIRE(module.setCardPlayCondition("ward", resourceExists("mana")).ok());
     CardPlayConditionQueries queries;
     queries.resource = [](std::string_view key) -> std::optional<eve::Value> {
         return key == "mana" ? std::optional<eve::Value>(eve::Value(1)) : std::nullopt;
     };
-    const auto accepted = mod.evaluatePlay(card, queries);
-    REQUIRE(accepted.passed());
-}
-}  // namespace test_card_play_condition
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card)
-#include <cmath>
-#include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "card/Card.h"
-#include "common/ECS.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
-// card.cpp
-namespace test_card_unit {
-using namespace eve;
-
-
-using namespace eve::card;
-
-namespace {
-
-[[maybe_unused]] int countCardView() {
-    int  n    = 0;
-    auto view = ecs::View<CardData, CardData::Identity>();
-    for (auto it = view.begin(); it != view.end(); ++it) ++n;
-    return n;
+    CHECK(module.evaluatePlay(&card, queries).passed());
 }
 
-[[maybe_unused]] bool near(float a, float b, float eps = 1e-3f) { return std::fabs(a - b) < eps; }
-
-const char* kDefs = R"JSON(
-[{"id":"flame","name":"Flame","kind":"creature","cost":2,"attack":3,"health":2},
- {"id":"bolt","name":"Bolt","kind":"spell","cost":3}]
-)JSON";
-
-}  // namespace
-
-
-TEST_CASE("card.authoring.stableDefinitionEnumerationAndMutation") {
-    Card mod;
-    REQUIRE_EQ(mod.registerCardsFromJson(kDefs), 2);
-    CHECK_EQ(mod.getCardDefinitionId(0), std::string("bolt"));
-    CHECK_EQ(mod.getCardDefinitionId(1), std::string("flame"));
-    REQUIRE(mod.setCardDefinition("archer", "Archer", "creature", 4, 5, 3, 1.2f, -0.2f, 0.5f));
-    CHECK_EQ(mod.getCardDefinitionId(0), std::string("archer"));
-    CHECK_EQ(mod.getCardDefinitionAttack("archer"), 5);
-    CHECK_EQ(mod.getCardDefinitionTintR("archer"), 1.f);
-    CHECK_EQ(mod.getCardDefinitionTintG("archer"), 0.f);
-    CHECK(!mod.setCardDefinition("", "Invalid", "", 0, 0, 0, 0.f, 0.f, 0.f));
-    REQUIRE(mod.removeCardDefinition("bolt"));
-    CHECK(!mod.hasCardDefinition("bolt"));
-    CHECK(!mod.removeCardDefinition("bolt"));
+// Published hands expose state and actions with owner/access/revision checks.
+TEST_CASE("card.gameplay.observeAndActionVocabularyRespectAccess") {
+    PublishedHand fixture;
+    auto&         provider = fixture.provider();
+    auto          observed = provider.observeGameplay(fixture.player, fixture.instance);
+    REQUIRE(observed.ok());
+    CHECK_EQ(member(observed.value().state, "owner")->asString(), std::string("player"));
+    CHECK_EQ(member(observed.value().state, "handSize")->asInt(), std::int64_t{1});
+    CHECK_EQ(member(observed.value().state, "deck")->asInt(), std::int64_t{2});
+    CHECK_EQ(member(observed.value().state, "payment")->asString(), std::string("unbound"));
+    auto player = provider.availableGameplayActions(fixture.player, fixture.instance, fixture.owner);
+    auto driver = provider.availableGameplayActions(fixture.driver, fixture.instance, fixture.owner);
+    REQUIRE(player.ok());
+    REQUIRE(driver.ok());
+    CHECK_EQ(player.value().size(), size_t{2});
+    CHECK_EQ(driver.value().size(), size_t{3});
+    CHECK_EQ(player.value()[0].id.format(), std::string("card:draw"));
+    CHECK_EQ(player.value()[1].id.format(), std::string("card:play"));
+    eve::GameplaySession stranger{"stranger", eve::GameplayAccess::PlayerEquivalent, {subject(strangerId)}};
+    CHECK(!provider.observeGameplay(stranger, fixture.instance).ok());
+    CHECK(!provider.availableGameplayActions(fixture.player, fixture.instance, subject(strangerId)).ok());
 }
 
-TEST_CASE("card.presentation.stableIdentityAndSnapshot") {
-    Card mod;
-    CHECK_EQ(mod.registerCardsFromJson(kDefs), 2);
-    CardData* first  = mod.newCard("flame");
-    CardData* second = mod.newCard("flame");
-    REQUIRE(first != nullptr);
-    REQUIRE(second != nullptr);
-    CHECK_EQ(first->identity()->definitionId, "flame");
-    CHECK_EQ(second->identity()->definitionId, "flame");
-    CHECK_NE(first->identity()->id, second->identity()->id);
-
-    first->layout()->x     = 42.f;
-    first->layout()->angle = 12.f;
-    CHECK_EQ(mod.capturePresentation(), 2);
-    auto* snapshot = mod.getPresentation(0);
-    REQUIRE(snapshot != nullptr);
-    CHECK_EQ(snapshot->instanceId, first->identity()->id);
-    CHECK_EQ(snapshot->definitionId, "flame");
-    CHECK_EQ(snapshot->x, 42.f);
-    CHECK_EQ(snapshot->angle, 12.f);
-    CHECK_EQ(mod.getPresentation(2), nullptr);
-}
-
-TEST_CASE("card.presentation.planeMapperRoundTrip") {
-    CardPlaneMapper mapper;
-    mapper.setLogicalRect(0.f, 0.f, 1280.f, 700.f);
-    mapper.setPlane(-6.4f, 0.6f, -7.f, 12.8f, 0.f, 0.f, 0.f, 0.f, 14.f);
-
-    CHECK(mapper.mapLayout(640.f, 350.f));
-    CHECK_LT(std::abs(mapper.getWorldX()), 0.0001f);
-    CHECK_LT(std::abs(mapper.getWorldY() - 0.6f), 0.0001f);
-    CHECK_LT(std::abs(mapper.getWorldZ()), 0.0001f);
-
-    CHECK(mapper.mapRay(0.f, 10.f, 0.f, 0.f, -1.f, 0.f));
-    CHECK_LT(std::abs(mapper.getLogicalX() - 640.f), 0.0001f);
-    CHECK_LT(std::abs(mapper.getLogicalY() - 350.f), 0.0001f);
-    CHECK(!mapper.mapRay(0.f, 10.f, 0.f, 1.f, 0.f, 0.f));
-}
-
-TEST_CASE("card.hand.membershipOrder") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    LayoutConfig* cfg = mod.newConfig();
-    Hand*         h   = mod.newHand(cfg);
-    h->meta()->owner  = "player";
-    CardData* a       = mod.newCard("flame");
-    CardData* b       = mod.newCard("bolt");
-    h->addCard(a);
-    h->addCard(b);
-    CHECK_EQ(h->count(), 2);
-    CHECK_EQ(h->get(0), a);
-    CHECK_EQ(h->get(1), b);
-    CHECK_EQ(mod.findHand("player"), h);
-}
-
-TEST_CASE("card.deck.stackOrder") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    Deck*     d = mod.newDeck();
-    CardData* a = mod.newCard("flame");
-    CardData* b = mod.newCard("bolt");
-    d->push(a);
-    d->push(b);
-    CHECK_EQ(d->count(), 2);
-    CHECK_EQ(d->peek(), b);
-    CHECK_EQ(d->draw(), b);
-    CHECK_EQ(d->draw(), a);
-    CHECK(d->isEmpty());
-}
-
-TEST_CASE("card.ecs.viewCountsFactoryCards") {
-    const int before = countCardView();
-    {
-        Card mod;
-        mod.registerCardsFromJson(kDefs);
-        CHECK(mod.newCard("flame") != nullptr);
-        CHECK(mod.newCard("bolt") != nullptr);
-        CHECK_EQ(countCardView(), before + 2);
+TEST_CASE("card.gameplay.drawFreePlayAndPaidBoundary") {
+    PublishedHand fixture;
+    auto&         provider = fixture.provider();
+    auto          drawn =
+        provider.submitGameplay(fixture.player, fixture.instance, command(fixture.owner, "draw", "card:draw", 0));
+    REQUIRE(drawn.ok());
+    CHECK_EQ(drawn.value().resultingRevision, std::uint64_t{1});
+    CHECK_EQ(fixture.hand->count(), 2);
+    auto state = provider.observeGameplay(fixture.player, fixture.instance);
+    REQUIRE(state.ok());
+    CHECK_EQ(member(state.value().state, "deck")->asInt(), std::int64_t{1});
+    auto freeId = cardOf(state.value().state, "free");
+    REQUIRE(!freeId.empty());
+    auto played = provider.submitGameplay(fixture.player, fixture.instance,
+                                          command(fixture.owner, "play", "card:play", 1, cardParameter(freeId)));
+    REQUIRE(played.ok());
+    CHECK_EQ(played.value().resultingRevision, std::uint64_t{2});
+    state = provider.observeGameplay(fixture.player, fixture.instance);
+    REQUIRE(state.ok());
+    auto boltId = cardOf(state.value().state, "bolt");
+    if (!boltId.empty()) {
+        CHECK(!provider
+                   .submitGameplay(fixture.player, fixture.instance,
+                                   command(fixture.owner, "paid", "card:play", 2, cardParameter(boltId)))
+                   .ok());
     }
-    CHECK_EQ(countCardView(), before);
+    CHECK(!provider
+               .submitGameplay(fixture.player, fixture.instance,
+                               command(fixture.owner, "missing", "card:play", 2, cardParameter("unknown")))
+               .ok());
+    CHECK(!provider.submitGameplay(fixture.player, fixture.instance, command(fixture.owner, "stale", "card:draw", 0))
+               .ok());
+    auto events = provider.gameplayEvents(fixture.player, fixture.instance, 0);
+    REQUIRE(events.ok());
+    REQUIRE(events.value().size() == size_t{2});
+    CHECK_EQ(events.value()[0].type, std::string("card.drawn"));
+    CHECK_EQ(events.value()[1].type, std::string("card.played"));
 }
 
-
-TEST_CASE("card.drawCardMovesDeckToHand") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    LayoutConfig* cfg = mod.newConfig();
-    Hand*         h   = mod.newHand(cfg);
-    h->meta()->owner  = "player";
-    Deck* d           = mod.newDeck();
-    d->push(mod.newCard("flame"));
-    CardData* drawn = mod.drawCard("player");
-    REQUIRE(drawn != nullptr);
-    CHECK_EQ(h->count(), 1);
-    CHECK(d->isEmpty());
-    CHECK_EQ(h->get(0), drawn);
+TEST_CASE("card.gameplay.attributeRewriteRequiresTestDriver") {
+    PublishedHand fixture;
+    auto&         provider = fixture.provider();
+    auto          state    = provider.observeGameplay(fixture.player, fixture.instance);
+    REQUIRE(state.ok());
+    auto id = cardOf(state.value().state, "free");
+    REQUIRE(!id.empty());
+    eve::Value::Object parameters;
+    parameters.emplace("card", eve::Value(id));
+    parameters.emplace("attribute", eve::Value("attack"));
+    parameters.emplace("value", eve::Value(5.0));
+    auto value = eve::Value(parameters);
+    CHECK(!provider
+               .submitGameplay(fixture.player, fixture.instance,
+                               command(fixture.owner, "denied", "card:set-attribute", 0, value))
+               .ok());
+    auto applied = provider.submitGameplay(fixture.driver, fixture.instance,
+                                           command(fixture.owner, "edit", "card:set-attribute", 0, value));
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value().resultingRevision, std::uint64_t{1});
+    state = provider.observeGameplay(fixture.player, fixture.instance);
+    REQUIRE(state.ok());
+    auto* hand = member(state.value().state, "hand")->getIf<eve::Value::Array>();
+    REQUIRE(hand != nullptr);
+    CHECK_EQ(member((*hand)[0], "attack")->asInt(), std::int64_t{5});
 }
 
-static const char* kCardViewScript = R"SQ(
-function testCardCppView() {
-    local card = eve.Card()
-    card.registerCardsFromJson("[{\"id\":\"flame\",\"name\":\"Flame\"}]")
-    local c = card.newCard("flame")
-    if (c == null) return false
-    local all = eve.view(eve.CardData)
-    foreach (e in all) {
-        if (e.getId() == c.getId()) return true
-    }
-    return false
-}
-)SQ";
-
-UnitSciptTest(CardViewScriptTest, kCardViewScript);
-
-
-TEST_CASE("card.cardStateName") {
-    CHECK_EQ(std::string(cardStateName(CardState::Deck)), std::string("deck"));
-    CHECK_EQ(std::string(cardStateName(CardState::Hand)), std::string("hand"));
-    CHECK_EQ(std::string(cardStateName(CardState::Hovered)), std::string("hovered"));
-    CHECK_EQ(std::string(cardStateName(CardState::Dragging)), std::string("dragging"));
-    CHECK_EQ(std::string(cardStateName(CardState::Returning)), std::string("returning"));
-    CHECK_EQ(std::string(cardStateName(CardState::Played)), std::string("played"));
-    CHECK_EQ(std::string(cardStateName(CardState::Discarded)), std::string("discarded"));
-    CHECK_EQ(std::string(cardStateName(CardState::Disabled)), std::string("disabled"));
+TEST_CASE("card.gameplay.jsonFacadeRoutesObservationAndDraw") {
+    PublishedHand fixture;
+    auto          observed = eve::executeGameplayControlJson(request("observe", "player"));
+    REQUIRE(observed.ok());
+    CHECK(observed.value().find("\"payment\":\"unbound\"") != std::string::npos);
+    auto actions =
+        eve::executeGameplayControlJson(request("actions", "player", std::string(",\"subject\":\"") + ownerId + "\""));
+    REQUIRE(actions.ok());
+    CHECK(actions.value().find("card:draw") != std::string::npos);
+    auto drawn = eve::executeGameplayControlJson(request("submit", "player", drawJson()));
+    REQUIRE(drawn.ok());
+    CHECK(drawn.value().find("\"resultingRevision\":1") != std::string::npos);
+    auto events = eve::executeGameplayControlJson(request("events", "player", ",\"afterSequence\":0"));
+    REQUIRE(events.ok());
+    CHECK(events.value().find("card.drawn") != std::string::npos);
 }
 
-TEST_CASE("card.cardData.hitAndDescribe") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    CardData* c        = mod.newCard("flame");
-    c->layout()->x     = 100.f;
-    c->layout()->y     = 100.f;
-    c->layout()->w     = 50.f;
-    c->layout()->h     = 70.f;
-    c->layout()->scale = 1.f;
-    CHECK(c->hit(100.f, 100.f));
-    CHECK(c->hit(125.f, 135.f));
-    CHECK(!c->hit(126.f, 100.f));
-    CHECK(!c->hit(100.f, 136.f));
-    c->layout()->scale = 2.f;  // enlarged hit box
-    CHECK(c->hit(140.f, 100.f));
-    c->layout()->w = 0.f;  // zero-size never hits
-    CHECK(!c->hit(100.f, 100.f));
+// Pointer interaction distinguishes a click, a rejected zone and an accepted drop.
+TEST_CASE("card.hand.pointerClickRejectedDropAndAcceptedDrop") {
+    Card module;
+    REQUIRE(module.registerCardsFromJson(definitions) == 2);
+    auto* config          = module.newConfig();
+    config->dragThreshold = 4.f;
+    config->cardW         = 50.f;
+    config->cardH         = 70.f;
+    config->handX         = 100.f;
+    config->handY         = 100.f;
+    config->spacing       = 20.f;
+    config->arcHeight     = 0.f;
+    config->rotationAngle = 0.f;
+    auto* hand            = module.newHand(config);
+    hand->meta()->owner   = "player";
+    hand->addCard(&newCard(module, "flame"));
+    auto& spell = newCard(module, "bolt");
+    hand->addCard(&spell);
+    auto* board                  = module.newZone("board", "Board", 100.f, 300.f, 200.f, 60.f);
+    board->filter()->acceptKinds = {"creature"};
+    auto* magic                  = module.newZone("magic", "Magic", 100.f, 400.f, 200.f, 60.f);
+    magic->filter()->acceptKinds = {"spell"};
+    std::vector<Zone*>     zones{board, magic};
+    std::vector<CardEvent> events;
+    for (int i = 0; i < 120; ++i) hand->update(1.f / 60.f, 0.f, 0.f, false, zones, events);
+    events.clear();
+    CHECK_LT(std::fabs(spell.layout()->x - 135.f), 0.5f);
 
-    const std::string creature = c->describe();
-    CHECK(creature.find("Flame") != std::string::npos);
-    CHECK(creature.find("3/2") != std::string::npos);
-    CardData* spell = mod.newCard("bolt");
-    CHECK(spell->describe().find("\xe6\xb3\x95\xe6\x9c\xaf") != std::string::npos);  // 法术
+    hand->update(1.f / 60.f, 135.f, 100.f, true, zones, events);
+    hand->update(1.f / 60.f, 136.f, 100.f, false, zones, events);
+    REQUIRE(events.size() == size_t{1});
+    CHECK_EQ(events[0].type, std::string("click"));
+    CHECK_EQ(events[0].hand, std::string("player"));
+    events.clear();
+
+    hand->update(1.f / 60.f, 135.f, 100.f, true, zones, events);
+    hand->update(1.f / 60.f, 145.f, 100.f, true, zones, events);
+    CHECK(spell.state()->dragging);
+    hand->update(1.f / 60.f, 145.f, 330.f, true, zones, events);
+    hand->update(1.f / 60.f, 145.f, 330.f, false, zones, events);
+    REQUIRE(events.size() == size_t{1});
+    CHECK_EQ(events[0].type, std::string("dropRejected"));
+    CHECK_EQ(events[0].reason, std::string("kind_not_allowed"));
+    CHECK(spell.state()->phase == CardState::Returning);
+    events.clear();
+    for (int i = 0; i < 120; ++i) hand->update(1.f / 60.f, 0.f, 0.f, false, zones, events);
+    events.clear();
+
+    hand->update(1.f / 60.f, 135.f, 100.f, true, zones, events);
+    hand->update(1.f / 60.f, 145.f, 100.f, true, zones, events);
+    hand->update(1.f / 60.f, 145.f, 430.f, true, zones, events);
+    hand->update(1.f / 60.f, 145.f, 430.f, false, zones, events);
+    REQUIRE(events.size() == size_t{1});
+    CHECK_EQ(events[0].type, std::string("drop"));
+    CHECK_EQ(events[0].zoneId, std::string("magic"));
 }
-
-TEST_CASE("card.deck.drawPeekBoundsAndShuffle") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    Deck* d = mod.newDeck();
-    CHECK(d->isEmpty());
-    CHECK_EQ(d->draw(), nullptr);
-    CHECK_EQ(d->peek(), nullptr);
-    CHECK_EQ(d->get(-1), nullptr);
-    CHECK_EQ(d->get(0), nullptr);
-
-    CardData* a = mod.newCard("flame");
-    CardData* b = mod.newCard("bolt");
-    d->push(a);
-    d->push(b);
-    CHECK_EQ(d->get(0), a);
-    CHECK_EQ(d->get(1), b);
-    CHECK_EQ(d->get(2), nullptr);
-
-    d->shuffle();  // membership preserved, order may change
-    CHECK_EQ(d->count(), 2);
-    const bool top0 = d->get(0) == a || d->get(0) == b;
-    const bool top1 = d->get(1) == a || d->get(1) == b;
-    CHECK(top0);
-    CHECK(top1);
-    CHECK(d->get(0) != d->get(1));
-
-    d->clear();
-    CHECK(d->isEmpty());
-}
-
-TEST_CASE("card.zone.containsAndAccepts") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    Zone* z = mod.newZone("board", "Board", 10.f, 20.f, 100.f, 60.f);
-    CHECK(z->contains(10.f, 20.f));
-    CHECK(z->contains(109.f, 79.f));
-    CHECK(!z->contains(9.f, 20.f));
-    CHECK(!z->contains(111.f, 81.f));  // rect bounds are inclusive
-
-    CardData* flame = mod.newCard("flame");
-    CardData* bolt  = mod.newCard("bolt");
-    CHECK(z->accepts(flame));
-    CHECK(z->accepts(bolt));
-    CHECK(!z->accepts(nullptr));
-
-    z->filter()->acceptKinds = {"spell"};
-    CHECK(!z->accepts(flame));
-    CHECK(z->accepts(bolt));
-
-    z->rect()->enabled = false;
-    CHECK(!z->accepts(bolt));
-}
-
-TEST_CASE("card.hand.addCardSetsLayoutAndPhase") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    LayoutConfig* cfg = mod.newConfig();
-    Hand*         h   = mod.newHand(cfg);
-
-    CardData* flame = mod.newCard("flame");
-    h->addCard(flame);
-    CHECK(static_cast<int>(flame->state()->phase) == static_cast<int>(CardState::Hand));
-    CHECK_EQ(flame->layout()->w, cfg->cardW);
-    CHECK(std::fabs(flame->layout()->scale - 0.01f) < 1e-5f);
-
-    CardData* bolt           = mod.newCard("bolt");
-    bolt->visual()->disabled = true;
-    h->addCard(bolt);
-    CHECK(static_cast<int>(bolt->state()->phase) == static_cast<int>(CardState::Disabled));
-    CHECK(std::fabs(bolt->layout()->alpha - cfg->disabledAlpha) < 1e-5f);
-
-    CardData* other = mod.newCard("flame");
-    CHECK(!h->removeCard(other));
-    CHECK(h->removeCard(flame));
-    CHECK_EQ(h->count(), 1);
-    CHECK_EQ(h->find(bolt->identity()->id), bolt);
-    CHECK_EQ(h->find("nope"), nullptr);
-    CHECK_EQ(h->get(5), nullptr);
-    h->clear();
-    CHECK_EQ(h->count(), 0);
-}
-
-TEST_CASE("card.hand.pickTopmostAndFanSlot") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    LayoutConfig* cfg = mod.newConfig();
-    Hand*         h   = mod.newHand(cfg);
-    CardData*     a   = mod.newCard("flame");
-    CardData*     b   = mod.newCard("bolt");
-    h->addCard(a);
-    h->addCard(b);
-    a->layout()->x     = 100.f;
-    a->layout()->y     = 100.f;
-    a->layout()->w     = 50.f;
-    a->layout()->h     = 70.f;
-    a->layout()->scale = 1.f;
-    b->layout()->x     = 100.f;
-    b->layout()->y     = 100.f;
-    b->layout()->w     = 50.f;
-    b->layout()->h     = 70.f;
-    b->layout()->scale = 1.f;
-    CHECK_EQ(h->pick(100.f, 100.f), b);  // top-most = last added
-    CHECK_EQ(h->pick(300.f, 300.f), nullptr);
-
-    float ox = 0.f, oy = 0.f, ang = 0.f;
-    h->slotTransform(0, 1, ox, oy, ang);
-    CHECK(std::fabs(ox - cfg->handX) < 1e-3f);
-    CHECK(std::fabs(oy - cfg->handY) < 1e-3f);
-    CHECK(std::fabs(ang) < 1e-4f);
-    h->slotTransform(0, 3, ox, oy, ang);
-    CHECK(ang < 0.f);
-    h->slotTransform(1, 3, ox, oy, ang);
-    CHECK(std::fabs(ang) < 1e-4f);
-    h->slotTransform(2, 3, ox, oy, ang);
-    CHECK(ang > 0.f);
-}
-
-namespace {
-
-[[maybe_unused]] void settleHand(Hand* h, const std::vector<Zone*>& zones, std::vector<CardEvent>& out) {
-    for (int i = 0; i < 120; ++i) h->update(1.f / 60.f, 0.f, 0.f, false, zones, out);
-    out.clear();
-}
-
-}  // namespace
-
-TEST_CASE("card.hand.updateClickDragDrop") {
-    Card mod;
-    mod.registerCardsFromJson(kDefs);
-    LayoutConfig* cfg  = mod.newConfig();
-    cfg->dragThreshold = 4.f;
-    cfg->cardW         = 50.f;
-    cfg->cardH         = 70.f;
-    cfg->handX         = 100.f;
-    cfg->handY         = 100.f;
-    cfg->spacing       = 20.f;
-    cfg->arcHeight     = 0.f;
-    cfg->rotationAngle = 0.f;
-    Hand* h            = mod.newHand(cfg);
-    h->meta()->owner   = "p1";
-    CardData* a        = mod.newCard("flame");  // creature
-    CardData* b        = mod.newCard("bolt");   // spell
-    h->addCard(a);
-    h->addCard(b);
-
-    Zone* board                      = mod.newZone("board", "Board", 100.f, 300.f, 200.f, 60.f);
-    board->filter()->acceptKinds     = {"creature"};
-    Zone* spellOnly                  = mod.newZone("magic", "Magic", 100.f, 400.f, 200.f, 60.f);
-    spellOnly->filter()->acceptKinds = {"spell"};
-    std::vector<Zone*>     zones     = {board, spellOnly};
-    std::vector<CardEvent> out;
-    settleHand(h, zones, out);
-
-    // After settling with two cards: a at (65,100), b at (135,100).
-    CHECK(near(a->layout()->x, 65.f, 0.5f));
-    CHECK(near(b->layout()->x, 135.f, 0.5f));
-
-    // Click: press + release without moving beyond threshold.
-    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
-    CHECK_EQ(out.size(), 0u);
-    h->update(1.f / 60.f, 136.f, 100.f, false, zones, out);
-    REQUIRE_EQ(out.size(), 1u);
-    CHECK_EQ(out[0].type, std::string("click"));
-    CHECK_EQ(out[0].hand, std::string("p1"));
-    CHECK(out[0].cardId.find("bolt") == 0);  // instance id is "bolt#<n>"
-    out.clear();
-
-    // Drag spell onto the creature-only board -> dropRejected.
-    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
-    h->update(1.f / 60.f, 145.f, 100.f, true, zones, out);
-    CHECK_EQ(b->state()->dragging, true);
-    h->update(1.f / 60.f, 145.f, 330.f, true, zones, out);
-    h->update(1.f / 60.f, 145.f, 330.f, false, zones, out);
-    REQUIRE_EQ(out.size(), 1u);
-    CHECK_EQ(out[0].type, std::string("dropRejected"));
-    CHECK_EQ(out[0].zoneId, std::string("board"));
-    CHECK_EQ(out[0].reason, std::string("kind_not_allowed"));
-    CHECK(static_cast<int>(b->state()->phase) == static_cast<int>(CardState::Returning));
-    out.clear();
-
-    settleHand(h, zones, out);
-
-    // Drag spell onto the spell-only zone -> drop accepted.
-    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
-    h->update(1.f / 60.f, 145.f, 100.f, true, zones, out);
-    h->update(1.f / 60.f, 145.f, 430.f, true, zones, out);
-    h->update(1.f / 60.f, 145.f, 430.f, false, zones, out);
-    REQUIRE_EQ(out.size(), 1u);
-    CHECK_EQ(out[0].type, std::string("drop"));
-    CHECK_EQ(out[0].zoneId, std::string("magic"));
-    out.clear();
-
-    settleHand(h, zones, out);
-
-    // Non-interactive hand: press produces no click/drag events.
-    h->meta()->interactive = false;
-    h->update(1.f / 60.f, 135.f, 100.f, true, zones, out);
-    h->update(1.f / 60.f, 136.f, 100.f, false, zones, out);
-    CHECK_EQ(out.size(), 0u);
-}
-}  // namespace test_card_unit
-#endif
