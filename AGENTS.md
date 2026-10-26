@@ -34,10 +34,12 @@ compiler override.
 - `make debug` configures + builds `build/linux-debug` (equivalently: cmake configure,
   then `--target deps`, then the engine).
 - Debug has two compiler profiles (`EVENGINE_DEBUG_LEVEL` / Makefile `DEBUG_LEVEL`):
-  **`normal`** (default, CI) = GCC/Clang `-g0 -O2` (MSVC `/O2`, no `/Zi`) so sccache
+  **`normal`** (default, CI) = GCC/Clang `-g0 -O2` (MSVC `/Od`, no `/Zi`) so sccache
   does not store DWARF-bloated `.o` into GitHub Actions cache; **`detail`** =
-  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. Example:
-  `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for `CONFIG:Debug` either way.
+  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. MSVC normal stays
+  `/Od` because `/O2` cold-compiles past the Windows CI build-step budget.
+  Example: `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for
+  `CONFIG:Debug` either way.
   ASan/UBSan is a separate RelWithDebInfo lane with `-O1 -g1` (line tables for
   sanitizer stacks; not full `-g`, not `-g0`).
 - The first configure downloads the `third-party/` sources from GitHub and the `deps`

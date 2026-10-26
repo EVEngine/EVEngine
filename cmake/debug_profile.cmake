@@ -1,12 +1,14 @@
 # Debug compiler profiles for CMAKE_BUILD_TYPE=Debug (and multi-config Debug).
 #
-#   normal (default): GCC/Clang -g0 -O2 ; MSVC /O2 (no /Zi)
+#   normal (default): GCC/Clang -g0 -O2 ; MSVC /Od (no /Zi)
 #     No DWARF/PDB in compiler outputs. CI stores each .o in sccache → GitHub
 #     Actions cache, and the host matrix (linux/win/mac/android ×
 #     debug/release/asan/…) keeps a separate namespace per cell — DWARF at
 #     ~75%+ of .o size was exhausting the account quota and forcing cold
 #     compiles. Asserts still use __FILE__/__LINE__; function names remain
-#     in the symbol table. ASan/UBSan is a separate RelWithDebInfo lane with
+#     in the symbol table. MSVC stays at /Od: /O2 cold-compiles the Windows
+#     debug lane past the CI step budget (and does not help the size goal —
+#     omitting /Zi does). ASan/UBSan is a separate RelWithDebInfo lane with
 #     `-O1 -g1` (line tables only — see cmake/platforms/linux-debug.mk).
 #   detail:           GCC/Clang -g2 -O1 ; MSVC /Zi /O1
 #     Rich DWARF/PDB and milder opts for interactive debugging / triage.
@@ -15,7 +17,7 @@
 # (see ZEROERR_NO_ASSERT wiring in the root CMakeLists.txt).
 
 set(EVENGINE_DEBUG_LEVEL "normal" CACHE STRING
-    "Debug compiler profile: normal (-g0 -O2 / MSVC /O2, no DWARF) or detail (-g2 -O1 / MSVC /Zi /O1)")
+    "Debug compiler profile: normal (-g0 -O2 / MSVC /Od, no DWARF) or detail (-g2 -O1 / MSVC /Zi /O1)")
 set_property(CACHE EVENGINE_DEBUG_LEVEL PROPERTY STRINGS normal detail)
 if(NOT EVENGINE_DEBUG_LEVEL MATCHES "^(normal|detail)$")
     message(FATAL_ERROR
@@ -35,11 +37,12 @@ if(MSVC)
         set(_eve_debug_c_flags "/Zi /O1")
         set(_eve_debug_cxx_flags "/Zi /O1")
     else()
-        # /RTC1 (CMake's historic Debug default) is incompatible with /O2.
         # Omit /Zi so .obj (and sccache entries) stay free of debug records;
-        # local triage uses DEBUG_LEVEL=detail.
-        set(_eve_debug_c_flags "/O2")
-        set(_eve_debug_cxx_flags "/O2")
+        # keep /Od so Windows CI cold builds finish inside the step budget
+        # (/O2 was timing out the 100-minute Build win32 debug step with
+        # 0% sccache hits). Local triage uses DEBUG_LEVEL=detail.
+        set(_eve_debug_c_flags "/Od")
+        set(_eve_debug_cxx_flags "/Od")
     endif()
 else()
     if(EVENGINE_DEBUG_LEVEL STREQUAL "detail")

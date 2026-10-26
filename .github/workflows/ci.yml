@@ -629,7 +629,9 @@ jobs:
       - name: Build win32 debug
         # Dependencies come from the pinned independent release; this job
         # compiles the engine/tests and caches verified downloaded packages.
-        timeout-minutes: 100
+        # 120m: cold sccache + MSVC normal (/Od, no /Zi) still has headroom;
+        # /O2 previously exhausted the old 100m budget at ~88% of the build.
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |

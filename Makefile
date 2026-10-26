@@ -361,8 +361,9 @@ CMAKE_EXTRA_ARGS ?=
 # inherit the gate; `sdk/win32` / `sdk/linux` (Release) do not.
 DEBUG_STRICT_WARNINGS_FLAG = -DEVENGINE_ENABLE_STRICT_WARNINGS=ON
 # Debug compiler profile (see cmake/debug_profile.cmake):
-#   normal (default) = -g0 -O2 / MSVC /O2 (no /Zi) — CI + day-to-day; keeps
-#                      sccache/GitHub Actions cache under quota (no DWARF in .o)
+#   normal (default) = -g0 -O2 / MSVC /Od (no /Zi) — CI + day-to-day; keeps
+#                      sccache/GitHub Actions cache under quota (no DWARF in .o).
+#                      MSVC stays /Od: /O2 cold-compiles past the Windows CI budget.
 #   detail           = -g2 -O1 / MSVC /Zi /O1 — richer DWARF/PDB for triage
 # Override: make debug DEBUG_LEVEL=detail
 DEBUG_LEVEL ?= normal

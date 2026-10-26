@@ -108,6 +108,7 @@ Run [source checks and affected tests](TESTING.md) before submitting changes. `m
 Assertions use `EV_PARAM_CHECK` / `EV_ASSERT` in `src/engine/common/Assert.h`. Debug enables them; non-Debug builds remove them by default. Explicitly retain them with `-DEVENGINE_ENABLE_ASSERTS=ON`.
 
 Debug builds use a two-tier compiler profile (`EVENGINE_DEBUG_LEVEL`, Makefile `DEBUG_LEVEL`):
-`normal` (default, CI) is `-g0 -O2` / MSVC `/O2` with no DWARF/PDB so compiler-cache
-entries stay small; `detail` is `-g2 -O1` / MSVC `/Zi /O1` for richer DWARF when
-debugging. Switch with `make debug DEBUG_LEVEL=detail`.
+`normal` (default, CI) is `-g0 -O2` / MSVC `/Od` with no DWARF/PDB so compiler-cache
+entries stay small (MSVC stays unoptimized: `/O2` cold-compiles past the Windows CI
+budget); `detail` is `-g2 -O1` / MSVC `/Zi /O1` for richer DWARF when debugging.
+Switch with `make debug DEBUG_LEVEL=detail`.
