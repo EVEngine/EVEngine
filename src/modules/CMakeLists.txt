@@ -355,6 +355,17 @@ endif()
 
 if(TARGET EVAsset_graphics)
   eve_configure_shader_asset_validation(EVAsset_graphics)
+  # GCC aarch64 -O2 miscompiles prefab AABB Z translation in this TU (Linux
+  # ARM64 CI: localBounds zmax loses root tz while worldT.z stays correct).
+  # Force -O1 for the file so the last -O on the command line wins.
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" _eve_prefab_arch)
+    if(_eve_prefab_arch MATCHES "^(aarch64|arm64)$")
+      set_source_files_properties(
+        "${CMAKE_CURRENT_SOURCE_DIR}/asset/graphics/EvpackStaticPrefab.cpp"
+        PROPERTIES COMPILE_OPTIONS "-O1")
+    endif()
+  endif()
 endif()
 if(TARGET EVGraphics)
   eve_configure_shader_asset_validation(EVGraphics)

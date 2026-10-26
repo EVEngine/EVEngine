@@ -627,6 +627,7 @@ Optional CMake variables:
 | Variable | Default | Notes |
 |----------|---------|-------|
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
+| `EVENGINE_DEBUG_LEVEL` | `normal` | Debug only: `normal` (`-g0 -O2` / MSVC `/Od`, no DWARF) or `detail` (`-g2 -O1` / MSVC `/Zi /O1`). Makefile: `DEBUG_LEVEL=` |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
 | `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `CCACHE_HARDLINK` opts into Windows/Ninja/MSVC object sharing; `OFF` disables auto-detection |

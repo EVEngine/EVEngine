@@ -2285,6 +2285,11 @@ private:
     vk::CommandBuffer &currentPresentCb();
     vkb::FrameSlot frameToken() const;
     void invalidateTextureBindings();
+    // Inspection service owns private GPU resources; destroyed only after device retirement.
+    struct InspectionService;
+    std::shared_ptr<InspectionService> inspectionService_;
+    void                               pollEntityInspection();
+    void                               destroyEntityInspection();
 };
 
 }  // namespace eve::graphics::vulkan
