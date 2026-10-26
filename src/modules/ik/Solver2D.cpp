@@ -1,130 +1,101 @@
 #include "ik/Solver2D.h"
-#include <algorithm>
-#include "common/Exception.h"
+#include "ik/Skeleton2D.h"
+#include "ik/Skeleton3D.h"
 #include "ik/Solver3D.h"
+#include "ik/detail/SkeletonImpl.h"
 
-// Solver2D.cpp
+#include "common/Exception.h"
+
+#include "ik.hpp"
+
+#include <utility>
+
 namespace eve::ik {
 
+struct Solver2D::Impl {
+    ::ik::solver2d solver;
+    bool           keepTrace     = false;
+    int            maxIterations = 16;
+    float          tolerance     = 1e-3f;
+    float          force         = 0.f;
+};
+
+Solver2D::Solver2D() : impl_(std::make_unique<Impl>()) {}
+Solver2D::~Solver2D() = default;
+
 void Solver2D::setKeepTrace(bool keep) {
-    keepTrace_ = keep;
-    solver_.setKeepTrace(keep);
+    impl_->keepTrace = keep;
+    impl_->solver.setKeepTrace(keep);
 }
 
-bool Solver2D::getKeepTrace() const { return keepTrace_; }
+bool Solver2D::getKeepTrace() const { return impl_->keepTrace; }
 
 void Solver2D::setMaxIterations(int iterations) {
     if (iterations < 0) {
         throw Exception("Solver2D.setMaxIterations: iterations must be >= 0");
     }
-    maxIterations_ = iterations;
-    solver_.setMaxIterations(static_cast<unsigned>(iterations));
+    impl_->maxIterations = iterations;
+    impl_->solver.setMaxIterations(static_cast<unsigned>(iterations));
 }
 
-int Solver2D::getMaxIterations() const { return maxIterations_; }
+int Solver2D::getMaxIterations() const { return impl_->maxIterations; }
 
 void Solver2D::setTolerance(float tol) {
     if (tol < 0.f) {
         throw Exception("Solver2D.setTolerance: tolerance must be >= 0");
     }
-    tolerance_ = tol;
-    solver_.setTolerance(tol);
+    impl_->tolerance = tol;
+    impl_->solver.setTolerance(tol);
 }
 
-float Solver2D::getTolerance() const { return tolerance_; }
+float Solver2D::getTolerance() const { return impl_->tolerance; }
 
 void Solver2D::setForce(float force) {
-    force_ = force;
-    solver_.setForce(force);
+    impl_->force = force;
+    impl_->solver.setForce(force);
 }
 
-float Solver2D::getForce() const { return force_; }
+float Solver2D::getForce() const { return impl_->force; }
 
 void Solver2D::setInfluence(float influence) {
     if (influence < 0.f || influence > 1.f) {
         throw Exception("Solver2D.setInfluence: influence must be in [0, 1]");
     }
-    influence_ = influence;
+    impl_->solver.setInfluence(influence);
 }
 
-float Solver2D::getInfluence() const { return influence_; }
+float Solver2D::getInfluence() const { return impl_->solver.getInfluence(); }
 
-void Solver2D::clearTargets() { solver_.clearTargets(); }
+void Solver2D::clearTargets() { impl_->solver.clearTargets(); }
 
 void Solver2D::addTarget(int boneId, float x, float y, float weight) {
     if (boneId < 0) {
         throw Exception("Solver2D.addTarget: boneId must be >= 0");
     }
-    solver_.addTarget(static_cast<unsigned>(boneId), ::ik::vec2{x, y}, weight);
+    impl_->solver.addTarget(static_cast<unsigned>(boneId), ::ik::vec2{x, y}, weight);
 }
 
-int Solver2D::getTargetCount() const { return static_cast<int>(solver_.targets().size()); }
+int Solver2D::getTargetCount() const { return static_cast<int>(impl_->solver.targets().size()); }
 
 bool Solver2D::solve(Skeleton2D *skeleton) {
     if (!skeleton) {
         throw Exception("Solver2D.solve: skeleton is null");
     }
-    ::ik::ecs2d            &state = skeleton->state();
-    std::vector<::ik::vec2> original;
-    if (influence_ < 1.f) {
-        original = state.position_;
-    }
-    const bool reached = solver_.solve(skeleton->native(), state);
-    if (influence_ < 1.f) {
-        const float t = influence_;
-        for (size_t i = 0; i < state.position_.size(); ++i) {
-            state.position_[i] = original[i] + (state.position_[i] - original[i]) * t;
-        }
-        skeleton->native().update_rotations(state);
-    }
-    return reached;
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    return impl_->solver.solve(skeleton->impl_->sk, skeleton->impl_->state);
 }
 
 void Solver2D::step(Skeleton2D *skeleton, float dt) {
     if (!skeleton) {
         throw Exception("Solver2D.step: skeleton is null");
     }
-    ::ik::ecs2d            &state = skeleton->state();
-    std::vector<::ik::vec2> original;
-    if (influence_ < 1.f) {
-        original = state.position_;
-    }
-    solver_.step(skeleton->native(), skeleton->state(), dt);
-    if (influence_ < 1.f) {
-        const float t = influence_;
-        for (size_t i = 0; i < state.position_.size(); ++i) {
-            state.position_[i] = original[i] + (state.position_[i] - original[i]) * t;
-        }
-        skeleton->native().update_rotations(state);
-    }
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    impl_->solver.step(skeleton->impl_->sk, skeleton->impl_->state, dt);
 }
 
-bool Solver2D::solveChain(Skeleton2D *skeleton, int rootBoneId, int tipBoneId) {
-    detail::ChainOptions<2> options;
-    options.tolerance      = tolerance_;
-    options.max_iterations = static_cast<unsigned>(maxIterations_);
-    options.force          = force_;
-    options.influence      = influence_;
-    return solveChainImpl(skeleton, rootBoneId, tipBoneId, options);
-}
-
-void Solver2D::stepChain(Skeleton2D *skeleton, int rootBoneId, int tipBoneId, float dt) {
-    detail::ChainOptions<2> options;
-    options.tolerance      = tolerance_;
-    options.max_iterations = 1;
-    options.influence      = influence_;
-    float f                = force_;
-    if (f <= 0.f) {
-        f = std::min(1.f, std::max(0.f, dt));
-    } else {
-        f = std::min(1.f, f * std::max(0.f, dt));
-    }
-    options.force = f;
-    solveChainImpl(skeleton, rootBoneId, tipBoneId, options);
-}
-
-bool Solver2D::solveChainImpl(Skeleton2D *skeleton, int rootBoneId, int tipBoneId,
-                              const detail::ChainOptions<2> &options) {
+void Solver2D::requireChain(Skeleton2D *skeleton, int rootBoneId, int tipBoneId) const {
     if (!skeleton) {
         throw Exception("Solver2D.solveChain: skeleton is null");
     }
@@ -150,146 +121,116 @@ bool Solver2D::solveChainImpl(Skeleton2D *skeleton, int rootBoneId, int tipBoneI
     if (!found) {
         throw Exception("Solver2D.solveChain: tipBoneId is not a descendant of rootBoneId");
     }
-    return detail::solveChain<2>(skeleton->native(), skeleton->state(), static_cast<unsigned>(rootBoneId),
-                                 static_cast<unsigned>(tipBoneId), solver_.targets(), options);
 }
 
-int Solver2D::getTraceSize() const { return static_cast<int>(solver_.traceSize()); }
+bool Solver2D::solveChain(Skeleton2D *skeleton, int rootBoneId, int tipBoneId) {
+    requireChain(skeleton, rootBoneId, tipBoneId);
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    return impl_->solver.solveChain(skeleton->impl_->sk, skeleton->impl_->state, static_cast<unsigned>(rootBoneId),
+                                    static_cast<unsigned>(tipBoneId));
+}
 
-void Solver2D::clearTrace() { solver_.clearTrace(); }
+void Solver2D::stepChain(Skeleton2D *skeleton, int rootBoneId, int tipBoneId, float dt) {
+    requireChain(skeleton, rootBoneId, tipBoneId);
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    impl_->solver.stepChain(skeleton->impl_->sk, skeleton->impl_->state, static_cast<unsigned>(rootBoneId),
+                            static_cast<unsigned>(tipBoneId), dt);
+}
 
-}  // namespace eve::ik
+int Solver2D::getTraceSize() const { return static_cast<int>(impl_->solver.traceSize()); }
 
-// Solver3D.cpp
-namespace eve::ik {
+void Solver2D::clearTrace() { impl_->solver.clearTrace(); }
+
+// ---------------------------------------------------------------------------
+// Solver3D
+// ---------------------------------------------------------------------------
+
+struct Solver3D::Impl {
+    ::ik::solver3d solver;
+    bool           keepTrace     = false;
+    int            maxIterations = 16;
+    float          tolerance     = 1e-3f;
+    float          force         = 0.f;
+};
+
+Solver3D::Solver3D() : impl_(std::make_unique<Impl>()) {}
+Solver3D::~Solver3D() = default;
 
 void Solver3D::setKeepTrace(bool keep) {
-    keepTrace_ = keep;
-    solver_.setKeepTrace(keep);
+    impl_->keepTrace = keep;
+    impl_->solver.setKeepTrace(keep);
 }
 
-bool Solver3D::getKeepTrace() const { return keepTrace_; }
+bool Solver3D::getKeepTrace() const { return impl_->keepTrace; }
 
 void Solver3D::setMaxIterations(int iterations) {
     if (iterations < 0) {
         throw Exception("Solver3D.setMaxIterations: iterations must be >= 0");
     }
-    maxIterations_ = iterations;
-    solver_.setMaxIterations(static_cast<unsigned>(iterations));
+    impl_->maxIterations = iterations;
+    impl_->solver.setMaxIterations(static_cast<unsigned>(iterations));
 }
 
-int Solver3D::getMaxIterations() const { return maxIterations_; }
+int Solver3D::getMaxIterations() const { return impl_->maxIterations; }
 
 void Solver3D::setTolerance(float tol) {
     if (tol < 0.f) {
         throw Exception("Solver3D.setTolerance: tolerance must be >= 0");
     }
-    tolerance_ = tol;
-    solver_.setTolerance(tol);
+    impl_->tolerance = tol;
+    impl_->solver.setTolerance(tol);
 }
 
-float Solver3D::getTolerance() const { return tolerance_; }
+float Solver3D::getTolerance() const { return impl_->tolerance; }
 
 void Solver3D::setForce(float force) {
-    force_ = force;
-    solver_.setForce(force);
+    impl_->force = force;
+    impl_->solver.setForce(force);
 }
 
-float Solver3D::getForce() const { return force_; }
+float Solver3D::getForce() const { return impl_->force; }
 
 void Solver3D::setInfluence(float influence) {
     if (influence < 0.f || influence > 1.f) {
         throw Exception("Solver3D.setInfluence: influence must be in [0, 1]");
     }
-    influence_ = influence;
+    impl_->solver.setInfluence(influence);
 }
 
-float Solver3D::getInfluence() const { return influence_; }
+float Solver3D::getInfluence() const { return impl_->solver.getInfluence(); }
 
-void Solver3D::clearTargets() { solver_.clearTargets(); }
+void Solver3D::clearTargets() { impl_->solver.clearTargets(); }
 
 void Solver3D::addTarget(int boneId, float x, float y, float z, float weight) {
     if (boneId < 0) {
         throw Exception("Solver3D.addTarget: boneId must be >= 0");
     }
-    solver_.addTarget(static_cast<unsigned>(boneId), ::ik::vec3{x, y, z}, weight);
+    impl_->solver.addTarget(static_cast<unsigned>(boneId), ::ik::vec3{x, y, z}, weight);
 }
 
-int Solver3D::getTargetCount() const { return static_cast<int>(solver_.targets().size()); }
+int Solver3D::getTargetCount() const { return static_cast<int>(impl_->solver.targets().size()); }
 
 bool Solver3D::solve(Skeleton3D *skeleton) {
     if (!skeleton) {
         throw Exception("Solver3D.solve: skeleton is null");
     }
-    ::ik::ecs3d            &state = skeleton->state();
-    std::vector<::ik::vec3> original;
-    if (influence_ < 1.f) {
-        original = state.position_;
-    }
-    const bool reached = solver_.solve(skeleton->native(), state);
-    if (influence_ < 1.f) {
-        const float t = influence_;
-        for (size_t i = 0; i < state.position_.size(); ++i) {
-            state.position_[i] = original[i] + (state.position_[i] - original[i]) * t;
-        }
-        skeleton->native().update_rotations(state);
-    }
-    applyTipRotation(skeleton);
-    return reached;
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    return impl_->solver.solve(skeleton->impl_->sk, skeleton->impl_->state);
 }
 
 void Solver3D::step(Skeleton3D *skeleton, float dt) {
     if (!skeleton) {
         throw Exception("Solver3D.step: skeleton is null");
     }
-    ::ik::ecs3d            &state = skeleton->state();
-    std::vector<::ik::vec3> original;
-    if (influence_ < 1.f) {
-        original = state.position_;
-    }
-    solver_.step(skeleton->native(), skeleton->state(), dt);
-    if (influence_ < 1.f) {
-        const float t = influence_;
-        for (size_t i = 0; i < state.position_.size(); ++i) {
-            state.position_[i] = original[i] + (state.position_[i] - original[i]) * t;
-        }
-        skeleton->native().update_rotations(state);
-    }
-    applyTipRotation(skeleton);
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    impl_->solver.step(skeleton->impl_->sk, skeleton->impl_->state, dt);
 }
 
-bool Solver3D::solveChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId) {
-    detail::ChainOptions<3> options;
-    options.tolerance      = tolerance_;
-    options.max_iterations = static_cast<unsigned>(maxIterations_);
-    options.force          = force_;
-    options.influence      = influence_;
-    options.use_pole       = usePole_;
-    options.pole           = pole_;
-    options.pole_weight    = poleWeight_;
-    return solveChainImpl(skeleton, rootBoneId, tipBoneId, options);
-}
-
-void Solver3D::stepChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId, float dt) {
-    detail::ChainOptions<3> options;
-    options.tolerance      = tolerance_;
-    options.max_iterations = 1;
-    options.influence      = influence_;
-    options.use_pole       = usePole_;
-    options.pole           = pole_;
-    options.pole_weight    = poleWeight_;
-    float f                = force_;
-    if (f <= 0.f) {
-        f = std::min(1.f, std::max(0.f, dt));
-    } else {
-        f = std::min(1.f, f * std::max(0.f, dt));
-    }
-    options.force = f;
-    solveChainImpl(skeleton, rootBoneId, tipBoneId, options);
-}
-
-bool Solver3D::solveChainImpl(Skeleton3D *skeleton, int rootBoneId, int tipBoneId,
-                              const detail::ChainOptions<3> &options) {
+void Solver3D::requireChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId) const {
     if (!skeleton) {
         throw Exception("Solver3D.solveChain: skeleton is null");
     }
@@ -315,81 +256,45 @@ bool Solver3D::solveChainImpl(Skeleton3D *skeleton, int rootBoneId, int tipBoneI
     if (!found) {
         throw Exception("Solver3D.solveChain: tipBoneId is not a descendant of rootBoneId");
     }
-    const bool reached = detail::solveChain<3>(skeleton->native(), skeleton->state(), static_cast<unsigned>(rootBoneId),
-                                               static_cast<unsigned>(tipBoneId), solver_.targets(), options);
-    applyTipRotation(skeleton);
-    return reached;
 }
 
-void Solver3D::setPole(float x, float y, float z, float weight) {
-    pole_       = ::ik::vec3{x, y, z};
-    poleWeight_ = std::min(1.f, std::max(0.f, weight));
-    usePole_    = true;
+bool Solver3D::solveChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId) {
+    requireChain(skeleton, rootBoneId, tipBoneId);
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    return impl_->solver.solveChain(skeleton->impl_->sk, skeleton->impl_->state, static_cast<unsigned>(rootBoneId),
+                                    static_cast<unsigned>(tipBoneId));
 }
 
-void Solver3D::clearPole() {
-    usePole_    = false;
-    poleWeight_ = 1.f;
+void Solver3D::stepChain(Skeleton3D *skeleton, int rootBoneId, int tipBoneId, float dt) {
+    requireChain(skeleton, rootBoneId, tipBoneId);
+    skeleton->impl_->ensureSorted();
+    skeleton->impl_->ensureStateSize();
+    impl_->solver.stepChain(skeleton->impl_->sk, skeleton->impl_->state, static_cast<unsigned>(rootBoneId),
+                            static_cast<unsigned>(tipBoneId), dt);
 }
 
-bool Solver3D::hasPole() const { return usePole_; }
+void Solver3D::setPole(float x, float y, float z, float weight) { impl_->solver.setPole(::ik::vec3{x, y, z}, weight); }
 
-float Solver3D::getPoleWeight() const { return usePole_ ? poleWeight_ : 0.f; }
+void Solver3D::clearPole() { impl_->solver.clearPole(); }
+
+bool Solver3D::hasPole() const { return impl_->solver.hasPole(); }
+
+float Solver3D::getPoleWeight() const { return impl_->solver.getPoleWeight(); }
 
 void Solver3D::setTipRotation(int boneId, float yaw, float pitch, float weight) {
     if (boneId < 0) {
         throw Exception("Solver3D.setTipRotation: boneId must be >= 0");
     }
-    tipBoneId_    = boneId;
-    tipYaw_       = yaw;
-    tipPitch_     = pitch;
-    tipRotWeight_ = std::min(1.f, std::max(0.f, weight));
+    impl_->solver.setTipRotation(static_cast<unsigned>(boneId), ::ik::vec2{yaw, pitch}, weight);
 }
 
-void Solver3D::clearTipRotation() {
-    tipBoneId_    = -1;
-    tipYaw_       = 0.f;
-    tipPitch_     = 0.f;
-    tipRotWeight_ = 0.f;
-}
+void Solver3D::clearTipRotation() { impl_->solver.clearTipRotation(); }
 
-float Solver3D::getTipRotationWeight() const { return tipRotWeight_; }
+float Solver3D::getTipRotationWeight() const { return impl_->solver.getTipRotationWeight(); }
 
-void Solver3D::applyTipRotation(Skeleton3D *skeleton) {
-    if (!skeleton || tipRotWeight_ <= 0.f || tipBoneId_ < 0) {
-        return;
-    }
-    ::ik::skeleton3d &sk = skeleton->native();
-    if (sk.bones().empty()) {
-        sk.topologicalSort();
-    }
-    if (static_cast<size_t>(tipBoneId_) >= sk.bones().size()) {
-        throw Exception("Solver3D.applyTipRotation: bone id out of range");
-    }
-    ::ik::bone3d *b = sk.bones()[static_cast<size_t>(tipBoneId_)];
-    if (!b->parent) {
-        return;  // orienting the root would fight the pinned chain root
-    }
-    ::ik::ecs3d &state = skeleton->state();
-    const float  w     = tipRotWeight_;
-    ::ik::vec2   rot   = b->rotation(state);
-    rot[0]             = rot[0] + ::ik::wrap_angle(tipYaw_ - rot[0]) * w;
-    rot[1]             = rot[1] + ::ik::wrap_angle(tipPitch_ - rot[1]) * w;
-    b->rotation(state) = rot;
+int Solver3D::getTraceSize() const { return static_cast<int>(impl_->solver.traceSize()); }
 
-    const ::ik::vec3 *gp = nullptr;
-    ::ik::vec3        gp_pos;
-    if (b->parent->parent) {
-        gp_pos = b->parent->parent->position(state);
-        gp     = &gp_pos;
-    }
-    const ::ik::vec3 parent_fwd =
-        ::ik::detail::parent_forward_of(b->parent->orientation(state), b->parent->position(state), gp);
-    b->orientation(state) = ::ik::detail::direction_from_local_angles<3>(parent_fwd, rot);
-}
-
-int Solver3D::getTraceSize() const { return static_cast<int>(solver_.traceSize()); }
-
-void Solver3D::clearTrace() { solver_.clearTrace(); }
+void Solver3D::clearTrace() { impl_->solver.clearTrace(); }
 
 }  // namespace eve::ik
