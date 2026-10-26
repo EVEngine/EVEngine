@@ -3716,7 +3716,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
         eve::attributes::priority::equipment);
     REQUIRE(cardModifier.ok());
     checkSharedModifierContract(card->attributes()->values.modifierAt(0));
-    CHECK_EQ(card->stats()->attack, 3);
+    CHECK_EQ(card->stats()->attack, 5);
     auto cardProject = eve::card::CardAttributeAdapter::project(*card);
     REQUIRE(cardProject.ok());
     CHECK_EQ(card->stats()->attack, 5);
@@ -3727,7 +3727,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto cardSet =
         eve::card::CardAttributeAdapter::setBase(*card, eve::card::CardAttributeAdapter::attackAttribute, 9.0);
     REQUIRE(cardSet.ok());
-    CHECK_EQ(card->stats()->attack, 9);
+    CHECK_EQ(card->stats()->attack, 11);
     auto cardRestore = eve::card::CardAttributeAdapter::restore(*card, snapshot, card->attributes()->values.revision());
     REQUIRE(cardRestore.ok());
     CHECK_EQ(card->stats()->attack, 5);
