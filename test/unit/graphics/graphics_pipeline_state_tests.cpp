@@ -3797,3 +3797,130 @@ TEST_CASE("graphics.DamageNumbers uses injected time and copies style at spawn")
 
 }  // namespace test_graphics_damage_numbers
 #endif
+
+#include <cmath>
+#include <limits>
+#include "graphics/ClipSpace.h"
+#include "graphics/InspectionPlan.h"
+#include "zeroerr/assert.h"
+#include "zeroerr/unittest.h"
+
+namespace {
+glm::vec3 projected(const eve::graphics::InspectionCamera& camera, glm::vec3 point) {
+    const auto clip = camera.projection * camera.view * glm::vec4(point, 1.f);
+    return glm::vec3(clip) / clip.w;
+}
+}  // namespace
+
+TEST_CASE("graphics.inspectionViews.axisOrientationAndScale") {
+    using namespace eve::graphics;
+    InspectionCamera camera;
+    camera.width      = 1920;
+    camera.height     = 1080;
+    camera.view       = glm::lookAtRH(glm::vec3(40, 30, 20), glm::vec3(0), glm::vec3(0, 1, 0));
+    camera.projection = perspectiveVulkanRH_ZO(1.f, 1920.f / 1080.f, .1f, 1000.f);
+    auto plan         = planInspectionViews({{10, 20, 30}, {12, 26, 34}}, camera, 640, 320, 1.1f);
+    REQUIRE(plan.ok());
+    const auto& value = plan.value();
+    ASSERT(value.center == glm::vec3(11, 23, 32));
+    const auto origin = value.center;
+    for (size_t index = 0; index < 3; ++index) {
+        const auto center = projected(value.cameras[index], origin);
+        ASSERT(std::abs(center.x) < 1e-5f);
+        ASSERT(std::abs(center.y) < 1e-5f);
+        ASSERT((center.z > 0.f && center.z < 1.f));
+        const glm::vec3 right      = index == 1 ? glm::vec3(0, 0, -1) : glm::vec3(1, 0, 0);
+        const glm::vec3 up         = index == 2 ? glm::vec3(0, 0, -1) : glm::vec3(0, 1, 0);
+        const auto      rightPoint = projected(value.cameras[index], origin + right);
+        const auto      upPoint    = projected(value.cameras[index], origin + up);
+        ASSERT(rightPoint.x > center.x);
+        ASSERT(upPoint.y < center.y);
+        ASSERT(std::abs((rightPoint.x - center.x) * 320.f - 1.f / value.worldUnitsPerPixel) < .001f);
+        ASSERT(std::abs((center.y - upPoint.y) * 160.f - 1.f / value.worldUnitsPerPixel) < .001f);
+    }
+    ASSERT(value.cameras[3].view == camera.view);
+    ASSERT(value.cameras[3].projection == camera.projection);
+    ASSERT(value.cameras[3].width == 1920);
+    ASSERT(value.cameras[3].height == 1080);
+}
+
+TEST_CASE("graphics.inspectionViews.unionBoundsAndInvalidInput") {
+    using namespace eve::graphics;
+    const InspectionBounds bounds{{-100, -2, -4}, {60, 10, 80}};
+    for (const auto size : {glm::uvec2(128, 1024), glm::uvec2(1024, 128)}) {
+        auto plan = planInspectionViews(bounds, {}, size.x, size.y, 1.f);
+        REQUIRE(plan.ok());
+        for (size_t index = 0; index < 3; ++index)
+            for (unsigned corner = 0; corner < 8; ++corner) {
+                glm::vec3 point;
+                for (int axis = 0; axis < 3; ++axis)
+                    point[axis] = corner & (1u << axis) ? bounds.maximum[axis] : bounds.minimum[axis];
+                const auto clip = projected(plan.value().cameras[index], point);
+                ASSERT((std::abs(clip.x) <= 1.0001f && std::abs(clip.y) <= 1.0001f));
+                ASSERT((clip.z >= 0 && clip.z <= 1));
+            }
+    }
+    auto empty = planInspectionViews({}, {}, 512, 512, 1.f);
+    ASSERT(!empty.ok());
+    auto inverted = planInspectionViews({{1, 0, 0}, {0, 2, 3}}, {}, 512, 512, 1.f);
+    ASSERT(!inverted.ok());
+    auto zeroWidth = planInspectionViews(bounds, {}, 0, 512, 1.f);
+    ASSERT(!zeroWidth.ok());
+    auto tooLarge = planInspectionViews(bounds, {}, 1025, 512, 1.f);
+    ASSERT(!tooLarge.ok());
+    auto padding = planInspectionViews(bounds, {}, 512, 512, std::numeric_limits<float>::quiet_NaN());
+    ASSERT(!padding.ok());
+    InspectionCamera invalidCamera;
+    invalidCamera.view[0][0] = std::numeric_limits<float>::infinity();
+    auto invalid             = planInspectionViews(bounds, invalidCamera, 512, 512, 1.f);
+    ASSERT(!invalid.ok());
+    auto flat = planInspectionViews({{0, 0, 0}, {1, 0, 1}}, {}, 512, 512, 1.f);
+    ASSERT(flat.ok());
+    auto tiny = planInspectionViews({{0, 0, 0}, {.0001f, .0001f, .0001f}}, {}, 512, 512, 1.1f);
+    ASSERT(tiny.ok());
+}
+
+TEST_CASE("graphics.inspectionSamples.endpointsAndLooping") {
+    using namespace eve::graphics;
+    auto decimal = planInspectionSamples(.1, .3, 10., 1., InspectionLoop::Once);
+    REQUIRE(decimal.ok());
+    REQUIRE(decimal.value().size() == 3);
+    ASSERT(decimal.value()[0].timelineTime == .1);
+    ASSERT(decimal.value()[2].timelineTime == .3);
+    ASSERT(decimal.value()[2].clipTime == .3);
+    auto fractional = planInspectionSamples(0, .25, 10, 1, InspectionLoop::Once);
+    REQUIRE(fractional.ok());
+    REQUIRE(fractional.value().size() == 3);
+    ASSERT(fractional.value().back().timelineTime == .2);
+    auto looping = planInspectionSamples(.75, 1.25, 4, 1, InspectionLoop::Repeat);
+    REQUIRE(looping.ok());
+    REQUIRE(looping.value().size() == 3);
+    ASSERT(looping.value()[0].clipTime == .75);
+    ASSERT(looping.value()[1].clipTime == 0.);
+    ASSERT(looping.value()[2].clipTime == .25);
+    auto decimalLoop = planInspectionSamples(.3, .3, 10, .1, InspectionLoop::Repeat);
+    REQUIRE(decimalLoop.ok());
+    ASSERT(decimalLoop.value()[0].clipTime == 0.);
+    auto once = planInspectionSamples(1, 1, 30, 1, InspectionLoop::Once);
+    REQUIRE(once.ok());
+    REQUIRE(once.value().size() == 1);
+    ASSERT(once.value()[0].clipTime == 1.);
+    auto sixteen = planInspectionSamples(0, .5, 30, 1, InspectionLoop::Once);
+    REQUIRE(sixteen.ok());
+    ASSERT(sixteen.value().size() == 16);
+    auto oversized = planInspectionSamples(0, 1, 30, 1, InspectionLoop::Once);
+    ASSERT(!oversized.ok());
+    auto pastEnd = planInspectionSamples(0, 1.1, 4, 1, InspectionLoop::Once);
+    ASSERT(!pastEnd.ok());
+    auto reversed = planInspectionSamples(1, 0, 4, 1, InspectionLoop::Once);
+    ASSERT(!reversed.ok());
+    auto zeroFps = planInspectionSamples(0, 1, 0, 1, InspectionLoop::Once);
+    ASSERT(!zeroFps.ok());
+    auto noDuration = planInspectionSamples(0, 1, 4, 0, InspectionLoop::Repeat);
+    ASSERT(!noDuration.ok());
+    auto nan = planInspectionSamples(0, 1, std::numeric_limits<double>::quiet_NaN(), 1, InspectionLoop::Once);
+    ASSERT(!nan.ok());
+    auto slow = planInspectionSamples(0, 1, std::numeric_limits<double>::denorm_min(), 1, InspectionLoop::Once);
+    REQUIRE(slow.ok());
+    ASSERT(slow.value().size() == 1);
+}
