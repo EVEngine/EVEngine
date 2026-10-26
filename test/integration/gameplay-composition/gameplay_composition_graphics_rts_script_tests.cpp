@@ -4588,8 +4588,10 @@ TEST_CASE("stylize.action.attack_vfx camera executor routes to optional sink") {
     REQUIRE(started.ok());
     REQUIRE_EQ(sink.calls, 1);
     REQUIRE(sink.last.has_value());
-    CHECK_EQ(sink.last->positionAmplitude, 0.2);
-    CHECK_EQ(sink.last->duration.seconds(), 0.15);
+    CHECK_EQ(sink.last->positionAmplitude, static_cast<double>(layer.floatParams.at("posAmp")));
+    auto expectedDuration = eve::Duration::fromSeconds(layer.floatParams.at("duration"));
+    REQUIRE(expectedDuration.ok());
+    CHECK_EQ(sink.last->duration, expectedDuration.value());
     REQUIRE(started.value().valid());
     CHECK(executor->stop(started.value(), AttackVfxStopBehavior::ClearImmediately).ok());
 

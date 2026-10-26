@@ -827,7 +827,7 @@ TEST_CASE("editor.building.surface_attachment_survives_replace_and_undo") {
     CHECK_EQ(restored.value().surfaceRevision, uint64_t{27});
     CHECK_EQ(restored.value().surfaceSampleCount, 4);
     CHECK_EQ(restored.value().surfaceMaxSlopeDegrees, 14.0);
-    CHECK_EQ(restored.value().surfaceHeightDelta, 0.6);
+    CHECK_EQ(restored.value().surfaceHeightDelta, static_cast<double>(0.6f));
 }
 
 TEST_CASE("editor.building.set_preflights_final_definition_and_pose_atomically") {

@@ -510,6 +510,8 @@ TEST_CASE("particles.attach.ik3dSolverMovesEmitter") {
     e->setAttachPlane("xy");
     e->setAttachScale(1.f);
     e->attachToSkeleton3D(sk.get(), tip);
+    e->setEmissionRate(0.f);
+    e->start();
     const float x0 = e->getX();
     const float y0 = e->getY();
 

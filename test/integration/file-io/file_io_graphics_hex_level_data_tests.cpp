@@ -924,11 +924,31 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     REQUIRE(ai->HasNormals());
     REQUIRE(ai->mNormals != nullptr);
 
+    const auto findMeshWorld = [&](auto &&self, const aiNode *node, const aiMatrix4x4 &parent,
+                                   aiMatrix4x4 &result) -> bool {
+        const auto world = parent * node->mTransformation;
+        for (unsigned i = 0; i < node->mNumMeshes; ++i)
+            if (node->mMeshes[i] == static_cast<unsigned>(meshIndex)) {
+                result = world;
+                return true;
+            }
+        for (unsigned i = 0; i < node->mNumChildren; ++i)
+            if (self(self, node->mChildren[i], world, result)) return true;
+        return false;
+    };
+    REQUIRE(model->getScene() != nullptr);
+    REQUIRE(model->getScene()->mRootNode != nullptr);
+    aiMatrix4x4 meshWorld;
+    REQUIRE(findMeshWorld(findMeshWorld, model->getScene()->mRootNode, aiMatrix4x4{}, meshWorld));
+    aiMatrix3x3 normalTransform(meshWorld);
+    normalTransform.Inverse().Transpose();
     std::vector<float> bindNrm(size_t(ai->mNumVertices) * 3u);
     for (int v = 0; v < int(ai->mNumVertices); ++v) {
-        bindNrm[size_t(v) * 3u + 0] = ai->mNormals[v].x;
-        bindNrm[size_t(v) * 3u + 1] = ai->mNormals[v].y;
-        bindNrm[size_t(v) * 3u + 2] = ai->mNormals[v].z;
+        auto normal = normalTransform * ai->mNormals[v];
+        normal.Normalize();
+        bindNrm[size_t(v) * 3u + 0] = normal.x;
+        bindNrm[size_t(v) * 3u + 1] = normal.y;
+        bindNrm[size_t(v) * 3u + 2] = normal.z;
     }
 
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -936,7 +956,7 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
     REQUIRE(skin.get() != nullptr);
 
-    // Bind pose: skin matrices are identity, so normals must stay in place.
+    // Bind-pose normals are expressed in skeleton world space, including the mesh node transform.
     std::unique_ptr<AnimPose> bind(new AnimPose());
     skeleton->applyBindPose(bind.get());
     bind->computeWorld(skeleton.get());
