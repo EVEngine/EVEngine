@@ -2570,6 +2570,7 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto action = adapter.execute(*unit, record, second);
     REQUIRE(action.ok());
     CHECK(action.value().disposition == eve::rts::ActionDisposition::Completed);
+    REQUIRE(unit->orders()->values.complete(record.id).ok());
     CHECK(unit->orders()->values.empty());
 
     unit->release();
