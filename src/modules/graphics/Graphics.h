@@ -1556,8 +1556,12 @@ public:
 
     /** @brief Pause/resume presenting (mobile background/foreground, desktop minimize/restore). */
     void setActive(bool active) override {
+        // Only dirty on inactive→active. Cocoa can re-post SHOWN/RESTORED during
+        // resize event pumps; marking dirty every time recreates the swapchain
+        // every frame (MoltenVK Suboptimal thrash) and leaves SpatialAA on its
+        // first-frame clear forever.
+        if (active && !graphicsActive) markSwapchainDirty();
         graphicsActive = active;
-        if (active) markSwapchainDirty();
     }
     /** @brief True when active. */
     bool isActive() const { return graphicsActive; }

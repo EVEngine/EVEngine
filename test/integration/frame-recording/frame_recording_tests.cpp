@@ -119,13 +119,6 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
             REQUIRE_EQ(pixelWidth, settings.width);
             REQUIRE_EQ(pixelHeight, settings.height);
             gfx->setViewportSize(logicalWidth, logicalHeight, pixelWidth, pixelHeight);
-            // First submit after a Cocoa/MoltenVK resize can still read back the
-            // scene clear while SpatialAA/offscreen targets are recreated.
-            entity->setTexture(frame % 2 ? greenTexture : redTexture);
-            RenderSystem3D::render(*gfx);
-            RenderSystem::render(*gfx);
-            std::unique_ptr<eve::image::ImageData> warmup(gfx->newImageData());
-            (void)warmup;
         }
         const bool expectGreen = (frame % 2) != 0;
         entity->setTexture(expectGreen ? greenTexture : redTexture);
