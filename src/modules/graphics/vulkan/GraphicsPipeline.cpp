@@ -545,11 +545,14 @@ void Graphics::createMesh3DPipeline() {
     // per texture combination (see mesh3dSetFor / ensureMesh3dRing).
     mesh3dFrameSlots.clear();
 
+    // Deferred lighting copies G-buffer depth into scene color. Built-in opaque
+    // ForwardPlus overlays must accept that same surface depth, without blending
+    // a second lighting contribution. Transparent/custom raster policies stay unchanged.
     auto vert = embeddedSpirv(mesh3d_vert_spv);
     auto frag = embeddedSpirv(mesh3d_frag_spv);
     mesh3dPipeline =
-        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
-                                  vk::SampleCountFlagBits::e1);
+        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
+                                  BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     mesh3dTransparentPipeline =
         createMesh3DHairPipeline(vert, frag, mesh3dPipelineLayout, renderpass,
                                  vk::SampleCountFlagBits::e1);
@@ -559,8 +562,10 @@ void Graphics::createMesh3DPipeline() {
             for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
                 const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
                 mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
-                    vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
-                    blend, depthValue != 0, doubleValue != 0);
+                    vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1, blend, depthValue != 0,
+                    doubleValue != 0,
+                    {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                   : MeshDepthCompare::Less});
             }
         }
     }
@@ -599,8 +604,8 @@ void Graphics::createMesh3DClusteredPipeline() {
     auto vert = embeddedSpirv(mesh3d_clustered_vert_spv);
     auto frag = embeddedSpirv(mesh3d_clustered_frag_spv);
     mesh3dClusteredPipeline =
-        createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout, renderpass,
-                                  vk::SampleCountFlagBits::e1);
+        createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
+                                  BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
 }
 
 void Graphics::destroyShadowResources() {
@@ -1568,9 +1573,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     destroyPipeline(device, voxelRectPipeline);
     for (auto &pipeline : primitive3DPipelines) destroyPipeline(device, pipeline);
 
-    mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
-                                               embeddedSpirv(mesh3d_frag_spv),
-                                               mesh3dPipelineLayout, target, samples);
+    mesh3dPipeline =
+        createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+                                  target, samples, BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     mesh3dTransparentPipeline =
         createMesh3DHairPipeline(embeddedSpirv(mesh3d_vert_spv),
                                  embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
@@ -1581,9 +1586,10 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
             for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
                 const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
                 mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
-                    embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
-                    mesh3dPipelineLayout, target, samples, blend, depthValue != 0,
-                    doubleValue != 0);
+                    embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout, target,
+                    samples, blend, depthValue != 0, doubleValue != 0,
+                    {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                   : MeshDepthCompare::Less});
             }
         }
     }
@@ -1597,8 +1603,8 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     if (mesh3dClusteredPipelineLayout) {
         mesh3dClusteredPipeline =
             createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
-                                      embeddedSpirv(mesh3d_clustered_frag_spv),
-                                      mesh3dClusteredPipelineLayout, target, samples);
+                                      embeddedSpirv(mesh3d_clustered_frag_spv), mesh3dClusteredPipelineLayout, target,
+                                      samples, BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     }
     if (voxelRectPipelineLayout)
         voxelRectPipeline = buildVoxelRectPipeline(target, samples);

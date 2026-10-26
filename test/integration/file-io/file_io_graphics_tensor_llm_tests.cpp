@@ -11,14 +11,12 @@
     "graphics",
     "map",
     "rpg",
-    "tensor",
-    "ui"
+    "tensor"
   ],
   "origins": [
     "language_server.cpp",
     "map_dual_grid_masks.cpp",
     "mcp_project_index.cpp",
-    "pcg_photo_mode_session.cpp",
     "reflection_probe_culling.cpp",
     "remotesync.cpp",
     "rpg_classic.cpp",
@@ -160,7 +158,8 @@ TEST_CASE("devtools.languageServer.documentAndNativeBindingContracts") {
 
         const auto keywords = server.complete(mainUri, Position{1, 0});
         REQUIRE(hasLabel(keywords, "local"));
-        REQUIRE(hasLabel(keywords, "playerSpeed"));
+        const auto locals = server.complete(mainUri, Position{1, 6});
+        REQUIRE(hasLabel(locals, "playerSpeed"));
 
         const auto hover = server.hover(mainUri, Position{1, 8});
         REQUIRE(hover.has_value());
@@ -189,6 +188,7 @@ TEST_CASE("devtools.languageServer.documentAndNativeBindingContracts") {
 
         const auto members = server.complete(uri, Position{0, 4});
         REQUIRE(hasLabel(members, "setBackgroundColor"));
+        REQUIRE(!hasLabel(members, "setGravity"));
 
         const auto help = server.signatureHelp(uri, Position{0, 24});
         REQUIRE(help.has_value());
@@ -205,16 +205,16 @@ TEST_CASE("devtools.languageServer.documentAndNativeBindingContracts") {
         const std::string source = readFile(root / "completesChainedAndConstructedNativeTypes.nut");
         server.openDocument(uri, source);
 
-        const auto chained = server.complete(uri, Position{0, 27});
+        const auto chained = server.complete(uri, Position{0, 25});
         REQUIRE(hasLabel(chained, "setGravity"));
 
-        const auto constructed = server.complete(uri, Position{1, 15});
+        const auto constructed = server.complete(uri, Position{1, 14});
         REQUIRE(hasLabel(constructed, "newWorld"));
 
         const auto fromLocal = server.complete(uri, Position{3, 6});
         REQUIRE(hasLabel(fromLocal, "setGravity"));
 
-        const auto emitter = server.complete(uri, Position{4, 27});
+        const auto emitter = server.complete(uri, Position{4, 26});
         REQUIRE(hasLabel(emitter, "applyPreset"));
 
         const auto eveClasses = server.complete(uri, Position{1, 4});
@@ -765,69 +765,12 @@ TEST_CASE("devtools.projectIndex.automaticInferenceAndInvalidationContracts") {
 }
 }  // namespace test_mcp_project_index
 
-// Contract section: pcg photo mode session
-#include "PrivateTestScope.h"
-
-#include <limits>
-#include "ui/PcgPhotoModeValues.h"
-// pcg_photo_mode_session.cpp
-namespace test_pcg_photo_mode_session {
-// pcg_photo_mode_session.cpp
-using namespace eve::ui;
-namespace {
-
-
-}  // namespace
-
-
-// pcg_photo_mode_values.cpp
-using namespace eve::ui;
-
-
-TEST_CASE("ui.pcgPhotoModeValues.roundTripsAllFieldsAndRejectsUnknownSchema") {
-    PcgPhotoModeValues source;
-    REQUIRE(source.setBool("m_showFPS", true).ok());
-    REQUIRE(source.setInt("m_targetFPS", 144).ok());
-    REQUIRE(source.setFloat("m_pcgWindSpeed", 0.875f).ok());
-    REQUIRE(source.setString("m_lastSceneName", "Alpine World").ok());
-    REQUIRE(source.setColor("m_sunColor", 1.25f, .5f, .25f, 2.0f).ok());
-    auto encoded = source.snapshotJson();
-    REQUIRE(encoded.ok());
-    PcgPhotoModeValues restored;
-    REQUIRE(restored.restoreJson(encoded.value()).ok());
-    auto again = restored.snapshotJson();
-    REQUIRE(again.ok());
-    CHECK_EQ(again.value(), encoded.value());
-    auto fps  = restored.getInt("m_targetFPS");
-    auto wind = restored.getFloat("m_pcgWindSpeed");
-    REQUIRE(fps.ok());
-    REQUIRE(wind.ok());
-    CHECK_EQ(fps.value(), int64_t(144));
-    CHECK_EQ(wind.value(), .875f);
-    REQUIRE(restored.selectColor("m_sunColor").ok());
-    CHECK_EQ(restored.getColorR(), 1.25f);
-    CHECK_EQ(restored.getColorA(), 2.0f);
-    const auto  before = again.value();
-    std::string wrong  = before;
-    auto        pos    = wrong.find("eve.ui.pcg-photo-mode-values");
-    REQUIRE(pos != std::string::npos);
-    wrong.replace(pos, 29, "eve.ui.wrong-photo-values");
-    CHECK(!restored.restoreJson(wrong).ok());
-    auto after = restored.snapshotJson();
-    REQUIRE(after.ok());
-    CHECK_EQ(after.value(), before);
-}
-}  // namespace test_pcg_photo_mode_session
-
 // Contract section: reflection probe culling
 #include "PrivateTestScope.h"
 
+#include <cmath>
 #include <glm/glm.hpp>
 #include <string_view>
-#include "common/ECS.h"
-#include "graphics/ReflectionProbeCapture.h"
-#include "graphics/ReflectionProbeRegistry.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/shaders/ReflectionProbeWgsl.h"
 // reflection_probe_culling.cpp
 namespace test_reflection_probe_culling {

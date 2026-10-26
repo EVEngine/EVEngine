@@ -61,22 +61,17 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "map/DualGrid.h"
@@ -1466,8 +1461,7 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     CloseWin closer{win};
     resetScene3D();
 
-    RenderAuditBg bg{0.08f, 0.09f, 0.11f};
-    auto          studio = makeStudio3D(gfx);
+    auto studio = makeStudio3D(gfx);
     (void)studio;
     RenderControl *rc = gfx->getRenderControl();
     REQUIRE(rc != nullptr);
@@ -1489,10 +1483,23 @@ TEST_CASE("graphics.imageAudit.gbufferViews") {
     REQUIRE(normal != nullptr);
     REQUIRE(depth != nullptr);
 
-    blitAndPresent(gfx, albedo);
-    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "albedo", bg);
-    blitAndPresent(gfx, normal);
-    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "normal", bg);
+    // G-buffer alpha stores depth (albedo) or packed PBR parameters (normal),
+    // not opacity. Display RGB without blending against the swapchain clear.
+    // The attachments themselves clear to black, so empty buffers must still
+    // fail the same occupancy requirement rather than count as foreground.
+    auto presentBuffer = [gfx](Texture *texture) {
+        gfx->setScreenReadbackEnabled(true);
+        gfx->setBackgroundColorRGBA(0.f, 0.f, 0.f, 1.f);
+        gfx->clearScreen();
+        gfx->drawTexturedRectShaderUV(texture, nullptr, 0, 0, float(gfx->getWidth()), float(gfx->getHeight()), 0, 0, 1,
+                                      1, Color(1, 1, 1, 1), false, BlendMode::Opaque);
+        gfx->present();
+    };
+    const RenderAuditBg bufferBackground{0.f, 0.f, 0.f};
+    presentBuffer(albedo);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "albedo", bufferBackground);
+    presentBuffer(normal);
+    auditSwapchain(_ZEROERR_TEST_CONTEXT, gfx, "gbuffer", "normal", bufferBackground);
 
     rc->disable("gbuffer");
     rc->compile();

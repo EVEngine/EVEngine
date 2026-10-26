@@ -92,7 +92,8 @@ public:
     /**
      * @brief Request the opaque lighting strategy (transparent stays Forward+).
      * @param mode ForwardPlus or Hybrid.
-     * @return Success. Hybrid may still fall back at compile() until deferred lighting ships.
+     * @return Success. compile() may use ForwardPlus when deferred lighting is unavailable
+     * or GPU-driven opaque rendering was explicitly enabled; the requested mode is retained.
      * @thread Render-thread affine; no callbacks.
      */
     [[nodiscard]] Result<void> setLightingMode(LightingMode mode);
@@ -115,7 +116,9 @@ public:
     bool isDeferredLightingAvailable() const;
     /**
      * @brief True after compile() when Hybrid was requested but could not run
-     * (deferred lighting unavailable or GBuffer off) and ForwardPlus was used instead.
+     * (deferred lighting unavailable, GBuffer off, or GPU-driven opaque explicitly
+     * enabled) and ForwardPlus was used instead. GPU-driven opaque/visibility
+     * resolve takes priority over Hybrid's deferred opaque pass.
      * Cleared on the next compile that keeps the requested Hybrid mode.
      */
     bool hasHybridLightingFallback() const { return hybridLightingFallback_; }

@@ -56,7 +56,6 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
 #include "window/Window.h"
 #include "zeroerr/unittest.h"
 // AmbientOcclusion.cpp
@@ -324,8 +323,6 @@ TEST_CASE("ao.overlayDarkensLitScene") {
 
 
 #include <vector>
-#include "graphics/Grass.h"
-#include "graphics/Waterfall.h"
 // AntiAliasing.cpp
 namespace test_AntiAliasing {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2794,6 +2791,65 @@ TEST_CASE("IBL.environmentIntensityAndRemovalContracts") {
         const float L_high = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
         REQUIRE(L_high > L_low + 0.04f);
+    };
+    SUB_CASE("IBL.hybridMatchesForwardEnvironmentResponse") {
+        resetScene3D();
+        auto *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+        cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
+        auto *ent = Renderable3D::create();
+        ent->setMesh(mesh);
+        ent->setTexture(makeSolidGray(gfx, 220));
+        ent->setMetallic(1.f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+        gfx->setScreenReadbackEnabled(true);
+        const LightingMode previousMode = gfx->getRenderControl()->getLightingMode();
+        const auto capture = [&](LightingMode mode, float intensity, zeroerr::TestContext *_ZEROERR_TEST_CONTEXT) {
+            auto *control = gfx->getRenderControl();
+            REQUIRE(control->setLightingMode(mode).ok());
+            control->compile();
+            REQUIRE(control->getEffectiveLightingMode() == mode);
+            cam->setEnvIntensity(intensity);
+            warmPresent(gfx);
+            return luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        };
+        const float forwardLow  = capture(LightingMode::ForwardPlus, .4f, _ZEROERR_TEST_CONTEXT);
+        const float forwardHigh = capture(LightingMode::ForwardPlus, 2.f, _ZEROERR_TEST_CONTEXT);
+        const float hybridLow   = capture(LightingMode::Hybrid, .4f, _ZEROERR_TEST_CONTEXT);
+        const float hybridHigh  = capture(LightingMode::Hybrid, 2.f, _ZEROERR_TEST_CONTEXT);
+        // An unlit opaque foreground must overwrite its deferred depth/color,
+        // while still hiding the more distant environment-lit surface.
+        const uint8_t red[]             = {240, 20, 20, 255};
+        auto         *foreground        = Renderable3D::create();
+        auto         *foregroundMesh    = gfx->newMeshCube();
+        auto         *foregroundTexture = gfx->newTexture(1, 1, red);
+        REQUIRE(foregroundMesh != nullptr);
+        REQUIRE(foregroundTexture != nullptr);
+        foreground->setMesh(foregroundMesh);
+        foreground->setTexture(foregroundTexture);
+        foreground->setPosition(0.f, 0.f, 1.f);
+        foreground->setScale(.4f, .4f, .4f);
+        foreground->setReceiveLight(false);
+        capture(LightingMode::ForwardPlus, 2.f, _ZEROERR_TEST_CONTEXT);
+        const Color forwardFront = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        capture(LightingMode::Hybrid, 2.f, _ZEROERR_TEST_CONTEXT);
+        const Color hybridFront = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(gfx->getRenderControl()->setLightingMode(previousMode).ok());
+        gfx->getRenderControl()->compile();
+        REQUIRE(forwardHigh > forwardLow + .04f);
+        REQUIRE(hybridHigh > hybridLow + .04f);
+        REQUIRE(std::fabs(hybridLow - forwardLow) < .02f);
+        REQUIRE(std::fabs(hybridHigh - forwardHigh) < .02f);
+        REQUIRE(forwardFront.r > forwardFront.g + .2f);
+        REQUIRE(hybridFront.r > hybridFront.g + .2f);
+        REQUIRE(std::fabs(hybridFront.r - forwardFront.r) < .02f);
+        REQUIRE(std::fabs(hybridFront.g - forwardFront.g) < .02f);
+        REQUIRE(std::fabs(hybridFront.b - forwardFront.b) < .02f);
     };
     SUB_CASE("IBL.clearEnvMapDisablesReflection") {
         resetScene3D();

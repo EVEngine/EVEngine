@@ -7616,6 +7616,3715 @@
       ],
       "wrapper_wall_seconds": 111.30296480003744,
       "ctest_exit_code": 8
+    },
+    "repaired": {
+      "parents": 528,
+      "ctest_real_seconds": 146.35,
+      "process_seconds": 583.2525087,
+      "counts": {
+        "passed": 513,
+        "failed": 0,
+        "skipped": 15
+      },
+      "cases": [
+        {
+          "name": "model3d.prefetch rejects missing executor and empty paths",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0994726,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.prefetch decodes on worker and joins the canonical cache",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0965804,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "filesystem.prepared snapshots deduplicate and survive cache eviction",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0899606,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "thread.resource executor bounds concurrent decoding",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.323859,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "filesystem.prepared rejects missing executor without submitting",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.083664,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.anim.txtFixturesPresent",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.078838,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.importSkeletonAndSample",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.318921,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.stateMachine.idleRunJump",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.319046,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.motionMatching.prefersRunWhenFast",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.319681,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.playerCrossFadeIdleToRun",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.320703,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.stateMachine.runJumpIdleCycle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.320213,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.stateMachine.boolArmedGate",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.318786,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.motionMatching.stableWithIgnoreRadius",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.319928,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.anim.txtExportRoundTripPreservesHips",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.583218,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.moduleEvaFactories",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.390275,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.mixamo.skeletonIdleRunJumpPreview",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 2.15185,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "editor.v2.disk_asset_sidecar_preserves_guid_across_move_and_poll",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.186129,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "editor.v2.disk_document_atomic_conflict_and_autosave",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.212178,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "font.create",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.224502,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "font.newFontData.empty",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0864274,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "font.newFontData.garbage",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0990851,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "font.newFontData.ttf",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0933126,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "font.newFontDataFromFile.cached",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.105218,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "font.newFontData.invalidSize",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0964713,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "map.tileset.loadsExternalTsjRelativeToMap",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0832173,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "map.tileset.loadsExternalTsxWithMetadataAnimationAndWang",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.10559,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "map.render.orthoAndIsoPreview",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.27753,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelData.objFromMemory",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.100619,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelData.emptyThrows",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0837528,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelData.invalidMeshIndexThrows",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.100885,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelDataFromFile.missingThrows",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0936327,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelDataFromFile.cached",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.340052,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.Model3D.getName",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.294679,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.evmodel.roundTrip",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0915367,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelData.rock1Fbx",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.208149,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.newModelDataFromFile.sofaObjMtl",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.177107,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.render.rock1Fbx",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.78205,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.render.rock1ToonShader",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.68468,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.render.sofaObjMtl",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.55703,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.materialApi.objMtl",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.323108,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.materialApi.gltf",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.124148,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.buildRenderable.objMtl",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.40303,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.render.gltfEmbeddedUvOrientation",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.66315,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.render.cesiumManGltf",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.57427,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.groundCulling.filtersVisitorAndControlsPlayback",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0934462,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.config.loadFileAndHotReload",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0984783,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "particles.config.newEmitterFromFile",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.212509,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.render.fireAndSmokePreview",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.31292,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resource.requestAsyncThenWaitFor",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0870632,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resource.getJoinsInFlightRequest",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0868416,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resource.asyncLoadFailureSurfacesInWaitFor",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0904865,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.png.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0815561,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.tga.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0985882,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.bmp.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.096199,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.jpg.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0902986,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.jpeg.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0830523,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.gif.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0802665,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.webp.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.217808,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.hdr.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0833444,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.exr.independentPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0979875,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.png.rgba8Export",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0894711,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.png.rgba16Export",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0926426,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.tga.rgba8Export",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0787589,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.truncatedHeadersRejectWithoutPoisoningDecoder",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0825518,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.gif.animatedFirstFrame",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0808834,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.webp.animatedFirstFrame",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.225543,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.webp.lossyPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.085977,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.hdr.truncatedPayloadIsRejected",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0882639,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.image.webp.truncatedPayloadIsRejected",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0984674,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.clone.originalDestroyedFirst",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.152005,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.clone.cloneDestroyedFirst",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.193061,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.clone.nestedClonesRetainStorageAndIndependentPosition",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.19922,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.obj.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.27746,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.stl.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.209653,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.ply.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.206707,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.off.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0835139,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.x.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0917533,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.dae.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.194951,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.gltf.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0848754,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.model.glb.independentTriangle",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.280903,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.wav.independentPcmAndStreaming",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.101154,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.flac.independentPcmAndStreaming",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.101557,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.ogg.independentPcmAndStreaming",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0979169,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "resourceFormats.sound.mp3.independentPcmAndStreaming",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0989714,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.diff.addRemoveModifyMove",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0954309,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.diff.movesReparent",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.104594,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.diff.unchangedIsNoop",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0979769,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.apply.preservesUnchangedRenderableIdentity",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0787543,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.importConventions.lodCollisionSocket",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.249542,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.load.buildsGameObjectTreeWithRenderables",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.30918,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.bounds.fillFromMeshAndUnion",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.285998,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.load.pbrMaterialAndLightsAndCamera",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.38692,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.load.pbrTextureCacheReusesTexture",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.31622,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.load.gltfCesiumManPbrAndAnimation",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.45548,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.loadAsync.mountsOnPoll",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.20774,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.loadAsync.precodesTextures",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.22344,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "SceneLoader.prewarmAsync.reusesDecodedScene",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.113845,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "spritestack.slice.boxLayers",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.0942074,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "spritestack.slice.sphereVariesAcrossLayers",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 0.372804,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "spritestack.render.pure2DStack",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.28767,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "spritestack.render.rotationChangesPixels",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.47068,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "spritestack.render.batchUses2DStacks",
+          "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+          "seconds": 1.19012,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "devtools.languageServer.documentAndNativeBindingContracts",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 9.21138,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "map.dualGridMask.packagedSbsFixturesDecode",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.256644,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "devtools.projectIndex.realQuestChainAndVersionedContext",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 2.78676,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "devtools.projectIndex.incrementRenameDeleteAndRejectFailedPublication",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 1.95743,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "devtools.projectIndex.budgetsAndUntrustedSource",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 1.12386,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "devtools.projectIndex.stdioDiscoveryAndTaskContext",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 2.73462,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "devtools.projectIndex.automaticInferenceAndInvalidationContracts",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 9.96526,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.reflectionProbe.diffuseWhiteFurnaceNormalization",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.0980973,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "hotreload.mountRealDirectoryShadow",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.240524,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "hotreload.remoteSyncDownload",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.223249,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "hotreload.remoteSyncUnreachableRecovers",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.412095,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.classic.mainScriptCompilesThroughEveScriptFrontend",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 1.46294,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "rpg.classic.villageSupportsExplorationInteractionAndThreeEncounters",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.114567,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.classic.elderDialogueHasOfferReminderTurnInAndCompletionRoutes",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.0943803,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.classic.forestSideQuestHasDataDrivenObjectiveAndRewards",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.0988077,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.classic.mapsQuestsAndDialogueComposeWithoutDanglingReferences",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.250135,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.classic.playthroughCompletesBothQuestsAndRestoresCheckpoint",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.148837,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.llm.loadBundle",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.086994,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.llm.forwardMatchesNumpy",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.0987646,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.llm.compiledMatchesEager",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.105737,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.llm.generate",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.184217,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.llm.quantizedDtypes",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.0983118,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.onnx.import.transactionAndDiagnostics",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.264518,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.onnx.gpu.failureAndScope",
+          "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+          "seconds": 0.100956,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycles",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.985421,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "asset.graphics.vegetationSceneLoadsAndProjectsAtomically",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.00994,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.lightProbe.customProvidedChangesRenderedPixels",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.930282,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "fluids.gpu.surfaceFlow",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.71532,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.gpu.pbfCohesionClusterRemainsBounded",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.63294,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.gpu.pipeline",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.59573,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.anisotropicProjectionIsOptionalAndGpuMatchesCpu",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.6792,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.surfaceDownsampleRunsReducedCpuAndGpuTargets",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.67508,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.thicknessDownsampleIsIndependentBeforeVolumeShading",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.8431,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.uniformVolumeColorOnlyGpuPath",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.71726,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.customMaterialUniformColorOnlyRemainsGpuFastPath",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.50498,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.multicolorVolumeColorOnlyRemainsDeviceLocal",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.59743,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.depthNormalAndBoundedBlurContracts",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.78748,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.orthographicDepthIndependentCoverageAndGpuParity",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.72303,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "fluids.ssf.occlusionDoesNotTiltForegroundNormals",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.54749,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.module.create",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.107204,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.graphics.backendName",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.985993,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.newShaderFromSpvFile.delegatesWhenMissing",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.01877,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.dispatch.scaleFloats",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.41792,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.meshDeformationProvider.runsRealCompute",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.42573,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.sequence.dispatchScale",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.49518,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.procgen.transformParity",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.74126,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.procgen.transformChainRejectsInvalidLength",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0887777,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.procgen.pointGraphCompilesLinearTransformSegment",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.75983,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.procgen.pointGraphFallsBackAtomicallyAfterForcedGpuFailures",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.60945,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.procgen.millionPointAcceptanceBenchmark",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.087026,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.sequence.singleSubmitChainedDispatches",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.4688,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.shaderSystem.ecsMove",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.65236,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.shaderSystem.millionResidentBenchmark",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0895766,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.buffer.bulkFloats",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.929208,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.buffer.readFloat32sReturnsAnArrayToScript",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.101737,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.ecsPack.roundTrip",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0950906,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.ecsPack.contiguousRange",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0882021,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.ecsPack.errors",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.213711,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.ecsPack.scriptEcsComponentsRoundTrip",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.109712,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.ecsPack.registeredScriptEcsComponentsRoundTrip",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0985664,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.shortTextureUpdateAndAlphaBlend",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.889479,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.pixelWorldCrossChunkIncrementalAtlas",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.953534,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.draw2dUvRotationAndBlendModes",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.970519,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.lighting2dNormalMapAndMultipleLights",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.991618,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.textureSamplingRepeatAndMipmaps",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.948772,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.webgpuCustomShaderLifetime",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.992316,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.dynamicMeshUpdate",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.993154,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.gbufferAlphaCutout",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.18998,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.decalLayerProjection",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.09142,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.pbrNormalParallaxAndCellBomb",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.918376,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.pbrEnvironmentAndCloudShadow",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.17975,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.maskedMaterialTechniques",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.992,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.surfaceBlendDepthWriteAndCulling",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.04985,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.backendParity.alphaMaskThresholdSoftnessAndInversion",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.92601,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.displayOutput.apiValidation",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.989658,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics_fog.syncToVolumetricInjectsMedia",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.13245,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics_fog.injectToVolumetricKeepsHeightFog",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.980745,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.gbufferPlaneDepthMatchesCameraRay",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.01381,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.headless.initCanvasDrawAndErrors",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.931611,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.mapFog.unlockedCellsStayClear",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.9507,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.mapFog.makeCloudTextureIsRepeatable",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.971012,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.pbrSurface.atomicValidationAndAbsentBackend",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.0934788,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.pbrSurface.extensionFactorsAndUvChangePixels",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 1.00561,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.raytracing.reflectionHitVisibility",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.913615,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.skinPalette.largeJointMovesRenderedPixels",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.998823,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.skinPalette.influenceLimitChangesRenderedDeformation",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.950132,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.texture.explicit_mips_preserve_every_uploaded_level",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.908014,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.texture.rgba16f_array_upload_is_atomic_and_backend_explicit",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.942197,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.texture.rgba8_volume_upload_is_atomic_and_backend_explicit",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.872795,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.pbrSurface.texture_dimensions_are_validated_before_publication",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+          "seconds": 0.921323,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.vertex_occlusion_rgb_matches_tve_remap",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.978984,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.backface_normal_modes_match_tve_facing_branch",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.13775,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.pbr_front_face_culling_matches_tve_render_cull",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.08502,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.vegetation.extras_array_samples_world_position_per_fragment",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.945948,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.alpha_fade_samples_volume_noise_after_local_controls",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.933418,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.emission_matches_tve_texture_remap_phase_and_global_field",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.936176,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.gradient_uses_mesh_height_and_blended_blue_mask",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.979702,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.colors_array_samples_world_position_per_fragment",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.05467,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.vertex_array_scales_each_object_from_its_world_pivot",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.958186,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.motion_array_deforms_rest_stream_with_explicit_noise_and_time",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.09726,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.Grass.photoModeAuthorityOwnsFourRuntimeMultipliers",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.0783182,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.Grass.fileSwayAtlasPacksFourGrassAndTwoLeaf",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.17219,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.Grass.gpuRenderScreenshot",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 2.38914,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "model3d.gltfUvOriginAndTransformSurviveLoader",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.14586,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "model3d.missingPreviewTextureRetainsMaterialFactors",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.920354,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.meshVertexAxisGizmo.picksMovesAndRendersThroughPrimitiveBackend",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.987531,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.splineGizmo.rendersThroughPrimitiveBackend",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.20118,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.anime.skinnedMeshFollowsPalette",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.999008,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.anime.vertexColorFeedsMaterialColor",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.892352,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.cartoon.skinnedMeshFollowsPalette",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.02545,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.cartoon.vertexColorFeedsMaterialColor",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.933286,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.compiledFunctionElementwiseAndMatmul",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.6882,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.compiledFunctionWhereTranspose",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.51979,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.reduceLargeTensor",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.44556,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.compiledKernelExecutionContracts",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.60163,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.stageBisect",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.96318,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.kernelFamiliesMatchEager",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.67245,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.gpu.quantizedWeightsMatchEager",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.47453,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.onnx.gpu.residentChain",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.51723,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.sequence.stagingSizeReuse",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.986911,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.sequence.largeRebindingBatchesPreserveSnapshots",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.65336,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gpgpu.sequence.cancelRecordingRetiresDescriptors",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.52486,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.onnx.gpu.sessionShapesAndLifetime",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.62878,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "tensor.onnx.gpu.parallelCompilation",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.89307,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "virtualgeometry.gpu.buildIcosphere",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.10248,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "virtualgeometry.gpu.cullRasterResolve",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 0.947614,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "virtualgeometry.gpu.lodTransitionSweep",
+          "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+          "seconds": 1.2786,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "ao.qualityAndModePresets",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.31564,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ao.paramRoundTrip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.15321,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ao.ssaoDarkensCrease",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.18123,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ao.hbaoAndGtaoProduceOcclusion",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.63537,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ao.blurPreservesMeanRoughly",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.7396,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ao.overlayDarkensLitScene",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.20635,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "aa.qualityAndModes",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.25541,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "aa.fxaaApplyToCanvas",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.247,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "aa.allModesSmoke",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.32338,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "aa.ssaaFromHiResCanvas",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.30268,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "aa.paramOverrides",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.24936,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "aa.msaaSamplesApi",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.17466,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.bloom photographic pyramid preserves weighted DC and threshold suppression",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.01668,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.cornell.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.19729,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.pbrChart.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.38909,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.sponza.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.095365,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.damagedHelmet.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.113364,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.flightHelmet.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.113922,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.boomBox.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.121071,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.scifiHelmet.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.100981,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.metalRoughSpheres.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.103696,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.suzanne.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.102836,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.duck.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.097332,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.avocado.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.194552,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.waterBottle.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.0926331,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.lantern.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.0929512,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.antiqueCamera.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.0936145,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.cesiumMilkTruck.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.100786,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.barramundiFish.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.0981112,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClassicScenes.corset.flythroughConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 0.0958255,
+          "status": "skipped",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "ClusteredLighting.manyPointLightsBrightenCenter",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.44001,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "gi.qualityAndApplyFromDepth",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.19247,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.metallicPicksUpEnvColor",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.58688,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.newCubemapCreatesSixLayers",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.18378,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.envIntensityNegativeClampsToZero",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.28916,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.environmentIntensityAndRemovalContracts",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.2606,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.dielectricEnvWeakerThanMetal",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.43642,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.plusZFaceTintsSmoothMetal",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.5297,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.loadsPolyHavenEnvCubemaps",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.71525,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.studioEnvBrightensMetal",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.83008,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "IBL.outdoorSkyDiffersFromStudio",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 2.27006,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.pointLightBrightensNearbyUnlitSprite",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.26523,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.normalMapLitSideBrighter",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.17701,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.zeroRadiusSpotDoesNotActAsDirectional",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.1704,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.spotLightBrightensAlongBeam",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.3473,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.setNormalTextureEnablesLitPathAndRotation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.29004,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.atlasUvNormalMapKeepsSideBias",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.2972,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.additiveBlendBrightensOverClear",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.15478,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting2D.hdrCanvasLitBlendDoesNotCrash",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.17845,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "outline.paramRoundTrip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.11612,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "outline.renderControlFeatureToggle",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.61717,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "outline.newMeshCubeAndPipelineConfig",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.65895,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "outline.previewCube",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.70246,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Quad.spriteAtlasSamplesSubRect",
+          "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+          "seconds": 1.13768,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.pipelineConfigs",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 2.13268,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.materialsAndCamera",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 2.06995,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.vertexColorsReachPresentedPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.36836,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.postFx",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.80962,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.composite2d3d",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.96247,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.stylizeAndSsaa",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.97334,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.multiObjectLod",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.83439,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.lightsAndXform",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.69144,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.samplerMorph",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.48569,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.gbufferViews",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.64017,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.occlusionScatter",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.34909,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.textureSources",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.68712,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.renderControlToggles",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.4515,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.sprite2dCamera",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.33238,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.overlayFx",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.64414,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.voxelAndHair",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.73003,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.uiAndMap",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.94496,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.skinnedPoseContracts",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.72457,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.reloadTex",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.71085,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.morphInflate",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.66948,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.procgenAssets",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.85233,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.mapFovHex",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.27259,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.particleSkin",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.75504,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.materialHair",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.69484,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.clusteredHair",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.5737,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.clothFluid2D",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.32623,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.particlePresets",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.63039,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.mapPath",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.13097,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.reloadTexBytes",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.56792,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.postQuality",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.32359,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.dualIsoFov",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.24226,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.avatarImage",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.41902,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.avatarVroid",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.69606,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.box2dDebug",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.19441,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.imageRotate",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.45785,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.sceneGraph",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.50457,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.imageAudit.fovHeightHex",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.3426,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.orientation.worldYMapsToScreenUp",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.64719,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.lighting.ambientHonorsCamera",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.55799,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.lighting.pointDoesNotBreakOrientation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.58522,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.shadow.dirShadowDarkensWithoutFlip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.85009,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.effects.gbufferAoDoesNotInvertOrientation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.43002,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.mesh.assimpNodeTransformBaked",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.67104,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.pick.screenToRayMatchesUprightProjection",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.25998,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.studio.threePointBrightensVsAmbient",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.66876,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.ibl.metalBrighterThanDielectric",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.52503,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.unlit.ignoresDirectionalLight",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.57124,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.shadow.pointAndDirCoexist",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.45338,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.winding.insideClosedRoomVisible",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.63629,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.gallery.cylinderAndSphereMaterials",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 2.01149,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.isolation.effectsDoNotFlipOrientation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.47355,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.clustered.manyPointsBrightenWithoutFlip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.34335,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.depth.nearOccludesFar",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.29765,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.scale.nonUniformKeepsUprightMarkers",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.50464,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.checker.colorGridReadable",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.61181,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.camera.moveKeepsUprightMarkers",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.42681,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderScenes.shadow.receiveOffIgnoresUmbra",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+          "seconds": 1.60638,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem.drawsVisibleSpritesViaMocklessPath",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.288845,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem.sprite2dPropertyApiReachesDrawItem",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.100075,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GraphicsSmoke.clearAndPresentWindow",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.37275,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GraphicsSmoke.newTextureFromFileThrowsOnMissing",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.24356,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Canvas.offscreenGetPixelAndSampleOnScreen",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.43424,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "Camera.panAndZoomAffectOffscreenPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.29697,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "Mesh.newMeshFromAssimpCube",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.16846,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Mesh.newMeshSphere",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.17379,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Graphics.screenGetPixelAfterPresent",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.20865,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.smokeRotatingCube",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.4484,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.13638,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.42245,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "RenderSystem3D.shadowContributorRunsInCascadesAndUnregisters",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.20005,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.dynamicVertexRingTracksLatestUpdate",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 2.34908,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "RenderSystem3D.textureCheckerPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.57945,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.lightingAffectsPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.56087,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting3D.pointLightBrightensNearbyFace",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.69501,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Lighting3D.metallicIncreasesSpecularHighlight",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.39994,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.texCellBombChangesPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.53738,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.parallaxChangesPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.36074,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "RenderSystem3D.entityIdMaskPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.3313,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "RenderSystem3D.readTextureBackPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.1451,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "ssr.createConfigureAndApply",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.47787,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.shader shared images retain ownership and replacement isolation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.34476,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.dirLightDarkensOccludedGround",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.79449,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.pcgLodTwoSidedCastsBackFacingGeometry",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.74298,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.pcgSpeedTreeLodKeepsComplementaryCasterCoverage",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.42891,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.receiveShadowFalseIgnoresMap",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.48916,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.shadowStrengthInterpolatesVisibility",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.77314,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Shadow3D.maskedCasterUsesAlbedoAlpha",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.47609,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky atmosphere capture uses independent HDR lighting and detaches cleanly",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.33513,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky filmic display preserves middle grey and keeps prior modes explicit",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.06615,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky height fog fills the ground with independently integrated ambient light",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.16493,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky atmosphere survives graphics provider retirement",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.19038,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky lunar surface preserves phase earthlight occultation and source orientation",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.23441,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "daynight.sky runtime advances one clock and publishes solar lighting to capture",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.1805,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "daynight.sky runtime rejects updates after provider retirement without advancing state",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.15686,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "daynight.sky injected cloud time changes authored wisps and closes the morph cycle",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 4.1946,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "daynight.sky optical cycle survives midnight and restores the same rendered snapshot",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 4.2256,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "daynight.sky script prepares an owned profile runtime and checks time commands",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.16107,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky HDR volume uploads preserve interpolation and failed replacement",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.22307,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.view preparation failures cancel dispatch and registrations detach",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.91025,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.view preparation runs before offscreen target opens",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.968889,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky descriptor limit rejects clouds and leaves atmosphere preparation usable",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.51182,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky authored wisps composite into the shared capture path",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 3.60143,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.sky wisps preserve phase blending and celestial vertex lighting",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.949826,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GraphicsSmoke.textureMipmapsAndAnisotropy",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.879843,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GraphicsSmoke.setTextureSamplerValidatesStrings",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.941803,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GraphicsSmoke.cubemapGeneratesMipChain",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.01267,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Renderable3D.gtsTerrainTileUploadsAndConfiguresRealLodChain",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 0.924825,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Renderable3D.pcgGenericLodsUploadAsOneAtomicChain",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.03373,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Renderable3D.gtsTerrainRuntimeReplacesTilesWithStableHandles",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.36419,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLifetimeOrder",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.01577,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "UI.smoke.RenderSystemSameFrameVulkanOverlay",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.84582,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "UI.smoke.panelGalleryPreview",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.5912,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "UI.smoke.viewportEmbeddedRenderTarget",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.76841,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.qualityPresets",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.25508,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.occlusionMapAndScatter",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.3296,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.applyFromScene",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.07747,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.drawOcclusionRespectsFlag",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.21451,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.collectAndDriveSceneLights3D",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.18903,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.froxelSceneLightsValidateBoundsAndRankProxies",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.32035,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.froxelIntegratesEmissiveProxyAndSceneLights",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.35655,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "volumetric.occlusionFromSceneLights2D",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.39755,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "volumetric.spotConeScatter2D",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.31319,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "volumetric.modeAndRayMarchQuality",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.18396,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.cloudModeParametersAndQuality",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.35916,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.rayMarchProducesScatter",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.56023,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.rayMarchShadowDarkensBehindOccluder",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.20371,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.drawOccluders2DUsesCastFlag",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.33087,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.sharedParameterContracts",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.15065,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.applyFogProducesOpacity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.50726,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.fogDenserAtDistance",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.11485,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "volumetric.froxelAtlasCompositesIntegratedMedia",
+          "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+          "seconds": 1.43766,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "xray.shaderAndFlags",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.35549,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "xray.occludedSilhouette",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.72443,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "animation.spine.windowDemoRealModels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.76603,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "avatar.vrm.importMorphGazeSpringAndRollback",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.1298,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "decal.proceduralImportsReferenceSubstanceMaterialPresets",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 0.181861,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "decal.proceduralFacadeUploadsAllRuntimeChannels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 0.930353,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "decal.gpuProjectBlendsIntoForward",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.60861,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "decal.gpuEmissiveAdditiveGlow",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.47029,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "decal.gpuHeadlessProjectionReadback",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.10387,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "decal.gpuTriplanarCoversGrazingWall",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.51212,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "dialogue.stage.avatarTypewriterPreview",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 2.06518,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.capsAvailable",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.28598,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.bindlessTextureRegistration",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.21975,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.meshTableRegistration",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.35994,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.residentInstanceBufferDirectSubmit",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.40518,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.squirrelResidentInstanceSubmit",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.40164,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.opaqueForwardParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.55741,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.opaqueForwardParityMultiTexture",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.56958,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.opaqueForwardCullParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.82868,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.visResolveParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.52728,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.vgVisResolve",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.57332,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.largeSceneForwardParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.65413,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.largeSceneCullParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.60424,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDriven.largeSceneVisResolveParity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.55488,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDrivenParity.rejectsUnrepresentedSurfaceFeatures",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.17513,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDrivenParity.materialRecordsReleaseIdempotentlyAndReuseSlots",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.20433,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDrivenParity.cameraFacingCardTurnsTowardSideCamera",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.69123,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "GpuDrivenParity.maskedAlphaCutoff",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.36414,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "GpuDrivenParity.opaqueStage1",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.55884,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "GpuDrivenParity.virtualGeometry",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.36764,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.lighting.boundedFrameSlotSubmission",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.63946,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.deferredTargets.lateGbufferAndResize",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.61796,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.hybridLighting.deferredPassAvailable",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.42359,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.lightingPreset.ciKeepsForwardPlus",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.08159,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.font.newFontBuildsAtlasForCharset",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 0.917171,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.font.newFontDefaultCharsetDoesNotCrash",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.0451,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.drawText.throwsWithNullFont",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 0.939905,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.drawText.rendersAtRequestedPosition",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 0.935242,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.drawText.rendersGlyphPixelsOnCanvas",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.01469,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.06502,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceReuse.samplerEditsCoalesceAndReuse",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.26319,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.26632,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.vegetation.render_mesh_update_and_season",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 2.16571,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.HairShader.createGpuPipeline",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.29322,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.HairCards.uploadMaterialAndLod",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.20763,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.hair.groomInstanceMultiGroupAndMarschner",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.22453,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.hair.groomInstanceCardsLodBakeAndDraw",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.38554,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.hair.groomInstanceGuideSimUpdate",
+          "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+          "seconds": 1.38922,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.gpu.residentSimulationAndIndirectRendering",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.44264,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.gpu.residentSortModesStayOnGpuAndRender",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.93603,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.gpu.residentRibbonStaysOnGpuAndRendersSegments",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.23897,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.gpu.multipleResidentEmittersKeepIndependentDrawState",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.3877,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.renderer.normalMappedLitMaterialUsesSceneLights",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.13195,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.renderer.distortionRefractsResolvedSceneColor",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.35977,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.gpu.softDepthFadeUsesSceneLinearDepth",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.39325,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.reference.effectPackLoadsAndRenders",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.49963,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.playback.renderDistanceTrailAndLoopingBurst",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.57949,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.reference.compositedBurstsRenderAtMultipleAngles",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.24165,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "particles.scalability.renderBudgetStressScene",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.42727,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.terrain.materialShaderRendersPortableSixteenLayerContract",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.04145,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "procgen.terrain.waterShaderShipsEmbeddedSpirv",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 0.986733,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.render.cloudShadowsDarkenGround",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.5843,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "procgen.render.castlePng",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.73594,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.waterfall.paramsRoundTrip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.27839,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.waterfall.render.flowAndFoam",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.62492,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.water.paramsRoundTrip",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.05576,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.water.render.dynamicRipplesAndReflection",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.45064,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.render3d.toCanvas",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.30485,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.water.render.planar",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 0.0925021,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.script.newLSystemIsTheDocumentedEntryPoint",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 0.122305,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.render.dungeonCaveMazePreview",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.38925,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceLifetime.textureHandleIsBorrowedUntilReleased",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.19099,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceLifetime.sharedTextureReusesContentKeyAndEvictsOnRelease",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.29617,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceLifetime.meshHandleIsBorrowedUntilReleased",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.15,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.resourceLifetime.shaderHandleIsBorrowedUntilReleased",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.21897,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "rpg.simulation.villageDefenseSystems",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 1.17367,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "procgen.script.pointsetPolygonAndBatchApiAreBound",
+          "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+          "seconds": 0.119665,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.Shader.customSpvOnSprite",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.34504,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "graphics.Shader.newShaderGlslc",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.77064,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.Shader.newShaderCompilesCustomVertexStage",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.59076,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.shaderReload.replacementContract",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.60381,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.shaderReload.vulkan.rebuildsEveryPipelineOfTheShader",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.16715,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.shaderReload.vulkan.meshShaderKeepsItsSurfacePipelines",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.37826,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.cloth.collidesWithWorld",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.229108,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.cloth.momentumExchangeScalesWithMass",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.116824,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.cloth3d.shortGroundContact",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.613102,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.cloth3d.shortMomentumExchangeScalesWithMass",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.520983,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.fluid.emitAndSettle",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.116256,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.fluid.interactRepels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.0888976,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.gpu.clothFallsAndPinsHold",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.85363,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.gpu.clothBoundsAndInteract",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.68283,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "softbody.gpu.clothSelfCollisionSeparates",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.72626,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.api.passFromShaderAndChain",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.12544,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.gpu.postPassAndMeshShader",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.21604,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.render.cylinderStyleGallery",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.97721,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.anime.realGpuPipeline",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.20521,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.meshVfx.gpuRibbonSubmission",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.22892,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "stylize.meshVfx.gpuBatchQueueSubmission",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.2234,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.77203,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.77082,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.faceDirAliasesDraw",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.46088,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.visibleWorldSubmission",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.47159,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.depthNearOccludesFar",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.52723,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.atlasBoundaryIndices",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.42514,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.batchAtlasAndGrowthContract",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.48559,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.remeshPublication",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.35019,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.vertexAoDarkensPixels",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.27245,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "voxel.render.submissionValidationAndRecovery",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.82812,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.WaterGradient.bakesAndPreservesTextureOnFailure",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.16367,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.waterReflectionMasker.bindsRealVm",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.105105,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.WaterUnderwaterDisableTrigger.consumesRealBox3DEvents",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 0.291653,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.1917,
+          "status": "passed",
+          "has_warning_assertions": true
+        },
+        {
+          "name": "weather.backendShaderInitialization",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.86837,
+          "status": "passed",
+          "has_warning_assertions": false
+        },
+        {
+          "name": "weather.pcgInteriorVolumeControlsRealPrecipitationRenderables",
+          "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+          "seconds": 1.57656,
+          "status": "passed",
+          "has_warning_assertions": false
+        }
+      ],
+      "wrapper_seconds": 146.74965159990825
     }
   },
   "ctest_real_reduction_percent": 14.116462753600738,
@@ -7637,7 +11346,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 4.308736999999994,
-      "process_seconds_reduction_percent": 5.199504519362016
+      "process_seconds_reduction_percent": 5.199504519362016,
+      "repaired": {
+        "parents": 74,
+        "process_seconds": 103.735746,
+        "passed": 74
+      }
     },
     {
       "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
@@ -7656,7 +11370,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 1.8784840000000003,
-      "process_seconds_reduction_percent": 2.6784073302951086
+      "process_seconds_reduction_percent": 2.6784073302951086,
+      "repaired": {
+        "parents": 57,
+        "process_seconds": 90.32851,
+        "passed": 57
+      }
     },
     {
       "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
@@ -7675,7 +11394,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 7.306607,
-      "process_seconds_reduction_percent": 12.778110456346134
+      "process_seconds_reduction_percent": 12.778110456346134,
+      "repaired": {
+        "parents": 48,
+        "process_seconds": 65.626442,
+        "passed": 48
+      }
     },
     {
       "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
@@ -7694,7 +11418,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 5.8139308999999955,
-      "process_seconds_reduction_percent": 10.396386118873528
+      "process_seconds_reduction_percent": 10.396386118873528,
+      "repaired": {
+        "parents": 66,
+        "process_seconds": 68.1915392,
+        "passed": 66
+      }
     },
     {
       "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
@@ -7713,7 +11442,13 @@
         "skipped": 15
       },
       "process_seconds_reduction": 3.3655562000000003,
-      "process_seconds_reduction_percent": 7.211774239506303
+      "process_seconds_reduction_percent": 7.211774239506303,
+      "repaired": {
+        "parents": 54,
+        "process_seconds": 57.8511905,
+        "passed": 39,
+        "skipped": 15
+      }
     },
     {
       "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
@@ -7732,7 +11467,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 11.754895000000005,
-      "process_seconds_reduction_percent": 26.15424416264764
+      "process_seconds_reduction_percent": 26.15424416264764,
+      "repaired": {
+        "parents": 37,
+        "process_seconds": 45.3408686,
+        "passed": 37
+      }
     },
     {
       "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
@@ -7751,7 +11491,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 13.822954199999998,
-      "process_seconds_reduction_percent": 30.580348083342514
+      "process_seconds_reduction_percent": 30.580348083342514,
+      "repaired": {
+        "parents": 102,
+        "process_seconds": 39.8542444,
+        "passed": 102
+      }
     },
     {
       "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
@@ -7770,7 +11515,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 11.401685300000004,
-      "process_seconds_reduction_percent": 30.42053402915196
+      "process_seconds_reduction_percent": 30.42053402915196,
+      "repaired": {
+        "parents": 29,
+        "process_seconds": 35.4548551,
+        "passed": 29
+      }
     },
     {
       "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
@@ -7789,7 +11539,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 4.5853033,
-      "process_seconds_reduction_percent": 12.183677582493118
+      "process_seconds_reduction_percent": 12.183677582493118,
+      "repaired": {
+        "parents": 37,
+        "process_seconds": 44.7500282,
+        "passed": 37
+      }
     },
     {
       "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
@@ -7808,7 +11563,12 @@
         "skipped": 0
       },
       "process_seconds_reduction": 7.122007200000002,
-      "process_seconds_reduction_percent": 20.815946394730837
+      "process_seconds_reduction_percent": 20.815946394730837,
+      "repaired": {
+        "parents": 24,
+        "process_seconds": 32.1190847,
+        "passed": 24
+      }
     }
   ],
   "baseline_failure_mapping": [
@@ -8041,5 +11801,13 @@
     "after.log": "05098d3344ce07ea37fd078fe81a73e38f0f59ac3adf5e1a36dd02aa120ad556",
     "after-results.json": "6ce660601026c3509050392923eed03b6683f64ee1a0b337f77092908991ef4e",
     "baseline-failure-review.json": "d30038ead43afc92e892628c01b210a3c8c65b846f333481b71ab3ee9e912364"
-  }
+  },
+  "latest_run": "repaired",
+  "repaired_ctest_real_reduction_percent": -13.32662227040422,
+  "repair_notes": [
+    "Repaired run fixes the prior rendering/LSP failures; historical before/after data is retained unchanged.",
+    "One pure UI value round-trip parent moved into the existing UI unit CPP; its assertions are unchanged and it is measured separately.",
+    "Restored rendering work differs from earlier failed runs; the timing ratio is an observation, not an isolated optimization estimate.",
+    "Full repaired integration sweep is recorded in integration-repair-validation.json."
+  ]
 }

@@ -207,7 +207,9 @@ bool Graphics::drawPbrMesh(wgpu::RenderPassEncoder pass, WGPUTextureFormat forma
         wgpu::DepthStencilState depth{};
         depth.format = wgpu::TextureFormat::Depth32Float;
         depth.depthWriteEnabled = depthWrite ? wgpu::OptionalBool::True : wgpu::OptionalBool::False;
-        depth.depthCompare = wgpu::CompareFunction::Less;
+        // Match built-in Vulkan opaque replacement of Hybrid's stored depth.
+        depth.depthCompare =
+            blend == BlendMode::Opaque && depthWrite ? wgpu::CompareFunction::LessEqual : wgpu::CompareFunction::Less;
         wgpu::RenderPipelineDescriptor descriptor{};
         descriptor.vertex.module = vertex;
         descriptor.vertex.entryPoint = "main";

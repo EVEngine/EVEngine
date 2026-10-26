@@ -1242,25 +1242,17 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
 #include "asset/procgen/TerrainMaterialAtlas.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
 #include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Grass.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
 #include "graphics/Water.h"
 #include "graphics/Waterfall.h"
 #include "image/Image.h"
@@ -1816,6 +1808,34 @@ TEST_CASE("graphics.waterfall.render.flowAndFoam") {
 
     Waterfall *wf = gfx->newWaterfall();
     REQUIRE(wf != nullptr);
+    SUB_CASE("graphics.waterfall.render.rasterSurvivesSurfaceRebuildAndInvalidInput") {
+        auto *shader = wf->getShader();
+        REQUIRE(shader != nullptr);
+        if (gfx->getBackendName() == "webgpu") {
+            const auto previous    = shader->meshRasterState();
+            auto       requested   = previous;
+            requested.depthCompare = MeshDepthCompare::LessEqual;
+            auto absent            = gfx->configureMeshShaderRaster(*shader, requested);
+            REQUIRE(!absent.ok());
+            REQUIRE(absent.status().code() == eve::StatusCode::Unsupported);
+            REQUIRE(shader->meshRasterState().depthCompare == previous.depthCompare);
+            REQUIRE(shader->meshRasterState().colorWriteMask == previous.colorWriteMask);
+            return;
+        }
+        REQUIRE(shader->meshRasterState().depthCompare == MeshDepthCompare::LessEqual);
+        REQUIRE(gfx->configureMeshShaderSurface(*shader, BlendMode::Opaque, false, true).ok());
+        REQUIRE(gfx->configureMeshShaderSurface(*shader, BlendMode::Opaque, true, true).ok());
+        const auto committed = shader->meshRasterState();
+        REQUIRE(committed.depthCompare == MeshDepthCompare::LessEqual);
+        auto invalid           = committed;
+        invalid.colorWriteMask = 16;
+        REQUIRE(!gfx->configureMeshShaderRaster(*shader, invalid).ok());
+        const auto retained = shader->meshRasterState();
+        REQUIRE(retained.depthCompare == committed.depthCompare);
+        REQUIRE(retained.depthBiasConstant == committed.depthBiasConstant);
+        REQUIRE(retained.depthBiasSlope == committed.depthBiasSlope);
+        REQUIRE(retained.colorWriteMask == committed.colorWriteMask);
+    };
     wf->createCurvedSheet(4.f, 6.f, 24, 32, 0.35f, 0.15f);
     wf->setWaterColor(0.05f, 0.28f, 0.5f);
     wf->setReflectionIntensity(0.65f);

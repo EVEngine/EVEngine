@@ -60,7 +60,6 @@
 #include <string>
 #include <vector>
 #include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
@@ -69,15 +68,11 @@
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
 #include "medialoader/model/ModelLoader.h"
 #include "stylize/Stylize.h"
 #include "window/Window.h"
@@ -314,9 +309,6 @@ done:
 #include "animation/SpriteSheet.h"
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/Grass.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 // animation_sprite_spine.cpp
 namespace test_animation_sprite_spine {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -806,47 +798,22 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
         recipe.value().width = recipe.value().height = 32;
         auto baked                                   = bakeProceduralDecal(recipe.value());
         REQUIRE(baked.ok());
-        // Isolate import -> manager projection -> forward composition using
-        // the identity-camera receiver from backendParity.decalLayerProjection.
-        // Its winding matches that projection; makePlane's z=0 cannot be used
-        // here because decal_box.frag rejects identity depth at 0 or 1.
-        // The legacy preview's warning-only projection checks stay separate.
-        const float    positions[] = {-1.f, -1.f, .5f, 1.f, -1.f, .5f, 1.f, 1.f, .5f, -1.f, 1.f, .5f};
-        const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
-        const float    uvs[]       = {0.f, 0.f, 1.f, 0.f, 1.f, 1.f, 0.f, 1.f};
-        const uint32_t indices[]   = {0, 2, 1, 2, 0, 3};
-        auto          *receiver    = gfx->newMeshFromArrays(positions, normals, uvs, 4, indices, 6);
-        auto          *base        = makeSolidTex(gfx, 255, 255, 255);
-        auto          *target      = gfx->newCanvas(64, 64);
-        REQUIRE(receiver != nullptr);
-        REQUIRE(base != nullptr);
-        REQUIRE(target != nullptr);
+        // Reuse the parent's camera, receiver and frame submission: this
+        // contract adds imported textures to the same real scene projection.
         auto &manager = DecalManager::inst();
         struct ClearProjection {
             ~ClearProjection() { DecalManager::inst().clearAll(); }
         } cleanup;
         const auto capture = [&] {
-            gfx->beginGBufferPass(64, 64);
-            gfx->drawMeshGBuffer(receiver, glm::mat4(1.f), glm::mat4(1.f), .1f, 100.f, base);
-            gfx->endGBufferPass();
-            gfx->beginDecalPass(64, 64);
-            gfx->setDecalCamera(glm::mat4(1.f), .1f, 100.f);
-            manager.drawAll(*gfx, 0.f, 0.f, 3.f, glm::mat4(1.f), 1.f);
-            gfx->endDecalPass();
-            Lighting3DPack lighting{};
-            lighting.ambient = glm::vec4(1.f, 1.f, 1.f, 0.f);
-            gfx->setMesh3DLighting(lighting);
-            gfx->setMesh3DViewProj(glm::mat4(1.f));
-            gfx->setMesh3DView(glm::mat4(1.f));
-            gfx->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
-            gfx->begin3DFrameToCanvas(target);
-            gfx->drawMesh(receiver, glm::mat4(1.f), base, Color(1.f));
-            gfx->end3DFrameToCanvas();
-            return std::unique_ptr<eve::image::ImageData>(target->newImageData());
+            for (int frame = 0; frame < 3; ++frame) {
+                RenderSystem3D::render(*gfx);
+                RenderSystem::render(*gfx);
+            }
+            return std::unique_ptr<eve::image::ImageData>(gfx->newImageData());
         };
         auto without = capture();
         REQUIRE(without != nullptr);
-        const auto receiverPixel = without->getPixel(32, 32);
+        const auto receiverPixel = without->getPixel(W / 2, H / 2);
         REQUIRE((receiverPixel.r > .5f && receiverPixel.g > .5f && receiverPixel.b > .5f));
         auto *albedo = gfx->newTexture(32, 32, baked.value().albedo.data());
         auto *normal = gfx->newTexture(32, 32, baked.value().normal.data());
@@ -854,7 +821,7 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
         REQUIRE(albedo != nullptr);
         REQUIRE(normal != nullptr);
         REQUIRE(params != nullptr);
-        const int imported = manager.project(0.f, 0.f, .5f, 0.f, 0.f, 1.f, albedo, "imported-contract", 1.2f, 0.1f,
+        const int imported = manager.project(0.f, 0.f, 0.f, 0.f, 0.f, 1.f, albedo, "imported-contract", 1.2f, 0.1f,
                                              false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
         REQUIRE(manager.setTextures(imported, normal, params));
         auto with = capture();
@@ -1743,6 +1710,8 @@ TEST_CASE("GpuDriven.opaqueForwardParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -1819,6 +1788,8 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -1896,6 +1867,8 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Frustum submission parity requires the same lighting path in both captures.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -2143,6 +2116,8 @@ TEST_CASE("GpuDriven.largeSceneForwardParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -2195,6 +2170,8 @@ TEST_CASE("GpuDriven.largeSceneCullParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -2885,6 +2862,24 @@ TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
     graphics->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
     graphics->drawDeferredLighting();
     graphics->present();
+    SUB_CASE("graphics.hybridLighting.explicitGpuDrivenTakesObservablePriority") {
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->hasPass("deferredLighting"));
+        rc->enable("gpuDriven");
+        rc->compile();
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+        REQUIRE(rc->hasHybridLightingFallback());
+        REQUIRE(rc->isEnabled("gpuDriven"));
+        REQUIRE(rc->hasPass("forward"));
+        REQUIRE(!rc->hasPass("deferredLighting"));
+        rc->disable("gpuDriven");
+        rc->compile();
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(!rc->hasHybridLightingFallback());
+        REQUIRE(rc->hasPass("deferredLighting"));
+    };
 }
 
 TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {

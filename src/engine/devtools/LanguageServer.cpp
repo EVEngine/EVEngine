@@ -416,6 +416,36 @@ size_t skipCallTokens(const std::vector<ExprTok>& tokens, size_t index) {
 
 using SlotClassMap = std::unordered_map<std::string, std::string>;
 
+bool moduleClass(std::string_view type, const SlotClassMap& slots) {
+    for (const auto& entry : slots)
+        if (entry.second == type) return true;
+    return false;
+}
+
+bool belongsToType(const script::BindingContract& contract, std::string_view type, const SlotClassMap& slots) {
+    if (!contract.scriptClass.empty()) return contract.scriptClass == type;
+    const auto slot = slots.find(contract.module);
+    return slot != slots.end() && slot->second == type;
+}
+
+std::string returnedScriptClass(const script::BindingContract&         factory,
+                                const script::BindingContractRegistry& bindings) {
+    const auto returned = trimTypeName(factory.returnType);
+    if (isPrimitiveType(returned)) return {};
+    if (bindings.hasScriptClass(returned)) return returned;
+    // Generated factories can retain a native type name while their methods
+    // name the script class. Derive that relation from the same owned contracts.
+    std::string candidate;
+    for (const auto& method : bindings.snapshot()) {
+        if (method.module != factory.module || method.scriptClass.empty()) continue;
+        const auto separator = method.cppSymbol.rfind("::");
+        if (separator == std::string::npos || method.cppSymbol.substr(0, separator) != returned) continue;
+        if (!candidate.empty() && candidate != method.scriptClass) return {};
+        candidate = method.scriptClass;
+    }
+    return candidate;
+}
+
 std::string applyRootIdent(std::string_view name, bool called, const SlotClassMap& slots,
                            const script::BindingContractRegistry& bindings,
                            const std::function<std::string(std::string_view)>& localType) {
@@ -427,17 +457,24 @@ std::string applyRootIdent(std::string_view name, bool called, const SlotClassMa
 }
 
 std::string applyMember(std::string type, std::string_view name, bool called,
-                        const script::BindingContractRegistry& bindings) {
+                        const script::BindingContractRegistry& bindings, const SlotClassMap& slots) {
     if (type == "eve") {
-        return bindings.hasScriptClass(name) ? std::string(name) : std::string{};
+        return bindings.hasScriptClass(name) || moduleClass(name, slots) ? std::string(name) : std::string{};
     }
     if (isPrimitiveType(type)) return {};
     const script::BindingContract* contract = bindings.findMethod(type, name);
+    std::optional<script::BindingContract> moduleMethod;
+    if (!contract && moduleClass(type, slots)) {
+        for (const auto& method : bindings.snapshot()) {
+            if (method.method != name || !belongsToType(method, type, slots)) continue;
+            if (moduleMethod) return {};
+            moduleMethod = method;
+        }
+        if (moduleMethod) contract = &*moduleMethod;
+    }
     if (contract == nullptr) return {};
     if (!called) return type;
-    const std::string returned = trimTypeName(contract->returnType);
-    if (isPrimitiveType(returned) || !bindings.hasScriptClass(returned)) return {};
-    return returned;
+    return returnedScriptClass(*contract, bindings);
 }
 
 std::string typeOfTokens(const std::vector<ExprTok>& tokens, const SlotClassMap& slots,
@@ -458,7 +495,7 @@ std::string typeOfTokens(const std::vector<ExprTok>& tokens, const SlotClassMap&
         const bool called = i < tokens.size() && tokens[i].kind == ExprTokKind::LParen;
         if (called) i = skipCallTokens(tokens, i);
         type = type.empty() ? applyRootIdent(name, called, slots, bindings, localType)
-                            : applyMember(std::move(type), name, called, bindings);
+                            : applyMember(std::move(type), name, called, bindings, slots);
         if (type.empty()) return {};
     }
     return type;
@@ -736,6 +773,11 @@ struct LanguageServer::Impl {
                                                                                         : cursor.qualifier);
             if (expectedClass == "eve") {
                 std::unordered_map<std::string, bool> seen;
+                for (const auto& entry : slotClass_) {
+                    const auto& scriptClass = entry.second;
+                    if (scriptClass.rfind(cursor.word, 0) != 0 || !seen.emplace(scriptClass, true).second) continue;
+                    result.push_back({scriptClass, "class", "eve." + scriptClass, scriptClass});
+                }
                 for (const script::BindingContract& contract : runtime_.scriptCompiler().bindings().snapshot()) {
                     if (contract.scriptClass.empty() || contract.scriptClass.rfind(cursor.word, 0) != 0) continue;
                     if (!seen.emplace(contract.scriptClass, true).second) continue;
@@ -744,7 +786,7 @@ struct LanguageServer::Impl {
                 return result;
             }
             for (const script::BindingContract& contract : runtime_.scriptCompiler().bindings().snapshot()) {
-                if (contract.scriptClass != expectedClass) continue;
+                if (!belongsToType(contract, expectedClass, slotClass_)) continue;
                 if (contract.method.rfind(cursor.word, 0) != 0) continue;
                 result.push_back(completionFromContract(contract));
             }
