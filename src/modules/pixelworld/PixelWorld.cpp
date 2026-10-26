@@ -1492,6 +1492,7 @@ eve::Result<PixelChunkApplyReceipt> PixelWorld::applyChunkBatch(
     }
 
     Impl candidate = batch.fullResync ? Impl(impl_->catalog) : *impl_;
+    candidate.seed = batch.sourceSeed;
     if (batch.fullResync) {
         candidate.worldId = impl_->worldId;
         candidate.epoch = impl_->epoch;
