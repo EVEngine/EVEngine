@@ -553,6 +553,8 @@ jobs:
     timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Debug .o blobs use -g0/-O2 (no /Zi); keep key stable to avoid a second
+      # namespace while the account cache quota is tight across the build matrix.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
       # warm other PRs. Let PRs consume the dev cache without duplicating it.
@@ -627,7 +629,9 @@ jobs:
       - name: Build win32 debug
         # Dependencies come from the pinned independent release; this job
         # compiles the engine/tests and caches verified downloaded packages.
-        timeout-minutes: 100
+        # 120m: cold sccache + MSVC normal (/Od, no /Zi) still has headroom;
+        # /O2 previously exhausted the old 100m budget at ~88% of the build.
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -1654,6 +1658,8 @@ jobs:
     timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Shared across the Linux Debug job; object hash includes -g0 so new
+      # entries are smaller without opening a parallel GHA cache namespace.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
       # Populate shared caches only from long-lived branches; PR-scoped writes
       # are dead stores after that PR closes and quickly evict reusable entries.
