@@ -234,7 +234,13 @@ bool StateValue::operator==(const StateValue& o) const {
         case Kind::Bool: return b_ == o.b_;
         case Kind::String: return s_ == o.s_;
         case Kind::Array: return arr_ == o.arr_;
-        case Kind::Object: return obj_ == o.obj_;
+        case Kind::Object:
+            if (obj_.size() != o.obj_.size()) return false;
+            for (const auto& [key, value] : obj_) {
+                const auto* other = o.find(key);
+                if (!other || value != *other) return false;
+            }
+            return true;
     }
     return false;
 }

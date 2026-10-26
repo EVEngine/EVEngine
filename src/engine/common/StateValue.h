@@ -107,6 +107,11 @@ public:
      */
     bool mergeDefaults(const StateValue& defaults);
 
+    /**
+     * @brief Compare typed values; object key order is ignored, array order is significant.
+     * @cost Scalars are constant-time; objects perform a key lookup per member.
+     *       Amortize large snapshot comparisons per reload operation.
+     */
     bool operator==(const StateValue& o) const;
     bool operator!=(const StateValue& o) const { return !(*this == o); }
 

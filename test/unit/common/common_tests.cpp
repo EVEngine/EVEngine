@@ -2950,6 +2950,25 @@ TEST_CASE("common.stateValue.spec.containersPathsMergeAndEquality") {
         b.set("k", StateValue::string("w"));
         CHECK(a != b);
 
+        a.set("a", StateValue::integer(7));
+        b = StateValue::object();
+        b.set("a", StateValue::integer(7));
+        b.set("k", StateValue::string("v"));
+        CHECK(a == b);
+        CHECK(a.keys() != b.keys());
+        CHECK(toLegacyStateValue(toCanonicalStateValue(a)) == a);
+        b.set("a", StateValue::number(7.0));
+        CHECK(a != b);
+        b.set("extra", StateValue::null());
+        CHECK(a != b);
+        auto first = StateValue::array();
+        first.pushBack(StateValue::integer(1));
+        first.pushBack(StateValue::integer(2));
+        auto reversed = StateValue::array();
+        reversed.pushBack(StateValue::integer(2));
+        reversed.pushBack(StateValue::integer(1));
+        CHECK(first != reversed);
+
         CHECK(StateValue::null() == StateValue::null());
     };
 }
