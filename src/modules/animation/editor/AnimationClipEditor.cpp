@@ -1,4 +1,5 @@
 #include "animation/editor/AnimationClipEditor.h"
+#include "common/Assert.h"
 
 #if defined(EVE_ANIMATION_EDITOR_RUNTIME)
 #include "animation/AnimClip.h"
@@ -6,6 +7,7 @@
 #include "animation/AnimSkeleton.h"
 #endif
 #include "editor/EditorProtocol.h"
+#include "editor/presentation/PreviewState.h"
 
 #include <algorithm>
 #include <cmath>
@@ -40,6 +42,7 @@ animation_editing::EditorValue trackValue(const char* id, const char* bone,
 
 AnimationClipEditor::AnimationClipEditor(std::string targetId)
     : target_(std::move(targetId)), authority_(&target_), transactions_(&authority_) {
+    initializePreview();
     skeleton_ = {{"Hips", {}}, {"Spine", "Hips"}, {"Chest", "Spine"}, {"Head", "Chest"},
                  {"LeftArm", "Chest"}, {"RightArm", "Chest"}};
     seedPreviewClip();
@@ -287,7 +290,8 @@ animation_editing::Result<void> AnimationClipEditor::moveSelectedKey(double time
 animation_editing::AnimationTransformKey AnimationClipEditor::sampledSelectedTransform() const {
     animation_editing::AnimationTransformKey result;
     result.time = playhead_;
-    for (const auto& bone : preview_.bones) {
+    const auto sampled = target_.preview(playhead_);
+    for (const auto& bone : sampled.bones) {
         if (bone.bone != selectedBone_) continue;
         result.positionX = bone.positionX; result.positionY = bone.positionY; result.positionZ = bone.positionZ;
         result.rotationX = bone.rotationX; result.rotationY = bone.rotationY; result.rotationZ = bone.rotationZ; result.rotationW = bone.rotationW;
@@ -430,9 +434,15 @@ void AnimationClipEditor::pause() noexcept { playing_ = false; }
 void AnimationClipEditor::stop() noexcept {
     playing_  = false;
     playhead_ = 0.0;
+    previewDirty_  = true;
+    auto cancelled = cancelPreview();
+    if (!cancelled.ok()) EV_ASSERT(false, "Owned preview cancellation must succeed");
 }
 
 animation_editing::Result<void> AnimationClipEditor::update(double deltaSeconds) {
+    auto previewed = pollPreview();
+    if (!previewed.ok()) return previewed;
+    const auto previousTime = playhead_;
     if (playing_) {
         if (!std::isfinite(deltaSeconds) || deltaSeconds < 0.0)
             return editorError(animation_editing::EditorStatus::Rejected, "editor.animation.dt",
@@ -449,43 +459,14 @@ animation_editing::Result<void> AnimationClipEditor::update(double deltaSeconds)
             playing_  = false;
         }
     }
-    return refreshPreview();
+    if (playhead_ != previousTime || previewDirty_) return refreshPreview();
+    return editing::noOp();
 }
 
 animation_editing::Result<void> AnimationClipEditor::refreshPreview() {
-    const auto sampled = target_.preview(playhead_, skeletonBones());
-    if (sampled.documentRevision != target_.revision()) {
-        return editorError(animation_editing::EditorStatus::Conflict, "editor.animation.stale-preview",
-                           "Clip preview revision does not match the document");
-    }
-    if (sampled.status != animation_editing::EditorStatus::Applied)
-        return editorError(sampled.status, "editor.animation.preview", "Could not sample the animation clip pose");
-
-    std::vector<animation_editing::SkeletonOverlayBone> bones;
-    bones.reserve(sampled.bones.size());
-    for (const auto& sample : sampled.bones) {
-        animation_editing::SkeletonOverlayBone bone;
-        bone.id         = animation_editing::StableId(sample.bone);
-        bone.parent     = animation_editing::StableId(skeletonParent(sample.bone));
-        bone.name       = sample.bone;
-        bone.position   = {sample.positionX, sample.positionY, sample.positionZ};
-        bone.rotation   = {sample.rotationX, sample.rotationY, sample.rotationZ, sample.rotationW};
-        bone.selected   = sample.bone == selectedBone_;
-        bone.maskWeight = sample.maskWeight;
-        bones.push_back(std::move(bone));
-    }
-    animation_editing::SkeletonOverlayOptions options;
-    options.showAxes            = true;
-    options.axesForSelectedOnly = true;
-    options.showConstraints     = false;
-    auto overlay = overlayBuilder_.build(target_.targetId().value(), animation_editing::Revision(target_.revision()),
-                                         bones, options);
-    if (overlay.status != eve::editing::Status::Applied)
-        return editorError(overlay.status, "editor.animation.overlay",
-                           "Could not rebuild the skeleton overlay from the sampled pose");
-    preview_ = sampled;
-    overlay_ = std::move(overlay);
-    return eve::editing::applied<void>();
+    const auto phase = previewState().phase;
+    if (phase == editor::PreviewPhase::Unavailable || phase == editor::PreviewPhase::Closed) return editing::noOp();
+    return requestPreview();
 }
 
 float AnimationClipEditor::layoutHeight() const noexcept {
@@ -495,7 +476,8 @@ float AnimationClipEditor::layoutHeight() const noexcept {
 float AnimationClipEditor::playheadX() const noexcept { return timeToX(playhead_); }
 
 double AnimationClipEditor::selectedMaskWeight() const {
-    for (const auto& sample : preview_.bones)
+    const auto sampled = target_.preview(playhead_);
+    for (const auto& sample : sampled.bones)
         if (sample.bone == selectedBone_) return sample.maskWeight;
     return 1.0;
 }

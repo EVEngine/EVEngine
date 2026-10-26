@@ -119,6 +119,10 @@ struct EVENGINE_API_WORLD BuildingDefinition {
     std::vector<float> freeFootprintVertices;
     /** @brief Edge topology compatibility group; empty falls back to building id. */
     std::string connectionGroup;
+    /** @brief Solid edge thickness in cells; zero disables free/edge collision. */
+    float edgeThicknessCells = 0.f;
+    /** @brief Edge channels that block this free-domain footprint at the same floor. */
+    std::vector<std::string> blockedByEdgeChannels;
     /** @brief Structural classification such as floor, wall, ceiling, roof, or stair. */
     std::string structuralRole;
     /** @brief Structural support policy: `none`, `cell_below`, or `corner_below`. */

@@ -513,7 +513,10 @@ def class_bindings(source: str) -> list[tuple[int, str, str]]:
         # Do not infer scriptClass from Type::create: that rewrites contract keys
         # (module/Class.method) and invalidates reviewed semantics maps.
         result.append((match.start(), match.group(1), literal.group(1) if literal else (match.group(2) or "")))
-    return result
+    helper_pattern = re.compile(r'\bauto\s+(\w+)\s*=\s*(?:editor::)?addScriptClass\s*<[^>]+>\s*\(\s*\w+\s*,\s*"([^"\n]+)"')
+    for match in helper_pattern.finditer(mask_comments(source)):
+        result.append((match.start(), match.group(1), match.group(2)))
+    return sorted(result)
 
 
 def callable_signature(expression: str, signatures: SignatureIndex) -> tuple[str, str, list[Parameter]] | None:
@@ -548,6 +551,10 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
+    helper_contracts: dict[str, list[Contract]] = {}
+    helper_pattern = re.compile(
+        r"template\s*<[^>]+>\s*void\s+(\w+)\s*\(\s*ssq::Class\s*&\s*(\w+)"
+    )
     slots = slot_index if slot_index is not None else load_slot_index()
     class_aliases: dict[str, set[str]] = {}
     for path, source in sources.items():
@@ -578,6 +585,12 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
             continue
         bindings = class_bindings(source)
         masked = mask_comments(source)
+        helpers = []
+        for helper in helper_pattern.finditer(masked):
+            opening = masked.find("{", helper.end())
+            closing = matching(source, opening, "{", "}") if opening >= 0 else None
+            if closing is not None:
+                helpers.append((opening, closing, helper.group(1), helper.group(2)))
         for match in call_pattern.finditer(masked):
             opening = source.find("(", match.start())
             closing = matching(source, opening)
@@ -655,6 +668,11 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                                 "main", [platform] if platform else [],
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
                                 f"{path.relative_to(ROOT).as_posix()}:{source.count(chr(10), 0, match.start()) + 1}")
+            helper_name = next((name for start, end, name, receiver in helpers
+                                if start < match.start() < end and receiver == receiver_expr), None)
+            if helper_name:
+                helper_contracts.setdefault(helper_name, []).append(contract)
+                continue
             existing = contracts.get(contract.key)
             direct_member = re.fullmatch(r"\s*&\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\s*", expression)
             if direct_member:
@@ -663,6 +681,27 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                 p.name.startswith("arg") for p in existing.parameters
             ):
                 contracts[contract.key] = contract
+    # Expand shared template binders at actual class-registration call sites.
+    # The methods still come from addFunc declarations, so no duplicate API list
+    # or per-domain registration wrapper is needed for discovery/LSP.
+    for name, methods in helper_contracts.items():
+        pattern = re.compile(r"\b" + re.escape(name) + r"\s*(?:<[^{}();]+>)?\s*\(\s*(\w+)\s*[,)]")
+        for path, source in sources.items():
+            relative = path.relative_to(ROOT).parts
+            if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
+                    and relative[2] not in enabled_modules):
+                continue
+            bindings = class_bindings(source)
+            for call in pattern.finditer(mask_comments(source)):
+                bound_class = next((bound for position, receiver, bound in reversed(bindings)
+                                    if position < call.start() and receiver == call.group(1)), "")
+                if not bound_class:
+                    continue
+                module = resolve_slot_module(path, module_for(path), "", bound_class, slots)
+                for method in methods:
+                    contract = replace(method, module=module, script_class=bound_class,
+                                       documentation_id=f"{module}.{bound_class}.{method.method}")
+                    contracts[contract.key] = contract
     return sorted(contracts.values(), key=lambda item: item.key), unresolved
 
 
