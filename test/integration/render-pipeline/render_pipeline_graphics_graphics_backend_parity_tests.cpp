@@ -140,10 +140,8 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     context.executionId = enter.id;
     REQUIRE(runtime.apply(enter, context).ok());
     CHECK_EQ(renderableCount(true), 1u);
-    auto transformed = ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
-                                 eve::graphics::Renderable3D::MeshRenderer>();
-    for (auto it = transformed.begin(); it != transformed.end(); ++it) {
-        auto [transform, renderer] = *it;
+    for (auto [transform, renderer] : ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
+                                                eve::graphics::Renderable3D::MeshRenderer>()) {
         if (!renderer->visible) continue;
         CHECK_EQ(transform->x, 2.f);
         CHECK_EQ(transform->y, 3.f);
@@ -230,8 +228,8 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     CHECK_EQ(renderableCount(true), 0u);
     preview.value()->present(frame);
     CHECK_EQ(renderableCount(true), 1u);
-    for (auto it = transformed.begin(); it != transformed.end(); ++it) {
-        auto [transform, renderer] = *it;
+    for (auto [transform, renderer] : ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
+                                                eve::graphics::Renderable3D::MeshRenderer>()) {
         if (!renderer->visible) continue;
         CHECK_EQ(transform->x, 6.f);
         CHECK_EQ(transform->y, 7.f);
