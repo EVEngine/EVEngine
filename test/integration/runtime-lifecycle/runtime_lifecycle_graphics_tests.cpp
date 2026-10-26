@@ -813,12 +813,14 @@ TEST_CASE("os.clipboardRoundTrip") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pcg_build_config)
-#include "PrivateTestScope.h"
 #include <limits>
+#include "PrivateTestScope.h"
 #include "scene/PcgBuildConfig.h"
 #include "scene/PcgGrowth.h"
 #include "scene/Scene.h"
+#include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
+#include "scene/SceneObject.h"
 #include "zeroerr/unittest.h"
 // pcg_build_config.cpp
 namespace test_pcg_build_config {
@@ -896,10 +898,25 @@ TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     scene->beginBuild();
     scene->beginNode("root");
     scene->addNode("plant");
+    scene->beginNode("branch");
+    scene->addNode("leaf");
+    scene->end();
     scene->end();
     REQUIRE(scene->mountBuildAs("pcg-growth-test"));
     SceneNodeRef node("pcg-growth-test", "plant");
     REQUIRE(node.isValid());
+    ecs::EntityHandle companion;
+    {
+        auto* host = scene->resolveHost("pcg-growth-test");
+        REQUIRE(host != nullptr);
+        auto plant = host->findById("plant");
+        REQUIRE(plant.ok());
+        auto created = SceneObject::createObject("pcg-growth-test", "plant", plant.value()->persistentId);
+        REQUIRE(created.ok());
+        auto* object            = std::move(created).takeValue();
+        plant.value()->objectId = static_cast<uint32_t>(object->id) + 1u;
+        companion               = ecs::handle_of(object);
+    }
     PcgGrowth g;
     REQUIRE(g.start(10, 3).ok());
     auto applied = applyPcgGrowth(g, node, 10);
@@ -911,6 +928,12 @@ TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     REQUIRE(removed.ok());
     CHECK(removed.value());
     CHECK(!node.isValid());
+    CHECK(ecs::try_get(companion) == nullptr);
+    SceneNodeRef branch("pcg-growth-test", "branch");
+    auto         rejected = applyPcgGrowth(g, branch, 16);
+    CHECK(!rejected.ok());
+    CHECK(branch.isValid());
+    CHECK(SceneNodeRef("pcg-growth-test", "leaf").isValid());
 }
 }  // namespace test_pcg_build_config
 #endif
@@ -1900,7 +1923,7 @@ TEST_CASE("scene.componentScheduling.automaticAndDestructionSafe") {
         destroyed.markDirty();
     }
     eve::scene::TransformSystem::updateAll();
-    tree.host()->release();
+    ecs::DestroyEntity(tree.host());
     tree.markDirty();
     eve::scene::TransformSystem::updateAll();
     CHECK(tree.host() == nullptr);
