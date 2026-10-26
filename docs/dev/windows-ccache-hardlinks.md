@@ -1,3 +1,9 @@
+> zeroerr 0.4.0 更新：下文 compiled diagnostics 的测量记录针对旧版。
+> 0.4.0 已提供轻量 String/StringBuffer 及独立编译的文本输出实现；
+> 引擎已移除旧版诊断补丁、CompiledDiagnostics.cpp 和
+> EVENGINE_ZEROERR_COMPILED_DIAGNOSTICS 选项，直接使用上游实现。
+> 下文历史性能数字不代表 0.4.0 的测量结果。
+
 # Windows 工作树共享 OBJ
 
 `EVENGINE_COMPILER_CACHE=CCACHE_HARDLINK` 是显式启用的 Windows/Ninja/MSVC 模式，

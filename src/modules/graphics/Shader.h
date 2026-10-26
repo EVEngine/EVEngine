@@ -13,7 +13,8 @@
 #include "graphics/BlendMode.h"
 #include "graphics/MeshShaderRasterState.h"
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics {
 class Texture;

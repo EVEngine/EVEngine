@@ -1,4 +1,6 @@
 #include "card/Card.h"
+#include <glm/geometric.hpp>
+#include <glm/vec3.hpp>
 #include "card/CardAttributes.h"
 #include "card/CardControl.h"
 #include "card/CardOwnerInternal.h"

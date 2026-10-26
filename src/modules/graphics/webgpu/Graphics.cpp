@@ -10,6 +10,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
@@ -2507,23 +2508,30 @@ Mesh* Graphics::newMeshFromArraysColored(const float* posXYZ, const float* nrmXY
     return mesh;
 }
 
-std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
-    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+eve::Result<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
+    if (!mesh || !mesh->gpuHandle)
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh has no backend upload", {}, {}, "graphics.mesh.describe"));
     const auto* gpu = static_cast<const GpuMesh*>(mesh->gpuHandle);
     const auto  owned =
         std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
                      [gpu](const std::unique_ptr<GpuMesh>& candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return std::nullopt;
-    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount, gpu->vertexStride,
-                                                gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u};
+    if (owned == ownedGpuMeshes.end())
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh is not owned by this graphics", {}, {}, "graphics.mesh.describe"));
+    return eve::Result<eve::graphics::MeshBackendDescriptor>::success(eve::graphics::MeshBackendDescriptor{
+        gpu->vertexCount, gpu->indexCount, gpu->vertexStride, gpu->indexFormat == wgpu::IndexFormat::Uint16 ? 2u : 4u});
 }
 
-Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh) {
-    aiMatrix4x4 ident;
-    return newMeshFromAssimp(mesh, ident);
-}
+Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh) { return newMeshFromAssimp(mesh, glm::mat4(1.f)); }
 
-Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const aiMatrix4x4& worldTransform) {
+Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) {
+    // glm is column-major; Assimp aiMatrix4x4 is row-major.
+    const aiMatrix4x4 world(worldTransform[0][0], worldTransform[1][0], worldTransform[2][0], worldTransform[3][0],
+                            worldTransform[0][1], worldTransform[1][1], worldTransform[2][1], worldTransform[3][1],
+                            worldTransform[0][2], worldTransform[1][2], worldTransform[2][2], worldTransform[3][2],
+                            worldTransform[0][3], worldTransform[1][3], worldTransform[2][3], worldTransform[3][3]);
+
     std::vector<float>    pos, nrm, uv;
     std::vector<uint32_t> idx;
     pos.reserve(mesh.mNumVertices * 3);
@@ -2532,12 +2540,12 @@ Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const aiMatrix4x4& world
     idx.reserve(mesh.mNumFaces * 3);
 
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
-        aiVector3D p = worldTransform * mesh.mVertices[i];
+        aiVector3D p = world * mesh.mVertices[i];
         pos.push_back(p.x);
         pos.push_back(p.y);
         pos.push_back(p.z);
         if (mesh.mNormals) {
-            aiMatrix3x3 rot(worldTransform);
+            aiMatrix3x3 rot(world);
             aiVector3D  n = rot * mesh.mNormals[i];
             n.Normalize();
             nrm.push_back(n.x);

@@ -7,6 +7,8 @@
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/Quad.h"
+#include "graphics/Shader.h"
+#include "graphics/Texture.h"
 
 #include <algorithm>
 #include <cmath>

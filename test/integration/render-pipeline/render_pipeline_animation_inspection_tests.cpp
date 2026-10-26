@@ -10,6 +10,7 @@
 #include "devtools/FrameContactSheet.hpp"
 #include "graphics/Graphics.h"
 #include "graphics/InspectionPlan.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"

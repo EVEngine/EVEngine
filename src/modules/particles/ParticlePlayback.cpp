@@ -2,6 +2,7 @@
 #include "particles/ParticleRecording.h"
 
 #include "common/Module.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 
 #include <algorithm>
@@ -160,7 +161,8 @@ void ParticleEmitter::reset() {
     auto g = gpuSim();
     if (g->residentHandle != 0) {
         auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        if (gfx) gfx->resetGpuParticleEmitter(g->residentHandle);
+        if (gfx)
+            if (auto* gp = gfx->gpuParticles()) gp->resetGpuParticleEmitter(g->residentHandle);
     }
     g->residentActive = false;
     g->estimatedAlive = 0;

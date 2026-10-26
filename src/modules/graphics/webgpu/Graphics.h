@@ -3,11 +3,15 @@
 #include "common/Export.h"
 #include "graphics/Batcher.h"
 #include "graphics/ClusteredLight.h"
+#include "graphics/GpuDrivenTypes.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsRgb.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Light.h"
 #include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
 #include "graphics/PrimitiveTypes.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/Shader.h"
 #include "graphics/Shadow.h"
 #include "graphics/ShadowScheme.h"
@@ -465,7 +469,7 @@ public:
     /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromAssimp(const ::aiMesh &mesh) override;
     /** @brief Creates a mesh from assimp. @ownership Caller deletes unless documented otherwise. */
-    Mesh *newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) override;
+    Mesh* newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) override;
     /** @brief Creates a mesh from arrays. @ownership Caller deletes unless documented otherwise. */
     Mesh *newMeshFromArrays(const float *posXYZ, const float *nrmXYZ, const float *uvST,
                             int vertexCount, const uint32_t *indices, int indexCount) override;
@@ -480,7 +484,7 @@ public:
                                    const float *colorRGBA, int vertexCount,
                                    const uint32_t *indices, int indexCount) override;
     /** @brief Return layout facts from the owned WebGPU mesh upload. */
-    [[nodiscard]] std::optional<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh *mesh) const override;
+    [[nodiscard]] eve::Result<eve::graphics::MeshBackendDescriptor> describeMesh(Mesh* mesh) const override;
     bool bakeMeshMorph(Mesh *mesh) override;
     /** @brief Updates mesh vertices. */
     bool updateMeshVertices(Mesh *mesh, const float *posXYZ, const float *nrmXYZ, const float *uvST,
@@ -586,21 +590,25 @@ public:
     /** @brief Returns the scene exposure. */
     float getSceneExposure() const override { return sceneExposure; }
     /** @brief Sets the scene color filter. */
-    void  setSceneColorFilter(const glm::vec3& color) override { sceneColorFilter = glm::max(color, glm::vec3(0.f)); }
+    void setSceneColorFilter(const RgbF& color) override {
+        sceneColorFilter = glm::max(glm::vec3(color.r, color.g, color.b), glm::vec3(0.f));
+    }
     /** @brief Returns the scene color filter. */
-    glm::vec3 getSceneColorFilter() const override { return sceneColorFilter; }
+    RgbF getSceneColorFilter() const override { return {sceneColorFilter.r, sceneColorFilter.g, sceneColorFilter.b}; }
     /** @brief Sets the scene lift gamma gain. */
-    void setSceneLiftGammaGain(const glm::vec3& lift, const glm::vec3& inverseGamma, const glm::vec3& gain) override {
-        sceneLift         = lift;
-        sceneInverseGamma = glm::max(inverseGamma, glm::vec3(0.001F));
-        sceneGain         = gain;
+    void setSceneLiftGammaGain(const RgbF& lift, const RgbF& inverseGamma, const RgbF& gain) override {
+        sceneLift         = glm::vec3(lift.r, lift.g, lift.b);
+        sceneInverseGamma = glm::max(glm::vec3(inverseGamma.r, inverseGamma.g, inverseGamma.b), glm::vec3(0.001F));
+        sceneGain         = glm::vec3(gain.r, gain.g, gain.b);
     }
     /** @brief Returns the scene lift. */
-    glm::vec3 getSceneLift() const override { return sceneLift; }
+    RgbF getSceneLift() const override { return {sceneLift.r, sceneLift.g, sceneLift.b}; }
     /** @brief Returns the scene inverse gamma. */
-    glm::vec3 getSceneInverseGamma() const override { return sceneInverseGamma; }
+    RgbF getSceneInverseGamma() const override {
+        return {sceneInverseGamma.r, sceneInverseGamma.g, sceneInverseGamma.b};
+    }
     /** @brief Returns the scene gain. */
-    glm::vec3 getSceneGain() const override { return sceneGain; }
+    RgbF getSceneGain() const override { return {sceneGain.r, sceneGain.g, sceneGain.b}; }
     /** @brief Sets the scene transition fx. */
     void      setSceneTransitionFx(float vignette, float vignetteSmoothness, float lensDistortion,
                                    float lensScale) override {
@@ -732,9 +740,9 @@ public:
     /** @brief Advances a pending frame readback; called every present(). */
     void pumpReadback();
     /** @brief Draws . */
-    void draw(eve::graphics::Graphics *gfx, const glm::mat4 &matrix) const override;
+    void draw(eve::graphics::Graphics* gfx, const glm::mat4& matrix) const override;
     /** @brief Draws . */
-    void draw(Canvas *C, const glm::mat4 &matrix) const override;
+    void draw(Canvas* C, const glm::mat4& matrix) const override;
     /** @brief Clears . */
     void  clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) override;
     /** @brief Returns the pixel. */

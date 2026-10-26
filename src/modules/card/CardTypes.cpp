@@ -1,7 +1,9 @@
 #include "card/CardTypes.h"
+#include <glm/vec2.hpp>
 
 #include "card/CardAttributes.h"
 
+#include "graphics/Font.h"
 #include "graphics/Graphics.h"
 
 #include <algorithm>

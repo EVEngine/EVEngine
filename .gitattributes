@@ -7,6 +7,5 @@ cmake/patches/ecs-shared-default-table.patch text eol=crlf
 cmake/patches/ecs-view-preparation.patch text eol=crlf
 cmake/patches/ecs-idle-commit.patch text eol=crlf
 cmake/patches/ecs-view-scope-and-iteration.patch text eol=crlf
-cmake/patches/zeroerr-compiled-diagnostics.patch text eol=lf
 cmake/patches/ecs-view-live-slots.patch text eol=crlf
 cmake/patches/ecs-query-and-record-lifetime.patch text eol=crlf

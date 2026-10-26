@@ -10,6 +10,7 @@
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"

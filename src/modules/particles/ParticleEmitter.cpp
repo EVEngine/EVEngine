@@ -11,6 +11,7 @@
 #include "common/Module.h"
 #include "common/ParticleSdf.h"
 #include "graphics/Canvas.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "graphics/Texture.h"
 #include "ik/Skeleton2D.h"
@@ -775,7 +776,8 @@ void ParticleEmitter::release() {
     auto gpu = gpuSim();
     if (gpu->residentHandle != 0) {
         auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        if (gfx) gfx->releaseGpuParticleEmitter(gpu->residentHandle);
+        if (gfx)
+            if (auto* gp = gfx->gpuParticles()) gp->releaseGpuParticleEmitter(gpu->residentHandle);
         gpu->residentHandle = 0;
         gpu->residentActive = false;
         gpu->estimatedAlive = 0;
@@ -946,7 +948,8 @@ void ParticleEmitter::setGpuSimulation(bool enable) {
     gpu->enabled            = enable;
     if (!enable && gpu->residentHandle != 0) {
         auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-        if (gfx) gfx->releaseGpuParticleEmitter(gpu->residentHandle);
+        if (gfx)
+            if (auto* gp = gfx->gpuParticles()) gp->releaseGpuParticleEmitter(gpu->residentHandle);
         gpu->residentHandle = 0;
         gpu->residentActive = false;
         gpu->estimatedAlive = 0;
@@ -968,7 +971,7 @@ std::string ParticleEmitter::getGpuFallbackReason() {
     if (!config()->gpuSimulation) return "disabled";
     if (const char* reason = gpuFeatureFallbackReason(*config(), *draw()); reason[0] != '\0') return reason;
     auto* gfx = eve::ModuleManager::getInstance<eve::graphics::Graphics>("Graphics");
-    if (!gfx || !gfx->supportsGpuParticles()) return "backend_unavailable";
+    if (!gfx || !gfx->gpuParticles() || !gfx->gpuParticles()->supportsGpuParticles()) return "backend_unavailable";
     return "pending_activation";
 }
 

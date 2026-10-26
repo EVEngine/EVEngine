@@ -18,6 +18,7 @@
 
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <glm/mat4x4.hpp>
 
 #include <algorithm>
 #include <cfloat>
