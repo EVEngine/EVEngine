@@ -3290,7 +3290,7 @@ TEST_CASE("rts.upstreamSupplyAutoDispatchesAndLeadsMovingRelay") {
     REQUIRE(order.ok());
     CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::SupplyRelay));
     CHECK(upstream->supply()->rendezvousActive);
-    CHECK(upstream->supply()->rendezvousPoint.x > relay->motion()->x + 7.9f);
+    CHECK(std::abs(upstream->supply()->rendezvousPoint.x - 14.0f) < 1e-5f);
     CHECK(std::abs(upstream->supply()->reservedStock - 8.0f) < 1e-5f);
 
     const eve::SimulationStep movement{eve::SimulationTick{2},
@@ -3324,6 +3324,7 @@ TEST_CASE("rts.supplyRendezvousAvoidsVisibleHostileCoverage") {
     supplier->supply()->range = 1.0f;
     relay->motion()->x        = 10.0f;
     relay->motion()->y        = 10.0f;
+    relay->motion()->speed    = 4.0f;
     CommandSpec move;
     move.kind   = OrderKind::Move;
     move.target = {20.0f, 10.0f};
