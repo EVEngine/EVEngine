@@ -3364,6 +3364,11 @@ using namespace eve::graphics;
 
 namespace {
 
+/** Assimp row-major → glm column-major for Graphics::newMeshFromAssimp. */
+glm::mat4 aiToGlm(const aiMatrix4x4& m) {
+    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
+
 [[maybe_unused]] float luma(const Color &c) { return 0.2126f * c.r + 0.7152f * c.g + 0.0722f * c.b; }
 
 
@@ -3767,7 +3772,7 @@ TEST_CASE("RenderScenes.mesh.assimpNodeTransformBaked") {
     world.a4   = 0.f;
     world.b4   = 2.f;  // +Y translation
     world.c4   = 0.f;
-    Mesh *mesh = gfx->newMeshFromAssimp(*scene->mMeshes[0], world);
+    Mesh* mesh = gfx->newMeshFromAssimp(*scene->mMeshes[0], aiToGlm(world));
     REQUIRE(mesh != nullptr);
 
     auto *ent = Renderable3D::create();

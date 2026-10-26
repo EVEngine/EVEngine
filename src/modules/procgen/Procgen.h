@@ -1,41 +1,15 @@
 #pragma once
 #include "common/Export.h"
 
-
 #include "common/Module.h"
-#include "common/SquirrelOwnership.h"
-#include "procgen/Biome.h"
-#include "procgen/Grid2D.h"
-#include "procgen/GridGraph.h"
-#include "procgen/MeshBuild.h"
-#include "procgen/MeshGraph.h"
-#include "procgen/OutputSpec.h"
-#include "procgen/Palette.h"
-#include "procgen/ParamSchema.h"
-#include "procgen/Params.h"
-#include "procgen/PointGraph.h"
-#include "procgen/PointSet.h"
-#include "procgen/ProcgenSystem.h"
-#include "procgen/RuntimeGeneration.h"
-#include "procgen/ShapeGrammar.h"
-#include "procgen/SpatialData.h"
-#include "procgen/algorithms/LSystem.h"
-#include "procgen/core/ProcgenCore.h"
-#include "procgen/heightmap/Heightmap.h"
-#include "procgen/heightmap/TerrainMesh.h"
-#include "procgen/mesh/MeshModifierGraph.h"
-#include "procgen/mesh/MeshDeformationSession.h"
-#include "procgen/mesh/DynamicMeshUvPaintSession.h"
-#include "procgen/spline/SplinePath.h"
-#include "procgen/heightmap/TerrainPipeline.h"
-#include "procgen/heightmap/TerrainSampler.h"
-#include "procgen/texture/CloudField.h"
-#include "procgen/texture/CloudShadow.h"
+#include "common/Result.h"
+#include "common/RuntimeBorrow.h"
+#include "common/RuntimeHandle.h"
 
+#include <cstdint>
 #include <memory>
 #include <span>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace eve::graphics {
@@ -54,10 +28,42 @@ namespace eve::data {
 class ByteData;
 }  // namespace eve::data
 
+namespace eve::map {
+class TileLayer;
+}  // namespace eve::map
+
 namespace eve::procgen {
 struct PbrTextureSet;
 class GtsTerrainLodSet;
 class PcgMeshLodSet;
+class Params;
+class OutputSpec;
+class Grid2D;
+class PointSet;
+struct PointDelta;
+class SpatialData;
+class RuntimeGeneration;
+class ProcgenCellRequest;
+class PointGraph;
+class MeshModifierGraph;
+class MeshDeformationSession;
+class DynamicMeshUvPaintSession;
+class SplinePath;
+class GridGraph;
+class MeshGraph;
+class BiomeRules;
+class ShapeGrammar;
+class LSystem;
+class ProcgenContext;
+class TerrainSampler;
+class Heightmap;
+class CloudField;
+class CloudShadow;
+class MeshBuild;
+class PaletteTable;
+struct TerrainErosionMap;
+class TerrainLayers;
+class TerrainMeshChunk;
 
 /** @brief Handle domain for module-owned procedural parameter objects. */
 struct ProcgenParamsHandleTag {};
@@ -136,14 +142,24 @@ using ProcgenBiomeRulesHandleRef        = eve::script::RuntimeHandleRef<ProcgenB
 using ProcgenShapeGrammarHandleRef      = eve::script::RuntimeHandleRef<ProcgenShapeGrammarHandleTag>;
 using ProcgenLSystemHandleRef           = eve::script::RuntimeHandleRef<ProcgenLSystemHandleTag>;
 
+struct ProcgenArtifactOps;
+struct ProcgenRecipeOps;
+
 /**
  * @brief Procedural generation module.
  * Phase A: runtime maps (semantic Grid2D → TileLayer).
  * Phase B: runtime textures (ImageData / Texture).
  * Phase C (partial): mesh recipes (Marching Cubes → MeshBuild / Mesh).
  * Script: `procgen <- eve.Procgen();`
+ *
+ * Artifact build/publish and owning recipe-schema copies live in
+ * `ProcgenArtifacts.h` / `ProcgenRecipes.h` so handle-only includers avoid
+ * GeneratedArtifact / ParamSchema / Identity.
  */
 class EVENGINE_API_DOMAINS Procgen : public Module {
+    friend struct ProcgenArtifactOps;
+    friend struct ProcgenRecipeOps;
+
 public:
     Module_REG(Procgen);
     /** @brief Procgen. */
@@ -599,8 +615,6 @@ public:
     std::string getAlgorithmId(int index) const;
     /** @brief True when algorithm. */
     bool        hasAlgorithm(const std::string& algorithmId) const;
-    /** @brief Returns an owning copy of an algorithm schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getAlgorithmSchema(const std::string& algorithmId) const;
     /** @brief Human-readable algorithm label from its schema.
      * @param algorithmId Algorithm id. @return Display name or empty text. */
     std::string getAlgorithmDisplayName(const std::string& algorithmId) const;
@@ -754,8 +768,6 @@ public:
     std::string getTextureRecipeId(int index) const;
     /** @brief True when texture recipe. */
     bool        hasTextureRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a texture schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getTextureRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing texture parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyTextureRecipeDefaults(const std::string&     recipeId,
                                                                ProcgenParamsHandleRef params) const;
@@ -803,8 +815,6 @@ public:
     std::string getPbrRecipeId(int index) const;
     /** @brief True when pbr recipe. */
     bool        hasPbrRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a PBR schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getPbrRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing PBR parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyPbrRecipeDefaults(const std::string&     recipeId,
                                                            ProcgenParamsHandleRef params) const;
@@ -823,29 +833,6 @@ public:
     [[nodiscard]] eve::Result<void>                      releaseMeshBuild(ProcgenMeshBuildHandleRef);
     /** @brief True when mesh build stale. */
     [[nodiscard]] bool                                   isMeshBuildStale(ProcgenMeshBuildHandleRef) const noexcept;
-    /**
-     * @brief Build an owning backend-neutral CPU artifact for a mesh recipe.
-     * @param recipeId Registered mesh recipe id.
-     * @param params Deterministic generation parameters; must not be null.
-     * @param id Non-nil identity for this artifact instance.
-     * @return Generated CPU artifact or a structured diagnostic.
-     */
-    [[nodiscard]] eve::Result<GeneratedArtifact> buildArtifact(const std::string&     recipeId,
-                                                               ProcgenParamsHandleRef params, ArtifactId id);
-    /**
-     * @brief Build then transactionally publish through requested optional adapters.
-     * @param recipeId Registered mesh recipe id.
-     * @param params Deterministic generation parameters; must not be null.
-     * @param id Non-nil identity for this artifact instance.
-     * @param options Scene, graphics and physics adapters required by this call.
-     * @return Publication receipt or an Unsupported/validation/adapter diagnostic.
-     * @remarks Must run on the main/simulation thread. A failure leaves the store unchanged.
-     */
-    [[nodiscard]] eve::Result<ArtifactPublishReceipt> publishArtifact(const std::string&     recipeId,
-                                                                      ProcgenParamsHandleRef params, ArtifactId id,
-                                                                      ArtifactPublishOptions options = {});
-    /** @brief Borrow the compatibility facade's published CPU artifact store. */
-    [[nodiscard]] const ArtifactStore& artifactStore() const noexcept { return artifactStore_; }
     /** @brief Upload an existing/composed CPU mesh to Graphics. */
     /** @brief Upload a CPU mesh and return a Graphics-owned borrowed mesh. */
     [[nodiscard]] eve::script::Borrowed<graphics::Mesh> uploadMeshBorrowed(const MeshBuild    &mesh,
@@ -895,8 +882,6 @@ public:
     std::string getMeshRecipeId(int index) const;
     /** @brief True when mesh recipe. */
     bool        hasMeshRecipe(const std::string& recipeId) const;
-    /** @brief Returns an owning copy of a mesh schema or a diagnostic. */
-    [[nodiscard]] eve::Result<RecipeDescriptor> getMeshRecipeSchema(const std::string& recipeId) const;
     /** @brief Fill missing mesh parameters in a module-owned parameter object. */
     [[nodiscard]] eve::Result<void> applyMeshRecipeDefaults(const std::string&     recipeId,
                                                             ProcgenParamsHandleRef params) const;
@@ -912,7 +897,7 @@ public:
     /** @brief Take ownership of a decoded height field so script can sample it.
      *  @param heightmap Decoded grid, moved into the module-owned registry.
      *  @return Owning handle, or a failure when the module is shutting down. */
-    [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> adoptHeightmap(Heightmap heightmap);
+    [[nodiscard]] eve::Result<ProcgenHeightmapHandleRef> adoptHeightmap(std::unique_ptr<Heightmap> heightmap);
     [[nodiscard]] eve::script::Borrowed<Heightmap>       resolveHeightmap(ProcgenHeightmapHandleRef) noexcept;
     [[nodiscard]] eve::Result<void>                      releaseHeightmap(ProcgenHeightmapHandleRef);
     [[nodiscard]] bool                                   isHeightmapStale(ProcgenHeightmapHandleRef) const noexcept;
@@ -988,42 +973,15 @@ public:
                                                                     ProcgenParamsHandleRef    params);
 
     /** @brief Palettes. */
-    PaletteTable& palettes() { return palettes_; }
+    PaletteTable& palettes();
+    /** @brief Const palettes. */
+    const PaletteTable& palettes() const;
 
 private:
-    bool       runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out);
-    ArtifactId nextCompatibilityArtifactId() noexcept;
+    bool runGenerate(const std::string& algorithmId, const Params& params, Grid2D& out);
 
     struct OwnershipState;
     std::unique_ptr<OwnershipState> ownership_;
-
-    PaletteTable                                                                             palettes_;
-    mutable std::string              lastError_;
-    mutable std::vector<std::string>                                                         algorithmIdsCache_;
-    mutable std::vector<std::string>                                                         textureRecipeIdsCache_;
-    mutable std::vector<std::string>                                                         pbrRecipeIdsCache_;
-    mutable std::vector<std::string>                                                         meshRecipeIdsCache_;
-    std::unordered_map<std::string, ProcgenSystemSnapshot>                                   systems_;
-    std::unordered_map<std::string, ProcgenSystemSnapshot>                                   previousSystems_;
-    ArtifactStore                                                                            artifactStore_;
-    std::uint64_t                                                                            nextArtifactSequence_ = 1;
-    eve::script::RuntimeObjectRegistry<Params, ProcgenParamsHandleTag>                       params_;
-    eve::script::RuntimeObjectRegistry<Grid2D, ProcgenGridHandleTag>                         grids_;
-    eve::script::RuntimeObjectRegistry<ProcgenContext, ProcgenContextHandleTag>              contexts_;
-    eve::script::RuntimeObjectRegistry<SpatialData, ProcgenSpatialDataHandleTag>             spatialData_;
-    eve::script::RuntimeObjectRegistry<RuntimeGeneration, ProcgenRuntimeGenerationHandleTag> runtimeGenerations_;
-    eve::script::RuntimeObjectRegistry<PointGraph, ProcgenPointGraphHandleTag>               pointGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshModifierGraph, ProcgenMeshModifierGraphHandleTag> meshModifierGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshDeformationSession, ProcgenMeshDeformationSessionHandleTag>
-        meshDeformationSessions_;
-    eve::script::RuntimeObjectRegistry<DynamicMeshUvPaintSession, ProcgenDynamicMeshUvPaintSessionHandleTag>
-        dynamicMeshUvPaintSessions_;
-    eve::script::RuntimeObjectRegistry<SplinePath, ProcgenSplinePathHandleTag>                     splinePaths_;
-    eve::script::RuntimeObjectRegistry<GridGraph, ProcgenGridGraphHandleTag>                 gridGraphs_;
-    eve::script::RuntimeObjectRegistry<MeshGraph, ProcgenMeshGraphHandleTag>                 meshGraphs_;
-    eve::script::RuntimeObjectRegistry<BiomeRules, ProcgenBiomeRulesHandleTag>               biomeRules_;
-    eve::script::RuntimeObjectRegistry<ShapeGrammar, ProcgenShapeGrammarHandleTag>           shapeGrammars_;
-    eve::script::RuntimeObjectRegistry<LSystem, ProcgenLSystemHandleTag>                     lsystems_;
 };
 
 }  // namespace eve::procgen

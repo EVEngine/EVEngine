@@ -905,6 +905,7 @@ TEST_CASE("particles.actionPreviewRetainsScrubsRebuildsAndCleansVfx") {
 #include <zeroerr/unittest.h>
 #include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
+#include "PrivateTestScope.h"
 #include "camera/CameraController.h"
 #include "camera/PcgCarCameraSetup.h"
 #include "camera/PcgFreeCamera.h"
@@ -917,6 +918,9 @@ TEST_CASE("particles.actionPreviewRetainsScrubsRebuildsAndCleansVfx") {
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
+#include "procgen/heightmap/Heightmap.h"
+#include "scene/Scene.h"
 #include "scene/SceneNodeRef.h"
 #include "ui/PcgPhotoModeApplyPlan.h"
 // pcg_car_camera.cpp

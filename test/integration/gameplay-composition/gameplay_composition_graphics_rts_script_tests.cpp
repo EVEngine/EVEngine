@@ -167,6 +167,7 @@
 // Related integration contracts share one translation unit to amortize header parsing.
 
 // Contract section: rts script
+#include <iostream>
 #include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 

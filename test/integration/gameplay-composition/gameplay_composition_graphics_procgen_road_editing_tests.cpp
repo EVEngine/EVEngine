@@ -45,6 +45,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
@@ -75,6 +76,7 @@
 #include "procgen/Grid2D.h"
 #include "procgen/JsonExport.h"
 #include "procgen/MeshBuild.h"
+#include "procgen/OutputSpec.h"
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "procgen/Semantic.h"

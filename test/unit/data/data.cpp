@@ -75,7 +75,7 @@ TEST_CASE("data.DataModule byte factories preserve length and transferred owners
     auto*                                transferred = new char[2]{'p', 'q'};
     std::unique_ptr<eve::data::ByteData> owned(module->newByteData(transferred, 2, true));
     REQUIRE(owned != nullptr);
-    CHECK(owned->getData() == transferred);
+    CHECK(owned->getData() == static_cast<void*>(transferred));
 }
 
 TEST_CASE("data.DataView exposes a bounded window of its live source") {

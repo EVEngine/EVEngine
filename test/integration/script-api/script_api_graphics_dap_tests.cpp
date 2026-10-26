@@ -65,6 +65,7 @@
 
 // Contract section: dap
 #include "PrivateTestScope.h"
+#include "graphics/Shader.h"
 #include "zeroerr/assert.h"
 
 #include <Poco/Dynamic/Var.h>

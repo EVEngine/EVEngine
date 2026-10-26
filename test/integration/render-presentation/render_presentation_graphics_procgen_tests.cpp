@@ -52,6 +52,8 @@
 #include <filesystem>
 #include <string>
 #include <vector>
+#include "PrivateTestScope.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem.h"
@@ -112,7 +114,8 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
     settings.centered = true;
     settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -179,7 +182,7 @@ TEST_CASE("particles.gpu.residentSimulationAndIndirectRendering") {
         REQUIRE(emitter->isGpuSimulationActive());
         REQUIRE_NE(gpu->residentHandle, std::uint64_t(0));
         REQUIRE_EQ(emitter->sim()->alive, 0);
-        const auto gpuStats = gfx->getGpuParticleStats(gpu->residentHandle);
+        const auto gpuStats = gfx->gpuParticles()->getGpuParticleStats(gpu->residentHandle);
         submittedFrames += gpuStats.submittedFrames;
         delayedAlive += gpuStats.alive;
         indirectInstances += gpuStats.instances;
@@ -224,7 +227,8 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
     settings.centered = true;
     settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -278,7 +282,7 @@ TEST_CASE("particles.gpu.residentSortModesStayOnGpuAndRender") {
         REQUIRE_EQ(emitters[i]->getSortMode(), std::string(modes[i]));
         REQUIRE_EQ(emitters[i]->getSimulationBackend(), std::string("gpu"));
         REQUIRE_EQ(std::string(emitters[i]->getGpuFallbackReason()), std::string());
-        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
         totalInstances += stats.instances;
         REQUIRE_GT(stats.submittedFrames, std::uint64_t(20));
     }
@@ -314,7 +318,8 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
     settings.centered = true;
     settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -354,7 +359,7 @@ TEST_CASE("particles.gpu.residentRibbonStaysOnGpuAndRendersSegments") {
     REQUIRE(emitter->isGpuSimulationActive());
     REQUIRE_EQ(emitter->getSimulationBackend(), std::string("gpu"));
     REQUIRE_EQ(std::string(emitter->getGpuFallbackReason()), std::string());
-    const auto stats = gfx->getGpuParticleStats(emitter->gpuSim()->residentHandle);
+    const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitter->gpuSim()->residentHandle);
     REQUIRE_GT(stats.instances, std::uint32_t(4));
     REQUIRE_GT(stats.submittedFrames, std::uint64_t(4));
 
@@ -387,7 +392,8 @@ TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
     settings.centered = true;
     settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -429,7 +435,7 @@ TEST_CASE("particles.gpu.multipleResidentEmittersKeepIndependentDrawState") {
 
     for (std::size_t i = 0; i < emitters.size(); ++i) {
         REQUIRE(emitters[i]->isGpuSimulationActive());
-        const auto stats = gfx->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
+        const auto stats = gfx->gpuParticles()->getGpuParticleStats(emitters[i]->gpuSim()->residentHandle);
         REQUIRE_EQ(stats.instances, std::uint32_t(1));
     }
     const auto red   = gfx->getPixel(160, 180);
@@ -630,7 +636,8 @@ TEST_CASE("particles.gpu.softDepthFadeUsesSceneLinearDepth") {
     settings.centered = true;
     settings.vsync    = 0;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles());
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setScreenReadbackEnabled(true);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};
@@ -1261,6 +1268,7 @@ TEST_CASE("particles.scalability.renderBudgetStressScene") {
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/Semantic.h"
 // procgen.cpp
 namespace test_procgen {

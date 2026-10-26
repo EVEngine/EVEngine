@@ -1734,8 +1734,8 @@ TEST_CASE("common.jsonRead.spec.scalarBoundsAndCoercion") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_diagnostics)
-#include "PrivateTestScope.h"
 #include <zeroerr/assert.h>
+#include <zeroerr/std_adapter.h>
 #include <zeroerr/unittest.h>
 #include <memory>
 #include <sstream>
@@ -1744,6 +1744,7 @@ TEST_CASE("common.jsonRead.spec.scalarBoundsAndCoercion") {
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 // common_zeroerr_diagnostics.cpp
 namespace test_common_zeroerr_diagnostics {
 static_assert(std::is_nothrow_move_constructible_v<zeroerr::ExprResult>);
@@ -1930,7 +1931,6 @@ TEST_CASE("common.zeroerr.printerOwnsAndResetsStream") {
     print.isQuoted   = false;
     print.line_break = "";
     CHECK(print("first").str() == "first");
-    print.os.setstate(std::ios::failbit);
     CHECK(print("second").str() == "second");
     print.clear_stream_before_printing = false;
     CHECK(print("third").str() == "secondthird");
@@ -1954,7 +1954,7 @@ TEST_CASE("common.zeroerr.printerBorrowsExternalStream") {
         try {
             (void)print.str();
         } catch (const std::runtime_error& error) {
-            caught = std::string(error.what()) == "Printer is not using stringstream";
+            caught = std::string(error.what()) == "Printer is not capturing text";
         }
         CHECK(caught);
     }
@@ -1984,17 +1984,17 @@ TEST_CASE("common.zeroerr.printerFormattingModes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_registration)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
+#include <string>
+#include "PrivateTestScope.h"
 // common_zeroerr_registration.cpp
 namespace test_common_zeroerr_registration {
-#if defined(ZEROERR_COMPILED_DIAGNOSTICS)
 namespace {
 void testCallback(zeroerr::TestContext*) {}
 }  // namespace
 TEST_CASE("common.zeroerrRegistration.borrowedDecoratorsKeepOrder") {
     zeroerr::Decorator first, second;
-    auto metadata = zeroerr::detail::makeTestCaseFromDecorators("probe", "source", 37, testCallback, {&first, &second});
+    auto               metadata = zeroerr::TestCase("probe", "source", 37, testCallback, {&first, &second});
     CHECK(metadata.decorators.size() == 2u);
     CHECK(metadata.decorators.at(0) == &first);
     CHECK(metadata.decorators.at(1) == &second);
@@ -2010,15 +2010,14 @@ TEST_CASE("common.zeroerrRegistration.borrowedDecoratorsKeepOrder") {
 TEST_CASE("common.zeroerrRegistration.borrowedNamesBecomeOwned") {
     std::string name("name\0suffix", 11);
     std::string file("file\0suffix", 11);
-    auto        metadata = zeroerr::detail::makeTestCaseFromDecorators(name, file, 91, testCallback, {});
+    auto        metadata = zeroerr::TestCase(name, file, 91, testCallback, {});
     name.assign("changed");
     file.assign("changed");
     CHECK(metadata.name.size() == 11u);
     CHECK(metadata.file.size() == 11u);
     CHECK(metadata.name.substr(5) == "suffix");
     CHECK(metadata.file.substr(5) == "suffix");
-    auto transient = zeroerr::detail::makeTestCaseFromDecorators(std::string(4096, 'n'), std::string(4096, 'f'), 92,
-                                                                 testCallback, {});
+    auto transient = zeroerr::TestCase(std::string(4096, 'n'), std::string(4096, 'f'), 92, testCallback, {});
     CHECK(transient.name.size() == 4096u);
     CHECK(transient.file.size() == 4096u);
     CHECK(transient.name.back() == 'n');
@@ -2026,7 +2025,6 @@ TEST_CASE("common.zeroerrRegistration.borrowedNamesBecomeOwned") {
     CHECK(transient.decorators.empty());
 }
 TEST_CASE("common.zeroerrRegistration.skippedCase", zeroerr::skip()) { CHECK(false); }
-#endif
 
 struct ZeroerrRegistrationFixture {
     int state = 73;

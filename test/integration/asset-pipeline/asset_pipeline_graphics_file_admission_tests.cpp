@@ -33,6 +33,7 @@
 // Contract section: asset import gltf animation
 #include <algorithm>
 #include <bit>
+#include <iostream>
 #include "PrivateTestScope.h"
 #include "asset/AssetCooker.h"
 #include "asset/import/AssetImporter.h"

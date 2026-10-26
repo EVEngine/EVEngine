@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <vector>
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleRuntime.h"
@@ -29,7 +30,8 @@ TEST_CASE("particles.gpu.mainThreadCrossoverAtSixteenThousandParticles") {
     settings.height   = 360;
     settings.centered = true;
     REQUIRE(window->setWindowSettings(settings));
-    REQUIRE(gfx->supportsGpuParticles());
+    REQUIRE(gfx->gpuParticles() != nullptr);
+    REQUIRE(gfx->gpuParticles()->supportsGpuParticles());
     gfx->setVSync(false);
 
     const std::uint8_t whitePixel[4] = {255, 255, 255, 255};

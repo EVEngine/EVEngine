@@ -48,6 +48,7 @@
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <tuple>
+#include "PrivateTestScope.h"
 #include "common/Module.h"
 #include "editor/EditorAuthority.h"
 #include "editor/EditorPersistence.h"
@@ -55,6 +56,7 @@
 #include "editor/EditorProjectSettings.h"
 #include "editor/EditorTransactionService.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Texture.h"
 #include "graphics/material/editing/MaterialTarget.h"
 #include "physics/editor/EditorPhysicsTarget.h"
 #include "zeroerr/unittest.h"

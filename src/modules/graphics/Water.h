@@ -1,6 +1,5 @@
 #pragma once
 
-#include "graphics/Shader.h"
 #include "graphics/WaterStyleConfig.h"
 
 #include <cstdint>
@@ -30,6 +29,7 @@ struct WaterMeshSettings {
 
 class Graphics;
 class Mesh;
+class Shader;
 class Texture;
 
 /** @brief One linear RGB stop in a Pcg-compatible water depth gradient. */

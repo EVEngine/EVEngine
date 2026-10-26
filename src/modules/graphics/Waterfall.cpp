@@ -1,10 +1,13 @@
 #include "graphics/Waterfall.h"
 
+#include <glm/mat4x4.hpp>
+#include <glm/vec4.hpp>
 #include "common/Exception.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"
 #include "graphics/MeshShaderRasterState.h"
 #include "graphics/RenderSystem3D.h"
+#include "graphics/Shader.h"
 #include "graphics/shaders/WaterfallWgsl.h"
 #include "graphics/shaders/waterfall_mesh_frag_spv.inc"
 

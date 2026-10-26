@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdint>
 #include <map>
+#include <stdexcept>
 #include <tuple>
 #include "animation/AnimClip.h"
 #include "animation/AnimParallelInternal.h"

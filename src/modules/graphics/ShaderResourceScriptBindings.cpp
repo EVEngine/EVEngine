@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstring>
 #include <exception>
+#include <glm/mat4x4.hpp>
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>

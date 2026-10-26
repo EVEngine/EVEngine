@@ -1,15 +1,16 @@
 // eve-hot-path
 #include "particles/ParticleSystem.h"
-#include "particles/ParticleEmitter.h"
-#include "particles/ParticleConfig.h"
-#include "particles/ParticleRuntime.h"
+#include "common/Module.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
+#include "graphics/GpuParticles.h"
 #include "graphics/Graphics.h"
 #include "graphics/Light.h"
 #include "graphics/RenderSystem.h"
-#include "graphics/Canvas.h"
-#include "filesystem/Filesystem.h"
-#include "common/Module.h"
+#include "particles/ParticleConfig.h"
+#include "particles/ParticleEmitter.h"
+#include "particles/ParticleRuntime.h"
 
 #include <algorithm>
 #include <bit>
@@ -238,7 +239,7 @@ graphics::GpuParticleSpawn gpuSpawn(const Particle& particle, std::uint32_t birt
 
 void deactivateResidentGpu(graphics::Graphics* gfx, ParticleEmitter::GpuSim& gpu) {
     if (gfx && gpu.residentHandle != graphics::kInvalidGpuParticleHandle)
-        gfx->releaseGpuParticleEmitter(gpu.residentHandle);
+        if (auto* gp = gfx->gpuParticles()) gp->releaseGpuParticleEmitter(gpu.residentHandle);
     gpu.residentHandle = graphics::kInvalidGpuParticleHandle;
     gpu.residentActive = false;
     gpu.estimatedAlive = 0;
@@ -254,10 +255,11 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     auto cfg = emitter->config();
     auto sim = emitter->sim();
     auto gpu = emitter->gpuSim();
-    if (!gfx || !gfx->canSubmitGpuParticles()) return eve::Result<bool>::success(false);
+    if (!gfx || !(gfx->gpuParticles() && gfx->gpuParticles()->canSubmitGpuParticles()))
+        return eve::Result<bool>::success(false);
 
     if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) {
-        gpu->residentHandle = gfx->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
+        gpu->residentHandle = gfx->gpuParticles()->createGpuParticleEmitter(std::uint32_t(sim->particles.size()));
         if (gpu->residentHandle == graphics::kInvalidGpuParticleHandle) return eve::Result<bool>::success(false);
     }
 
@@ -319,7 +321,8 @@ eve::Result<bool> advanceResidentGpu(graphics::Graphics *gfx, ParticleEmitter *e
     update.localOffsetX += gpu->pendingWorldOffsetX;
     update.localOffsetY += gpu->pendingWorldOffsetY;
 
-    if (!gfx->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(), std::uint32_t(spawns.size()))) {
+    if (!gfx->gpuParticles()->updateGpuParticleEmitter(gpu->residentHandle, update, spawns.data(),
+                                                       std::uint32_t(spawns.size()))) {
         // Before activation the CPU state remains authoritative and already
         // advanced. Once resident, a transient submit failure freezes state
         // rather than losing it through an implicit CPU migration.
@@ -550,7 +553,8 @@ int appendOneEmitter(graphics::Graphics& gfx, ParticleEmitter& emitter,
                            : cfg->sortMode == "youngest" ? graphics::GpuParticleSortMode::Youngest
                            : cfg->sortMode == "distance" ? graphics::GpuParticleSortMode::Distance
                                                          : graphics::GpuParticleSortMode::None;
-        if (gfx.drawGpuParticleEmitter(gpu->residentHandle, gpuDraw)) return gpu->estimatedAlive;
+        if (auto* gp = gfx.gpuParticles(); gp && gp->drawGpuParticleEmitter(gpu->residentHandle, gpuDraw))
+            return gpu->estimatedAlive;
         culled = true; return 0;
     }
     if (draw->canvas) usedCanvas = true;

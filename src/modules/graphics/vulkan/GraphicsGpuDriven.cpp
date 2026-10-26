@@ -5,15 +5,16 @@
 // VirtualGeometry hardware-raster integration. Kept in its own TU (matching
 // dev's split-graphics-backend layout) so the feature stays reviewable.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/GraphicsInternal.h"
-#include "graphics/vulkan/Canvas.h"
 #include "common/Assert.h"
 #include "graphics/IndirectBuilder.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shadow.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include <SDL2/SDL.h>
 
