@@ -75,7 +75,7 @@ TEST_CASE("data.DataModule byte factories preserve length and transferred owners
     auto*                                transferred = new char[2]{'p', 'q'};
     std::unique_ptr<eve::data::ByteData> owned(module->newByteData(transferred, 2, true));
     REQUIRE(owned != nullptr);
-    CHECK(owned->getData() == transferred);
+    CHECK(owned->getData() == static_cast<void*>(transferred));
 }
 
 TEST_CASE("data.DataView exposes a bounded window of its live source") {
@@ -190,6 +190,7 @@ TEST_CASE("data.compress lz4 round-trip owns independent compressed bytes") {
     CHECK_EQ(clone->getSize(), compressed->getSize());
     std::size_t             restoredSize = 0;
     std::unique_ptr<char[]> restored(eve::data::decompress(clone.get(), restoredSize));
+    // zeroerr prints decomposed char-array pointers as C strings; this buffer is binary.
     REQUIRE(static_cast<bool>(restored));
     CHECK_EQ(restoredSize, size);
     CHECK(std::memcmp(restored.get(), source, size) == 0);
@@ -202,11 +203,11 @@ TEST_CASE("data.encode hex and base64 round-trip exact binary length") {
     for (const auto* format : {"hex", "base64"}) {
         std::size_t             encodedSize = 0;
         std::unique_ptr<char[]> encoded(eve::data::encode(format, source, sizeof(source), encodedSize));
-        REQUIRE(encoded != nullptr);
+        REQUIRE(static_cast<bool>(encoded));
         CHECK(encodedSize > sizeof(source));
         std::size_t             decodedSize = 0;
         std::unique_ptr<char[]> decoded(eve::data::decode(format, encoded.get(), encodedSize, decodedSize));
-        REQUIRE(decoded != nullptr);
+        REQUIRE(static_cast<bool>(decoded));
         CHECK_EQ(decodedSize, sizeof(source));
         CHECK(std::memcmp(decoded.get(), source, sizeof(source)) == 0);
     }

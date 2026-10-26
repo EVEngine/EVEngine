@@ -243,7 +243,7 @@ class BindMethodScrapeTests(unittest.TestCase):
                 "    auto cls = table.addClass<OrientationWarping>(\n"
                 '        "OrientationWarping", std::function<OrientationWarping*()>([]() { return nullptr; }), true);\n'
                 '    script::bindMethod(cls, "setEnabled", &OrientationWarping::setEnabled);\n'
-                '    script::bindMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
+                '    eve::script::bindPointerMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
                 "}\n"
                 "}\n"
             ),

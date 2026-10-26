@@ -243,6 +243,9 @@ message("Enable strict warnings (warnings as errors): " ${EVENGINE_ENABLE_STRICT
 if (CMAKE_BUILD_TYPE STREQUAL "")
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "The build type (Debug, Release)")
 endif()
+# Replace CMake's stock Debug flags (-g /Od) with a two-tier profile:
+# normal (-g0 -O2 / MSVC /Od) for daily CI/dev, detail (-g2 -O1) for triage.
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/debug_profile.cmake")
 
 include(CTest)
 if(EVENGINE_BUILD_PROFILE_CHECKS)
@@ -454,10 +457,8 @@ function(main)
     elseif(BUILD_PLATFORM STREQUAL "webgpu" AND BUILD_TESTING)
         message(STATUS "webgpu (native Dawn) build: unit tests enabled")
     endif()
-    include(cmake/zeroerr_compiled_diagnostics.cmake)
     add_subdirectory(external/zeroerr)
     include(${CMAKE_SOURCE_DIR}/cmake/zeroerr_assertion_contract.cmake)
-    eve_enable_zeroerr_compiled_diagnostics()
     target_compile_definitions(zeroerr PUBLIC ZEROERR_NO_MAIN)
     # Strip ASSERT macros in non-Debug builds (upstream ZEROERR_NO_ASSERT under
     # NDEBUG is commented out), unless assertions were explicitly enabled with

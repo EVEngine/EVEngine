@@ -517,7 +517,7 @@ jobs:
         run: |
           suffix=""
           if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
-          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS="$(nproc)" \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}' \
             CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
 
@@ -553,6 +553,8 @@ jobs:
     timeout-minutes: 240
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Debug .o blobs use -g0/-O2 (no /Zi); keep key stable to avoid a second
+      # namespace while the account cache quota is tight across the build matrix.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-windows-x64
       # Pull-request cache entries are scoped to refs/pull/*/merge and cannot
       # warm other PRs. Let PRs consume the dev cache without duplicating it.
@@ -627,7 +629,9 @@ jobs:
       - name: Build win32 debug
         # Dependencies come from the pinned independent release; this job
         # compiles the engine/tests and caches verified downloaded packages.
-        timeout-minutes: 100
+        # 120m: cold sccache + MSVC normal (/Od, no /Zi) still has headroom;
+        # /O2 previously exhausted the old 100m budget at ~88% of the build.
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -1655,6 +1659,8 @@ jobs:
     timeout-minutes: 120
     env:
       SCCACHE_GHA_ENABLED: "true"
+      # Shared across the Linux Debug job; object hash includes -g0 so new
+      # entries are smaller without opening a parallel GHA cache namespace.
       SCCACHE_GHA_VERSION: evengine-cpp-v1-linux-x64
       # Populate shared caches only from long-lived branches; PR-scoped writes
       # are dead stores after that PR closes and quickly evict reusable entries.
@@ -1782,10 +1788,9 @@ jobs:
           ALSOFT_DRIVERS: "null"
           EVENGINE_FORMAT_EXPORT_DIR: "${{ github.workspace }}/build/resource-format-exports"
         run: |
-          # CTEST_JOBS=2: Lavapipe renders several window/GPU tests in
-          # parallel; -j4 hits a pre-existing race (voxel.render.sceneHillsIsland
-          # SEGFAULT) that is not reproducible in isolation.
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS=2 \
+          # Match ASan: use all CPUs on the runner instead of hard-coding
+          # CTEST_JOBS=2 from an older Lavapipe race workaround.
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS="$(nproc)" \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Upload Linux test failure diagnostics
@@ -2247,7 +2252,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-coverage CTEST_JOBS=2
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-coverage CTEST_JOBS="$(nproc)"
 
       - name: Generate coverage report
         timeout-minutes: 10

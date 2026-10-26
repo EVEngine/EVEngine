@@ -164,6 +164,7 @@
 */
 // clang-format on
 
+#include <iostream>
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_script)

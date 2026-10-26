@@ -18,6 +18,7 @@
 #include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include <iterator>
 #include <limits>
 #include "Fixtures.h"
