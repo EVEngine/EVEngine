@@ -2477,26 +2477,26 @@ TEST_CASE("animation.spine.unsupportedFeaturesFailLoading") {
             const std::string skins = arraySkin
                 ? "[{\"name\":\"default\",\"attachments\":" + attachments + "}]"
                 : "{\"default\":" + attachments + "}";
-            CHECK(!data.loadFromJson(
+            REQUIRE(!data.loadFromJson(
                 "{\"bones\":[{\"name\":\"root\"}],"
                 "\"slots\":[{\"name\":\"body\",\"bone\":\"root\"}],\"skins\":" + skins + "}", &error));
-            CHECK(error.find(type) != std::string::npos);
-            CHECK(error.find("default") != std::string::npos);
-            CHECK(error.find("bodyMesh") != std::string::npos);
-            CHECK_EQ(data.getBoneCount(), 0);
-            CHECK_EQ(data.getSkinCount(), 0);
+            REQUIRE(error.find(type) != std::string::npos);
+            REQUIRE(error.find("default") != std::string::npos);
+            REQUIRE(error.find("bodyMesh") != std::string::npos);
+            REQUIRE_EQ(data.getBoneCount(), 0);
+            REQUIRE_EQ(data.getSkinCount(), 0);
         }
     }
-    CHECK(!data.loadFromJson(R"({"ik":[{"name":"arm"}]})", &error));
-    CHECK(error.find("constraint 'ik'") != std::string::npos);
-    CHECK(!data.loadFromJson(R"({"animations":{"walk":{"deform":{"default":{}}}}})", &error));
-    CHECK(error.find("deform") != std::string::npos);
-    CHECK(error.find("walk") != std::string::npos);
-    CHECK(data.loadFromJson(R"({"bones":[{"name":"root"}],"ik":[],"animations":{"idle":{"deform":{}}}})", &error));
-    CHECK(error.empty());
-    CHECK_EQ(data.getBoneCount(), 1);
+    REQUIRE(!data.loadFromJson(R"({"ik":[{"name":"arm"}]})", &error));
+    REQUIRE(error.find("constraint 'ik'") != std::string::npos);
+    REQUIRE(!data.loadFromJson(R"({"animations":{"walk":{"deform":{"default":{}}}}})", &error));
+    REQUIRE(error.find("deform") != std::string::npos);
+    REQUIRE(error.find("walk") != std::string::npos);
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root"}],"ik":[],"animations":{"idle":{"deform":{}}}})", &error));
+    REQUIRE(error.empty());
+    REQUIRE_EQ(data.getBoneCount(), 1);
     // The script-style path without an error output must reject unsupported data too.
-    CHECK(!data.loadFromJson(R"({"path":[{"name":"path"}]})"));
+    REQUIRE(!data.loadFromJson(R"({"path":[{"name":"path"}]})"));
 }
 
 TEST_CASE("animation.spine.rejectsSilentDowngrades") {
@@ -2517,14 +2517,14 @@ TEST_CASE("animation.spine.rejectsSilentDowngrades") {
         {R"({"slots":[{"name":"body","bone":"root"}],"skins":{"default":{"body":{"a":{"sequence":{}}}}}})", "sequence"},
     };
     for (const auto &[json, expected] : cases) {
-        CHECK(!data.loadFromJson(json, &error));
-        CHECK(error.find(expected) != std::string::npos);
-        CHECK_EQ(data.getBoneCount(), 0);
+        REQUIRE(!data.loadFromJson(json, &error));
+        REQUIRE(error.find(expected) != std::string::npos);
+        REQUIRE_EQ(data.getBoneCount(), 0);
     }
-    CHECK(data.loadFromJson(R"({"bones":[{"name":"root","shearX":0,"inherit":"normal"}],
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root","shearX":0,"inherit":"normal"}],
         "slots":[{"name":"body","bone":"root","color":"ffffffff","blend":"normal"}],
         "animations":{"walk":{"bones":{"root":{"rotate":[{"curve":"stepped"},{"time":1,"curve":"linear"}]}}}}})", &error));
-    CHECK(error.empty());
+    REQUIRE(error.empty());
 }
 
 TEST_CASE("animation.spine.trimOffsetAndMissingReferences") {
@@ -2541,36 +2541,36 @@ TEST_CASE("animation.spine.trimOffsetAndMissingReferences") {
     std::vector<eve::graphics::DrawItem2D> items;
     player.collectDrawItems(items);
     REQUIRE_EQ(items.size(), 1u);
-    CHECK(std::fabs(items[0].x - (-40.f)) < 1e-4f);
-    CHECK(std::fabs(items[0].y - (-20.f)) < 1e-4f);
-    CHECK(std::fabs(items[0].w - 40.f) < 1e-4f);
-    CHECK(std::fabs(items[0].h - 30.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].x - (-40.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 40.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 30.f) < 1e-4f);
     player.setFlipY(true);
     player.setScale(2.f, 2.f);
     items.clear();
     player.collectDrawItems(items);
     REQUIRE_EQ(items.size(), 1u);
-    CHECK(std::fabs(items[0].x - (-80.f)) < 1e-4f);
-    CHECK(std::fabs(items[0].y - (-20.f)) < 1e-4f);
-    CHECK(std::fabs(items[0].w - 80.f) < 1e-4f);
-    CHECK(std::fabs(items[0].h - 60.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].x - (-80.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 80.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 60.f) < 1e-4f);
     // apply() restores setup pose each frame, so exercise setup attachment names.
     SpineSkeletonData missingData;
     REQUIRE(missingData.loadFromJson(R"({"bones":[{"name":"root"}],
         "slots":[{"name":"body","bone":"root","attachment":"missing"}]})"));
     SpineSkeleton missingSkeleton(&missingData);
     SpineAnim missingPlayer(&missingSkeleton);
-    CHECK_THROWS((missingPlayer.collectDrawItems(items), false));
+    REQUIRE_THROWS((missingPlayer.collectDrawItems(items), false));
     SpineSkeletonData hiddenData;
     REQUIRE(hiddenData.loadFromJson(R"({"slots":[{"name":"body","bone":"root"}]})"));
     SpineSkeleton hiddenSkeleton(&hiddenData);
     SpineAnim hiddenPlayer(&hiddenSkeleton);
     items.clear();
     hiddenPlayer.collectDrawItems(items);
-    CHECK(items.empty());
+    REQUIRE(items.empty());
     SpineAtlas missing;
     REQUIRE(missing.loadFromText("hero.png\nsize: 128,128\nother\n  xy: 0,0\n  size: 10,10\n"));
-    CHECK_THROWS((player.setAtlas(&missing), player.collectDrawItems(items), false));
+    REQUIRE_THROWS((player.setAtlas(&missing), player.collectDrawItems(items), false));
 }
 
 }  // namespace test_animation_sprite_spine
