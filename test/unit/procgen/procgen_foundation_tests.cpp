@@ -91,6 +91,7 @@ TEST_CASE("graphics.renderable.meshLod_distanceFadeAndClearContract") {
     };
 
     SUB_CASE("fade policy produces a second level and continuous weight at boundary") {
+        REQUIRE(renderable->setMeshLodFadePolicy(1, false, .5f).ok());
         REQUIRE(renderable->setMeshLodFadeWidth(0, .25f).ok());
         CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(17.5f), 1);
         CHECK(std::abs(renderable->getMeshLodSecondaryWeightAtDistance(17.5f) - .5f) < .0001f);

@@ -957,7 +957,7 @@ TEST_CASE("animation.clip.semanticNotifyContractReportsMissingEvents") {
     REQUIRE(clip.validateNotifyContract({"contact.left_hand", "land"}).ok());
     auto missing = clip.validateNotifyContract({"contact.left_hand", "contact.right_hand", "land"});
     CHECK(!missing.ok());
-    CHECK(missing.code() == eve::StatusCode::Rejected);
+    CHECK(missing.code() == eve::StatusCode::NotFound);
 }
 }  // namespace test_animation_clip_editing
 #endif

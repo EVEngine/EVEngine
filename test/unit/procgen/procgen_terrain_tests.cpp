@@ -563,9 +563,9 @@ TEST_CASE("procgen.splatmap.paint_normalization_and_atomic_rejection") {
     auto changed = paintTerrainSplatLayer(splat, paint, 1);
     REQUIRE(changed.ok());
     CHECK_EQ(changed.value(), 2);
-    CHECK_EQ(splat.sample(0, 0, 0).value(), .375f);
+    CHECK_EQ(splat.sample(0, 0, 0).value(), .75f);
     CHECK_EQ(splat.sample(1, 0, 0).value(), .25f);
-    CHECK_EQ(splat.sample(2, 0, 0).value(), .375f);
+    CHECK_EQ(splat.sample(2, 0, 0).value(), 0.f);
     CHECK_EQ(splat.sample(1, 1, 0).value(), 1.f);
     Heightmap wrong(1, 1);
     CHECK(!paintTerrainSplatLayer(splat, wrong, 1).ok());

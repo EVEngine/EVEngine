@@ -333,7 +333,9 @@ TEST_CASE("procgen.heightmapSlopeQuery.threeSourceFormulasAndBinding") {
         for (int x = 0; x < 3; ++x) source.setHeight(x, y, float(x + 2 * y) * 0.1F);
     auto forward = measureTerrainHeightmapSlope(source, 1.F, 1.F, TerrainHeightmapSlopeQuery::GridForward);
     auto central = measureTerrainHeightmapSlope(source, 0.5F, 0.5F, TerrainHeightmapSlopeQuery::NormalizedCentral);
-    auto average = measureTerrainHeightmapSlope(source, 0.5F, 0.5F, TerrainHeightmapSlopeQuery::NormalizedAverage);
+    // Center the four-neighbor stencil on the interior texel, away from edge clamping.
+    auto average =
+        measureTerrainHeightmapSlope(source, 1.F / 3.F, 1.F / 3.F, TerrainHeightmapSlopeQuery::NormalizedAverage);
     REQUIRE(forward.ok());
     REQUIRE(central.ok());
     REQUIRE(average.ok());
