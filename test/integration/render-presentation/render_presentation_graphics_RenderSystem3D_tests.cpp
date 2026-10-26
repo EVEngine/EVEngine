@@ -3694,7 +3694,8 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
         // ImGui frame must be built before present (RenderSystem ends with present).
         ui->beginFrameAndRender();
-        CHECK(gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr);
+        const bool overlayHooked = gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr;
+        CHECK(overlayHooked);
         RenderSystem::render(*gfx);
         ui->dispatchEvents();
 
