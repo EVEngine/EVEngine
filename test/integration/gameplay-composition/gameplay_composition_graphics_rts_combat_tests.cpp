@@ -2484,6 +2484,7 @@ TEST_CASE("rts.coordinatedVolleyHoldsAndReleasesGroupWhileExplicitAttackBypasses
         definition.id               = "volley-shell";
         definition.damage           = 10.0f;
         definition.range            = 12.0f;
+        weapon->state()->resource.value = weapon->state()->resource.max = 4.0f;
         weapon->definition()->owned = std::make_shared<const eve::weapon::WeaponDefinition>(definition);
         weapon->definition()->def   = weapon->definition()->owned.get();
         weapon->state()->stages     = &weapon->definition()->def->stages;
@@ -2546,6 +2547,9 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto              order = unit->orders()->values.enqueue(move);
     REQUIRE(order.ok());
     std::move(order).takeValue();
+    auto current = unit->orders()->values.current();
+    REQUIRE(current.ok());
+    const auto record = current.value();
 
     eve::action::ActionRuntime runtime;
     eve::rts::ActionAdapter    adapter(runtime);
@@ -2553,9 +2557,9 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto                       moved = eve::rts::MotionSystem::step(first);
     REQUIRE(moved.ok());
     std::move(moved).takeValue();
-    auto pending = eve::rts::OrderActionSystem::step(first, adapter);
+    auto pending = adapter.execute(*unit, record, first);
     REQUIRE(pending.ok());
-    std::move(pending).takeValue();
+    CHECK(pending.value().disposition == eve::rts::ActionDisposition::Pending);
     CHECK(!unit->orders()->values.empty());
     CHECK_EQ(runtime.executionCount(), 1u);
 
@@ -2563,9 +2567,9 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto                      completed = eve::rts::MotionSystem::step(second);
     REQUIRE(completed.ok());
     std::move(completed).takeValue();
-    auto action = eve::rts::OrderActionSystem::step(second, adapter);
+    auto action = adapter.execute(*unit, record, second);
     REQUIRE(action.ok());
-    std::move(action).takeValue();
+    CHECK(action.value().disposition == eve::rts::ActionDisposition::Completed);
     CHECK(unit->orders()->values.empty());
 
     unit->release();
