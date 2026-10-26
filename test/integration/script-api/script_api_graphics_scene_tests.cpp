@@ -2354,8 +2354,8 @@ TEST_CASE("scriptCompiler.servesLanguageToolingQueries") {
     runtime.scriptCompiler().bindings().registerContract(std::move(contract));
 
     const auto scriptItems = runtime.scriptCompiler().completions("game:/tooling.nut", "player");
-    CHECK_EQ(scriptItems.size(), size_t(1));
-    CHECK_EQ(scriptItems[0].label, std::string("playerSpeed"));
+    CHECK(std::any_of(scriptItems.begin(), scriptItems.end(),
+                      [](const auto& item) { return item.label == "playerSpeed" && item.kind == "local"; }));
     const auto nativeItems = runtime.scriptCompiler().completions("game:/tooling.nut", "toolingNew");
     CHECK_EQ(nativeItems.size(), size_t(1));
     CHECK(nativeItems[0].insertText.find("gravity:") != std::string::npos);

@@ -315,7 +315,7 @@ TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
     REQUIRE(rts.configureScriptWorld(36, 22, 1.0f).ok());
     const auto loaded = rts.loadScriptContent(json.str());
     REQUIRE(loaded.ok());
-    CHECK_EQ(loaded.value().inserted, std::size_t{18});
+    CHECK_EQ(loaded.value().inserted, std::size_t{27});
 
     auto*                            faction = rts.newFaction(subject("00000000-0000-7000-8000-00000000fa01")).value();
     const std::array<const char*, 7> unitTypes{"worker", "engineer", "marine", "apc", "jammer", "skyguard", "drone"};

@@ -449,6 +449,10 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     const physics::CapsuleMove3D movement = std::move(moved).takeValue();
     lastCounters_.moverIterations         = static_cast<std::uint32_t>(std::max(0, movement.iterations));
     const Vec3 actual{movement.deltaX, movement.deltaY, movement.deltaZ};
+    if (debugCapture_ == ClimbingDebugCapture::Enabled)
+        boundedDebugPush(lastDebugQueries_,
+                         ClimbingDebugQuery{execution.candidate.actionId, "climbing.active.move", execution.currentFeet,
+                                            execution.currentFeet + desired, profile_.capsuleRadius, collisionHeight});
     execution.currentFeet            = execution.currentFeet + actual;
     execution.lastPlannedFeet        = planned;
     const Vec3 residual              = desired - actual;
