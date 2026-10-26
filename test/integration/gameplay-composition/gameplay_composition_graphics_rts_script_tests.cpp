@@ -1788,7 +1788,11 @@ TEST_CASE("scene.editor.physics_placement_auto_hull_cache_is_explicit_and_sessio
     REQUIRE(session.cancelPhysicsPlacement().ok());
     REQUIRE(session.removePhysicsPlacementHull(ObjectId("mesh")).ok());
     const auto missingRemoval = session.removePhysicsPlacementHull(ObjectId("mesh"));
+    REQUIRE(missingRemoval.ok());
     REQUIRE(missingRemoval.code() == Status::NoOp);
+    const auto inactiveCancel = session.cancelPhysicsPlacement();
+    REQUIRE(inactiveCancel.ok());
+    REQUIRE(inactiveCancel.code() == Status::NoOp);
 }
 
 TEST_CASE("scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources") {

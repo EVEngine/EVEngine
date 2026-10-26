@@ -254,6 +254,14 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
         if (!overlap) return eve::Result<ClimbingAdvance>::failure(overlap.status());
         ++lastQueryCount_;
         lastCounters_.queryCount = lastQueryCount_;
+        if (debugCapture_ == ClimbingDebugCapture::Enabled)
+            boundedDebugPush(lastDebugQueries_,
+                             ClimbingDebugQuery{execution.candidate.actionId,
+                                                "climbing.hang.clearance",
+                                                {execution.currentFeet.x, lowerY, execution.currentFeet.z},
+                                                {execution.currentFeet.x, upperY, execution.currentFeet.z},
+                                                profile_.capsuleRadius,
+                                                profile_.capsuleHeight});
         if (overlap.value().bodyCount != 0) {
             enqueueEvent({ClimbingEventKind::Failed, execution.candidate.actionId, step.tick, execution.executionId});
             phase_        = ClimbingPhase::Failed;
