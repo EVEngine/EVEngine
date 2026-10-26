@@ -1519,6 +1519,8 @@ TEST_CASE("ssr.createConfigureAndApply") {
 }  // namespace test_ScreenSpaceReflection
 
 // Contract section: ShaderResourceSharing
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
 
 
@@ -1592,6 +1594,7 @@ TEST_CASE("graphics.shader shared images retain ownership and replacement isolat
 #endif
 }
 }  // namespace test_ShaderResourceSharing
+#endif
 
 // Contract section: Shadow3D
 #include "PrivateTestScope.h"

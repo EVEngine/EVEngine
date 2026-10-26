@@ -532,6 +532,8 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
 }  // namespace test_animation_sprite_spine
 
 // Contract section: avatar vrm vulkan
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
 
 #include <cstring>
@@ -605,6 +607,7 @@ TEST_CASE("avatar.vrm.importMorphGazeSpringAndRollback") {
     REQUIRE(fs->unmount(directory));
 }
 }  // namespace test_avatar_vrm_vulkan
+#endif
 
 // Contract section: decal
 #include "PrivateTestScope.h"
@@ -1203,6 +1206,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
 }  // namespace test_dialogue
 
 // Contract section: gpu driven
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
 
 #include <glm/ext/matrix_clip_space.hpp>
@@ -2251,6 +2255,7 @@ TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
     win->close();
 }
 }  // namespace test_gpu_driven
+#endif
 
 // Contract section: gpu driven parity
 #include "PrivateTestScope.h"

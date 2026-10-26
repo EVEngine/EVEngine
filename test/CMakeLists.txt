@@ -100,10 +100,10 @@ endif()
 
 # These tests intentionally exercise Vulkan implementation details rather than
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
-# binary. Backend parity coverage lives in graphics_backend_parity.cpp.
+# binary. Merged Vulkan-only contract sections select the backend in source.
+# Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
-                                    shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
+  foreach(_eve_vulkan_test IN ITEMS shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()

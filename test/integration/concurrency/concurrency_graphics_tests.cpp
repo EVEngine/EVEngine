@@ -111,6 +111,7 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
 }  // namespace test_animation_batch_lod
 
 // Contract section: animation binary
+#include <stdexcept>
 #include "PrivateTestScope.h"
 
 #include <bit>
@@ -2803,6 +2804,8 @@ TEST_CASE("procgen.cave.cellular.parallelJobsHaveIsolatedRandomStreams") {
 }  // namespace test_procgen_rng_contract
 
 // Contract section: render graph
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
 
 #include <mutex>
@@ -3186,6 +3189,7 @@ TEST_CASE("render_graph.recordCycleConcurrent") {
     cycle.submitted();
 }
 }  // namespace test_render_graph
+#endif
 
 // Contract section: thread
 #include "PrivateTestScope.h"
