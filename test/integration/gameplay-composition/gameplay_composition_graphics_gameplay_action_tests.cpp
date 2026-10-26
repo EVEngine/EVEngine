@@ -3639,6 +3639,7 @@ eve::sensing::WorldPoint testPoint() {
 
 TEST_CASE("gameplayAction.phasePipelineUsesInjectedSimulationTime") {
     ActionDefinition def = definition("timed");
+    def.activeExecutionRequired = true;
     def.timing.windup    = eve::Duration::fromNanoseconds(1);
     def.timing.active    = eve::Duration::fromNanoseconds(2);
     def.timing.recover   = eve::Duration::fromNanoseconds(3);
