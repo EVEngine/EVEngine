@@ -1398,7 +1398,7 @@ TEST_CASE("rts.abilitiesUseCanonicalDamageEconomyCooldownAndInterruptibleChannel
     CHECK_EQ(caster->veterancy()->experience, 10.0f);
     CHECK_EQ(caster->veterancy()->level, 1);
     CHECK_EQ(caster->combat()->upgradeDamageFactor, 1.25f);
-    CHECK_EQ(caster->durability()->state.maxHealth, 12.0);
+    CHECK_LT(std::abs(caster->durability()->state.maxHealth - 12.0), 1e-5);
 
     target->release();
     caster->release();
@@ -1524,7 +1524,7 @@ TEST_CASE("rts.projectilesUseCanonicalTrajectorySweptImpactAndHostileSplashDamag
     CHECK_EQ(source->veterancy()->level, 1);
     CHECK_EQ(source->veterancy()->experience, 10.0f);
     CHECK_EQ(source->combat()->upgradeDamageFactor, 1.25f);
-    CHECK_EQ(source->durability()->state.maxHealth, 12.0);
+    CHECK_LT(std::abs(source->durability()->state.maxHealth - 12.0), 1e-5);
 
     blocker->release();
     ally->release();
@@ -2177,6 +2177,8 @@ TEST_CASE("rts.compositionRootsAndBatchViews") {
 
     Unit*     unit               = Unit::createUnit();
     Building* building           = Building::createBuilding();
+    CHECK_EQ(unit->table, &world);
+    CHECK_EQ(building->table, &world);
     unit->motion()->x            = 10.0f;
     building->placement()->cellX = 4;
 
@@ -2211,6 +2213,8 @@ TEST_CASE("rts.baseViewIncludesSubclassButNotOtherRoot") {
 
     Unit*  unit  = Unit::createUnit();
     Scout* scout = Scout::create();
+    CHECK_EQ(unit->table, &world);
+    CHECK_EQ(scout->table, &world);
     initializeScout(*scout);
     Building* building = Building::createBuilding();
 

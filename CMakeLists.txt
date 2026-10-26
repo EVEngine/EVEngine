@@ -532,8 +532,10 @@ function(main)
     # skipped without touching anything when the checkout already carries it.
     # Runtime patches also skip fully initialized component words and avoid
     # scanning the entity registry on commits with no deferred creation.
+    # Keep the current-slot patch last: earlier zero-context hunks use offsets
+    # from the original default-table patch and must run before new lines shift them.
     if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
-        foreach(_eve_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime)
+        foreach(_eve_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime ecs-shared-current-table)
             set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
                 "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch")
             execute_process(
