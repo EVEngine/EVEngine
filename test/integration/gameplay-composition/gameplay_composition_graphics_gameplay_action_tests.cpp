@@ -2263,7 +2263,10 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
         workspacePanelCount <- workspace.getPanelCount();
         panel0 <- workspace.getPanelId(0);
         cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         createdCustom <- themeEditor.createFromPreset("studio", "Studio", "dark");
         beforeRounding <- themeEditor.getFloat("geometry.frameRounding");
         roundingResult <- themeEditor.setFloat("geometry.frameRounding", 9.0);

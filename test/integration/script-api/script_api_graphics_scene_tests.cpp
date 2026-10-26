@@ -2546,8 +2546,8 @@ TEST_CASE("scriptConfig.instantiatesOnlyConfiguredModules") {
     Runtime runtime(1024, ssq::Libs::ALL);
     configureRuntime(runtime);
     runtime.runSource(
-        "eve.Foo <- function() { return { n = 1 } }\n"
-        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.Foo <- class { n = 1 }\n"
+        "eve.Bar <- class { n = 2 }\n"
         "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
         "config.modules <- [\"foo\"]\n"
         "instantiate_configured_modules()\n"
@@ -2560,8 +2560,8 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
     Runtime runtime(1024, ssq::Libs::ALL);
     configureRuntime(runtime);
     runtime.runSource(
-        "eve.Foo <- function() { return { n = 1 } }\n"
-        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.Foo <- class { n = 1 }\n"
+        "eve.Bar <- class { n = 2 }\n"
         "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
         "config.modules <- [\"foo\"]\n"
         "instantiate_configured_modules()\n"

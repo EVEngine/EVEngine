@@ -1319,7 +1319,7 @@ TEST_CASE("rpg.classic.mainScriptCompilesThroughEveScriptFrontend") {
           std::string::npos);
     CHECK(script.find("rpg.replaceStoriesFromDnut(storyDnut, \"data/stories.dnut\")") != std::string::npos);
     CHECK(script.find("text.replaceBundleFromJson(source)") != std::string::npos);
-    CHECK(script.find("dialogueFlow.validateLocalization(text, \"zh-CN\")") != std::string::npos);
+    CHECK(script.find("dialogueFlow.validateLocalization(text, language)") != std::string::npos);
     CHECK(script.find("function resumePendingStoryEvent()") != std::string::npos);
     CHECK(script.find("rpg.newStorySession()") != std::string::npos);
     CHECK(script.find("function presentStoryStep()") != std::string::npos);

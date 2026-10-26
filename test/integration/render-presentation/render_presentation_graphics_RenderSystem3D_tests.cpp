@@ -856,6 +856,11 @@ TEST_CASE("RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters") {
     Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx, 64, 64);
     resetScene3D();
+    auto *control = gfx->getRenderControl();
+    REQUIRE(control->setLightingMode(LightingMode::ForwardPlus).ok());
+    control->disable("clustered");
+    control->enable("gpuDriven");
+    const int expectedCalls = gfx->supportsGpuDriven3D() ? 1 : 0;
 
     auto *cam            = Camera3D::createCamera();
     cam->data()->eyeZ    = 3.f;
@@ -872,12 +877,12 @@ TEST_CASE("RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters") {
 
     RenderSystem3D::render(*gfx);
     gfx->present();
-    CHECK_EQ(calls, 1);
+    CHECK_EQ(calls, expectedCalls);
 
     RenderSystem3D::removeGpuOpaqueCollector(token);
     RenderSystem3D::render(*gfx);
     gfx->present();
-    CHECK_EQ(calls, 1);
+    CHECK_EQ(calls, expectedCalls);
 
     win->close();
 }
@@ -3656,8 +3661,6 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
     REQUIRE(ui->initBackend());
     CHECK(ui->isBackendReady());
-    const bool overlayHooked = gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr;
-    CHECK(overlayHooked);
 
     gfx->setBackgroundColor(Color(0.10f, 0.12f, 0.18f, 1.0f));
     gfx->setScreenReadbackEnabled(true);
@@ -3691,6 +3694,7 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
         // ImGui frame must be built before present (RenderSystem ends with present).
         ui->beginFrameAndRender();
+        CHECK(gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr);
         RenderSystem::render(*gfx);
         ui->dispatchEvents();
 

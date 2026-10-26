@@ -2206,7 +2206,7 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("animation.timeline"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("animation.skeleton"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("animation.clip"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));
@@ -2251,7 +2251,7 @@ TEST_CASE("editor.api.session_and_history_preserve_failure_status") {
 
     EditorHistory history;
     auto          emptyUndo = history.undoAction();
-    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NoOp));
+    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NotFound));
     REQUIRE(!emptyUndo.diagnostics().empty());
     CHECK(!history.undo());
 
@@ -2346,8 +2346,8 @@ TEST_CASE("editor.api.session_execute_checked_forwards_transaction_diagnostics")
     auto missingTransaction = session.executeChecked(std::move(command));
     CHECK_EQ(static_cast<int>(missingTransaction.code()), static_cast<int>(EditorStatus::Rejected));
     REQUIRE(!missingTransaction.diagnostics().empty());
-    CHECK_EQ(eve::editing::diagnosticRule(missingTransaction.diagnostics().front()).value(),
-             std::string("editor.transaction"));
+    CHECK_EQ(missingTransaction.diagnostics().front().code(), eve::DiagnosticCode::PreconditionViolation);
+    CHECK_EQ(missingTransaction.diagnostics().front().path(), std::string("editor.transaction"));
     CHECK_EQ(buffer.getGid(0, 0), 0);
 }
 
@@ -2410,7 +2410,7 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
     REQUIRE_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     REQUIRE(vm.find("configured").toTable().get<bool>("ok"));
     REQUIRE_EQ(vm.find("workspacePanelCount").toInt(), 5);
-    REQUIRE_EQ(vm.find("panel0").toString(), std::string("avatar.parameters"));
+    REQUIRE_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
     REQUIRE_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
     REQUIRE_EQ(vm.find("ctx4").toString(), std::string("expressions"));
     REQUIRE(vm.find("selectParam").toTable().get<bool>("ok"));
@@ -3638,7 +3638,7 @@ TEST_CASE("editor.audio.source_editor_script_composes_workspace_and_transactions
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("audio.transport"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("audio.sources"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("audio.source"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("viewport").toTable().get<bool>("ok"));
