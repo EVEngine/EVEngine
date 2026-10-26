@@ -2223,6 +2223,9 @@ TEST_CASE("procgen.pointDelta.spec.roundtripStaleBaseAndLargeUnion") {
         PointSet first  = makePointSet(10000, 700);
         PointSet second = makePointSet(10000, 701);
         CHECK_EQ(unionPointSets(first, second).getCount(), 20000);
+        const auto savedId = first.getPointId(0);
+        first.assignPointIds(702).expect("retain previously assigned point identities");
+        CHECK_EQ(first.getPointId(0), savedId);
     };
 }
 
