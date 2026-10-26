@@ -949,7 +949,9 @@ TEST_CASE("editor.building.edge_curve_is_one_atomic_undoable_gesture") {
         world.placeEdge("editor-fence", memberBeforeUndo.edge.x, memberBeforeUndo.edge.y,
                         memberBeforeUndo.edge.axis == eve::building::EdgeAxis::Horizontal ? "north" : "west");
     REQUIRE(blocker > 0);
-    auto rejectedRedo = authority.preflight(transaction, operations);
+    auto blockedPlan = authority.preflight(transaction, operations);
+    REQUIRE(blockedPlan.ok());
+    auto rejectedRedo = authority.commit(blockedPlan.value());
     CHECK(!rejectedRedo.ok());
     CHECK_EQ(world.getBuildingCount(), 1);
     CHECK_EQ(world.getEdgeCurveGroupCount(), 0);

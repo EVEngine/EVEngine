@@ -3911,6 +3911,7 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
     immediate.id          = CommandId("park.add-tree");
     immediate.ownerModule = "park";
     immediate.displayName = "Add tree";
+    immediate.createsTransaction = false;
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(immediate),
                                  [](const CommandContext&, const EditorValue&) {
