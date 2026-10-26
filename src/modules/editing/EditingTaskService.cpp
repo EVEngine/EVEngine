@@ -8,6 +8,7 @@ namespace eve::editing {
 struct TaskService::TaskRecord {
     TaskSnapshot                      snapshot;
     Work                              work;
+    bool                              discarded = false;
     std::shared_ptr<std::atomic_bool> cancelled = std::make_shared<std::atomic_bool>(false);
 };
 
@@ -77,6 +78,28 @@ Result<void> TaskService::cancel(const TaskId& task) {
     if (record.snapshot.state == TaskState::Queued) record.snapshot.state = TaskState::Cancelled;
     workReady_.notify_all();
     return eve::editing::applied<void>();
+}
+
+Result<void> TaskService::discard(const TaskId& id) {
+    std::shared_ptr<TaskRecord> released;
+    {
+        std::lock_guard lock(mutex_);
+        auto            found = tasks_.find(id);
+        if (found == tasks_.end())
+            return editing::failed<void>(Status::NotFound, RuleId("editing.task.not-found"), "Task does not exist");
+        auto& record = *found->second;
+        record.cancelled->store(true, std::memory_order_relaxed);
+        record.discarded = true;
+        if (record.snapshot.state != TaskState::Running) {
+            released = found->second;
+            std::erase(queue_, released);
+            tasks_.erase(found);
+        }
+    }
+    // Captures can own arbitrary provider destructors; release them outside the mutex.
+    released.reset();
+    idle_.notify_all();
+    return editing::applied<void>();
 }
 
 Result<TaskSnapshot> TaskService::snapshot(const TaskId& task) const {
@@ -152,8 +175,9 @@ void TaskService::workerLoop() {
                 task->snapshot.state = TaskState::Succeeded;
             else
                 task->snapshot.state = TaskState::Failed;
-            task->work = {};
+            if (task->discarded) tasks_.erase(task->snapshot.id);
         }
+        task->work = {};
         idle_.notify_all();
     }
 }
