@@ -92,11 +92,12 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
     const uint8_t green[4]     = {0, 255, 0, 255};
     auto         *redTexture   = gfx->newTexture(1, 1, red);
     auto         *greenTexture = gfx->newTexture(1, 1, green);
-    for (int frame = 0; frame < 12; ++frame) {
-        // Resize on both even and odd frames to cover both in-flight slots.
-        if (frame == 6 || frame == 9) {
-            settings.width  = frame == 6 ? 160 : 96;
-            settings.height = frame == 6 ? 96 : 160;
+    for (int frame = 0; frame < 36; ++frame) {
+        // Repeatedly resize on even and odd frames to cover both in-flight slots
+        // and retirement of swapchains with outstanding native presentations.
+        if (frame >= 6 && frame % 3 == 0) {
+            settings.width  = frame % 2 == 0 ? 160 : 96;
+            settings.height = frame % 2 == 0 ? 96 : 160;
             auto *native    = static_cast<SDL_Window *>(win->getHandle());
             SDL_SetWindowSize(native, settings.width, settings.height);
             // Cocoa applies the content-view / Metal-layer resize while pumping
@@ -127,6 +128,12 @@ TEST_CASE("graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas") {
         entity->setTexture(expectGreen ? greenTexture : redTexture);
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
+        // Swapchain replacement must preserve the actual drawable extent,
+        // not merely the logical size observed before acquisition.
+        int drawableWidth = 0, drawableHeight = 0;
+        SDL_Vulkan_GetDrawableSize(static_cast<SDL_Window *>(win->getHandle()), &drawableWidth, &drawableHeight);
+        REQUIRE_EQ(drawableWidth, settings.width);
+        REQUIRE_EQ(drawableHeight, settings.height);
         std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
         REQUIRE(image != nullptr);
         REQUIRE_EQ(image->getSize(), size_t(gfx->getWidth() * gfx->getHeight() * 4));
