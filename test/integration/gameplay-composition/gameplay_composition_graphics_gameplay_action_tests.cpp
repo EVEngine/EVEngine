@@ -1767,7 +1767,10 @@ TEST_CASE("editor.v2.authority_compensation_validates_full_inverse_on_candidate"
 
     auto compensation = authority.compensate(committed.value());
     CHECK(!compensation.ok());
-    CHECK_EQ(static_cast<int>(compensation.code()), static_cast<int>(EditorStatus::Failed));
+    CHECK_EQ(static_cast<int>(compensation.code()), static_cast<int>(EditorStatus::Rejected));
+    REQUIRE_EQ(compensation.diagnostics().size(), 1u);
+    CHECK_EQ(eve::editing::diagnosticRule(compensation.diagnostics().front()).value(),
+             std::string("test.operation.failure"));
     CHECK_EQ(target.value(), 5);
     CHECK_EQ(target.revision(), revisionAfterCommit);
 }

@@ -2574,6 +2574,9 @@ public:
     }
 
     [[nodiscard]] Result<void> commitDomainState(std::unique_ptr<IDomainOperationTarget> candidate) override {
+        if (failCommit)
+            return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.commit"),
+                                              "Injected property commit failure");
         auto* typed = dynamic_cast<TransformPropertyTarget*>(candidate.get());
         if (!typed)
             return eve::editing::failed<void>(EditorStatus::Rejected, RuleId("scene.property.candidate"),
@@ -2596,6 +2599,8 @@ public:
     }
 
     const EditorValue& position() const { return position_; }
+
+    bool failCommit = false;
 
     void externalSet(EditorValue position) {
         position_ = std::move(position);
@@ -2897,9 +2902,10 @@ TEST_CASE("editor.v2.property_model_explicit_transaction_previews_without_mutati
 
 TEST_CASE("editor.v2.property_model_failed_commit_keeps_target_unchanged_and_is_discardable") {
     TransformPropertyTarget   target;
+    target.failCommit = true;
     TransformPropertyProvider provider(&target);
     SelectionSnapshot         selection = sceneSelection(target);
-    ReadOnlyAuthority         authority;
+    LocalWorldAuthority       authority(&target);
     LocalTransactionBackend   backend(&authority);
     EditorPropertyModel       model(provider.schema(selection), selection, &provider, PropertyModelSurface::Developer,
                                     HostProfile::developer(), &backend);
