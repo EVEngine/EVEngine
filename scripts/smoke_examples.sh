@@ -147,6 +147,13 @@ for name in "${EXAMPLES[@]}"; do
           kill -KILL "$pid" 2>/dev/null || true
         fi
       fi
+      if ! is_windows; then
+        # Bound teardown on hosts without GNU timeout, including macOS GUI loops.
+        sleep 3
+        if kill -0 "$pid" 2>/dev/null; then
+          kill -KILL "$pid" 2>/dev/null || true
+        fi
+      fi
     fi
     wait "$pid" 2>/dev/null
     rc=$?
