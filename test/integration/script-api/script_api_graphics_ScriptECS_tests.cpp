@@ -3001,7 +3001,7 @@ TEST_CASE("async.asyncSeq") {
     std::string out = runAsyncSnippet(R"(
         result <- "fail";
         asyncSeq([
-            function() { return Promise.resolve(1); },
+            function(_) { return Promise.resolve(1); },
             function(v) { return Promise.resolve(v + 2); },
             function(v) { return v * 10; },
         ]).then(function(v) { result = "" + v; });
