@@ -138,11 +138,11 @@ void Rope3D::collideBorrowedSurfaces(float dt) {
             if (continuousCollision_ && magnitude(sweep) > 1e-7f &&
                 world_->castSphere(particle.previous.x, particle.previous.y, particle.previous.z, radius_, sweep.x,
                                    sweep.y, sweep.z) >= 0) {
-                const float fraction = std::clamp(world_->getShapeCastFraction(), 0.f, 1.f);
                 normal = {world_->getShapeCastNormalX(), world_->getShapeCastNormalY(), world_->getShapeCastNormalZ()};
-                particle.position = add(particle.previous, multiply(sweep, fraction));
-                particle.position = add(particle.position, multiply(normal, 1e-4f));
                 contactPoint      = {world_->getShapeCastX(), world_->getShapeCastY(), world_->getShapeCastZ()};
+                // Native sweep fractions allow contact slop. Place the sphere
+                // from the obstacle surface so its full radius stays outside.
+                particle.position = add(contactPoint, multiply(normal, radius_ + 1e-4f));
                 body              = world_->findBodyById(world_->getShapeCastBodyId());
                 hit               = true;
             } else {
