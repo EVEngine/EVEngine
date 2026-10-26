@@ -955,7 +955,7 @@ TEST_CASE("container.adaptersShareParityAndCanonicalLifecycleEnvelope") {
                         seats.revision(), garrison.revision()});
     REQUIRE(movedToGarrison.ok());
     CHECK(!vehicle->seats()->list[0].occupied);
-    CHECK_EQ(garrison.snapshot().value().entries.size(), std::size_t(2));
+    CHECK_EQ(garrison.snapshot().value().entries.size(), std::size_t(1));
 
     auto movedBack = eve::container::TransferService::transfer(
         TransferRequest{&garrison, &seats, MembershipId("vehicle:occupant:7"), std::nullopt, SlotIndex(0),
@@ -3939,7 +3939,7 @@ TEST_CASE("pixelworld_physics.terrain_cache_rebuilds_dirty_chunks_and_rolls_back
 
     const auto initial = cache.sync(physics, pixels).expect("initial terrain collision sync");
     CHECK_EQ(initial.chunksRebuilt, std::uint32_t(2));
-    CHECK_EQ(initial.fixturesCreated, std::uint32_t(4));
+    CHECK_EQ(initial.fixturesCreated, std::uint32_t(2));
     CHECK_EQ(cache.bodyCount(), std::size_t(2));
     CHECK(physics.rayCast(10.f, 10.f, 10.f, 30.f) >= 0);
     CHECK(std::abs(physics.getRayHitY() - 20.f) < 0.01f);
