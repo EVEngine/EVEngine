@@ -190,8 +190,7 @@ TEST_CASE("data.compress lz4 round-trip owns independent compressed bytes") {
     CHECK_EQ(clone->getSize(), compressed->getSize());
     std::size_t             restoredSize = 0;
     std::unique_ptr<char[]> restored(eve::data::decompress(clone.get(), restoredSize));
-    // Cast to bool: zeroerr's unique_ptr printer streams get() as a C string,
-    // and LZ4 decompress allocates exactly restoredSize bytes with no NUL.
+    // zeroerr prints decomposed char-array pointers as C strings; this buffer is binary.
     REQUIRE(static_cast<bool>(restored));
     CHECK_EQ(restoredSize, size);
     CHECK(std::memcmp(restored.get(), source, size) == 0);
