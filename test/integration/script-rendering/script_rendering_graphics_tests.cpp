@@ -41,8 +41,9 @@ public:
 };
 
 TEST_CASE_FIXTURE(GraphicTest, "GraphicTest.bindings") {
-    SUB_CASE("basic") { REQUIRE(callScript("basic")); };
-    SUB_CASE("hasDrawText") { REQUIRE(callScript("hasDrawText")); };
+    auto* const fixture = this;
+    SUB_CASE("basic") { REQUIRE(fixture->callScript("basic")); };
+    SUB_CASE("hasDrawText") { REQUIRE(fixture->callScript("hasDrawText")); };
 }
 }  // namespace test_graphic
 
