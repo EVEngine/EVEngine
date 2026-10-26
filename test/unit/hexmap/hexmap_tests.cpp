@@ -1155,11 +1155,7 @@ TEST_CASE("hexmap.serializationAndGeneration.spec.roundtripFailureAndSeed") {
         REQUIRE(land > 0);
         REQUIRE(water > 0);
         REQUIRE(planted > 0);
-        // KNOWING FAILURE, recorded rather than silenced: the generator currently produces
-        // no rivers at all, on the default settings *and* on a deliberately wet climate, so
-        // this is a defect in the river path (origin weighting or carving), not a tuning
-        // question. Both assertions stay advisory until it is fixed, because a red suite
-        // would hide every other regression.
+        // Erosion must preserve the land count used to budget rivers.
         CHECK(rivers > 0);
 
         HexMap                  wet         = makeMap(20, 15, 1u);
