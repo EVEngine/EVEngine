@@ -12,14 +12,7 @@
 #include "../../../../external/zeroerr/include/zeroerr/unittest.h"
 
 #undef TEST_CASE_FIXTURE
-#define TEST_CASE_FIXTURE(fixture, ...)                                              \
-    ZEROERR_EXPAND(ZEROERR_CREATE_TEST_CLASS(                                         \
-        fixture, ZEROERR_NAMEGEN(ZEROERR_CAT(fixture, _zeroerr_class)),               \
-        ZEROERR_NAMEGEN(ZEROERR_CAT(fixture, _zeroerr_test_method)), __VA_ARGS__))
-
-
-#if defined(ZEROERR_COMPILED_DIAGNOSTICS)
-#include "../../../zeroerr/TestRegistration.h"
-#undef ZEROERR_TEST_CASE_FACTORY
-#define ZEROERR_TEST_CASE_FACTORY zeroerr::detail::makeTestCaseFromDecorators
-#endif
+#define TEST_CASE_FIXTURE(fixture, ...)                                                                      \
+    ZEROERR_EXPAND(ZEROERR_CREATE_TEST_CLASS(fixture, ZEROERR_NAMEGEN(ZEROERR_CAT(fixture, _zeroerr_class)), \
+                                             ZEROERR_NAMEGEN(ZEROERR_CAT(fixture, _zeroerr_test_method)),    \
+                                             __VA_ARGS__))
