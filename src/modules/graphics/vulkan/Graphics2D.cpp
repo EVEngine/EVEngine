@@ -323,7 +323,8 @@ image::ImageData *Graphics::renderEntityIdMask(
         gd.push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
         const uint32_t packed = u8(d.idColor.r) | (u8(d.idColor.g) << 8) |
                                 (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
-        gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), 0.f);
+        // Negative motion selects exact RGBA8 IDs instead of RGB6 material tint packing.
+        gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), -1.f);
         idDraws.push_back(gd);
     }
     if (idDraws.empty()) return nullptr;
@@ -337,11 +338,13 @@ image::ImageData *Graphics::renderEntityIdMask(
 
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                std::array<vk::ClearValue, 4> clears{};
+                                std::array<vk::ClearValue, 6> clears{};
                                 clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
                                 clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
                                 clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                clears[3].color        = vk::ClearColorValue(std::array<float, 4>{0, 1, 1, 1});
+                                clears[4].color        = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
+                                clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
                                 vk::RenderPassBeginInfo rpBegin{};
                                 rpBegin.renderPass = gbufferRenderPass;
                                 rpBegin.framebuffer = slot->framebuffer;
@@ -351,6 +354,8 @@ image::ImageData *Graphics::renderEntityIdMask(
                                 slot->normal.beginColorAttachment();
                                 slot->depthColor.beginColorAttachment();
                                 slot->albedo.beginColorAttachment();
+                                slot->pbrParams.beginColorAttachment();
+                                slot->emissive.beginColorAttachment();
                                 slot->depth.beginDepthAttachment();
                                 cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
                                 setViewportAndScissor(cb, w, h);
@@ -374,6 +379,8 @@ image::ImageData *Graphics::renderEntityIdMask(
                                 slot->normal.endSampledLayout();
                                 slot->depthColor.endSampledLayout();
                                 slot->albedo.endSampledLayout();
+                                slot->pbrParams.endSampledLayout();
+                                slot->emissive.endSampledLayout();
                                 slot->depth.endSampledLayout();
 
                                 // Copy the albedo attachment (location 2 = ID colors) to CPU.
