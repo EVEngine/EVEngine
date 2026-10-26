@@ -4,7 +4,8 @@
 #include "common/Result.h"
 #include "graphics/RayTracingCaps.h"
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm types are enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 namespace eve::graphics {
 

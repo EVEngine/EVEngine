@@ -9,8 +9,8 @@
 #include "common/Export.h"
 
 #include <cstdint>
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -60,7 +60,7 @@ enum class StatusCode : uint8_t {
 }
 
 /** @brief Write the stable StatusCode spelling to a stream. */
-inline std::ostream& operator<<(std::ostream& stream, StatusCode code) { return stream << statusCodeName(code); }
+EVENGINE_API_FOUNDATION std::ostream& operator<<(std::ostream& stream, StatusCode code);
 
 /**
  * @brief Structured status and zero or more diagnostics for an operation.

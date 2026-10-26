@@ -5,6 +5,7 @@
 
 #include "graphics/AntiAliasing.h"
 #include "graphics/Light.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/vulkan/Canvas.h"
 #include "graphics/vulkan/Graphics.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
@@ -156,11 +157,17 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh) {
     return raw;
 }
 
-Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &worldTransform) {
+Mesh* Graphics::newMeshFromAssimp(const ::aiMesh& mesh, const glm::mat4& worldTransform) {
     ASSERT(initialized);
     if (!initialized) throw Exception("newMeshFromAssimp: graphics not initialized");
     if (mesh.mNumVertices == 0 || mesh.mNumFaces == 0)
         throw Exception("newMeshFromAssimp: empty mesh");
+
+    // glm is column-major; Assimp aiMatrix4x4 is row-major.
+    const aiMatrix4x4 world(worldTransform[0][0], worldTransform[1][0], worldTransform[2][0], worldTransform[3][0],
+                            worldTransform[0][1], worldTransform[1][1], worldTransform[2][1], worldTransform[3][1],
+                            worldTransform[0][2], worldTransform[1][2], worldTransform[2][2], worldTransform[3][2],
+                            worldTransform[0][3], worldTransform[1][3], worldTransform[2][3], worldTransform[3][3]);
 
     std::vector<aiVector3D> positions(mesh.mNumVertices);
     std::vector<aiVector3D> normals(mesh.mNumVertices);
@@ -169,7 +176,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
     if (mesh.HasTangentsAndBitangents()) {
         tangents.resize(mesh.mNumVertices);
         bitangents.resize(mesh.mNumVertices);
-        const aiMatrix3x3 linear(worldTransform);
+        const aiMatrix3x3 linear(world);
         for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
             tangents[i]   = linear * mesh.mTangents[i];
             bitangents[i] = linear * mesh.mBitangents[i];
@@ -177,14 +184,14 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
             bitangents[i].Normalize();
         }
     }
-    aiMatrix3x3 nmat(worldTransform);
+    aiMatrix3x3 nmat(world);
     const float ndet = nmat.Determinant();
     if (std::fabs(ndet) > 1e-8f) {
         nmat.Inverse();
         nmat.Transpose();
     }
     for (unsigned i = 0; i < mesh.mNumVertices; ++i) {
-        positions[i] = worldTransform * mesh.mVertices[i];
+        positions[i] = world * mesh.mVertices[i];
         if (mesh.HasNormals()) {
             normals[i] = nmat * mesh.mNormals[i];
             normals[i].Normalize();
@@ -195,7 +202,7 @@ Mesh *Graphics::newMeshFromAssimp(const ::aiMesh &mesh, const aiMatrix4x4 &world
 
     // Negative determinant mirrors the mesh: winding flips while inverse-transpose
     // keeps normals consistent, so back-face cull would hide the visible side.
-    const bool flipWinding = worldTransform.Determinant() < 0.f;
+    const bool            flipWinding = world.Determinant() < 0.f;
     std::vector<aiFace> flippedFaces;
     std::vector<unsigned> flippedIdx;
     if (flipWinding) {
@@ -301,16 +308,20 @@ Mesh *Graphics::newMeshFromArraysColored(const float *posXYZ, const float *nrmXY
     return raw;
 }
 
-std::optional<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh *mesh) const {
-    if (!mesh || !mesh->gpuHandle) return std::nullopt;
+eve::Result<eve::graphics::MeshBackendDescriptor> Graphics::describeMesh(Mesh* mesh) const {
+    if (!mesh || !mesh->gpuHandle)
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh has no backend upload", {}, {}, "graphics.mesh.describe"));
     const auto *gpu = static_cast<const GpuMesh *>(mesh->gpuHandle);
     const auto  owned =
         std::find_if(ownedGpuMeshes.begin(), ownedGpuMeshes.end(),
                      [gpu](const std::unique_ptr<GpuMesh> &candidate) { return candidate.get() == gpu; });
-    if (owned == ownedGpuMeshes.end()) return std::nullopt;
-    return eve::graphics::MeshBackendDescriptor{gpu->vertexCount, gpu->indexCount,
-                                                static_cast<std::uint32_t>(sizeof(MeshVertex)),
-                                                gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u};
+    if (owned == ownedGpuMeshes.end())
+        return eve::Result<eve::graphics::MeshBackendDescriptor>::failure(eve::Diagnostic::error(
+            eve::DiagnosticCode::NotFound, "mesh is not owned by this graphics", {}, {}, "graphics.mesh.describe"));
+    return eve::Result<eve::graphics::MeshBackendDescriptor>::success(eve::graphics::MeshBackendDescriptor{
+        gpu->vertexCount, gpu->indexCount, static_cast<std::uint32_t>(sizeof(MeshVertex)),
+        gpu->indexType == vk::IndexType::eUint16 ? 2u : 4u});
 }
 
 bool Graphics::bakeMeshMorph(Mesh *mesh) {

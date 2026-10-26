@@ -1296,6 +1296,10 @@ using namespace eve::graphics;
 
 namespace {
 
+/** Assimp row-major → glm column-major for Graphics::newMeshFromAssimp. */
+glm::mat4 aiToGlm(const aiMatrix4x4& m) {
+    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
 
 EVE_DEFINE_PATH_BESIDE_SOURCE()
 
@@ -1618,7 +1622,7 @@ void renderModelSmoke(eve::model3d::ModelData *md, const char *pngName, const ch
             if (mi >= scene->mNumMeshes) continue;
             const aiMesh *ai = scene->mMeshes[mi];
             if (!ai || ai->mNumFaces == 0) continue;
-            Mesh *mesh = gfx->newMeshFromAssimp(*ai, world);
+            Mesh* mesh = gfx->newMeshFromAssimp(*ai, aiToGlm(world));
             REQUIRE(mesh != nullptr);
             REQUIRE_GT(mesh->indexCount, 0);
 

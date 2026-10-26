@@ -331,6 +331,8 @@ TEST_CASE("procgen.rng.cellularGeneration_usesOnlyExplicitSeed") {
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"

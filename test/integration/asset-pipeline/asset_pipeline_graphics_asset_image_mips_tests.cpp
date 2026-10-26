@@ -3403,6 +3403,7 @@ TEST_CASE("asset.import.gltfAnimationRetainsAndNormalizesMultipleQuantizedWeight
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_asset_import_gltf_material)
+#include <iostream>
 #include "PrivateTestScope.h"
 #ifdef EVE_TEST_MESH_UPLOAD
 #include "asset/graphics/CookedMaterial.h"
