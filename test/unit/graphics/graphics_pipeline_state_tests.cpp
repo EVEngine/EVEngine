@@ -1194,7 +1194,10 @@ TEST_CASE("graphics.volumeDensityGraph.sphereNoiseAndSparseBakeProduceOccupiedBr
     AtmosphereVolume volume;
     volume.resize(16, 16, 16);
     volume.injectSparseVolume(sparse);
-    CHECK_GT(volume.at(8, 8, 8).extinction, 0.f);
+    // Cell centers map to sparse voxels 15 and 17: (-.5,-.5,-.5) lies
+    // inside radius 2, while (1.5,1.5,1.5) lies outside it.
+    CHECK_GT(volume.at(7, 7, 7).extinction, 0.f);
+    CHECK_EQ(volume.at(8, 8, 8).extinction, 0.f);
     CHECK_EQ(volume.at(0, 0, 0).extinction, 0.f);
 }
 }  // namespace test_atmosphere_volume
@@ -1287,6 +1290,8 @@ TEST_CASE("graphics.lightProbe.batchReplacementBlendsOverlappingIrradianceAndRem
     red.x             = -1.f;
     red.extentX = red.extentY = red.extentZ = 4.f;
     red.irradianceR                         = 1.f;
+    red.irradianceG                         = 0.f;
+    red.irradianceB                         = 0.f;
     ProcgenProbeDesc blue                   = red;
     blue.sourcePointId                      = 2;
     blue.x                                  = 1.f;
