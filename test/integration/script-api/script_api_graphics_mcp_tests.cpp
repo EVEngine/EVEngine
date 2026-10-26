@@ -1671,7 +1671,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
 
     REQUIRE(host.listEditors().find("terrain") != std::string::npos);
     REQUIRE(host.setEditorValue("terrain", "brushSize", "12") == "ok");
-    CHECK(vm.find("TerrainVM").toTable().find("brushSize").toInt() == 12);
+    CHECK(vm.find("TerrainVM").toTable().find("brushSize").toFloat() == 12.f);
     CHECK(vm.find("TerrainVM").toTable().find("changedCount").toInt() == 1);
     CHECK(host.consumeEvents("terrain").find("change") != std::string::npos);
 
@@ -1681,7 +1681,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     CHECK(host.reloadResource("editors/terrain.vm.nut") == "ok");
     auto terrainVm = vm.find("TerrainVM").toTable();
     CHECK(terrainVm.find("version").toInt() == 2);
-    CHECK(terrainVm.find("brushSize").toInt() == 12);
+    CHECK(terrainVm.find("brushSize").toFloat() == 12.f);
     CHECK(terrainVm.find("changedCount").toInt() == 0);
     CHECK(host.consumeEvents("terrain") == "[]");
 
@@ -1689,7 +1689,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     CHECK(host.reloadResource("editors/terrain.vm.nut").rfind("error:", 0) == 0);
     terrainVm = vm.find("TerrainVM").toTable();
     CHECK(terrainVm.find("version").toInt() == 2);
-    CHECK(terrainVm.find("brushSize").toInt() == 12);
+    CHECK(terrainVm.find("brushSize").toFloat() == 12.f);
 
     writeText(
         editorPath,

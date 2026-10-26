@@ -575,7 +575,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     ui::UISystem::pendingEvents().push_back(change);
 
     REQUIRE(callScript("fireTestEvents"));
-    CHECK(std::abs(vm.find("clicks").toFloat() - 1.f) < 1e-5f);
+    CHECK_EQ(vm.find("clicks").toInt(), 1);
     CHECK(vm.find("changeKind").toString() == "value");
     CHECK(std::abs(vm.find("changeValue").toFloat() - 0.75f) < 1e-5f);
 }

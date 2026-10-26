@@ -542,7 +542,13 @@ TEST_CASE("devtools.projectIndex.incrementRenameDeleteAndRejectFailedPublication
     REQUIRE(deleted->getValue<bool>("ok"));
     CHECK_EQ(deleted->getObject("stats")->getValue<int>("removed"), 1);
     CHECK_EQ(findNode(deleted, "script:onQuestCompleted")->getValue<std::string>("status"), std::string("missing"));
-    CHECK_EQ(deleted->getArray("edges")->size(), size_t(0));
+    // API-to-test evidence remains valid after removing the gameplay script.
+    auto remainingEdges = deleted->getArray("edges");
+    REQUIRE_EQ(remainingEdges->size(), size_t(1));
+    auto remainingEdge = remainingEdges->getObject(0);
+    CHECK_EQ(remainingEdge->getValue<std::string>("from"), std::string("api:scene/SceneNodeRef.setVisible"));
+    CHECK_EQ(remainingEdge->getValue<std::string>("to"), std::string("test:quest-scene"));
+    CHECK_EQ(remainingEdge->getValue<std::string>("relation"), std::string("tested_by"));
     auto staleArgs = args(fixture.root);
     staleArgs->set("expectedRevision", goodRevision);
     CHECK_EQ(payload(eve::dev::callMcpProjectIndexTool("eve_project_index_query", staleArgs))
