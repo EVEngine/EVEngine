@@ -3851,9 +3851,10 @@ public:
 };
 
 TEST_CASE_FIXTURE(JoystickScript, "JoystickScript.bindings") {
-    SUB_CASE("basic") { REQUIRE(callScript("basic")); };
-    SUB_CASE("padClass") { REQUIRE(callScript("padClass")); };
-    SUB_CASE("query") { REQUIRE(callScript("query")); };
-    SUB_CASE("axes") { REQUIRE(callScript("axes")); };
+    auto* const fixture = this;
+    SUB_CASE("basic") { REQUIRE(fixture->callScript("basic")); };
+    SUB_CASE("padClass") { REQUIRE(fixture->callScript("padClass")); };
+    SUB_CASE("query") { REQUIRE(fixture->callScript("query")); };
+    SUB_CASE("axes") { REQUIRE(fixture->callScript("axes")); };
 }
 }  // namespace test_joystick_script

@@ -4659,6 +4659,7 @@ private:
 };
 
 TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispatchContract") {
+    auto* const fixture = this;
     SUB_CASE("map.collision.scriptSinkReceivesLayerIdentityAndGeometry") {
         eve::ScriptProviderRegistry::instance().clearAll();
         Map        map;
@@ -4670,7 +4671,7 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispat
         REQUIRE(eve::ScriptProviderRegistry::instance().hasCapabilitySeam("ITileCollisionSink"));
         REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
 
-        ssq::Object published = publish("test.collision", "sink");
+        ssq::Object published = fixture->publish("test.collision", "sink");
         REQUIRE_EQ(published.getType(), ssq::Type::TABLE);
         REQUIRE(published.find("ok").toBool());
         REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{1});
@@ -4680,26 +4681,26 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispat
         // 直接把 `publishCollision` 写进断言会派发两次。
         const int publishedRects = map.publishCollision(layer);
         REQUIRE_EQ(publishedRects, 1);
-        REQUIRE_EQ(vm.find("calls").toInt(), 1);
-        REQUIRE_EQ(vm.find("seenLayerId").toInt(), int(layer->layerRef().slot));
-        REQUIRE_EQ(vm.find("seenLayerGeneration").toInt(), int(layer->layerRef().generation));
-        REQUIRE_EQ(vm.find("seenCount").toInt(), 1);
-        REQUIRE_EQ(vm.find("seenX").toFloat(), 16.0);
-        REQUIRE_EQ(vm.find("seenY").toFloat(), 8.0);
-        REQUIRE_EQ(vm.find("seenWidth").toFloat(), 48.0);
-        REQUIRE_EQ(vm.find("seenHeight").toFloat(), 16.0);
+        REQUIRE_EQ(fixture->vm.find("calls").toInt(), 1);
+        REQUIRE_EQ(fixture->vm.find("seenLayerId").toInt(), int(layer->layerRef().slot));
+        REQUIRE_EQ(fixture->vm.find("seenLayerGeneration").toInt(), int(layer->layerRef().generation));
+        REQUIRE_EQ(fixture->vm.find("seenCount").toInt(), 1);
+        REQUIRE_EQ(fixture->vm.find("seenX").toFloat(), 16.0);
+        REQUIRE_EQ(fixture->vm.find("seenY").toFloat(), 8.0);
+        REQUIRE_EQ(fixture->vm.find("seenWidth").toFloat(), 48.0);
+        REQUIRE_EQ(fixture->vm.find("seenHeight").toFloat(), 16.0);
 
         // 脚本 sink 不会替换 map 自己的权威矩形表：`collisionRects_` 仍然是唯一权威。
         REQUIRE_EQ(map.getCollisionRectCount(), 1);
         REQUIRE_EQ(map.getCollisionRectWidth(0), 48.f);
 
         // 退订之后派发停止，而 map 侧的行为完全不变。
-        vm.run(vm.compileSource("unloaded <- eve.provider.unload(\"test.collision\")"));
-        REQUIRE(vm.find("unloaded").find("ok").toBool());
+        fixture->vm.run(fixture->vm.compileSource("unloaded <- eve.provider.unload(\"test.collision\")"));
+        REQUIRE(fixture->vm.find("unloaded").find("ok").toBool());
         REQUIRE_EQ(eve::cap::listenerCount<ITileCollisionSink>(), std::size_t{0});
         const int rectsAfterUnload = map.publishCollision(layer);
         REQUIRE_EQ(rectsAfterUnload, 1);
-        REQUIRE_EQ(vm.find("calls").toInt(), 1);
+        REQUIRE_EQ(fixture->vm.find("calls").toInt(), 1);
     };
     SUB_CASE("map.collision.scriptSinkCanTellLayersApart") {
         eve::ScriptProviderRegistry::instance().clearAll();
@@ -4716,7 +4717,7 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispat
         second->setTile(0, 0, 9);
         second->setTile(2, 0, 9);  // 与 (0,0) 不相邻，所以合并后是两个矩形
 
-        ssq::Object published = publish("test.collision.recording", "recorder");
+        ssq::Object published = fixture->publish("test.collision.recording", "recorder");
         REQUIRE(published.find("ok").toBool());
 
         const int firstRects  = map.publishCollision(first);
@@ -4726,8 +4727,8 @@ TEST_CASE_FIXTURE(MapTileCollisionSinkTest, "map.collision.scriptSinkLayerDispat
 
         // 层身份进得来，所以脚本分得清两次发布属于哪一层（这正是换掉 `const void*` 的收益）。
         const std::string expectedLayers = formatLayer(first->layerRef()) + formatLayer(second->layerRef());
-        REQUIRE_EQ(vm.find("recordedLayers").toString(), expectedLayers);
-        REQUIRE_EQ(vm.find("recordedSlots").toString(), std::string("1,2,"));
+        REQUIRE_EQ(fixture->vm.find("recordedLayers").toString(), expectedLayers);
+        REQUIRE_EQ(fixture->vm.find("recordedSlots").toString(), std::string("1,2,"));
     };
 }
 
@@ -4941,54 +4942,55 @@ public:
 }  // namespace
 
 TEST_CASE_FIXTURE(MotionScriptSinkTest, "animation.motion.scriptSinkValueShapeContract") {
+    auto* const fixture = this;
     SUB_CASE("animation.motion.scriptSinkReceivesEveryEvaluatedValue") {
-        REQUIRE(callScript("startMotionWithSink"));
+        REQUIRE(fixture->callScript("startMotionWithSink"));
         eve::animation::Animation* module = eve::animation::Animation::create();
         REQUIRE(module != nullptr);
         REQUIRE_EQ(module->motions().activeCount(), 1);
 
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
 
         // 每次 advance 都推一个值，而且单调上升（0→10 的线性 tween）。
-        REQUIRE(vm.find("writeCount").toInt() >= 3);
-        REQUIRE_EQ(vm.find("received").getType(), ssq::Type::ARRAY);
-        const double last = vm.find("lastValue").toFloat();
+        REQUIRE(fixture->vm.find("writeCount").toInt() >= 3);
+        REQUIRE_EQ(fixture->vm.find("received").getType(), ssq::Type::ARRAY);
+        const double last = fixture->vm.find("lastValue").toFloat();
         REQUIRE(last > 0.0);
         REQUIRE(last <= 10.0);
 
         // 跑完 1 秒的 tween：motion 结束，不再活跃。
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.5);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.5);
         REQUIRE_EQ(module->motions().activeCount(), 0);
-        REQUIRE(std::fabs(vm.find("lastValue").toFloat() - 10.0) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("lastValue").toFloat() - 10.0) < 1e-3);
 
         // 撤回适配器与 provider 登记（模块析构走同一条路）。
         eve::animation::clearScriptMotionSinkAdapters();
         REQUIRE(!ScriptProviderRegistry::instance().contains("animation.motion-sink.1"));
     };
     SUB_CASE("animation.motion.nonFloatShapesReachScriptSinksToo") {
-        REQUIRE(callScript("startNonFloatMotions"));
+        REQUIRE(fixture->callScript("startNonFloatMotions"));
         eve::animation::Animation* module = eve::animation::Animation::create();
         REQUIRE(module != nullptr);
         REQUIRE_EQ(module->motions().activeCount(), 4);
 
         // 四条一起跑：每次 advance 每个 sink 都收到自己那几维的值（位置参数编组）。
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
-        REQUIRE(vm.find("vec2Sum").toFloat() > 0.0);
-        REQUIRE(vm.find("vec3Sum").toFloat() > 0.0);
-        REQUIRE(vm.find("colorSum").toFloat() > 0.0);
-        REQUIRE(vm.find("colorLastA").toFloat() > 0.0);
-        REQUIRE(vm.find("quatSum").toFloat() > 0.0);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 0.25);
+        REQUIRE(fixture->vm.find("vec2Sum").toFloat() > 0.0);
+        REQUIRE(fixture->vm.find("vec3Sum").toFloat() > 0.0);
+        REQUIRE(fixture->vm.find("colorSum").toFloat() > 0.0);
+        REQUIRE(fixture->vm.find("colorLastA").toFloat() > 0.0);
+        REQUIRE(fixture->vm.find("quatSum").toFloat() > 0.0);
 
         // 跑到 1 秒结束：终点值就是 to 那一端（vec2 6、vec3 6、color 6/1、单位四元数 z+w≈1.414）。
-        advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 1.0);
+        fixture->advanceAnimation(_ZEROERR_TEST_CONTEXT, *module, 1.0);
         REQUIRE_EQ(module->motions().activeCount(), 0);
-        REQUIRE(std::fabs(vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
-        REQUIRE(std::fabs(vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
-        REQUIRE(std::fabs(vm.find("colorSum").toFloat() - 6.0) < 1e-3);
-        REQUIRE(std::fabs(vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
-        REQUIRE(std::fabs(vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("vec2Sum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("vec3Sum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("colorSum").toFloat() - 6.0) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("colorLastA").toFloat() - 1.0) < 1e-3);
+        REQUIRE(std::fabs(fixture->vm.find("quatSum").toFloat() - 1.41421356) < 1e-3);
     };
 }
 
@@ -5229,22 +5231,24 @@ protected:
 }  // namespace
 
 TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBindingContract") {
+    auto* const fixture = this;
     SUB_CASE("scene.scriptLink.pushDrivesFollower") {
         eve::ScriptProviderRegistry::instance().clearAll();
-        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        fixture->vm.run(fixture->vm.compileSource("follower = Follower(); driver = Driver();"));
         // Provider-present probe for the node -> script direction: the follower is
         // called with the node's *world* transform, not its local one.
-        SceneHost* host = mount(_ZEROERR_TEST_CONTEXT, "scriptlink_push",
-                                node("root", {node("child").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
+        SceneHost* host =
+            fixture->mount(_ZEROERR_TEST_CONTEXT, "scriptlink_push",
+                           node("root", {node("child").withPosition(1.f, 2.f, 3.f)}).withPosition(10.f, 0.f, 0.f));
 
-        REQUIRE(module
+        REQUIRE(fixture->module
                     ->linkScriptAt("scriptlink_push", "child",
-                                   publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower").name, "node")
+                                   fixture->publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower").name, "node")
                     .ok());
         REQUIRE_EQ(host->linkCount("child"), 1);
 
-        syncAll(host);
-        const ssq::Object follower = vm.find("follower");
+        fixture->syncAll(host);
+        const ssq::Object follower = fixture->vm.find("follower");
         REQUIRE(memberNumber(follower, "pushes") >= 1.0);
         REQUIRE_EQ(memberString(follower, "lastId"), std::string("child"));
         REQUIRE_EQ(memberNumber(follower, "lastX"), 11.0);
@@ -5255,7 +5259,7 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBinding
         const double pushes = memberNumber(follower, "pushes");
 
         // Moving the node re-syncs it; the reported position is still world-space.
-        moveLocal(_ZEROERR_TEST_CONTEXT, host, "child", 5.f, 6.f, 7.f);
+        fixture->moveLocal(_ZEROERR_TEST_CONTEXT, host, "child", 5.f, 6.f, 7.f);
         REQUIRE(memberNumber(follower, "pushes") > pushes);
         REQUIRE_EQ(memberNumber(follower, "lastX"), 15.0);
         REQUIRE_EQ(memberNumber(follower, "lastY"), 6.0);
@@ -5264,13 +5268,13 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBinding
 
     SUB_CASE("scene.scriptLink.pullDrivesNode") {
         eve::ScriptProviderRegistry::instance().clearAll();
-        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        fixture->vm.run(fixture->vm.compileSource("follower = Follower(); driver = Driver();"));
         // Script -> node direction: "body" mode asks the provider for a local transform
         // and moves the node to it, which is what physics does natively.
-        SceneHost* host =
-            mount(_ZEROERR_TEST_CONTEXT, "scriptlink_pull", node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
+        SceneHost* host = fixture->mount(_ZEROERR_TEST_CONTEXT, "scriptlink_pull",
+                                         node("root", {node("child").withPosition(1.f, 2.f, 3.f)}));
 
-        const ssq::Object driver = vm.find("driver");
+        const ssq::Object driver = fixture->vm.find("driver");
         REQUIRE(setMemberNumber(driver, "x", 4.f));
         REQUIRE(setMemberNumber(driver, "y", 5.f));
         REQUIRE(setMemberNumber(driver, "z", 6.f));
@@ -5280,13 +5284,13 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBinding
         REQUIRE_EQ(memberNumber(driver, "z"), 6.0);
         REQUIRE_EQ(memberNumber(driver, "yaw"), 0.25);
 
-        REQUIRE(module
+        REQUIRE(fixture->module
                     ->linkScriptAt("scriptlink_pull", "child",
-                                   publish(_ZEROERR_TEST_CONTEXT, "link.driver", "driver").name, "body")
+                                   fixture->publish(_ZEROERR_TEST_CONTEXT, "link.driver", "driver").name, "body")
                     .ok());
 
         // Linking already ran a transform update, so the node is at the driver's pose.
-        const SceneNode* node = nodeOf(_ZEROERR_TEST_CONTEXT, host, "child");
+        const SceneNode* node = fixture->nodeOf(_ZEROERR_TEST_CONTEXT, host, "child");
         REQUIRE(node != nullptr);
         REQUIRE(approxEq(node->x, 4.f));
         REQUIRE(approxEq(node->y, 5.f));
@@ -5296,41 +5300,41 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.transformDirectionAndBinding
         // And it keeps following: the node is not merely set once.
         REQUIRE(setMemberNumber(driver, "x", -1.5f));
         eve::scene::TransformSystem::updateHost(host);
-        REQUIRE(approxEq(nodeOf(_ZEROERR_TEST_CONTEXT, host, "child")->x, -1.5f));
+        REQUIRE(approxEq(fixture->nodeOf(_ZEROERR_TEST_CONTEXT, host, "child")->x, -1.5f));
     };
     SUB_CASE("scene.scriptLink.scriptBindingReportsResult") {
         eve::ScriptProviderRegistry::instance().clearAll();
-        vm.run(vm.compileSource("follower = Follower(); driver = Driver();"));
+        fixture->vm.run(fixture->vm.compileSource("follower = Follower(); driver = Driver();"));
         // The script face of the same call: a script links its own provider and reads the
         // result table, so `eve.Scene().linkScriptAt` is exercised, not just the C++ method.
-        SceneHost* host =
-            mount(_ZEROERR_TEST_CONTEXT, "scriptlink_api", node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
-        publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower");
+        SceneHost* host = fixture->mount(_ZEROERR_TEST_CONTEXT, "scriptlink_api",
+                                         node("root", {node("child").withPosition(3.f, 0.f, 0.f)}));
+        fixture->publish(_ZEROERR_TEST_CONTEXT, "link.follower", "follower");
 
-        vm.run(vm.compileSource(
+        fixture->vm.run(fixture->vm.compileSource(
             "local scene = eve.Scene()\n"
             "linked <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"link.follower\", \"node\")\n"
             "missing <- scene.linkScriptAt(\"scriptlink_api\", \"child\", \"nope\", \"node\")\n"
             "orphanHost <- scene.linkScriptAt(\"nowhere\", \"child\", \"link.follower\", \"node\")\n"));
 
-        ssq::Object linked = vm.find("linked");
+        ssq::Object linked = fixture->vm.find("linked");
         REQUIRE_EQ(linked.getType(), ssq::Type::TABLE);
         REQUIRE(linked.find("ok").toBool());
         REQUIRE_EQ(host->linkCount("child"), 1);
 
-        ssq::Object missing = vm.find("missing");
+        ssq::Object missing = fixture->vm.find("missing");
         REQUIRE_EQ(missing.getType(), ssq::Type::TABLE);
         REQUIRE(!missing.find("ok").toBool());
         REQUIRE_EQ(missing.find("code").toString(), std::string("not_found"));
 
-        ssq::Object orphanHost = vm.find("orphanHost");
+        ssq::Object orphanHost = fixture->vm.find("orphanHost");
         REQUIRE(!orphanHost.find("ok").toBool());
         REQUIRE_EQ(orphanHost.find("code").toString(), std::string("not_found"));
 
         // The script-linked follower is the one the pipeline drives.
-        syncAll(host);
-        REQUIRE_EQ(memberNumber(vm.find("follower"), "lastX"), 3.0);
-        REQUIRE(memberNumber(vm.find("follower"), "pushes") >= 1.0);
+        fixture->syncAll(host);
+        REQUIRE_EQ(memberNumber(fixture->vm.find("follower"), "lastX"), 3.0);
+        REQUIRE(memberNumber(fixture->vm.find("follower"), "pushes") >= 1.0);
     };
 }
 
@@ -5671,10 +5675,11 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateProviderSe
 }
 
 TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerValidationContract") {
+    auto* const fixture = this;
     SUB_CASE("sensing.script.candidateAnswerMustStayInTheQuerySpace") {
         ScriptProviderRegistry::instance().clearAll();
         declareScriptSensingCandidateSeam();
-        REQUIRE(publish("test.sensing.grid", "gridCandidateProvider").find("ok").toBool());
+        REQUIRE(fixture->publish("test.sensing.grid", "gridCandidateProvider").find("ok").toBool());
 
         // 查询是 world2d、候选自称 grid2d：明确拒绝（`Unsupported`），而不是把格子当世界单位算距离。
         const auto resolved = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
@@ -5688,21 +5693,21 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerVali
         declareScriptSensingCandidateSeam();
 
         // 返回的不是数组：拒绝（`Rejected`），而不是"当成零个候选"。
-        REQUIRE(publish("test.sensing.not-array", "notAnArrayProvider").find("ok").toBool());
+        REQUIRE(fixture->publish("test.sensing.not-array", "notAnArrayProvider").find("ok").toBool());
         auto notArray = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
         REQUIRE(!notArray.ok());
         REQUIRE_EQ(static_cast<int>(notArray.code()), static_cast<int>(StatusCode::Rejected));
-        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.not-array");
+        fixture->unload(_ZEROERR_TEST_CONTEXT, "test.sensing.not-array");
 
         // 主体不是规范 UUID：拒绝。
-        REQUIRE(publish("test.sensing.bad-subject", "badSubjectProvider").find("ok").toBool());
+        REQUIRE(fixture->publish("test.sensing.bad-subject", "badSubjectProvider").find("ok").toBool());
         auto badSubject = TargetingResolver{}.resolve(minimalWorldQuery(_ZEROERR_TEST_CONTEXT));
         REQUIRE(!badSubject.ok());
         REQUIRE_EQ(static_cast<int>(badSubject.code()), static_cast<int>(StatusCode::Rejected));
-        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.bad-subject");
+        fixture->unload(_ZEROERR_TEST_CONTEXT, "test.sensing.bad-subject");
 
         // 格子坐标不是整数：拒绝，而不是截断成整数后继续。
-        REQUIRE(publish("test.sensing.fractional", "fractionalGridProvider").find("ok").toBool());
+        REQUIRE(fixture->publish("test.sensing.fractional", "fractionalGridProvider").find("ok").toBool());
         TargetingSpec gridSpec;
         gridSpec.space = CoordinateSpace::Grid2D;
         TargetingQuery gridQuery{subject(_ZEROERR_TEST_CONTEXT, kOriginId), TargetLocation(GridPoint::grid2D(0, 0)),
@@ -5710,10 +5715,10 @@ TEST_CASE_FIXTURE(ScriptSensingProviderTest, "sensing.script.candidateAnswerVali
         auto           fractional = TargetingResolver{}.resolve(gridQuery);
         REQUIRE(!fractional.ok());
         REQUIRE_EQ(static_cast<int>(fractional.code()), static_cast<int>(StatusCode::Rejected));
-        unload(_ZEROERR_TEST_CONTEXT, "test.sensing.fractional");
+        fixture->unload(_ZEROERR_TEST_CONTEXT, "test.sensing.fractional");
 
         // 同一个空间换成整数的格子候选就是合法答案：适配器不是"只认世界坐标"。
-        REQUIRE(publish("test.sensing.grid-ok", "gridOkProvider").find("ok").toBool());
+        REQUIRE(fixture->publish("test.sensing.grid-ok", "gridOkProvider").find("ok").toBool());
         auto gridAnswer = TargetingResolver{}.resolve(gridQuery);
         REQUIRE(gridAnswer.ok());
         REQUIRE_EQ(gridAnswer.value().subjects().size(), std::size_t{1});
