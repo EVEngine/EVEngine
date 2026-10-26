@@ -401,6 +401,7 @@ TEST_CASE("editor.biome.adapter_registers_commands_and_owns_automation_targets")
 #include "PrivateTestScope.h"
 
 #include "building/BuildingDef.h"
+#include "building/BuildingSnapshot.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
 #include "building/editing/BuildingTarget.h"

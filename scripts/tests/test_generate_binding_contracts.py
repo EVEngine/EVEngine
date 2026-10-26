@@ -10,6 +10,7 @@ from generate_binding_contracts import (
     Contract,
     Parameter,
     SignatureIndex,
+    extract_contracts,
     class_blocks,
     write_dts,
     write_json,
@@ -110,6 +111,38 @@ class SignatureIndexTests(unittest.TestCase):
         )
 
 
+class SharedBinderTests(unittest.TestCase):
+    def test_template_binder_methods_follow_both_real_domain_classes(self):
+        paths = [
+            "src/modules/editor/presentation/WorkspacePresentationBindings.h",
+            "src/modules/audio/editor/AudioEditorModule.cpp",
+            "src/modules/animation/editor/AnimationClipEditorScriptBindings.cpp",
+        ]
+        sources = {ROOT / path: (ROOT / path).read_text(encoding="utf-8") for path in paths}
+        contracts, _ = extract_contracts(sources)
+        keys = {contract.key: contract for contract in contracts}
+        for module, cls in (("audioEditor", "AudioSourceEditor"), ("animationEditor", "AnimationClipEditor")):
+            for method in ("presentationState", "presentationSnapshot", "presentationEdit",
+                           "presentationCommit", "presentationCancel", "presentationAction", "presentationClose"):
+                self.assertIn(f"{module}/{cls}.{method}", keys)
+            edit = keys[f"{module}/{cls}.presentationEdit"]
+            self.assertEqual(["path", "input", "staged"], [param.name for param in edit.parameters])
+            self.assertEqual("Table<string, dynamic>", edit.return_type)
+        self.assertNotIn("editor/presentationEdit", keys)
+
+    def test_trimmed_consumer_does_not_publish_its_shared_methods(self):
+        paths = [
+            "src/modules/editor/presentation/WorkspacePresentationBindings.h",
+            "src/modules/audio/editor/AudioEditorModule.cpp",
+            "src/modules/animation/editor/AnimationClipEditorScriptBindings.cpp",
+        ]
+        sources = {ROOT / path: (ROOT / path).read_text(encoding="utf-8") for path in paths}
+        contracts, _ = extract_contracts(sources, enabled_modules={"editor", "audio"})
+        keys = {contract.key for contract in contracts}
+        self.assertIn("audioEditor/AudioSourceEditor.presentationEdit", keys)
+        self.assertNotIn("animationEditor/AnimationClipEditor.presentationEdit", keys)
+
+
 class CatalogExportTests(unittest.TestCase):
     def test_json_and_dts_export_round_trip_fields(self) -> None:
         contract = Contract(
@@ -176,7 +209,7 @@ class BindMethodScrapeTests(unittest.TestCase):
                 "    auto cls = table.addClass<OrientationWarping>(\n"
                 '        "OrientationWarping", std::function<OrientationWarping*()>([]() { return nullptr; }), true);\n'
                 '    script::bindMethod(cls, "setEnabled", &OrientationWarping::setEnabled);\n'
-                '    script::bindMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
+                '    eve::script::bindPointerMethod(cls, "isEnabled", &OrientationWarping::isEnabled);\n'
                 "}\n"
                 "}\n"
             ),

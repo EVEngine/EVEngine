@@ -17,24 +17,19 @@ VERIFY = ROOT / ".github/scripts/verify-third-party-cache.sh"
 TOOLCHAIN = ROOT / ".github/scripts/identify-third-party-toolchain.sh"
 
 
-def bash_executable():
-    if os.name != "nt":
-        return "bash"
-    # System32/bash.exe is WSL; these fixtures use native Windows paths and Python.
-    git = shutil.which("git")
-    if git is not None:
-        for parent in Path(git).resolve().parents:
-            candidate = parent / "bin/bash.exe"
-            if candidate.is_file():
-                return str(candidate)
-    raise RuntimeError("Git for Windows Bash is required to run the CI cache contract")
-
-
 class ThirdPartyCacheTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        self.bash = "bash"
+        if os.name == "nt":
+            # PATH may resolve to the WSL launcher, which cannot use native cwd/env paths.
+            git = shutil.which("git")
+            if git is None:
+                raise RuntimeError("Git for Windows is required to run the CI Bash contract")
+            candidates = [parent / "bin" / "bash.exe" for parent in Path(git).resolve().parents]
+            self.bash = str(next(path for path in candidates if path.is_file()))
 
     def identity(self, **overrides):
         action = ACTION.read_text(encoding="utf-8")
@@ -98,7 +93,7 @@ class ThirdPartyCacheTests(unittest.TestCase):
             "\n".join(f"{key}={value}" for key, value in fields.items()) + "\n", encoding="utf-8"
         )
         return subprocess.run(
-            [bash_executable(), VERIFY.as_posix(), prefix.as_posix(), "android", "Release"],
+            [self.bash, VERIFY.as_posix(), prefix.as_posix(), "android", "Release"],
             capture_output=True, text=True, encoding="utf-8",
         )
 
@@ -133,15 +128,15 @@ class ThirdPartyCacheTests(unittest.TestCase):
             "CACHE_PREFIX": "build/third-party-binary/android",
             "CACHE_PLATFORM": "android",
             "CACHE_BUILD_TYPE": "Release",
-            "GITHUB_OUTPUT": str(output),
+            "GITHUB_OUTPUT": output.as_posix(),
         }
-        restored = subprocess.run([bash_executable(), "-ec", script], cwd=self.root, env=env, capture_output=True, text=True, encoding="utf-8")
+        restored = subprocess.run([self.bash, "-ec", script], cwd=self.root, env=env, capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(restored.returncode, 0, restored.stderr)
         self.assertIn("cmake-args=-DEVENGINE_THIRD_PARTY_BINARY_DIR=build/third-party-binary/android-debug", output.read_text(encoding="utf-8"))
         self.assertFalse((self.root / "build/third-party-binary/android").exists())
         stamp.write_text(stamp.read_text(encoding="utf-8").replace("build_type=Release", "build_type=Debug"), encoding="utf-8")
         output.unlink()
-        invalid = subprocess.run([bash_executable(), "-ec", script], cwd=self.root, env=env, capture_output=True, text=True, encoding="utf-8")
+        invalid = subprocess.run([self.bash, "-ec", script], cwd=self.root, env=env, capture_output=True, text=True, encoding="utf-8")
         self.assertNotEqual(invalid.returncode, 0)
         self.assertFalse(output.exists())
 
@@ -157,8 +152,8 @@ class ThirdPartyCacheTests(unittest.TestCase):
         manifest_path = prefix / "eve-third-party-package.json"
         manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
         cache = self.root / "CMakeCache.txt"
-        cache.write_text(f"EVENGINE_TP_INSTALL_PREFIX:INTERNAL={prefix}\n", encoding="utf-8")
-        command = [bash_executable(), VERIFY.as_posix(), (self.root / "unused source prefix").as_posix(), "android", "Release", cache.as_posix()]
+        cache.write_text(f"EVENGINE_TP_INSTALL_PREFIX:INTERNAL={prefix.as_posix()}\n", encoding="utf-8")
+        command = [self.bash, VERIFY.as_posix(), (self.root / "unused source prefix").as_posix(), "android", "Release", cache.as_posix()]
         valid = subprocess.run(command, capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(valid.returncode, 0, valid.stderr)
         manifest_path.write_text(json.dumps({**manifest, "architecture": "x86_64"}), encoding="utf-8")
@@ -176,11 +171,11 @@ class ThirdPartyCacheTests(unittest.TestCase):
         cmake = binaries / "cmake"
         cmake.write_text("#!/bin/sh\nprintf 'cmake version 3.29.0\\n'\n", encoding="utf-8")
         cmake.chmod(0o755)
-        env = {**os.environ, "ANDROID_NDK": str(ndk), "PATH": str(binaries) + os.pathsep + os.environ["PATH"]}
+        env = {**os.environ, "ANDROID_NDK": ndk.as_posix(), "PATH": str(binaries) + os.pathsep + os.environ["PATH"]}
 
         def fingerprint(**overrides):
             return subprocess.check_output(
-                [bash_executable(), TOOLCHAIN.as_posix(), "android"], env={**env, **overrides}, text=True, encoding="utf-8"
+                [self.bash, TOOLCHAIN.as_posix(), "android"], env={**env, **overrides}, text=True, encoding="utf-8"
             )
 
         baseline = fingerprint(ANDROID_ABI="arm64-v8a", ANDROID_PLATFORM="android-24", ANDROID_STL="c++_shared")

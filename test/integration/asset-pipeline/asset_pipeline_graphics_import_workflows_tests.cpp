@@ -659,6 +659,7 @@ TEST_CASE("asset.graphics.imageBackendRejectionIsStructuredFailure") {
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <regex>
@@ -3895,8 +3896,19 @@ TEST_CASE("asset.import.unityStaticPrefabResolvesAndReleasesGpuLeases") {
     REQUIRE(bounds.ok());
     // This FBX export decodes to X/Z in [-1,0], Y in [0,1]; the prefab root retains (1,2,-3).
     const std::array<float, 6> expectedBounds{0.f, 2.f, -4.f, 1.f, 3.f, -3.f};
-    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis)
-        REQUIRE(std::fabs(bounds.value()[axis] - expectedBounds[axis]) < 1e-4f);
+    for (std::size_t axis = 0; axis < expectedBounds.size(); ++axis) {
+        const float got = bounds.value()[axis];
+        const float exp = expectedBounds[axis];
+        const float delta = std::fabs(got - exp);
+        if (delta >= 1e-4f)
+            std::fprintf(stderr,
+                         "prefab localBounds mismatch axis=%zu got=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] "
+                         "expected=[%.6f,%.6f,%.6f,%.6f,%.6f,%.6f] delta=%.6f\n",
+                         axis, bounds.value()[0], bounds.value()[1], bounds.value()[2], bounds.value()[3],
+                         bounds.value()[4], bounds.value()[5], expectedBounds[0], expectedBounds[1],
+                         expectedBounds[2], expectedBounds[3], expectedBounds[4], expectedBounds[5], delta);
+        REQUIRE(delta < 1e-4f);
+    }
     auto packageBuild = reader.buildId();
     REQUIRE(packageBuild.ok());
     REQUIRE(owner->sourceAsset() == ref);

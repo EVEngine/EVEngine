@@ -14,6 +14,7 @@ build/android-debug/build.ninja:
 		-DCMAKE_BUILD_TYPE=Debug \
 		-DBUILD_PLATFORM=android \
 		-DBUILD_TESTING=OFF \
+		$(DEBUG_LEVEL_FLAG) \
 		$(CMAKE_EXTRA_ARGS) \
 		-B build/android-debug -S .
 

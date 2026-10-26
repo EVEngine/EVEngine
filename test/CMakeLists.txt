@@ -454,6 +454,27 @@ else()
     endif()
   endif()
 
+  # The same house contract runs with and without authoring/renderer satellites.
+  if(TARGET EVBuilding)
+    eve_add_test_executable(building_workflow_test EXCLUDE_FROM_ALL
+      profile/gltf_animation_main.cpp integration/building-workflow/building_assembly.cpp integration/building-workflow/building_roof_support.cpp)
+    if(TARGET EVBuilding_editing)
+      eve_target_test_sources(building_workflow_test PRIVATE integration/building-workflow/editor_building_assembly.cpp editor_building_target.cpp)
+    endif()
+    if(TARGET EVMap)
+      eve_target_test_sources(building_workflow_test PRIVATE building.cpp)
+    endif()
+    target_link_libraries(building_workflow_test eve_engine_includes ${EVELIBS} zeroerr ${ThirdParty}
+      ${EVENGINE_VULKAN_LIB} ${EVENGINE_WEBGPU_LIB})
+    target_compile_options(building_workflow_test PRIVATE
+      $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
+      $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
+    if(WIN32)
+      target_link_libraries(building_workflow_test EVBacktrace)
+      target_compile_definitions(building_workflow_test PRIVATE POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
+    endif()
+  endif()
+
   # Scene composition must also run in a trimmed host, where unrelated unit-test
   # translation units still reference disabled optional domains.
   if(TARGET EVScene_editor)

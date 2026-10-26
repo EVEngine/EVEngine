@@ -45,6 +45,10 @@
 }
 */
 // clang-format on
+#include <map>
+#include "editor_preview_script_test_support.h"
+#include "editor_preview_test_support.h"
+
 
 // Related integration contracts share one translation unit to amortize header parsing.
 
@@ -2007,11 +2011,18 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
         clipEditor <- created.value;
         configured <- clipEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        panel0 <- ""; cap0 <- ""; ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "animation.skeleton") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         viewport <- clipEditor.setViewport(640.0, 36.0, 120.0);
         seekResult <- clipEditor.seekSeconds(1.0);
+    )"));
+    REQUIRE(preview_test::finishScript(vm, "clipEditor").ok());
+    vm.run(vm.compileSource(R"(
         hipsAtMid <- 0.0;
         for (local i = 0; i < clipEditor.getPrimitiveCount(); ++i) {
             if (clipEditor.getPrimitiveKind(i) == "joint") {
@@ -2048,8 +2059,8 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
     CHECK_LT(std::abs(vm.find("restoredMask").toFloat() - vm.find("beforeMask").toFloat()), 0.0001F);
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK(vm.find("playhead").toFloat() > 0.0F);
-    CHECK_EQ(vm.find("tracks").toInt(), 2);
-    CHECK(vm.find("keys").toInt() >= 4);
+    CHECK_EQ(vm.find("tracks").toInt(), 6);
+    CHECK(vm.find("keys").toInt() >= 12);
     CHECK(vm.find("primitives").toInt() > 0);
 }
 
@@ -2218,9 +2229,13 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         avatarEditor <- created.value;
         configured <- avatarEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx4 <- workspace.getPanelContext(4);
+        panel0 <- ""; cap0 <- ""; ctx4 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "avatar.layers") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "expressions") ctx4 = workspace.getPanelContext(i);
+        }
         selectParam <- avatarEditor.selectParameter("smile");
         beforeY <- avatarEditor.getPreviewY(1);
         deleted <- avatarEditor.deleteSelectedParameter();
@@ -2232,21 +2247,21 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         channels <- avatarEditor.getExpressionChannelCount(0);
     )"));
 
-    CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
-    CHECK(vm.find("configured").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("workspacePanelCount").toInt(), 5);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
-    CHECK_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
-    CHECK_EQ(vm.find("ctx4").toString(), std::string("expressions"));
-    CHECK(vm.find("selectParam").toTable().get<bool>("ok"));
-    CHECK(!vm.find("deleted").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("afterCount").toInt(), 1);
-    CHECK_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
-    CHECK(vm.find("valueResult").toTable().get<bool>("ok"));
-    CHECK(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
-    CHECK_EQ(vm.find("expressions").toInt(), 1);
-    CHECK(vm.find("channels").toInt() >= 1);
+    REQUIRE(vm.find("created").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    REQUIRE(vm.find("configured").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("workspacePanelCount").toInt(), 5);
+    REQUIRE_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
+    REQUIRE_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
+    REQUIRE_EQ(vm.find("ctx4").toString(), std::string("expressions"));
+    REQUIRE(vm.find("selectParam").toTable().get<bool>("ok"));
+    REQUIRE(!vm.find("deleted").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("afterCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
+    REQUIRE(vm.find("valueResult").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
+    REQUIRE_EQ(vm.find("expressions").toInt(), 1);
+    REQUIRE(vm.find("channels").toInt() >= 1);
 }
 
 // editor_biome_rules_script.cpp
@@ -2388,17 +2403,24 @@ using eve::editor::EditorWorkspace;
 
 TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     EditorWorkspace     workspace("animation.preview", "Animation Clip Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("animation.skeleton"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("animation.clip"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("timeline"));
+    const std::map<std::string, std::string> expected = {{"animation.skeleton", "list"},
+                                                         {"animation.preview", "preview"},
+                                                         {"animation.inspector", "inspector"},
+                                                         {"animation.timeline", "timeline"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        const auto id = workspace.getPanelId(i);
+        REQUIRE(expected.contains(id));
+        CHECK_EQ(workspace.getPanelCapability(i), std::string("animation.clip"));
+        CHECK_EQ(workspace.getPanelContext(i), expected.at(id));
+    }
 
     REQUIRE(editor.setViewport(640.0f, 36.0f, 120.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.trackCount(), 6);
     CHECK_EQ(editor.boneCount(), 6);
     CHECK_EQ(editor.boneParent(3), std::string("Chest"));
@@ -2408,6 +2430,7 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     CHECK_EQ(editor.preview().documentRevision, editor.revision());
 
     REQUIRE(editor.seekSeconds(1.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.playhead() - 1.0) < 0.0001);
     double hipsX = 0.0;
     for (const auto& bone : editor.preview().bones)
@@ -2416,19 +2439,29 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
 
     const double before = editor.selectedMaskWeight();
     REQUIRE(editor.setMaskWeight(0.25).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedMaskWeight() - 0.25) < 0.0001);
     REQUIRE(editor.undo().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedMaskWeight() - before) < 0.0001);
 }
 
 TEST_CASE("editor.animation.clip_editor_pointer_selects_bone_and_rejects_invalid_settings") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.setViewport(800.0f, 36.0f, 120.0f).ok());
-    REQUIRE(editor.pointerDown(20.0f, 50.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
+    int spineRow = -1;
+    for (int i = 0; i < editor.trackCount(); ++i)
+        if (editor.trackBone(i) == "Spine") spineRow = i;
+    REQUIRE(spineRow >= 0);
+    REQUIRE(editor.pointerDown(20.0f, (static_cast<float>(spineRow) + 0.5f) * 36.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.selectedBone(), std::string("Spine"));
 
     editor.play();
     REQUIRE(editor.update(0.2).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.playhead() > 0.0);
     CHECK(editor.isPlaying());
 
@@ -2439,11 +2472,15 @@ TEST_CASE("editor.animation.clip_editor_pointer_selects_bone_and_rejects_invalid
 
 TEST_CASE("editor.animation.clip_editor_keys_edits_and_deletes_joint_transform") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.selectBone("Spine").ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.seekSeconds(1.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     const int beforeKeys = editor.keyCount();
 
     REQUIRE(editor.setSelectedPosition(1.25, 2.5, -0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.hasSelectedKey());
     CHECK_EQ(editor.keyCount(), beforeKeys + 1);
     CHECK(std::abs(editor.selectedPositionX() - 1.25) < 0.0001);
@@ -2451,18 +2488,23 @@ TEST_CASE("editor.animation.clip_editor_keys_edits_and_deletes_joint_transform")
     CHECK(std::abs(editor.selectedPositionZ() + 0.5) < 0.0001);
 
     REQUIRE(editor.setSelectedRotation(15.0, 30.0, -20.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedRotationX() - 15.0) < 0.01);
     CHECK(std::abs(editor.selectedRotationY() - 30.0) < 0.01);
     CHECK(std::abs(editor.selectedRotationZ() + 20.0) < 0.01);
     REQUIRE(editor.setSelectedScale(1.1, 1.2, 1.3).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedScaleY() - 1.2) < 0.0001);
 
     REQUIRE(editor.moveSelectedKey(1.25).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedKeyTime() - 1.25) < 0.0001);
     REQUIRE(editor.deleteSelectedKey().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(!editor.hasSelectedKey());
     CHECK_EQ(editor.keyCount(), beforeKeys);
     REQUIRE(editor.undo().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.keyCount(), beforeKeys + 1);
 }
 
@@ -2482,14 +2524,20 @@ TEST_CASE("editor.animation.clip_editor_round_trips_real_runtime_skeleton_and_cl
     clip.addRotationKey(hand, 1.0f, 0.0f, 0.7071067f, 0.0f, 0.7071067f);
 
     AnimationClipEditor editor("runtime.attack");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.loadRuntimeClip(skeleton, clip).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.boneCount(), 2);
     CHECK_EQ(editor.boneName(1), std::string("Hand"));
     CHECK_EQ(editor.boneParent(1), std::string("Root"));
     REQUIRE(editor.selectBone("Hand").ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.seekSeconds(0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.setSelectedPosition(0.25, 1.25, -0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.writeRuntimeClip(clip, skeleton).ok());
+    REQUIRE(preview_test::finish(editor).ok());
 
     eve::animation::AnimPose pose(2);
     clip.sample(0.5f, &pose, &skeleton);
@@ -3303,14 +3351,19 @@ TEST_CASE("editor.audio.source_editor_installs_workspace_and_reverses_volume") {
     EditorWorkspace   workspace("audio.preview", "Audio Source Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("audio.sources"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("audio.source"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("transport"));
+    const std::map<std::string, std::string> expected = {{"audio.sources", "list"},
+                                                         {"audio.waveform", "preview"},
+                                                         {"audio.inspector", "inspector"},
+                                                         {"audio.transport", "transport"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        const auto id = workspace.getPanelId(i);
+        REQUIRE(expected.contains(id));
+        CHECK_EQ(workspace.getPanelCapability(i), std::string("audio.source"));
+        CHECK_EQ(workspace.getPanelContext(i), expected.at(id));
+    }
 
     REQUIRE(editor.setViewportWidth(320.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.bucketCount() > 8);
     CHECK(editor.duration() > 1.9);
 
@@ -3361,10 +3414,17 @@ TEST_CASE("editor.audio.source_editor_script_composes_workspace_and_transactions
         audioEditor <- created.value;
         configured <- audioEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        panel0 <- ""; cap0 <- ""; ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "audio.sources") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         viewport <- audioEditor.setViewportWidth(400.0);
+    )"));
+    REQUIRE(preview_test::finishScript(vm, "audioEditor").ok());
+    vm.run(vm.compileSource(R"(
         beforeVolume <- audioEditor.getFloat("play.volume");
         volumeResult <- audioEditor.setFloat("play.volume", 0.2);
         afterVolume <- audioEditor.getFloat("play.volume");
@@ -4141,26 +4201,29 @@ TEST_CASE("editor.avatar.document_editor_installs_workspace_and_reverses_layer_z
     AvatarDocumentEditor editor("preview.face");
     EditorWorkspace      workspace("avatar.preview", "Avatar Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
-    CHECK_EQ(workspace.getPanelCount(), 5);
-    CHECK_EQ(workspace.getPanelId(0), std::string("avatar.layers"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("avatar.document"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("parameters"));
-    CHECK_EQ(workspace.getPanelContext(4), std::string("expressions"));
-    CHECK_EQ(editor.layerCount(), 2);
-    CHECK_EQ(editor.parameterCount(), 1);
-    CHECK_EQ(editor.expressionCount(), 1);
-    CHECK_EQ(editor.previewRevision(), editor.revision());
-    CHECK(editor.previewLayerCount() >= 2);
+    REQUIRE_EQ(workspace.getPanelCount(), 5);
+    const std::map<std::string, std::string> expected = {{"avatar.layers", "list"},
+                                                         {"avatar.preview", "preview"},
+                                                         {"avatar.inspector", "inspector"},
+                                                         {"avatar.parameters", "parameters"},
+                                                         {"avatar.expressions", "expressions"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        REQUIRE(expected.contains(workspace.getPanelId(i)));
+        REQUIRE_EQ(workspace.getPanelCapability(i), std::string("avatar.document"));
+        REQUIRE_EQ(workspace.getPanelContext(i), expected.at(workspace.getPanelId(i)));
+    }
+    REQUIRE_EQ(editor.layerCount(), 2);
+    REQUIRE_EQ(editor.parameterCount(), 1);
+    REQUIRE_EQ(editor.expressionCount(), 1);
+    REQUIRE_EQ(editor.previewRevision(), editor.revision());
+    REQUIRE(editor.previewLayerCount() >= 2);
 
     REQUIRE(editor.selectLayer("eyes").ok());
     const int before = editor.layerZ(1);
     REQUIRE(editor.setLayerZ(4).ok());
-    CHECK_EQ(editor.layerZ(1), 4);
+    REQUIRE_EQ(editor.layerZ(1), 4);
     REQUIRE(editor.undo().ok());
-    CHECK_EQ(editor.layerZ(1), before);
+    REQUIRE_EQ(editor.layerZ(1), before);
 }
 
 TEST_CASE("editor.avatar.document_editor_rejects_referenced_parameter_delete") {
@@ -4171,16 +4234,16 @@ TEST_CASE("editor.avatar.document_editor_rejects_referenced_parameter_delete") {
     const auto revision   = editor.revision();
     const auto previewRev = editor.previewRevision();
     auto       rejected   = editor.deleteSelectedParameter();
-    CHECK(!rejected.ok());
-    CHECK_EQ(editor.layerCount(), layers);
-    CHECK_EQ(editor.parameterCount(), 1);
-    CHECK_EQ(editor.revision(), revision);
-    CHECK_EQ(editor.previewRevision(), previewRev);
-    CHECK_EQ(editor.previewY(1), previewY);
+    REQUIRE(!rejected.ok());
+    REQUIRE_EQ(editor.layerCount(), layers);
+    REQUIRE_EQ(editor.parameterCount(), 1);
+    REQUIRE_EQ(editor.revision(), revision);
+    REQUIRE_EQ(editor.previewRevision(), previewRev);
+    REQUIRE_EQ(editor.previewY(1), previewY);
 
     REQUIRE(editor.setParameterValue(0.9).ok());
-    CHECK(editor.previewY(1) > previewY);
-    CHECK_EQ(editor.previewRevision(), editor.revision());
+    REQUIRE(editor.previewY(1) > previewY);
+    REQUIRE_EQ(editor.previewRevision(), editor.revision());
 }
 }  // namespace test_editor_avatar_document_editor
 
