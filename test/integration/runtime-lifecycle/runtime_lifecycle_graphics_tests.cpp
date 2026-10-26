@@ -634,7 +634,10 @@ TEST_CASE("gameplay.control.jsonFacadeRejectsUnknownSchemaFields") {
     auto rejected = eve::executeGameplayControlJson(
         R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"domains","mystery":true})");
     CHECK(!rejected.ok());
-    CHECK_EQ(rejected.code(), eve::StatusCode::Rejected);
+    CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
+    REQUIRE_EQ(rejected.diagnostics().size(), std::size_t(1));
+    CHECK_EQ(rejected.diagnostics().front().code(), eve::DiagnosticCode::ParseError);
+    CHECK_EQ(rejected.diagnostics().front().path(), std::string("request.mystery"));
 }
 
 TEST_CASE("gameplay.control.squirrelFacadeUsesTheSharedJsonRouter") {
