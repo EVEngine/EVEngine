@@ -4327,13 +4327,13 @@ TEST_CASE("audio.source.seekTell") {
     CHECK(src->getDuration() > 0.9);
     src->play();
     audio->pump();
+    // Keep the sample cursor stationary: a scheduled sleep is not an audio clock.
+    src->pause();
+    REQUIRE(!src->isPlaying());
     CHECK(src->seek(0.5));
     audio->pump();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     double pos = src->tell();
-    // OpenAL tell() can drift after pump/sleep; keep a loose window around seek(0.5).
-    CHECK(pos >= 0.40);
-    CHECK(pos <= 0.65);
+    CHECK(std::abs(pos - 0.5) <= 1.0 / 44100.0);
     src->stop();
 
     delete src;
