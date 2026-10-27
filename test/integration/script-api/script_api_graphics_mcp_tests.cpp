@@ -1390,7 +1390,28 @@ TEST_CASE("devtools.mcp.stderrCaptureFeedsConsole") {
     // forty-odd fprintf(stderr, ...) call sites.
     std::fprintf(stderr, "engine-fprintf-marker\n");
     std::fflush(stderr);
-    std::cerr << "engine-cerr-marker" << std::endl;
+    // zeroerr redirects cerr to a string buffer around every test. Reconnect it
+    // to stderr while probing descriptor capture, then restore the reporter.
+    class NativeStderrBuffer final : public std::streambuf {
+    public:
+        NativeStderrBuffer() : previous_(std::cerr.rdbuf(this)) {}
+        ~NativeStderrBuffer() override { std::cerr.rdbuf(previous_); }
+
+    private:
+        std::streamsize xsputn(const char* text, std::streamsize count) override {
+            return static_cast<std::streamsize>(std::fwrite(text, 1, static_cast<std::size_t>(count), stderr));
+        }
+        int_type overflow(int_type value) override {
+            if (traits_type::eq_int_type(value, traits_type::eof())) return traits_type::not_eof(value);
+            return std::fputc(traits_type::to_char_type(value), stderr) == EOF ? traits_type::eof() : value;
+        }
+        int             sync() override { return std::fflush(stderr); }
+        std::streambuf* previous_;
+    };
+    {
+        NativeStderrBuffer nativeStderr;
+        std::cerr << "engine-cerr-marker" << std::endl;
+    }
 
     bool sawFprintf = false;
     bool sawCerr    = false;
