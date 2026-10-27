@@ -1,9 +1,9 @@
 """Build the demo geometry-node converter's .blend inside Blender.
 
 Run once with your Blender:
-    blender --background --python modelconverter/scripts/build_nodegroup_blend.py
+    blender --background --python tools/modelconverter/scripts/build_nodegroup_blend.py
 
-Creates `modelconverter/converters/gn_displace/gn_displace.blend` containing a
+Creates `tools/modelconverter/converters/gn_displace/gn_displace.blend` containing a
 Geometry Node group named `EVE_Displace` (displaces a mesh along its normals by
 a seeded noise field). The `gn_displace` converter appends and applies it.
 """
