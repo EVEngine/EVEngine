@@ -677,7 +677,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(modInfo.find("error") != std::string::npos);
     // Unknown action must surface as a controlled error, not crash the server.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
-    CHECK(modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos);
+    CHECK((modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos));
     const std::string editorCommands = textOf(17, "{\"name\":\"eve_editor_commands\",\"arguments\":{}}");
     CHECK(editorCommands.find("mcp.test-command") != std::string::npos);
     const std::string editorExecuted =
