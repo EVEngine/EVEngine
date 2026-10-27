@@ -201,6 +201,7 @@ Windows 本地直接跑同样的命令即可：脚本自身按 UTF-8 写 stdout/
 | [terrain-gallery](terrain-gallery/README.md) | 三个固定 seed 在相同生成参数、光照与材质下的并排对比 |
 | [mesh-modifier-lab](mesh-modifier-lab/README.md) | 13 种网格变形变体并排对照：类型化修饰图（bend / twist / FFD / 切面 / 样条 / 声波）、雕刻笔刷、粘液回弹、Mesh Fit、顶点编辑器 |
 | [mesh-contact-fusion](mesh-contact-fusion/README.md) | 接触带融合：静态 `mergeStaticMeshes`（默认关 / 可选开）与实时 `MeshAdhereLive` 并排对照 |
+| [pipe-generator](pipe-generator/README.md) | 交互式样条管道工具：控制点编辑、局部粗细、封盖、闭合与网格精度 |
 | [spline-tube-lab](spline-tube-lab/README.md) | 无源网格生成：样条路径驱动管道 / 带状体 / 自定义截面挤出，含开放与闭合回路、分块、分布采样与行进帧 |
 | [night-city](night-city/README.md) | 自动街区与新版路网结合的夜间都市：SCAD 高楼、发光窗户、路灯、信号灯与人行道 |
 | [automatic-bridge](automatic-bridge/README.md) | 自动桥梁：十种桥型共用起终点、尺寸与可编辑构件计划，含桥墩、护栏、缆索和桁架（`mesh.autoBridge`） |
