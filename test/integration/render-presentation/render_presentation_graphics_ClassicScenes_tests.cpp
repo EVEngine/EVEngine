@@ -222,10 +222,6 @@ TEST_CASE("ao.hbaoAndGtaoProduceOcclusion") {
     CornerDepth cd;
     cd.w = 100;
     cd.h = 75;
-    // With a 50-unit far plane, this depth gap is half a world unit and
-    // lies inside the one-unit AO radius (the old gap spanned 25 units).
-    cd.wallDepth  = 0.10f;
-    cd.floorDepth = 0.11f;
 
     for (const char *mode : {"hbao", "gtao"}) {
         std::unique_ptr<AmbientOcclusion> ao(gfx->newAmbientOcclusion());
