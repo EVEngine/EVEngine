@@ -654,7 +654,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
     // A plain VM defers authoring-kit installation to the next update.
-    auto checkDeferred = [](const std::string& text) {
+    auto checkDeferred = [&](const std::string& text) {
         Poco::JSON::Parser parser;
         auto               result = parser.parse(text).extract<Poco::JSON::Object::Ptr>();
         CHECK(!result->getValue<bool>("ok"));
