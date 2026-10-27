@@ -84,6 +84,8 @@
 */
 // clang-format on
 
+#include "procgen/Procgen.h"
+#include "ui/UI.h"
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp)
@@ -365,6 +367,7 @@ private:
 }  // namespace
 
 TEST_CASE("devtools.mcp.initializeToolsStatus") {
+    eve::procgen::Procgen procgenModule;
     auto& mcp = McpServer::instance();
     auto& dt  = DevTool::instance();
     auto& ai  = AiPanel::instance();
@@ -1044,6 +1047,7 @@ TEST_CASE("devtools.ai.panelLog") {
 }
 
 TEST_CASE("devtools.mcp.hostEditorBinding") {
+    eve::ui::UI uiModule;
     auto& mcp  = McpServer::instance();
     auto& dt   = DevTool::instance();
     auto& host = eve::ui::EditorHost::instance();
