@@ -94,7 +94,7 @@ fn integrate(a:f32,b:f32)->f32{return clamp(.25*(-cos(2*b)+cos(2*a)+2*(b-a)),0,1
    if ln>.0001&&ln<r{h2=max(h2,mix(-1.5707963,asin(clamp(dot(normalize(dn),n),-1,1)),1-ln/r));}}
   let c=.5*(integrate(-1.5707963,clamp(h1,-1.5707963,1.5707963))+integrate(-1.5707963,clamp(h2,-1.5707963,1.5707963)));
   let thin=smoothstep(0,1,(h1+h2+3.14159265)/max(thick/max(r,.001),.001));vis+=mix(c,max(c,.85),.2*(1-thin));}
- vis/=f32(max(dirs,1));var ao=clamp(pow(max(vis,0),max(p(21),.01)),0,1);ao=mix(1,ao,clamp(p(20),0,2));return vec4f(ao,ao,ao,z)*i.color;
+ vis=1-vis/f32(max(dirs,1));var ao=clamp(pow(max(vis,0),max(p(21),.01)),0,1);ao=mix(1,ao,clamp(p(20),0,2));return vec4f(ao,ao,ao,z)*i.color;
 }
 )wgsl";
 

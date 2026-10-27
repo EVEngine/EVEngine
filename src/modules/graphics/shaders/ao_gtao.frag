@@ -133,7 +133,8 @@ void main() {
     visibility += mix(contrib, max(contrib, 0.85), 0.2 * (1.0 - thin));
   }
 
-  visibility /= float(max(dirs, 1));
+  // The horizon integrals cover the blocked angular range.
+  visibility = 1.0 - visibility / float(max(dirs, 1));
   float ao = clamp(pow(max(visibility, 0.0), power), 0.0, 1.0);
   ao = mix(1.0, ao, clamp(intensity, 0.0, 2.0));
   outColor = vec4(ao, ao, ao, depth01) * fragColor;
