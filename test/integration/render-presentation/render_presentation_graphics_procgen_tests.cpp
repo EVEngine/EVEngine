@@ -2505,7 +2505,7 @@ TEST_CASE("graphics.render3d.toCanvas") {
 
     Mesh *cube = makeUnitCube(gfx);
     REQUIRE(cube != nullptr);
-    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 2.f, 5.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
+    const glm::mat4 view = glm::lookAtRH(glm::vec3(0.f, 1.f, 3.f), glm::vec3(0.f, 0.f, 0.f), glm::vec3(0.f, 1.f, 0.f));
     const glm::mat4 proj = perspectiveVulkanRH_ZO(glm::radians(50.f), 160.f / 120.f, 0.1f, 50.f);
     const glm::mat4 viewProj = proj * view;
 
@@ -2513,7 +2513,7 @@ TEST_CASE("graphics.render3d.toCanvas") {
     RenderSystem3D::setDirectionalLight(0.5f, 1.f, 0.3f, 1.4f, 1.3f, 1.2f);
     gfx->setMesh3DViewProj(viewProj);
     gfx->setMesh3DView(view);
-    gfx->setMesh3DCameraPos(glm::vec3(0.f, 2.f, 5.f));
+    gfx->setMesh3DCameraPos(glm::vec3(0.f, 1.f, 3.f));
     gfx->setMesh3DEnv(skyTex, 1.f);
     const uint8_t red[4] = {220, 40, 40, 255};
     Texture      *redTex = gfx->newTexture(1, 1, red);

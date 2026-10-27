@@ -389,8 +389,10 @@ struct SpineDemoPlayer {
  *  place each model by its own bounds instead of assuming the root anchor. */
 [[maybe_unused]] void measurePoseCenter(SpineAnim *anim, float &cx, float &cy) {
     std::vector<eve::graphics::DrawItem2D> items;
+    const float                            previousX = anim->getX(), previousY = anim->getY();
     anim->setPosition(0.f, 0.f);
     anim->collectDrawItems(items);
+    anim->setPosition(previousX, previousY);
     float minX = 1e30f, minY = 1e30f, maxX = -1e30f, maxY = -1e30f;
     for (const auto &it : items) {
         minX = std::min(minX, it.x);
@@ -1510,7 +1512,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     dlg->setLipSyncEnabled(true);
     dlg->setLipSyncParameter("mouth");
     dlg->setLipSyncAmplitude(0.95f);
-    dlg->setTypeSpeed(18.f);
+    dlg->setTypeSpeed(80.f);
 
     auto *cam      = Camera2D::createCamera();
     cam->data()->r = 0.08f;
