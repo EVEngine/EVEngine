@@ -4310,6 +4310,10 @@ TEST_CASE("volumetric.spotConeScatter2D") {
     // In-beam (below light) should be brighter than a side sample at similar distance.
     const float inBeam = luma(shafts->getPixel(64, 70));
     const float side   = luma(shafts->getPixel(110, 24));
+    const auto  beamColor = shafts->getPixel(64, 70);
+    const auto  sideColor = shafts->getPixel(110, 24);
+    std::printf("spot cone: beam=(%.4f,%.4f,%.4f) side=(%.4f,%.4f,%.4f)\n", beamColor.r, beamColor.g, beamColor.b,
+                sideColor.r, sideColor.g, sideColor.b);
     CHECK(inBeam > 0.02f);
     CHECK(inBeam > side * 2.5f);
 

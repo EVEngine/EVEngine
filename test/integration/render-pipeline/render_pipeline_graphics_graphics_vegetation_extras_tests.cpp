@@ -1131,6 +1131,8 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
             }
         }
     }
+    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
+    savePng(frame, outDir + "/grass_field.png");
     // This fixed-size scene contains a broad field spanning multiple cascades.
     // A WebGPU regression that left empty cascade layers uncleared turned the
     // whole field dark while still satisfying the old handful-of-pixels check.
@@ -1138,16 +1140,12 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     CHECK(darkGreen > 100);
     CHECK(litGreen > 50000);
 
-    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
-    savePng(frame, outDir + "/grass_field.png");
-    savePng(frame, "/opt/cursor/artifacts/grass_field.png");
 
     std::vector<uint8_t> atlasRgba;
     PackedAtlasInfo      atlasInfo;
     eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba, atlasInfo);
     auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8", atlasRgba.data(), false);
     savePng(atlasImg, outDir + "/grass_atlas.png");
-    savePng(atlasImg, "/opt/cursor/artifacts/grass_atlas.png");
     delete atlasImg;
 
     win->close();

@@ -2108,7 +2108,7 @@ TEST_CASE("procgen.render.castlePng") {
     const RenderAuditResult audit = auditImage(*image, auditCfg, {0.09f, 0.13f, 0.19f}, 2);
     CHECK(!audit.empty);
     CHECK(audit.occupancy > 0.08f);
-    CHECK(audit.meanLuma > 12.f);
+    CHECK(audit.meanLuma > 12.f / 255.f);
     const std::filesystem::path outDir = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out";
     std::filesystem::create_directories(outDir);
     const std::filesystem::path outPath = outDir / "castle.png";
