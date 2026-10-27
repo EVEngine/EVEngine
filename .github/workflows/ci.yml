@@ -1015,6 +1015,10 @@ jobs:
         with:
           version: "v0.16.0"
 
+      - name: Start C/C++ compilation cache
+        timeout-minutes: 5
+        run: bash .github/scripts/start-sccache.sh
+
       - name: Build zeroerr JSON fuzz harness
         timeout-minutes: 5
         run: >-
