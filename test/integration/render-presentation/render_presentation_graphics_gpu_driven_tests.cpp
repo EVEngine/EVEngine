@@ -532,6 +532,7 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     for (auto &p : players) p.anim->update(1.f / 60.f);
     for (auto &p : players) p.anim->collectDrawItems(items);
     eve::graphics::RenderSystem::drawItems(*gfx, items, true);
+    REQUIRE(gfx->saveFramePng(std::string(EVENGINE_TEST_BINARY_DIR) + "/out/spine_models.png"));
     gfx->setScreenReadbackEnabled(false);
 
     std::vector<int> perPlayerLitPixels(players.size(), 0);
@@ -553,6 +554,7 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     // target position (no overlap / no off-screen scatter), and draw visible
     // non-background pixels around that center.
     for (size_t pi = 0; pi < players.size(); ++pi) {
+        std::printf("spine model %zu: lit samples=%d\n", pi, perPlayerLitPixels[pi]);
         CHECK_GT(perPlayerItems[pi], 0u);
         CHECK(perPlayerRotated[pi]);
         CHECK_GT(perPlayerLitPixels[pi], 0);
