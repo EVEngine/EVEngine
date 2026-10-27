@@ -16,6 +16,8 @@
 #include "particles/ParticlesCapabilities.h"
 #include "particles/PcgMaterialSelector.h"
 #include "particles/UnderwaterParticles.h"
+#include "particles/bake/script/ParticleBakeRecording.h"
+#include "physics/backend/bake/script/PhysicsBake.h"
 
 #include <memory>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -150,8 +152,11 @@ float Particles::getLastSimulationMs() const { return static_cast<float>(particl
 float Particles::getLastRenderMs() const { return static_cast<float>(particleFrameStats().renderMs); }
 
 void Particles::expose(ssq::Table& table) {
+    physics::PhysicsBake::expose(table);
+    ParticleBakeRecording::expose(table);
     auto cls = table.addClass(name, Particles::create, false);
     expose(cls);
+    cls.addFunc("bakeRecording", [](Particles*) { return ParticleBakeRecording::create(); });
     cls.addFunc("setBudget", &Particles::setBudget);
     cls.addFunc("getMaxParticles", &Particles::getMaxParticles);
     cls.addFunc("getMaxSimulatedEmitters", &Particles::getMaxSimulatedEmitters);

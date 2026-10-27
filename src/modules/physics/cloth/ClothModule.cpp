@@ -1,9 +1,12 @@
 #include "physics/cloth/ClothModule.h"
 
 #include "common/Exception.h"
+#include "common/SquirrelOwnership.h"
 #include "gpgpu/Gpgpu.h"
+#include "physics/backend/bake/script/DeformCaptureBinding.h"
 #include "physics/cloth/Cloth.h"
 #include "physics/cloth/Cloth3D.h"
+#include "physics/cloth/Cloth3DBakeCapture.h"
 #include "physics/cloth/ClothGPU.h"
 #include "physics/cloth/ClothModel.h"
 #include "physics/cloth/LayeredCloth3D.h"
@@ -143,6 +146,10 @@ void Cloth::expose(ssq::Table& table) {
 
     auto cloth3 =
         table.addClass<Cloth3D>("Cloth3D", std::function<Cloth3D*()>([]() -> Cloth3D* { return nullptr; }), true);
+    cloth3.addFunc("captureBake",
+                   [vm = table.getHandle()](Cloth3D* self, const ssq::Object& recordingObject, float seconds) {
+                       return eve::physics::bake_detail::appendCapturedDeform(vm, *self, recordingObject, seconds);
+                   });
     cloth3.addFunc("update", &Cloth3D::update);
     cloth3.addFunc("setGravity", &Cloth3D::setGravity);
     cloth3.addFunc("getGravityX", &Cloth3D::getGravityX);
@@ -292,7 +299,13 @@ void Cloth::expose(ssq::Class& cls) {
     // script could not identify the module it got back from eve.Cloth().
     cls.addFunc("getName", &eve::cloth::Cloth::getName);
     cls.addFunc("newCloth", &eve::cloth::Cloth::newCloth);
-    cls.addFunc("newCloth3D", &eve::cloth::Cloth::newCloth3D);
+    cls.addFunc("newCloth3D", [vm = cls.getHandle()](eve::cloth::Cloth* self, int cols, int rows, float spacing,
+                                                     float x, float y, float z) {
+        auto owned = script::makeOwnedSquirrelInstance(
+            vm, std::unique_ptr<eve::physics::Cloth3D>(self->newCloth3D(cols, rows, spacing, x, y, z)));
+        if (!owned) throw Exception("Cloth.newCloth3D: failed to publish owned script instance");
+        return std::move(owned).takeValue();
+    });
     cls.addFunc("newClothGPU", &eve::cloth::Cloth::newClothGPU);
 }
 

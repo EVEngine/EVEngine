@@ -30,8 +30,8 @@ local snap = world.snapshot(agent);
 `snapshot` / `snapshotJson` 失败用于检测失效。黑板写入用类型化 setter：
 `setBlackboardBool` / `setBlackboardInt` / `setBlackboardNumber` /
 `setBlackboardString`。感知用 `remember` / `forget`，调度用 `tick` / `signal`。
-`ITaskService` 仍只能在 C++ 注册——无任务 provider 时，含 task 的行为会在 admission
-失败；脚本仍可驱动信号 / 黑板 / 感知路径。
+`ITaskService` 可通过 C++ `registerTaskService` 或脚本 `registerTaskProvider` 注册；
+无任务 provider 时，含 task 的行为会在 admission 失败。
 
 ## Behavior runtime
 
@@ -105,3 +105,24 @@ proof, not a hardware performance benchmark.
 （槽位 `decision`）。与层次状态树 / 感知记忆的 `NpcAiWorld` 互补：前者是显式
 workspace，后者是行为编排运行时。用法见 [决策](decision.md)。共享条件树见
 [条件树](condition.md)。
+
+### 脚本任务提供方
+
+`world.registerTaskProvider(type, providerName)` 把已通过 `eve.provider.publish` 发布的脚本实例
+接入 `ITaskService`。注册时捕获 generation；卸载或同名重发布后旧任务返回 stale 错误，
+不会自动绑定另一实例。游戏仍决定路径、移动、攻击及感知到行动的策略。
+
+提供方实现 `start(context)`、`tick(context)`、`stop(context)`：
+
+- start 返回 `{state="running", memoryJson="{}"}`；tick 的 state 可以是
+  running/succeeded/failed。memoryJson 可省略，提供时必须是有效 JSON 字符串。
+- context 是拥有型投影，包含 agent/state/tick/dt/task/parametersJson/memoryJson/blackboard/
+  perception；stop 另含 stopReason（completed/transition/startupRollback/agentDestroyed/definitionReplaced）。
+- stop 返回值不参与业务决策，错误记入引擎日志；原生清理继续执行。
+- 回调不可重入同一 NPC 世界；脚本修改/查询入口返回 Conflict。提供方在脚本线程调用，
+  不持锁，不保留任务上下文引用。世界销毁先停止任务，提供方由现有 registry 管理并在 VM 退出前释放。
+- 每次任务调用需复制黑板/感知投影，成本随该 agent 数据增长；高频大批量原生行为可继续使用
+  C++ `registerTaskService`。两者最终进入同一 NpcAiWorld 调度器。
+
+注册阶段的名称查找只做一次。运行时保存 `ScriptProviderHandle`，复用现有 provider 生命周期和
+调用机制（R-COHESION-3/6、R-FACE-5/6/7、R-MECH-1/4），不创建新的 provider 注册表。

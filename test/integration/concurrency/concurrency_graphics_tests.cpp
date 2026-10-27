@@ -117,6 +117,10 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
 #include <bit>
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
+#include <vector>
+#include "PrivateTestScope.h"
+#include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimParallelInternal.h"
 // animation_binary.cpp

@@ -58,6 +58,8 @@
 // clang-format on
 
 // Related integration contracts share one translation unit to amortize header parsing.
+#include "physics/Box2DSimulationBackend.h"
+#include "zeroerr/assert.h"
 
 // Contract section: climbing prediction
 #include "PrivateTestScope.h"
