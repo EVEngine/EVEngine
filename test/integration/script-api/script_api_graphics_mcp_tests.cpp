@@ -1497,8 +1497,11 @@ TEST_CASE("devtools.mcp.crashReportExplainsPreviousRun") {
 
     // eve_status points at the same artifact without reading it.
     const std::string status = toolText(callToolOnce("eve_status", "{}"));
-    CHECK(status.find(path) != std::string::npos);
-    CHECK(status.find("\"crashLog\"") != std::string::npos);
+    const auto        statusObject = parseObject(status);
+    REQUIRE(statusObject);
+    const auto crashLog = statusObject->getObject("crashLog");
+    REQUIRE(crashLog);
+    CHECK_EQ(crashLog->getValue<std::string>("path"), path);
 }
 
 TEST_CASE("devtools.mcp.scriptToolExportRoundTrip") {

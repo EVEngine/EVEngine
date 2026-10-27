@@ -2097,8 +2097,17 @@ TEST_CASE("mouse.positionRoundTrip") {
     CHECK(std::abs(y - 60.0) < 2.0);
 
     m->setX(80.0);
+    // Windows delivers warps asynchronously; wait for SDL's event-backed state.
+    for (int attempt = 0; attempt < 100 && std::abs(m->getX() - 80.0) >= 2.0; ++attempt) {
+        SDL_Delay(1);
+        SDL_PumpEvents();
+    }
     CHECK(std::abs(m->getX() - 80.0) < 2.0);
     m->setY(90.0);
+    for (int attempt = 0; attempt < 100 && std::abs(m->getY() - 90.0) >= 2.0; ++attempt) {
+        SDL_Delay(1);
+        SDL_PumpEvents();
+    }
     CHECK(std::abs(m->getY() - 90.0) < 2.0);
 }
 

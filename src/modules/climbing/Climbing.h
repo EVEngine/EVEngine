@@ -889,6 +889,7 @@ private:
     std::string                            previousActionId_;
     std::uint64_t                          nextExecutionId_ = 1;
     std::uint64_t                          definitionGeneration_ = 1;
+    mutable std::optional<std::uint64_t>           validatedProfileGeneration_;
     std::vector<ClimbingEvent>             pendingEvents_;
 };
 

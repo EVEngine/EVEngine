@@ -184,8 +184,13 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
         lastDebugQueries_.clear();
         lastEvidence_.clear();
     }
-    auto valid      = validateClimbingProfileDefinition(profile_);
-    if (!valid) return eve::Result<void>::failure(valid.status());
+    // Definitions are immutable between generations. Validate a changed profile
+    // once, rather than allocating action/tag validation sets on every probe.
+    if (validatedProfileGeneration_ != definitionGeneration_) {
+        auto valid = validateClimbingProfileDefinition(profile_);
+        if (!valid) return eve::Result<void>::failure(valid.status());
+        validatedProfileGeneration_ = definitionGeneration_;
+    }
     if (!world.isValid())
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "physics world is no longer valid", "world", {}, "climbing"));
