@@ -1965,29 +1965,30 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     req->setBodyString("post-body");
     REQUIRE(req->submit());
 
-    std::string              received;
+    std::string received;
     eve::network::TcpSocket* peer = nullptr;
-    for (int i = 0; i < 400 && !peer; ++i) {
+    bool complete = false;
+    for (int i = 0; i < 400 && !complete; ++i) {
         net->pump();
-        while (ev->pollOwned()) {
-        }
-        peer = server->accept();
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
-    REQUIRE(peer != nullptr);
-
-    for (int i = 0; i < 400 && received.find("\r\n\r\n") == std::string::npos; ++i) {
-        net->pump();
+        // Accept before draining events: the worker can queue request bytes
+        // along with the connection, so discarding early events loses headers.
+        if (!peer) peer = server->accept();
         while (auto m = ev->pollOwned()) {
             if (m->name == "netdata" && m->args.size() >= 2 && m->args[0].p == peer && m->args[1].p) {
                 auto* data = static_cast<eve::data::ByteData*>(m->args[1].p);
                 received.append(static_cast<char*>(data->getData()), data->getSize());
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        // TCP may deliver headers and body separately. The known request body
+        // is nine bytes; do not reply or assert until all of it has arrived.
+        const auto headerEnd = received.find("\r\n\r\n");
+        complete = headerEnd != std::string::npos && received.size() >= headerEnd + 4 + 9;
+        if (!complete) std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(received.find("X-Test-Header: custom-value") != std::string::npos);
-    CHECK(received.find("post-body") != std::string::npos);
+    REQUIRE(peer != nullptr);
+    REQUIRE(complete);
+    REQUIRE(received.find("X-Test-Header: custom-value") != std::string::npos);
+    REQUIRE_EQ(received.substr(received.find("\r\n\r\n") + 4), std::string("post-body"));
 
     const char*         httpResp = "HTTP/1.1 200 OK\r\nContent-Length: 2\r\nConnection: close\r\n\r\nok";
     eve::data::ByteData respData(httpResp, std::strlen(httpResp));
@@ -1997,15 +1998,15 @@ TEST_CASE("network.Http.setHeaderAndBody") {
     for (int i = 0; i < 400 && !got; ++i) {
         net->pump();
         while (auto m = ev->pollOwned()) {
-            if (m->name == "httpresp") {
+            if (m->name == "httpresp" && !m->args.empty() && m->args[0].p == req) {
                 got = true;
                 REQUIRE(m->args.size() >= 3);
-                CHECK(m->args[2].ownsPointer());
+                REQUIRE(m->args[2].ownsPointer());
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
-    CHECK(got);
+    REQUIRE(got);
 
     peer->close();
     server->close();
