@@ -37,7 +37,7 @@ def make_displace_group(name: str = "EVE_Displace") -> None:
                                    socket_type="NodeSocketGeometry")
     except AttributeError:
         # Fallback for older Blender node-tree interface.
-        in_geom = group.inputs.new("NodeSocketGeometry", "Geometry")
+        group.inputs.new("NodeSocketGeometry", "Geometry")
         in_strength = group.inputs.new("NodeSocketFloat", "Strength")
         in_seed = group.inputs.new("NodeSocketInt", "Seed")
         group.outputs.new("NodeSocketGeometry", "Geometry")

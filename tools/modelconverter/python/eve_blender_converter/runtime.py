@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 import sys
-from typing import Optional
 
 from .job import Job, Result
 from .converters import load_manifest, run_converter, ConverterError
