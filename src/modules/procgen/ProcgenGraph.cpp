@@ -1,38 +1,42 @@
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenOwnership.h"
 
 #include "procgen/GridGraph.h"
 #include "procgen/MeshGraph.h"
 #include "procgen/PointGraph.h"
+#include "procgen/mesh/DynamicMeshUvPaintSession.h"
+#include "procgen/mesh/MeshDeformationSession.h"
 #include "procgen/mesh/MeshModifierGraph.h"
+#include "procgen/spline/SplinePath.h"
 
 namespace eve::procgen {
 
 eve::Result<ProcgenPointGraphHandleRef> Procgen::newPointGraphHandle() {
-    return pointGraphs_.emplace(std::make_unique<PointGraph>());
+    return ownership_->pointGraphs.emplace(std::make_unique<PointGraph>());
 }
 
 eve::Result<ProcgenMeshModifierGraphHandleRef> Procgen::newMeshModifierGraphHandle() {
-    return meshModifierGraphs_.emplace(std::make_unique<MeshModifierGraph>());
+    return ownership_->meshModifierGraphs.emplace(std::make_unique<MeshModifierGraph>());
 }
 
 eve::Result<ProcgenMeshDeformationSessionHandleRef> Procgen::newMeshDeformationSessionHandle() {
-    return meshDeformationSessions_.emplace(std::make_unique<MeshDeformationSession>());
+    return ownership_->meshDeformationSessions.emplace(std::make_unique<MeshDeformationSession>());
 }
 
 eve::Result<ProcgenDynamicMeshUvPaintSessionHandleRef> Procgen::newDynamicMeshUvPaintSessionHandle() {
-    return dynamicMeshUvPaintSessions_.emplace(std::make_unique<DynamicMeshUvPaintSession>());
+    return ownership_->dynamicMeshUvPaintSessions.emplace(std::make_unique<DynamicMeshUvPaintSession>());
 }
 
 eve::Result<ProcgenSplinePathHandleRef> Procgen::newSplinePathHandle() {
-    return splinePaths_.emplace(std::make_unique<SplinePath>());
+    return ownership_->splinePaths.emplace(std::make_unique<SplinePath>());
 }
 
 eve::Result<ProcgenGridGraphHandleRef> Procgen::newGridGraphHandle() {
-    return gridGraphs_.emplace(std::make_unique<GridGraph>());
+    return ownership_->gridGraphs.emplace(std::make_unique<GridGraph>());
 }
 
 eve::Result<ProcgenMeshGraphHandleRef> Procgen::newMeshGraphHandle() {
-    return meshGraphs_.emplace(std::make_unique<MeshGraph>());
+    return ownership_->meshGraphs.emplace(std::make_unique<MeshGraph>());
 }
 
 }  // namespace eve::procgen

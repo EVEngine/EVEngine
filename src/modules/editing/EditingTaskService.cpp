@@ -23,7 +23,10 @@ void TaskContext::reportProgress(float progress) const {
     if (progress_) progress_(std::clamp(progress, 0.0F, 1.0F));
 }
 
-TaskService::TaskService() : worker_([this] { workerLoop(); }) {}
+TaskService::TaskService() {
+    // Start only after all members, including stopping_, have been initialized.
+    worker_ = std::thread([this] { workerLoop(); });
+}
 
 TaskService::~TaskService() {
     {

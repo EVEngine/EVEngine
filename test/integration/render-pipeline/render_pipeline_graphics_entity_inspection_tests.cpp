@@ -4,6 +4,7 @@
 #include "common/Capability.h"
 #include "common/EntityInspection.h"
 #include "graphics/Graphics.h"
+#include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 #include "window/Window.h"
 #include "zeroerr/assert.h"

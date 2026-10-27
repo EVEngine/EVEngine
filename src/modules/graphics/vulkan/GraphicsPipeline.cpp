@@ -190,9 +190,13 @@ void Graphics::createSwapchainAndPipeline() {
     }
     // Allow screen getPixel / newImageData readback after present.
     swapchainBuilder.add_image_usage_flags(vk::ImageUsageFlagBits::eTransferSrc);
-    auto swapRet = swapchainBuilder.set_old_swapchain(swapchain).build();
+    // Retire the old swapchain before installing its replacement. MoltenVK
+    // 1.2.11 can force oldSwapchain presentation completion after setting the
+    // new CAMetalLayer size, overwriting it with 1x1. Completing retirement
+    // first keeps that shared-surface mutation ahead of new drawable setup.
     swapchain.destroy();
-    swapchain = swapRet;
+    swapchain = vkb::Swapchain{};
+    swapchain = swapchainBuilder.build();
     if (swapchain.image_format != selectedSurfaceFormat_.format) {
         // Builder fell through to an unlisted surface format; treat as SDR.
         activeDisplayColorSpace_ = DisplayColorSpace::Sdr;

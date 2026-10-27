@@ -4,11 +4,8 @@
 
 #include "common/Result.h"
 #include "graphics/BlendMode.h"
-#include "graphics/Mesh.h"
 #include "graphics/PbrSurface.h"
-#include "graphics/Shader.h"
 #include "graphics/SurfaceMode.h"
-#include "graphics/Texture.h"
 #include "graphics/VirtualTextureStreaming.h"
 
 #include <cstdint>
@@ -19,6 +16,9 @@
 namespace eve::graphics {
 
 class Graphics;
+class Mesh;
+class Shader;
+class Texture;
 
 /** @brief Selects conventional or atlas/page-table material sampling. */
 enum class MaterialVirtualTextureMode { Conventional, AtlasPageTable };

@@ -3,6 +3,7 @@
 #include <limits>
 #include "graphics/Graphics.h"
 #include "graphics/Grass.h"
+#include "graphics/Shader.h"
 #include "image/ImageData.h"
 namespace eve::graphics {
 Result<int> GrassField::bakePoints(const std::vector<grass::Point>& points, float width, float height) {

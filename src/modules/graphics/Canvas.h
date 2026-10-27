@@ -31,29 +31,34 @@ public:
     /** @brief Returns the height. */
     virtual int getHeight() const = 0;
 
-    /** @brief Sampleable color buffer; screen Canvas returns nullptr. */
-    virtual Texture *getTexture() = 0;
+    /**
+     * @brief Sampleable color buffer; screen Canvas returns nullptr.
+     * @return Borrowed texture owned by this canvas, or nullptr for the screen canvas.
+     * @ownership Borrowed; the canvas retains ownership and may invalidate the pointer when
+     *            the canvas is destroyed or its backing store is recreated.
+     * @lifetime Valid until the owning canvas is destroyed or replaces its color buffer.
+     */
+    virtual Texture* getTexture() = 0;
 
     /** @brief Clears . */
-    virtual void clear(std::optional<Color> color, std::optional<int> stencil,
-                       std::optional<double> depth) = 0;
+    virtual void clear(std::optional<Color> color, std::optional<int> stencil, std::optional<double> depth) = 0;
 
     /** @brief Returns the pixel. */
     virtual Color getPixel(int x, int y) = 0;
 
     /** Full RGBA8 copy; caller owns ImageData*. */
     /** @brief Creates a image data. @ownership Caller deletes unless documented otherwise. */
-    virtual image::ImageData *newImageData() = 0;
+    virtual image::ImageData* newImageData() = 0;
 
     /**
      * @brief Copy an HDR Canvas as linear RGBA16F without tone mapping.
      * @return Caller-owned ImageData, or nullptr when this Canvas is not HDR.
      * @ownership The caller owns the returned image data.
      */
-    virtual image::ImageData *newHDRImageData() { return nullptr; }
+    virtual image::ImageData* newHDRImageData() { return nullptr; }
 
-    /** @brief Draws . */
-    virtual void draw(Canvas *C, const glm::mat4 &matrix) const = 0;
+    /** @brief Draws this canvas into another canvas with a transform. */
+    virtual void draw(Canvas* C, const glm::mat4& matrix) const = 0;
 };
 
 }  // namespace eve::graphics

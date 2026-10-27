@@ -1,9 +1,10 @@
 #pragma once
 
-#include <glm/mat4x4.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters; .cpp files that
+// read matrix elements include <glm/mat4x4.hpp> (or get it via Graphics.h).
+#include <glm/fwd.hpp>
 
-namespace eve::graphics
-{
+namespace eve::graphics {
 
 class Graphics;
 
@@ -20,8 +21,10 @@ public:
     virtual ~Drawable() {}
 
     /**
-	 * @brief Draws the object with the specified transformation matrix.
-	 **/
+     * @brief Draws the object with the specified transformation matrix.
+     * @param gfx Borrowed graphics backend for the draw.
+     * @param matrix Column-major model transform; borrowed for the call only.
+     **/
     virtual void draw(Graphics* gfx, const glm::mat4& matrix) const = 0;
 
     /** @brief When false, skipped by Graphics::drawOcclusion / volumetric occluder passes. */
@@ -43,4 +46,4 @@ private:
     bool castOcclusion_ = true;
 };
 
-} // namespace eve::graphics
+}  // namespace eve::graphics

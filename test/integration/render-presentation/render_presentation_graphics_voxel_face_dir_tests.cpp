@@ -52,7 +52,6 @@
 #include "zeroerr/assert.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_shader)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
@@ -60,6 +59,7 @@
 #include <memory>
 #include <stdexcept>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
@@ -70,6 +70,7 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsRgb.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -1033,7 +1034,6 @@ TEST_CASE("softbody.gpu.renderClothPreview") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_spatial)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <algorithm>
 #include <cmath>
@@ -1041,6 +1041,7 @@ TEST_CASE("softbody.gpu.renderClothPreview") {
 #include <memory>
 #include <set>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
@@ -1757,9 +1758,9 @@ TEST_CASE("stylize.meshVfx.gpuRibbonSubmission") {
     graphics->end3DFrameToCanvas();
 
     auto descriptor = graphics->describeMesh(renderer->trailMesh());
-    REQUIRE(descriptor.has_value());
-    CHECK_EQ(descriptor->vertexCount, 4u);
-    CHECK_EQ(descriptor->indexCount, 6u);
+    REQUIRE(descriptor.ok());
+    CHECK_EQ(descriptor.value().vertexCount, 4u);
+    CHECK_EQ(descriptor.value().indexCount, 6u);
     const eve::graphics::Color center        = target->getPixel(32, 32);
     const bool                 renderedColor = center.r > 0.05f || center.g > 0.05f || center.b > 0.05f;
     CHECK(renderedColor);
@@ -4484,30 +4485,66 @@ TEST_CASE("graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider") {
     surfacePostFx.color      = {0.9F, 0.8F, 0.7F};
     REQUIRE(static_cast<bool>(applyWaterUnderwaterPostFx(graphics, camera, output, surfacePostFx)));
     CHECK(camera->getExposure() == -1.25F);
-    CHECK(graphics->getSceneColorFilter() == glm::vec3(0.12F, 0.36F, 0.48F));
+    {
+        const auto      c = graphics->getSceneColorFilter();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == glm::vec3(0.12F, 0.36F, 0.48F));
+    }
     CHECK(graphics->getSceneTransitionVignette() == 0.25F);
     CHECK(graphics->getSceneTransitionVignetteSmoothness() == 0.8F);
     CHECK(graphics->getSceneTransitionLensDistortion() == 0.252F);
     CHECK(graphics->getSceneTransitionLensScale() == 1.02F);
-    CHECK(graphics->getSceneLift() == output.transitionLift);
-    CHECK(graphics->getSceneInverseGamma() == output.transitionInverseGamma);
-    CHECK(graphics->getSceneGain() == output.transitionGain);
+    {
+        const auto      c = graphics->getSceneLift();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == output.transitionLift);
+    }
+    {
+        const auto      c = graphics->getSceneInverseGamma();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == output.transitionInverseGamma);
+    }
+    {
+        const auto      c = graphics->getSceneGain();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == output.transitionGain);
+    }
     output.isUnderwater = false;
     REQUIRE(static_cast<bool>(applyWaterUnderwaterPostFx(graphics, camera, output, surfacePostFx)));
     CHECK(camera->getExposure() == 0.4F);
-    CHECK(graphics->getSceneColorFilter() == surfacePostFx.color);
+    {
+        const auto      c = graphics->getSceneColorFilter();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == surfacePostFx.color);
+    }
     CHECK(graphics->getSceneTransitionVignette() == 0.0F);
     CHECK(graphics->getSceneTransitionVignetteSmoothness() == 0.2F);
     CHECK(graphics->getSceneTransitionLensDistortion() == 0.0F);
     CHECK(graphics->getSceneTransitionLensScale() == 1.0F);
-    CHECK(graphics->getSceneLift() == glm::vec3(0.0F));
-    CHECK(graphics->getSceneInverseGamma() == glm::vec3(1.0F));
-    CHECK(graphics->getSceneGain() == glm::vec3(1.0F));
+    {
+        const auto      c = graphics->getSceneLift();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == glm::vec3(0.0F));
+    }
+    {
+        const auto      c = graphics->getSceneInverseGamma();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == glm::vec3(1.0F));
+    }
+    {
+        const auto      c = graphics->getSceneGain();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == glm::vec3(1.0F));
+    }
 
     surfacePostFx.color.r = -1.0F;
     CHECK(!applyWaterUnderwaterPostFx(graphics, camera, output, surfacePostFx));
     CHECK(camera->getExposure() == 0.4F);
-    CHECK(graphics->getSceneColorFilter() == glm::vec3(0.9F, 0.8F, 0.7F));
+    {
+        const auto      c = graphics->getSceneColorFilter();
+        const glm::vec3 got(c.r, c.g, c.b);
+        CHECK(got == glm::vec3(0.9F, 0.8F, 0.7F));
+    }
 
     auto *horizon  = Renderable3D::create();
     output.horizon = true;
