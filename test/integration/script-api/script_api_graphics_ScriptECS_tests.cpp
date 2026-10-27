@@ -1064,7 +1064,7 @@ function reflectScriptProbe() {
 
     local info = eve.reflect.classInfo("ReflectScriptHero");
     if (info == null) throw "classInfo() null";
-    if (info.base != "ReflectScriptBase") throw "classInfo().base mismatch";
+    if (info["base"] != "ReflectScriptBase") throw "classInfo().base mismatch";
     if (eve.reflect.classInfo("ReflectScriptMissing") != null)
         throw "classInfo() must return null for unknown class";
 
