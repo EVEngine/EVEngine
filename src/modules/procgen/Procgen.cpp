@@ -66,7 +66,7 @@
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStampScript.h"
 #include "procgen/house/HouseGen.h"
-#include "procgen/shaders/terrain_material_compat_frag_spv.inc"
+#include "procgen/shaders/terrain_material_frag_spv.inc"
 #include "procgen/shaders/terrain_water_compat_frag_spv.inc"
 #include "procgen/texture/PbrMaterial.h"
 #include "procgen/texture/TextureRecipe.h"
@@ -1895,8 +1895,8 @@ graphics::Shader* Procgen::createTerrainMaterialShader(graphics::Graphics* gfx) 
         return nullptr;
     }
     try {
-        std::vector<uint32_t> fragment(terrain_material_compat_frag_spv,
-                                       terrain_material_compat_frag_spv + terrain_material_compat_frag_spv_count);
+        std::vector<uint32_t> fragment(terrain_material_frag_spv,
+                                       terrain_material_frag_spv + terrain_material_frag_spv_count);
         auto *shader = gfx->newMeshShaderFromSpv({}, fragment);
         if (!shader) return nullptr;
         for (int slot = 0; slot < 4; ++slot)
