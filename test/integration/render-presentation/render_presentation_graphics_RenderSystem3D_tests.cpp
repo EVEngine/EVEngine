@@ -4215,7 +4215,8 @@ TEST_CASE("volumetric.froxelIntegratesEmissiveProxyAndSceneLights") {
 
     auto injected = vol->injectEmissiveLightProxy(0.f, 1.f, -4.f, 1.f, 0.15f, 0.05f, 6.f, 2.5f);
     REQUIRE(injected.ok());
-    vol->integrateFroxel(0.05f, 0.05f, 0.06f, 1.f);
+    auto integrated = vol->integrateFroxelFromSceneLights(0.05f, 0.05f, 0.06f, glm::vec3(-10.f), glm::vec3(10.f), 8);
+    REQUIRE(integrated.ok());
 
     const glm::vec4 sample = vol->getAtmosphereVolume()->sampleIntegrated(0.5f, 0.5f, 12.f);
     CHECK(sample.r > sample.b);
