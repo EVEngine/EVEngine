@@ -958,7 +958,6 @@ TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
     auto renderFrame = [&]() {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        gfx->present();
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
