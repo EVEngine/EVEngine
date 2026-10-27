@@ -319,8 +319,8 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
         gd.push.modelR0 = glm::vec4(d.model[0][0], d.model[1][0], d.model[2][0], d.model[3][0]);
         gd.push.modelR1 = glm::vec4(d.model[0][1], d.model[1][1], d.model[2][1], d.model[3][1]);
         gd.push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
-        const uint32_t packed = u8(d.idColor.r) | (u8(d.idColor.g) << 8) |
-                                (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
+        const uint32_t packed =
+            u8(d.idColor.r) | (u8(d.idColor.g) << 8) | (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
         // Negative motion selects exact RGBA8 IDs instead of RGB6 material tint packing.
         gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), -1.f);
         idDraws.push_back(gd);

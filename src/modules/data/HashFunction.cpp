@@ -83,7 +83,7 @@ public:
                     padded[paddedLength + byte] = static_cast<uint8_t>(bitLength >> (byte * 8));
                 paddedLength += 8;
 
-		for (uint64_t i = 0; i < paddedLength; i += 64)
+                for (uint64_t i = 0; i < paddedLength; i += 64)
 		{
                     uint32_t chunk[16];
                     memcpy(chunk, padded + i, sizeof(chunk));
@@ -115,9 +115,9 @@ public:
                         C             = B;
                         B += leftrot(A + F + constants[j] + chunk[g], shifts[j]);
                         A = temp;
-			}
+                    }
 
-			a0 += A;
+                        a0 += A;
 			b0 += B;
 			c0 += C;
 			d0 += D;
