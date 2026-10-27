@@ -3431,7 +3431,7 @@ TEST_CASE("procgen.pointGraph.spec.biomeShapeAndSamplingNodes") {
         SpatialData box = SpatialData::box(0.f, 0.f, 0.f, 2.f, 0.f, 2.f);
         CHECK(graph.setNodeSpatial("sample", &box));
         CHECK(graph.setNodeFloat("sample", "spacing", 1.f));
-        CHECK(graph.validate());
+        CHECK(!graph.validate());
         PointSet* rejected = graph.execute("sample");
         CHECK(!rejected);
         CHECK(graph.getError().find("surface.mesh") != std::string::npos);

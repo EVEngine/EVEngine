@@ -1180,6 +1180,7 @@ TEST_CASE("building.edge.spec.occupancyAndAtomicShapes") {
         CHECK(PlacementSystem::events().empty());
         REQUIRE(world.removeBuilding(blocker));
 
+        PlacementSystem::clearEvents();
         auto placed = PlacementSystem::placeEdgeCubicBezier(&world, wall.id, controls, 24);
         REQUIRE(placed.ok());
         CHECK_EQ(placed.value().instanceIds.size(), preview.value().edges.size());
