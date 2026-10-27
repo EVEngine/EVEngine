@@ -36,3 +36,8 @@ SMOKE_RUNTIME_ARCHIVE ?= build/example-smoke-runtime.tar.gz
 .PHONY: package/smoke-runtime
 package/smoke-runtime:
 	bash scripts/package_smoke_runtime.sh "$(RUNTIME_EVE)" "$(SMOKE_RUNTIME_ARCHIVE)"
+
+# Builds run in their own CI step. The generated impact index selects actual
+# transitive consumers; an unknown dependency selects the complete test lane.
+test/ci-%:
+	$(CTEST_ENV) python3 -X utf8 scripts/run_ci_tests.py --platform "$*" --jobs $(CTEST_JOBS) --label-regex '$(LABEL_FILTER)'

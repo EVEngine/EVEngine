@@ -75,11 +75,11 @@ class CiChangeScopeTests(unittest.TestCase):
         self.assertEqual("selected", mode)
         self.assertEqual(r"^source:(arithmetic[.]cpp|draw[.]cpp)$", label)
 
-    def test_production_change_runs_full_test_suite(self):
+    def test_module_change_uses_build_derived_impact(self):
         mode, label = ci_change_scope.classify_tests(
             ["src/modules/scene/Scene.cpp"]
         )
-        self.assertEqual("full", mode)
+        self.assertEqual("affected", mode)
         self.assertEqual("", label)
 
     def test_test_infrastructure_change_runs_full_test_suite(self):

@@ -51,6 +51,11 @@ jobs:
       tools: ${{ steps.scope.outputs.tools }}
       test_mode: ${{ steps.scope.outputs.test_mode }}
       test_label_regex: ${{ steps.scope.outputs.test_label_regex }}
+      source_mode: ${{ steps.scope.outputs.source_mode }}
+      script_tests: ${{ steps.scope.outputs.script_tests }}
+      examples: ${{ steps.scope.outputs.examples }}
+      changed_examples: ${{ steps.scope.outputs.changed_examples }}
+      native_paths: ${{ steps.scope.outputs.native_paths }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -80,6 +85,10 @@ jobs:
 
   # Fast source-only gate. Local equivalent: `make check` (scripts/check_source_quality.sh).
   source-quality:
+    needs: [change-scope]
+    env:
+      SOURCE_QUALITY_MODE: ${{ needs.change-scope.outputs.source_mode }}
+      SOURCE_QUALITY_SCRIPT_TESTS: ${{ needs.change-scope.outputs.script_tests }}
     name: Source quality
     runs-on: ubuntu-24.04
     # The gate step below is the long pole (~15 min measured); the job budget has to stay
@@ -94,6 +103,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install source-quality tools
+        if: needs.change-scope.outputs.source_mode == 'full'
         run: |
           # This job needs Ubuntu packages only. Leave the runner's Chrome
           # installation and repository configuration intact for browser jobs.
@@ -107,7 +117,10 @@ jobs:
           sudo apt-get "${apt_sources[@]}" update
           sudo apt-get "${apt_sources[@]}" install -y clang-format-18
           sudo ln -sf /usr/bin/clang-format-18 /usr/local/bin/clang-format
-          python3 -m pip install --user --quiet numpy pillow ruff
+
+      - name: Install Python check dependencies
+        if: needs.change-scope.outputs.source_mode == 'full' || needs.change-scope.outputs.source_mode == 'scripts'
+        run: python3 -m pip install --user --quiet numpy pillow ruff
 
       - name: Run source-quality gate
         # Same entry point as local `make check`. Groups inside
@@ -186,6 +199,8 @@ jobs:
     # Vulkan build and unit tests; Dawn has its own independent job.
     timeout-minutes: 240
     env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
       SCCACHE_GHA_ENABLED: "true"
       # Debug .o blobs use -g0/-O2 (no /Zi); keep key stable to avoid a second
       # namespace while the account cache quota is tight across the build matrix.
@@ -307,7 +322,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/win32-debug
+          make test/ci-win32-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Upload Windows test failure diagnostics
@@ -448,6 +463,8 @@ jobs:
     # run 35566503055. Budget the debug build and unit suite together.
     timeout-minutes: 240
     env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
       SCCACHE_GHA_ENABLED: "true"
       SCCACHE_GHA_VERSION: evengine-cpp-v1-macos-arm64-debug
       SCCACHE_GHA_RW_MODE: ${{ (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v')) && 'READ_WRITE' || 'READ_ONLY' }}
@@ -534,7 +551,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: >-
-          make test/macosx-debug
+          make test/ci-macosx-debug
           LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Report network phase timings
@@ -663,6 +680,8 @@ jobs:
     # past 40 minutes, so keep headroom for tests afterward.
     timeout-minutes: 120
     env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
       SCCACHE_GHA_ENABLED: "true"
       # Shared across the Linux Debug job; object hash includes -g0 so new
       # entries are smaller without opening a parallel GHA cache namespace.
@@ -758,7 +777,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           make build/linux-debug JOBS="$(nproc)" \
-            CMAKE_EXTRA_ARGS="-DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
+            CMAKE_EXTRA_ARGS="-DBUILD_TESTING=${{ needs.change-scope.outputs.test_mode == 'none' && 'OFF' || 'ON' }} \
+              -DEVENGINE_ENABLE_STRICT_WARNINGS=ON \
               -DEVENGINE_COMPILER_CACHE=SCCACHE ${{ steps.third-party-cache.outputs.cmake-args }}"
 
       - name: Verify built third-party cache
@@ -782,10 +802,12 @@ jobs:
         run: sccache --show-stats
 
       - name: Verify resource format fixture integrity
+        if: needs.change-scope.outputs.test_mode != 'none'
         timeout-minutes: 5
         run: make check/resource-fixtures
 
       - name: Run linux unit tests
+        if: needs.change-scope.outputs.test_mode != 'none'
         # Run 39399072292 passed 6628/7045 cases before the 30-minute
         # guard fired. Keep headroom for the expanded suite and runner variance.
         timeout-minutes: 45
@@ -795,7 +817,7 @@ jobs:
         run: |
           # Match ASan: use all CPUs on the runner instead of hard-coding
           # CTEST_JOBS=2 from an older Lavapipe race workaround.
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-debug CTEST_JOBS="$(nproc)" \
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/ci-linux-debug CTEST_JOBS="$(nproc)" \
             LABEL_FILTER='${{ needs.change-scope.outputs.test_label_regex }}'
 
       - name: Upload Linux test failure diagnostics
@@ -810,6 +832,7 @@ jobs:
           retention-days: 7
 
       - name: Verify resource test results without skipped or warning-only cases
+        if: needs.change-scope.outputs.test_mode != 'none'
         timeout-minutes: 20
         env:
           ALSOFT_DRIVERS: "null"
@@ -818,11 +841,13 @@ jobs:
           xvfb-run -a -s "-screen 0 1280x800x24" make check/resource-results RUNTIME_BUILD_DIR=build/linux-debug
 
       - name: Independently decode resource image exports
+        if: needs.change-scope.outputs.test_mode != 'none'
         timeout-minutes: 5
         run: |
           make check/resource-exports RESOURCE_PYTHON=/usr/bin/python3
 
       - name: Run headless GPU tests without Xvfb
+        if: needs.change-scope.outputs.test_mode != 'none'
         timeout-minutes: 15
         env:
           ALSOFT_DRIVERS: "null"
@@ -835,11 +860,21 @@ jobs:
           make test/headless-gpu RUNTIME_BUILD_DIR=build/linux-debug
 
       - name: DevLab developer-experience test (hot reload + DevTools)
+        if: needs.change-scope.outputs.test_mode != 'none'
         timeout-minutes: 5
         env:
           ALSOFT_DRIVERS: "null"
         run: |
           xvfb-run -a -s "-screen 0 1280x800x24" make test/devlab RUNTIME_BUILD_DIR=build/linux-debug
+
+      - name: Smoke changed examples
+        if: needs.change-scope.outputs.examples == 'true'
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+          MIN_RUN_SECONDS: "2"
+          SMOKE_EXAMPLES: ${{ needs.change-scope.outputs.changed_examples }}
+        run: xvfb-run -a -s "-screen 0 1280x800x24" make check/examples smoke/examples
 
   linux-asan:
     name: Linux (ASan+UBSan)
@@ -850,6 +885,8 @@ jobs:
     # the 90-minute test guard, plus dependency/toolchain setup and reporting.
     timeout-minutes: 330
     env:
+      CI_TEST_MODE: ${{ needs.change-scope.outputs.test_mode }}
+      CI_NATIVE_PATHS: ${{ needs.change-scope.outputs.native_paths }}
       # Leak detection off: the zeroerr discovery run during the build (and a
       # few tests) allocates process-lifetime state that LeakSanitizer flags;
       # the sanitizer job's value is UAF/OOB/UB, not leaks.
@@ -971,7 +1008,7 @@ jobs:
         env:
           ALSOFT_DRIVERS: "null"
         run: |
-          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-asan CTEST_JOBS="$(nproc)"
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/ci-linux-asan CTEST_JOBS="$(nproc)"
 
   linux-fuzz:
     name: Linux (zeroerr fuzz)

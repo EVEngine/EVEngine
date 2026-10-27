@@ -1,6 +1,7 @@
 """Failure propagation and concurrency contract for the source gate runner."""
 import contextlib
 import io
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -24,8 +25,19 @@ class RunnerTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(runner.run_commands([("ok", [sys.executable, "-c", "pass"])], 1), 0)
 
+    def test_script_mode_has_no_native_source_gates(self):
+        with patch.dict(os.environ, {"SOURCE_QUALITY_MODE": "scripts"}), \
+             patch.object(sys, "argv", ["runner"]), \
+             patch.object(runner, "run_commands", return_value=0) as execute:
+            self.assertEqual(runner.main(), 0)
+        names = [name for name, _ in execute.call_args.args[0]]
+        self.assertIn("check/scripts", names)
+        self.assertIn("test_source_quality_runner", names)
+        self.assertNotIn("check/bindings", names)
+
     def test_commands_come_from_make_inventory(self):
-        with patch.object(sys, "argv", ["runner", "--base", "fixture-base"]), \
+        with patch.dict(os.environ, {"SOURCE_QUALITY_MODE": "full", "SOURCE_QUALITY_SCRIPT_TESTS": "true"}), \
+             patch.object(sys, "argv", ["runner", "--base", "fixture-base"]), \
              patch.object(runner.subprocess, "check_output", return_value="check/custom\n"), \
              patch.object(runner, "run_commands", return_value=0) as execute:
             self.assertEqual(runner.main(), 0)
