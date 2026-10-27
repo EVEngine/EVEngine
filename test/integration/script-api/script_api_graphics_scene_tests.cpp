@@ -3101,7 +3101,7 @@ TEST_CASE("scriptOwnership.procgenAndStateModulesOwnedBindings") {
         if (params.ok && grid.ok && context.ok && production.ok && authority.ok &&
             statepatch.ok && decision.ok && pointSet.ok && output.ok && cloud.ok && batch.ok &&
             params.value.ownerEpoch() > 0 && pointSet.ownerEpoch > 0 && output.ownerEpoch > 0 &&
-            cloud.ownerEpoch > 0 && pointSet.value.empty() && output.value.getTarget() == "" &&
+            cloud.ownerEpoch > 0 && pointSet.value.empty() && output.value.getTarget() == "grid" &&
             grid.value.getWidth() == 2 && grid.value.getHeight() == 3 &&
             params.value.setSeed(42).ok && params.value.getSeed() == 42 &&
             grid.value.fill(1).ok && grid.value.getCell(1, 2) == 1 &&
