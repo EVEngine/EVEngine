@@ -3555,11 +3555,12 @@ TEST_CASE("graphics.drawText.rendersGlyphPixelsOnCanvas") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_resource_reuse)
-#include "PrivateTestScope.h"
 #include <filesystem>
 #include <memory>
 #include "Fixtures.h"
 #include "GraphicsParitySupport.h"
+#include "PrivateTestScope.h"
+#include "common/Resource.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/Graphics.h"
 #include "graphics/Mesh.h"

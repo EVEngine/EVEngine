@@ -3908,7 +3908,7 @@ TEST_CASE("graphics.mapFog.unlockedCellsStayClear") {
     const uint8_t *right = pixel(*image, 56, 16);
 
     // Fogged side should no longer be pure background blue.
-    CHECK(int(left[2]) < 200);
+    CHECK(int(left[0]) > int(right[0]) + 40);
     // Unlocked side should remain close to the clear blue background.
     CHECK(int(right[2]) > 200);
     CHECK(int(right[0]) < 40);
