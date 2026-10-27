@@ -419,12 +419,12 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         const auto vertex   = vk::ShaderStageFlagBits::eVertex;
         std::array<vk::DescriptorSetLayoutBinding, 14> bindings{
             {{0, vk::DescriptorType::eUniformBuffer, 1, both},
-             {1, vk::DescriptorType::eCombinedImageSampler, 11, fragment},
+             {14, vk::DescriptorType::eCombinedImageSampler, 11, fragment},
              {3, vk::DescriptorType::eStorageBuffer, 1, vertex},
              {4, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
              {5, vk::DescriptorType::eUniformBuffer, 1, fragment},
              {6, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
-             {7, vk::DescriptorType::eCombinedImageSampler, 3, fragment},
+             {15, vk::DescriptorType::eCombinedImageSampler, 3, fragment},
              {8, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
              {9, vk::DescriptorType::eCombinedImageSampler, 1, fragment},
              {10, vk::DescriptorType::eCombinedImageSampler, 1, vertex},
@@ -781,7 +781,7 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
                                                      {draw.shadow.buffer, 0, sizeof(shadow)},
                                                      {draw.uv.buffer, 0, draw.uv.size}}};
     std::array<vk::WriteDescriptorSet, 14>  writes{};
-    const std::array<uint32_t, 14>          bindings{0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 2};
+    const std::array<uint32_t, 14>          bindings{0, 14, 3, 4, 5, 6, 15, 8, 9, 10, 11, 12, 13, 2};
     for (size_t i = 0; i < writes.size(); ++i) {
         writes[i].dstSet          = draw.set;
         writes[i].dstBinding      = bindings[i];
