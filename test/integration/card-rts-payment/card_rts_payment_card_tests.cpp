@@ -397,6 +397,8 @@ TEST_CASE("card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills") {
         buildBarracks();
         for(local i=0;i<600 && !mission.built;++i) stepSimulation(1.0/30.0);
         assert(mission.built);
+        for(local i=0;i<600 && mission.minerals<40;++i) stepSimulation(1.0/30.0);
+        assert(mission.minerals>=40);
         produceMarine();
         for(local i=0;i<100;++i) stepSimulation(1.0/30.0);
         assert(mission.produced==1);

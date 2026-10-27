@@ -99,7 +99,8 @@ VirtualGeometryAsset buildSphere() {
 
 std::vector<std::uint32_t> select(const VirtualGeometryAsset& asset, float distance, float error = 1.f) {
     std::vector<std::uint32_t> selected;
-    REQUIRE_EQ(selectClusters(asset, distance, 540.f, error, selected), static_cast<int>(selected.size()));
+    const int                  count = selectClusters(asset, distance, 540.f, error, selected);
+    REQUIRE_EQ(count, static_cast<int>(selected.size()));
     return selected;
 }
 

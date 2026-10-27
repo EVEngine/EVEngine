@@ -78,48 +78,43 @@ public:
 		padded[length] = 0x80;
 
 		//Now we need the length in bits
-		*((uint64_t*) &padded[paddedLength]) = length * 8;
-		paddedLength += 8;
+                const uint64_t bitLength = length * 8;
+                for (int byte = 0; byte < 8; ++byte)
+                    padded[paddedLength + byte] = static_cast<uint8_t>(bitLength >> (byte * 8));
+                paddedLength += 8;
 
 		for (uint64_t i = 0; i < paddedLength; i += 64)
 		{
-			uint32_t *chunk = (uint32_t*) &padded[i];
+                    uint32_t chunk[16];
+                    memcpy(chunk, padded + i, sizeof(chunk));
 
-			uint32_t A = a0;
-			uint32_t B = b0;
-			uint32_t C = c0;
-			uint32_t D = d0;
-			uint32_t F;
-			uint32_t g;
+                    uint32_t A = a0;
+                    uint32_t B = b0;
+                    uint32_t C = c0;
+                    uint32_t D = d0;
+                    uint32_t F;
+                    uint32_t g;
 
-			for (int j = 0; j < 64; j++)
-			{
-				if (j < 16)
-				{
-					F = (B & C) | (~B & D);
-					g = j;
-				}
-				else if (j < 32)
-				{
-					F = (D & B) | (~D & C);
-					g = (5*j + 1) % 16;
-				}
-				else if (j < 48)
-				{
-					F = B ^ C ^ D;
-					g = (3*j + 5) % 16;
-				}
-				else
-				{
-					F = C ^ (B | ~D);
-					g = (7*j) % 16;
-				}
+                    for (int j = 0; j < 64; j++) {
+                        if (j < 16) {
+                            F = (B & C) | (~B & D);
+                            g = j;
+                        } else if (j < 32) {
+                            F = (D & B) | (~D & C);
+                            g = (5 * j + 1) % 16;
+                        } else if (j < 48) {
+                            F = B ^ C ^ D;
+                            g = (3 * j + 5) % 16;
+                        } else {
+                            F = C ^ (B | ~D);
+                            g = (7 * j) % 16;
+                        }
 
-				uint32_t temp = D;
-				D = C;
-				C = B;
-				B += leftrot(A + F + constants[j] + chunk[g], shifts[j]);
-				A = temp;
+                        uint32_t temp = D;
+                        D             = C;
+                        C             = B;
+                        B += leftrot(A + F + constants[j] + chunk[g], shifts[j]);
+                        A = temp;
 			}
 
 			a0 += A;

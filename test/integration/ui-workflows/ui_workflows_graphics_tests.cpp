@@ -259,6 +259,7 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     ImGuiIO &io           = ImGui::GetIO();
     io.DisplaySize        = ImVec2(1024.f, 720.f);
     io.IniFilename        = nullptr;
+    io.KeyMap[ImGuiKey_Space] = 32;
     unsigned char *pixels = nullptr;
     int            width  = 0;
     int            height = 0;
