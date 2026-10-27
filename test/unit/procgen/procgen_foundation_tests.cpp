@@ -91,6 +91,7 @@ TEST_CASE("graphics.renderable.meshLod_distanceFadeAndClearContract") {
     };
 
     SUB_CASE("fade policy produces a second level and continuous weight at boundary") {
+        REQUIRE(renderable->setMeshLodFadePolicy(1, false, .5f).ok());
         REQUIRE(renderable->setMeshLodFadeWidth(0, .25f).ok());
         CHECK_EQ(renderable->getMeshLodSecondaryLevelAtDistance(17.5f), 1);
         CHECK(std::abs(renderable->getMeshLodSecondaryWeightAtDistance(17.5f) - .5f) < .0001f);
@@ -331,6 +332,8 @@ TEST_CASE("procgen.rng.cellularGeneration_usesOnlyExplicitSeed") {
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainPipeline.h"
 #include "procgen/heightmap/TerrainStreaming.h"
+#include "procgen/texture/CloudField.h"
+#include "procgen/texture/CloudShadow.h"
 #include "procgen/texture/ColorRamp.h"
 #include "procgen/texture/NoiseField.h"
 #include "procgen/texture/PbrMaterial.h"
@@ -627,6 +630,23 @@ TEST_CASE("procgen.marchingCubes.invalidBufferShapeAndField_haveExplicitErrors")
     CHECK_EQ(ny, 8);
     CHECK_EQ(nz, 8);
     CHECK_EQ(density.size(), static_cast<size_t>(8 * 8 * 8));
+
+    SUB_CASE("rectangular defaults and explicit axes override uniform resolution") {
+        Params rectangular;
+        rectangular.setSize(6, 7);
+        rectangular.setString("field", "sphere");
+        REQUIRE(fillDensityField(rectangular, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 6);
+        valid.setInt("nx", 6);
+        valid.setInt("ny", 7);
+        valid.setInt("nz", 5);
+        REQUIRE(fillDensityField(valid, density, nx, ny, nz, error));
+        CHECK_EQ(nx, 6);
+        CHECK_EQ(ny, 7);
+        CHECK_EQ(nz, 5);
+    };
 
     SUB_CASE("unknown field") {
         valid.setString("field", "unknown");
@@ -1005,6 +1025,16 @@ TEST_CASE("procgen.hexTerrain.seededMesh_replaysHydrologyAndBiomeCounts") {
     CHECK_EQ(first.positions(), replay.positions());
     CHECK_EQ(first.indices(), replay.indices());
     CHECK(meshIndicesInRange(first));
+    const auto& positions  = first.positions();
+    const auto& indices    = first.indices();
+    const auto  coordinate = [&](std::size_t corner, std::size_t axis) {
+        return positions[std::size_t(indices[corner]) * 3 + axis];
+    };
+    const float ax = coordinate(1, 0) - coordinate(0, 0);
+    const float az = coordinate(1, 2) - coordinate(0, 2);
+    const float bx = coordinate(2, 0) - coordinate(0, 0);
+    const float bz = coordinate(2, 2) - coordinate(0, 2);
+    CHECK(az * bx - ax * bz > 0.0f);
     CHECK_EQ(first.getMeta("algorithm", ""), "mesh.hexterrain");
     CHECK(std::stoi(first.getMeta("cells.ocean", "0")) > 0);
     CHECK(std::stoi(first.getMeta("cells.grassland", "0")) > 0);

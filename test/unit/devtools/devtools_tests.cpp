@@ -127,34 +127,42 @@ TEST_CASE("devtools.CallGraph calls: stack and edges record entry/return in orde
 TEST_CASE("devtools.CallGraph sliceBackward: latest definition reaches selected use") {
     eve::dev::CallGraph graph;
     graph.onCall(location("game.nut", 1, "main"), "main");
-    graph.onDef(location("game.nut", 2, "main"), "health");
-    graph.onDef(location("game.nut", 3, "main"), "health");
-    graph.onUse(location("game.nut", 4, "main"), "health");
+    const auto oldDefinition = graph.onDef(location("game.nut", 2, "main"), "health");
+    const auto newDefinition = graph.onDef(location("game.nut", 3, "main"), "health");
+    const auto use           = graph.onUse(location("game.nut", 4, "main"), "health");
     graph.onLine(location("game.nut", 5, "main"));
     eve::dev::SliceCriterion criterion;
     criterion.loc = location("game.nut", 5, "main");
     criterion.variables.push_back("health");
     auto slice    = graph.sliceBackward(criterion);
     bool latest   = false;
-    bool obsolete = false;
     for (const auto& place : slice.locations) {
         if (place.line == 3) latest = true;
-        if (place.line == 2) obsolete = true;
     }
     REQUIRE(latest);
+    // Control predecessors can retain older locations; reaching-definition
+    // edges must still select only the latest write for this use.
+    bool obsolete   = false;
+    bool reachesUse = false;
+    for (const auto& edge : slice.dataFlow) {
+        if (edge.toEventId != use) continue;
+        if (edge.fromEventId == oldDefinition) obsolete = true;
+        if (edge.fromEventId == newDefinition) reachesUse = true;
+    }
+    CHECK(reachesUse);
     CHECK(!obsolete);
 }
 
 TEST_CASE("devtools.CallGraph event ring: capacity keeps newest IDs without stale lookup") {
     eve::dev::CallGraph graph;
-    graph.setMaxEvents(3);
+    graph.setMaxEvents(16);
     graph.onCall(location("game.nut", 1, "main"), "main");
     const auto old = graph.events().back().id;
-    for (int line = 2; line <= 6; ++line) graph.onLine(location("game.nut", line, "main"));
-    CHECK_EQ(graph.eventCount(), 3u);
+    for (int line = 2; line <= 20; ++line) graph.onLine(location("game.nut", line, "main"));
+    CHECK_EQ(graph.eventCount(), 16u);
     CHECK(graph.event(old) == nullptr);
     REQUIRE(graph.event(graph.events().back().id) != nullptr);
-    CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 6);
+    CHECK_EQ(graph.event(graph.events().back().id)->loc.line, 20);
 }
 }  // namespace test_callgraph_contract
 #endif
@@ -530,6 +538,8 @@ TEST_CASE("devtools.LanguageText incremental edit: range replacement changes onl
     REQUIRE(eve::dev::lsp::applyIncremental(source, &selection, "value"));
     CHECK_EQ(source, std::string("function foo() {\nlocal value = 1\n}\n"));
     CHECK_EQ(eve::dev::lsp::sliceLines(source, 1, 1), std::string("local value = 1\n"));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {0, 100}), size_t(3));
+    CHECK_EQ(eve::dev::lsp::offsetAt("abc\nnext", {1, 100}), size_t(8));
 }
 TEST_CASE("devtools.LanguageText format and fold: braces and comments define ranges") {
     REQUIRE_EQ(eve::dev::lsp::formatEveScript("{\na\n}\n"), std::string("{\n    a\n}\n"));
@@ -583,7 +593,8 @@ TEST_CASE("devtools.Console cursor: eviction and clear expose lost lines without
     const auto old = console.nextSeq() - 1;
     console.addInfo("middle");
     console.addInfo("new");
-    auto stale = console.read(old, 10, {});
+    CHECK(!console.read(old, 10, {}).truncated);
+    auto stale = console.read(old - 1, 10, {});
     CHECK(stale.truncated);
     REQUIRE_EQ(stale.lines.size(), 2u);
     CHECK_EQ(stale.lines.front().text, std::string("middle"));

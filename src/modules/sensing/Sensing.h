@@ -8,7 +8,7 @@
 #include "common/SensingQuery.h"
 #include "common/SquirrelOwnership.h"
 #include "common/Value.h"
-#include "spatial/SpatialHash2D.h"
+#include "sensing/CoordinateSpace.h"
 
 #include <cstdint>
 #include <limits>
@@ -23,8 +23,14 @@
 #include <variant>
 #include <vector>
 
+namespace eve::spatial {
+class SpatialHash2D;
+class SpatialHash3D;
+}  // namespace eve::spatial
+
 namespace eve::sensing {
 
+class ILineOfSightQuery;
 class EnvironmentQueryPlan;
 struct EnvironmentRequest;
 struct EnvironmentServices;
@@ -38,12 +44,14 @@ struct Subject {
     std::set<std::string> tags;
     std::set<std::string> visibleTo;
     std::set<std::string> zones; /**< Logical zone ids (LogicalId text). */
+    float                 z = 0.f; /**< Actual world Z; indexing never overwrites coordinates. */
 };
 
 /** @brief A deterministic candidate returned by a spatial query. */
 struct Candidate {
     std::string id;
     float       x = 0, y = 0, distance = 0;
+    float       z = 0.f;
 };
 
 /** @brief How candidate-count overflow relative to maxCount is handled. */
@@ -90,16 +98,25 @@ struct QueryCone {
     float range     = 0.f;
 };
 
+/** @brief Sphere in actual XYZ world coordinates. */
+struct QuerySphere {
+    float x = 0, y = 0, z = 0, radius = 0;
+};
+/** @brief Independent distance/projection semantics; planar shapes use these two axes. */
+enum class QueryAxes : std::uint8_t { XY, XZ, YZ, XYZ };
+/** @brief Broad-phase implementation; selecting an index never changes query semantics. */
+enum class SpatialIndexKind : std::uint8_t { None, XY, XZ, YZ, XYZ };
+
 /** @brief Optional broad-phase shape; monostate means range-only around the origin. */
-using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox, QueryCone>;
+using QueryShape = std::variant<std::monostate, QueryCircle, QueryBox, QueryCone, QuerySphere>;
 
 /**
  * @brief Configurable candidate query against SensingWorld.
  *
  * This is the single filtering/sorting implementation surface. Script circle/box
  * helpers and Targeting adapters compose a QuerySpec rather than reimplementing
- * acceptance rules. Domain/LOS/zone stay outside this World2D fact query; adapters
- * that need them must inject projection/LOS capabilities explicitly.
+ * acceptance rules. The axes select distance and planar-shape semantics independently
+ * of the index. LOS is explicitly injected; domain and zone policy stays in adapters.
  */
 struct QuerySpec {
     QueryShape               shape{};
@@ -115,15 +132,20 @@ struct QuerySpec {
     CountPolicy              countPolicy = CountPolicy::TruncateToMax;
     SortKey                  sortKey     = SortKey::DistanceAscending;
 
+    bool      requireLineOfSight = false;         /**< Missing provider is Unsupported, never silently ignored. */
+    QueryAxes axes               = QueryAxes::XY; /**< Independent of index selection. */
+
     /** @brief Validates ranges, counts, tags and shape invariants. */
-    [[nodiscard]] eve::Result<void> validate() const;
+    [[nodiscard]] EVENGINE_API_PLATFORM eve::Result<void> validate() const;
 };
 
-/** @brief World2D origin used for range tests and distance sorting. */
+/** @brief World origin used for range tests, distance sorting and LOS. */
 struct QueryOrigin {
     float                x = 0.f;
     float                y = 0.f;
     std::optional<std::string> subjectId; /**< Optional self id to exclude from results. */
+    float                      z     = 0.f;
+    CoordinateSpace            space = CoordinateSpace::World2D; /**< LOS and output coordinate tag. */
 };
 
 /** @brief One ranked candidate produced by SensingWorld::query. */
@@ -134,6 +156,8 @@ struct RankedCandidate {
     float       distance     = 0.f;
     float       score        = 0.f; /**< Higher is better; Phase 1 uses -distance. */
     std::string scoreReason;        /**< Stable diagnostic token, e.g. "distance". */
+    float           z     = 0.f;
+    CoordinateSpace space = CoordinateSpace::World2D;
 };
 
 /** @brief Owning ranked result; does not assign a primary target. */
@@ -160,10 +184,16 @@ struct CandidateCollection {
     std::uint32_t                scanned     = 0;
 };
 
-/** @brief Mirrored 2D facts and query composition; consumers decide gameplay actions from results. */
+/** @brief Mirrored world positions and query composition; consumers decide gameplay actions from results. */
 class EVENGINE_API_PLATFORM SensingWorld {
 public:
-    /** @brief Inserts or replaces mirrored facts. CSV fields contain comma-separated stable keys. */
+    /** @brief Inserts actual XYZ coordinates and metadata; owns copies, no retained arguments.
+     * @return InvalidArgument for nonfinite positions or an empty id; failure leaves facts unchanged.
+     * @thread Simulation thread; invokes no callbacks. Cost is one fact and its index entry.
+     */
+    [[nodiscard]] Result<void> upsertPosition(std::string_view id, float x, float y, float z, std::string_view faction,
+                                              std::string_view tagsCsv, std::string_view visibleToCsv);
+    /** @brief Compatibility-only XY insertion; delegates to upsertPosition with Z zero. */
     [[nodiscard]] eve::Result<void> upsert(std::string_view id, float x, float y, std::string_view faction,
                                            std::string_view tagsCsv, std::string_view visibleToCsv);
     /** @brief Removes mirrored facts, or returns NotFound when the id is absent. */
@@ -178,7 +208,7 @@ public:
     [[nodiscard]] eve::Result<void> setZones(std::string_view id, std::string_view zonesCsv);
 
     /**
-     * @brief Enables or disables an optional SpatialHash2D broadphase (off by default).
+     * @brief Enables or disables an compatibility-only XY broadphase; delegates to rebuildIndex (off by default).
      * @param enabled When true, rebuilds the index from current subjects.
      * @param cellSize Uniform grid cell size; must be finite and > 0 when enabling.
      * @return Applied on success, or InvalidArgument when cellSize is invalid.
@@ -186,6 +216,14 @@ public:
      * @thread Call on the sensing world's owning simulation thread.
      */
     [[nodiscard]] eve::Result<void> setSpatialIndexEnabled(bool enabled, float cellSize = 64.f);
+    /** @brief Rebuilds the derived index from owned facts; no coordinate conversion is stored.
+     * @return InvalidArgument for an invalid kind, size or unrepresentable indexed coordinate.
+     * @cost Linear in subject count per explicit rebuild; configure outside query loops.
+     * @thread Simulation thread; no callbacks. Validation failure preserves the existing index.
+     */
+    [[nodiscard]] Result<void> rebuildIndex(SpatialIndexKind kind, float cellSize);
+    /** @brief Current broad-phase selection, independent of query distance semantics. */
+    [[nodiscard]] SpatialIndexKind indexKind() const noexcept;
     /** @brief Reports whether the optional spatial broadphase is active. */
     [[nodiscard]] bool spatialIndexEnabled() const noexcept;
 
@@ -196,6 +234,13 @@ public:
      * @thread Call on the sensing world's owning simulation thread.
      */
     [[nodiscard]] eve::Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec);
+    /** @brief Runs the same query with an explicitly injected LOS backend, before result limits.
+     * @ownership Provider is borrowed only until return; results own coordinates and ids.
+     * @thread Simulation thread; provider must not mutate or re-enter this world.
+     * @cost Candidate scan plus one LOS call per accepted candidate; reuse the configured index.
+     */
+    [[nodiscard]] Result<CandidateQueryResult> query(const QueryOrigin& origin, const QuerySpec& spec,
+                                                     OptionalRef<const ILineOfSightQuery> lineOfSight);
 
     /**
      * @brief Collects matching facts without sorting, truncation or result-cache mutation.
@@ -270,15 +315,15 @@ public:
     /** @brief Returns a borrowed view of stored subjects for adapters; valid until mutation. */
     [[nodiscard]] const std::map<std::string, Subject>& subjects() const noexcept { return subjects_; }
 
-    SensingWorld() = default;
+    SensingWorld();
     /** @brief Sensing world. */
     ~SensingWorld();
     SensingWorld(const SensingWorld&) = delete;
     SensingWorld& operator=(const SensingWorld&) = delete;
     /** @brief Sensing world. */
-    SensingWorld(SensingWorld&&) noexcept = default;
+    SensingWorld(SensingWorld&&) noexcept;
     /** @brief Operator =. */
-    SensingWorld& operator=(SensingWorld&&) noexcept = default;
+    SensingWorld& operator=(SensingWorld&&) noexcept;
 
 private:
     [[nodiscard]] bool accepts(const Subject& subject, const QuerySpec& spec) const;
@@ -295,6 +340,8 @@ private:
     std::vector<Candidate>         results_;
 
     std::unique_ptr<eve::spatial::SpatialHash2D> spatialIndex_;
+    std::unique_ptr<eve::spatial::SpatialHash3D> spatialIndex3D_;
+    SpatialIndexKind                             indexKind_ = SpatialIndexKind::None;
     std::unordered_map<std::string, int>         subjectSpatialIds_;
     // Derived references into owned map nodes: stable across upserts, removed before erase,
     // and rebuilt after restore. No borrowed external storage or worker access.
@@ -307,6 +354,8 @@ private:
         std::uint32_t                accepted    = 0;
         float                        originX     = 0.f;
         float                        originY     = 0.f;
+        float                        originZ     = 0.f;
+        CoordinateSpace              space       = CoordinateSpace::World2D;
         std::string                  shapeKind   = "none";
         std::vector<RankedCandidate> ranked;
     };
@@ -367,6 +416,8 @@ struct PerceptionFact {
     float       distance     = 0.f;
     float       score        = 0.f;
     std::string scoreReason;
+    float           z     = 0.f;
+    CoordinateSpace space = CoordinateSpace::World2D;
 };
 
 /**
@@ -382,6 +433,8 @@ struct PerceptionFact {
         fact.subjectId   = candidate.id;
         fact.x           = candidate.x;
         fact.y           = candidate.y;
+        fact.z           = candidate.z;
+        fact.space       = candidate.space;
         fact.distance    = candidate.distance;
         fact.score       = candidate.score;
         fact.scoreReason = candidate.scoreReason;

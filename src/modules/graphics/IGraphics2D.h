@@ -11,8 +11,8 @@
 #include "graphics/BlendMode.h"
 #include "graphics/Color.h"
 
-#include <glm/mat4x4.hpp>
-#include <glm/vec2.hpp>
+// Incomplete glm::mat4 is enough for const-reference parameters.
+#include <glm/fwd.hpp>
 
 #include <cstdint>
 #include <string>

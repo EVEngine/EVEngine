@@ -190,9 +190,13 @@ void Graphics::createSwapchainAndPipeline() {
     }
     // Allow screen getPixel / newImageData readback after present.
     swapchainBuilder.add_image_usage_flags(vk::ImageUsageFlagBits::eTransferSrc);
-    auto swapRet = swapchainBuilder.set_old_swapchain(swapchain).build();
+    // Retire the old swapchain before installing its replacement. MoltenVK
+    // 1.2.11 can force oldSwapchain presentation completion after setting the
+    // new CAMetalLayer size, overwriting it with 1x1. Completing retirement
+    // first keeps that shared-surface mutation ahead of new drawable setup.
     swapchain.destroy();
-    swapchain = swapRet;
+    swapchain = vkb::Swapchain{};
+    swapchain = swapchainBuilder.build();
     if (swapchain.image_format != selectedSurfaceFormat_.format) {
         // Builder fell through to an unlisted surface format; treat as SDR.
         activeDisplayColorSpace_ = DisplayColorSpace::Sdr;
@@ -545,11 +549,14 @@ void Graphics::createMesh3DPipeline() {
     // per texture combination (see mesh3dSetFor / ensureMesh3dRing).
     mesh3dFrameSlots.clear();
 
+    // Deferred lighting copies G-buffer depth into scene color. Built-in opaque
+    // ForwardPlus overlays must accept that same surface depth, without blending
+    // a second lighting contribution. Transparent/custom raster policies stay unchanged.
     auto vert = embeddedSpirv(mesh3d_vert_spv);
     auto frag = embeddedSpirv(mesh3d_frag_spv);
     mesh3dPipeline =
-        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass,
-                                  vk::SampleCountFlagBits::e1);
+        createMesh3DStylePipeline(vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
+                                  BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     mesh3dTransparentPipeline =
         createMesh3DHairPipeline(vert, frag, mesh3dPipelineLayout, renderpass,
                                  vk::SampleCountFlagBits::e1);
@@ -559,8 +566,10 @@ void Graphics::createMesh3DPipeline() {
             for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
                 const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
                 mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
-                    vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
-                    blend, depthValue != 0, doubleValue != 0);
+                    vert, frag, mesh3dPipelineLayout, renderpass, vk::SampleCountFlagBits::e1, blend, depthValue != 0,
+                    doubleValue != 0,
+                    {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                   : MeshDepthCompare::Less});
             }
         }
     }
@@ -599,8 +608,8 @@ void Graphics::createMesh3DClusteredPipeline() {
     auto vert = embeddedSpirv(mesh3d_clustered_vert_spv);
     auto frag = embeddedSpirv(mesh3d_clustered_frag_spv);
     mesh3dClusteredPipeline =
-        createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout, renderpass,
-                                  vk::SampleCountFlagBits::e1);
+        createMesh3DStylePipeline(vert, frag, mesh3dClusteredPipelineLayout, renderpass, vk::SampleCountFlagBits::e1,
+                                  BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
 }
 
 void Graphics::destroyShadowResources() {
@@ -878,8 +887,8 @@ void Graphics::queueUiResolve() {
     // ImGui directly). Never bind the opaque DisplayEncode path here — it would
     // replace transparent texels with the UI clear color.
     TexturedBatch resolve{&slot->colorTex, nullptr, nullptr, BlendMode::Alpha, Batcher{}};
-    resolve.batch.addTexturedRect(0.f, 0.f, float(uiColorWidth), float(uiColorHeight),
-                                  Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
+    // The overlay texture is physical pixels; the compositing batch uses logical coordinates.
+    resolve.batch.addTexturedRect(0.f, 0.f, float(width), float(height), Color(1.f, 1.f, 1.f, 1.f), 0.f, 0.f, 1.f, 1.f);
     pendingUiResolve = std::move(resolve);
 }
 
@@ -1573,9 +1582,9 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     destroyPipeline(device, voxelRectPipeline);
     for (auto &pipeline : primitive3DPipelines) destroyPipeline(device, pipeline);
 
-    mesh3dPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv),
-                                               embeddedSpirv(mesh3d_frag_spv),
-                                               mesh3dPipelineLayout, target, samples);
+    mesh3dPipeline =
+        createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+                                  target, samples, BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     mesh3dTransparentPipeline =
         createMesh3DHairPipeline(embeddedSpirv(mesh3d_vert_spv),
                                  embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
@@ -1586,9 +1595,10 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
             for (int doubleValue = 0; doubleValue < 2; ++doubleValue) {
                 const size_t index = mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
                 mesh3dSurfacePipelines[index] = createMesh3DStylePipeline(
-                    embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
-                    mesh3dPipelineLayout, target, samples, blend, depthValue != 0,
-                    doubleValue != 0);
+                    embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout, target,
+                    samples, blend, depthValue != 0, doubleValue != 0,
+                    {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                   : MeshDepthCompare::Less});
             }
         }
     }
@@ -1602,8 +1612,8 @@ void Graphics::ensureScenePassPipelines(const vkb::BuiltRenderPass &target,
     if (mesh3dClusteredPipelineLayout) {
         mesh3dClusteredPipeline =
             createMesh3DStylePipeline(embeddedSpirv(mesh3d_clustered_vert_spv),
-                                      embeddedSpirv(mesh3d_clustered_frag_spv),
-                                      mesh3dClusteredPipelineLayout, target, samples);
+                                      embeddedSpirv(mesh3d_clustered_frag_spv), mesh3dClusteredPipelineLayout, target,
+                                      samples, BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
     }
     if (voxelRectPipelineLayout)
         voxelRectPipeline = buildVoxelRectPipeline(target, samples);

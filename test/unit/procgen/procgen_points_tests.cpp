@@ -559,8 +559,11 @@ TEST_CASE("procgen.cableRope.spec.textureSeedParametersAndPbr") {
         filled.setSize(16, 16);
         REQUIRE(TextureRecipeRegistry::instance().applyDefaults("tex.cable.steel", filled));
         CHECK_EQ(filled.getInt("strands", 0), 6);
-        REQUIRE(TextureRecipeRegistry::instance().applyDefaults("tex.rope.hemp", filled));
-        CHECK_EQ(filled.getInt("strands", 0), 3);
+        Params hempDefaults;
+        hempDefaults.setSize(16, 16);
+        REQUIRE(TextureRecipeRegistry::instance().applyDefaults("tex.rope.hemp", hempDefaults));
+        CHECK_EQ(hempDefaults.getInt("strands", 0), 3);
+        CHECK_EQ(filled.getInt("strands", 0), 6);
     };
     SUB_CASE("PBR recipe -> complete material map set") {
         PbrRecipeRegistry::instance().registerPbrBuiltins();
@@ -2223,6 +2226,9 @@ TEST_CASE("procgen.pointDelta.spec.roundtripStaleBaseAndLargeUnion") {
         PointSet first  = makePointSet(10000, 700);
         PointSet second = makePointSet(10000, 701);
         CHECK_EQ(unionPointSets(first, second).getCount(), 20000);
+        const auto savedId = first.getPointId(0);
+        first.assignPointIds(702).expect("retain previously assigned point identities");
+        CHECK_EQ(first.getPointId(0), savedId);
     };
 }
 
@@ -2744,8 +2750,11 @@ TEST_CASE("procgen.pointGraph.spec.dagTypingBranchesAndSerialization") {
         CHECK_EQ(PointGraph::getOperationInputCount("merge"), 2);
         CHECK_EQ(PointGraph::getOperationInputCount("spatial.sample"), 0);
         CHECK_EQ(PointGraph::getOperationParamCount("transform"), 7);
-        CHECK_EQ(PointGraph::getOperationParamKey("spatial.sample", 0), std::string("spacing"));
-        CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 1), std::string("int"));
+        CHECK_EQ(PointGraph::getOperationParamKey("spatial.sample", 0), std::string("binding"));
+        CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 0), std::string("string"));
+        CHECK_EQ(PointGraph::getOperationParamKey("spatial.sample", 1), std::string("spacing"));
+        CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 1), std::string("float"));
+        CHECK_EQ(PointGraph::getOperationParamKind("spatial.sample", 2), std::string("int"));
         CHECK_EQ(PointGraph::getOperationParamDefault("branch", 0), std::string("false"));
         CHECK_EQ(PointGraph::getOperationInputCount("filter.slope"), 1);
         CHECK_EQ(PointGraph::getOperationInputCount("missing"), -1);
@@ -3321,7 +3330,7 @@ TEST_CASE("procgen.pointGraph.spec.biomeShapeAndSamplingNodes") {
         CHECK(wrongKind.setNodePoints("in", &maskPoints));
         CHECK(wrongKind.connect("in", "sample"));
         CHECK(wrongKind.setNodeSpatial("sample", &landscape));
-        CHECK(wrongKind.validate());
+        CHECK(!wrongKind.validate());
         CHECK(!wrongKind.execute("sample"));
         CHECK(wrongKind.getError().find("texture_mask") != std::string::npos);
     };
@@ -3422,7 +3431,7 @@ TEST_CASE("procgen.pointGraph.spec.biomeShapeAndSamplingNodes") {
         SpatialData box = SpatialData::box(0.f, 0.f, 0.f, 2.f, 0.f, 2.f);
         CHECK(graph.setNodeSpatial("sample", &box));
         CHECK(graph.setNodeFloat("sample", "spacing", 1.f));
-        CHECK(graph.validate());
+        CHECK(!graph.validate());
         PointSet* rejected = graph.execute("sample");
         CHECK(!rejected);
         CHECK(graph.getError().find("surface.mesh") != std::string::npos);
@@ -3670,6 +3679,7 @@ TEST_CASE("procgen.pointGraph.spec.attributeAndNamedBindingNodes") {
 #include "PrivateTestScope.h"
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

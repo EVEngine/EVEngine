@@ -3,19 +3,6 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "platform-file": [
-      "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips"
-    ],
-    "script-binding": [
-      "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary"
-    ],
-    "physics-backend": [
-      "climbing.vault.runningJumpUsesLowVaultAndProducesStableConstrainedLanding",
-      "climbing.vault.destroyedTargetCancelsWithStaleEvidence",
-      "container.zoneUsesStrongCoordinateSpacesAndValidatesShapes"
-    ]
-  },
   "module": "buildingfx",
   "modules": [
     "buildingfx",
@@ -43,7 +30,6 @@
     "combat_loop.cpp",
     "combat_navigation.cpp",
     "combat_target_enemy_ai.cpp",
-    "common_result_header.cpp",
     "container_transfer.cpp",
     "definition_runtime.cpp",
     "definition_runtime_skill_vehicle.cpp",
@@ -51,46 +37,29 @@
     "dialogue_localization.cpp",
     "dialogue_payment.cpp",
     "dialogue_proc.cpp"
-  ]
+  ],
+  "cases": {
+    "physics-backend": [
+      "climbing.vault.destroyedTargetCancelsWithStaleEvidence",
+      "climbing.vault.runningJumpUsesLowVaultAndProducesStableConstrainedLanding",
+      "container.zoneUsesStrongCoordinateSpacesAndValidatesShapes"
+    ],
+    "platform-file": [
+      "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips"
+    ],
+    "script-binding": [
+      "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: buildingfx
+#include "PrivateTestScope.h"
 // Check header isolation before any test assertion headers are loaded.
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_result_header)
-#include "PrivateTestScope.h"
-#include "common/Result.h"
-#include "editing/EditingResult.h"
-#if defined(EV_ASSERT) || defined(ZEROERR_ASSERT_EXP)
-#error "Result headers must not expose the zeroerr assertion backend"
-#endif
-
-#include <zeroerr/unittest.h>
-#include <type_traits>
-// common_result_header.cpp
-namespace test_common_result_header {
-
-
-#if defined(ZEROERR_NO_ASSERT)
-static_assert(std::is_nothrow_destructible_v<eve::Result<int>>);
-#else
-static_assert(!std::is_nothrow_destructible_v<eve::Result<int>>);
-#endif
-
-TEST_CASE("common.result.headersKeepDiagnosticsInImplementation") {
-    auto value = eve::Result<int>::success(7);
-    CHECK(value.value() == 7);
-    auto unchanged = eve::editing::noOp();
-    CHECK(unchanged.ok());
-    auto failed = eve::editing::rejected<int>(eve::editing::RuleId("header.contract"), "expected");
-    CHECK(!failed.ok());
-    CHECK(failed.status().code() == eve::StatusCode::Rejected);
-}
-}  // namespace test_common_result_header
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_buildingfx)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include "building/Building.h"
 #include "building/BuildingDef.h"
@@ -397,7 +366,8 @@ TEST_CASE("buildingfx.edgeCurveCommitsAndExtrudesCustomSurfaceFrames") {
     auto mesh = BuildingFx::buildEdgeCurveGroupMeshForInstance(world, placed.value().instanceIds.front(), 1.f, 3.f);
     REQUIRE(mesh.ok());
     CHECK_EQ(mesh.value().sampleCount, 17);
-    CHECK(mesh.value().positions[1] < mesh.value().positions[mesh.value().positions.size() - 23]);
+    const auto lastSample = static_cast<std::size_t>(mesh.value().sampleCount - 1) * 8 * 3;
+    CHECK(mesh.value().positions[1] < mesh.value().positions[lastSample + 1]);
 
     PlacementWorld rejectedWorld(12, 12, 10.f);
     rejectedWorld.setGridPlane("xz");
@@ -728,7 +698,7 @@ TEST_CASE("buildingfx.projectsDiscreteFloorAlongGridNormal") {
     auto view  = ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D>();
     for (auto it = view.begin(); it != view.end(); ++it) {
         auto [transform] = *it;
-        if (std::abs(transform->x - 2.f) < 0.0001f && std::abs(transform->z - 1.f) < 0.0001f &&
+        if (std::abs(transform->x - 2.5f) < 0.0001f && std::abs(transform->z - 1.5f) < 0.0001f &&
             std::abs(transform->y - 6.5f) < 0.0001f)
             found = true;
     }
@@ -754,10 +724,10 @@ TEST_CASE("buildingfx.projectsDiscreteFloorAlongGridNormal") {
     BuildingRegistry::clear();
 }
 }  // namespace test_buildingfx
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_payment_composition)
+// Contract section: card payment composition
 #include "PrivateTestScope.h"
+// Check header isolation before any test assertion headers are loaded.
 #include <array>
 #include <limits>
 #include "card/Card.h"
@@ -765,8 +735,6 @@ TEST_CASE("buildingfx.projectsDiscreteFloorAlongGridNormal") {
 #include "economy/EconomyLedger.h"
 #include "rts/RTSEconomy.h"
 #include "rts/RTSProductionAction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // card_payment_composition.cpp
 namespace test_card_payment_composition {
 namespace {
@@ -937,11 +905,10 @@ TEST_CASE("card.productionAndCardConsumptionShareOnePaymentAndRollback") {
     CHECK_EQ(static_cast<int>(card->state()->phase), static_cast<int>(eve::card::CardState::Played));
 }
 }  // namespace test_card_payment_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_animation)
+// Contract section: climbing animation
 #include "PrivateTestScope.h"
-#include <cmath>
+// Check header isolation before any test assertion headers are loaded.
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -969,8 +936,6 @@ TEST_CASE("card.productionAndCardConsumptionShareOnePaymentAndRollback") {
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_animation.cpp
 namespace test_climbing_animation {
 // climbing_animation.cpp
@@ -1455,17 +1420,14 @@ TEST_CASE("climbing.vault.destroyedTargetCancelsWithStaleEvidence") {
              static_cast<int>(eve::climbing::ClimbingEventKind::Cancelled));
 }
 }  // namespace test_climbing_animation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_action_damage)
+// Contract section: combat action damage
 #include "PrivateTestScope.h"
+// Check header isolation before any test assertion headers are loaded.
 #include <functional>
-#include <string_view>
 #include "action/ActionDamageBlock.h"
 #include "action/ActionNotifyRegistry.h"
 #include "combat/ActionDamageSink.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_action_damage.cpp
 namespace test_combat_action_damage {
 namespace {
@@ -1546,20 +1508,14 @@ TEST_CASE("combatActionDamage.validatesRoutesAndAtomicallyMutatesResolvedState")
     CHECK(!sink.enabled());
 }
 }  // namespace test_combat_action_damage
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_action_windows)
+// Contract section: combat action windows
 #include "PrivateTestScope.h"
-#include <string_view>
+// Check header isolation before any test assertion headers are loaded.
 #include "action/ActionBlockRuntime.h"
-#include "action/ActionDamageBlock.h"
-#include "action/ActionNotifyRegistry.h"
 #include "action/ActionStateWindowBlock.h"
-#include "combat/ActionDamageSink.h"
 #include "combat/ActionWindowState.h"
 #include "combat/MeleeHit.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_action_windows.cpp
 namespace test_combat_action_windows {
 namespace {
@@ -1725,10 +1681,10 @@ TEST_CASE("combatActionWindows.armAndDisarmMeleeHitboxRuntime") {
     windows.setEnabled(false);
 }
 }  // namespace test_combat_action_windows
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_arena_foundation)
+// Contract section: combat arena foundation
 #include "PrivateTestScope.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "action/AbilityController.h"
 #include "action/input/ActionCancelWindowState.h"
 #include "action/input/ActionInputBuffer.h"
@@ -1739,10 +1695,7 @@ TEST_CASE("combatActionWindows.armAndDisarmMeleeHitboxRuntime") {
 #include "combat/ComboGraph.h"
 #include "combat/Damage.h"
 #include "combat/HitFeel.h"
-#include "combat/MeleeHit.h"
 #include "combat/StandardAbilities.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_arena_foundation.cpp
 namespace test_combat_arena_foundation {
 namespace {
@@ -1842,17 +1795,12 @@ TEST_CASE("combatArenaFoundation.composesSlicesABCDEF") {
     CHECK(feel.activeCount() >= 1u);
 }
 }  // namespace test_combat_arena_foundation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_cancel_resolver)
+// Contract section: combat cancel resolver
 #include "PrivateTestScope.h"
-#include "action/input/ActionCancelWindowState.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "action/input/ActionComboWindowState.h"
-#include "action/input/ActionInputBuffer.h"
 #include "combat/CombatCancelResolver.h"
-#include "combat/ComboGraph.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_cancel_resolver.cpp
 namespace test_combat_cancel_resolver {
 namespace {
@@ -1931,13 +1879,10 @@ TEST_CASE("combatCancelResolver.consumesBufferAgainstCancelAndComboGraph") {
     CHECK_EQ(buffer.size(), 0u);
 }
 }  // namespace test_combat_cancel_resolver
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_damage)
+// Contract section: combat damage
 #include "PrivateTestScope.h"
-#include "combat/Damage.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+// Check header isolation before any test assertion headers are loaded.
 // combat_damage.cpp
 namespace test_combat_damage {
 namespace {
@@ -2178,18 +2123,11 @@ TEST_CASE("combatDamage.rejectsMismatchedTargetAndInvalidPayloadAtomically") {
     CHECK_EQ(target.health, 100.0);
 }
 }  // namespace test_combat_damage
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_feel_cancel_guard)
+// Contract section: combat feel cancel guard
 #include "PrivateTestScope.h"
-#include "action/ActionNotifyRegistry.h"
-#include "action/input/ActionCancelWindowState.h"
-#include "action/input/ActionInputBuffer.h"
-#include "combat/ComboGraph.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "combat/GuardWindowState.h"
-#include "combat/HitFeel.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_feel_cancel_guard.cpp
 namespace test_combat_feel_cancel_guard {
 namespace {
@@ -2286,20 +2224,15 @@ TEST_CASE("combatFeelCancelGuardAndComboGraphCompose") {
     guards.setEnabled(false);
 }
 }  // namespace test_combat_feel_cancel_guard
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_framework_composition)
+// Contract section: combat framework composition
 #include "PrivateTestScope.h"
+// Check header isolation before any test assertion headers are loaded.
 #include <algorithm>
-#include "action/AbilityController.h"
 #include "combat/CombatAttributes.h"
-#include "combat/Damage.h"
-#include "combat/StandardAbilities.h"
 #include "effects/EffectContainer.h"
 #include "tags/GameplayTag.h"
 #include "weapon/ProjectileRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_framework_composition.cpp
 namespace test_combat_framework_composition {
 namespace {
@@ -2385,21 +2318,14 @@ TEST_CASE("combatFramework.composesTagsPlayerAbilityBuffDamageAttributesAndProje
     REQUIRE(effects.advance({eve::SimulationTick(11), eve::Duration::fromNanoseconds(1000000000)}).ok());
 }
 }  // namespace test_combat_framework_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_loop)
+// Contract section: combat loop
 #include "PrivateTestScope.h"
-#include <cmath>
+// Check header isolation before any test assertion headers are loaded.
 #include <map>
-#include <string>
 #include "combat/CombatCamera.h"
 #include "combat/CombatCharacterPose.h"
 #include "combat/CombatLoop.h"
-#include "combat/CombatTarget.h"
-#include "combat/HitFeel.h"
-#include "combat/MeleeHit.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_loop.cpp
 namespace test_combat_loop {
 namespace {
@@ -2556,16 +2482,13 @@ TEST_CASE("combatCharacterPoseSource.samplesChestHeightAndYaw") {
     CHECK(std::abs(pose.value().yawRadians) < 1e-9);
 }
 }  // namespace test_combat_loop
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_navigation)
+// Contract section: combat navigation
 #include "PrivateTestScope.h"
-#include <cmath>
+// Check header isolation before any test assertion headers are loaded.
 #include <utility>
 #include "combat/navigation/PathfinderCombatNavigation.h"
 #include "map/Pathfinder.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_navigation.cpp
 namespace test_combat_navigation {
 namespace {
@@ -2679,17 +2602,10 @@ TEST_CASE("combatNavigation.rejectsInvalidGridProjection") {
     CHECK(!invalid.ok());
 }
 }  // namespace test_combat_navigation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_target_enemy_ai)
+// Contract section: combat target enemy ai
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include "combat/BodyPartDamage.h"
-#include "combat/CombatEnemyAI.h"
-#include "combat/CombatTarget.h"
-#include "combat/StandardAbilities.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+// Check header isolation before any test assertion headers are loaded.
 // combat_target_enemy_ai.cpp
 namespace test_combat_target_enemy_ai {
 namespace {
@@ -2861,24 +2777,16 @@ TEST_CASE("combatEnemyAi.midAndFarBandsSteerTowardTarget") {
     CHECK_EQ(near.value().size(), 0u);
 }
 }  // namespace test_combat_target_enemy_ai
-#endif
 
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_container_transfer)
+// Contract section: container transfer
 #include "PrivateTestScope.h"
-#include <limits>
+// Check header isolation before any test assertion headers are loaded.
 #include <stdexcept>
-#include <string>
-#include <utility>
-#include <vector>
-#include "card/Card.h"
 #include "card/CardContainers.h"
 #include "common/Container.h"
 #include "inventory/ContainerAdapters.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // container_transfer.cpp
 namespace test_container_transfer {
 namespace {
@@ -3121,20 +3029,14 @@ TEST_CASE("container.sameContainerMoveUsesFinalSlotAndRejectsOccupiedSlot") {
     ItemRegistry::clear();
 }
 }  // namespace test_container_transfer
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_definition_runtime)
+// Contract section: definition runtime
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string>
-#include <string_view>
-#include <utility>
+// Check header isolation before any test assertion headers are loaded.
 #include "card/CardDefinitionRuntime.h"
 #include "common/definitions/DefinitionRuntime.h"
 #include "definitions/Definitions.h"
 #include "effects/EffectDefinitionRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // definition_runtime.cpp
 namespace test_definition_runtime {
 namespace {
@@ -3316,22 +3218,16 @@ TEST_CASE("definitionRuntime.effectAdapterKeepsTypedPolicyAndRejectsActiveReload
     CHECK_EQ(runtime.identity().definitionGeneration.value(), uint64_t{1});
 }
 }  // namespace test_definition_runtime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_definition_runtime_skill_vehicle)
+// Contract section: definition runtime skill vehicle
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string_view>
-#include "common/ECS.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "common/definitions/RuntimeSnapshot.h"
-#include "definitions/Definitions.h"
 #include "rpg/RPGActor.h"
 #include "rpg/Skill.h"
 #include "rpg/SkillConditionCodec.h"
 #include "rpg/SkillDefinitionRuntime.h"
 #include "vehicle/VehicleDefinitionRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // definition_runtime_skill_vehicle.cpp
 namespace test_definition_runtime_skill_vehicle {
 namespace {
@@ -3467,18 +3363,11 @@ TEST_CASE("definitionRuntime.vehicleAdapterProjectsEntityAndRejectsStaleSnapshot
     entity->release();
 }
 }  // namespace test_definition_runtime_skill_vehicle
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_definition_runtime_weapon)
+// Contract section: definition runtime weapon
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string_view>
-#include <utility>
-#include "common/definitions/RuntimeSnapshot.h"
-#include "definitions/Definitions.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "weapon/WeaponDefinitionRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // definition_runtime_weapon.cpp
 namespace test_definition_runtime_weapon {
 namespace {
@@ -3577,15 +3466,13 @@ TEST_CASE("definitionRuntime.weaponRejectWhileActiveIsAtomic") {
     CHECK_EQ(runtime.definitionHandle().generation, before.generation);
 }
 }  // namespace test_definition_runtime_weapon
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_localization)
+// Contract section: dialogue localization
 #include "PrivateTestScope.h"
+// Check header isolation before any test assertion headers are loaded.
 #include "dialogue/ConversationLocalization.h"
 #include "dialogue/DialogueFlow.h"
 #include "i18n/I18n.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue_localization.cpp
 namespace test_dialogue_localization {
 using namespace eve::dialogue;
@@ -3670,24 +3557,19 @@ TEST_CASE("dialogueLocalization.validatesExactRuntimeLocaleCoverage") {
     localization->clear();
 }
 }  // namespace test_dialogue_localization
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_payment)
+// Contract section: dialogue payment
 #include "PrivateTestScope.h"
-#include <array>
-#include <cstdint>
+// Check header isolation before any test assertion headers are loaded.
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <span>
-#include <utility>
 #include "attributes/AttributeSetResourceAccount.h"
 #include "dialogue/ConversationAuthoring.h"
-#include "dialogue/DialogueFlow.h"
 #include "dialogue/DialoguePayment.h"
 #include "dialogue/DialogueSequence.h"
 #include "economy/EconomyLedgerResourceAccount.h"
 #include "statepatch/StateAccessAdapter.h"
 #include "statepatch/StatePatch.h"
-#include "zeroerr/unittest.h"
 // dialogue_payment.cpp
 namespace test_dialogue_payment {
 namespace {
@@ -3823,22 +3705,16 @@ TEST_CASE("dialoguePayment.choiceUsesTheSameAtomicFacade") {
     CHECK(store.has("actor", "accepted"));
 }
 }  // namespace test_dialogue_payment
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_proc)
+// Contract section: dialogue proc
 #include "PrivateTestScope.h"
-#include <string>
+// Check header isolation before any test assertion headers are loaded.
 #include <unordered_map>
-#include <utility>
-#include <vector>
 #include "avatar/Avatar.h"
 #include "dialogue/Dialogue.h"
 #include "dialogue/DnutParser.h"
-#include "i18n/I18n.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue_proc.cpp
 namespace test_dialogue_proc {
 using namespace eve::dialogue;
@@ -4365,4 +4241,3 @@ TEST_CASE("dialogueProc.stateRestoreRejectsMalformed") {
     resetDialogue(dlg);
 }
 }  // namespace test_dialogue_proc
-#endif

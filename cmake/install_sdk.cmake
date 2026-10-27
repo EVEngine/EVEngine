@@ -9,7 +9,7 @@ set(EVENGINE_SDK_VERSION
     "${EVENGINE_MAJOR_VERSION}.${EVENGINE_MINOR_VERSION}.${EVENGINE_PATCH_VERSION}")
 
 # load_third_party resolves both downloaded and source-built install trees.
-set(_eve_sdk_tp_prefix "${EVENGINE_TP_INSTALL_PREFIX}")
+file(TO_CMAKE_PATH "${EVENGINE_TP_INSTALL_PREFIX}" _eve_sdk_tp_prefix)
 if(NOT _eve_sdk_tp_prefix)
     message(FATAL_ERROR "SDK install requires a resolved EVENGINE_TP_INSTALL_PREFIX")
 endif()
@@ -345,9 +345,9 @@ install(CODE "
 ")
 
 # Plugins use the same member and stateless binding templates as the engine.
-install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/third-party/simplesquirrel/include/simplesquirrel"
     DESTINATION include)
-install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
+install(FILES "${CMAKE_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

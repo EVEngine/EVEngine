@@ -505,3 +505,4 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
 }
 
 }  // namespace eve::animation
+

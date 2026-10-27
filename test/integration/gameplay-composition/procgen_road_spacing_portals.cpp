@@ -15,6 +15,7 @@
 */
 // clang-format on
 
+#include <iostream>
 #include "editing/EditingAuthority.h"
 #include "procgen/editing/RoadNetworkEditTarget.h"
 #include "procgen/editing/RoadPresetDocument.h"

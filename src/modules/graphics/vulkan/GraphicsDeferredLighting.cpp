@@ -4,6 +4,7 @@
 #include <limits>
 #include <optional>
 #include <vector>
+#include "common/Exception.h"
 #include "graphics/ClusteredLight.h"
 #include "graphics/DisplayOutputEncoding.h"
 #include "graphics/Shadow.h"
@@ -153,7 +154,12 @@ void Graphics::drawDeferredLighting() {
     ensureMesh3dStrides();
     auto& cfslots = currentMesh3dClusteredFrameSlots();
     ensureMesh3dClusteredRing(cfslots);
-    const uint32_t shadowOffset = 0;
+    if (cfslots.drawIndex >= cfslots.capacity)
+        throw Exception("drawDeferredLighting: clustered shadow UBO ring exhausted (%zu draws)", cfslots.capacity);
+    // Reserve a slot just as Forward+ draws do: their per-object receive-shadow
+    // upload must not overwrite this fullscreen pass's shadow state before submit.
+    const size_t   shadowSlot   = cfslots.drawIndex++;
+    const uint32_t shadowOffset = uint32_t(shadowSlot) * shadowUboStride;
     updateRingLocal(cfslots.shadowRing, shadowOffset, &mesh3dShadows.ubo, sizeof(ShadowUBO));
 
     auto writeImage = [&](uint32_t binding, vk::ImageView view, vk::Sampler sampler,

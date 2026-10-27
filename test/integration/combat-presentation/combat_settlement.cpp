@@ -48,7 +48,8 @@ TEST_CASE("combatSettlement.canonicalStagesAndActualDamage") {
     CHECK_EQ(result.clamped, 20.0);
     CHECK(result.critical);
     CHECK_EQ(result.tick.value(), 42u);
-    CHECK_EQ(result.stages.size(), 8u);
+    REQUIRE_EQ(result.stages.size(), 9u);
+    CHECK_EQ(result.stages[1].kind, eve::settlement::StageKind::Decision);
     REQUIRE(result.event.has_value());
     CHECK_EQ(target.health, 0.0);
     CHECK_EQ(target.poise, 5.0);

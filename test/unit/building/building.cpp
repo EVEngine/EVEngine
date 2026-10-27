@@ -1180,6 +1180,7 @@ TEST_CASE("building.edge.spec.occupancyAndAtomicShapes") {
         CHECK(PlacementSystem::events().empty());
         REQUIRE(world.removeBuilding(blocker));
 
+        PlacementSystem::clearEvents();
         auto placed = PlacementSystem::placeEdgeCubicBezier(&world, wall.id, controls, 24);
         REQUIRE(placed.ok());
         CHECK_EQ(placed.value().instanceIds.size(), preview.value().edges.size());
@@ -1628,8 +1629,8 @@ TEST_CASE("building.structure.spec.supportAndReload") {
         CHECK_EQ(rebuilt.value().changedCount, 1);
         CHECK_EQ(world.getBuildingSupportAt(upperId, 0), baseId);
 
-        BuildingDefinition incompatible = base;
-        incompatible.tags.clear();
+        BuildingDefinition incompatible = upper;
+        incompatible.supportTag         = "missing-support";
         BuildingRegistry::registerBuilding(incompatible);
         const auto linksBeforeFailure = world.buildings().at(upperId).supportInstanceIds;
         auto       rejected           = PlacementSystem::rebuildStructuralLinksResult(&world);

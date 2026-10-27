@@ -209,7 +209,7 @@ evaluate_rebellion <- function() {
         demoState.baseId, "owner", "\"faction.frontier\"", "\"faction.crown\"");
     ownership.setExpected(
         demoState.armyId, "owner", "\"faction.frontier\"", "\"faction.crown\"");
-    if (!demoState.authoritativeState.commit(ownership)) {
+    if (!demoState.authoritativeState.commit(ownership).ok) {
         plan.fail("ownership_conflict");
         return false;
     }

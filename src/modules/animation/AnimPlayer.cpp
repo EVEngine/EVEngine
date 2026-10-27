@@ -232,7 +232,11 @@ void AnimPlayer::updateUnchecked(float dt) {
             prevClip_ = nullptr;
             pose_.copyFrom(&sampledPose_);
         } else {
-            const TransformTRS outgoingFrom = prevPose_.local(rootMotionBone_);
+            // The displayed pose may already have root translation baked out.
+            // Measure outgoing motion between two samples of the source clip.
+            prevClip_->sample(prevTime_, &rootPreviousPose_, skeleton_);
+            const TransformTRS outgoingFrom = rootPreviousPose_.local(rootMotionBone_);
+            const float        outgoingTime = prevTime_;
             prevTime_ += dt * speed_;
             prevClip_->sample(prevTime_, &prevPose_, skeleton_);
             switch (blendCurve_) {
@@ -242,7 +246,21 @@ void AnimPlayer::updateUnchecked(float dt) {
                 case AnimBlendCurve::EaseInOut: t = t * t * (3.0f - 2.0f * t); break;
                 case AnimBlendCurve::SmoothStep: t = t * t * (3.0f - 2.0f * t); break;
             }
-            const TransformTRS outgoingDelta = rootMotionDelta(outgoingFrom, prevPose_.local(rootMotionBone_));
+            TransformTRS outgoingDelta = rootMotionDelta(outgoingFrom, prevPose_.local(rootMotionBone_));
+            if (prevClip_->getLoop() && prevClip_->getDuration() > 1e-8f) {
+                const float duration = prevClip_->getDuration();
+                const int   cycles =
+                    static_cast<int>(std::floor(prevTime_ / duration) - std::floor(outgoingTime / duration));
+                if (cycles != 0) {
+                    prevClip_->sample(0.f, &rootStartPose_, skeleton_);
+                    prevClip_->sampleClamped(duration, &rootEndPose_, skeleton_);
+                    const auto& start = rootStartPose_.local(rootMotionBone_);
+                    const auto& end   = rootEndPose_.local(rootMotionBone_);
+                    outgoingDelta.px += static_cast<float>(cycles) * (end.px - start.px);
+                    outgoingDelta.py += static_cast<float>(cycles) * (end.py - start.py);
+                    outgoingDelta.pz += static_cast<float>(cycles) * (end.pz - start.pz);
+                }
+            }
             pose_.blendFrom(&prevPose_, &sampledPose_, t);
             rawMotion = blendTRS(outgoingDelta, rawMotion, t);
         }

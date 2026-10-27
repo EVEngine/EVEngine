@@ -1,0 +1,11 @@
+source,before_parents,after_parents,before_process_seconds,after_process_seconds,process_seconds_reduction,before_passed,before_failed,before_skipped,after_passed,after_failed,after_skipped,repaired_parents,repaired_process_seconds,repaired_passed,repaired_failed,repaired_skipped
+test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp,76,74,82.868223,78.559486,4.308737,73,3,0,71,3,0,74,103.735746,74,0,0
+test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp,58,57,70.134366,68.255882,1.878484,55,3,0,54,3,0,57,90.32851,57,0,0
+test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp,51,48,57.180653,49.874046,7.306607,40,11,0,36,12,0,48,65.626442,48,0,0
+test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp,67,66,55.922614,50.108683,5.813931,67,0,0,66,0,0,66,68.1915392,66,0,0
+test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp,55,54,46.667520,43.301964,3.365556,32,8,15,32,7,15,54,57.8511905,39,0,15
+test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp,42,37,44.944503,33.189608,11.754895,42,0,0,37,0,0,37,45.3408686,37,0,0
+test/integration/asset-import/asset_import_graphics_tests.cpp,102,102,45.202083,31.379128,13.822954,102,0,0,102,0,0,102,39.8542444,102,0,0
+test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp,30,29,37.480227,26.078542,11.401685,29,1,0,28,1,0,29,35.4548551,29,0,0
+test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp,40,37,37.634805,33.049502,4.585303,40,0,0,37,0,0,37,44.7500282,37,0,0
+test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp,31,25,34.214189,27.092182,7.122007,31,0,0,24,1,0,24,32.1190847,24,0,0

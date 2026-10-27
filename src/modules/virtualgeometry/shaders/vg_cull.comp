@@ -29,14 +29,14 @@ void main() {
         if (dot(vgU.frustum[i].xyz, wc) + vgU.frustum[i].w < -r) return;
     }
 
-    // Screen-space error (pre-scaled by projScale on the CPU).
-    float screenC = vg_clusterErrorRS(cid) / dist;
+    // Projection changes after cluster upload; use the current frame's scale.
+    float screenC = vg_clusterErrorR(cid) * vgU.params.z / dist;
     float screenP = 1e30;
     uint parent = vg_clusterParent(cid);
     if (parent != 0xFFFFFFFFu) {
         vec4 pc = vgU.model * vec4(vg_clusterCenter(parent), 1.0);
         float pd = max(length(pc.xyz - vgU.cameraPos.xyz), 1e-4);
-        screenP = vg_clusterErrorRS(parent) / pd;
+        screenP = vg_clusterErrorR(parent) * vgU.params.z / pd;
     }
 
     bool isLeaf = vg_clusterChildCount(cid) == 0u;

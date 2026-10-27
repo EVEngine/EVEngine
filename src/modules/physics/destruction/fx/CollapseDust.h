@@ -62,12 +62,18 @@ public:
      * @cost Linear in particles, at the baked display rate; no solver step. @return Transactional restore status.
      */
     [[nodiscard]] Result<void> present(fluids::VolumeFluid& target, float seconds) const;
-    /** @brief Save a new asset, refusing overwrite; incomplete writes are removed.
+    /** @brief Save a new asset through the shared atomic, non-replacing baked-asset publisher.
      * @cost Linear in all samples, once after bake. @return Checked IO status.
+     * Linux uses file and directory durability barriers. Other platforms currently guarantee atomic visibility.
+     * Barrier failures carry publication and durability details; a published target is never rolled back.
+     * @thread Concurrent saves are supported while no caller mutates this clip. No callbacks.
      */
     [[nodiscard]] Result<void> save(std::string_view path) const;
     /** @brief Validate and load an owning clip; failure preserves this clip.
      * @cost Linear in file size, once at startup. @return Checked IO/schema status.
+     * EVEDUST1 v2 verifies a noncryptographic checksum over header and samples before decoding.
+     * Legacy v1 remains readable without an integrity guarantee; saving migrates it to v2.
+     * Unknown versions, extra fields and oversized files are rejected transactionally.
      */
     [[nodiscard]] Result<void> load(std::string_view path);
     /** @brief Recorded frame count. */

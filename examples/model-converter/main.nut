@@ -16,8 +16,8 @@ persist autoRun = true
 persist ran = false
 
 function repoRoot() { return "../.."; }
-function converterDir() { return repoRoot() + "/modelconverter/converters"; }
-function pythonRuntimeDir() { return repoRoot() + "/modelconverter/python"; }
+function converterDir() { return repoRoot() + "/tools/modelconverter/converters"; }
+function pythonRuntimeDir() { return repoRoot() + "/tools/modelconverter/python"; }
 function boxModel() { return "box.obj"; }
 function outModel(ext) { return "out/result." + ext; }
 

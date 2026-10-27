@@ -1501,3 +1501,29 @@ Successful world restore increments the query epoch; stale bindings, including s
 No new ECS System or tool protocol is introduced. Physics collision results retain body/shape provenance,
 while gameplay entity mapping remains with the game. The existing backend provides the shape query;
 filter parameters are scoped, results are owning, and overflow is an error rather than a truncated hit list.
+
+## 烘焙与重放
+
+烘焙属于 Physics。physics.bake() 提供 loadRigid/loadDeform/loadParticles(path,recipe)，
+physics.bakeRecording() 提供 beginRigid/beginDeform。它们是宿主服务，不是独立模块。
+布料和绳索通过 source.captureBake(recording,seconds) 采集，由各生产方模块拥有实现；
+粒子使用 particles.bakeRecording() 的 begin/finish/newArchive，不归 Physics 管理。
+
+纯资产、轨道、采样和播放状态位于 physics/backend/bake/，归属已有 physics_backend。
+Box2D 的具体推进桥接归属 Physics 宿主，backend 本身不依赖求解器。
+只保留一个跨域的 physics_bake_graphics 模块，原生与脚本呈现代码在同一模块内。
+
+原生呈现器只拥有冻结资产和缓冲。createMesh(player,graphics)、
+upload(player,graphics,mesh)、draw(player,graphics,material) 在调用期间借用播放器。
+脚本 prepareDeform(player,radius)/prepareParticles(player,ids) 保留输入播放器的 VM 拥有引用，
+控制方法与绘制使用同一份时间、速率、暂停和 placement。独立实例必须显式调用并检查
+player.prepareInstance()；不要通过多个包装器对同一个播放器重复 advance。
+材质资源仍按绘制借用，必须存活到 Graphics 完成相关帧。
+
+旧 eve.PhysicsBake()/eve.PhysicsBakeRecording()/eve.ParticleBakeRecording() 仅兼容，
+内部使用同一实现，不再注册 ModuleManager 或出现在模块启动列表。
+持久格式和迁移版本不变；不覆盖已存在资产，缓存检查完整 provenance。
+准备、加载、保存必须在帧循环之外执行，并检查每个 Result。
+
+physics-bake-only 和 physics-bake-script-only 仅选择 common + physics_backend，
+前者排除 VM 投影；physics-bake-render 组合呈现而不引入实时求解器。

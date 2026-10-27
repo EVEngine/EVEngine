@@ -33,6 +33,15 @@ compiler override.
 ### Building
 - `make debug` configures + builds `build/linux-debug` (equivalently: cmake configure,
   then `--target deps`, then the engine).
+- Debug has two compiler profiles (`EVENGINE_DEBUG_LEVEL` / Makefile `DEBUG_LEVEL`):
+  **`normal`** (default, CI) = GCC/Clang `-g0 -O2` (MSVC `/Od`, no `/Zi`) so sccache
+  does not store DWARF-bloated `.o` into GitHub Actions cache; **`detail`** =
+  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. MSVC normal stays
+  `/Od` because `/O2` cold-compiles past the Windows CI build-step budget.
+  Example: `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for
+  `CONFIG:Debug` either way.
+  ASan/UBSan is a separate RelWithDebInfo lane with `-O1 -g1` (line tables for
+  sanitizer stacks; not full `-g`, not `-g0`).
 - The first configure downloads the `third-party/` sources from GitHub and the `deps`
   target compiles them (SDL2, Poco, OpenAL, Box2D/box3d, FreeType, …). This is slow the
   first time and cached afterward. `build/` is git-ignored and tied to its source tree.
@@ -299,6 +308,29 @@ versions.
   engine-side state (e.g. `SDL_InitSubSystem`/`SDL_QuitSubSystem` pairing, the
   SDL global `_this`, or window flags) — instrument the state before touching
   the SDL/driver layer.
+
+## Third-party source ownership (mandatory)
+
+- **Dependency fixes belong in the owning source repository.** Modify and commit
+  the dependency's actual sources, then update the consuming revision. Do not
+  modify third-party code through patch files, `git apply`, CMake `PATCH_COMMAND`,
+  configure/build-time text replacement, or overwrite/override header directories.
+  Generated replacement headers, include-path shadowing and copied modified
+  dependency implementations are equally prohibited; moving such a workaround
+  into another directory or into the third-party aggregate does not satisfy this
+  rule. Source builds, prebuilt packages and SDK consumers must use the same
+  canonical dependency implementation.
+- **Keep dependency development ownership explicit.** Stable bundled dependencies
+  are managed by the `third-party` repository. ECS and zeroerr remain independently
+  developed submodules under `external/ECS.hpp` and `external/zeroerr`; do not move
+  them into the third-party aggregate or tie their updates to its release pin.
+  Apply their fixes directly in their respective repositories and update their
+  engine submodule revisions independently.
+- **Complete the migration when removing a workaround.** Update build/include and
+  SDK install rules to consume the canonical sources, remove the obsolete patch,
+  override directory and application/generation steps, and verify the affected
+  source, package and linkage contracts. Do not leave a second implementation as
+  a compatibility shortcut.
 
 ## Collaboration conventions (multi-agent parallel work)
 

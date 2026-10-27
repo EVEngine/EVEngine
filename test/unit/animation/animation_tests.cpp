@@ -957,7 +957,7 @@ TEST_CASE("animation.clip.semanticNotifyContractReportsMissingEvents") {
     REQUIRE(clip.validateNotifyContract({"contact.left_hand", "land"}).ok());
     auto missing = clip.validateNotifyContract({"contact.left_hand", "contact.right_hand", "land"});
     CHECK(!missing.ok());
-    CHECK(missing.code() == eve::StatusCode::Rejected);
+    CHECK(missing.code() == eve::StatusCode::NotFound);
 }
 }  // namespace test_animation_clip_editing
 #endif
@@ -1246,7 +1246,14 @@ TEST_CASE("animation.motionSchema.invalidNormalizationRangePreservesLastConfigur
     database.bake();
     float sample = 0.f;
     database.getFeature(11, &sample, 1);
-    CHECK(std::abs(sample - 10.f) < 1e-5f);
+    MotionDatabase unchanged(&clips.skeleton);
+    clips.addTo(unchanged);
+    REQUIRE(unchanged.setFeatureLayout(positionLayout()).ok());
+    REQUIRE(unchanged.setFeatureNormalizationRanges(valid).ok());
+    unchanged.bake();
+    float expected = 0.f;
+    unchanged.getFeature(11, &expected, 1);
+    CHECK(std::abs(sample - expected) < 1e-5f);
 }
 
 TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialReplacement") {
@@ -1273,7 +1280,7 @@ TEST_CASE("animation.motionSchema.velocityQueryCopiesInputsAndRejectsPartialRepl
     database.addClip(&forward);
     database.addClip(&backward);
     database.bake();
-    CHECK_EQ(database.getFrameCount(), 42);
+    CHECK_EQ(database.getFrameCount(), 40);  // looping clips omit the duplicated endpoint
     CHECK(!database.setFeatureLayout(layout).ok());
     for (int direction : {-1, 1}) {
         MotionMatcher                          matcher(&skeleton, &database);
@@ -1431,7 +1438,10 @@ TEST_CASE("animation.motionMatcher.costBiasAndReplacementRangeSelectValidEntry")
     candidates = {{0, 0.f, 1.f, -2.f, false, {}, 10.f}, {0, 0.f, 1.f, -1.f, false, {}, -10.f}, {1, 0.f, 1.f, 0.f}};
     REQUIRE(matcher.setCandidateRanges(candidates).ok());
     matcher.search();
-    CHECK_EQ(matcher.getMatchedClipIndex(), 1);
+    // Clip 1 is now continuing. A fresh clip-0 candidate uses the winning
+    // range's -2 entry bias, without that range's continuing-only +10 bias.
+    CHECK_EQ(matcher.getMatchedClipIndex(), 0);
+    CHECK(std::abs(matcher.getLastSearchCost() + 2.f) < 1e-5f);
 }
 }  // namespace test_animation_motion_schema
 #endif
@@ -1780,6 +1790,7 @@ TEST_CASE("animation.motionMatcher.oneShotExhaustionHandsOffToLoop") {
     skeleton.addBone("pelvis", 0);
     AnimClip action("action"), loop("loop");
     action.setDuration(.2f);
+    action.setLoop(false);
     loop.setDuration(.4f);
     loop.setLoop(true);
     MotionDatabase database(&skeleton);
@@ -2014,6 +2025,11 @@ TEST_CASE("animation.rootMotion.crossFadePublishesBlendedDeltaWithoutRootOffset"
     CHECK(player.getRootMotionZ() > .05f);
     CHECK(player.getRootMotionZ() < .2f);
     close(player.getPose()->getLocalPositionZ(0), 0.f);
+    player.play(walking.get());
+    player.update(.95f);
+    player.crossFade(&idle, .2f);
+    player.update(.1f);
+    close(player.getRootMotionZ(), .1f, .02f);
 }
 
 TEST_CASE("animation.rootMotion.parseNamesAndRejectNonfiniteYaw") {
@@ -2842,3 +2858,60 @@ TEST_CASE("animation.rigLimits.codecMigrationAndBakeApplyClampedKeys") {
 }
 }  // namespace test_animation_rig_limits
 #endif
+
+#include <cmath>
+#include "animation/AnimClip.h"
+#include "animation/AnimSkeleton.h"
+#include "animation/tensor/SmrFeatures.h"
+
+namespace test_smr_feature_math_unit {
+using namespace eve::animation;
+namespace {
+
+void buildArmature(AnimSkeleton& skel, float torsoHeight, float upperArm, float lowerArm) {
+    const int root     = skel.addBone("Hips");
+    const int chest    = skel.addBone("Spine", root);
+    const int shoulder = skel.addBone("LeftShoulder", chest);
+    const int elbow    = skel.addBone("LeftElbow", shoulder);
+    const int hand     = skel.addBone("LeftHand", elbow);
+    skel.setBindPosition(chest, 0.f, torsoHeight, 0.f);
+    skel.setBindPosition(shoulder, 0.15f, 0.f, 0.f);
+    skel.setBindPosition(elbow, upperArm, 0.f, 0.f);
+    skel.setBindPosition(hand, lowerArm, 0.f, 0.f);
+}
+
+}  // namespace
+
+
+TEST_CASE("animation.smr.neural.rot6dRoundTrip") {
+    float out[6] = {};
+    quatToRot6d(0.f, 0.f, 0.70710678f, 0.70710678f, out);
+    float qx = 0.f, qy = 0.f, qz = 0.f, qw = 1.f;
+    rot6dToQuat(out, qx, qy, qz, qw);
+    const float dot = std::fabs(qx * 0.f + qy * 0.f + qz * 0.70710678f + qw * 0.70710678f);
+    CHECK(dot > 0.999f);
+}
+
+TEST_CASE("animation.smr.neural.featureBatchShapes") {
+    AnimSkeleton source;
+    AnimSkeleton target;
+    buildArmature(source, 1.0f, 0.28f, 0.28f);
+    buildArmature(target, 1.8f, 0.70f, 0.70f);
+
+    AnimClip clip("reach");
+    clip.setDuration(0.1f);
+    clip.setSampleRate(10.f);
+    clip.addRotationKey(source.findBone("LeftShoulder"), 0.f, 0.f, 0.f, 0.70710678f, 0.70710678f);
+    clip.addRotationKey(source.findBone("LeftElbow"), 0.05f, 0.f, 0.f, 0.70710678f, 0.70710678f);
+
+    const SmrFeatureBatch batch = buildSmrFeatures(clip, &source, &target, nullptr, nullptr, 2, 4);
+    CHECK(batch.frames >= 1);
+    CHECK(batch.joints == target.getBoneCount());
+    CHECK(batch.sensors >= 1);
+    CHECK(static_cast<int>(batch.sourceRot6d.size()) == batch.frames * batch.joints * 6);
+    CHECK(static_cast<int>(batch.sourceGeom.size()) == batch.sensors * 7);
+    CHECK(static_cast<int>(batch.targetGeom.size()) == batch.sensors * 7);
+    CHECK(static_cast<int>(batch.sourceDmi.size()) == batch.frames * std::max(batch.pairs, 1) * 10);
+}
+}  // namespace test_smr_feature_math_unit
+

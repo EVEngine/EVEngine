@@ -154,7 +154,8 @@ TEST_CASE("Cloth3D runtime constraint contract") {
         compliant.setStretchCompliance(0.005f);
         compliant.setShearCompliance(0.005f);
         compliant.setBendCompliance(0.02f);
-        for (int frame = 0; frame < 30; ++frame) {
+        // Compare settled stretch, after the initial swinging/drooping transient.
+        for (int frame = 0; frame < 120; ++frame) {
             rigid.update(1.f / 60.f);
             compliant.update(1.f / 60.f);
         }

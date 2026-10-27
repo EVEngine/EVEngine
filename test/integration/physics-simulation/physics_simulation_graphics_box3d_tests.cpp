@@ -4,11 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "physics-backend",
-  "cases": {
-    "render-window": [
-      "box2d.render.fallingStackPreview"
-    ]
-  },
   "module": "action",
   "modules": [
     "action",
@@ -30,15 +25,22 @@
     "climbing_parkour.cpp",
     "climbing_performance.cpp",
     "climbing_physics_policy.cpp"
-  ]
+  ],
+  "cases": {
+    "render-window": [
+      "box2d.render.fallingStackPreview"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: action collision ignore
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_collision_ignore)
-#include "PrivateTestScope.h"
 #include <memory>
 #include <string_view>
 #include "action/ActionBlockRuntime.h"
@@ -48,7 +50,6 @@
 #include "physics/PhysicsLink.h"
 #include "physics/World3D.h"
 #include "physics/action/ActionCollisionIgnoreState.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // action_collision_ignore.cpp
 namespace test_action_collision_ignore {
@@ -213,30 +214,24 @@ TEST_CASE("actionCollisionIgnore.destructorRestoresAndWorldMayDieFirst") {
     ignores.reset();
 }
 }  // namespace test_action_collision_ignore
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_box2d)
+// Contract section: box2d
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
 #include <cmath>
-#include <memory>
 #include <vector>
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
@@ -244,11 +239,8 @@ TEST_CASE("actionCollisionIgnore.destructorRestoresAndWorldMayDieFirst") {
 #include "graphics/Waterfall.h"
 #include "physics/Body.h"
 #include "physics/Fixture.h"
-#include "physics/Physics.h"
 #include "physics/World.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // box2d.cpp
 namespace test_box2d {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -608,25 +600,17 @@ TEST_CASE("box2d.render.fallingStackPreview") {
     win->close();
 }
 }  // namespace test_box2d
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_box3d)
+// Contract section: box3d
 #include "PrivateTestScope.h"
+
 #include <box3d/box3d.h>
-#include <cmath>
 #include <limits>
-#include <memory>
-#include <vector>
-#include "physics/Body3D.h"
 #include "physics/DistanceField3D.h"
 #include "physics/Joint3D.h"
-#include "physics/Physics.h"
 #include "physics/Shape3D.h"
 #include "physics/TerrainLoadGravity.h"
-#include "physics/World3D.h"
 #include "physics/box3d/Box3DBody.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // box3d.cpp
 namespace test_box3d {
 using namespace eve::physics;
@@ -2393,21 +2377,13 @@ TEST_CASE("box3d.mover.groundAndSlopeClassification") {
     CHECK(world->isMoverGrounded());
 }
 }  // namespace test_box3d
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing)
+// Contract section: climbing
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <cmath>
-#include <memory>
 #include "animation/AnimClip.h"
 #include "climbing/Climbing.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 #if defined(_MSC_VER)
 #include <crtdbg.h>
 #endif
@@ -2812,6 +2788,7 @@ TEST_CASE("climbing.authoredMotionFailsExplicitlyWhenWarpCannotConverge") {
 TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     ClimbingWorld                  fixture;
     eve::climbing::ClimbingRuntime runtime;
+    runtime.setDebugCapture(eve::climbing::ClimbingDebugCapture::Enabled);
     auto                           added = runtime.upsertAction(ledgeGrabAction());
     REQUIRE(added.ok());
     const eve::climbing::ClimbingPose pose{{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, 1.f, -1, -1.f, false};
@@ -2910,20 +2887,11 @@ TEST_CASE("climbing.animationNotifyContractIsValidatedBeforeExecution") {
     REQUIRE(begun.ok());
 }
 }  // namespace test_climbing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_anchor_execution)
+// Contract section: climbing anchor execution
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
+
 #include <string>
-#include "climbing/Climbing.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_anchor_execution.cpp
 namespace test_climbing_anchor_execution {
 namespace {
@@ -3332,19 +3300,11 @@ TEST_CASE("climbing.anchorExecution.snapshotTransfersOrReacquiresOneExclusiveCla
     CHECK_EQ(graph->reservationCount(), std::size_t(0));
 }
 }  // namespace test_climbing_anchor_execution
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_anchor_graph)
+// Contract section: climbing anchor graph
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
+
 #include "climbing/ClimbingAnchorGraph.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_anchor_graph.cpp
 namespace test_climbing_anchor_graph {
 namespace {
@@ -3513,18 +3473,10 @@ TEST_CASE("climbing.anchorGraph.nodeReferencesCannotCrossGraphIdentity") {
              .ok());
 }
 }  // namespace test_climbing_anchor_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_anchor_route)
+// Contract section: climbing anchor route
 #include "PrivateTestScope.h"
-#include <memory>
-#include "climbing/ClimbingAnchorGraph.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // climbing_anchor_route.cpp
 namespace test_climbing_anchor_route {
 namespace {
@@ -3679,18 +3631,11 @@ TEST_CASE("climbing.anchorRoute.enforcesAuthoredCapabilityTags") {
     CHECK_EQ(static_cast<int>(duplicate.error()->code()), static_cast<int>(eve::DiagnosticCode::InvalidArgument));
 }
 }  // namespace test_climbing_anchor_route
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_definition_policy)
+// Contract section: climbing definition policy
 #include "PrivateTestScope.h"
-#include <memory>
-#include "climbing/Climbing.h"
+
 #include "climbing/ClimbingInput.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_definition_policy.cpp
 namespace test_climbing_definition_policy {
 namespace {
@@ -3787,19 +3732,11 @@ TEST_CASE("climbing.definitionPolicy.commandIsTransactionalAndCameraCueIsOwningO
     CHECK_EQ(advanced.value().cameraCue, std::string("camera:vault_low"));
 }
 }  // namespace test_climbing_definition_policy
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_ecs)
+// Contract section: climbing ecs
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include <vector>
+
 #include "climbing/ClimbingECS.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_ecs.cpp
 namespace test_climbing_ecs {
 namespace {
@@ -4062,22 +3999,11 @@ TEST_CASE("climbing.ecs.stepHeightUsesBoundedOwningMoverQueries") {
     entity->release();
 }
 }  // namespace test_climbing_ecs
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_events)
-#include <algorithm>
-#include <memory>
+// Contract section: climbing events
 #include "PrivateTestScope.h"
-#include <string>
-#include <vector>
-#include "climbing/Climbing.h"
+
 #include "climbing/ClimbingEventValue.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_events.cpp
 namespace test_climbing_events {
 namespace {
@@ -4202,17 +4128,10 @@ TEST_CASE("climbing.events.capacityBackpressureIsAtomic") {
  */
 
 }  // namespace test_climbing_events
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_input)
+
+// Contract section: climbing input
 #include "PrivateTestScope.h"
-#include <limits>
-#include <memory>
-#include "climbing/ClimbingInput.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // climbing_input.cpp
 namespace test_climbing_input {
 namespace {
@@ -4315,23 +4234,13 @@ TEST_CASE("climbing.selection.appliesProfileCoyoteTicksAtTheBoundary") {
     CHECK(retained.commands.front().consumedExecutionId.isZero());
 }
 }  // namespace test_climbing_input
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_parkour)
+// Contract section: climbing parkour
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <iterator>
-#include <memory>
-#include <string>
 #include <utility>
-#include "climbing/Climbing.h"
 #include "climbing/ClimbingCodec.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_parkour.cpp
 namespace test_climbing_parkour {
 namespace {
@@ -4424,19 +4333,11 @@ TEST_CASE("climbing.parkour.wallRunChoosesStableSideAndDoesNotEmitLand") {
     CHECK(completed);
 }
 }  // namespace test_climbing_parkour
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_performance)
+// Contract section: climbing performance
 #include "PrivateTestScope.h"
+
 #include <cstdio>
-#include <memory>
-#include "climbing/ClimbingECS.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_performance.cpp
 namespace test_climbing_performance {
 namespace {
@@ -4575,17 +4476,10 @@ TEST_CASE("climbing.performance.reportsOrdinaryCandidateDenseAndActiveP50P95") {
     printSummary("active", activeSummary);
 }
 }  // namespace test_climbing_performance
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_physics_policy)
+// Contract section: climbing physics policy
 #include "PrivateTestScope.h"
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // climbing_physics_policy.cpp
 namespace test_climbing_physics_policy {
 TEST_CASE("climbing.physics.ownedMoverSlopePolicyIsPerCall") {
@@ -4630,4 +4524,3 @@ TEST_CASE("climbing.physics.broadPhaseOwnsStableFilteredShapeEvidence") {
     CHECK(result.value().hits[0].shape == keptShape->runtimeHandle());
 }
 }  // namespace test_climbing_physics_policy
-#endif

@@ -38,7 +38,7 @@ runs:
         CACHE_PLATFORM: ${{ inputs.platform }}
         CACHE_CONFIGURATION: ${{ inputs.configuration }}
         CACHE_TOOLCHAIN: ${{ inputs.toolchain }}
-        CACHE_RECIPE: ${{ hashFiles('CMakeLists.txt', 'Makefile', '.github/scripts/identify-third-party-toolchain.sh', 'cmake/ios.toolchain.cmake', 'cmake/modules.cmake', 'cmake/module_manifest.cmake', 'cmake/module_manifest/**', 'cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/third_party_build.cmake', 'cmake/third_party_release.cmake', 'scripts/third_party_package.py', 'cmake/patch_third_party.cmake', 'cmake/patches/**', 'cmake/write_third_party_version.cmake', '.github/actions/restore-third-party/action.yml') }}
+        CACHE_RECIPE: ${{ hashFiles('CMakeLists.txt', 'Makefile', '.github/scripts/identify-third-party-toolchain.sh', 'cmake/ios.toolchain.cmake', 'cmake/modules.cmake', 'cmake/module_manifest.cmake', 'cmake/module_manifest/**', 'cmake/third_party_pin.cmake', 'cmake/third_party_cache_version.txt', 'cmake/third_party_build.cmake', 'cmake/third_party_release.cmake', 'scripts/third_party_package.py', 'cmake/write_third_party_version.cmake', '.github/actions/restore-third-party/action.yml') }}
         CACHE_RUNNER_OS: ${{ runner.os }}
         CACHE_RUNNER_ARCH: ${{ runner.arch }}
       run: |

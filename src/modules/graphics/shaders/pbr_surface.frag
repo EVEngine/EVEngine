@@ -29,13 +29,13 @@ layout(set=0,binding=0,std140) uniform Params {
  uvec4 colorsInfo;
 } u;
 
-layout(set=0,binding=1) uniform sampler2D maps[11];
+layout(set=0,binding=14) uniform sampler2D maps[11];
 layout(set=0,binding=4) uniform samplerCube environmentMap;
 layout(set=0,binding=5,std140) uniform Shadows {
  mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel; vec4 cascadeUvScale;
 } shadow;
 layout(set=0,binding=6) uniform sampler2DArrayShadow shadowMap;
-layout(set=0,binding=7) uniform sampler2D detailMaps[3];
+layout(set=0,binding=15) uniform sampler2D detailMaps[3];
 layout(set=0,binding=8) uniform sampler2DArray extrasMap;
 layout(set=0,binding=9) uniform sampler2DArray colorsMap;
 layout(set=0,binding=13) uniform sampler3D vegetationFadeNoise;

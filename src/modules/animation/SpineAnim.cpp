@@ -500,3 +500,4 @@ std::string SpineAnim::getDrawSlotRegion(int index) const {
 }
 
 }  // namespace eve::animation
+

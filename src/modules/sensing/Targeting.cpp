@@ -400,9 +400,9 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
     if (world_ == nullptr)
         return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "SensingWorldCandidateProvider has no bound SensingWorld", {}));
-    if (query.spec.space != CoordinateSpace::World2D)
-        return Result<std::vector<TargetCandidate>>::failure(
-            Diagnostic::error(DiagnosticCode::Unsupported, "SensingWorldCandidateProvider supports World2D only", {}));
+    if (query.spec.space != CoordinateSpace::World2D && query.spec.space != CoordinateSpace::World3D)
+        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(
+            DiagnosticCode::Unsupported, "SensingWorldCandidateProvider supports world coordinates only", {}));
     if (query.spec.gridArea)
         return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(
             DiagnosticCode::Unsupported, "SensingWorldCandidateProvider does not support grid areas", {}));
@@ -412,9 +412,10 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
             "TargetDomain filters require an injected FactionRelationFn on SensingWorldCandidateProvider", {}));
 
     const auto* originPoint = std::get_if<WorldPoint>(&query.originLocation);
-    if (originPoint == nullptr || !originPoint->isValid() || originPoint->space() != CoordinateSpace::World2D)
-        return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(
-            DiagnosticCode::InvalidArgument, "SensingWorldCandidateProvider origin must be a World2D point", {}));
+    if (originPoint == nullptr || !originPoint->isValid() || originPoint->space() != query.spec.space)
+        return Result<std::vector<TargetCandidate>>::failure(
+            Diagnostic::error(DiagnosticCode::InvalidArgument,
+                              "SensingWorldCandidateProvider origin must match the query world space", {}));
 
     QuerySpec spec;
     spec.minRange        = query.spec.minRange;
@@ -426,7 +427,10 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
     spec.countPolicy     = CountPolicy::TruncateToMax;
     spec.sortKey         = SortKey::DistanceAscending;
 
-    auto queried = world_->query(QueryOrigin{originPoint->x(), originPoint->y(), query.origin.format()}, spec);
+    spec.axes    = query.spec.space == CoordinateSpace::World3D ? QueryAxes::XYZ : QueryAxes::XY;
+    auto queried = world_->query(
+        QueryOrigin{originPoint->x(), originPoint->y(), query.origin.format(), originPoint->z(), query.spec.space},
+        spec);
     if (!queried) return Result<std::vector<TargetCandidate>>::failure(queried.status());
 
     std::string originFaction;
@@ -441,7 +445,8 @@ Result<std::vector<TargetCandidate>> SensingWorldCandidateProvider::query(const 
             return Result<std::vector<TargetCandidate>>::failure(Diagnostic::error(
                 DiagnosticCode::InvalidArgument,
                 "SensingWorld subject id must be a PersistentId UUID for Targeting adapters", "subject.id"));
-        auto location = WorldPoint::world2D(ranked.x, ranked.y);
+        auto location = ranked.space == CoordinateSpace::World3D ? WorldPoint::world3D(ranked.x, ranked.y, ranked.z)
+                                                                 : WorldPoint::world2D(ranked.x, ranked.y);
         if (!location) return Result<std::vector<TargetCandidate>>::failure(location.status());
         if (query.spec.worldArea && !query.spec.worldArea->contains(location.value())) continue;
 

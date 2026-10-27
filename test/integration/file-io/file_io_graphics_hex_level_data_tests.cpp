@@ -4,25 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "platform-file",
-  "cases": {
-    "render-window": [
-      "animation.skinned.render.bindPose",
-      "animation.skinned.render.clipSampledMovesPixels",
-      "animation.skinned.render.playerDriven",
-      "animation.skinned.render.applyToMesh",
-      "avatar.vrm.graphicsBackendSupportIsExplicit"
-    ],
-    "concurrency": [
-      "filesystem.watch.fileModified",
-      "filesystem.watch.coalescesOverlappingRegistrations",
-      "filesystem.watch.dotResolvesToCwd",
-      "hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath"
-    ],
-    "script-binding": [
-      "hotreload.tryReloadParticleJson",
-      "hotreload.softScriptReloadPreservesState"
-    ]
-  },
   "module": "daynight",
   "modules": [
     "animation",
@@ -52,15 +33,36 @@
     "hotreload.cpp",
     "i18n.cpp",
     "joystick_cpp.cpp"
-  ]
+  ],
+  "cases": {
+    "concurrency": [
+      "filesystem.watch.coalescesOverlappingRegistrations",
+      "filesystem.watch.dotResolvesToCwd",
+      "filesystem.watch.fileModified",
+      "hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath"
+    ],
+    "render-window": [
+      "animation.skinned.render.applyToMesh",
+      "animation.skinned.render.bindPose",
+      "animation.skinned.render.clipSampledMovesPixels",
+      "animation.skinned.render.playerDriven",
+      "avatar.vrm.graphicsBackendSupportIsExplicit"
+    ],
+    "script-binding": [
+      "hotreload.softScriptReloadPreservesState",
+      "hotreload.tryReloadParticleJson"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: SkyProfile
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyProfile)
-#include "PrivateTestScope.h"
 #include <fstream>
 #include <iterator>
 #include <limits>
@@ -185,20 +187,17 @@ TEST_CASE("daynight.sky profile validates the authored reference and owns import
     REQUIRE(profile.value().atmosphere().groundRadiusKm == 6360);
 }
 }  // namespace test_SkyProfile
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyWispsAsset)
+// Contract section: SkyWispsAsset
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <fstream>
 #include <optional>
 #include "Fixtures.h"
-#include "common/Value.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/ShaderResources.h"
 #include "graphics/sky/SkyWispsAsset.h"
 #include "graphics/sky/SkyWispsLayer.h"
-#include "zeroerr/unittest.h"
 // SkyWispsAsset.cpp
 namespace test_SkyWispsAsset {
 TEST_CASE("graphics.sky external packs validate all versions without private assets") {
@@ -324,24 +323,21 @@ TEST_CASE("graphics.sky external packs validate all versions without private ass
     REQUIRE(retained->layer().moonColorTexture->bytes.size() == 8);
 }
 }  // namespace test_SkyWispsAsset
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_skinned)
+// Contract section: animation skinned
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
-#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <filesystem>
-#include <fstream>
 #include <memory>
 #include <string>
 #include <vector>
-#include "Fixtures.h"
 #include "PathBesideSource.h"
 #include "ResourceTestSupport.h"
 #include "animation/AnimClip.h"
@@ -354,14 +350,11 @@ TEST_CASE("graphics.sky external packs validate all versions without private ass
 #include "common/Exception.h"
 #include "data/ByteData.h"
 #include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
@@ -372,7 +365,6 @@ TEST_CASE("graphics.sky external packs validate all versions without private ass
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
@@ -383,8 +375,6 @@ TEST_CASE("graphics.sky external packs validate all versions without private ass
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_skinned.cpp
 namespace test_animation_skinned {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -924,11 +914,31 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     REQUIRE(ai->HasNormals());
     REQUIRE(ai->mNormals != nullptr);
 
+    const auto findMeshWorld = [&](auto &&self, const aiNode *node, const aiMatrix4x4 &parent,
+                                   aiMatrix4x4 &result) -> bool {
+        const auto world = parent * node->mTransformation;
+        for (unsigned i = 0; i < node->mNumMeshes; ++i)
+            if (node->mMeshes[i] == static_cast<unsigned>(meshIndex)) {
+                result = world;
+                return true;
+            }
+        for (unsigned i = 0; i < node->mNumChildren; ++i)
+            if (self(self, node->mChildren[i], world, result)) return true;
+        return false;
+    };
+    REQUIRE(model->getScene() != nullptr);
+    REQUIRE(model->getScene()->mRootNode != nullptr);
+    aiMatrix4x4 meshWorld;
+    REQUIRE(findMeshWorld(findMeshWorld, model->getScene()->mRootNode, aiMatrix4x4{}, meshWorld));
+    aiMatrix3x3 normalTransform(meshWorld);
+    normalTransform.Inverse().Transpose();
     std::vector<float> bindNrm(size_t(ai->mNumVertices) * 3u);
     for (int v = 0; v < int(ai->mNumVertices); ++v) {
-        bindNrm[size_t(v) * 3u + 0] = ai->mNormals[v].x;
-        bindNrm[size_t(v) * 3u + 1] = ai->mNormals[v].y;
-        bindNrm[size_t(v) * 3u + 2] = ai->mNormals[v].z;
+        auto normal = normalTransform * ai->mNormals[v];
+        normal.Normalize();
+        bindNrm[size_t(v) * 3u + 0] = normal.x;
+        bindNrm[size_t(v) * 3u + 1] = normal.y;
+        bindNrm[size_t(v) * 3u + 2] = normal.z;
     }
 
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -936,7 +946,7 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
     REQUIRE(skin.get() != nullptr);
 
-    // Bind pose: skin matrices are identity, so normals must stay in place.
+    // Bind-pose normals are expressed in skeleton world space, including the mesh node transform.
     std::unique_ptr<AnimPose> bind(new AnimPose());
     skeleton->applyBindPose(bind.get());
     bind->computeWorld(skeleton.get());
@@ -1146,27 +1156,14 @@ TEST_CASE("animation.skinned.render.applyToMesh") {
     win->close();
 }
 }  // namespace test_animation_skinned
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_avatar_vrm)
+// Contract section: avatar vrm
 #include "PrivateTestScope.h"
+
 #include <cstring>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/VrmDocument.h"
 #include "common/ECS.h"
-#include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
-#include "model3d/Model3D.h"
-#include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // avatar_vrm.cpp
 namespace test_avatar_vrm {
 namespace {
@@ -1222,26 +1219,18 @@ TEST_CASE("avatar.vrm.graphicsBackendSupportIsExplicit") {
     REQUIRE(fs->unmount(directory));
 }
 }  // namespace test_avatar_vrm
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_cmdline)
+// Contract section: cmdline
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cstdint>
+
 #include <cstdlib>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 #include <sstream>
 #include <streambuf>
-#include <string>
-#include <vector>
 #include "cmdline/cmdline.h"
 #include "cmdline/sdk_tools.h"
 #include "cmdline/zip_writer.h"
 #include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // cmdline.cpp
 namespace test_cmdline {
 namespace {
@@ -2061,17 +2050,11 @@ TEST_CASE("cmdline.packageRejectsInvalidScriptDependencyGraphs") {
 }
 
 }  // namespace test_cmdline
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_crashlog)
+// Contract section: crashlog
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <fstream>
-#include <iterator>
-#include <string>
+
 #include "common/CrashLog.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // crashlog.cpp
 namespace test_crashlog {
 using namespace eve;
@@ -2106,13 +2089,11 @@ TEST_CASE("crashLog.recordCrashEvent") {
     CHECK(content.find("crash") != std::string::npos);
 }
 }  // namespace test_crashlog
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_database)
+// Contract section: database
 #include "PrivateTestScope.h"
+
 #include "database/Database.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // database.cpp
 namespace test_database {
 using namespace eve::database;
@@ -2134,7 +2115,7 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
                                {"name", [](const Actor &a) -> Value { return a.name; },
                                 [](Actor &a, const Value &v) { a.name = std::get<std::string>(v); }},
                                {"hp", [](const Actor &a) -> Value { return a.hp; },
-                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }},
+                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }, "REAL"},
                            }};
 
     Repository<Actor> actors(db, mapping);
@@ -2177,21 +2158,16 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
     CHECK_EQ(ranked->count(), 4);
 }
 }  // namespace test_database
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_tilemap_formats)
+// Contract section: editor tilemap formats
 #include "PrivateTestScope.h"
+
 #include <chrono>
-#include <filesystem>
-#include <fstream>
-#include <limits>
 #include "common/Json.h"
 #include "map/level/editing/Brush.h"
 #include "map/level/editing/EditorHistory.h"
 #include "map/level/editing/LevelDocument.h"
 #include "map/level/editing/LevelFormat.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_tilemap_formats.cpp
 namespace test_editor_tilemap_formats {
 using namespace eve::level_editing;
@@ -2233,27 +2209,13 @@ TEST_CASE("editor.tilemap.formats.failedSavePreservesPreviousFile") {
     CHECK_EQ(std::distance(std::filesystem::directory_iterator(directory), std::filesystem::directory_iterator{}), 2);
 }
 }  // namespace test_editor_tilemap_formats
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_filesystem_cpp)
+// Contract section: filesystem cpp
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <cstdint>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <memory>
-#include <string>
+
 #include <thread>
-#include <vector>
-#include "common/Exception.h"
-#include "data/ByteData.h"
 #include "filesystem/File.h"
-#include "filesystem/FileData.h"
 #include "filesystem/FileWatch.h"
-#include "filesystem/Filesystem.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // filesystem_cpp.cpp
 namespace test_filesystem_cpp {
 namespace {
@@ -2803,25 +2765,16 @@ TEST_CASE("filesystem.watch.parentDotDotResolves") {
     CHECK_EQ(f->getWatchCount(), 0);
 }
 }  // namespace test_filesystem_cpp
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hex_level_data)
+// Contract section: hex level data
 #include "PrivateTestScope.h"
+
 #include <Poco/Dynamic/Var.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-#include "PathBesideSource.h"
 #include "ProcgenGridTestSupport.h"
 #include "data/DataModule.h"
 #include "data/JsonDocument.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Light.h"
 #include "inventory/Bag.h"
 #include "inventory/Equipment.h"
 #include "inventory/Inventory.h"
@@ -2841,8 +2794,6 @@ TEST_CASE("filesystem.watch.parentDotDotResolves") {
 #include "procgen/Params.h"
 #include "procgen/Procgen.h"
 #include "procgen/Semantic.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // hex_level_data.cpp
 namespace test_hex_level_data {
 // Data-driven hex level fixtures — loads examples/hex-levels/data/*.json
@@ -3500,8 +3451,18 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         if (auto light = lv->getObject("light")) {
             std::string lightType = "point";
             if (light->has("type")) lightType = light->getValue<std::string>("type");
+            const bool knownProfile =
+                lightType == "point" || lightType == "spot" || lightType == "dir" || lightType == "multi";
+            REQUIRE(knownProfile);
+            // The example keeps its point torch for the multi-light profile;
+            // multi is a catalog profile, not a Light2D primitive type.
+            const std::string primitiveType = lightType == "multi" ? "point" : lightType;
             auto *lamp = eve::graphics::Light2D::createLight(lightType);
-            CHECK_EQ(lamp->getType(), lightType);
+            CHECK_EQ(lamp->getType(), primitiveType);
+            if (lightType == "multi") {
+                REQUIRE(light->has("count"));
+                CHECK(light->getValue<int>("count") > 1);
+            }
             const float radius = light->has("radius") ? float(light->getValue<double>("radius")) : 120.f;
             lamp->setRadius(radius);
             CHECK(std::fabs(lamp->getRadius() - radius) < 1e-3f);
@@ -4226,25 +4187,13 @@ TEST_CASE("hex.data.tinyMap.doorIsWalkable") {
     for (TileLayer *L : layers) L->setVisible(false);
 }
 }  // namespace test_hex_level_data
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hotreload)
+// Contract section: hotreload
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <memory>
-#include <string>
-#include <thread>
+
 #include "ScriptTest.h"
-#include "filesystem/Filesystem.h"
 #include "filesystem/HotReload.h"
-#include "particles/ParticleEmitter.h"
 #include "particles/ParticleSystem.h"
-#include "particles/Particles.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // hotreload.cpp
 namespace test_hotreload {
 using namespace eve;
@@ -4412,16 +4361,11 @@ TEST_CASE("hotreload.watchTree.absoluteRootRecursesAndReportsRelativePath") {
     std::filesystem::remove_all(root);
 }
 }  // namespace test_hotreload
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_i18n)
+// Contract section: i18n
 #include "PrivateTestScope.h"
-#include <cstring>
-#include <string>
-#include "filesystem/Filesystem.h"
+
 #include "i18n/I18n.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // i18n.cpp
 namespace test_i18n {
 using namespace eve::i18n;
@@ -4446,15 +4390,12 @@ TEST_CASE("i18n.loadFromFileRoundTripAndMissing") {
     CHECK_EQ(i18n->get("n"), std::string("42"));
 }
 }  // namespace test_i18n
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_joystick_cpp)
+// Contract section: joystick cpp
 #include "PrivateTestScope.h"
-#include "common/Exception.h"
+
 #include "joystick/Joystick.h"
 #include "joystick/Pad.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // joystick_cpp.cpp
 namespace test_joystick_cpp {
 namespace {
@@ -4521,4 +4462,3 @@ TEST_CASE("joystick.connectedPadsQueryable") {
     }
 }
 }  // namespace test_joystick_cpp
-#endif

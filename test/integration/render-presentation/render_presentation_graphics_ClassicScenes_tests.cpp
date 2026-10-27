@@ -25,12 +25,14 @@
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: AmbientOcclusion
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
 #include "ManualPreview.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_AmbientOcclusion)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <memory>
@@ -44,7 +46,6 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -55,10 +56,7 @@
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // AmbientOcclusion.cpp
 namespace test_AmbientOcclusion {
@@ -196,6 +194,9 @@ TEST_CASE("ao.ssaoDarkensCrease") {
     CornerDepth cd;
     cd.w           = 128;
     cd.h           = 96;
+    // Keep the wall/floor depth gap inside the AO radius; probe the floor beside the walls.
+    cd.wallDepth   = 0.10f;
+    cd.floorDepth  = 0.12f;
     Texture *depth = ao->newLinearDepthTexture(gfx, cd.w, cd.h, cornerDepth01, &cd);
     REQUIRE(depth != nullptr);
 
@@ -203,7 +204,7 @@ TEST_CASE("ao.ssaoDarkensCrease") {
     ao->computeTo(gfx, depth, out);
 
     // Crease center vs open floor corner.
-    const float crease = luma(out->getPixel(cd.w / 2, cd.h / 2));
+    const float crease = luma(out->getPixel(int(cd.w * 0.56f), int(cd.h * 0.56f)));
     const float open   = luma(out->getPixel(int(cd.w * 0.12f), int(cd.h * 0.12f)));
     CHECK(open > crease);
     CHECK(crease < 0.98f);
@@ -259,6 +260,45 @@ TEST_CASE("ao.blurPreservesMeanRoughly") {
     ao->setQuality("medium");
     ao->setCamera(0.f, 1.f, 3.f, 0.f, 0.f, 0.f, 0.f, 1.f, 0.f, 60.f, 160.f / 120.f, 0.1f, 30.f);
 
+    auto *const sharedAo = ao.get();
+    SUB_CASE("data passes preserve AO and depth independently of the destination") {
+        // Zero intensity gives a known white AO payload, independent of each algorithm's sampling.
+        sharedAo->setIntensity(0.f);
+        Texture *flatDepth =
+            sharedAo->newLinearDepthTexture(gfx, 8, 8, [](int, int, void *) { return 0.25f; }, nullptr);
+        Canvas *computed = gfx->newCanvas(8, 8);
+        Canvas *filtered = gfx->newCanvas(8, 8);
+        REQUIRE(flatDepth != nullptr);
+        REQUIRE(computed != nullptr);
+        REQUIRE(filtered != nullptr);
+        for (const char *mode : {"ssao", "hbao", "gtao"}) {
+            sharedAo->setMode(mode);
+            for (const Color clear : {Color(1.f, 0.f, 0.f, 1.f), Color(0.f, 0.f, 1.f, 0.f)}) {
+                gfx->setCanvas(computed);
+                gfx->clear(clear, std::nullopt, std::nullopt);
+                gfx->setCanvas(nullptr);
+                sharedAo->computeTo(gfx, flatDepth, computed);
+                const Color data = computed->getPixel(4, 4);
+                REQUIRE(data.r > 0.98f);
+                REQUIRE(data.g > 0.98f);
+                REQUIRE(data.b > 0.98f);
+                REQUIRE(std::fabs(data.a - 0.25f) < 0.01f);
+
+                gfx->setCanvas(filtered);
+                gfx->clear(clear, std::nullopt, std::nullopt);
+                gfx->setCanvas(nullptr);
+                sharedAo->blurTo(gfx, computed->getTexture(), filtered);
+                const Color blurred = filtered->getPixel(4, 4);
+                REQUIRE(blurred.r > 0.98f);
+                REQUIRE(blurred.g > 0.98f);
+                REQUIRE(blurred.b > 0.98f);
+                REQUIRE(std::fabs(blurred.a - 0.25f) < 0.01f);
+            }
+        }
+    };
+    ao->setMode("ssao");
+    ao->setIntensity(1.f);
+
     CornerDepth cd;
     cd.w           = 80;
     cd.h           = 60;
@@ -300,18 +340,22 @@ TEST_CASE("ao.overlayDarkensLitScene") {
     CornerDepth cd;
     cd.w           = 80;
     cd.h           = 60;
+    cd.wallDepth   = 0.10f;
+    cd.floorDepth  = 0.12f;
     Texture *depth = ao->newLinearDepthTexture(gfx, cd.w, cd.h, cornerDepth01, &cd);
     Canvas  *aoMap = gfx->newCanvas(cd.w, cd.h);
     ao->computeTo(gfx, depth, aoMap);
 
     Canvas *scene = gfx->newCanvas(cd.w, cd.h);
     gfx->setCanvas(scene);
-    gfx->clear(Color(0.85f, 0.85f, 0.88f, 1.f), std::nullopt, std::nullopt);
-    const float before = luma(scene->getPixel(cd.w / 2, cd.h / 2));
-    ao->applyOverlay(gfx, aoMap->getTexture());
+    gfx->drawSolidRect(0.f, 0.f, float(cd.w), float(cd.h), Color(0.85f, 0.85f, 0.88f, 1.f));
     gfx->setCanvas(nullptr);
+    const int   creaseX = int(cd.w * 0.56f), creaseY = int(cd.h * 0.56f);
+    const float before = luma(scene->getPixel(creaseX, creaseY));
+    REQUIRE(before > 0.8f);
+    ao->applyOverlayTo(gfx, aoMap->getTexture(), scene);
 
-    const float after     = luma(scene->getPixel(cd.w / 2, cd.h / 2));
+    const float after     = luma(scene->getPixel(creaseX, creaseY));
     const float openAfter = luma(scene->getPixel(int(cd.w * 0.1f), int(cd.h * 0.1f)));
     CHECK(after < before);
     CHECK(openAfter + 0.02f >= after);
@@ -319,40 +363,12 @@ TEST_CASE("ao.overlayDarkensLitScene") {
     win->close();
 }
 }  // namespace test_AmbientOcclusion
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_AntiAliasing)
+// Contract section: AntiAliasing
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <memory>
-#include <string>
+
+
 #include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // AntiAliasing.cpp
 namespace test_AntiAliasing {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -589,20 +605,16 @@ TEST_CASE("aa.msaaSamplesApi") {
     gfx->present();
 }
 }  // namespace test_AntiAliasing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_BloomPyramid)
+// Contract section: BloomPyramid
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
+
+
 #include "common/config.h"
 #include "graphics/Bloom.h"
-#include "graphics/Canvas.h"
 #include "graphics/shaders/PostProcessWgsl.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 // BloomPyramid.cpp
 namespace test_BloomPyramid {
 #ifndef EVENGINE_WEBGPU
@@ -675,11 +687,11 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
     REQUIRE(std::abs(restored->getPixel(32, 16).r - energy) < .004f);
 }
 }  // namespace test_BloomPyramid
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ClassicScenes)
+// Contract section: ClassicScenes
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
+
 #include <assimp/material.h>
 #include <assimp/matrix4x4.h>
 #include <assimp/mesh.h>
@@ -688,7 +700,6 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
 #include <assimp/vector3.h>
 #include <algorithm>
 #include <chrono>
-#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -697,47 +708,17 @@ TEST_CASE("graphics.bloom photographic pyramid preserves weighted DC and thresho
 #include <filesystem>
 #include <fstream>
 #include <functional>
-#include <memory>
-#include <string>
 #include <unordered_map>
-#include <vector>
-#include "Fixtures.h"
 #include "PathBesideSource.h"
 #include "RenderImageAudit.h"
 #include "data/ByteData.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
 #include "os/OS.h"
 #include "timer/Timer.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ClassicScenes.cpp
 namespace test_ClassicScenes {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -1162,7 +1143,7 @@ float viewHz() {
     return 30.f;
 }
 
-/** Extra per-phase / diagnostic PNGs. Default is one hero shot per scene. */
+/** Extra per-phase / diagnostic PNGs; regular contracts do not emit hero images. */
 bool dumpPhaseFrames() {
     const char *env = std::getenv("EVENGINE_DUMP_PHASES");
     return env && env[0] && env[0] != '0';
@@ -1170,14 +1151,16 @@ bool dumpPhaseFrames() {
 
 std::string classicOutDir() { return std::string(EVENGINE_TEST_BINARY_DIR) + "/out/classic_scenes"; }
 
-void saveFramePng(Graphics * /*gfx*/, const std::string &name, eve::image::ImageData *frame) {
+void saveFramePng(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics * /*gfx*/, const std::string &name,
+                  eve::image::ImageData *frame) {
     const std::string outDir = classicOutDir();
     REQUIRE(saveImagePng(*frame, outDir + "/" + name));
     std::printf("ClassicScenes frame: %s\n", (outDir + "/" + name).c_str());
 }
 
 /** CPU-only audit of the already-read-back snapshot. No extra present/readback. */
-void auditCapturedFrame(eve::image::ImageData *frame, Graphics *gfx, const char *sceneTag, const char *phase) {
+void auditCapturedFrame(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, eve::image::ImageData *frame, Graphics *gfx,
+                        const char *sceneTag, const char *phase) {
     REQUIRE(frame != nullptr);
     const Color       c = gfx->getBackgroundColor();
     RenderAuditConfig cfg{sceneTag, phase, "", 0};
@@ -1211,7 +1194,8 @@ void resetRenderControl(Graphics *gfx) {
 }
 
 /** Extra lighting / RenderControl snaps at the current camera. No extra fly frames. */
-void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneTag, bool polishMetals) {
+void snapStaticConfigGrid(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                          const char *sceneTag, bool polishMetals) {
     struct Extra {
         RenderCfg   cfg;
         const char *enableFeat;
@@ -1253,8 +1237,9 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
         RenderSystem::render(*gfx);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        if (dumpPhaseFrames()) saveFramePng(gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
-        auditCapturedFrame(snap, gfx, sceneTag, ex.tag);
+        if (dumpPhaseFrames())
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + "_" + ex.tag + ".png", snap);
+        auditCapturedFrame(_ZEROERR_TEST_CONTEXT, snap, gfx, sceneTag, ex.tag);
         delete snap;
         gfx->setScreenReadbackEnabled(false);
         if (ex.msaaSamples >= 0) gfx->setMsaaSamples(4);
@@ -1263,28 +1248,29 @@ void snapStaticConfigGrid(Graphics *gfx, SceneActors &actors, const char *sceneT
     gfx->setScreenReadbackEnabled(true);
 }
 
-void snapAndSave(Graphics *gfx, const char *name) {
+void snapAndSave(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, const char *name) {
     gfx->setScreenReadbackEnabled(true);
     warmPresent(gfx);
     eve::image::ImageData *snap = gfx->newImageData();
     REQUIRE(snap != nullptr);
-    saveFramePng(gfx, name, snap);
+    saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, name, snap);
     delete snap;
     gfx->setScreenReadbackEnabled(false);
 }
 
 /** Isolate the pbr_chart ground disk: hide spheres, dump lighting vs GBuffer normals. */
-void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &cam) {
+void dumpPbrChartGroundDiag(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                            const CamKey &cam) {
     REQUIRE(!actors.ents.empty());
     applyCam(actors.cam, cam);
 
     applyConfig(actors, RenderCfg::DirectionalShadows, false);
-    snapAndSave(gfx, "pbr_chart_diag_shadows.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_shadows.png");
     CamKey side = cam;
     side.eyeX   = 2.f * cam.tgtX - cam.eyeX;
     side.eyeZ   = 2.f * cam.tgtZ - cam.eyeZ;
     applyCam(actors.cam, side);
-    snapAndSave(gfx, "pbr_chart_diag_shadows_side.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_shadows_side.png");
     applyCam(actors.cam, cam);
 
     for (size_t i = 1; i < actors.ents.size(); ++i) actors.ents[i]->setVisible(false);
@@ -1292,14 +1278,14 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     const float savedRough = ground->meshRenderer()->roughness;
 
     applyConfig(actors, RenderCfg::DirectionalLit, false);
-    snapAndSave(gfx, "pbr_chart_diag_ground_dir.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_dir.png");
 
     applyConfig(actors, RenderCfg::IblReflections, false);
-    snapAndSave(gfx, "pbr_chart_diag_ground_ibl.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_ibl.png");
 
     applyConfig(actors, RenderCfg::DirectionalLit, false);
     ground->setRoughness(1.f);
-    snapAndSave(gfx, "pbr_chart_diag_ground_matte.png");
+    snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_ground_matte.png");
     ground->setRoughness(savedRough);
 
     RenderControl *rc = gfx->getRenderControl();
@@ -1322,7 +1308,7 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     gfx->present();
     eve::image::ImageData *nSnap = gfx->newImageData();
     REQUIRE(nSnap != nullptr);
-    saveFramePng(gfx, "pbr_chart_diag_gbuffer_n.png", nSnap);
+    saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, "pbr_chart_diag_gbuffer_n.png", nSnap);
     delete nSnap;
 
     for (auto *e : actors.ents) e->setVisible(true);
@@ -1330,14 +1316,15 @@ void dumpPbrChartGroundDiag(Graphics *gfx, SceneActors &actors, const CamKey &ca
     gfx->setScreenReadbackEnabled(true);
 }
 
-void dumpCornellShadowSweep(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path) {
+void dumpCornellShadowSweep(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                            const std::vector<CamKey> &path) {
     REQUIRE(path.size() >= 2);
     applyConfig(actors, RenderCfg::DirectionalShadows, false);
     for (size_t i = 0; i < path.size(); ++i) {
         applyCam(actors.cam, path[i]);
         char name[80];
         std::snprintf(name, sizeof(name), "cornell_diag_shadow_k%zu.png", i);
-        snapAndSave(gfx, name);
+        snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, name);
     }
     // Consecutive micro-steps on the first leg: swimming shows up as the umbra
     // crawling across the floor between otherwise-similar frames.
@@ -1345,7 +1332,7 @@ void dumpCornellShadowSweep(Graphics *gfx, SceneActors &actors, const std::vecto
         applyCam(actors.cam, lerpKey(path[0], path[1], float(i) * 0.04f));
         char name[80];
         std::snprintf(name, sizeof(name), "cornell_diag_shadow_step%02d.png", i);
-        snapAndSave(gfx, name);
+        snapAndSave(_ZEROERR_TEST_CONTEXT, gfx, name);
     }
 }
 
@@ -1368,10 +1355,15 @@ float meanLuma(Graphics *gfx, int step = 8) {
     return n ? float(sum / n) : 0.f;
 }
 
+/** Assimp row-major → glm column-major for Graphics::newMeshFromAssimp. */
+glm::mat4 aiToGlm(const aiMatrix4x4& m) {
+    return glm::mat4(m.a1, m.b1, m.c1, m.d1, m.a2, m.b2, m.c2, m.d2, m.a3, m.b3, m.c3, m.d3, m.a4, m.b4, m.c4, m.d4);
+}
+
 /** Upload an Assimp mesh with a baked world transform (copies positions/normals). */
 Mesh *uploadMeshWorld(Graphics *gfx, const aiMesh *src, const aiMatrix4x4 &world) {
     REQUIRE(src != nullptr);
-    return gfx->newMeshFromAssimp(*src, world);
+    return gfx->newMeshFromAssimp(*src, aiToGlm(world));
 }
 
 /** Spawn every Assimp mesh with node transforms baked + material tint/texture.
@@ -1460,7 +1452,7 @@ int spawnModel(Graphics *gfx, eve::model3d::ModelData *md, const std::string &as
             if (mi >= scene->mNumMeshes) continue;
             const aiMesh *ai = scene->mMeshes[mi];
             if (!ai || ai->mNumFaces == 0) continue;
-            Mesh *mesh = gfx->newMeshFromAssimp(*ai, world);
+            Mesh* mesh = gfx->newMeshFromAssimp(*ai, aiToGlm(world));
             REQUIRE(mesh != nullptr);
 
             MatLook look                 = resolveMat(ai->mMaterialIndex);
@@ -1613,13 +1605,13 @@ std::vector<CamKey> makeSponzaPath(const Bounds &b) {
 }
 
 /**
- * Fly the camera through @p path while cycling render configs.
- * Presents live frames to the window and writes one FullLit PNG per scene
- * (`{tag}.png`). Set EVENGINE_DUMP_PHASES=1 to also write per-phase dumps.
+ * Submit representative camera keys while cycling render configs.
+ * Manual preview retains the timed flythrough. Hero and per-phase PNGs are
+ * exported only for manual preview or EVENGINE_DUMP_PHASES=1 respectively.
  * Returns mean luma sampled at the end of each config phase.
  */
-std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const std::vector<CamKey> &path,
-                                     const char *sceneTag, bool polishMetalsForIbl) {
+std::vector<float> flyThroughConfigs(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics *gfx, SceneActors &actors,
+                                     const std::vector<CamKey> &path, const char *sceneTag, bool polishMetalsForIbl) {
     REQUIRE(actors.cam != nullptr);
     REQUIRE(path.size() >= 2);
     REQUIRE(actors.env != nullptr);
@@ -1638,6 +1630,7 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
     gfx->setBackgroundColor(Color(0.14f, 0.15f, 0.17f, 1.f));
     addHud();
 
+    const bool  manualPreview = eve::test::manualPreviewEnabled();
     auto       *timer       = eve::timer::Timer::create();
     const float hz          = viewHz();
     const float secPerPhase = viewSecondsPerPhase();
@@ -1646,7 +1639,9 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
     std::printf("ClassicScenes[%s] view %.1fs/phase @ %.0f Hz (set EVENGINE_VIEW_SECONDS to change)\n", sceneTag,
                 secPerPhase, hz);
 
-    auto dumpHero = [&]() {
+    auto dumpHero = [&](bool captureForCaller) {
+        const bool writePng = manualPreview || dumpPhaseFrames();
+        if (!captureForCaller && !writePng) return;
         applyCam(actors.cam, path[0]);
         if (std::string(sceneTag) == "pbr_chart") {
             for (auto *e : actors.ents) e->transform()->yaw = 0.f;
@@ -1655,13 +1650,15 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         resetRenderControl(gfx);
         gfx->setScreenReadbackEnabled(true);
         warmPresent(gfx);
-        eve::image::ImageData *hero = gfx->newImageData();
-        REQUIRE(hero != nullptr);
-        saveFramePng(gfx, std::string(sceneTag) + ".png", hero);
-        delete hero;
+        if (writePng) {
+            eve::image::ImageData *hero = gfx->newImageData();
+            REQUIRE(hero != nullptr);
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + ".png", hero);
+            delete hero;
+        }
         gfx->setScreenReadbackEnabled(false);
     };
-    dumpHero();
+    dumpHero(false);
     const float tFly0 = timer->getTime();
 
     int frame = 0;
@@ -1672,13 +1669,15 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         const float phaseEnd = float(pi + 1) * secPerPhase;
         const float tPhase0  = timer->getTime();
         int         nFrames  = 0;
-        const int   frameCap = std::max(8, int(hz * secPerPhase) * 4);
+        const int   frameCap = manualPreview ? std::max(8, int(hz * secPerPhase) * 4) : 3;
         while (nFrames < frameCap) {
             const float now     = timer->getTime();
             const float elapsed = now - tFly0;
-            if (elapsed >= phaseEnd && nFrames >= 2) break;
+            if (manualPreview && elapsed >= phaseEnd && nFrames >= 2) break;
 
-            const float tPath = totalSec > 1e-4f ? std::min(elapsed / totalSec, 1.f) : 0.f;
+            // Fixed path samples exercise real camera submissions without a viewing hold.
+            const float tPath = manualPreview ? (totalSec > 1e-4f ? std::min(elapsed / totalSec, 1.f) : 0.f)
+                                              : (float(pi) + float(nFrames) / float(frameCap - 1)) / float(nPhases);
             const float legF  = tPath * float(legs);
             const int   leg   = std::min(legs - 1, int(legF));
             const float u     = legF - float(leg);
@@ -1694,7 +1693,7 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
             while (SDL_PollEvent(&e)) {
                 if (e.type == SDL_QUIT) break;
             }
-            paceViewFrame(timer, now, hz);
+            if (manualPreview) paceViewFrame(timer, now, hz);
             ++nFrames;
             ++frame;
         }
@@ -1715,14 +1714,17 @@ std::vector<float> flyThroughConfigs(Graphics *gfx, SceneActors &actors, const s
         phaseLuma.push_back(L);
         eve::image::ImageData *snap = gfx->newImageData();
         REQUIRE(snap != nullptr);
-        if (dumpPhaseFrames()) saveFramePng(gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
-        auditCapturedFrame(snap, gfx, sceneTag, cfgName(phases[pi]));
+        if (dumpPhaseFrames())
+            saveFramePng(_ZEROERR_TEST_CONTEXT, gfx, std::string(sceneTag) + "_" + cfgName(phases[pi]) + ".png", snap);
+        auditCapturedFrame(_ZEROERR_TEST_CONTEXT, snap, gfx, sceneTag, cfgName(phases[pi]));
         delete snap;
         std::printf("ClassicScenes[%s] phase=%s meanLuma=%.4f\n", sceneTag, cfgName(phases[pi]), L);
         gfx->setScreenReadbackEnabled(false);
     }
 
-    dumpHero();
+    // Refresh the FullLit/path-start pixels even without PNG output: callers
+    // sample this result, not the preceding IBL phase's cached readback.
+    dumpHero(true);
 
     // Callers (cornell wall sampling) may read pixels after we return.
     gfx->setScreenReadbackEnabled(true);
@@ -1886,7 +1888,7 @@ double benchGltfOrbitScene(Graphics *gfx, const char *relDir, const char *gltfFi
     }
 }
 
-void expectLightingResponse(const std::vector<float> &L) {
+void expectLightingResponse(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const std::vector<float> &L) {
     REQUIRE(L.size() >= 5);
     // Soft metals (DamagedHelmet etc.) can stay dark / slightly darker under
     // directional-only because diffuse is tiny; accept either a directional lift
@@ -1903,9 +1905,10 @@ void expectLightingResponse(const std::vector<float> &L) {
 }  // namespace
 
 // Defined below; forward-declared so early ClassicScenes cases can soft-skip via it.
-bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag, float defaultMetallic,
-                       float defaultRoughness, bool usePbrFactors, bool polishMetalsForIbl, float elev = 0.35f,
-                       float distScale = 1.7f, int minMeshes = 1, int minTextures = 0, int winW = 640, int winH = 480);
+bool runGltfOrbitScene(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const char *relDir, const char *gltfFile,
+                       const char *tag, float defaultMetallic, float defaultRoughness, bool usePbrFactors,
+                       bool polishMetalsForIbl, float elev = 0.35f, float distScale = 1.7f, int minMeshes = 1,
+                       int minTextures = 0, int winW = 640, int winH = 480);
 
 TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     const std::string dir = pathBesideThisSource("assets/classic/cornell");
@@ -1937,10 +1940,10 @@ TEST_CASE("ClassicScenes.cornell.flythroughConfigs") {
     actors.pointA->setRadius(4.f);
 
     auto path = makeCornellPath(actors.bounds);
-    auto L    = flyThroughConfigs(gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
-    expectLightingResponse(L);
-    snapStaticConfigGrid(gfx, actors, "cornell", /*polishMetals=*/true);
-    if (dumpPhaseFrames()) dumpCornellShadowSweep(gfx, actors, path);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "cornell", /*polishMetalsForIbl=*/true);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
+    snapStaticConfigGrid(_ZEROERR_TEST_CONTEXT, gfx, actors, "cornell", /*polishMetals=*/true);
+    if (dumpPhaseFrames()) dumpCornellShadowSweep(_ZEROERR_TEST_CONTEXT, gfx, actors, path);
 
     // Red vs green walls should remain distinguishable under directional light.
     applyConfig(actors, RenderCfg::DirectionalLit, false);
@@ -2004,10 +2007,10 @@ TEST_CASE("ClassicScenes.pbrChart.flythroughConfigs") {
     actors.sun->setDirection(0.9f, 0.45f, 0.25f);
 
     auto path = makeOrbitPath(actors.bounds, 0.55f, 1.65f);
-    auto L    = flyThroughConfigs(gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
-    expectLightingResponse(L);
-    snapStaticConfigGrid(gfx, actors, "pbr_chart", /*polishMetals=*/false);
-    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(gfx, actors, path[0]);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "pbr_chart", /*polishMetalsForIbl=*/false);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
+    snapStaticConfigGrid(_ZEROERR_TEST_CONTEXT, gfx, actors, "pbr_chart", /*polishMetals=*/false);
+    if (dumpPhaseFrames()) dumpPbrChartGroundDiag(_ZEROERR_TEST_CONTEXT, gfx, actors, path[0]);
 
     // IBL phase should brighten metals relative to ambient-only.
     CHECK(L[4] > L[0] + 0.01f);
@@ -2060,8 +2063,8 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
     actors.pointB->setRadius(rad * 1.2f);
 
     auto path = makeSponzaPath(actors.bounds);
-    auto L    = flyThroughConfigs(gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false);
-    expectLightingResponse(L);
+    auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, "sponza", /*polishMetalsForIbl=*/false);
+    expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
 
     // Shadows should not black out the whole atrium vs plain directional.
     REQUIRE(L[2] > 0.02f);
@@ -2073,7 +2076,7 @@ TEST_CASE("ClassicScenes.sponza.flythroughConfigs") {
 TEST_CASE("ClassicScenes.damagedHelmet.flythroughConfigs") {
     // Keep dielectric-friendly defaults: without sampling the MR map, glTF's
     // metallicFactor≈1 turns the helmet into a near-black mirror under dir-only.
-    if (!runGltfOrbitScene("assets/classic/damaged_helmet/glTF", "DamagedHelmet.gltf", "helmet",
+    if (!runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/damaged_helmet/glTF", "DamagedHelmet.gltf", "helmet",
                            /*defaultMetallic=*/0.05f, /*defaultRoughness=*/0.4f,
                            /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.25f, 1.8f)) {
         return;
@@ -2081,9 +2084,10 @@ TEST_CASE("ClassicScenes.damagedHelmet.flythroughConfigs") {
 }
 
 /** Soft-skip helper for downloaded Khronos glTF sample scenes. */
-bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag, float defaultMetallic,
-                       float defaultRoughness, bool usePbrFactors, bool polishMetalsForIbl, float elev, float distScale,
-                       int minMeshes, int minTextures, int winW, int winH) {
+bool runGltfOrbitScene(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const char *relDir, const char *gltfFile,
+                       const char *tag, float defaultMetallic, float defaultRoughness, bool usePbrFactors,
+                       bool polishMetalsForIbl, float elev, float distScale, int minMeshes, int minTextures, int winW,
+                       int winH) {
     const std::string dir = pathBesideThisSource(relDir);
     if (!fileExists(dir + "/" + gltfFile)) {
         std::printf("ClassicScenes.%s: missing %s/%s — run scripts/download_classic_scenes.sh\n", tag, dir.c_str(),
@@ -2148,8 +2152,8 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
         actors.pointB->setColor(0.35f, 0.55f, 1.f, 6.5f);
 
         auto path = makeOrbitPath(actors.bounds, elev, distScale);
-        auto L    = flyThroughConfigs(gfx, actors, path, tag, polishMetalsForIbl);
-        expectLightingResponse(L);
+        auto L    = flyThroughConfigs(_ZEROERR_TEST_CONTEXT, gfx, actors, path, tag, polishMetalsForIbl);
+        expectLightingResponse(_ZEROERR_TEST_CONTEXT, L);
 
         md = nullptr;
         win->close();
@@ -2162,81 +2166,87 @@ bool runGltfOrbitScene(const char *relDir, const char *gltfFile, const char *tag
 }
 
 TEST_CASE("ClassicScenes.flightHelmet.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/flight_helmet/glTF", "FlightHelmet.gltf", "flight_helmet",
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/flight_helmet/glTF", "FlightHelmet.gltf", "flight_helmet",
                       /*defaultMetallic=*/0.05f, /*defaultRoughness=*/0.55f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.8f,
                       /*minMeshes=*/5, /*minTextures=*/3);
 }
 
 TEST_CASE("ClassicScenes.boomBox.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/boom_box/glTF", "BoomBox.gltf", "boom_box", 0.05f, 0.45f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/boom_box/glTF", "BoomBox.gltf", "boom_box", 0.05f, 0.45f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.3f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.scifiHelmet.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/scifi_helmet/glTF", "SciFiHelmet.gltf", "scifi_helmet", 0.05f, 0.4f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/scifi_helmet/glTF", "SciFiHelmet.gltf", "scifi_helmet",
+                      0.05f, 0.4f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.25f, 1.8f);
 }
 
 TEST_CASE("ClassicScenes.metalRoughSpheres.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/metal_rough_spheres/glTF", "MetalRoughSpheres.gltf", "metal_rough_spheres", 0.05f,
-                      0.5f, /*usePbrFactors=*/true,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/metal_rough_spheres/glTF", "MetalRoughSpheres.gltf",
+                      "metal_rough_spheres", 0.05f, 0.5f, /*usePbrFactors=*/true,
                       /*polishMetalsForIbl=*/false, 0.45f, 1.7f, /*minMeshes=*/1,
                       /*minTextures=*/0);
 }
 
 TEST_CASE("ClassicScenes.suzanne.flythroughConfigs") {
     // Blender monkey — silhouette / orientation / lit response.
-    if (!runGltfOrbitScene("assets/classic/suzanne/glTF", "Suzanne.gltf", "suzanne", 0.05f, 0.55f,
+    if (!runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/suzanne/glTF", "Suzanne.gltf", "suzanne", 0.05f,
+                           0.55f,
                            /*usePbrFactors=*/false, /*polishMetalsForIbl=*/true, 0.35f, 1.9f)) {
         return;
     }
 }
 
 TEST_CASE("ClassicScenes.duck.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/duck/glTF", "Duck.gltf", "duck", 0.02f, 0.65f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/duck/glTF", "Duck.gltf", "duck", 0.02f, 0.65f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.45f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.avocado.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/avocado/glTF", "Avocado.gltf", "avocado", 0.02f, 0.7f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/avocado/glTF", "Avocado.gltf", "avocado", 0.02f, 0.7f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.9f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.waterBottle.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/water_bottle/glTF", "WaterBottle.gltf", "water_bottle", 0.05f, 0.35f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/water_bottle/glTF", "WaterBottle.gltf", "water_bottle",
+                      0.05f, 0.35f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.4f, 1.9f);
 }
 
 TEST_CASE("ClassicScenes.lantern.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/lantern/glTF", "Lantern.gltf", "lantern", 0.05f, 0.55f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/lantern/glTF", "Lantern.gltf", "lantern", 0.05f, 0.55f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.45f, 1.85f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.antiqueCamera.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/antique_camera/glTF", "AntiqueCamera.gltf", "antique_camera", 0.08f, 0.5f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/antique_camera/glTF", "AntiqueCamera.gltf",
+                      "antique_camera", 0.08f, 0.5f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.9f, /*minMeshes=*/1,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.cesiumMilkTruck.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/cesium_milk_truck/glTF", "CesiumMilkTruck.gltf", "cesium_milk_truck", 0.05f, 0.6f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/cesium_milk_truck/glTF", "CesiumMilkTruck.gltf",
+                      "cesium_milk_truck", 0.05f, 0.6f,
                       /*usePbrFactors=*/false,
                       /*polishMetalsForIbl=*/false, 0.4f, 2.0f, /*minMeshes=*/2,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.barramundiFish.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/barramundi_fish/glTF", "BarramundiFish.gltf", "barramundi_fish", 0.02f, 0.55f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/barramundi_fish/glTF", "BarramundiFish.gltf",
+                      "barramundi_fish", 0.02f, 0.55f,
                       /*usePbrFactors=*/false,
                       /*polishMetalsForIbl=*/false, 0.3f, 1.9f, /*minMeshes=*/1,
                       /*minTextures=*/1);
 }
 
 TEST_CASE("ClassicScenes.corset.flythroughConfigs") {
-    runGltfOrbitScene("assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f,
+    runGltfOrbitScene(_ZEROERR_TEST_CONTEXT, "assets/classic/corset/glTF", "Corset.gltf", "corset", 0.05f, 0.5f,
                       /*usePbrFactors=*/false, /*polishMetalsForIbl=*/false, 0.35f, 1.85f,
                       /*minMeshes=*/1, /*minTextures=*/1);
 }
@@ -2347,42 +2357,13 @@ TEST_CASE("ClassicScenes.perf.maxFps") {
     REQUIRE(globalBest > 1.0);
 }
 }  // namespace test_ClassicScenes
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ClusteredLighting)
+// Contract section: ClusteredLighting
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
+
+
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClusteredLight.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ClusteredLighting.cpp
 namespace test_ClusteredLighting {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2485,57 +2466,30 @@ TEST_CASE("ClusteredLighting.manyPointLightsBrightenCenter") {
 
     REQUIRE(L_on > L_off + 0.04f);
 
-    // Re-enable the ring of lights and spin so clustered lighting is visible.
-    for (auto *L : lights) L->setEnabled(true);
-    for (int i = 0; i < 60; ++i) {
-        ent->transform()->yaw = float(i) * 0.04f;
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
+    if (eve::test::manualPreviewEnabled()) {
+        // Re-enable the ring of lights and spin so clustered lighting is visible.
+        for (auto *L : lights) L->setEnabled(true);
+        for (int i = 0; i < 60; ++i) {
+            ent->transform()->yaw = float(i) * 0.04f;
+            RenderSystem3D::render(*gfx);
+            RenderSystem::render(*gfx);
+            SDL_Event e;
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) break;
+            }
+            SDL_Delay(16);
         }
-        SDL_Delay(16);
     }
 
     dir->setEnabled(false);
     win->close();
 }
 }  // namespace test_ClusteredLighting
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_GlobalIllumination)
+// Contract section: GlobalIllumination
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // GlobalIllumination.cpp
 namespace test_GlobalIllumination {
 using namespace eve::graphics;
@@ -2604,49 +2558,11 @@ TEST_CASE("gi.qualityAndApplyFromDepth") {
     win->close();
 }
 }  // namespace test_GlobalIllumination
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_IBL)
+// Contract section: IBL
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
-#include <fstream>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
-#include "data/ByteData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // IBL.cpp
 namespace test_IBL {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2889,82 +2805,140 @@ TEST_CASE("IBL.envIntensityNegativeClampsToZero") {
     win->close();
 }
 
-TEST_CASE("IBL.envIntensityScalesMetalBrightness") {
+TEST_CASE("IBL.environmentIntensityAndRemovalContracts") {
     eve::window::Window *win = nullptr;
     Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx);
-    resetScene3D();
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{win};
+    SUB_CASE("IBL.envIntensityScalesMetalBrightness") {
+        resetScene3D();
 
-    Mesh *mesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(mesh != nullptr);
+        Mesh *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
 
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 3.f;
-    cam->setAmbient(0.03f, 0.03f, 0.03f);
-    cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+        cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
 
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
-    ent->setMetallic(1.0f);
-    ent->setRoughness(0.08f);
-    addHud(gfx);
-    RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+        auto *ent                    = Renderable3D::create();
+        ent->meshRenderer()->mesh    = mesh;
+        ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+        ent->setMetallic(1.0f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
 
-    gfx->setScreenReadbackEnabled(true);
-    cam->setEnvIntensity(0.4f);
-    warmPresent(gfx);
-    const float L_low = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        gfx->setScreenReadbackEnabled(true);
+        cam->setEnvIntensity(0.4f);
+        warmPresent(gfx);
+        const float L_low = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
-    cam->setEnvIntensity(2.0f);
-    warmPresent(gfx);
-    const float L_high = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        cam->setEnvIntensity(2.0f);
+        warmPresent(gfx);
+        const float L_high = luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
 
-    REQUIRE(L_high > L_low + 0.04f);
+        REQUIRE(L_high > L_low + 0.04f);
+    };
+    SUB_CASE("IBL.hybridMatchesForwardEnvironmentResponse") {
+        resetScene3D();
+        auto *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+        cam->setEnvMap(makeSolidCubemap(gfx, 220, 220, 220));
+        auto *ent = Renderable3D::create();
+        ent->setMesh(mesh);
+        ent->setTexture(makeSolidGray(gfx, 220));
+        ent->setMetallic(1.f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+        gfx->setScreenReadbackEnabled(true);
+        const LightingMode previousMode = gfx->getRenderControl()->getLightingMode();
+        const auto capture = [&](LightingMode mode, float intensity, zeroerr::TestContext *_ZEROERR_TEST_CONTEXT) {
+            auto *control = gfx->getRenderControl();
+            REQUIRE(control->setLightingMode(mode).ok());
+            control->compile();
+            REQUIRE(control->getEffectiveLightingMode() == mode);
+            cam->setEnvIntensity(intensity);
+            warmPresent(gfx);
+            return luma(gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2));
+        };
+        const float forwardLow  = capture(LightingMode::ForwardPlus, .4f, _ZEROERR_TEST_CONTEXT);
+        const float forwardHigh = capture(LightingMode::ForwardPlus, 2.f, _ZEROERR_TEST_CONTEXT);
+        const float hybridLow   = capture(LightingMode::Hybrid, .4f, _ZEROERR_TEST_CONTEXT);
+        const float hybridHigh  = capture(LightingMode::Hybrid, 2.f, _ZEROERR_TEST_CONTEXT);
+        // An unlit opaque foreground must overwrite its deferred depth/color,
+        // while still hiding the more distant environment-lit surface.
+        const uint8_t red[]             = {240, 20, 20, 255};
+        auto         *foreground        = Renderable3D::create();
+        auto         *foregroundMesh    = gfx->newMeshCube();
+        auto         *foregroundTexture = gfx->newTexture(1, 1, red);
+        REQUIRE(foregroundMesh != nullptr);
+        REQUIRE(foregroundTexture != nullptr);
+        foreground->setMesh(foregroundMesh);
+        foreground->setTexture(foregroundTexture);
+        foreground->setPosition(0.f, 0.f, 1.f);
+        foreground->setScale(.4f, .4f, .4f);
+        foreground->setReceiveLight(false);
+        capture(LightingMode::ForwardPlus, 2.f, _ZEROERR_TEST_CONTEXT);
+        const Color forwardFront = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        capture(LightingMode::Hybrid, 2.f, _ZEROERR_TEST_CONTEXT);
+        const Color hybridFront = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(gfx->getRenderControl()->setLightingMode(previousMode).ok());
+        gfx->getRenderControl()->compile();
+        REQUIRE(forwardHigh > forwardLow + .04f);
+        REQUIRE(hybridHigh > hybridLow + .04f);
+        REQUIRE(std::fabs(hybridLow - forwardLow) < .02f);
+        REQUIRE(std::fabs(hybridHigh - forwardHigh) < .02f);
+        REQUIRE(forwardFront.r > forwardFront.g + .2f);
+        REQUIRE(hybridFront.r > hybridFront.g + .2f);
+        REQUIRE(std::fabs(hybridFront.r - forwardFront.r) < .02f);
+        REQUIRE(std::fabs(hybridFront.g - forwardFront.g) < .02f);
+        REQUIRE(std::fabs(hybridFront.b - forwardFront.b) < .02f);
+    };
+    SUB_CASE("IBL.clearEnvMapDisablesReflection") {
+        resetScene3D();
 
-    win->close();
+        Mesh *mesh = gfx->newMeshSphere(24, 16);
+        REQUIRE(mesh != nullptr);
+
+        auto *cam         = Camera3D::createCamera();
+        cam->data()->eyeZ = 3.f;
+        cam->setAmbient(0.03f, 0.03f, 0.03f);
+
+        auto *ent                    = Renderable3D::create();
+        ent->meshRenderer()->mesh    = mesh;
+        ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
+        ent->setMetallic(1.0f);
+        ent->setRoughness(0.08f);
+        addHud(gfx);
+        RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
+
+        gfx->setScreenReadbackEnabled(true);
+        warmPresent(gfx);
+        const Color c0 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+
+        cam->setEnvMap(makeSolidCubemap(gfx, 40, 200, 40));
+        cam->setEnvIntensity(1.5f);
+        warmPresent(gfx);
+        const Color c1 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(c1.g > c0.g + 0.04f);
+
+        cam->setEnvMap(nullptr);
+        warmPresent(gfx);
+        const Color c2 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
+        REQUIRE(std::abs(c2.r - c0.r) < 0.05f);
+        REQUIRE(std::abs(c2.g - c0.g) < 0.05f);
+        REQUIRE(std::abs(c2.b - c0.b) < 0.05f);
+    };
 }
 
-TEST_CASE("IBL.clearEnvMapDisablesReflection") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    resetScene3D();
-
-    Mesh *mesh = gfx->newMeshSphere(24, 16);
-    REQUIRE(mesh != nullptr);
-
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 3.f;
-    cam->setAmbient(0.03f, 0.03f, 0.03f);
-
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->meshRenderer()->texture = makeSolidGray(gfx, 220);
-    ent->setMetallic(1.0f);
-    ent->setRoughness(0.08f);
-    addHud(gfx);
-    RenderSystem3D::setDirectionalLight(0.f, 1.f, 0.f, 0.f, 0.f, 0.f);
-
-    gfx->setScreenReadbackEnabled(true);
-    warmPresent(gfx);
-    const Color c0 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-
-    cam->setEnvMap(makeSolidCubemap(gfx, 40, 200, 40));
-    cam->setEnvIntensity(1.5f);
-    warmPresent(gfx);
-    const Color c1 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    REQUIRE(c1.g > c0.g + 0.04f);
-
-    cam->setEnvMap(nullptr);
-    warmPresent(gfx);
-    const Color c2 = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-    REQUIRE(std::abs(c2.r - c0.r) < 0.05f);
-    REQUIRE(std::abs(c2.g - c0.g) < 0.05f);
-    REQUIRE(std::abs(c2.b - c0.b) < 0.05f);
-
-    win->close();
-}
 
 TEST_CASE("IBL.dielectricEnvWeakerThanMetal") {
     eve::window::Window *win = nullptr;
@@ -3151,42 +3125,12 @@ TEST_CASE("IBL.outdoorSkyDiffersFromStudio") {
     win->close();
 }
 }  // namespace test_IBL
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Lighting2D)
+// Contract section: Lighting2D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstring>
+
+
 #include <initializer_list>
-#include <string>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Lighting2D.cpp
 namespace test_Lighting2D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3885,44 +3829,11 @@ TEST_CASE("Lighting2D.hdrCanvasLitBlendDoesNotCrash") {
     win->close();
 }
 }  // namespace test_Lighting2D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Outline)
+// Contract section: Outline
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cstdio>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "ManualPreview.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // Outline.cpp
 namespace test_Outline {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3976,7 +3887,6 @@ void warmPresent(Graphics *gfx, int frames = 2) {
     for (int i = 0; i < frames; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 }
 
@@ -4187,40 +4097,11 @@ done:
     win->close();
 }
 }  // namespace test_Outline
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Quad)
+// Contract section: Quad
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstring>
-#include <vector>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
+
 // Quad.cpp
 namespace test_Quad {
 using namespace eve::graphics;
@@ -4295,4 +4176,3 @@ TEST_CASE("Quad.spriteAtlasSamplesSubRect") {
     win->close();
 }
 }  // namespace test_Quad
-#endif

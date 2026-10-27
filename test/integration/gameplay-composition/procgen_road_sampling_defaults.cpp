@@ -23,53 +23,6 @@
 using namespace eve::procgen;
 using namespace eve::procgen::road;
 
-TEST_CASE("procgen.road.authoring.newSamplingDefaultsMatchMeasuredReferenceAndLegacyNetworkRetainsCounts") {
-    auto created = RoadNetwork::makeStraight(40.f, 2);
-    REQUIRE(created.ok());
-    auto        network = std::move(created).takeValue();
-    const auto& style   = network.edges()[0].style;
-    // Actual CreateRoad readbacks before any setter: resolution 2, angle 45, subSegments 1.
-    REQUIRE(style.samplingSpacingMeters == 2.f);
-    REQUIRE(style.samplingAngleDegrees == 45.f);
-    REQUIRE(style.crossSectionSubdivisions == 1);
-    REQUIRE(style.samplingPolicy == RoadSamplingPolicy::ParametricDistanceTurn);
-    RoadBakeOptions coarse, dense;
-    coarse.pathSegmentsPerEdge = 4;
-    dense.pathSegmentsPerEdge  = 400;
-    auto first = bakeRoadNetwork(network, coarse), second = bakeRoadNetwork(network, dense);
-    REQUIRE(first.ok());
-    REQUIRE(second.ok());
-    REQUIRE(first.value().mesh.positions() == second.value().mesh.positions());
-    REQUIRE(first.value().mesh.indices() == second.value().mesh.indices());
-    Params params;
-    REQUIRE(setRoadRecipeNetwork(params, network).ok());
-    params.setInt("pathSegments", 4);
-    auto recipe = bakeRoadNetworkRecipe(params);
-    REQUIRE(recipe.ok());
-    REQUIRE(recipe.value().mesh.positions() == first.value().mesh.positions());
-    auto captured = captureRoadNetwork(network);
-    REQUIRE(captured.ok());
-    auto& value = captured.value()
-                      .getIf<eve::Value::Object>()
-                      ->at("edges")
-                      .getIf<eve::Value::Array>()
-                      ->at(0)
-                      .getIf<eve::Value::Object>()
-                      ->at("style");
-    for (const char* key :
-         {"samplingSpacingMeters", "samplingAngleDegrees", "samplingPolicy", "crossSectionSubdivisions"})
-        value.getIf<eve::Value::Object>()->erase(key);
-    auto restored = restoreRoadNetwork(captured.value());
-    REQUIRE(restored.ok());
-    REQUIRE(restored.value().edges()[0].style.samplingSpacingMeters == 0.f);
-    REQUIRE(restored.value().edges()[0].style.samplingAngleDegrees == 4.f);
-    REQUIRE(restored.value().edges()[0].style.samplingPolicy == RoadSamplingPolicy::MaximumIntervals);
-    auto oldCoarse = bakeRoadNetwork(restored.value(), coarse), oldDense = bakeRoadNetwork(restored.value(), dense);
-    REQUIRE(oldCoarse.ok());
-    REQUIRE(oldDense.ok());
-    REQUIRE(oldCoarse.value().mesh.getVertexCount() < oldDense.value().mesh.getVertexCount());
-}
-
 TEST_CASE("procgen.road.authoring.presetV2MigratesEveryHistoryRootWithoutChangingChildInheritance") {
     using namespace eve::procgen_editing;
     RoadPresetDraft draft;

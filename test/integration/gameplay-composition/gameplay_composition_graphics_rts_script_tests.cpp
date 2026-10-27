@@ -4,132 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "script-binding",
-  "cases": {
-    "platform-file": [
-      "rts.legacySandboxContentMaterializesEveryArchetype"
-    ],
-    "module-composition": [
-      "rts.scriptProductionUsesCanonicalEconomyActionAndProductionQueues",
-      "rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder",
-      "rts.scriptConstructionCancellationRefundsProgressAndRestoresThroughCheckpoint",
-      "rts.scriptBuildingSaleRefundsQueuesEvacuatesGarrisonAndRestoresThroughCheckpoint",
-      "rts.scriptReinforcementFacadeAndReplayResolveFallbackThroughPaidProduction",
-      "rts.scriptAIReplenishesWorkersBuildsArmyAndRestoresDeterministicIdentitySequence",
-      "rts.scriptResearchPaysOnceAndUpgradesExistingAndFutureUnits",
-      "rts.scriptAbilityLoadsCanonicalDefinitionDebitsAndSettlesChannelDamage",
-      "rts.scriptStatusEffectsDriveMovementDamageIntakeRegenerationAndExpiry",
-      "rts.scriptCommandLogSchedulesStableCommandsAtExactFixedTicks",
-      "rts.scriptCommandLogReplaysConstructionCancellationAndBuildingSale",
-      "rts.scriptCheckpointRestoresRootsEconomyAndTimelineTogether",
-      "rts.scriptCheckpointRebuildsChangedRootTopology",
-      "rts.scriptFogUsesCanonicalFovAndProjectsStableLastKnownContacts",
-      "rts.scriptMatchFacadeRunsResourceVictoryAndStableSurrenderLifecycle",
-      "rts.scriptProfileMaterializesCanonicalContentAndAutomaticFire",
-      "rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles",
-      "rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints",
-      "rts.settlement.configurationUsesAttachedCombatProvider",
-      "rts.settlement.rulesReadCanonicalCombatContext",
-      "rts.settlement.healingUsesTheConfiguredCombatPipeline",
-      "scene.authoring.document_atomic_spawn_presentation_roundtrip_history",
-      "scene.authoring.rejected_source_schema_camera_and_parent_preserve_state",
-      "scene.authoring.ground_and_gap_solve_world_geometry_under_reflected_parent",
-      "scene.authoring.screen_anchor_preserves_depth_and_rejects_singular_parent",
-      "scene.editing.commands_hierarchy_plans_are_reversible_and_backend_neutral",
-      "scene.editing.snapshot_restore_is_validated_atomic_and_reversible",
-      "scene.editor.live_session_preserves_links_rejects_divergence_and_stale_host",
-      "scene.editor.live_restore_reorders_hierarchy_atomically_and_can_reopen",
-      "scene.editor.detached_root_keeps_world_transform",
-      "scene.editor.session_create_restore_and_undo_share_one_history",
-      "scene.editor.physics_placement_commits_selected_objects_as_one_undo_step",
-      "scene.editor.physics_placement_cancel_is_non_destructive",
-      "scene.editor.physics_placement_transform_commits_scale_and_undoes_atomically",
-      "scene.editor.physics_placement_auto_hull_cache_is_explicit_and_session_owned",
-      "scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources",
-      "scene.editor.physics_placement_detects_scene_changes_before_commit",
-      "scene.editor.physics_placement_converts_mixed_parent_world_preview_back_to_local_trs",
-      "scene.editor.physics_placement_selected_parent_uses_its_final_world_for_child_local_trs",
-      "scene.followPlayer.matchesPcgOffsetsAndWaterThreshold",
-      "scene.followPlayer.scaleNoPlayerAndAtomicValidation",
-      "scene.locationProfile.oneShotLocationAndFailureAtomicity",
-      "scene.locationProfile.bookmarksMatchPcgSelectionRules",
-      "scene.locationProfile.versionedJsonRoundTripAndAtomicRestore",
-      "scene.physicsPlacement.rejects_invalid_admission_without_a_world",
-      "scene.physicsPlacement.drives_a_private_box3d_world_without_mutating_admission",
-      "scene.physicsPlacement.fast_drag_reaches_the_handle_in_one_preview_step",
-      "scene.physicsPlacement.resolves_collision_and_clones_independently",
-      "scene.physicsPlacement.drop_uses_gravity_and_reports_settled_contact",
-      "scene.physicsPlacement.rotates_a_multi_selection_as_one_rigid_layout",
-      "scene.physicsPlacement.scales_layout_and_live_collision_shapes_from_the_primary_handle",
-      "scene.physicsPlacement.supports_primitive_and_convex_preview_shapes",
-      "scene.physicsPlacement.rejects_malformed_convex_preview_shape",
-      "scene.physicsPlacement.aligns_selection_up_and_support_to_external_surface",
-      "scene.physicsPlacement.builds_compound_colliders_and_honors_source_policy",
-      "scene.physicsPlacement.filters_background_but_rejects_filtered_selection",
-      "scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies",
-      "scene.physicsPlacement_supports_vector_gravity_motion_locks_and_teleport_threshold",
-      "scene.projected_overlap.schema_v4_migration_roundtrip_delete_and_invalid_restore",
-      "scene.projected_overlap.target_planning_includes_partner_and_reference_region",
-      "scene.projected_overlap_uses_pair_fraction_independent_of_visibility_and_rejects_bad_evidence",
-      "scene.projected_overlap.provider_absent_rejects_measure_and_commit_without_document_mutation",
-      "scene.regions.geometry_revision_excludes_trs_and_material_but_invalidates_recipe",
-      "scene.regions.roundtrip_delete_undo_and_v2_migration_preserve_intent",
-      "scene.regions.invalid_bounds_unknown_fields_and_conflicting_identity_are_atomic",
-      "scene.regions.evidence_is_matched_by_object_region_and_definition",
-      "scene.relations.roundtrip_delete_undo_and_v1_migration_are_atomic",
-      "scene.relations.reject_unknown_missing_and_duplicate_without_mutation",
-      "scene.relations.contact_evidence_distinguishes_support_penetration_and_unmeasurable",
-      "scene.relations.native_drop_preserves_preview_and_commits_with_locked_floor",
-      "scene.relations.reject_wrong_support_missing_participant_locked_selection_and_stale_preview",
-      "scene.relations.physics_roundtrip_preserves_scene_yxz_rotation",
-      "scene.relations.visual_roundtrip_delete_and_invalid_intervals_are_atomic",
-      "scene.relations.visual_evidence_uses_directional_occluder_and_rejects_ambiguity",
-      "scene.relations.visual_provider_absent_cannot_commit_but_physics_still_works",
-      "scene.relations.moving_unrelated_occluder_still_checks_all_visual_intent",
-      "scene.relations.malformed_visual_provider_evidence_returns_failure",
-      "schema.productionBoundary.validatesDefinitionsBeforeMutation",
-      "schema.productionBoundary.validatesPolicyMetadataBeforeMutation",
-      "settlement.replay.rpgLifestealChainReplaysThroughDomainAdapter",
-      "settlement.replay.rtsDamageBatchRetainsAndVerifiesCanonicalAudits",
-      "settlement.replay.cardPeriodicRestoreRetainsAndVerifiesCanonicalAudit",
-      "settlement.replay.cardProjectionFailureDoesNotCommitLifecycleCandidate",
-      "settlement.replay.tacticsCanonicalProjectionReplaysThroughDomainAdapter",
-      "settlement.replay.tacticsCommitFailureRollsBackDomainState",
-      "snapshot.consumers.eventStreamEnvelopeRoundTripAndGeneratorSurvives",
-      "snapshot.consumers.transactionLedgerEnvelopeMigratesAtomically",
-      "snapshot.consumers.statePatchEnvelopeRejectsHashAndRevisionMismatch",
-      "snapshot.consumers.productionEnvelopeRoundTripAndUnknownVersionIsAtomic",
-      "snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtomically",
-      "snapshot.envelope.canonicalHashRoundTripAndNoWallClock",
-      "snapshot.migration.rejectsUnknownNewVersionAndHashMismatch",
-      "snapshot.consumers.authorityAndDefinitionsRoundTripAndMetadata",
-      "snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchanged",
-      "softbody.volume.creationRejectsInvalidLattice",
-      "softbody.volume.definitionRoundTripsAndCreatesRuntime",
-      "softbody.volume.definitionRejectsUnknownFieldsAndVersions",
-      "softbody.volume.modelDefinitionRoundTripsMeshSamplingRecipe",
-      "softbody.volume.cooksVertexSampledModelFromCanonicalMesh",
-      "softbody.volume.cookerRejectsUnsupportedVoxelRecipeTransactionally",
-      "softbody.volume.creationSchemaMatchesDefinitionDefaults",
-      "softbody.volume.shapeMatchingRecoversAfterCompression",
-      "softbody.volume.coreAcceptsBackendNeutralCollisionProvider",
-      "softbody.volume.checkedStepTracksInjectedTime",
-      "standardCombatAbilities.providesTwentyUniqueValidatedArchetypes",
-      "standardCombatAbilities.registerGrantAndActivateThroughSharedController",
-      "standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAssets",
-      "stylize.action.attack_vfx binding validates recipe xor uri",
-      "stylize.action.attack_vfx camera executor routes to optional sink",
-      "stylize.action.attack_vfx runtime plays with soft-skipped missing backends",
-      "stylize.action.attack_vfx action notify plays registered recipe",
-      "stylize.action.attack_vfx cues are sorted by offset",
-      "stylize.action.attack_vfx concurrent executions use isolated clocks"
-    ],
-    "physics-backend": [
-      "softbody.volume.pinsAndWorldCollision"
-    ],
-    "render-window": [
-      "softbody.volume.renderPreview"
-    ]
-  },
   "module": "rts",
   "modules": [
     "action",
@@ -159,20 +33,148 @@
     "softbody_volume.cpp",
     "standard_combat_abilities.cpp",
     "stylize_action_attack_vfx.cpp"
-  ]
+  ],
+  "cases": {
+    "module-composition": [
+      "rts.scriptAIReplenishesWorkersBuildsArmyAndRestoresDeterministicIdentitySequence",
+      "rts.scriptAbilityLoadsCanonicalDefinitionDebitsAndSettlesChannelDamage",
+      "rts.scriptBuildingSaleRefundsQueuesEvacuatesGarrisonAndRestoresThroughCheckpoint",
+      "rts.scriptCheckpointRebuildsChangedRootTopology",
+      "rts.scriptCheckpointRestoresRootsEconomyAndTimelineTogether",
+      "rts.scriptCommandLogReplaysConstructionCancellationAndBuildingSale",
+      "rts.scriptCommandLogSchedulesStableCommandsAtExactFixedTicks",
+      "rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder",
+      "rts.scriptConstructionCancellationRefundsProgressAndRestoresThroughCheckpoint",
+      "rts.scriptFogUsesCanonicalFovAndProjectsStableLastKnownContacts",
+      "rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles",
+      "rts.scriptMatchFacadeRunsResourceVictoryAndStableSurrenderLifecycle",
+      "rts.scriptProductionUsesCanonicalEconomyActionAndProductionQueues",
+      "rts.scriptProfileMaterializesCanonicalContentAndAutomaticFire",
+      "rts.scriptReinforcementFacadeAndReplayResolveFallbackThroughPaidProduction",
+      "rts.scriptResearchPaysOnceAndUpgradesExistingAndFutureUnits",
+      "rts.scriptStatusEffectsDriveMovementDamageIntakeRegenerationAndExpiry",
+      "rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints",
+      "rts.settlement.configurationUsesAttachedCombatProvider",
+      "rts.settlement.healingUsesTheConfiguredCombatPipeline",
+      "rts.settlement.rulesReadCanonicalCombatContext",
+      "scene.authoring.document_atomic_spawn_presentation_roundtrip_history",
+      "scene.authoring.ground_and_gap_solve_world_geometry_under_reflected_parent",
+      "scene.authoring.rejected_source_schema_camera_and_parent_preserve_state",
+      "scene.authoring.screen_anchor_preserves_depth_and_rejects_singular_parent",
+      "scene.editing.commands_hierarchy_plans_are_reversible_and_backend_neutral",
+      "scene.editing.snapshot_restore_is_validated_atomic_and_reversible",
+      "scene.editor.detached_root_keeps_world_transform",
+      "scene.editor.live_restore_reorders_hierarchy_atomically_and_can_reopen",
+      "scene.editor.live_session_preserves_links_rejects_divergence_and_stale_host",
+      "scene.editor.physics_placement_auto_hull_cache_is_explicit_and_session_owned",
+      "scene.editor.physics_placement_cancel_is_non_destructive",
+      "scene.editor.physics_placement_commits_selected_objects_as_one_undo_step",
+      "scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources",
+      "scene.editor.physics_placement_converts_mixed_parent_world_preview_back_to_local_trs",
+      "scene.editor.physics_placement_detects_scene_changes_before_commit",
+      "scene.editor.physics_placement_selected_parent_uses_its_final_world_for_child_local_trs",
+      "scene.editor.physics_placement_transform_commits_scale_and_undoes_atomically",
+      "scene.editor.session_create_restore_and_undo_share_one_history",
+      "scene.followPlayer.matchesPcgOffsetsAndWaterThreshold",
+      "scene.followPlayer.scaleNoPlayerAndAtomicValidation",
+      "scene.locationProfile.bookmarksMatchPcgSelectionRules",
+      "scene.locationProfile.oneShotLocationAndFailureAtomicity",
+      "scene.locationProfile.versionedJsonRoundTripAndAtomicRestore",
+      "scene.physicsPlacement.aligns_selection_up_and_support_to_external_surface",
+      "scene.physicsPlacement.builds_compound_colliders_and_honors_source_policy",
+      "scene.physicsPlacement.drives_a_private_box3d_world_without_mutating_admission",
+      "scene.physicsPlacement.drop_uses_gravity_and_reports_settled_contact",
+      "scene.physicsPlacement.fast_drag_reaches_the_handle_in_one_preview_step",
+      "scene.physicsPlacement.filters_background_but_rejects_filtered_selection",
+      "scene.physicsPlacement.rejects_invalid_admission_without_a_world",
+      "scene.physicsPlacement.rejects_malformed_convex_preview_shape",
+      "scene.physicsPlacement.resolves_collision_and_clones_independently",
+      "scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies",
+      "scene.physicsPlacement.rotates_a_multi_selection_as_one_rigid_layout",
+      "scene.physicsPlacement.scales_layout_and_live_collision_shapes_from_the_primary_handle",
+      "scene.physicsPlacement.supports_primitive_and_convex_preview_shapes",
+      "scene.physicsPlacement_supports_vector_gravity_motion_locks_and_teleport_threshold",
+      "scene.projected_overlap.provider_absent_rejects_measure_and_commit_without_document_mutation",
+      "scene.projected_overlap.schema_v4_migration_roundtrip_delete_and_invalid_restore",
+      "scene.projected_overlap.target_planning_includes_partner_and_reference_region",
+      "scene.projected_overlap_uses_pair_fraction_independent_of_visibility_and_rejects_bad_evidence",
+      "scene.regions.evidence_is_matched_by_object_region_and_definition",
+      "scene.regions.geometry_revision_excludes_trs_and_material_but_invalidates_recipe",
+      "scene.regions.invalid_bounds_unknown_fields_and_conflicting_identity_are_atomic",
+      "scene.regions.roundtrip_delete_undo_and_v2_migration_preserve_intent",
+      "scene.relations.contact_evidence_distinguishes_support_penetration_and_unmeasurable",
+      "scene.relations.malformed_visual_provider_evidence_returns_failure",
+      "scene.relations.moving_unrelated_occluder_still_checks_all_visual_intent",
+      "scene.relations.native_drop_preserves_preview_and_commits_with_locked_floor",
+      "scene.relations.physics_roundtrip_preserves_scene_yxz_rotation",
+      "scene.relations.reject_unknown_missing_and_duplicate_without_mutation",
+      "scene.relations.reject_wrong_support_missing_participant_locked_selection_and_stale_preview",
+      "scene.relations.roundtrip_delete_undo_and_v1_migration_are_atomic",
+      "scene.relations.visual_evidence_uses_directional_occluder_and_rejects_ambiguity",
+      "scene.relations.visual_provider_absent_cannot_commit_but_physics_still_works",
+      "scene.relations.visual_roundtrip_delete_and_invalid_intervals_are_atomic",
+      "schema.productionBoundary.validatesDefinitionsBeforeMutation",
+      "schema.productionBoundary.validatesPolicyMetadataBeforeMutation",
+      "settlement.replay.cardPeriodicRestoreRetainsAndVerifiesCanonicalAudit",
+      "settlement.replay.cardProjectionFailureDoesNotCommitLifecycleCandidate",
+      "settlement.replay.rpgLifestealChainReplaysThroughDomainAdapter",
+      "settlement.replay.rtsDamageBatchRetainsAndVerifiesCanonicalAudits",
+      "settlement.replay.tacticsCanonicalProjectionReplaysThroughDomainAdapter",
+      "settlement.replay.tacticsCommitFailureRollsBackDomainState",
+      "snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtomically",
+      "snapshot.consumers.authorityAndDefinitionsRoundTripAndMetadata",
+      "snapshot.consumers.eventStreamEnvelopeRoundTripAndGeneratorSurvives",
+      "snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchanged",
+      "snapshot.consumers.productionEnvelopeRoundTripAndUnknownVersionIsAtomic",
+      "snapshot.consumers.statePatchEnvelopeRejectsHashAndRevisionMismatch",
+      "snapshot.consumers.transactionLedgerEnvelopeMigratesAtomically",
+      "snapshot.envelope.canonicalHashRoundTripAndNoWallClock",
+      "snapshot.migration.rejectsUnknownNewVersionAndHashMismatch",
+      "softbody.volume.checkedStepTracksInjectedTime",
+      "softbody.volume.cookerRejectsUnsupportedVoxelRecipeTransactionally",
+      "softbody.volume.cooksVertexSampledModelFromCanonicalMesh",
+      "softbody.volume.coreAcceptsBackendNeutralCollisionProvider",
+      "softbody.volume.creationRejectsInvalidLattice",
+      "softbody.volume.creationSchemaMatchesDefinitionDefaults",
+      "softbody.volume.definitionRejectsUnknownFieldsAndVersions",
+      "softbody.volume.definitionRoundTripsAndCreatesRuntime",
+      "softbody.volume.modelDefinitionRoundTripsMeshSamplingRecipe",
+      "softbody.volume.shapeMatchingRecoversAfterCompression",
+      "standardCombatAbilities.providesTwentyUniqueValidatedArchetypes",
+      "standardCombatAbilities.registerGrantAndActivateThroughSharedController",
+      "standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAssets",
+      "stylize.action.attack_vfx action notify plays registered recipe",
+      "stylize.action.attack_vfx binding validates recipe xor uri",
+      "stylize.action.attack_vfx camera executor routes to optional sink",
+      "stylize.action.attack_vfx concurrent executions use isolated clocks",
+      "stylize.action.attack_vfx cues are sorted by offset",
+      "stylize.action.attack_vfx runtime plays with soft-skipped missing backends"
+    ],
+    "physics-backend": [
+      "softbody.volume.pinsAndWorldCollision"
+    ],
+    "platform-file": [
+      "rts.legacySandboxContentMaterializesEveryArchetype"
+    ],
+    "render-window": [
+      "softbody.volume.renderPreview"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: rts script
+#include <iostream>
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_script)
-#include "PrivateTestScope.h"
 #include <array>
 #include "PathBesideSource.h"
 #include "RtsCompositionFixtures.h"
 #include "rts/RTS.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // rts_script.cpp
 namespace test_rts_script {
@@ -314,7 +316,7 @@ TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
     REQUIRE(rts.configureScriptWorld(36, 22, 1.0f).ok());
     const auto loaded = rts.loadScriptContent(json.str());
     REQUIRE(loaded.ok());
-    CHECK_EQ(loaded.value().inserted, std::size_t{18});
+    CHECK_EQ(loaded.value().inserted, std::size_t{27});
 
     auto*                            faction = rts.newFaction(subject("00000000-0000-7000-8000-00000000fa01")).value();
     const std::array<const char*, 7> unitTypes{"worker", "engineer", "marine", "apc", "jammer", "skyguard", "drone"};
@@ -429,6 +431,8 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     REQUIRE(workerId.has_value());
     REQUIRE(barracksId.has_value());
     Unit* builder = rts.newFactionUnit(*faction, subject("00000000-0000-7000-8000-00000000fc02"), *workerId).value();
+    builder->motion()->x = 2.0f;
+    builder->motion()->y = 5.0f;
     REQUIRE(rts.addScriptResource(*faction, "minerals", 200).ok());
     const auto buildingSubject = subject("00000000-0000-7000-8000-00000000fc03");
     auto       started = rts.startScriptConstruction(*faction, buildingSubject, *barracksId, {4.0f, 5.0f}, *builder);
@@ -438,9 +442,9 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     CHECK_EQ(barracks->construction()->progress, 0.0f);
     auto order = builder->orders()->values.current();
     REQUIRE(order.ok());
-    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Move));
-    for (int index = 0; index < 8 && barracks->construction()->progress < 1.0f; ++index)
-        REQUIRE(rts.stepScript(1.0).ok());
+    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Build));
+    for (int index = 0; index < 80 && barracks->construction()->progress < 1.0f; ++index)
+        REQUIRE(rts.stepScript(0.1).ok());
     CHECK_EQ(barracks->construction()->progress, 1.0f);
     CHECK(builder->orders()->values.empty());
 
@@ -1147,10 +1151,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit*    beam = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e903"), *beamType).value();
     Unit*    beamTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e904"), *targetType).value();
-    beam->motion()->x       = 1.5f;
-    beam->motion()->y       = 1.5f;
-    beamTarget->motion()->x = 7.5f;
-    beamTarget->motion()->y = 1.5f;
+    beam->motion()->x       = 1.f;
+    beam->motion()->y       = 1.f;
+    beamTarget->motion()->x = 7.f;
+    beamTarget->motion()->y = 1.f;
     REQUIRE(module.setScriptNavigationBlocked(4, 1, true).ok());
     REQUIRE(module.stepScript(0.2).ok());
     CHECK_EQ(beamTarget->durability()->state.health, 50.0);
@@ -1161,10 +1165,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit* shell = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e905"), *shellType).value();
     Unit* shellTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e906"), *targetType).value();
-    shell->motion()->x       = 1.5f;
-    shell->motion()->y       = 4.5f;
-    shellTarget->motion()->x = 7.5f;
-    shellTarget->motion()->y = 4.5f;
+    shell->motion()->x       = 1.f;
+    shell->motion()->y       = 4.f;
+    shellTarget->motion()->x = 7.f;
+    shellTarget->motion()->y = 4.f;
     REQUIRE(module.stepScript(0.1).ok());
     REQUIRE(module.setScriptTerrainElevation(4, 4, 2.0f).ok());
     REQUIRE(module.stepScript(1.0).ok());
@@ -1195,10 +1199,10 @@ TEST_CASE("rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints") {
     Faction* red  = module.newFaction(subject("00000000-0000-7000-8000-00000000e802")).value();
     Unit* shooter = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e803"), *shooterType).value();
     Unit* target  = module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e804"), *targetType).value();
-    shooter->motion()->x = 1.5f;
-    shooter->motion()->y = 2.5f;
-    target->motion()->x  = 7.5f;
-    target->motion()->y  = 2.5f;
+    shooter->motion()->x = 1.f;
+    shooter->motion()->y = 2.f;
+    target->motion()->x  = 7.f;
+    target->motion()->y  = 2.f;
     CHECK_EQ(shooter->combat()->firingHeight, 1.0f);
     CHECK_EQ(target->combat()->targetHeight, 1.0f);
     REQUIRE(module.setScriptTerrainElevation(4, 2, 2.0f).ok());
@@ -1295,17 +1299,15 @@ TEST_CASE("rts.settlement.healingUsesTheConfiguredCombatPipeline") {
     CHECK_EQ(target.health, 70.0);
 }
 }  // namespace test_rts_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_authoring)
+// Contract section: scene authoring
 #include "PrivateTestScope.h"
+
 #include <cmath>
 #include <limits>
 #include "scene/editing/SceneAuthoring.h"
 #include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_authoring.cpp
 namespace test_scene_authoring {
 namespace {
@@ -1488,15 +1490,13 @@ TEST_CASE("scene.authoring.screen_anchor_preserves_depth_and_rejects_singular_pa
     REQUIRE_EQ(session->saveJson(), singular);
 }
 }  // namespace test_scene_authoring
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editing_commands)
+// Contract section: scene editing commands
 #include "PrivateTestScope.h"
+
 #include <map>
 #include "editing/EditingValueJson.h"
 #include "scene/editing/SceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_editing_commands.cpp
 namespace test_scene_editing_commands {
 namespace {
@@ -1583,17 +1583,12 @@ TEST_CASE("scene.editing.snapshot_restore_is_validated_atomic_and_reversible") {
 }
 }  // namespace
 }  // namespace test_scene_editing_commands
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editor_live_session)
+// Contract section: scene editor live session
 #include "PrivateTestScope.h"
-#include "editing/EditingValueJson.h"
+
 #include "scene/SceneHost.h"
 #include "scene/TransformSystem.h"
-#include "scene/editing/SceneTarget.h"
-#include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_editor_live_session.cpp
 namespace test_scene_editor_live_session {
 TEST_CASE("scene.editor.live_session_preserves_links_rejects_divergence_and_stale_host") {
@@ -1669,14 +1664,10 @@ TEST_CASE("scene.editor.detached_root_keeps_world_transform") {
     REQUIRE_EQ(host->findById("child").value()->world[3][1], 4.f);
 }
 }  // namespace test_scene_editor_live_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_editor_session)
+// Contract section: scene editor session
 #include "PrivateTestScope.h"
-#include <cmath>
-#include "scene/editor/SceneEditorSession.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // scene_editor_session.cpp
 namespace test_scene_editor_session {
 TEST_CASE("scene.editor.session_create_restore_and_undo_share_one_history") {
@@ -1787,7 +1778,11 @@ TEST_CASE("scene.editor.physics_placement_auto_hull_cache_is_explicit_and_sessio
     REQUIRE(session.cancelPhysicsPlacement().ok());
     REQUIRE(session.removePhysicsPlacementHull(ObjectId("mesh")).ok());
     const auto missingRemoval = session.removePhysicsPlacementHull(ObjectId("mesh"));
+    REQUIRE(missingRemoval.ok());
     REQUIRE(missingRemoval.code() == Status::NoOp);
+    const auto inactiveCancel = session.cancelPhysicsPlacement();
+    REQUIRE(inactiveCancel.ok());
+    REQUIRE(inactiveCancel.code() == Status::NoOp);
 }
 
 TEST_CASE("scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources") {
@@ -1932,21 +1927,17 @@ TEST_CASE("scene.editor.physics_placement_selected_parent_uses_its_final_world_f
     CHECK(std::abs(localX("child") - 1.0) < 0.08);
 }
 }  // namespace test_scene_editor_session
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_follow_player)
+// Contract section: scene follow player
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
-#include <cmath>
-#include <limits>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "common/SquirrelBinding.h"
 #include "scene/FollowPlayer.h"
 #include "scene/LocationProfile.h"
 #include "scene/LocationProfileBindings.h"
 #include "scene/editor/ScenePhysicsPlacement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_follow_player.cpp
 namespace test_scene_follow_player {
 // scene_follow_player.cpp
@@ -2371,7 +2362,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     REQUIRE(rotated.ok());
     REQUIRE(rotated.value()->setHandlePosition(100, 100, 100).ok());
     REQUIRE(rotated.value()->setHandleRotation(0, 0, 1.57079632679).ok());
-    REQUIRE(rotated.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(rotated.value()->step(tick, 1.0 / 60.0).ok());
     auto rotateFrame = rotated.value()->placementFrame();
     REQUIRE(rotateFrame.ok());
     CHECK(std::abs(rotateFrame.value().objects[0].transform.x) < 0.1);
@@ -2382,7 +2373,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     auto pointed = ScenePhysicsPlacementBackend::create(std::move(point));
     REQUIRE(pointed.ok());
     REQUIRE(pointed.value()->setHandlePosition(5, 0, 0).ok());
-    REQUIRE(pointed.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(pointed.value()->step(tick, 1.0 / 60.0).ok());
     auto pointFrame = pointed.value()->placementFrame();
     REQUIRE(pointFrame.ok());
     CHECK(std::abs(pointFrame.value().objects[0].transform.x) < 0.01);
@@ -2415,20 +2406,16 @@ TEST_CASE("scene.physicsPlacement_supports_vector_gravity_motion_locks_and_telep
     CHECK(std::abs(teleportFrame.value().objects[0].transform.x - 10.0) < 0.001);
 }
 }  // namespace test_scene_follow_player
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_projected_overlap)
+// Contract section: scene projected overlap
 #include "PrivateTestScope.h"
+
 #include <memory>
 #include "common/Capability.h"
 #include "common/SceneVisibilityEvidence.h"
 #include "editing/EditingProperty.h"
-#include "scene/editing/SceneAuthoringDocument.h"
 #include "scene/editing/SceneRegions.h"
-#include "scene/editor/SceneEditorSession.h"
 #include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_projected_overlap.cpp
 namespace test_scene_projected_overlap {
 namespace {
@@ -2581,18 +2568,10 @@ TEST_CASE("scene.projected_overlap.provider_absent_rejects_measure_and_commit_wi
     if (previous) eve::cap::provide<eve::ISceneVisibilityEvidence>(previous);
 }
 }  // namespace test_scene_projected_overlap
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_regions)
+// Contract section: scene regions
 #include "PrivateTestScope.h"
-#include <memory>
-#include "editing/EditingProperty.h"
-#include "scene/editing/SceneAuthoringDocument.h"
-#include "scene/editing/SceneRegions.h"
-#include "scene/editor/SceneEditorSession.h"
-#include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // scene_regions.cpp
 namespace test_scene_regions {
 namespace {
@@ -2751,19 +2730,11 @@ TEST_CASE("scene.regions.evidence_is_matched_by_object_region_and_definition") {
                std::string("Unmeasurable"));
 }
 }  // namespace test_scene_regions
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_scene_relations)
+// Contract section: scene relations
 #include "PrivateTestScope.h"
-#include <memory>
-#include "common/Capability.h"
-#include "common/SceneVisibilityEvidence.h"
-#include "scene/editing/SceneAuthoringDocument.h"
-#include "scene/editor/SceneEditorSession.h"
+
 #include "scene/editor/SceneRelationEvidence.h"
-#include "scene/editor/SceneVisualRelationEvidence.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // scene_relations.cpp
 namespace test_scene_relations {
 namespace {
@@ -3131,14 +3102,13 @@ TEST_CASE("scene.relations.malformed_visual_provider_evidence_returns_failure") 
     }
 }
 }  // namespace test_scene_relations
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_schema_production_integration)
+// Contract section: schema production integration
 #include "PrivateTestScope.h"
+
 #include "definitions/Definitions.h"
 #include "policyregistry/PolicyRegistry.h"
 #include "schema/SchemaRegistry.h"
-#include "zeroerr/unittest.h"
 // schema_production_integration.cpp
 namespace test_schema_production_integration {
 namespace {
@@ -3192,11 +3162,10 @@ TEST_CASE("schema.productionBoundary.validatesPolicyMetadataBeforeMutation") {
     CHECK_EQ(registry.size(), 1);
 }
 }  // namespace test_schema_production_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_settlement_replay_composition)
+// Contract section: settlement replay composition
 #include "PrivateTestScope.h"
-#include <array>
+
 #include <string_view>
 #include "card/CardEffects.h"
 #include "combat/Damage.h"
@@ -3204,8 +3173,6 @@ TEST_CASE("schema.productionBoundary.validatesPolicyMetadataBeforeMutation") {
 #include "rpg/SettlementAdapter.h"
 #include "settlement/SettlementRules.h"
 #include "tactics/TacticsSettlement.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // settlement_replay_composition.cpp
 namespace test_settlement_replay_composition {
 namespace {
@@ -3573,25 +3540,21 @@ TEST_CASE("settlement.replay.tacticsCommitFailureRollsBackDomainState") {
     CHECK_EQ(health, 100.0);
 }
 }  // namespace test_settlement_replay_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_snapshot_consumers)
+// Contract section: snapshot consumers
 #include "PrivateTestScope.h"
+
 #include <cstdint>
 #include <string>
-#include <string_view>
 #include <utility>
 #include "GameEventTestSupport.h"
 #include "StatePatchTestSupport.h"
 #include "authority/Authority.h"
 #include "common/Snapshot.h"
-#include "definitions/Definitions.h"
 #include "game_event/GameEvent.h"
 #include "production/Production.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // snapshot_consumers.cpp
 namespace test_snapshot_consumers {
 namespace {
@@ -3868,18 +3831,10 @@ TEST_CASE("snapshot.consumers.authorityAndDefinitionsRejectDuplicateMetadataAtom
     CHECK_EQ(definitionsRestored.snapshotJson(), definitionsBefore);
 }
 }  // namespace test_snapshot_consumers
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_snapshot_envelope)
+// Contract section: snapshot envelope
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <string_view>
-#include <utility>
-#include "authority/Authority.h"
-#include "common/Snapshot.h"
-#include "definitions/Definitions.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // snapshot_envelope.cpp
 namespace test_snapshot_envelope {
 using eve::ContentId;
@@ -4079,12 +4034,11 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
     CHECK_EQ(definitions.snapshotJson(), definitionsBefore);
 }
 }  // namespace test_snapshot_envelope
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_softbody_volume)
+// Contract section: softbody volume
 #include "PrivateTestScope.h"
+
 #include <SDL2/SDL.h>
-#include <cmath>
 #include <filesystem>
 #include <glm/gtc/matrix_transform.hpp>
 #include "asset/CanonicalMesh.h"
@@ -4101,10 +4055,7 @@ TEST_CASE("snapshot.consumers.malformedPayloadAndUnknownVersionLeaveStateUnchang
 #include "physics/softbody/cook/SoftBodyModelCooker.h"
 #include "physics/softbody/editing/SoftBody3DSchema.h"
 #include "physics/softbody/graphics/SoftBody3DRenderer.h"
-#include "schema/SchemaRegistry.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // softbody_volume.cpp
 namespace test_softbody_volume {
 using eve::physics::SoftBody3D;
@@ -4412,17 +4363,14 @@ TEST_CASE("softbody.volume.renderPreview") {
     window->close();
 }
 }  // namespace test_softbody_volume
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_standard_combat_abilities)
+// Contract section: standard combat abilities
 #include "PrivateTestScope.h"
+
 #include <set>
-#include <string>
 #include "action/AbilityAsset.h"
 #include "action/AbilityController.h"
 #include "combat/StandardAbilities.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // standard_combat_abilities.cpp
 namespace test_standard_combat_abilities {
 TEST_CASE("standardCombatAbilities.providesTwentyUniqueValidatedArchetypes") {
@@ -4482,23 +4430,18 @@ TEST_CASE("standardCombatAbilities.roundTripEveryArchetypeThroughVersionedJsonAs
     }
 }
 }  // namespace test_standard_combat_abilities
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_stylize_action_attack_vfx)
+// Contract section: stylize action attack vfx
 #include "PrivateTestScope.h"
+
 #include <optional>
-#include <string>
-#include <string_view>
 #include "action/ActionAttackVfxBlock.h"
 #include "action/ActionCameraBlock.h"
 #include "action/ActionNotifyRegistry.h"
-#include "common/Capability.h"
 #include "stylize/AttackVfxLayerExecutor.h"
 #include "stylize/AttackVfxRecipe.h"
 #include "stylize/AttackVfxRuntime.h"
 #include "stylize/action/StylizeAction.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // stylize_action_attack_vfx.cpp
 namespace test_stylize_action_attack_vfx {
 using namespace eve::stylize;
@@ -4588,8 +4531,10 @@ TEST_CASE("stylize.action.attack_vfx camera executor routes to optional sink") {
     REQUIRE(started.ok());
     REQUIRE_EQ(sink.calls, 1);
     REQUIRE(sink.last.has_value());
-    CHECK_EQ(sink.last->positionAmplitude, 0.2);
-    CHECK_EQ(sink.last->duration.seconds(), 0.15);
+    CHECK_EQ(sink.last->positionAmplitude, static_cast<double>(layer.floatParams.at("posAmp")));
+    auto expectedDuration = eve::Duration::fromSeconds(layer.floatParams.at("duration"));
+    REQUIRE(expectedDuration.ok());
+    CHECK_EQ(sink.last->duration, expectedDuration.value());
     REQUIRE(started.value().valid());
     CHECK(executor->stop(started.value(), AttackVfxStopBehavior::ClearImmediately).ok());
 
@@ -4707,4 +4652,3 @@ TEST_CASE("stylize.action.attack_vfx concurrent executions use isolated clocks")
     eve::cap::removeListener<eve::action::IActionCameraCueSink>(&sink);
 }
 }  // namespace test_stylize_action_attack_vfx
-#endif

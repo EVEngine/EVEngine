@@ -1734,8 +1734,8 @@ TEST_CASE("common.jsonRead.spec.scalarBoundsAndCoercion") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_diagnostics)
-#include "PrivateTestScope.h"
 #include <zeroerr/assert.h>
+#include <zeroerr/std_adapter.h>
 #include <zeroerr/unittest.h>
 #include <memory>
 #include <sstream>
@@ -1744,6 +1744,7 @@ TEST_CASE("common.jsonRead.spec.scalarBoundsAndCoercion") {
 #include <type_traits>
 #include <utility>
 #include <vector>
+#include "PrivateTestScope.h"
 // common_zeroerr_diagnostics.cpp
 namespace test_common_zeroerr_diagnostics {
 static_assert(std::is_nothrow_move_constructible_v<zeroerr::ExprResult>);
@@ -1783,8 +1784,10 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
         zeroerr::TestContext context(*reporter);
-        auto*                _ZEROERR_TEST_CONTEXT = &context;
-        CHECK(2 == 3);
+        zeroerr::assert_info   info{zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false};
+        zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3", info);
+        failure.setResult({false, "2 == 3"});
+        zeroerr::detail::context_helper<zeroerr::TestContext*, false>::setContext(failure, &context);
         return context.warning_as;
     };
     CHECK(knownFailure() == 1);
@@ -1930,7 +1933,6 @@ TEST_CASE("common.zeroerr.printerOwnsAndResetsStream") {
     print.isQuoted   = false;
     print.line_break = "";
     CHECK(print("first").str() == "first");
-    print.os.setstate(std::ios::failbit);
     CHECK(print("second").str() == "second");
     print.clear_stream_before_printing = false;
     CHECK(print("third").str() == "secondthird");
@@ -1954,7 +1956,7 @@ TEST_CASE("common.zeroerr.printerBorrowsExternalStream") {
         try {
             (void)print.str();
         } catch (const std::runtime_error& error) {
-            caught = std::string(error.what()) == "Printer is not using stringstream";
+            caught = std::string(error.what()) == "Printer is not capturing text";
         }
         CHECK(caught);
     }
@@ -1984,17 +1986,17 @@ TEST_CASE("common.zeroerr.printerFormattingModes") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_zeroerr_registration)
-#include "PrivateTestScope.h"
 #include <zeroerr/unittest.h>
+#include <string>
+#include "PrivateTestScope.h"
 // common_zeroerr_registration.cpp
 namespace test_common_zeroerr_registration {
-#if defined(ZEROERR_COMPILED_DIAGNOSTICS)
 namespace {
 void testCallback(zeroerr::TestContext*) {}
 }  // namespace
 TEST_CASE("common.zeroerrRegistration.borrowedDecoratorsKeepOrder") {
     zeroerr::Decorator first, second;
-    auto metadata = zeroerr::detail::makeTestCaseFromDecorators("probe", "source", 37, testCallback, {&first, &second});
+    auto               metadata = zeroerr::TestCase("probe", "source", 37, testCallback, {&first, &second});
     CHECK(metadata.decorators.size() == 2u);
     CHECK(metadata.decorators.at(0) == &first);
     CHECK(metadata.decorators.at(1) == &second);
@@ -2010,15 +2012,14 @@ TEST_CASE("common.zeroerrRegistration.borrowedDecoratorsKeepOrder") {
 TEST_CASE("common.zeroerrRegistration.borrowedNamesBecomeOwned") {
     std::string name("name\0suffix", 11);
     std::string file("file\0suffix", 11);
-    auto        metadata = zeroerr::detail::makeTestCaseFromDecorators(name, file, 91, testCallback, {});
+    auto        metadata = zeroerr::TestCase(name, file, 91, testCallback, {});
     name.assign("changed");
     file.assign("changed");
     CHECK(metadata.name.size() == 11u);
     CHECK(metadata.file.size() == 11u);
     CHECK(metadata.name.substr(5) == "suffix");
     CHECK(metadata.file.substr(5) == "suffix");
-    auto transient = zeroerr::detail::makeTestCaseFromDecorators(std::string(4096, 'n'), std::string(4096, 'f'), 92,
-                                                                 testCallback, {});
+    auto transient = zeroerr::TestCase(std::string(4096, 'n'), std::string(4096, 'f'), 92, testCallback, {});
     CHECK(transient.name.size() == 4096u);
     CHECK(transient.file.size() == 4096u);
     CHECK(transient.name.back() == 'n');
@@ -2026,7 +2027,6 @@ TEST_CASE("common.zeroerrRegistration.borrowedNamesBecomeOwned") {
     CHECK(transient.decorators.empty());
 }
 TEST_CASE("common.zeroerrRegistration.skippedCase", zeroerr::skip()) { CHECK(false); }
-#endif
 
 struct ZeroerrRegistrationFixture {
     int state = 73;
@@ -2592,6 +2592,8 @@ TEST_CASE("common.scriptCompiler.spec.metadataContractsAndSearch") {
             "/* export function hidden() {}\n"
             "persist ignored = 1 */\n"
             "local text = \"// await remains text\"\n"
+            "local escaped = \"\\\" await remains text too\"\n"
+            "local single = 'await'\n"
             "import { answer } from \"game:/real.nut\"\n",
             "game:/comments.nut");
         CHECK_EQ(metadata.imports.size(), size_t(1));
@@ -2599,6 +2601,11 @@ TEST_CASE("common.scriptCompiler.spec.metadataContractsAndSearch") {
         CHECK(metadata.exports.empty());
         CHECK(metadata.persistRoots.empty());
         CHECK(metadata.awaitLocations.empty());
+        const auto withAwait =
+            script::ScriptCompiler::analyze("local text = \"await\"\nawait task()\n", "game:/await.nut");
+        REQUIRE_EQ(withAwait.awaitLocations.size(), size_t(1));
+        CHECK_EQ(withAwait.awaitLocations[0].line, size_t(2));
+        CHECK_EQ(withAwait.awaitLocations[0].column, size_t(1));
     };
     SUB_CASE("binding contracts -> are replaceable and sorted") {
         script::BindingContractRegistry registry;
@@ -2940,6 +2947,25 @@ TEST_CASE("common.stateValue.spec.containersPathsMergeAndEquality") {
         CHECK(a == b);
         b.set("k", StateValue::string("w"));
         CHECK(a != b);
+
+        a.set("a", StateValue::integer(7));
+        b = StateValue::object();
+        b.set("a", StateValue::integer(7));
+        b.set("k", StateValue::string("v"));
+        CHECK(a == b);
+        CHECK(a.keys() != b.keys());
+        CHECK(toLegacyStateValue(toCanonicalStateValue(a)) == a);
+        b.set("a", StateValue::number(7.0));
+        CHECK(a != b);
+        b.set("extra", StateValue::null());
+        CHECK(a != b);
+        auto first = StateValue::array();
+        first.pushBack(StateValue::integer(1));
+        first.pushBack(StateValue::integer(2));
+        auto reversed = StateValue::array();
+        reversed.pushBack(StateValue::integer(2));
+        reversed.pushBack(StateValue::integer(1));
+        CHECK(first != reversed);
 
         CHECK(StateValue::null() == StateValue::null());
     };
@@ -3372,6 +3398,7 @@ TEST_CASE("common.xml.spec.treeEntitiesAndInvalidInput") {
 #include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/CapabilityOwned.h"
+#include "zeroerr/unittest.h"
 namespace test_owned_capability_contract {
 class IWidget {
 public:
@@ -3413,6 +3440,19 @@ TEST_CASE("Owned capability lease survives retirement while stale handle cannot 
     REQUIRE(lease.ok());
     CHECK_EQ(lease.value()->value(), 7);
     CHECK_EQ(eve::cap::query<IWidget>()->value(), 7);
+    auto copy  = lease.value();
+    auto moved = std::move(copy);
+    CHECK(!copy);
+    CHECK(copy.handle().id.empty());
+    CHECK_EQ(copy.handle().generation, std::uint64_t{0});
+    copy = std::move(moved);
+    CHECK(!moved);
+    CHECK(moved.handle().id.empty());
+    CHECK_EQ(moved.handle().generation, std::uint64_t{0});
+    CHECK(copy.get() == lease.value().get());
+    auto& self = copy;
+    copy       = std::move(self);
+    CHECK(copy.handle() == first.value());
     CHECK(!Registry::provide("rewrite.widget", std::make_shared<Widget>(8)).ok());
     REQUIRE(Registry::unload(first.value()).ok());
     CHECK(!Registry::acquire(first.value()).ok());
@@ -3766,3 +3806,63 @@ TEST_CASE("ECS view supports explicit only components and constructor side effec
 }
 }  // namespace test_ecs_view_contract
 #endif
+
+#include <limits>
+#include <type_traits>
+#include "common/Identity.h"
+#include "common/RuntimeHandle.h"
+
+namespace test_identity_value_audit_unit {
+namespace {
+template <class Id>
+Id parsedId(const char* text) {
+    const auto parsed = Id::parse(text);
+    return parsed ? *parsed : Id::nil();
+}
+}  // namespace
+static_assert(!std::is_convertible_v<eve::AssetGuid, eve::DocumentId>);
+static_assert(!std::is_convertible_v<eve::EventId, eve::TransactionId>);
+static_assert(!std::is_convertible_v<eve::TransactionId, eve::OperationId>);
+static_assert(!std::is_convertible_v<eve::SceneObjectId, eve::PersistentId>);
+
+
+TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
+    constexpr const char* text  = "01020304-0506-0708-090a-0b0c0d0e0f10";
+    const auto            asset = parsedId<eve::AssetGuid>(text);
+    REQUIRE(!asset.isNil());
+    CHECK_EQ(asset.format(), text);
+    CHECK_EQ(eve::DocumentId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::SceneObjectId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::ArtifactId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::EventId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::TransactionId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::OperationId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::EffectId::fromUuid(asset).format(), text);
+
+    CHECK(!eve::AssetGuid::parse("asset-01020304-0506-0708-090a-0b0c0d0e0f10").has_value());
+    CHECK(!eve::AssetGuid::parse("{01020304-0506-0708-090a-0b0c0d0e0f10}").has_value());
+}
+
+TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive") {
+    REQUIRE(eve::LogicalId::parse("rpg:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("RPG:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("_rpg:Skill.Fire").has_value());
+    CHECK(eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("rpg:skill/fire").has_value());
+    CHECK(eve::LogicalId::fromParts("game_event", "Damage.Applied").has_value());
+}
+
+TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
+    struct RegistryTag {};
+    using Handle = eve::RuntimeHandle<RegistryTag>;
+
+    constexpr Handle oldHandle(4u, 1u);
+    const auto       next = oldHandle.nextGeneration();
+    REQUIRE(next.has_value());
+    CHECK(next.value() != oldHandle);
+    CHECK_EQ(next->index(), oldHandle.index());
+    CHECK_EQ(next->generation(), 2u);
+    CHECK(!Handle(4u, std::numeric_limits<Handle::generation_type>::max()).nextGeneration().has_value());
+    CHECK_EQ(Handle::fromPacked(oldHandle.packed()), oldHandle);
+}
+}  // namespace test_identity_value_audit_unit

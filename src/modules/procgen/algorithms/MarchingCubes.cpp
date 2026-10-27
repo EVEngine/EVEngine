@@ -344,7 +344,8 @@ bool fillDensityField(const Params &params, std::vector<float> &density, int &nx
     const int res = params.getInt("resolution",
                                   params.getWidth() > 0 ? params.getWidth() : 24);
     nx = params.getInt("nx", res);
-    ny = params.getInt("ny", params.getHeight() > 0 ? params.getHeight() : res);
+    // An explicit uniform resolution takes precedence over the default grid height.
+    ny = params.getInt("ny", params.has("resolution") ? res : (params.getHeight() > 0 ? params.getHeight() : res));
     nz = params.getInt("nz", params.getInt("depth", res));
     if (nx < 2 || ny < 2 || nz < 2) {
         error = "mesh.marchingcubes: resolution must be at least 2 in each axis";

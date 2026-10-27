@@ -2,6 +2,7 @@
 #include <cmath>
 #include "common/Exception.h"
 #include "graphics/Grass.h"
+#include "graphics/Shader.h"
 namespace eve::graphics::grass {
 namespace {
 const std::array<const char *, 32> kParamSlots = {

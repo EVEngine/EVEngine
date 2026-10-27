@@ -43,37 +43,8 @@ fi
 
 group "changed lines are clang-format clean" \
     bash .github/scripts/check-format.sh "$BASE"
-group "module dependency layering" \
-    python3 scripts/module_depgraph.py --check --check-layers --report
-group "script bindings have guide or generated API coverage" \
-    python3 scripts/check_bindings.py --strict
-group "test source manifest" \
-    python3 scripts/check_test_manifest.py
-group "test case source lines" \
-    python3 scripts/check_test_case_lines.py
-group "test case names" \
-    python3 scripts/check_test_case_names.py
-group "test assertion levels" \
-    python3 scripts/check_test_assert_level.py
-group "Squirrel call sites" \
-    python3 scripts/check_sq_call_sites.py
-group "examples layout and curated overview links" \
-    python3 scripts/check_examples.py
-group "critical return-value diagnostics" \
-    python3 scripts/check_nodiscard.py
-group "no new ad-hoc Result tables" \
-    python3 scripts/check_adhoc_result_tables.py
-group "release version consistency" \
-    python3 scripts/release.py check-versions
-group "bounded quality debt" \
-    python3 scripts/check_quality_metadata.py
-group "profile matrix (source-only)" \
-    python3 scripts/profile_matrix.py --check
-group "architecture contracts" \
-    python3 scripts/check_architecture_contracts.py --base "$BASE"
-group "ruff lint repository scripts" \
-    python3 -m ruff check scripts
-group "repository script tests" \
-    python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+# Bound subprocess parallelism; logs are emitted as complete groups.
+# Keep formatting first, then share one worker pool across checks and tests.
+python3 scripts/run_source_quality.py --base "$BASE" --jobs "${SOURCE_QUALITY_JOBS:-4}"
 
 echo "ok: source-quality gate passed (base=${BASE})"

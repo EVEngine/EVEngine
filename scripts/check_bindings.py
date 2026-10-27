@@ -273,9 +273,20 @@ def declared_dirs() -> list[Path]:
 def doc_only_names() -> list[tuple[str, str]]:
     """(module, name) pairs the docs promise as script API but nothing defines."""
     surface: set[str] = set()
-    for directory in declared_dirs():
+    directories = declared_dirs()
+    roots = [directory for directory in directories
+             if not any(parent != directory and parent in directory.parents for parent in directories)]
+    for directory in roots:
         surface |= bound_names(directory, set())
-        surface |= script_defined_names(directory, set())
+    paths = {path for directory in roots for path in module_sources(directory, set())}
+    if SHIPPED_SCRIPTS.is_dir():
+        paths.update(SHIPPED_SCRIPTS.rglob("*.nut"))
+    if ENGINE_CORE.is_dir():
+        paths.update(path for path in ENGINE_CORE.rglob("*") if path.suffix in {".cpp", ".h", ".hpp"})
+    for path in paths:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for pattern in SCRIPT_DEF_RES:
+            surface.update(pattern.findall(text))
 
     found: list[tuple[str, str]] = []
     for module, directory, _ in iter_modules():

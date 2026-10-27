@@ -124,9 +124,9 @@ template <typename T>
 std::unique_ptr<medialoader::Decoder> tryMake(const char *data, size_t size, int bufferSize) {
     try {
         return std::unique_ptr<medialoader::Decoder>(new T(data, size, bufferSize));
-    } catch (const medialoader::Exception &) {
-        return nullptr;
     } catch (...) {
+        // Every decoder failure has the same fallback; one catch avoids a
+        // redundant typed exception handler in each decoder specialization.
         return nullptr;
     }
 }

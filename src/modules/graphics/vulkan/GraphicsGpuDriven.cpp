@@ -5,15 +5,16 @@
 // VirtualGeometry hardware-raster integration. Kept in its own TU (matching
 // dev's split-graphics-backend layout) so the feature stays reviewable.
 
-#include "graphics/vulkan/Graphics.h"
-#include "graphics/vulkan/GraphicsInternal.h"
-#include "graphics/vulkan/Canvas.h"
 #include "common/Assert.h"
 #include "graphics/IndirectBuilder.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/Shadow.h"
+#include "graphics/vulkan/Canvas.h"
+#include "graphics/vulkan/Graphics.h"
+#include "graphics/vulkan/GraphicsInternal.h"
 
 #include <SDL2/SDL.h>
 
@@ -763,6 +764,8 @@ GpuMaterialRecord Graphics::buildMaterialRecord(Material *material) {
                             material->getTexCellBombRotation(), 0.f);
     rec.parallax = glm::vec4(material->getParallaxScale(), material->getParallaxMinLayers(),
                              material->getParallaxMaxLayers(), 0.f);
+    rec.surface =
+        glm::vec4(material->getAlphaCutoff(), material->surfaceMode() == SurfaceMode::Masked ? 1.f : 0.f, 0.f, 0.f);
     auto slotOf = [](Texture *t) {
         if (!t || !t->gpuHandle) return kInvalidBindlessSlot;
         return static_cast<GpuTexture *>(t->gpuHandle)->bindlessIndex2D;
@@ -777,6 +780,7 @@ GpuMaterialRecord Graphics::buildMaterialRecord(Material *material) {
                                                                   : 0u;
     if (material->getCastShadow()) rec.flags |= 1u;
     if (material->getCastOcclusion()) rec.flags |= 2u;
+    if (material->getCameraFacing()) rec.flags |= 4u;
     return rec;
 }
 
