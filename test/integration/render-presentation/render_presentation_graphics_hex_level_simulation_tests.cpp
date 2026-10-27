@@ -172,7 +172,9 @@ TEST_CASE("hd2d.tilemap.heightRaisesBoxes") {
     t.setHeightScale(2.f);
     Mesh *low = t.buildMesh(fx.gfx, layer);
     REQUIRE(low != nullptr);
-    CHECK_GT(low->boundsCy, 0.f);
+    const auto elevatedBounds = low->localBounds();
+    REQUIRE(elevatedBounds.ok());
+    CHECK_EQ(elevatedBounds.value()[4], 6.f);
     TileMap3D t2;
     t2.setHeightScale(0.f);
     Mesh *flat = t2.buildMesh(fx.gfx, layer);

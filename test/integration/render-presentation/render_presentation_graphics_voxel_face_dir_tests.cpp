@@ -4485,7 +4485,7 @@ TEST_CASE("graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider") {
     surfacePostFx.color      = {0.9F, 0.8F, 0.7F};
     REQUIRE(static_cast<bool>(applyWaterUnderwaterPostFx(graphics, camera, output, surfacePostFx)));
     CHECK(camera->getExposure() == -1.25F);
-    CHECK(graphics->getSceneColorFilter() == glm::vec3(0.12F, 0.36F, 0.48F));
+    CHECK(glm::length(graphics->getSceneColorFilter() - glm::vec3(0.12F, 0.36F, 0.48F)) < 1e-6F);
     CHECK(graphics->getSceneTransitionVignette() == 0.25F);
     CHECK(graphics->getSceneTransitionVignetteSmoothness() == 0.8F);
     CHECK(graphics->getSceneTransitionLensDistortion() == 0.252F);
