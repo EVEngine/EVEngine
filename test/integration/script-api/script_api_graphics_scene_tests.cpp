@@ -1237,9 +1237,9 @@ function testSceneEntityEnableAndDelayedDetach() {
 
     local scene = eve.Scene()
     scene.beginBuild()
-    scene.beginNode("root")
-    scene.addNode("npc")
-    scene.addNode("prop")
+    scene.beginNode("root", "")
+    scene.addNode("npc", "")
+    scene.addNode("prop", "")
     scene.end()
     scene.mountBuildAs("life")
 
@@ -5707,7 +5707,12 @@ TEST_CASE_FIXTURE(ScriptLinkTest, "scene.scriptLink.pullDrivesNode") {
     REQUIRE(setMemberNumber(driver, "z", 6.f));
     REQUIRE(setMemberNumber(driver, "yaw", 0.25f));
 
-    REQUIRE(module->linkScriptAt("scriptlink_pull", "child", publish("link.driver", "driver").name, "body").ok());
+    const auto provider = publish("link.driver", "driver");
+    auto       supplied = eve::ScriptProviderRegistry::instance().callNumbers(provider, "nodeTransform");
+    REQUIRE(supplied.ok());
+    REQUIRE_EQ(supplied.value().size(), 6u);
+    CHECK_EQ(supplied.value()[0], 4.0);
+    REQUIRE(module->linkScriptAt("scriptlink_pull", "child", provider.name, "body").ok());
 
     // Linking already ran a transform update, so the node is at the driver's pose.
     const SceneNode* node = nodeOf(host, "child");
