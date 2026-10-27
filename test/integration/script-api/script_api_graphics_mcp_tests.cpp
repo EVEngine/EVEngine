@@ -390,6 +390,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     editorCommand.id          = eve::editor::CommandId("mcp.test-command");
     editorCommand.ownerModule = "mcp.test";
     editorCommand.displayName = "MCP test command";
+    editorCommand.createsTransaction = false;
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(editorCommand),
                                  [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
