@@ -85,13 +85,13 @@ private:
 
 public:
     /** @brief Draws . */
-    void draw(Graphics * /*gfx*/, const glm::mat4 & /*matrix*/) const override {}
+    void draw(Graphics* /*gfx*/, const glm::mat4& /*matrix*/) const override {}
     /**
      * @brief Screen-space black proxy for volumetric occlusion.
      * Interprets matrix as 2D affine (translation + scale) and fills a solid rect —
      * callers should pass a pixel-space placement (e.g. projected AABB).
      */
-    void drawOcclusion(Graphics *gfx, const glm::mat4 &matrix) const override;
+    void drawOcclusion(Graphics* gfx, const glm::mat4& matrix) const override;
 
     // ---- morph targets (CPU) ----
     /** @brief Clears morph data. */

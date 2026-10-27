@@ -33,7 +33,7 @@ LineOfSightRouter& routerHolder() {
 Result<LineOfSightRouter*> ensureLineOfSightRouter() {
     LineOfSightRouter& router = routerHolder();
     ILineOfSightQuery* registered = cap::query<ILineOfSightQuery>();
-    if (registered == &router) return Result<LineOfSightRouter*>::success(&router);
+    if (registered == &router) return Result<LineOfSightRouter*>::success(&router, Status::success(StatusCode::NoOp));
     if (registered != nullptr)
         // Respect an existing registration instead of replacing it, so a project that owns its
         // own implementation is never silently overridden by a backend claiming a space.

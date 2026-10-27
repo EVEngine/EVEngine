@@ -1,4 +1,4 @@
-#include "physics/destruction/FractureGeometry.h"
+#include "physics/backend/bake/collapse/FractureGeometry.h"
 #include <algorithm>
 #include <array>
 #include <cmath>

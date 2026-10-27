@@ -1,7 +1,8 @@
+#include "procgen/OutputSpec.h"
 #include "procgen/Procgen.h"
 #include "procgen/ProcgenLive.h"
-#include "procgen/ProcgenScriptSupport.h"
 #include "procgen/ProcgenOwnership.h"
+#include "procgen/ProcgenScriptSupport.h"
 
 #include "common/Capability.h"
 #include "common/ProcgenSceneSink.h"
@@ -32,13 +33,13 @@ namespace eve::procgen {
 
 eve::Result<ProcgenParamsHandleRef> Procgen::newParamsHandle() {
     Procgen* module = Procgen::create();
-    return module->params_.emplace(std::make_unique<Params>());
+    return module->ownership_->params.emplace(std::make_unique<Params>());
 }
 
 eve::script::Borrowed<Params> Procgen::resolve(ProcgenParamsHandleRef reference) noexcept {
     Procgen* module = liveProcgen();
     if (!module) return {};
-    return module->params_.resolve(reference);
+    return module->ownership_->params.resolve(reference);
 }
 
 eve::Result<void> Procgen::release(ProcgenParamsHandleRef reference) {
@@ -46,13 +47,13 @@ eve::Result<void> Procgen::release(ProcgenParamsHandleRef reference) {
     if (!module)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "params", {}, "procgen.squirrel"));
-    return module->params_.erase(reference);
+    return module->ownership_->params.erase(reference);
 }
 
 bool Procgen::isStale(ProcgenParamsHandleRef reference) noexcept {
     if (!reference.isValid()) return false;
     Procgen* module = liveProcgen();
-    return !module || module->params_.isStale(reference);
+    return !module || module->ownership_->params.isStale(reference);
 }
 
 eve::Result<ProcgenOutputHandleRef> Procgen::newOutputHandle() {
@@ -85,13 +86,13 @@ eve::Result<ProcgenGridHandleRef> Procgen::newGridHandle(int width, int height) 
     auto grid = std::make_unique<Grid2D>();
     grid->resize(width, height);
     Procgen* module = Procgen::create();
-    return module->grids_.emplace(std::move(grid));
+    return module->ownership_->grids.emplace(std::move(grid));
 }
 
 eve::script::Borrowed<Grid2D> Procgen::resolve(ProcgenGridHandleRef reference) noexcept {
     Procgen* module = liveProcgen();
     if (!module) return {};
-    return module->grids_.resolve(reference);
+    return module->ownership_->grids.resolve(reference);
 }
 
 eve::Result<void> Procgen::release(ProcgenGridHandleRef reference) {
@@ -99,13 +100,13 @@ eve::Result<void> Procgen::release(ProcgenGridHandleRef reference) {
     if (!module)
         return eve::Result<void>::failure(eve::Diagnostic::error(
             eve::DiagnosticCode::StaleHandle, "Procgen module is no longer loaded", "grid", {}, "procgen.squirrel"));
-    return module->grids_.erase(reference);
+    return module->ownership_->grids.erase(reference);
 }
 
 bool Procgen::isStale(ProcgenGridHandleRef reference) noexcept {
     if (!reference.isValid()) return false;
     Procgen* module = liveProcgen();
-    return !module || module->grids_.isStale(reference);
+    return !module || module->ownership_->grids.isStale(reference);
 }
 
 eve::Result<ProcgenPointSetHandleRef> Procgen::newPointSetHandle() {

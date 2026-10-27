@@ -3679,6 +3679,7 @@ TEST_CASE("procgen.pointGraph.spec.attributeAndNamedBindingNodes") {
 #include "PrivateTestScope.h"
 #include "procgen/PointSet.h"
 #include "procgen/Procgen.h"
+#include "procgen/ProcgenSystem.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"

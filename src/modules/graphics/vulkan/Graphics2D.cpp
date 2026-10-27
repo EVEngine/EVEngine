@@ -5,6 +5,7 @@
 
 #include "common/Profile.h"
 #include "graphics/AntiAliasing.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Light.h"
 #include "graphics/PrimitiveDrawList.h"
 #include "graphics/PrimitiveTessellator.h"
@@ -292,9 +293,8 @@ Color Graphics::getPixel(int x, int y) {
     return Color(r, g, b, a);
 }
 
-image::ImageData *Graphics::renderEntityIdMask(
-    const std::vector<eve::graphics::Graphics::EntityIdDraw> &draws, const glm::mat4 &viewProj,
-    int maskW, int maskH) {
+image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::EntityIdDraw>& draws,
+                                               const glm::mat4& viewProj, int maskW, int maskH) {
     if (!initialized || maskW <= 0 || maskH <= 0) return nullptr;
     // G-buffer pipeline / render pass are created lazily by createGBufferResources,
     // so that must run before the availability check.

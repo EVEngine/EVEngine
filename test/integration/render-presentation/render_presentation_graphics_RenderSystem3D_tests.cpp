@@ -119,13 +119,13 @@
 #include "ManualPreview.h"
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <memory>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "common/Exception.h"
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
@@ -138,6 +138,7 @@
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
+#include "graphics/GraphicsVisibility.h"
 #include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
@@ -1400,13 +1401,13 @@ TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
     const glm::mat4 viewProj = projM * viewM;
 
     // 两个立方体：左侧 id=1（红），右侧 id=2（绿）。
-    std::vector<Graphics::EntityIdDraw> draws;
-    Graphics::EntityIdDraw              a;
+    std::vector<EntityIdDraw> draws;
+    EntityIdDraw              a;
     a.mesh    = mesh;
     a.model   = glm::translate(glm::mat4(1.f), glm::vec3(-1.f, 0.f, 0.f));
     a.idColor = glm::vec4(1.f, 0.f, 0.f, 1.f);
     draws.push_back(a);
-    Graphics::EntityIdDraw b;
+    EntityIdDraw b;
     b.mesh    = mesh;
     b.model   = glm::translate(glm::mat4(1.f), glm::vec3(1.f, 0.f, 0.f));
     b.idColor = glm::vec4(0.f, 1.f, 0.f, 1.f);
@@ -1414,7 +1415,7 @@ TEST_CASE("RenderSystem3D.entityIdMaskPixels") {
 
     const int              w   = gfx->getWidth();
     const int              h   = gfx->getHeight();
-    eve::image::ImageData *img = gfx->renderEntityIdMask(draws, viewProj, w, h);
+    eve::image::ImageData* img = gfx->visibilityCapture()->renderEntityIdMask(draws, viewProj, w, h);
     REQUIRE(img != nullptr);
     REQUIRE(img->getWidth() == w);
     REQUIRE(img->getHeight() == h);
@@ -1475,13 +1476,13 @@ TEST_CASE("RenderSystem3D.readTextureBackPixels") {
         eve::graphics::perspectiveVulkanRH_ZO(glm::radians(d->fovYDeg), 320.f / 240.f, d->nearZ, d->farZ);
     const glm::mat4 viewProj = projM * viewM;
 
-    std::vector<Graphics::EntityIdDraw> draws;
-    Graphics::EntityIdDraw              a;
+    std::vector<EntityIdDraw> draws;
+    EntityIdDraw              a;
     a.mesh    = mesh;
     a.model   = glm::mat4(1.f);
     a.idColor = glm::vec4(1.f, 0.f, 0.f, 1.f);
     draws.push_back(a);
-    eve::image::ImageData *idImg = gfx->renderEntityIdMask(draws, viewProj, 320, 240);
+    eve::image::ImageData* idImg = gfx->visibilityCapture()->renderEntityIdMask(draws, viewProj, 320, 240);
     REQUIRE(idImg != nullptr);
     delete idImg;
 

@@ -232,11 +232,16 @@ vkb::Instance consumeWarmedInstance() {
     {
         auto&                       w = instanceWarmup();
         std::lock_guard<std::mutex> lock(w.mu);
-        if (w.consumed) {
-            throw Exception("Vulkan instance warmup already consumed");
+        if (!w.consumed) {
+            w.consumed = true;
+            fut        = std::move(w.future);
         }
-        w.consumed = true;
-        fut        = std::move(w.future);
+    }
+    // Boot warmup transfers one instance only. A later Graphics owner creates
+    // its own instance after the previous owner has retired; never reuse its handle.
+    if (!fut.valid()) {
+        StartupStage stage("  vulkan: instance (new owner)");
+        return createInstanceFast();
     }
     StartupStage waitStage("  vulkan: wait instance warmup");
     return fut.get();
@@ -1058,7 +1063,22 @@ bool Graphics::rebuildSwapchainIfNeeded() {
     if (surfaceNeedsRecreate.exchange(false)) recreateSurfaceForResume();
     if (presentModel.needs_recreate) {
         presentModel.needs_recreate = false;
-        swapchainDirty              = true;
+        // presentKHR sets needs_recreate on both OUT_OF_DATE and SUBOPTIMAL.
+        // After a Cocoa resize MoltenVK often stays SUBOPTIMAL for many presents
+        // even when the drawable size already matches the live swapchain; forcing
+        // a rebuild every frame then never leaves the first-frame clear path
+        // (SpatialAA/offscreen recreate). Rebuild only when the drawable size
+        // actually disagrees — true OUT_OF_DATE with a matching size still trips
+        // the acquire-failure path in beginPresentCommandBuffer, which forces a
+        // recreate.
+        auto* window = static_cast<SDL_Window*>(sdlWindow);
+        int   pw = 0, ph = 0;
+        if (window) SDL_Vulkan_GetDrawableSize(window, &pw, &ph);
+        // vkb::Swapchain's bool conversion is explicit; use extent as the live-
+        // chain probe (empty/destroyed swapchains keep extent at 0x0).
+        const bool sizeMismatch = swapchain.extent.width == 0 || swapchain.extent.height == 0 || pw <= 0 || ph <= 0 ||
+                                  uint32_t(pw) != swapchain.extent.width || uint32_t(ph) != swapchain.extent.height;
+        if (sizeMismatch) swapchainDirty = true;
     }
     if (swapchainDirty) {
         device->waitIdle();

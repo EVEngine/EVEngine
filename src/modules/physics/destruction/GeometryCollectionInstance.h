@@ -4,6 +4,7 @@
 #include "common/Result.h"
 #include "common/Time.h"
 #include "physics/PhysicsLink.h"
+#include "physics/backend/bake/collapse/CollapseCaptureSource.h"
 #include "physics/destruction/DestructionField.h"
 #include "physics/destruction/GeometryCollectionAsset.h"
 #include "physics/destruction/GeometryCollectionSnapshot.h"
@@ -17,13 +18,6 @@ namespace eve::physics {
 class World3D;
 class Joint3D;
 struct FractureGeometry;
-
-/** @brief Runtime lifecycle for one bone inside a geometry-collection instance. */
-enum class BoneRuntimeState : std::uint8_t {
-    Attached = 0,
-    Detached = 1,
-    Sleeping = 2,
-};
 
 /** @brief One ordered detach event emitted during step. */
 struct EVENGINE_API_DOMAINS BoneDetachEvent {
@@ -65,28 +59,6 @@ struct EVENGINE_API_DOMAINS DestructionStepReceipt {
 };
 
 /**
- * @brief Presentation snapshot for one bone (world pose + proxy extents).
- *
- * Owning value for the current synchronous call. Pose comes from the live
- * Body3D; extents come from the instance-owned proxy definition.
- */
-struct EVENGINE_API_DOMAINS BonePresentation {
-    BoneRuntimeState state = BoneRuntimeState::Attached;
-    float halfExtentX = 0.5f;
-    float halfExtentY = 0.5f;
-    float halfExtentZ = 0.5f;
-    float worldX = 0.f;
-    float worldY = 0.f;
-    float worldZ = 0.f;
-    float rotX = 0.f;
-    float rotY = 0.f;
-    float rotZ = 0.f;
-    float rotW = 1.f;
-    int clusterId = 0;
-    int fractureLevel = 0;
-};
-
-/**
  * @brief Runtime owner of bone state, connection strain, and PhysicsLink bindings.
  *
  * @ownership Owns Body3D objects it creates; never retains raw World3D or Body3D
@@ -95,12 +67,12 @@ struct EVENGINE_API_DOMAINS BonePresentation {
  * world-first teardown makes later resolve/step/applyField return StaleHandle.
  * Either order leaves PhysicsLinks resolvable without use-after-free.
  */
-class EVENGINE_API_DOMAINS GeometryCollectionInstance {
+class EVENGINE_API_DOMAINS GeometryCollectionInstance : public CollapseCaptureSource {
 public:
     GeometryCollectionInstance(const GeometryCollectionInstance&)            = delete;
     GeometryCollectionInstance& operator=(const GeometryCollectionInstance&) = delete;
     /** @brief Geometry collection instance. */
-    ~GeometryCollectionInstance();
+    ~GeometryCollectionInstance() override;
 
     /**
      * @brief Create bodies for every bone and bind PhysicsLinks.
@@ -134,7 +106,7 @@ public:
      * @ownership Returned shared value keeps geometry alive independently of this instance.
      * @thread Owner thread for acquisition; read-only sharing is safe after publication.
      */
-    [[nodiscard]] std::shared_ptr<const FractureGeometry> fragmentGeometry() const noexcept;
+    [[nodiscard]] std::shared_ptr<const FractureGeometry> fragmentGeometry() const noexcept override;
 
     /** @brief Whether the owning world handle still resolves. */
     [[nodiscard]] bool hasLiveWorld() const noexcept;
@@ -156,7 +128,7 @@ public:
      */
     [[nodiscard("check geometry-collection step")]] eve::Result<DestructionStepReceipt> step(SimulationStep step);
 
-    [[nodiscard]] int boneCount() const noexcept { return static_cast<int>(bones_.size()); }
+    [[nodiscard]] int              boneCount() const noexcept override { return static_cast<int>(bones_.size()); }
     [[nodiscard]] int edgeCount() const noexcept { return static_cast<int>(edges_.size()); }
     [[nodiscard]] BoneRuntimeState boneState(int boneIndex) const;
     [[nodiscard]] int boneClusterId(int boneIndex) const;
@@ -181,7 +153,7 @@ public:
      * @return Owning snapshot, or StaleHandle/InvalidArgument without mutating state.
      */
     [[nodiscard("check bone presentation sampling")]]
-    eve::Result<BonePresentation> bonePresentation(int boneIndex) const;
+    eve::Result<BonePresentation> bonePresentation(int boneIndex) const override;
 
     /** @brief Monotonic revision bumped when any bone enters Sleeping (for batch rebuild). */
     [[nodiscard]] std::uint64_t sleepBatchRevision() const noexcept { return sleepBatchRevision_; }
