@@ -1023,6 +1023,16 @@ TEST_CASE("procgen.hexTerrain.seededMesh_replaysHydrologyAndBiomeCounts") {
     CHECK_EQ(first.positions(), replay.positions());
     CHECK_EQ(first.indices(), replay.indices());
     CHECK(meshIndicesInRange(first));
+    const auto& positions  = first.positions();
+    const auto& indices    = first.indices();
+    const auto  coordinate = [&](std::size_t corner, std::size_t axis) {
+        return positions[std::size_t(indices[corner]) * 3 + axis];
+    };
+    const float ax = coordinate(1, 0) - coordinate(0, 0);
+    const float az = coordinate(1, 2) - coordinate(0, 2);
+    const float bx = coordinate(2, 0) - coordinate(0, 0);
+    const float bz = coordinate(2, 2) - coordinate(0, 2);
+    CHECK(az * bx - ax * bz > 0.0f);
     CHECK_EQ(first.getMeta("algorithm", ""), "mesh.hexterrain");
     CHECK(std::stoi(first.getMeta("cells.ocean", "0")) > 0);
     CHECK(std::stoi(first.getMeta("cells.grassland", "0")) > 0);
