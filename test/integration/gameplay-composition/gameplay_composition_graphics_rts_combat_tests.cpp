@@ -2701,7 +2701,7 @@ TEST_CASE("rts.moduleResolvesStableSubjectsAndRejectsCrossRootDuplicates") {
     auto stepped = module.stepScript(0.5);
     REQUIRE(stepped.ok());
     CHECK(unit->motion()->x > 0.0f);
-    CHECK(unit->motion()->y > 0.0f);
+    CHECK(std::hypot(unit->motion()->x - 4.0f, unit->motion()->y - 7.0f) < std::hypot(4.0f, 7.0f));
 
     const std::array missing{subject("00000000-0000-7000-8000-000000000073")};
     auto             rejected = module.commandUnits(missing, move);

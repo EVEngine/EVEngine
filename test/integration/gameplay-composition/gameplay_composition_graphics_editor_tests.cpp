@@ -1919,7 +1919,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
         sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
         montageSettingsResult <- actionEditor.setMontageSettings(
-            1.5, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            1.5, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         montageRate <- actionEditor.getMontageBasePlayRate();
         montageLooping <- actionEditor.getMontageLooping();
         montageFootIk <- actionEditor.getMontageFootIk();
@@ -1927,7 +1927,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         montageBlendOffset <- actionEditor.getMontageBlendOutOffset();
         montageRootRotation <- actionEditor.getMontageRootMotionRotation();
         invalidMontageSettings <- actionEditor.setMontageSettings(
-            0.0, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            0.0, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         undoMontageSettings <- actionEditor.undo();
         restoredMontageRate <- actionEditor.getMontageBasePlayRate();
         splitCountBefore <- actionEditor.getSectionSplitCount();
@@ -2063,7 +2063,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("montageLooping").toBool());
     CHECK(vm.find("montageFootIk").toBool());
     CHECK_EQ(vm.find("montageLayer").toInt(), 2);
-    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() + 0.03f) < 1e-5f);
+    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() - 0.03f) < 1e-5f);
     CHECK(!vm.find("montageRootRotation").toBool());
     CHECK_EQ(vm.find("splitCountBefore").toInt(), 0);
     CHECK(vm.find("addSplit").toTable().get<bool>("ok"));

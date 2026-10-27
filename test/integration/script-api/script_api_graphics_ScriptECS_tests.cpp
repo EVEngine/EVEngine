@@ -1089,7 +1089,7 @@ function reflectScriptProbe() {
     if (eve.reflect.read(hero, "hp") != 42.5) throw "read hp mismatch";
     if (!eve.reflect.write(hero, "alive", false)) throw "write alive failed";
     if (eve.reflect.read(hero, "alive") != false) throw "read alive mismatch";
-    if (eve.reflect.write(hero, "name", 123)) throw "typed write must convert";
+    if (!eve.reflect.write(hero, "name", 123)) throw "typed write must convert";
     if (eve.reflect.read(hero, "name") != "123") throw "typed write conversion failed";
     if (eve.reflect.write(hero, "missing", 1))
         throw "write to missing member must fail";
