@@ -444,11 +444,7 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Build));
     for (int index = 0; index < 80 && barracks->construction()->progress < 1.0f; ++index)
         REQUIRE(rts.stepScript(0.1).ok());
-    CHECK(barracks->construction()->progress == 1.0f,
-          "builder=({}, {}), arrived={}, unreachable={}, waypoints={}/{}, interactionRadius={}", builder->motion()->x,
-          builder->motion()->y, builder->motion()->arrived, builder->navigation()->unreachable,
-          builder->navigation()->waypointIndex, builder->navigation()->waypoints.size(),
-          barracks->dropoff()->radius + builder->crowd()->radius);
+    CHECK_EQ(barracks->construction()->progress, 1.0f);
     CHECK(builder->orders()->values.empty());
 
     const std::size_t before = rts.buildingCount();
