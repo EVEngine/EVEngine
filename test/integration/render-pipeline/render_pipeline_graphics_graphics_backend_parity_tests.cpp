@@ -813,7 +813,7 @@ TEST_CASE("graphics.lightProbe.customProvidedChangesRenderedPixels") {
     const float    positions[] = {-0.8f, -0.7f, 0.f, 0.8f, -0.7f, 0.f, 0.f, 0.8f, 0.f};
     const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
     const uint32_t indices[]   = {0, 1, 2, 2, 1, 0};
-    Mesh          *mesh        = gfx->newMeshFromArrays(positions, nullptr, normals, 3, indices, 6);
+    Mesh          *mesh        = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 6);
     REQUIRE(mesh);
     auto *camera = Camera3D::createCamera();
     camera->setEye(0.f, 0.f, 3.f);

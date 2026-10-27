@@ -154,6 +154,7 @@ TEST_CASE("graphics.vegetation.backface_normal_modes_match_tve_facing_branch") {
 TEST_CASE("graphics.vegetation.pbr_front_face_culling_matches_tve_render_cull") {
     auto *gfx = Graphics::create();
     gfx->initHeadless(32, 32);
+    gfx->setBackgroundColor(Color(0, 0, 0, 1));
     const float    positions[] = {-.9f, -.9f, .5f, .9f, -.9f, .5f, .9f, .9f, .5f, -.9f, .9f, .5f};
     const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
     const float    uvs[]       = {0, 0, 1, 0, 1, 1, 0, 1};

@@ -1082,13 +1082,14 @@ TEST_CASE("decal.gpuHeadlessProjectionReadback") {
     gfx->getRenderControl()->enable("decal");
     gfx->getRenderControl()->compile();
 
+    const auto viewProj = glm::translate(glm::mat4(1.f), glm::vec3(0.f, 0.f, 0.5f));
     gfx->beginGBufferPass(160, 120);
-    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), glm::mat4(1.f), 0.1f, 100.f, makeSolidTex(gfx, 255, 255, 255));
+    gfx->drawMeshGBuffer(mesh, viewProj, glm::mat4(1.f), 0.1f, 100.f, makeSolidTex(gfx, 255, 255, 255));
     gfx->endGBufferPass();
 
     auto *decalTex = makeSolidTex(gfx, 200, 20, 20);
     gfx->beginDecalPass(160, 120);
-    gfx->setDecalCamera(glm::mat4(1.f), 0.1f, 100.f);
+    gfx->setDecalCamera(viewProj, 0.1f, 100.f);
     // Identity box at the origin covers the screen center.
     gfx->drawDecal(glm::mat4(1.f), decalTex, nullptr, nullptr, nullptr, 1.f, 0.f, 0.f, 0.f, 0.f);
     gfx->endDecalPass();
