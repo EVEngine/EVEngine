@@ -420,6 +420,9 @@ void Graphics::drawPbrMesh(Mesh* mesh, const glm::mat4& model, const Color& tint
         const auto both     = vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment;
         const auto fragment = vk::ShaderStageFlagBits::eFragment;
         const auto vertex   = vk::ShaderStageFlagBits::eVertex;
+        // Keep fragment-only arrays after the vertex resources. Older Metal
+        // translators size inactive array placeholders as one element, shifting
+        // the storage-buffer addresses that follow them in an argument buffer.
         std::array<vk::DescriptorSetLayoutBinding, 14> bindings{
             {{0, vk::DescriptorType::eUniformBuffer, 1, both},
              {14, vk::DescriptorType::eCombinedImageSampler, 11, fragment},

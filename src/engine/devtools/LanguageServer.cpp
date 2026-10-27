@@ -447,7 +447,7 @@ std::string applyRootIdent(std::string_view name, bool called, const SlotClassMa
     if (name == "eve") return called ? std::string{} : std::string{"eve"};
     const auto slot = slots.find(std::string(name));
     if (slot != slots.end()) return slot->second;
-    if (knownType(name, slots, bindings)) return std::string(name);
+    if (bindings.hasScriptClass(name) || moduleClass(name, slots)) return std::string(name);
     return localType(name);
 }
 
