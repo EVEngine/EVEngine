@@ -49,7 +49,7 @@ TEST_CASE("physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement") {
             auto owner = std::make_unique<BakeGraphicsBackend>();
             owner->initHeadless(16, 16);
             auto* mesh = presentation->createMesh(player, *owner).expect("first owner mesh");
-            REQUIRE(owner->describeMesh(mesh).has_value());
+            REQUIRE(owner->describeMesh(mesh).ok());
             REQUIRE(player.seek(1).ok());
             REQUIRE(presentation->upload(player, *owner, *mesh).ok());
             // The owner destroys its registered mesh. Never reuse the facade after this scope.
@@ -62,7 +62,7 @@ TEST_CASE("physics.bake.deformPresentationSurvivesGraphicsOwnerReplacement") {
             auto replacement = std::make_unique<BakeGraphicsBackend>();
             replacement->initHeadless(16, 16);
             auto* mesh = presentation->createMesh(player, *replacement).expect("replacement owner mesh");
-            REQUIRE(replacement->describeMesh(mesh).has_value());
+            REQUIRE(replacement->describeMesh(mesh).ok());
             REQUIRE(player.time() == .5);
             REQUIRE(player.seek(0).ok());
             REQUIRE(presentation->upload(player, *replacement, *mesh).ok());
