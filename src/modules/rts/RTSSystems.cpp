@@ -1004,7 +1004,8 @@ Result<std::size_t> AISystem::step(const SimulationStep& step, const AIProductio
         formation.spacing = strategy->formationSpacing;
         auto issued = CommandFanOutSystem::fanOut(idleArmy, attackMove, formation);
         if (!issued) return Result<std::size_t>::failure(issued.status());
-        const std::uint64_t group = static_cast<std::uint64_t>(identity->self.id) + 1u;
+        const std::uint64_t subjectHash = identity->subject.persistentId().hash();
+        const std::uint64_t group       = subjectHash == 0 ? 1 : subjectHash;
         for (const auto& handle : idleArmy) {
             auto* unit = dynamic_cast<Unit*>(ecs::try_get(handle));
             if (unit != nullptr) unit->tactics()->combatGroup = group;
