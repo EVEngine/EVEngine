@@ -430,6 +430,8 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     REQUIRE(workerId.has_value());
     REQUIRE(barracksId.has_value());
     Unit* builder = rts.newFactionUnit(*faction, subject("00000000-0000-7000-8000-00000000fc02"), *workerId).value();
+    builder->motion()->x = 2.0f;
+    builder->motion()->y = 5.0f;
     REQUIRE(rts.addScriptResource(*faction, "minerals", 200).ok());
     const auto buildingSubject = subject("00000000-0000-7000-8000-00000000fc03");
     auto       started = rts.startScriptConstruction(*faction, buildingSubject, *barracksId, {4.0f, 5.0f}, *builder);
