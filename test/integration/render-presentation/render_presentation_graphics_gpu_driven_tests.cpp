@@ -1650,7 +1650,11 @@ TEST_CASE("GpuDriven.capsAvailable") {
     openGfxWindow(win, gfx);
     auto *vg = dynamic_cast<eve::graphics::vulkan::Graphics *>(gfx);
     REQUIRE(vg != nullptr);
-    CHECK(vg->gpuDrivenCaps().gpuDrivenAvailable());
+    CHECK(vg->gpuDrivenCaps().computeShader);
+    gfx->gpuDrivenSetEnabled(true);
+    CHECK_EQ(gfx->gpuDrivenEnabled(), vg->gpuDrivenCaps().gpuDrivenAvailable());
+    gfx->gpuDrivenSetEnabled(false);
+    CHECK(!gfx->gpuDrivenEnabled());
     win->close();
 }
 
@@ -3615,6 +3619,7 @@ TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
     CHECK(&cached.value().get() == texture);
     REQUIRE(gfx->releaseTexture(texture));
     delete texture;
+    eve::ResourceManager::getInstance().unload(texturePath);
     CHECK(!gfx->loadTexture(texturePath).ok());
     std::filesystem::copy_file("test/assets/resource_reuse.png", path,
                                std::filesystem::copy_options::overwrite_existing);
