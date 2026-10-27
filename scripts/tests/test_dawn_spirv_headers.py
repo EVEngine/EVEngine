@@ -190,16 +190,22 @@ endif()
 
 
 class DawnCiConfigureTests(unittest.TestCase):
-    def check_dependencies(self, root, cmake_status):
+    def check_dependencies(self, root, cmake_status, third_party_arg=None):
         workflow = (ROOT / ".github/workflows/release-ci.yml").read_text(encoding="utf-8")
         step = workflow.split("      - name: Configure native Dawn smoke lane\n", 1)[1]
         step = step.split("      - name:", 1)[0]
         script = textwrap.dedent(step.split("        run: |\n", 1)[1])
+        if third_party_arg is not None:
+            script = script.replace("${{ steps.third-party-cache.outputs.cache-hit }}", "true")
+            script = script.replace("${{ steps.third-party-cache.outputs.cmake-args }}", third_party_arg)
         script = re.sub(r"\$\{\{.*?\}\}", "", script)
         binaries = root / "bin"
         binaries.mkdir(exist_ok=True)
         cmake = binaries / "cmake"
-        cmake.write_text(f"#!/bin/sh\necho attempt >> attempts\nexit {cmake_status}\n", encoding="utf-8")
+        cmake.write_text(
+            f'#!/bin/sh\nprintf "%s\\n" "$@" > arguments\necho attempt >> attempts\nexit {cmake_status}\n',
+            encoding="utf-8",
+        )
         cmake.chmod(0o755)
         sleep = binaries / "sleep"
         sleep.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
@@ -215,6 +221,14 @@ class DawnCiConfigureTests(unittest.TestCase):
         env = {**os.environ, "PATH": str(binaries) + os.pathsep + os.environ["PATH"]}
         return subprocess.run([bash, "-c", script], cwd=root, env=env, check=False,
                               capture_output=True, text=True, encoding="utf-8")
+
+    def test_cached_dependency_path_with_spaces_is_one_argument(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            argument = "-DEVENGINE_THIRD_PARTY_BINARY_DIR=/cache/prebuilt deps"
+            result = self.check_dependencies(root, 0, argument)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn(argument, (root / "arguments").read_text(encoding="utf-8").splitlines())
 
     def test_cmake_validates_prepared_dependencies_and_failed_configures_are_bounded(self):
         with tempfile.TemporaryDirectory() as temporary:

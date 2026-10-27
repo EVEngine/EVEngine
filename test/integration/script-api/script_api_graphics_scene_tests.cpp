@@ -2249,8 +2249,8 @@ TEST_CASE("scriptConfig.instantiatesOnlyConfiguredModules") {
     Runtime runtime(1024, ssq::Libs::ALL);
     configureRuntime(runtime);
     runtime.runSource(
-        "eve.Foo <- function() { return { n = 1 } }\n"
-        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.Foo <- class { n = 1 }\n"
+        "eve.Bar <- class { n = 2 }\n"
         "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
         "config.modules <- [\"foo\"]\n"
         "instantiate_configured_modules()\n"
@@ -2263,8 +2263,8 @@ TEST_CASE("scriptConfig.ensureModuleLoadsOmittedSlot") {
     Runtime runtime(1024, ssq::Libs::ALL);
     configureRuntime(runtime);
     runtime.runSource(
-        "eve.Foo <- function() { return { n = 1 } }\n"
-        "eve.Bar <- function() { return { n = 2 } }\n"
+        "eve.Foo <- class { n = 1 }\n"
+        "eve.Bar <- class { n = 2 }\n"
         "eve.moduleList = [{ slot = \"foo\", cls = \"Foo\" }, { slot = \"bar\", cls = \"Bar\" }]\n"
         "config.modules <- [\"foo\"]\n"
         "instantiate_configured_modules()\n"
@@ -2788,7 +2788,7 @@ TEST_CASE("scriptOwnership.procgenAndStateModulesOwnedBindings") {
         if (params.ok && grid.ok && context.ok && production.ok && authority.ok &&
             statepatch.ok && decision.ok && pointSet.ok && output.ok && cloud.ok && batch.ok &&
             params.value.ownerEpoch() > 0 && pointSet.ownerEpoch > 0 && output.ownerEpoch > 0 &&
-            cloud.ownerEpoch > 0 && pointSet.value.empty() && output.value.getTarget() == "" &&
+            cloud.ownerEpoch > 0 && pointSet.value.empty() && output.value.getTarget() == "grid" &&
             grid.value.getWidth() == 2 && grid.value.getHeight() == 3 &&
             params.value.setSeed(42).ok && params.value.getSeed() == 42 &&
             grid.value.fill(1).ok && grid.value.getCell(1, 2) == 1 &&
@@ -3947,7 +3947,7 @@ TEST_CASE("tactics.scriptReachesPresentationAndSightQueries") {
 
             // Sight-aware range, and which policy answered it.
             local visible = battle.visibleCellsInRange(0, 0, 0, 1, 2, "chebyshev");
-            local algorithm = battle.lineOfSightAlgorithm();
+            local algorithm = battle.lineOfSightAlgorithm().value;
 
             // Presentation intents: a move must come back as Moving with a revert contract.
             local before = battle.eventCount();
@@ -4218,8 +4218,8 @@ TEST_CASE("tactics.scriptEdgesAreDirectedAndAffectReachability") {
             local declared = battle.addEdge(0, 0, 0, 1, 0, 0, "{\"passable\":false,\"tags\":[\"door\"]}");
             local duplicate = battle.addEdge(0, 0, 0, 1, 0, 0, "");
             local forward = battle.edge(0, 0, 0, 1, 0, 0);
-            local forwardPresent = battle.hasEdge(0, 0, 0, 1, 0, 0);
-            local reversePresent = battle.hasEdge(1, 0, 0, 0, 0, 0);
+            forwardPresent <- battle.hasEdge(0, 0, 0, 1, 0, 0);
+            reversePresent <- battle.hasEdge(1, 0, 0, 0, 0, 0);
 
             local started = battle.start("initiative");
             local p1 = battle.advance(1, 1);
@@ -4240,6 +4240,8 @@ TEST_CASE("tactics.scriptEdgesAreDirectedAndAffectReachability") {
             }
         }
     )"));
+    CHECK(vm.find("forwardPresent").toBool());
+    CHECK(!vm.find("reversePresent").toBool());
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 
@@ -4449,10 +4451,10 @@ TEST_CASE("tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel") {
             // at the revision the snapshot was taken at, or replay is refused by design.
             local baselineRevision = battle.revision();
             local snapshot = battle.snapshotJson();
-            local log = battle.commandLogJson(baselineRevision);
-            local algorithm = battle.snapshotAlgorithm();
+            local algorithm = battle.snapshotAlgorithm().value;
             local moved = battle.move(unitId, 1, 0, 0);
             local ended = battle.endTurn(unitId);
+            local log = battle.commandLogJson(baselineRevision);
             local directCell = battle.unitCell(unitId);
             local directPhase = battle.phase().value;
 

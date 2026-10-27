@@ -565,6 +565,21 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
         r"template\s*<[^>]+>\s*void\s+(\w+)\s*\(\s*ssq::Class\s*&\s*(\w+)"
     )
     slots = slot_index if slot_index is not None else load_slot_index()
+    class_aliases: dict[str, set[str]] = {}
+    for path, source in sources.items():
+        relative = path.relative_to(ROOT).parts
+        if (enabled_modules is not None and relative[:2] == ("src", "modules")
+                and relative[2] not in enabled_modules):
+            continue
+        for position, _, script_class in class_bindings(source):
+            declaration = source[position:source.find("(", position)]
+            cpp_class = re.search(r"\.addClass\s*<\s*([^,>]+)", declaration)
+            if cpp_class:
+                mapped, _ = script_type(cpp_class.group(1))
+                if mapped not in {"dynamic", "int", "float", "bool", "string", "void",
+                                  "Array<dynamic>", "Table<string, dynamic>"} and script_class:
+                    class_aliases.setdefault(mapped, set()).add(script_class)
+    aliases = {cpp: next(iter(names)) for cpp, names in class_aliases.items() if len(names) == 1}
     # SimpleSquirrel addFunc plus the table-driven helpers in SquirrelBindContext.h.
     # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
     # are not scraped. Method names stay string literals in argument 1.
@@ -654,6 +669,9 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                     and receiver_expr not in {"table", "eve", "root", "vm"}):
                 parameters = parameters[1:]
             mapped_return, return_nullable = script_type(return_cpp)
+            mapped_return = aliases.get(mapped_return, mapped_return)
+            parameters = [replace(parameter, script_type=aliases.get(parameter.script_type, parameter.script_type))
+                          for parameter in parameters]
             ownership = "borrowed" if "*" in return_cpp else "value"
             host_module = module_for(path)
             module = resolve_slot_module(path, host_module, slot_owner, script_class, slots)

@@ -152,6 +152,7 @@ TEST_CASE("graphics.vegetation.backface_normal_modes_match_tve_facing_branch") {
 TEST_CASE("graphics.vegetation.pbr_front_face_culling_matches_tve_render_cull") {
     auto *gfx = Graphics::create();
     gfx->initHeadless(32, 32);
+    gfx->setBackgroundColor(Color(0, 0, 0, 1));
     const float    positions[] = {-.9f, -.9f, .5f, .9f, -.9f, .5f, .9f, .9f, .5f, -.9f, .9f, .5f};
     const float    normals[]   = {0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
     const float    uvs[]       = {0, 0, 1, 0, 1, 1, 0, 1};
@@ -1084,9 +1085,16 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     int       litGreen  = 0;
     const int w         = gfx->getWidth();
     const int h         = gfx->getHeight();
+    // Screen readback is display encoded; classify light and shadow in linear RGB.
+    const auto linearize = [](float value) {
+        return value <= 0.04045f ? value / 12.92f : std::pow((value + 0.055f) / 1.055f, 2.4f);
+    };
     for (int y = 0; y < h; y += 2) {
         for (int x = 0; x < w; x += 2) {
-            const auto c = frame->getPixel(x, y);
+            auto c = frame->getPixel(x, y);
+            c.r    = linearize(c.r);
+            c.g    = linearize(c.g);
+            c.b    = linearize(c.b);
             if (c.g > c.r + 0.04f && c.g > c.b + 0.02f) {
                 ++greenish;
                 const float luma = (c.r + c.g + c.b) / 3.f;
@@ -1095,6 +1103,8 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
             }
         }
     }
+    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
+    savePng(_ZEROERR_TEST_CONTEXT, frame, outDir + "/grass_field.png");
     // This fixed-size scene contains a broad field spanning multiple cascades.
     // A WebGPU regression that left empty cascade layers uncleared turned the
     // whole field dark while still satisfying the old handful-of-pixels check.
@@ -1102,19 +1112,13 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     CHECK(darkGreen > 100);
     CHECK(litGreen > 50000);
 
-    if (eve::test::manualPreviewEnabled()) {
-        const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out";
-        savePng(_ZEROERR_TEST_CONTEXT, frame, outDir + "/grass_field.png");
-        savePng(_ZEROERR_TEST_CONTEXT, frame, "/opt/cursor/artifacts/grass_field.png");
 
-        std::vector<uint8_t> atlasRgba;
-        PackedAtlasInfo      atlasInfo;
-        eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba, atlasInfo);
-        auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8", atlasRgba.data(), false);
-        savePng(_ZEROERR_TEST_CONTEXT, atlasImg, outDir + "/grass_atlas.png");
-        savePng(_ZEROERR_TEST_CONTEXT, atlasImg, "/opt/cursor/artifacts/grass_atlas.png");
-        delete atlasImg;
-    }
+    std::vector<uint8_t> atlasRgba;
+    PackedAtlasInfo      atlasInfo;
+    eve::graphics::grass::packSwayAtlasRGBA(bake.grassAtlasFiles, bake.leafAtlasFiles, atlasRgba, atlasInfo);
+    auto *atlasImg = new eve::image::ImageData(atlasInfo.width, atlasInfo.height, "RGBA8", atlasRgba.data(), false);
+    savePng(_ZEROERR_TEST_CONTEXT, atlasImg, outDir + "/grass_atlas.png");
+    delete atlasImg;
 
     win->close();
 }

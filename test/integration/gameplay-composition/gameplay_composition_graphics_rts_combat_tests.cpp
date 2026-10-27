@@ -1397,7 +1397,7 @@ TEST_CASE("rts.abilitiesUseCanonicalDamageEconomyCooldownAndInterruptibleChannel
     CHECK_EQ(caster->veterancy()->experience, 10.0f);
     CHECK_EQ(caster->veterancy()->level, 1);
     CHECK_EQ(caster->combat()->upgradeDamageFactor, 1.25f);
-    CHECK_EQ(caster->durability()->state.maxHealth, 12.0);
+    CHECK_LT(std::abs(caster->durability()->state.maxHealth - 12.0), 1e-5);
 
     target->release();
     caster->release();
@@ -1523,7 +1523,7 @@ TEST_CASE("rts.projectilesUseCanonicalTrajectorySweptImpactAndHostileSplashDamag
     CHECK_EQ(source->veterancy()->level, 1);
     CHECK_EQ(source->veterancy()->experience, 10.0f);
     CHECK_EQ(source->combat()->upgradeDamageFactor, 1.25f);
-    CHECK_EQ(source->durability()->state.maxHealth, 12.0);
+    CHECK_LT(std::abs(source->durability()->state.maxHealth - 12.0), 1e-5);
 
     blocker->release();
     ally->release();
@@ -2175,6 +2175,8 @@ TEST_CASE("rts.compositionRootsAndBatchViews") {
 
     Unit*     unit               = Unit::createUnit();
     Building* building           = Building::createBuilding();
+    CHECK_EQ(unit->table, &world);
+    CHECK_EQ(building->table, &world);
     unit->motion()->x            = 10.0f;
     building->placement()->cellX = 4;
 
@@ -2209,6 +2211,8 @@ TEST_CASE("rts.baseViewIncludesSubclassButNotOtherRoot") {
 
     Unit*  unit  = Unit::createUnit();
     Scout* scout = Scout::create();
+    CHECK_EQ(unit->table, &world);
+    CHECK_EQ(scout->table, &world);
     initializeScout(*scout);
     Building* building = Building::createBuilding();
 
@@ -2294,7 +2298,9 @@ TEST_CASE("rts.exactOverlapPublishesShortDeterministicMotion") {
             REQUIRE(unit->orders()->values.enqueue(move).ok());
             units.push_back(unit);
         }
-        for (std::uint64_t tick = 1; tick <= 8; ++tick) {
+        // Include time to separate 96 coincident discs as well as the 5.6s
+        // unobstructed travel time to the target at four units per second.
+        for (std::uint64_t tick = 1; tick <= 240; ++tick) {
             const eve::SimulationStep step{eve::SimulationTick{tick},
                                            eve::Duration::fromSeconds(1.0 / 120.0).expect("short crowd dt")};
             const auto                advanced = eve::rts::CrowdMotionSystem::step(step, crowd);
@@ -2495,6 +2501,7 @@ TEST_CASE("rts.coordinatedVolleyHoldsAndReleasesGroupWhileExplicitAttackBypasses
         definition.id               = "volley-shell";
         definition.damage           = 10.0f;
         definition.range            = 12.0f;
+        weapon->state()->resource.value = weapon->state()->resource.max = 4.0f;
         weapon->definition()->owned = std::make_shared<const eve::weapon::WeaponDefinition>(definition);
         weapon->definition()->def   = weapon->definition()->owned.get();
         weapon->state()->stages     = &weapon->definition()->def->stages;
@@ -2557,6 +2564,9 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto              order = unit->orders()->values.enqueue(move);
     REQUIRE(order.ok());
     std::move(order).takeValue();
+    auto current = unit->orders()->values.current();
+    REQUIRE(current.ok());
+    const auto record = current.value();
 
     eve::action::ActionRuntime runtime;
     eve::rts::ActionAdapter    adapter(runtime);
@@ -2564,9 +2574,9 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto                       moved = eve::rts::MotionSystem::step(first);
     REQUIRE(moved.ok());
     std::move(moved).takeValue();
-    auto pending = eve::rts::OrderActionSystem::step(first, adapter);
+    auto pending = adapter.execute(*unit, record, first);
     REQUIRE(pending.ok());
-    std::move(pending).takeValue();
+    CHECK(pending.value().disposition == eve::rts::ActionDisposition::Pending);
     CHECK(!unit->orders()->values.empty());
     CHECK_EQ(runtime.executionCount(), 1u);
 
@@ -2574,9 +2584,10 @@ TEST_CASE("rts.actionAdapterReusesSharedActionRuntime") {
     auto                      completed = eve::rts::MotionSystem::step(second);
     REQUIRE(completed.ok());
     std::move(completed).takeValue();
-    auto action = eve::rts::OrderActionSystem::step(second, adapter);
+    auto action = adapter.execute(*unit, record, second);
     REQUIRE(action.ok());
-    std::move(action).takeValue();
+    CHECK(action.value().disposition == eve::rts::ActionDisposition::Completed);
+    REQUIRE(unit->orders()->values.complete(record.id).ok());
     CHECK(unit->orders()->values.empty());
 
     unit->release();
@@ -2707,7 +2718,7 @@ TEST_CASE("rts.moduleResolvesStableSubjectsAndRejectsCrossRootDuplicates") {
     auto stepped = module.stepScript(0.5);
     REQUIRE(stepped.ok());
     CHECK(unit->motion()->x > 0.0f);
-    CHECK(unit->motion()->y > 0.0f);
+    CHECK(std::hypot(unit->motion()->x - 4.0f, unit->motion()->y - 7.0f) < std::hypot(4.0f, 7.0f));
 
     const std::array missing{subject("00000000-0000-7000-8000-000000000073")};
     auto             rejected = module.commandUnits(missing, move);
@@ -3296,7 +3307,7 @@ TEST_CASE("rts.upstreamSupplyAutoDispatchesAndLeadsMovingRelay") {
     REQUIRE(order.ok());
     CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::SupplyRelay));
     CHECK(upstream->supply()->rendezvousActive);
-    CHECK(upstream->supply()->rendezvousPoint.x > relay->motion()->x + 7.9f);
+    CHECK(std::abs(upstream->supply()->rendezvousPoint.x - 14.0f) < 1e-5f);
     CHECK(std::abs(upstream->supply()->reservedStock - 8.0f) < 1e-5f);
 
     const eve::SimulationStep movement{eve::SimulationTick{2},
@@ -3330,6 +3341,7 @@ TEST_CASE("rts.supplyRendezvousAvoidsVisibleHostileCoverage") {
     supplier->supply()->range = 1.0f;
     relay->motion()->x        = 10.0f;
     relay->motion()->y        = 10.0f;
+    relay->motion()->speed    = 4.0f;
     CommandSpec move;
     move.kind   = OrderKind::Move;
     move.target = {20.0f, 10.0f};

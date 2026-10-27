@@ -1231,10 +1231,9 @@ void RenderSystem3D::render(Graphics& gfx) {
             const std::string model = mat->getShadingModel();
             if (model != "pbr") return false;
             if (!mat->getReceiveLight()) return false;
-            if (mat->hasPbrSurface()) {
-                const PbrSurface s = mat->pbrSurface();
-                if (s.clearcoatFactor > 1e-4f || s.anisotropyStrength > 1e-4f) return false;
-            }
+            // The core G-buffer does not carry the dedicated PBR surface's
+            // texture bindings, authored normal mode or vegetation factors.
+            if (mat->hasPbrSurface()) return false;
         } else {
             if (item.mr->texBombStrength > 0.f) return false;
             if (item.mr->heightTexture && item.mr->parallaxScale > 0.f) return false;

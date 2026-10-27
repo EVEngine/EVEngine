@@ -676,13 +676,30 @@ TEST_CASE("devtools.mcp.consoleToolsRoundTripScriptPrint") {
     CHECK(responseContentText(responses[3]).find("unknown level") != std::string::npos);
     CHECK(responseContentText(responses[4]).find("unknown level") != std::string::npos);
 
-    // Cursor-based incremental read: nothing new after clear().
+    // A tail read after clear reports the discarded history as a gap.
     auto cleared = parseObject(responseContentText(responses[5]));
     REQUIRE(cleared);
     CHECK(cleared->getValue<std::int64_t>("droppedThrough") == nextSeq - 1);
-    const std::string afterClear = responseContentText(responses[6]);
-    CHECK(afterClear.find("\"count\":0") != std::string::npos);
-    CHECK(afterClear.find("\"truncated\":false") != std::string::npos);
+    auto afterClear = parseObject(responseContentText(responses[6]));
+    REQUIRE(afterClear);
+    CHECK_EQ(afterClear->getValue<int>("count"), 0);
+    CHECK(afterClear->getValue<bool>("truncated"));
+    CHECK_EQ(afterClear->getValue<std::int64_t>("droppedThrough"), nextSeq - 1);
+
+    // Resuming from the last covered sequence has no gap or repeated lines.
+    const auto resumed = runStdioSession(
+        joinRequests({initializeRequest(1, "2025-06-18"),
+                      callRequest(2, "eve_console_read", "{\"sinceSeq\":" + std::to_string(nextSeq - 1) + "}")}),
+        2);
+    REQUIRE_EQ(resumed.size(), std::size_t(2));
+    auto incremental = parseObject(responseContentText(resumed[1]));
+    REQUIRE(incremental);
+    CHECK(!incremental->getValue<bool>("truncated"));
+    auto resumedLines = incremental->getArray("lines");
+    REQUIRE(resumedLines);
+    CHECK_EQ(incremental->getValue<std::size_t>("count"), resumedLines->size());
+    for (std::size_t index = 0; index < resumedLines->size(); ++index)
+        CHECK(resumedLines->getObject(static_cast<unsigned>(index))->getValue<Poco::Int64>("seq") > nextSeq - 1);
 
     dt.detach();
     CHECK(!console.isAttached());
@@ -735,7 +752,9 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
     auto supported = parseObject(responses[0])->getObject("result");
     REQUIRE(supported);
     CHECK(supported->getValue<std::string>("protocolVersion") == "2025-06-18");
-    CHECK(!supported->getValue<std::string>("serverInfo.name").empty());
+    auto serverInfo = supported->getObject("serverInfo");
+    REQUIRE(serverInfo);
+    CHECK(!serverInfo->getValue<std::string>("name").empty());
 
     // An unknown revision must not be echoed back as if it were implemented.
     auto unknown = parseObject(responses[1])->getObject("result");
@@ -884,6 +903,9 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // Aggregate one synthetic frame the way the frame loop does, so the tool has
     // real zone data to report.
+    const bool enabledBefore = profilerModule->enabled();
+    profilerModule->setEnabled(true);
+    profilerModule->reset();
     profilerModule->beginFrame();
     {
         eve::prof::Profiler::zoneBegin("mcp.test.zone", "mcp.test");
@@ -900,6 +922,7 @@ TEST_CASE("devtools.mcp.profilerToolsReadTheLiveCore") {
 
     // The text report is the same hotspot view the profiler panel shows.
     CHECK(callToolOnce("eve_profiler_report", "{}").find("mcp.test.zone") != std::string::npos);
+    profilerModule->setEnabled(enabledBefore);
 }
 
 TEST_CASE("devtools.mcp.spatialQueryToolsValidateAndReportMissingProviders") {
@@ -2807,12 +2830,19 @@ TEST_CASE("procgen.cave.cellular.parallelJobsHaveIsolatedRandomStreams") {
 }
 }  // namespace test_procgen_rng_contract
 
-// Contract section: render graph
 #include "common/config.h"
 #if !defined(EVENGINE_WEBGPU)
-#include "PrivateTestScope.h"
-
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <condition_variable>
+#include <cstdint>
+#include <memory>
 #include <mutex>
+#include <string>
+#include <thread>
+#include <vector>
+#include "PrivateTestScope.h"
 #include "graphics/vulkan/FrameGraphJobs.h"
 #include "vkbuilder/framegraph.hpp"
 // render_graph.cpp
@@ -2950,49 +2980,52 @@ TEST_CASE("render_graph.engineTopology") {
         }
         if (p.name == "shadow0" || p.name == "shadow1" || p.name == "shadow2") {
             REQUIRE_EQ(p.attachments.size(), size_t(1));
-            const bool folded = p.attachments[0].finalLayout == vk::ImageLayout::eDepthStencilReadOnlyOptimal;
-            CHECK(folded);
+            // Match the next sample() access, not the resource's end-of-frame layout.
+            CHECK_EQ(p.attachments[0].finalLayout, vk::ImageLayout::eShaderReadOnlyOptimal);
         }
     }
 }
 
 TEST_CASE("render_graph.jobSystemExecutorParallel") {
-    auto* jobs = eve::thread::createJobSystem(0);  // hardware concurrency, like the engine
+    auto* jobs = eve::thread::createJobSystem(4);
     REQUIRE(jobs != nullptr);
     jobs->beginFrame();
 
     std::mutex                   mu;
     std::vector<int>             recorded;
     std::vector<std::thread::id> threads;
+    std::condition_variable      overlap;
+    int                          active = 0, peakActive = 0;
+    const auto                   deadline  = std::chrono::steady_clock::now() + std::chrono::seconds(5);
     const auto                   recordOne = [&](uint32_t order) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(8));
-        std::lock_guard<std::mutex> lk(mu);
+        std::unique_lock<std::mutex> lk(mu);
+        peakActive = std::max(peakActive, ++active);
+        overlap.notify_all();
+        overlap.wait_until(lk, deadline, [&] { return peakActive >= 2; });
         recorded.push_back(int(order));
         threads.push_back(std::this_thread::get_id());
+        --active;
     };
 
-    // One layer of 8 independent passes: serial recording would take >= 64 ms,
-    // parallel recording on 4 workers takes ~2-3 sleep periods.
+    // Independent passes must overlap, even when a busy CI host schedules workers late.
     std::vector<uint32_t> layer{0, 1, 2, 3, 4, 5, 6, 7};
-    const auto            t0       = std::chrono::steady_clock::now();
     auto                  executor = vulkan::jobSystemPassExecutor(jobs);
     executor(layer, recordOne);
-    const auto ms =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - t0).count();
 
     jobs->endFrame();
     delete jobs;
 
     CHECK_EQ(recorded.size(), layer.size());
+    std::sort(recorded.begin(), recorded.end());
     for (size_t i = 0; i < recorded.size(); ++i) CHECK_EQ(recorded[i], int(i));
     // Every pass recorded exactly once (recorded already proves count; sort
     // check proves no duplicates and no gaps).
-    CHECK(ms < 40);
+    CHECK_GE(peakActive, 2);
     // At least two distinct threads participated -> the layer was truly
     // recorded in parallel, not just serialized through the executor.
     std::sort(threads.begin(), threads.end());
-    const bool parallel = threads.size() >= 2 && std::unique(threads.begin(), threads.end()) != threads.end();
-    CHECK(parallel);
+    const auto distinctEnd = std::unique(threads.begin(), threads.end());
+    CHECK(std::distance(threads.begin(), distinctEnd) >= 2);
 }
 
 TEST_CASE("render_graph.jobSystemExecutorSerialFallback") {
@@ -3320,7 +3353,8 @@ TEST_CASE("thread.postMain.fromWorkerThread") {
     task->wait();
     CHECK_EQ(task->getStatus(), std::string("done"));
     CHECK_EQ(ev->pollName(), std::string("thread.worker.done"));
-    CHECK_EQ(ev->pollData(), std::string("w"));
+    CHECK_EQ(ev->getLastData(), std::string("w"));
+    CHECK_EQ(ev->pollName(), std::string());
 }
 
 TEST_CASE("thread.pool.submitSleep") {

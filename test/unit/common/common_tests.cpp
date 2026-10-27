@@ -1784,8 +1784,10 @@ TEST_CASE("common.zeroerr.preservesAssertionCounters") {
     CHECK(after == before + 1);
     auto knownFailure = [reporter = &_ZEROERR_TEST_CONTEXT->reporter] {
         zeroerr::TestContext context(*reporter);
-        auto*                _ZEROERR_TEST_CONTEXT = &context;
-        CHECK(2 == 3);
+        zeroerr::assert_info   info{zeroerr::assert_level::ZEROERR_WARN_l, zeroerr::assert_throw::no_throw, false};
+        zeroerr::AssertionData failure(__FILE__, __LINE__, "2 == 3", info);
+        failure.setResult({false, "2 == 3"});
+        zeroerr::detail::context_helper<zeroerr::TestContext*, false>::setContext(failure, &context);
         return context.warning_as;
     };
     CHECK(knownFailure() == 1);
@@ -2590,6 +2592,8 @@ TEST_CASE("common.scriptCompiler.spec.metadataContractsAndSearch") {
             "/* export function hidden() {}\n"
             "persist ignored = 1 */\n"
             "local text = \"// await remains text\"\n"
+            "local escaped = \"\\\" await remains text too\"\n"
+            "local single = 'await'\n"
             "import { answer } from \"game:/real.nut\"\n",
             "game:/comments.nut");
         CHECK_EQ(metadata.imports.size(), size_t(1));
@@ -2597,6 +2601,11 @@ TEST_CASE("common.scriptCompiler.spec.metadataContractsAndSearch") {
         CHECK(metadata.exports.empty());
         CHECK(metadata.persistRoots.empty());
         CHECK(metadata.awaitLocations.empty());
+        const auto withAwait =
+            script::ScriptCompiler::analyze("local text = \"await\"\nawait task()\n", "game:/await.nut");
+        REQUIRE_EQ(withAwait.awaitLocations.size(), size_t(1));
+        CHECK_EQ(withAwait.awaitLocations[0].line, size_t(2));
+        CHECK_EQ(withAwait.awaitLocations[0].column, size_t(1));
     };
     SUB_CASE("binding contracts -> are replaceable and sorted") {
         script::BindingContractRegistry registry;
@@ -2938,6 +2947,25 @@ TEST_CASE("common.stateValue.spec.containersPathsMergeAndEquality") {
         CHECK(a == b);
         b.set("k", StateValue::string("w"));
         CHECK(a != b);
+
+        a.set("a", StateValue::integer(7));
+        b = StateValue::object();
+        b.set("a", StateValue::integer(7));
+        b.set("k", StateValue::string("v"));
+        CHECK(a == b);
+        CHECK(a.keys() != b.keys());
+        CHECK(toLegacyStateValue(toCanonicalStateValue(a)) == a);
+        b.set("a", StateValue::number(7.0));
+        CHECK(a != b);
+        b.set("extra", StateValue::null());
+        CHECK(a != b);
+        auto first = StateValue::array();
+        first.pushBack(StateValue::integer(1));
+        first.pushBack(StateValue::integer(2));
+        auto reversed = StateValue::array();
+        reversed.pushBack(StateValue::integer(2));
+        reversed.pushBack(StateValue::integer(1));
+        CHECK(first != reversed);
 
         CHECK(StateValue::null() == StateValue::null());
     };
@@ -3370,6 +3398,7 @@ TEST_CASE("common.xml.spec.treeEntitiesAndInvalidInput") {
 #include "PrivateTestScope.h"
 #include "common/Capability.h"
 #include "common/CapabilityOwned.h"
+#include "zeroerr/unittest.h"
 namespace test_owned_capability_contract {
 class IWidget {
 public:
@@ -3411,6 +3440,19 @@ TEST_CASE("Owned capability lease survives retirement while stale handle cannot 
     REQUIRE(lease.ok());
     CHECK_EQ(lease.value()->value(), 7);
     CHECK_EQ(eve::cap::query<IWidget>()->value(), 7);
+    auto copy  = lease.value();
+    auto moved = std::move(copy);
+    CHECK(!copy);
+    CHECK(copy.handle().id.empty());
+    CHECK_EQ(copy.handle().generation, std::uint64_t{0});
+    copy = std::move(moved);
+    CHECK(!moved);
+    CHECK(moved.handle().id.empty());
+    CHECK_EQ(moved.handle().generation, std::uint64_t{0});
+    CHECK(copy.get() == lease.value().get());
+    auto& self = copy;
+    copy       = std::move(self);
+    CHECK(copy.handle() == first.value());
     CHECK(!Registry::provide("rewrite.widget", std::make_shared<Widget>(8)).ok());
     REQUIRE(Registry::unload(first.value()).ok());
     CHECK(!Registry::acquire(first.value()).ok());
@@ -3804,7 +3846,8 @@ TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
 TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive") {
     REQUIRE(eve::LogicalId::parse("rpg:Skill.Fire").has_value());
     CHECK(!eve::LogicalId::parse("RPG:Skill.Fire").has_value());
-    CHECK(!eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("_rpg:Skill.Fire").has_value());
+    CHECK(eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
     CHECK(!eve::LogicalId::parse("rpg:skill/fire").has_value());
     CHECK(eve::LogicalId::fromParts("game_event", "Damage.Applied").has_value());
 }

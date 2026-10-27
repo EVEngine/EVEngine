@@ -239,13 +239,8 @@ struct CursorWord {
     bool        memberAccess = false;
 };
 
-CursorWord wordAt(std::string_view source, size_t line, size_t character) {
-    size_t offset = 0;
-    for (size_t current = 0; current < line && offset < source.size(); ++current) {
-        const size_t newline = source.find('\n', offset);
-        offset               = newline == std::string_view::npos ? source.size() : newline + 1;
-    }
-    offset = std::min(offset + character, source.size());
+CursorWord wordAt(std::string_view source, size_t line, size_t character, bool prefix = false) {
+    const size_t offset = lsp::offsetAt(source, {line, character});
     size_t begin = offset;
     size_t end   = offset;
     while (begin > 0 && (std::isalnum(static_cast<unsigned char>(source[begin - 1])) != 0 || source[begin - 1] == '_'))
@@ -253,7 +248,7 @@ CursorWord wordAt(std::string_view source, size_t line, size_t character) {
     while (end < source.size() && (std::isalnum(static_cast<unsigned char>(source[end])) != 0 || source[end] == '_'))
         ++end;
     CursorWord result;
-    result.word = std::string(source.substr(begin, end - begin));
+    result.word = std::string(source.substr(begin, (prefix ? offset : end) - begin));
     size_t scan = begin;
     if (result.word.empty() && offset > 0 && source[offset - 1] == '.') scan = offset;
     while (scan > 0 && std::isspace(static_cast<unsigned char>(source[scan - 1])) != 0) --scan;
@@ -452,7 +447,7 @@ std::string applyRootIdent(std::string_view name, bool called, const SlotClassMa
     if (name == "eve") return called ? std::string{} : std::string{"eve"};
     const auto slot = slots.find(std::string(name));
     if (slot != slots.end()) return slot->second;
-    if (bindings.hasScriptClass(name)) return std::string(name);
+    if (bindings.hasScriptClass(name) || moduleClass(name, slots)) return std::string(name);
     return localType(name);
 }
 
@@ -731,19 +726,13 @@ struct LanguageServer::Impl {
     std::vector<script::ScriptCompletion> complete(std::string_view uri, lsp::Position position) const {
         const std::string* source = sourceFor(uri);
         CursorWord         cursor;
-        if (source)
-            cursor = wordAt(*source, position.line, position.character);
+        if (source) cursor = wordAt(*source, position.line, position.character, true);
         const std::string ident = identity(uri);
         std::vector<script::ScriptCompletion> result;
         if (cursor.memberAccess) {
             size_t wordBegin = 0;
             if (source) {
-                size_t offset = 0;
-                for (size_t current = 0; current < position.line && offset < source->size(); ++current) {
-                    const size_t newline = source->find('\n', offset);
-                    offset               = newline == std::string_view::npos ? source->size() : newline + 1;
-                }
-                offset    = std::min(offset + position.character, source->size());
+                const size_t offset = lsp::offsetAt(*source, position);
                 wordBegin = offset;
                 while (wordBegin > 0 && identifierPart((*source)[wordBegin - 1])) --wordBegin;
             }

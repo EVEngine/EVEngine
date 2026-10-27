@@ -441,6 +441,8 @@ TEST_CASE("card.rtsScriptShortCollectionConstructionAndAtomicPlayContract") {
         assert(barracks!="");
         for(local i=0;i<24 && !mission.built;++i) advanceContract();
         assert(mission.built);
+        for(local i=0;i<600 && mission.minerals<40;++i) stepSimulation(1.0/30.0);
+        assert(mission.minerals>=40);
         produceMarine();
         for(local i=0;i<12 && mission.produced==0;++i) advanceContract();
         assert(mission.produced==1);

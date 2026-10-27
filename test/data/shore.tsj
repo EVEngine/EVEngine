@@ -10,7 +10,8 @@
   "imagewidth": 32,
   "imageheight": 16,
   "tiles": [
-    {"id": 0, "properties": [{"name": "wet", "type": "bool", "value": true}]},
+    {"id": 0, "properties": [{"name": "wet", "type": "bool", "value": true}],
+     "animation": [{"tileid": 1, "duration": 80}, {"tileid": 0, "duration": 120}]},
     {"id": 1, "properties": [{"name": "walkable", "type": "bool", "value": false}]}
   ],
   "wangsets": [{

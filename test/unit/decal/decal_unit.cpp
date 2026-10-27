@@ -101,6 +101,7 @@ TEST_CASE("decal.DecalManager project update remove: each id has an observable l
     auto*       manager = &DecalManager::inst();
 
     SUB_CASE("project returns a live id and remove clears only that instance") {
+        ClearDecals isolated;
         const int id = project(*manager);
         REQUIRE_GT(id, 0);
         CHECK(manager->contains(id));
@@ -112,6 +113,7 @@ TEST_CASE("decal.DecalManager project update remove: each id has an observable l
     };
 
     SUB_CASE("finite lifetime plus fade-out expires while zero lifetime persists") {
+        ClearDecals isolated;
         const int temporary  = project(*manager, "temporary", 1.f, 0.5f);
         const int persistent = project(*manager, "persistent");
         manager->update(0.5f);
@@ -123,6 +125,7 @@ TEST_CASE("decal.DecalManager project update remove: each id has an observable l
     };
 
     SUB_CASE("a per-kind quota evicts the oldest matching id without evicting other kinds") {
+        ClearDecals isolated;
         manager->setLimit("blood", 2);
         const int oldest = project(*manager);
         const int newer  = project(*manager);

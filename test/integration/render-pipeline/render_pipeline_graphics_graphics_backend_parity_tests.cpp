@@ -141,10 +141,8 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     context.executionId = enter.id;
     REQUIRE(runtime.apply(enter, context).ok());
     CHECK_EQ(renderableCount(true), 1u);
-    auto transformed = ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
-                                 eve::graphics::Renderable3D::MeshRenderer>();
-    for (auto it = transformed.begin(); it != transformed.end(); ++it) {
-        auto [transform, renderer] = *it;
+    for (auto [transform, renderer] : ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
+                                                eve::graphics::Renderable3D::MeshRenderer>()) {
         if (!renderer->visible) continue;
         CHECK_EQ(transform->x, 2.f);
         CHECK_EQ(transform->y, 3.f);
@@ -231,8 +229,8 @@ TEST_CASE("actionPrefabRuntime.spawnsRealRenderablePoolsAndAppliesThreeLifecycle
     CHECK_EQ(renderableCount(true), 0u);
     preview.value()->present(frame);
     CHECK_EQ(renderableCount(true), 1u);
-    for (auto it = transformed.begin(); it != transformed.end(); ++it) {
-        auto [transform, renderer] = *it;
+    for (auto [transform, renderer] : ecs::View<eve::graphics::Renderable3D, eve::graphics::Renderable3D::Transform3D,
+                                                eve::graphics::Renderable3D::MeshRenderer>()) {
         if (!renderer->visible) continue;
         CHECK_EQ(transform->x, 6.f);
         CHECK_EQ(transform->y, 7.f);
@@ -807,7 +805,7 @@ TEST_CASE("graphics.lightProbe.customProvidedChangesRenderedPixels") {
     const float    positions[] = {-0.8f, -0.7f, 0.f, 0.8f, -0.7f, 0.f, 0.f, 0.8f, 0.f};
     const float    normals[]   = {0.f, 0.f, 1.f, 0.f, 0.f, 1.f, 0.f, 0.f, 1.f};
     const uint32_t indices[]   = {0, 1, 2, 2, 1, 0};
-    Mesh          *mesh        = gfx->newMeshFromArrays(positions, nullptr, normals, 3, indices, 6);
+    Mesh          *mesh        = gfx->newMeshFromArrays(positions, normals, nullptr, 3, indices, 6);
     REQUIRE(mesh);
     auto *camera = Camera3D::createCamera();
     camera->setEye(0.f, 0.f, 3.f);
@@ -3620,7 +3618,7 @@ TEST_CASE("graphics.gbufferPlaneDepthMatchesCameraRay") {
     const auto      projection = eve::graphics::perspectiveVulkanRH_ZO(glm::radians(55.f), 160.f / 120.f, 0.1f, 100.f);
     const auto      vp         = projection * view;
     gfx->beginGBufferPass(160, 120);
-    gfx->drawMeshGBuffer(mesh, glm::mat4(1.f), vp, 0.1f, 100.f);
+    gfx->drawMeshGBuffer(mesh, vp, glm::mat4(1.f), 0.1f, 100.f);
     gfx->endGBufferPass();
     std::unique_ptr<eve::image::ImageData> depth(gfx->readGBufferToImageData("depth"));
     REQUIRE(depth != nullptr);
@@ -3790,7 +3788,7 @@ TEST_CASE("graphics.mapFog.unlockedCellsStayClear") {
     const uint8_t *right = pixel(*image, 56, 16);
 
     // Fogged side should no longer be pure background blue.
-    CHECK(int(left[2]) < 200);
+    CHECK(int(left[0]) > int(right[0]) + 40);
     // Unlocked side should remain close to the clear blue background.
     CHECK(int(right[2]) > 200);
     CHECK(int(right[0]) < 40);

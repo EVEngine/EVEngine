@@ -2788,6 +2788,7 @@ TEST_CASE("climbing.authoredMotionFailsExplicitlyWhenWarpCannotConverge") {
 TEST_CASE("climbing.ledgeGrabTransitionsToHangAndDrop") {
     ClimbingWorld                  fixture;
     eve::climbing::ClimbingRuntime runtime;
+    runtime.setDebugCapture(eve::climbing::ClimbingDebugCapture::Enabled);
     auto                           added = runtime.upsertAction(ledgeGrabAction());
     REQUIRE(added.ok());
     const eve::climbing::ClimbingPose pose{{0.f, 0.f, 0.f}, {0.f, 0.f, 1.f}, 1.f, -1, -1.f, false};

@@ -168,8 +168,8 @@ eve::Result<eve::condition::Condition> compileCondition(const eve::Value& specif
         if (!readOperator(op, parsed)) return conditionError("unknown condition operator: " + op, "op");
         const eve::Value* expected = specification.find("value");
         if (!expected) return conditionError("comparison condition is missing value", "value");
-        return eve::Result<eve::condition::Condition>::success(
-            eve::condition::Condition::compare(key, parsed, *expected));
+        return eve::Result<eve::condition::Condition>::success(eve::condition::Condition::compare(
+            attribute && attribute->isString() ? eve::condition::attrKey(key) : key, parsed, *expected));
     }
 
     if (attribute && attribute->isString())

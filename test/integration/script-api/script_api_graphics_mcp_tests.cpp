@@ -81,10 +81,9 @@
 */
 // clang-format on
 
-// Related integration contracts share one translation unit to amortize header parsing.
-
-// Contract section: mcp
-#include "PrivateTestScope.h"
+#include "physics/Physics.h"
+#include "procgen/Procgen.h"
+#include "ui/UI.h"
 #include "zeroerr/assert.h"
 
 #include <Poco/Dynamic/Var.h>
@@ -363,6 +362,8 @@ private:
 }  // namespace
 
 TEST_CASE("devtools.mcp.initializeToolsStatus") {
+    eve::procgen::Procgen procgenModule;
+    eve::physics::Physics physicsModule;
     auto& mcp = McpServer::instance();
     auto& dt  = DevTool::instance();
     auto& ai  = AiPanel::instance();
@@ -383,6 +384,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     editorCommand.id          = eve::editor::CommandId("mcp.test-command");
     editorCommand.ownerModule = "mcp.test";
     editorCommand.displayName = "MCP test command";
+    editorCommand.createsTransaction = false;
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(editorCommand),
                                  [](const eve::editor::CommandContext&, const eve::editor::EditorValue&) {
@@ -646,10 +648,16 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
-    // A plain VM has no native authoring providers. Tools report the absence
-    // instead of creating an independent script-only scene owner.
+    // A plain VM defers authoring-kit installation to the next update.
+    auto checkDeferred = [&](const std::string& text) {
+        Poco::JSON::Parser parser;
+        auto               result = parser.parse(text).extract<Poco::JSON::Object::Ptr>();
+        CHECK(!result->getValue<bool>("ok"));
+        CHECK(result->getValue<bool>("retryable"));
+        CHECK_EQ(result->getValue<std::string>("reason"), std::string("deferred-to-update"));
+    };
     const std::string sdStat = textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
-    CHECK(sdStat.find("error") != std::string::npos);
+    checkDeferred(sdStat);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
     CHECK(resetText.find("error") != std::string::npos);
@@ -664,9 +672,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(modInfo.find("error") != std::string::npos);
     // Unknown action must surface as a controlled error, not crash the server.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
-    const bool        modBadHasError =
-        modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos;
-    CHECK(modBadHasError);
+    CHECK((modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos));
     const std::string editorCommands = textOf(17, "{\"name\":\"eve_editor_commands\",\"arguments\":{}}");
     CHECK(editorCommands.find("mcp.test-command") != std::string::npos);
     const std::string editorExecuted =
@@ -1042,6 +1048,7 @@ TEST_CASE("devtools.ai.panelLog") {
 }
 
 TEST_CASE("devtools.mcp.hostEditorBinding") {
+    eve::ui::UI uiModule;
     auto& mcp  = McpServer::instance();
     auto& dt   = DevTool::instance();
     auto& host = eve::ui::EditorHost::instance();
@@ -1364,7 +1371,28 @@ TEST_CASE("devtools.mcp.stderrCaptureFeedsConsole") {
     // forty-odd fprintf(stderr, ...) call sites.
     std::fprintf(stderr, "engine-fprintf-marker\n");
     std::fflush(stderr);
-    std::cerr << "engine-cerr-marker" << std::endl;
+    // zeroerr redirects cerr to a string buffer around every test. Reconnect it
+    // to stderr while probing descriptor capture, then restore the reporter.
+    class NativeStderrBuffer final : public std::streambuf {
+    public:
+        NativeStderrBuffer() : previous_(std::cerr.rdbuf(this)) {}
+        ~NativeStderrBuffer() override { std::cerr.rdbuf(previous_); }
+
+    private:
+        std::streamsize xsputn(const char* text, std::streamsize count) override {
+            return static_cast<std::streamsize>(std::fwrite(text, 1, static_cast<std::size_t>(count), stderr));
+        }
+        int_type overflow(int_type value) override {
+            if (traits_type::eq_int_type(value, traits_type::eof())) return traits_type::not_eof(value);
+            return std::fputc(traits_type::to_char_type(value), stderr) == EOF ? traits_type::eof() : value;
+        }
+        int             sync() override { return std::fflush(stderr); }
+        std::streambuf* previous_;
+    };
+    {
+        NativeStderrBuffer nativeStderr;
+        std::cerr << "engine-cerr-marker" << std::endl;
+    }
 
     bool sawFprintf = false;
     bool sawCerr    = false;
@@ -1469,8 +1497,11 @@ TEST_CASE("devtools.mcp.crashReportExplainsPreviousRun") {
 
     // eve_status points at the same artifact without reading it.
     const std::string status = toolText(callToolOnce("eve_status", "{}"));
-    CHECK(status.find(path) != std::string::npos);
-    CHECK(status.find("\"crashLog\"") != std::string::npos);
+    const auto        statusObject = parseObject(status);
+    REQUIRE(statusObject);
+    const auto crashLog = statusObject->getObject("crashLog");
+    REQUIRE(crashLog);
+    CHECK_EQ(crashLog->getValue<std::string>("path"), path);
 }
 
 TEST_CASE("devtools.mcp.scriptToolExportRoundTrip") {
@@ -1643,7 +1674,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
 
     REQUIRE(host.listEditors().find("terrain") != std::string::npos);
     REQUIRE(host.setEditorValue("terrain", "brushSize", "12") == "ok");
-    CHECK(vm.find("TerrainVM").toTable().find("brushSize").toInt() == 12);
+    CHECK(vm.find("TerrainVM").toTable().find("brushSize").toFloat() == 12.f);
     CHECK(vm.find("TerrainVM").toTable().find("changedCount").toInt() == 1);
     CHECK(host.consumeEvents("terrain").find("change") != std::string::npos);
 
@@ -1653,7 +1684,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     CHECK(host.reloadResource("editors/terrain.vm.nut") == "ok");
     auto terrainVm = vm.find("TerrainVM").toTable();
     CHECK(terrainVm.find("version").toInt() == 2);
-    CHECK(terrainVm.find("brushSize").toInt() == 12);
+    CHECK(terrainVm.find("brushSize").toFloat() == 12.f);
     CHECK(terrainVm.find("changedCount").toInt() == 0);
     CHECK(host.consumeEvents("terrain") == "[]");
 
@@ -1661,7 +1692,7 @@ TEST_CASE("devtools.mcp.hostResourceHotReload") {
     CHECK(host.reloadResource("editors/terrain.vm.nut").rfind("error:", 0) == 0);
     terrainVm = vm.find("TerrainVM").toTable();
     CHECK(terrainVm.find("version").toInt() == 2);
-    CHECK(terrainVm.find("brushSize").toInt() == 12);
+    CHECK(terrainVm.find("brushSize").toFloat() == 12.f);
 
     writeText(
         editorPath,
@@ -3443,7 +3474,8 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
         pbrSetResult <- pbrParams == null ? { ok = false, hasValue = false } :
             procgen.generatePbrMaterial("pbr.rock", pbrParams);
         pbrResultOk <- pbrSetResult.ok && pbrSetResult.hasValue &&
-            pbrSetResult.value.ownership() == "owned" && !pbrSetResult.value.isStale();
+            pbrSetResult.ownership == "owned" && pbrSetResult.ownerEpoch > 0 && pbrSetResult.handle > 0 &&
+            pbrSetResult.value != null;
         meshParamsResult <- procgen.newParams();
         meshParamsResultOk <- meshParamsResult.ok;
         meshParams <- meshParamsResult.ok ? meshParamsResult.value : null;
@@ -3459,7 +3491,8 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
         meshBuildResult <- meshParams == null ? { ok = false, hasValue = false } :
             procgen.buildMesh("mesh.fence", meshParams);
         meshBuildOk <- meshBuildResult.ok && meshBuildResult.hasValue &&
-            meshBuildResult.value.ownership() == "owned" && !meshBuildResult.value.isStale();
+            meshBuildResult.ownership == "owned" && meshBuildResult.ownerEpoch > 0 && meshBuildResult.handle > 0 &&
+            meshBuildResult.value != null;
     )"));
 
     CHECK(vm.find("paramsResultOk").toBool());

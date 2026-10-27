@@ -234,7 +234,10 @@ TEST_CASE("Solved contacts report impulse consistent with body momentum on both 
             for (const auto& point : contact.value().points) {
                 CHECK_EQ(point.shapeTag, 72);
                 CHECK(point.normalImpulse >= 0);
-                impulse += point.totalNormalImpulse;
+                CHECK(point.totalNormalImpulse >= 0);
+                // One substep: compare its final impulse, not the cumulative
+                // solver activity used to classify speculative contacts.
+                impulse += point.normalImpulse;
             }
             const float momentum = body->getMass() * (body->getLinearVelocityY() - priorVelocity);
             CHECK(std::fabs(impulse - momentum) < .03f);
@@ -271,6 +274,7 @@ TEST_CASE("Sensor contact emits neither solved impulse nor hit even when hit eve
 #include <memory>
 #include "PrivateTestScope.h"
 #include "physics/Body3D.h"
+#include "physics/Shape3D.h"
 #include "physics/World3D.h"
 
 namespace test_rigid_backend_contract {
@@ -287,6 +291,8 @@ TEST_CASE("Rigid backend selection either constructs the requested provider or r
     REQUIRE(box.ok());
     CHECK(box.value()->rigidBackendKind() == RigidBackend3D::Box3D);
     std::unique_ptr<Body3D> body(box.value()->newBody("dynamic", 0, 10, 0));
+    std::unique_ptr<Shape3D> shape(body->newSphereShape(.5f));
+    REQUIRE(shape != nullptr);
     box.value()->update(.02f);
     CHECK(body->getY() < 10.f);
 }

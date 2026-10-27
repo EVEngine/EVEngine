@@ -2433,6 +2433,8 @@ TEST_CASE("particles.attach.moveToOverwrittenBySync") {
     e->moveTo(999.f, 888.f);
     CHECK(std::fabs(e->getX() - 999.f) < 1e-3f);
 
+    e->setEmissionRate(0.f);
+    e->start();
     ParticleSimSystem::update(0.016f);
     CHECK(std::fabs(e->getX() - 5.f) < 1e-2f);
     CHECK(std::fabs(e->getY() - 6.f) < 1e-2f);
@@ -2815,8 +2817,9 @@ TEST_CASE("particles.skin.filterByIndexAndClearFilter") {
     e->setSkinScale(50.f);
     e->setSkinSource(skin.get(), pose.get());
 
-    const int skinBone = 0;
-    e->setSkinBoneFilter(skinBone, 0.05f);
+    REQUIRE(skin->getBoneCount() > 0);
+    const int skeletonBone = skin->getSkeletonBone(0);
+    e->setSkinBoneFilter(skeletonBone, 0.05f);
     e->emitFromSkin(16);
     CHECK_GE(e->getCount(), 1);
 
@@ -3250,6 +3253,8 @@ TEST_CASE("particles.attach.ik2dSolverStepTracksTip") {
     auto            *mod = Particles::create();
     ParticleEmitter *e   = mod->newEmitter(8);
     e->attachToSkeleton2D(sk.get(), tip);
+    e->setEmissionRate(0.f);
+    e->start();
 
     float prev  = e->getX() + e->getY();
     int   moved = 0;
@@ -3537,6 +3542,8 @@ TEST_CASE("particles.attach.boneFollowsPose") {
     e->setAttachScale(1.f);
     e->setAttachPlane("xy");
     e->attachToBone(pose.get(), hand);
+    e->setEmissionRate(0.f);
+    e->start();
 
     CHECK(e->isAttached());
     CHECK_EQ(e->getAttachBone(), hand);
@@ -3772,10 +3779,10 @@ TEST_CASE("particles.attach.clipSampleMovesEmitter") {
     REQUIRE(clip.get() != nullptr);
     REQUIRE(clip->getDuration() > 0.1f);
 
-    // Prefer a named limb bone; fall back to last bone.
+    // Use an animated limb; the last imported node can be the static mesh node.
     int bone = skeleton->findBone("Left_arm");
     if (bone < 0) bone = skeleton->findBone("LeftArm");
-    if (bone < 0) bone = skeleton->getBoneCount() - 1;
+    if (bone < 0) bone = skeleton->findBone("Skeleton_arm_joint_L__4_");
     REQUIRE(bone >= 0);
 
     std::unique_ptr<AnimPose> pose(new AnimPose());

@@ -939,6 +939,19 @@ void Graphics::drawMeshShaderRange(Mesh *mesh, const glm::mat4 &model, Texture *
                           : sceneColorHistoryValid && completedSceneColorSlot < sceneColorSlots.size()
                               ? &sceneColorSlots[completedSceneColorSlot].colorGpu
                               : static_cast<GpuTexture *>(whiteTexture->gpuHandle);
+    if (shader) {
+        // Custom meshes reuse the decal/scene-color sampler bindings for their
+        // four portable textures, keeping the layout within sampler limits.
+        GpuTexture **slots[] = {&gpuDecalAlb, &gpuDecalNrm, &gpuDecalPrm, &gpuSceneColor};
+        for (std::size_t index = 0; index < Shader::kMaxMeshTextures; ++index) {
+            if (auto *custom = shader->meshTexture(index)) {
+                if (!custom->gpuHandle) throw Exception("drawMesh: custom texture has no GPU resource");
+                auto *gpuCustom = static_cast<GpuTexture *>(custom->gpuHandle);
+                if (gpuCustom->isCube) throw Exception("drawMesh: custom texture must be two-dimensional");
+                *slots[index] = gpuCustom;
+            }
+        }
+    }
     vk::DescriptorSet set = mesh3dSetFor(gpuTex, gpuNormal, gpuEnv, gpuHeight, gpuDepth, gpuSceneColor,
                                          gpuDecalAlb, gpuDecalNrm, gpuDecalPrm, fslots);
     const uint32_t dynOffsets[2] = {uboOffset, shadowOffset};

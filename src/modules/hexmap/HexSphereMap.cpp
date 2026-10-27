@@ -64,7 +64,9 @@ Result<void> HexSphereMap::reset(std::int32_t subdivision, float radius, std::ui
     sphereRadius_  = radius;
     elevationStep_ = radius * kDefaultElevationRatio;
     noise_.reset(seed);
-    cells_.assign(static_cast<std::size_t>(topology_.cellCount()), HexCellData{});
+    HexCellData initial{};
+    initial.values = initial.values.withElevation(0).withWaterLevel(0);
+    cells_.assign(static_cast<std::size_t>(topology_.cellCount()), initial);
     cellDirty_.assign(cells_.size(), 0u);
     dirtyQueue_.clear();
     dirtyHead_ = 0;

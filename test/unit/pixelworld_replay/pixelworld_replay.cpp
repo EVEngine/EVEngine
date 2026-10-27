@@ -152,7 +152,10 @@ TEST_CASE("pixelworld.replay checkpoint digest uses canonical byte ordering") {
     REQUIRE(log.captureCheckpoint(world).ok());
     REQUIRE_EQ(log.checkpoints().size(), std::size_t{1});
     REQUIRE_EQ(log.checkpoints()[0].chunks.size(), std::size_t{1});
-    CHECK_EQ(log.checkpoints()[0].chunks[0].digest, std::uint64_t{17357935190315814178ULL});
+    CHECK_EQ(log.checkpoints()[0].chunks[0].x, -1);
+    CHECK_EQ(log.checkpoints()[0].chunks[0].y, 0);
+    // Little-endian x/y followed by material, temperature, lifetime and thermal remainder per cell.
+    CHECK_EQ(log.checkpoints()[0].chunks[0].digest, std::uint64_t{9661110577551370436ULL});
 }
 
 TEST_CASE("pixelworld.replay version 2 snapshot restores complete log and replay behavior") {

@@ -458,7 +458,8 @@ function __eve_async(body, environment) {
         }
 
         local started = false;
-        local function advance(value, failed) {
+        local advance = null;
+        advance = function(value, failed) {
             if (entry.settled) return;
             if (entry.generation != _async.generation) {
                 finish("async continuation cancelled: stale script generation", true);
@@ -487,7 +488,7 @@ function __eve_async(body, environment) {
                 function(v) { advance(v, false); },
                 function(e) { advance(e, true); }
             );
-        }
+        };
         advance(null, false);
     });
 }
@@ -501,7 +502,7 @@ function __eve_async(body, environment) {
 //
 // Example:
 //   asyncSeq([
-//     function() { return asyncSleep(50); },
+//     function(_) { return asyncSleep(50); },
 //     function(_) { return asyncDelay(20, "ok"); },
 //     function(msg) { print(msg + "\n"); return msg; },
 //   ]).then(function(v) { /* done */ });
@@ -514,7 +515,8 @@ function asyncSeq(steps) {
         }
         local i = 0;
         local value = null;
-        local function runNext() {
+        local runNext = null;
+        runNext = function() {
             if (i >= steps.len()) {
                 resolve(value);
                 return;
@@ -541,7 +543,7 @@ function asyncSeq(steps) {
                 value = out;
                 nextTick(runNext);
             }
-        }
+        };
         runNext();
     });
 }

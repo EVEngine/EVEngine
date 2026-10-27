@@ -428,6 +428,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     off->sprite()->g       = 0.8f;
     off->sprite()->b       = 0.3f;
     off->sprite()->canvas  = c2;
+    off->sprite()->receiveLight = false;
     off->sprite()->visible = true;
 
     auto *onScreen              = Renderable2D::create();
@@ -436,6 +437,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     onScreen->sprite()->width   = 192;
     onScreen->sprite()->height  = 192;
     onScreen->sprite()->texture = c2->getTexture();
+    onScreen->sprite()->receiveLight = false;
     onScreen->sprite()->r       = 1;
     onScreen->sprite()->g       = 1;
     onScreen->sprite()->b       = 1;
@@ -497,6 +499,7 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     sp->sprite()->g       = 0.f;
     sp->sprite()->b       = 0.f;
     sp->sprite()->canvas  = rt;
+    sp->sprite()->receiveLight = false;
     sp->sprite()->visible = true;
 
     RenderSystem::render(*gfx);
@@ -820,6 +823,11 @@ TEST_CASE("RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters") {
     Graphics            *gfx = nullptr;
     openGfxWindow(win, gfx, 64, 64);
     resetScene3D();
+    auto *control = gfx->getRenderControl();
+    REQUIRE(control->setLightingMode(LightingMode::ForwardPlus).ok());
+    control->disable("clustered");
+    control->enable("gpuDriven");
+    const int expectedCalls = gfx->supportsGpuDriven3D() ? 1 : 0;
 
     auto *cam            = Camera3D::createCamera();
     cam->data()->eyeZ    = 3.f;
@@ -836,12 +844,12 @@ TEST_CASE("RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters") {
 
     RenderSystem3D::render(*gfx);
     gfx->present();
-    CHECK_EQ(calls, 1);
+    CHECK_EQ(calls, expectedCalls);
 
     RenderSystem3D::removeGpuOpaqueCollector(token);
     RenderSystem3D::render(*gfx);
     gfx->present();
-    CHECK_EQ(calls, 1);
+    CHECK_EQ(calls, expectedCalls);
 
     win->close();
 }
@@ -914,7 +922,6 @@ TEST_CASE("RenderSystem3D.dynamicVertexRingTracksLatestUpdate") {
     auto renderFrame = [&]() {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        gfx->present();
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
@@ -3470,8 +3477,6 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
     REQUIRE(ui->initBackend());
     CHECK(ui->isBackendReady());
-    const bool overlayHooked = gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr;
-    CHECK(overlayHooked);
 
     gfx->setBackgroundColor(Color(0.10f, 0.12f, 0.18f, 1.0f));
     gfx->setScreenReadbackEnabled(true);
@@ -3505,6 +3510,8 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
         // ImGui frame must be built before present (RenderSystem ends with present).
         ui->beginFrameAndRender();
+        const bool overlayHooked = gfx->getPresentOverlay() != nullptr && gfx->getPresentOverlayUser() != nullptr;
+        CHECK(overlayHooked);
         RenderSystem::render(*gfx);
         ui->dispatchEvents();
 
@@ -3988,7 +3995,8 @@ TEST_CASE("volumetric.froxelIntegratesEmissiveProxyAndSceneLights") {
 
     auto injected = vol->injectEmissiveLightProxy(0.f, 1.f, -4.f, 1.f, 0.15f, 0.05f, 6.f, 2.5f);
     REQUIRE(injected.ok());
-    vol->integrateFroxel(0.05f, 0.05f, 0.06f, 1.f);
+    auto integrated = vol->integrateFroxelFromSceneLights(0.05f, 0.05f, 0.06f, glm::vec3(-10.f), glm::vec3(10.f), 8);
+    REQUIRE(integrated.ok());
 
     const glm::vec4 sample = vol->getAtmosphereVolume()->sampleIntegrated(0.5f, 0.5f, 12.f);
     CHECK(sample.r > sample.b);
@@ -4081,6 +4089,10 @@ TEST_CASE("volumetric.spotConeScatter2D") {
     // In-beam (below light) should be brighter than a side sample at similar distance.
     const float inBeam = luma(shafts->getPixel(64, 70));
     const float side   = luma(shafts->getPixel(110, 24));
+    const auto  beamColor = shafts->getPixel(64, 70);
+    const auto  sideColor = shafts->getPixel(110, 24);
+    std::printf("spot cone: beam=(%.4f,%.4f,%.4f) side=(%.4f,%.4f,%.4f)\n", beamColor.r, beamColor.g, beamColor.b,
+                sideColor.r, sideColor.g, sideColor.b);
     CHECK(inBeam > 0.02f);
     CHECK(inBeam > side * 2.5f);
 

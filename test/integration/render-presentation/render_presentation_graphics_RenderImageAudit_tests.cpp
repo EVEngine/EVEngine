@@ -278,7 +278,9 @@ namespace {
     gfx->setScreenReadbackEnabled(true);
     gfx->setBackgroundColorRGBA(0.08f, 0.09f, 0.11f, 1.f);
     gfx->clearScreen();
-    gfx->drawTexturedRectRGBA(tex, 0, 0, float(gfx->getWidth()), float(gfx->getHeight()), 1, 1, 1, 1);
+    // Attachment alpha can store depth or PBR metadata rather than coverage.
+    gfx->drawTexturedRectShaderUV(tex, nullptr, 0, 0, float(gfx->getWidth()), float(gfx->getHeight()), 0, 0, 1, 1,
+                                  Color(1, 1, 1, 1), false, BlendMode::Opaque);
     gfx->present();
 }
 

@@ -215,6 +215,10 @@ TEST_CASE("data.encode hex and base64 round-trip exact binary length") {
         std::size_t             size = 0;
         std::unique_ptr<char[]> bad(eve::data::encode("bad", "x", 1, size));
     }));
+    CHECK(throwsDataError([]() {
+        std::size_t             size = 0;
+        std::unique_ptr<char[]> bad(eve::data::decode("bad", "eA==", 4, size));
+    }));
 }
 
 TEST_CASE("data.hash uses known digests for empty and nonempty inputs") {

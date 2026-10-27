@@ -271,6 +271,15 @@ bool Scene::removeNodeAt(const std::string &hostName, const std::string &nodeId)
     return ok;
 }
 
+eve::Result<void> Scene::removeLeafAt(const std::string &hostName, const std::string &nodeId) {
+    auto *host = resolveHost(hostName);
+    if (!host || host->removeLeaf(nodeId) != SceneMutationStatus::Applied)
+        return eve::Result<void>::failure(
+            eve::Diagnostic::error(eve::DiagnosticCode::InvalidArgument, "scene leaf cannot be removed", "scene.node"));
+    pruneOrphanObjects();
+    return eve::Result<void>::success(eve::Status::success(eve::StatusCode::Applied));
+}
+
 bool Scene::addChildAt(const std::string &hostName, const std::string &parentId,
                        const std::string &childId) {
     SceneHost *h = resolveHost(hostName);

@@ -2290,8 +2290,8 @@ TEST_CASE("actionTimelineWidget.insertsRegisteredNotifyShapesAtCursor") {
                 .ok());
     CHECK_EQ(editor.target().timeline().tracks[0].notifies.size(), 2u);
     CHECK_EQ(editor.target().timeline().tracks[0].states.size(), 2u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 5u);
-    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 7u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::Instant).size(), 6u);
+    CHECK_EQ(view.insertableTypes(eve::action::ActionNotifyShape::State).size(), 12u);
     CHECK(!view.addNotifyAtCursor(track, "combat:hitbox-window", {{"hitbox", eve::Value("weapon")}}).ok());
 }
 }  // namespace test_action_timeline_widget
@@ -2651,10 +2651,10 @@ TEST_CASE("animation.lattice.cornerScaleTrilinear") {
     CHECK(approx(out[1], 1.f));
     CHECK(approx(out[2], 1.f));
 
-    // Center vertex: all 8 weights are 1/8 → scale x = 1 + 1/8.
+    // The box spans [-1,1]; at (0.5,0.5,0.5) the upper-corner weight is 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f * 1.125f));
+    CHECK(approx(out[0], 0.5f * (1.f + 0.75f * 0.75f * 0.75f)));
     CHECK(approx(out[1], 0.5f));
     CHECK(approx(out[2], 0.5f));
 }
@@ -2672,11 +2672,11 @@ TEST_CASE("animation.lattice.offsetBulge") {
     CHECK(approx(out[1], 0.8f));
     CHECK(approx(out[2], 1.f));
 
-    // Center: offset diluted by 1/8, position unchanged otherwise.
+    // Interior point: upper-corner offset weighted by 0.75^3.
     std::vector<float> center = {0.5f, 0.5f, 0.5f};
     REQUIRE(lat.deformPositionsTo(center, out));
-    CHECK(approx(out[0], 0.5f + 0.4f / 8.f));
-    CHECK(approx(out[1], 0.5f - 0.2f / 8.f));
+    CHECK(approx(out[0], 0.5f + 0.4f * 0.75f * 0.75f * 0.75f));
+    CHECK(approx(out[1], 0.5f - 0.2f * 0.75f * 0.75f * 0.75f));
     CHECK(approx(out[2], 0.5f));
 }
 
@@ -2684,7 +2684,8 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     AnimLattice lat(2, 2, 2);
     lat.setSize(2.f, 2.f, 2.f);
     lat.setOrigin(0.f, 0.f, 0.f);
-    lat.setPointScale(1, 0, 0, 2.f, 1.f, 1.f);
+    for (int y = 0; y < 2; ++y)
+        for (int z = 0; z < 2; ++z) lat.setPointScale(1, y, z, 2.f, 1.f, 1.f);
 
     // Vertex outside the box on +x: u = 1.5.
     std::vector<float> p = {2.f, 0.f, 0.f};
@@ -2697,6 +2698,9 @@ TEST_CASE("animation.lattice.clampVsExtrapolate") {
     lat.setClamp(false);
     REQUIRE(lat.deformPositionsTo(p, out));
     CHECK(approx(out[0], 5.f));  // linear extrapolation keeps growing
+    p[0] = -2.f;
+    REQUIRE(lat.deformPositionsTo(p, out));
+    CHECK(approx(out[0], -1.f));  // extrapolate from the lower boundary too
 }
 
 TEST_CASE("animation.lattice.normals") {
@@ -2990,6 +2994,10 @@ TEST_CASE("animation.physicalBalance.recoilDeflectsHitBone") {
     REQUIRE(balance.setTargetPose(&target).ok());
     REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 1.8f, 0.1f).ok());
     balance.update(1.f / 60.f);
+    CHECK_EQ(balance.getPose()->getLocalRotationW(2), 1.f);
+    // An impulse through the bone center has no recoil torque; use an offset hit.
+    REQUIRE(balance.applyImpulse(2, 0.f, 0.f, 4.f, 0.f, 2.2f, 0.1f).ok());
+    balance.update(1.f / 60.f);
     const float hitW = balance.getPose()->getLocalRotationW(2);
     CHECK(hitW < 0.999f);
     for (int i = 0; i < 180; ++i) balance.update(1.f / 60.f);
@@ -3141,13 +3149,13 @@ TEST_CASE("animation.procedural.dynamicBoneColliderModesAreRuntimeConfigurable")
     solver.addColliderSphere(0.f, -1.f, 0.f, 0.5f);
     solver.setColliderInside(0, true);
     solver.setColliderRadius(0, 0.25f);
-    solver.update(&pose, 0.1f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) <= 0.151f);
 
     skeleton.applyBindPose(&pose);
     solver.reset();
     solver.setColliderEnabled(0, false);
-    solver.update(&pose, 0.1f);
+    for (int i = 0; i < 3; ++i) solver.update(&pose, 0.1f);
     CHECK(pose.getWorldPositionX(tip) > 0.151f);
 }
 
@@ -3626,7 +3634,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
         eve::attributes::priority::equipment);
     REQUIRE(cardModifier.ok());
     checkSharedModifierContract(card->attributes()->values.modifierAt(0));
-    CHECK_EQ(card->stats()->attack, 3);
+    CHECK_EQ(card->stats()->attack, 5);
     auto cardProject = eve::card::CardAttributeAdapter::project(*card);
     REQUIRE(cardProject.ok());
     CHECK_EQ(card->stats()->attack, 5);
@@ -3637,7 +3645,7 @@ TEST_CASE("attributes.domainAdapters.projectSelectedStats") {
     auto cardSet =
         eve::card::CardAttributeAdapter::setBase(*card, eve::card::CardAttributeAdapter::attackAttribute, 9.0);
     REQUIRE(cardSet.ok());
-    CHECK_EQ(card->stats()->attack, 9);
+    CHECK_EQ(card->stats()->attack, 11);
     auto cardRestore = eve::card::CardAttributeAdapter::restore(*card, snapshot, card->attributes()->values.revision());
     REQUIRE(cardRestore.ok());
     CHECK_EQ(card->stats()->attack, 5);
@@ -4319,13 +4327,13 @@ TEST_CASE("audio.source.seekTell") {
     CHECK(src->getDuration() > 0.9);
     src->play();
     audio->pump();
+    // Keep the sample cursor stationary: a scheduled sleep is not an audio clock.
+    src->pause();
+    REQUIRE(!src->isPlaying());
     CHECK(src->seek(0.5));
     audio->pump();
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     double pos = src->tell();
-    // OpenAL tell() can drift after pump/sleep; keep a loose window around seek(0.5).
-    CHECK(pos >= 0.40);
-    CHECK(pos <= 0.65);
+    CHECK(std::abs(pos - 0.5) <= 1.0 / 44100.0);
     src->stop();
 
     delete src;

@@ -218,6 +218,10 @@ TEST_CASE("physics_voronoi.legacyBoxBakeVersionOneMigration") {
     std::ifstream     in(path, std::ios::binary);
     std::vector<char> bytes((std::istreambuf_iterator<char>(in)), {});
     in.close();
+    REQUIRE(bytes.size() >= 56);
+    REQUIRE(bytes[8] == 3);
+    // Version 1 predates both the geometry count and the version 3 checksum.
+    bytes.resize(bytes.size() - 32);
     bytes[8] = 1;
     bytes.erase(bytes.begin() + 20, bytes.begin() + 24);
     {

@@ -212,6 +212,9 @@ void VirtualGeometryRenderer::setCameraSimple(float camX, float camY, float camZ
                            : 60.f * 3.14159265358979323846f / 180.f;
     // Identity view (looking down -Z).
     Mat4 view = Mat4::identity();
+    view.m[12] = -camX;
+    view.m[13] = -camY;
+    view.m[14] = -camZ;
     // Perspective projection (column-major, D3D/Vulkan clip z in [0,1]).
     Mat4        proj{};
     const float a         = 1.f / std::tan(fovY * 0.5f);

@@ -359,6 +359,8 @@ TEST_CASE("event.ownedPushPollDestroysPayloadWithMessage") {
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
     ev->push(std::make_unique<Message>("owned", args));
+    // Message copies share payload ownership; release the fixture's copy first.
+    args.clear();
 
     {
         auto message = ev->pollOwned();
@@ -376,6 +378,7 @@ TEST_CASE("event.clearDestroysOwnedPayloadExactlyOnce") {
     std::vector<Variant> args;
     args.push_back(Variant::makeOwnedPtr(new TrackedPayload(&destructions)));
     ev->push(std::make_unique<Message>("unconsumed", args));
+    args.clear();
 
     ev->clear();
     CHECK_EQ(destructions, 1);
@@ -623,7 +626,10 @@ TEST_CASE("gameplay.control.jsonFacadeRejectsUnknownSchemaFields") {
     auto rejected = eve::executeGameplayControlJson(
         R"({"schemaId":"evengine.gameplay-control-request","schemaVersion":1,"op":"domains","mystery":true})");
     CHECK(!rejected.ok());
-    CHECK_EQ(rejected.code(), eve::StatusCode::Rejected);
+    CHECK_EQ(rejected.code(), eve::StatusCode::Failed);
+    REQUIRE_EQ(rejected.diagnostics().size(), std::size_t(1));
+    CHECK_EQ(rejected.diagnostics().front().code(), eve::DiagnosticCode::ParseError);
+    CHECK_EQ(rejected.diagnostics().front().path(), std::string("request.mystery"));
 }
 
 TEST_CASE("gameplay.control.squirrelFacadeUsesTheSharedJsonRouter") {
@@ -795,14 +801,15 @@ TEST_CASE("os.clipboardRoundTrip") {
 }
 }  // namespace test_os
 
-// Contract section: pcg build config
-#include "PrivateTestScope.h"
-
 #include <limits>
+#include "PrivateTestScope.h"
 #include "scene/PcgBuildConfig.h"
 #include "scene/PcgGrowth.h"
 #include "scene/Scene.h"
+#include "scene/SceneHost.h"
 #include "scene/SceneNodeRef.h"
+#include "scene/SceneObject.h"
+#include "zeroerr/unittest.h"
 // pcg_build_config.cpp
 namespace test_pcg_build_config {
 // pcg_build_config.cpp
@@ -816,10 +823,25 @@ TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     scene->beginBuild();
     scene->beginNode("root");
     scene->addNode("plant");
+    scene->beginNode("branch");
+    scene->addNode("leaf");
+    scene->end();
     scene->end();
     REQUIRE(scene->mountBuildAs("pcg-growth-test"));
     SceneNodeRef node("pcg-growth-test", "plant");
     REQUIRE(node.isValid());
+    ecs::EntityHandle companion;
+    {
+        auto* host = scene->resolveHost("pcg-growth-test");
+        REQUIRE(host != nullptr);
+        auto plant = host->findById("plant");
+        REQUIRE(plant.ok());
+        auto created = SceneObject::createObject("pcg-growth-test", "plant", plant.value()->persistentId);
+        REQUIRE(created.ok());
+        auto* object            = std::move(created).takeValue();
+        plant.value()->objectId = static_cast<uint32_t>(object->id) + 1u;
+        companion               = ecs::handle_of(object);
+    }
     PcgGrowth g;
     REQUIRE(g.start(10, 3).ok());
     auto applied = applyPcgGrowth(g, node, 10);
@@ -831,6 +853,12 @@ TEST_CASE("scene.pcgGrowth.appliesToAndDestroysRealNode") {
     REQUIRE(removed.ok());
     CHECK(removed.value());
     CHECK(!node.isValid());
+    CHECK(ecs::try_get(companion) == nullptr);
+    SceneNodeRef branch("pcg-growth-test", "branch");
+    auto         rejected = applyPcgGrowth(g, branch, 16);
+    CHECK(!rejected.ok());
+    CHECK(branch.isValid());
+    CHECK(SceneNodeRef("pcg-growth-test", "leaf").isValid());
 }
 }  // namespace test_pcg_build_config
 
@@ -1807,7 +1835,7 @@ TEST_CASE("scene.componentScheduling.automaticAndDestructionSafe") {
         destroyed.markDirty();
     }
     eve::scene::TransformSystem::updateAll();
-    tree.host()->release();
+    ecs::DestroyEntity(tree.host());
     tree.markDirty();
     eve::scene::TransformSystem::updateAll();
     CHECK(tree.host() == nullptr);

@@ -62,7 +62,7 @@ class GameplayEditorComponents {
         crowdSim.resizeField(heightmap.getWidth(), heightmap.getHeight(), cellSize, 0.0, 0.0);
         for (local y = 0; y < heightmap.getHeight(); ++y)
             for (local x = 0; x < heightmap.getWidth(); ++x)
-                crowdSim.setCellCost(x, y, 1.0 + abs(heightmap.height(x, y)) * 3.0);
+                crowdSim.setCellCost(x, y, 1.0 + fabs(heightmap.height(x, y)) * 3.0);
         crowdSim.buildFlowField(heightmap.getWidth() / 2, heightmap.getHeight() / 2);
     }
 

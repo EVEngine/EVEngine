@@ -153,7 +153,9 @@ function verifyScheduledComponent() {
             builds += 1
             if (edit) { edit = false; markDirty(); eve_ui_flush_components() }
             if (fail) throw "injected script publication failure"
+            this.ui().beginWindow("Scheduled", "script-window")
             this.ui().text("published", "script-label")
+            this.ui().end()
         }
     }
     local first = Scheduled(eve.UI())
@@ -181,7 +183,7 @@ function verifyScheduledComponent() {
 )SQ") {}
 };
 TEST_CASE_FIXTURE(UIScheduledScriptTest, "UI.componentScheduling.scriptCoalescingAndFailureRecovery") {
-    CHECK(vm.callFunc(vm.findFunc("verifyScheduledComponent"), vm).toBool());
+    CHECK(callScript("verifyScheduledComponent"));
 }
 }  // namespace test_UIComponentScheduling
 
@@ -255,12 +257,16 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     ImGuiIO &io           = ImGui::GetIO();
     io.DisplaySize        = ImVec2(1024.f, 720.f);
     io.IniFilename        = nullptr;
+    io.KeyMap[ImGuiKey_Space] = 32;
     unsigned char *pixels = nullptr;
     int            width  = 0;
     int            height = 0;
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     (void)pixels;
 
+    ImGui::NewFrame();
+    UISystem::render();
+    ImGui::EndFrame();
     const ImVec4 buttonBefore = ImGui::GetStyleColorVec4(ImGuiCol_Button);
 
     ImGui::NewFrame();
@@ -569,7 +575,7 @@ TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     ui::UISystem::pendingEvents().push_back(change);
 
     REQUIRE(callScript("fireTestEvents"));
-    CHECK(std::abs(vm.find("clicks").toFloat() - 1.f) < 1e-5f);
+    CHECK_EQ(vm.find("clicks").toInt(), 1);
     CHECK(vm.find("changeKind").toString() == "value");
     CHECK(std::abs(vm.find("changeValue").toFloat() - 0.75f) < 1e-5f);
 }

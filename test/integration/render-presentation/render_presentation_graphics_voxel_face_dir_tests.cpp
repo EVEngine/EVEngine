@@ -118,6 +118,7 @@ TEST_CASE("graphics.Shader.customSpvOnSprite") {
     ent->sprite()->height  = 80;
     ent->sprite()->texture = tex;
     ent->sprite()->shader  = shader;
+    ent->sprite()->receiveLight = false;
     ent->sprite()->visible = true;
 
     gfx->setScreenReadbackEnabled(true);
@@ -2348,7 +2349,7 @@ TEST_CASE("graphics.WaterUnderwaterFog.appliesAndRestoresVolumetricProvider") {
     {
         const auto      c = graphics->getSceneColorFilter();
         const glm::vec3 got(c.r, c.g, c.b);
-        CHECK(got == glm::vec3(0.12F, 0.36F, 0.48F));
+        CHECK(glm::length(got - glm::vec3(0.12F, 0.36F, 0.48F)) < 1e-6F);
     }
     CHECK(graphics->getSceneTransitionVignette() == 0.25F);
     CHECK(graphics->getSceneTransitionVignetteSmoothness() == 0.8F);

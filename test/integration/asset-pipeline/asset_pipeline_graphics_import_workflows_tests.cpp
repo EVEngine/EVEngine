@@ -415,7 +415,7 @@ TEST_CASE("asset.procgen.terrainGpuGroupBindsSecondControlLayerSet") {
     CHECK(shader.meshTexture(0) == &textures[4]);
     CHECK(shader.meshTexture(3) == &textures[8]);
     float st[4]{};
-    CHECK(shader.getFromVar("terrainLayer0ST", st, sizeof(st)) == 0);
+    CHECK_EQ(shader.getFromVar("terrainLayer0ST", st, sizeof(st)), static_cast<int>(sizeof(st)));
     CHECK(std::abs(st[0] - .125f) < .0001f);
     CHECK(std::abs(st[1] - .25f) < .0001f);
     CHECK(std::abs(st[2] - .25f) < .0001f);
@@ -1098,9 +1098,10 @@ TerrainData:
     REQUIRE(definitionObject != nullptr);
     const auto* wavingGrass = definitionObject->at("wavingGrass").getIf<Value::Object>();
     REQUIRE(wavingGrass != nullptr);
-    CHECK_EQ(wavingGrass->at("amount").asDouble(), .4);
-    CHECK_EQ(wavingGrass->at("strength").asDouble(), .8);
-    CHECK_EQ(wavingGrass->at("tint").getIf<Value::Array>()->at(1).asDouble(), .7);
+    // The importer serializes the public float fields as promoted doubles.
+    CHECK_EQ(wavingGrass->at("amount").asDouble(), double(.4f));
+    CHECK_EQ(wavingGrass->at("strength").asDouble(), double(.8f));
+    CHECK_EQ(wavingGrass->at("tint").getIf<Value::Array>()->at(1).asDouble(), double(.7f));
     const auto* prototypeArray = definitionObject->at("prototypes").getIf<Value::Array>();
     REQUIRE(prototypeArray != nullptr);
     REQUIRE_EQ(prototypeArray->size(), std::size_t(1));
@@ -1111,10 +1112,10 @@ TerrainData:
     CHECK(prototype->at("usePrototypeMesh").asBool());
     CHECK_EQ(prototype->at("noiseSeed").asInt(), 17);
     CHECK_EQ(prototype->at("alignToGround").asDouble(), .5);
-    CHECK_EQ(prototype->at("bendFactor").asDouble(), .35);
-    CHECK_EQ(prototype->at("holeEdgePadding").asDouble(), .4);
+    CHECK_EQ(prototype->at("bendFactor").asDouble(), double(.35f));
+    CHECK_EQ(prototype->at("holeEdgePadding").asDouble(), double(.4f));
     CHECK(!prototype->at("useDensityScaling").asBool());
-    CHECK_EQ(prototype->at("healthyColor").getIf<Value::Array>()->at(1).asDouble(), .8);
+    CHECK_EQ(prototype->at("healthyColor").getIf<Value::Array>()->at(1).asDouble(), double(.8f));
     const auto expectedResource =
         AssetRef::fromId(unityIdentity().packageId.child("unity-prefab:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
     REQUIRE(expectedResource.ok());
@@ -1429,7 +1430,8 @@ TEST_CASE("asset.runtimeWorldLoadersRejectCrossChunkMismatchAndSceneCycles") {
 
     auto materialPack = runtimePack(
         "eve.terrain-material",
-        R"json({"schema":"eve.terrain-material","schemaVersion":1,"layers":[{"name":"bad","diffuseSource":"","normalSource":"","weightSource":"","normalConvention":"opengl","tileSizeMeters":0}]})json");
+        R"json({"schema":"eve.terrain-material","schemaVersion":2,"layers":[{"name":"bad","diffuseSource":"","normalSource":"","weightSource":"","normalConvention":"opengl","tileSizeMeters":0}]})json",
+        {}, SchemaVersion(2));
     EvpackResourceReader                            materialReader(materialPack);
     eve::asset_procgen::EvpackTerrainMaterialLoader materialLoader(materialReader);
     auto invalidMaterial = materialLoader.load(reference("asset://550e8400-e29b-41d4-a716-446655440000"), capabilities);

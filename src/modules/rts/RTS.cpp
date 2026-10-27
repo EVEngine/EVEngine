@@ -2327,17 +2327,13 @@ Result<Building*> RTS::startScriptConstruction(Faction& faction, SubjectRef buil
     building->placement()->worldY      = position.y;
     building->construction()->progress = 0.0f;
     building->construction()->builders = {ecs::handle_of(&builder)};
-    CommandSpec move;
-    move.kind    = OrderKind::Move;
-    move.target  = position;
-    auto ordered = builder.orders()->values.replace(move);
-    if (ordered) {
-        CommandSpec buildCommand;
-        buildCommand.kind         = OrderKind::Build;
-        buildCommand.target       = position;
-        buildCommand.targetEntity = ecs::handle_of(building);
-        ordered                   = builder.orders()->values.enqueue(buildCommand);
-    }
+    // Build already owns approach movement with the building's interaction
+    // radius. A preceding Move demands entry into its blocked footprint.
+    CommandSpec buildCommand;
+    buildCommand.kind         = OrderKind::Build;
+    buildCommand.target       = position;
+    buildCommand.targetEntity = ecs::handle_of(building);
+    auto ordered              = builder.orders()->values.replace(buildCommand);
     if (!ordered) {
         const Status status = ordered.status();
         builder.orders()->values.restoreState(previousOrders.value()).ignore("restore construction builder orders");

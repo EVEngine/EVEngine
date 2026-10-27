@@ -1049,7 +1049,7 @@ function reflectScriptProbe() {
 
     local info = eve.reflect.classInfo("ReflectScriptHero");
     if (info == null) throw "classInfo() null";
-    if (info.base != "ReflectScriptBase") throw "classInfo().base mismatch";
+    if (info["base"] != "ReflectScriptBase") throw "classInfo().base mismatch";
     if (eve.reflect.classInfo("ReflectScriptMissing") != null)
         throw "classInfo() must return null for unknown class";
 
@@ -1074,7 +1074,7 @@ function reflectScriptProbe() {
     if (eve.reflect.read(hero, "hp") != 42.5) throw "read hp mismatch";
     if (!eve.reflect.write(hero, "alive", false)) throw "write alive failed";
     if (eve.reflect.read(hero, "alive") != false) throw "read alive mismatch";
-    if (eve.reflect.write(hero, "name", 123)) throw "typed write must convert";
+    if (!eve.reflect.write(hero, "name", 123)) throw "typed write must convert";
     if (eve.reflect.read(hero, "name") != "123") throw "typed write conversion failed";
     if (eve.reflect.write(hero, "missing", 1))
         throw "write to missing member must fail";
@@ -1136,7 +1136,8 @@ void requireRun(Runtime& runtime, const char* source, const char* name) {
     try {
         runtime.runSource(source, name);
         ok = true;
-    } catch (const ScriptException&) {
+    } catch (const ScriptException& exception) {
+        REQUIRE(false, "script execution failed: {}", exception.what());
     }
     REQUIRE(ok);
 }
@@ -1148,9 +1149,7 @@ TEST_CASE("reflectScriptExposesRuntimeApi") {
     runtime.initialize();
     requireRun(runtime, kReflectScript, "reflect-script-probe.nut");
 
-    auto                scope = runtime.enter();
-    const ssq::Function probe = runtime.vm().findFunc("reflectScriptProbe");
-    CHECK(runtime.vm().callFunc(probe, runtime.root()).toBool());
+    requireRun(runtime, "if (!reflectScriptProbe()) throw \"reflection probe failed\";", "reflect-script-invoke.nut");
 }
 }  // namespace test_ReflectScript
 
@@ -2977,7 +2976,7 @@ TEST_CASE("async.asyncSeq") {
     std::string out = runAsyncSnippet(R"(
         result <- "fail";
         asyncSeq([
-            function() { return Promise.resolve(1); },
+            function(_) { return Promise.resolve(1); },
             function(v) { return Promise.resolve(v + 2); },
             function(v) { return v * 10; },
         ]).then(function(v) { result = "" + v; });
@@ -3883,6 +3882,7 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         combat <- eve.Combat();
         created <- combat.newRuntime();
         arena <- created.value;
+        arenaOwnership <- arena.ownership();
         player <- "01020304-0506-0708-890a-0b0c0d0e0f10";
         enemy <- "11121314-1516-1718-991a-1b1c1d1e1f20";
         registeredPlayer <- arena.registerFighter(player, "fighter:player", 0.0, 0.0, 100.0, 40.0, 4.0, 20.0);
@@ -3913,7 +3913,7 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
         damageReaction <- damaged.value.reaction;
     )"));
     CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("arena").toTable().get<std::string>("ownership"), std::string("owned"));
+    CHECK_EQ(vm.find("arenaOwnership").toString(), std::string("owned"));
     CHECK(vm.find("registeredPlayer").toTable().get<bool>("ok"));
     CHECK(vm.find("registeredEnemy").toTable().get<bool>("ok"));
     CHECK(vm.find("moved").toTable().get<bool>("ok"));
@@ -3972,7 +3972,8 @@ TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
         scenarioAiTarget <- demoState.aiTarget;
         scenarioAiState <- demoState.decisions.state("defense.ai");
         scenarioAiAction <- demoState.aiAction;
-        scenarioAiVelocity <- demoState.aiVelocity;
+        scenarioAiVelocityX <- demoState.aiVelocity.getX();
+        scenarioAiVelocityLength <- demoState.aiVelocity.length();
         scenarioAiThreat <- demoState.aiThreat;
     )"));
 
@@ -3994,7 +3995,8 @@ TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
     CHECK_EQ(vm.find("scenarioAiTarget").toString(), std::string("army.raiders"));
     CHECK_EQ(vm.find("scenarioAiState").toString(), std::string("engage"));
     CHECK_EQ(vm.find("scenarioAiAction").toString(), std::string("attack"));
-    CHECK(vm.find("scenarioAiVelocity").toString().find("\"x\"") != std::string::npos);
+    CHECK(vm.find("scenarioAiVelocityX").toFloat() > 0.0f);
+    CHECK(vm.find("scenarioAiVelocityLength").toFloat() <= 6.0f);
     CHECK_EQ(vm.find("scenarioAiThreat").toFloat(), 0.8F);
 
     vm.run(vm.compileSource(R"(
@@ -4105,7 +4107,10 @@ TEST_CASE("devtools.console.attachEvalPrintCapture") {
     CHECK(console.eval("\"hi\"") == "\"hi\"");
 
     // REPL: compile error reported without crashing.
-    CHECK(console.eval("1 +") == "error: compile failed");
+    const auto compileError = console.eval("1 +");
+    CHECK(compileError.starts_with("error: "));
+    CHECK(compileError.find("console_repl.nut") != std::string::npos);
+    CHECK(compileError.find("expression expected") != std::string::npos);
 
     // print() from a script is captured into the log.
     {

@@ -334,7 +334,9 @@ TEST_CASE("procgen.heightmapSlopeQuery.threeSourceFormulasAndBinding") {
         for (int x = 0; x < 3; ++x) source.setHeight(x, y, float(x + 2 * y) * 0.1F);
     auto forward = measureTerrainHeightmapSlope(source, 1.F, 1.F, TerrainHeightmapSlopeQuery::GridForward);
     auto central = measureTerrainHeightmapSlope(source, 0.5F, 0.5F, TerrainHeightmapSlopeQuery::NormalizedCentral);
-    auto average = measureTerrainHeightmapSlope(source, 0.5F, 0.5F, TerrainHeightmapSlopeQuery::NormalizedAverage);
+    // Center the four-neighbor stencil on the interior texel, away from edge clamping.
+    auto average =
+        measureTerrainHeightmapSlope(source, 1.F / 3.F, 1.F / 3.F, TerrainHeightmapSlopeQuery::NormalizedAverage);
     REQUIRE(forward.ok());
     REQUIRE(central.ok());
     REQUIRE(average.ok());
@@ -1373,7 +1375,8 @@ TEST_CASE("procgen.terrainTextureAligner.bindsRealVm") {
         local r=eve.alignTerrainSplatTextures(a(),b(),s);
         assert(r.ok);
     )"));
-    CHECK(a.sample(0, 1, 0).value() < 1.0F);
+    // Pcg's X-adjacent Top/Bottom edges use the splatmap's second coordinate.
+    CHECK(a.sample(0, 1, 1).value() < 1.0F);
     CHECK(b.sample(0, 0, 0).value() > 0.0F);
 }
 

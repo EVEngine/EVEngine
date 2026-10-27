@@ -675,14 +675,16 @@ TEST_CASE("animation.mixamo.skeletonIdleRunJumpPreview") {
 
     gfx->setBackgroundColorRGBA(0.07f, 0.08f, 0.11f, 1.f);
 
-    // Short fixture timeline: Idle → Run → Idle → Jump → Idle.
+    // Allow the imported jump clip to reach its exit time and finish blending.
+    const int previewFrames = 100 + static_cast<int>(std::ceil((pack.jump->getDuration() + 0.2f) / 0.016f));
+    // Phase timeline: Idle → Run → Idle → Jump → Idle
     enum Phase { IdleA, RunA, IdleB, JumpA, IdleC };
     Phase phase       = IdleA;
     int   phaseFrames = 0;
     int   drawnBones  = 0;
     bool  seenIdle = false, seenRun = false, seenJump = false;
 
-    for (int frame = 0; frame < 48; ++frame) {
+    for (int frame = 0; frame < previewFrames; ++frame) {
         ++phaseFrames;
         if (phase == IdleA && phaseFrames > 2) {
             sm->setFloat("speed", 200.f);
@@ -812,7 +814,7 @@ TEST_CASE("editor.v2.disk_document_atomic_conflict_and_autosave") {
     std::filesystem::create_directories(root);
     DiskAtomicDocumentStore store(root);
     CHECK(store.resolve("content://World/Park.evscene").generic_string() ==
-          (root / "Content" / "World" / "Park.evscene").generic_string());
+          (std::filesystem::canonical(root) / "Content" / "World" / "Park.evscene").generic_string());
     CHECK(store.resolve("content://../outside.evscene").empty());
 
     DocumentService   documents(&store);
@@ -857,7 +859,9 @@ TEST_CASE("editor.v2.disk_document_atomic_conflict_and_autosave") {
     auto       stale    = documents.requestSave(id);
     const auto conflict = documents.executeSave(stale.value());
     CHECK(static_cast<int>(conflict.code()) == static_cast<int>(EditorStatus::Conflict));
-    CHECK(static_cast<int>(conflict.value().state) == static_cast<int>(DocumentState::Conflict));
+    const auto conflictedDocument = documents.snapshot(id);
+    REQUIRE(conflictedDocument.ok());
+    CHECK(static_cast<int>(conflictedDocument.value().state) == static_cast<int>(DocumentState::Conflict));
 
     // A failed atomic replace leaves the previously persisted file intact.
     DiskAtomicDocumentStore failureStore(root);
@@ -1065,7 +1069,13 @@ TEST_CASE("map.tileset.loadsExternalTsjRelativeToMap") {
     REQUIRE(layer->tileset()->atlases.size() == 2);
     CHECK_EQ(layer->tileset()->atlases[1].firstGid, 30);
     CHECK_EQ(layer->getTileDataType(20, "wet"), std::string("bool"));
+    CHECK(layer->getTileDataBool(20, "wet"));
     CHECK_EQ(layer->getTileDataType(30, "walkable"), std::string("bool"));
+    REQUIRE(layer->tileset()->animations.size() == 1);
+    CHECK_EQ(layer->tileset()->animations[0].gid, 20);
+    REQUIRE(layer->tileset()->animations[0].frames.size() == 2);
+    CHECK_EQ(layer->tileset()->animations[0].frames[0].gid, 21);
+    CHECK_EQ(layer->tileset()->animations[0].frames[1].gid, 20);
     REQUIRE(layer->tileset()->terrainRules.size() == 1);
     CHECK_EQ(layer->tileset()->terrainRules[0].gid, 20);
     CHECK_EQ(layer->tileset()->terrainRules[0].neighborMask, 1 << 3);

@@ -1848,12 +1848,12 @@ void Tactics::expose(ssq::Table& table) {
             bindingEdgeValue);
     });
     // Declared-or-not is a plain query: an undeclared direction is the normal case.
-    battle.addFunc("hasEdge", [vm](ScriptTacticsBattle* value, int fx, int fy, int fl, int tx, int ty, int tl) {
+    battle.addFunc("hasEdge", [](ScriptTacticsBattle* value, int fx, int fy, int fl, int tx, int ty, int tl) {
         auto session = bindingSession(value);
-        if (!session) return Value(false);
+        if (!session) return false;
         auto* battleValue = dynamic_cast<Battle*>(ecs::try_get(session.value()->battle));
-        if (battleValue == nullptr) return Value(false);
-        return Value(battleValue->board()->value.tryEdge({fx, fy, fl}, {tx, ty, tl}).has_value());
+        if (battleValue == nullptr) return false;
+        return battleValue->board()->value.tryEdge({fx, fy, fl}, {tx, ty, tl}).has_value();
     });
     // Read side of the scheduling choice, so a UI need not infer it from ordering.
     battle.addFunc("policyId", [vm](ScriptTacticsBattle* value) {

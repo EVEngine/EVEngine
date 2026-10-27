@@ -450,6 +450,7 @@ eve::Result<void> VehicleDefinitionRuntime::applyTo(VehicleEntity* entity) const
 
         identity.id          = this->identity().instanceId.format();
         identity.defId       = this->identity().definition.id().name();
+        identity.faction     = state().faction;
         definition.owned     = std::move(definitionOwner);
         definition.def       = definition.owned.get();
         binding.identity     = this->identity();

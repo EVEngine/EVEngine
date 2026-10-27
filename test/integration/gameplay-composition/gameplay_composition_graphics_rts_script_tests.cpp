@@ -316,7 +316,7 @@ TEST_CASE("rts.legacySandboxContentMaterializesEveryArchetype") {
     REQUIRE(rts.configureScriptWorld(36, 22, 1.0f).ok());
     const auto loaded = rts.loadScriptContent(json.str());
     REQUIRE(loaded.ok());
-    CHECK_EQ(loaded.value().inserted, std::size_t{18});
+    CHECK_EQ(loaded.value().inserted, std::size_t{27});
 
     auto*                            faction = rts.newFaction(subject("00000000-0000-7000-8000-00000000fa01")).value();
     const std::array<const char*, 7> unitTypes{"worker", "engineer", "marine", "apc", "jammer", "skyguard", "drone"};
@@ -431,6 +431,8 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     REQUIRE(workerId.has_value());
     REQUIRE(barracksId.has_value());
     Unit* builder = rts.newFactionUnit(*faction, subject("00000000-0000-7000-8000-00000000fc02"), *workerId).value();
+    builder->motion()->x = 2.0f;
+    builder->motion()->y = 5.0f;
     REQUIRE(rts.addScriptResource(*faction, "minerals", 200).ok());
     const auto buildingSubject = subject("00000000-0000-7000-8000-00000000fc03");
     auto       started = rts.startScriptConstruction(*faction, buildingSubject, *barracksId, {4.0f, 5.0f}, *builder);
@@ -440,9 +442,9 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     CHECK_EQ(barracks->construction()->progress, 0.0f);
     auto order = builder->orders()->values.current();
     REQUIRE(order.ok());
-    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Move));
-    for (int index = 0; index < 8 && barracks->construction()->progress < 1.0f; ++index)
-        REQUIRE(rts.stepScript(1.0).ok());
+    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Build));
+    for (int index = 0; index < 80 && barracks->construction()->progress < 1.0f; ++index)
+        REQUIRE(rts.stepScript(0.1).ok());
     CHECK_EQ(barracks->construction()->progress, 1.0f);
     CHECK(builder->orders()->values.empty());
 
@@ -1149,10 +1151,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit*    beam = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e903"), *beamType).value();
     Unit*    beamTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e904"), *targetType).value();
-    beam->motion()->x       = 1.5f;
-    beam->motion()->y       = 1.5f;
-    beamTarget->motion()->x = 7.5f;
-    beamTarget->motion()->y = 1.5f;
+    beam->motion()->x       = 1.f;
+    beam->motion()->y       = 1.f;
+    beamTarget->motion()->x = 7.f;
+    beamTarget->motion()->y = 1.f;
     REQUIRE(module.setScriptNavigationBlocked(4, 1, true).ok());
     REQUIRE(module.stepScript(0.2).ok());
     CHECK_EQ(beamTarget->durability()->state.health, 50.0);
@@ -1163,10 +1165,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit* shell = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e905"), *shellType).value();
     Unit* shellTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e906"), *targetType).value();
-    shell->motion()->x       = 1.5f;
-    shell->motion()->y       = 4.5f;
-    shellTarget->motion()->x = 7.5f;
-    shellTarget->motion()->y = 4.5f;
+    shell->motion()->x       = 1.f;
+    shell->motion()->y       = 4.f;
+    shellTarget->motion()->x = 7.f;
+    shellTarget->motion()->y = 4.f;
     REQUIRE(module.stepScript(0.1).ok());
     REQUIRE(module.setScriptTerrainElevation(4, 4, 2.0f).ok());
     REQUIRE(module.stepScript(1.0).ok());
@@ -1197,10 +1199,10 @@ TEST_CASE("rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints") {
     Faction* red  = module.newFaction(subject("00000000-0000-7000-8000-00000000e802")).value();
     Unit* shooter = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e803"), *shooterType).value();
     Unit* target  = module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e804"), *targetType).value();
-    shooter->motion()->x = 1.5f;
-    shooter->motion()->y = 2.5f;
-    target->motion()->x  = 7.5f;
-    target->motion()->y  = 2.5f;
+    shooter->motion()->x = 1.f;
+    shooter->motion()->y = 2.f;
+    target->motion()->x  = 7.f;
+    target->motion()->y  = 2.f;
     CHECK_EQ(shooter->combat()->firingHeight, 1.0f);
     CHECK_EQ(target->combat()->targetHeight, 1.0f);
     REQUIRE(module.setScriptTerrainElevation(4, 2, 2.0f).ok());
@@ -1776,7 +1778,11 @@ TEST_CASE("scene.editor.physics_placement_auto_hull_cache_is_explicit_and_sessio
     REQUIRE(session.cancelPhysicsPlacement().ok());
     REQUIRE(session.removePhysicsPlacementHull(ObjectId("mesh")).ok());
     const auto missingRemoval = session.removePhysicsPlacementHull(ObjectId("mesh"));
+    REQUIRE(missingRemoval.ok());
     REQUIRE(missingRemoval.code() == Status::NoOp);
+    const auto inactiveCancel = session.cancelPhysicsPlacement();
+    REQUIRE(inactiveCancel.ok());
+    REQUIRE(inactiveCancel.code() == Status::NoOp);
 }
 
 TEST_CASE("scene.editor.physics_placement_compound_cache_round_trips_and_detects_stale_resources") {
@@ -2356,7 +2362,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     REQUIRE(rotated.ok());
     REQUIRE(rotated.value()->setHandlePosition(100, 100, 100).ok());
     REQUIRE(rotated.value()->setHandleRotation(0, 0, 1.57079632679).ok());
-    REQUIRE(rotated.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(rotated.value()->step(tick, 1.0 / 60.0).ok());
     auto rotateFrame = rotated.value()->placementFrame();
     REQUIRE(rotateFrame.ok());
     CHECK(std::abs(rotateFrame.value().objects[0].transform.x) < 0.1);
@@ -2367,7 +2373,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     auto pointed = ScenePhysicsPlacementBackend::create(std::move(point));
     REQUIRE(pointed.ok());
     REQUIRE(pointed.value()->setHandlePosition(5, 0, 0).ok());
-    REQUIRE(pointed.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(pointed.value()->step(tick, 1.0 / 60.0).ok());
     auto pointFrame = pointed.value()->placementFrame();
     REQUIRE(pointFrame.ok());
     CHECK(std::abs(pointFrame.value().objects[0].transform.x) < 0.01);
@@ -4525,8 +4531,10 @@ TEST_CASE("stylize.action.attack_vfx camera executor routes to optional sink") {
     REQUIRE(started.ok());
     REQUIRE_EQ(sink.calls, 1);
     REQUIRE(sink.last.has_value());
-    CHECK_EQ(sink.last->positionAmplitude, 0.2);
-    CHECK_EQ(sink.last->duration.seconds(), 0.15);
+    CHECK_EQ(sink.last->positionAmplitude, static_cast<double>(layer.floatParams.at("posAmp")));
+    auto expectedDuration = eve::Duration::fromSeconds(layer.floatParams.at("duration"));
+    REQUIRE(expectedDuration.ok());
+    CHECK_EQ(sink.last->duration, expectedDuration.value());
     REQUIRE(started.value().valid());
     CHECK(executor->stop(started.value(), AttackVfxStopBehavior::ClearImmediately).ok());
 

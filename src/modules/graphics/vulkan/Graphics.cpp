@@ -40,6 +40,9 @@
 #include "common/Exception.h"
 #include "common/StartupTiming.h"
 #include "common/config.h"
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+#include <vulkan/vulkan_beta.h>
+#endif
 #include "filesystem/Filesystem.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/IRayTracing.h"
@@ -671,6 +674,21 @@ void Graphics::createInstanceAndDevice(const std::vector<const char*>& extNames,
         }
 
         vkb::DeviceBuilder deviceBuilder = phys.createDevice();
+#if defined(EVENGINE_MACOSX) || defined(EVENGINE_IOS)
+        // Portability features are disabled unless explicitly enabled, even
+        // when the physical device supports updating comparison descriptors.
+        VkPhysicalDevicePortabilitySubsetFeaturesKHR portabilitySupported{};
+        // The pinned core headers hide this beta extension's enum token.
+        constexpr auto portabilityFeatureType = static_cast<VkStructureType>(1000163000);
+        portabilitySupported.sType            = portabilityFeatureType;
+        vk::PhysicalDeviceFeatures2 portabilityQuery{};
+        portabilityQuery.pNext = &portabilitySupported;
+        phys->getFeatures2(&portabilityQuery);
+        VkPhysicalDevicePortabilitySubsetFeaturesKHR portabilityEnable{};
+        portabilityEnable.sType                     = portabilityFeatureType;
+        portabilityEnable.mutableComparisonSamplers = portabilitySupported.mutableComparisonSamplers;
+        deviceBuilder.add_pNext(&portabilityEnable);
+#endif
         // Vulkan 1.2 feature: vkCmdDrawIndirectCount (VG cluster draws) and BDA for RT.
         vk::PhysicalDeviceVulkan12Features vk12Enable{};
         vk12Enable.sType = vk::StructureType::ePhysicalDeviceVulkan12Features;

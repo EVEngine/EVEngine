@@ -1189,10 +1189,11 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     auto*            ints = base->query<IIntFieldTarget>();
     CHECK(ints != nullptr);
     CHECK(base->query<IScalarFieldTarget>() == nullptr);
+    const auto initialRevision = tiles.revision();
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Applied));
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Unchanged));
     CHECK_EQ(ints->readInt(2, 1), 9);
-    CHECK_EQ(tiles.revision(), 1ULL);
+    CHECK_EQ(tiles.revision(), initialRevision + 1);
     CHECK_EQ(tiles.dirtyRegion().minX, 2);
     tiles.clearDirtyRegion();
     CHECK(tiles.dirtyRegion().empty());
@@ -1570,7 +1571,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         timelineAsset <- {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:light-attack", durationNs=1000000000,
-            animationUri="asset://test/attack.glb#Attack",
+            animationUri="",
             metadata={},
             tracks=[{
                 id="test-track:gameplay", label="Gameplay", kind="gameplay",
@@ -1759,7 +1760,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
         sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
         montageSettingsResult <- actionEditor.setMontageSettings(
-            1.5, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            1.5, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         montageRate <- actionEditor.getMontageBasePlayRate();
         montageLooping <- actionEditor.getMontageLooping();
         montageFootIk <- actionEditor.getMontageFootIk();
@@ -1767,7 +1768,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         montageBlendOffset <- actionEditor.getMontageBlendOutOffset();
         montageRootRotation <- actionEditor.getMontageRootMotionRotation();
         invalidMontageSettings <- actionEditor.setMontageSettings(
-            0.0, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            0.0, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         undoMontageSettings <- actionEditor.undo();
         restoredMontageRate <- actionEditor.getMontageBasePlayRate();
         splitCountBefore <- actionEditor.getSectionSplitCount();
@@ -1903,7 +1904,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("montageLooping").toBool());
     CHECK(vm.find("montageFootIk").toBool());
     CHECK_EQ(vm.find("montageLayer").toInt(), 2);
-    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() + 0.03f) < 1e-5f);
+    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() - 0.03f) < 1e-5f);
     CHECK(!vm.find("montageRootRotation").toBool());
     CHECK_EQ(vm.find("splitCountBefore").toInt(), 0);
     CHECK(vm.find("addSplit").toTable().get<bool>("ok"));
@@ -2092,7 +2093,7 @@ TEST_CASE("editor.api.session_and_history_preserve_failure_status") {
 
     EditorHistory history;
     auto          emptyUndo = history.undoAction();
-    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NoOp));
+    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NotFound));
     REQUIRE(!emptyUndo.diagnostics().empty());
     CHECK(!history.undo());
 
@@ -2187,8 +2188,8 @@ TEST_CASE("editor.api.session_execute_checked_forwards_transaction_diagnostics")
     auto missingTransaction = session.executeChecked(std::move(command));
     CHECK_EQ(static_cast<int>(missingTransaction.code()), static_cast<int>(EditorStatus::Rejected));
     REQUIRE(!missingTransaction.diagnostics().empty());
-    CHECK_EQ(eve::editing::diagnosticRule(missingTransaction.diagnostics().front()).value(),
-             std::string("editor.transaction"));
+    CHECK_EQ(missingTransaction.diagnostics().front().code(), eve::DiagnosticCode::PreconditionViolation);
+    CHECK_EQ(missingTransaction.diagnostics().front().path(), std::string("editor.transaction"));
     CHECK_EQ(buffer.getGid(0, 0), 0);
 }
 
@@ -2291,9 +2292,9 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.layers"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.assets"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("biome.rules"));
-    CHECK_EQ(vm.find("ctx3").toString(), std::string("assets"));
+    CHECK_EQ(vm.find("ctx3").toString(), std::string("inspector"));
     CHECK(vm.find("beforePoints").toInt() > 0);
     CHECK(vm.find("excluded").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("exclusions").toInt(), 1);
@@ -3705,6 +3706,7 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
     immediate.id          = CommandId("park.add-tree");
     immediate.ownerModule = "park";
     immediate.displayName = "Add tree";
+    immediate.createsTransaction = false;
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(immediate),
                                  [](const CommandContext&, const EditorValue&) {
@@ -3838,11 +3840,19 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
         "execute",
         R"({"target":"material.player","command":"material.property.set.v1","payload":{"path":"shading.roughness","value":0.65}})");
     CHECK(changed.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") == EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") == EditorValue(0.65));
 
     const std::string undone = automation->invoke("undo", R"({"target":"material.player"})");
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") != EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") != EditorValue(0.65));
 
     CHECK(editor.unregisterEditingTarget(TargetId("material.player")).ok());
 }

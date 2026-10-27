@@ -78,13 +78,16 @@ constexpr auto  instanceId = "00000000-0000-7000-8000-000000000901";
 constexpr auto  ownerId    = "00000000-0000-7000-8000-000000000902";
 constexpr auto  strangerId = "00000000-0000-7000-8000-000000000903";
 constexpr auto  flowText   = R"(
-conversation greeting entry=ask
-node ask choice speaker=elder
-option buy -> shop
-option leave -> end
+schema "eve.dnut"
+version 1
+conversation greeting entry=ask {
+node ask choice {
+route buy target=shop
+route leave target=end
+}
 node shop line speaker=elder text="here you go" next=end
 node end end
-endconversation
+}
 )";
 eve::SubjectRef subject(const char* text) {
     auto id = eve::PersistentId::parse(text);

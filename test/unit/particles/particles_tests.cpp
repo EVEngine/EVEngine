@@ -102,8 +102,8 @@ TEST_CASE("particles.ParticleEffect naturalDuration: bounded emitters include ta
     auto finite = eve::particles::ParticleEffect::tryFromText(R"({
         "type":"eve.particle-effect", "version":1,
         "emitters":[
-            {"name":"short","emitter":{"emitterLife":0.3,"particleLifetime":[0.2,1.2]}},
-            {"name":"long","emitter":{"emitterLife":0.8,"particleLifetime":[0.2,0.9]}}
+            {"name":"short","emitter":{"emitterLife":0.3,"particleLife":[0.2,1.2]}},
+            {"name":"long","emitter":{"emitterLife":0.8,"particleLife":[0.2,0.9]}}
         ]
     })");
     REQUIRE(finite.ok());
@@ -463,6 +463,7 @@ TEST_CASE("particles.shiftWorldSpaceParticles: world coordinates move while play
     emitter->setAutoRandomSeed(false);
     emitter->setRandomSeed(7);
     emitter->setPosition(1200.0f, 45.0f);
+    emitter->start();
     emitter->emit(1);
     emitter->pause();
     const auto before = emitter->sim()->particles[0];

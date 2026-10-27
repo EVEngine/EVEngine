@@ -1195,7 +1195,10 @@ TEST_CASE("graphics.volumeDensityGraph.sphereNoiseAndSparseBakeProduceOccupiedBr
     AtmosphereVolume volume;
     volume.resize(16, 16, 16);
     volume.injectSparseVolume(sparse);
-    CHECK_GT(volume.at(8, 8, 8).extinction, 0.f);
+    // Cell centers map to sparse voxels 15 and 17: (-.5,-.5,-.5) lies
+    // inside radius 2, while (1.5,1.5,1.5) lies outside it.
+    CHECK_GT(volume.at(7, 7, 7).extinction, 0.f);
+    CHECK_EQ(volume.at(8, 8, 8).extinction, 0.f);
     CHECK_EQ(volume.at(0, 0, 0).extinction, 0.f);
 }
 }  // namespace test_atmosphere_volume
@@ -1288,6 +1291,8 @@ TEST_CASE("graphics.lightProbe.batchReplacementBlendsOverlappingIrradianceAndRem
     red.x             = -1.f;
     red.extentX = red.extentY = red.extentZ = 4.f;
     red.irradianceR                         = 1.f;
+    red.irradianceG                         = 0.f;
+    red.irradianceB                         = 0.f;
     ProcgenProbeDesc blue                   = red;
     blue.sourcePointId                      = 2;
     blue.x                                  = 1.f;
@@ -1463,7 +1468,8 @@ TEST_CASE("graphics.displayOutput.hdr10AndScRgbEncodePaperWhiteWithHeadroom") {
         CHECK_LT(r, 0.7f);
         CHECK_LT(std::fabs(r - g), 1e-4f);
         CHECK_LT(std::fabs(g - b), 1e-4f);
-        CHECK_EQ(linearToPq(0.f), 0.f);
+        // The PQ float offset still quantizes to HDR10 black code zero.
+        CHECK_EQ(std::lround(linearToPq(0.f) * 1023.f), 0L);
         CHECK_GT(linearToPq(1.f), 0.9f);
     };
     SUB_CASE("scRGB maps paper white to 200 over 80 and peak remains representable") {
@@ -2004,6 +2010,7 @@ TEST_CASE("graphics.vegetationWind.packetUsesExplicitTimeAndBillboardFlags") {
     CHECK_EQ(disabled.value()[5], 0.f);
     profile.enabled   = true;
     profile.billboard = true;
+    profile.alphaTest = false;
     auto billboard    = packVegetationWind(state, profile, 2.0);
     REQUIRE(billboard.ok());
     const auto data = billboard.value();
@@ -2705,7 +2712,9 @@ TEST_CASE("graphics.hair.simulation: roots stay pinned while tips fall and inval
     std::vector<StrandPoint> points;
     for (float rootX : {-0.1f, 0.1f}) {
         for (int index = 0; index < 4; ++index) {
-            points.push_back({glm::vec3(rootX, 0.5f + 0.04f * float(index), 0.f), 0.001f, float(index) / 3.f});
+            // A slight lean gives gravity a bending moment instead of an exactly axial load.
+            points.push_back({glm::vec3(rootX + 0.01f * float(index), 0.5f + 0.04f * float(index), 0.f), 0.001f,
+                              float(index) / 3.f});
         }
     }
     guides.setPoints(std::move(points));

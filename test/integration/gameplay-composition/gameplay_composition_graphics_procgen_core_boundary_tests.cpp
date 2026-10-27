@@ -509,6 +509,8 @@ TEST_CASE("particles.attach.ik3dSolverMovesEmitter") {
     e->setAttachPlane("xy");
     e->setAttachScale(1.f);
     e->attachToSkeleton3D(sk.get(), tip);
+    e->setEmissionRate(0.f);
+    e->start();
     const float x0 = e->getX();
     const float y0 = e->getY();
 
@@ -1443,7 +1445,7 @@ PcgPhotoModeValues changed() {
     PcgPhotoModeValues v;
     v.setFloat("m_fieldOfView", 75).value();
     v.setBool("m_pcgWeatherRain", true).value();
-    v.setFloat("m_pcgUnderwaterVolume", 0.2f).value();
+    v.setFloat("m_globalVolume", 0.2f).value();
     v.setFloat("m_globalGrassDistance", 350).value();
     return v;
 }
@@ -1672,7 +1674,7 @@ TEST_CASE("ui.pcgPhotoModeApply.cameraAuthorityProjectsAllPostFxFieldsToFinalCom
     CHECK(camera->data()->dofMaxBlurPx > 0.f);
     CHECK_EQ(camera->data()->dofFocusDistance, 24.f);
     CHECK_EQ(camera->data()->dofFocusRange, 60.f);
-    CHECK_EQ(camera->data()->dofMaxBlurPx, 12.f);
+    CHECK_EQ(camera->data()->dofMaxBlurPx, 18.f);  // radius 2 * URP 1.5 * HDRP 1.5 * kernel 4
     CHECK_EQ(camera->getAperture(), 5.6f);
     CHECK_EQ(camera->getFocalLength(), 85.f);
 }
@@ -1808,6 +1810,8 @@ TEST_CASE("ui.pcgPhotoModeApply.framePacingAuthorityAppliesVSyncAndRealFrameCap"
     REQUIRE(plan.executeRegistered().ok());
     CHECK_EQ(presentation.count, 2);
     CHECK_EQ(os.getTargetFramesPerSecond(), 120);
+    // The software cap is active when presentation VSync is disabled.
+    REQUIRE(os.setVerticalSyncCount(0).ok());
     os.limitFrame();
     const auto start = std::chrono::steady_clock::now();
     os.limitFrame();

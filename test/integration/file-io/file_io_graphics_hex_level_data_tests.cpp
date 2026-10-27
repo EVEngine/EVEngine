@@ -914,11 +914,31 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     REQUIRE(ai->HasNormals());
     REQUIRE(ai->mNormals != nullptr);
 
+    const auto findMeshWorld = [&](auto &&self, const aiNode *node, const aiMatrix4x4 &parent,
+                                   aiMatrix4x4 &result) -> bool {
+        const auto world = parent * node->mTransformation;
+        for (unsigned i = 0; i < node->mNumMeshes; ++i)
+            if (node->mMeshes[i] == static_cast<unsigned>(meshIndex)) {
+                result = world;
+                return true;
+            }
+        for (unsigned i = 0; i < node->mNumChildren; ++i)
+            if (self(self, node->mChildren[i], world, result)) return true;
+        return false;
+    };
+    REQUIRE(model->getScene() != nullptr);
+    REQUIRE(model->getScene()->mRootNode != nullptr);
+    aiMatrix4x4 meshWorld;
+    REQUIRE(findMeshWorld(findMeshWorld, model->getScene()->mRootNode, aiMatrix4x4{}, meshWorld));
+    aiMatrix3x3 normalTransform(meshWorld);
+    normalTransform.Inverse().Transpose();
     std::vector<float> bindNrm(size_t(ai->mNumVertices) * 3u);
     for (int v = 0; v < int(ai->mNumVertices); ++v) {
-        bindNrm[size_t(v) * 3u + 0] = ai->mNormals[v].x;
-        bindNrm[size_t(v) * 3u + 1] = ai->mNormals[v].y;
-        bindNrm[size_t(v) * 3u + 2] = ai->mNormals[v].z;
+        auto normal = normalTransform * ai->mNormals[v];
+        normal.Normalize();
+        bindNrm[size_t(v) * 3u + 0] = normal.x;
+        bindNrm[size_t(v) * 3u + 1] = normal.y;
+        bindNrm[size_t(v) * 3u + 2] = normal.z;
     }
 
     std::unique_ptr<AnimSkeleton> skeleton(AnimImporter::loadSkeletonFromModel(model.get()));
@@ -926,7 +946,7 @@ TEST_CASE("animation.skinned.normalsFollowPose") {
     std::unique_ptr<AnimSkin> skin(AnimSkin::fromModel(model.get(), meshIndex, skeleton.get()));
     REQUIRE(skin.get() != nullptr);
 
-    // Bind pose: skin matrices are identity, so normals must stay in place.
+    // Bind-pose normals are expressed in skeleton world space, including the mesh node transform.
     std::unique_ptr<AnimPose> bind(new AnimPose());
     skeleton->applyBindPose(bind.get());
     bind->computeWorld(skeleton.get());
@@ -2095,7 +2115,7 @@ TEST_CASE("Database.SQLiteCrudOrmAndECSExport") {
                                {"name", [](const Actor &a) -> Value { return a.name; },
                                 [](Actor &a, const Value &v) { a.name = std::get<std::string>(v); }},
                                {"hp", [](const Actor &a) -> Value { return a.hp; },
-                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }},
+                                [](Actor &a, const Value &v) { a.hp = std::get<double>(v); }, "REAL"},
                            }};
 
     Repository<Actor> actors(db, mapping);
@@ -3431,8 +3451,18 @@ TEST_CASE("hex.data.catalog.bootEachLevelDistinctConfig") {
         if (auto light = lv->getObject("light")) {
             std::string lightType = "point";
             if (light->has("type")) lightType = light->getValue<std::string>("type");
+            const bool knownProfile =
+                lightType == "point" || lightType == "spot" || lightType == "dir" || lightType == "multi";
+            REQUIRE(knownProfile);
+            // The example keeps its point torch for the multi-light profile;
+            // multi is a catalog profile, not a Light2D primitive type.
+            const std::string primitiveType = lightType == "multi" ? "point" : lightType;
             auto *lamp = eve::graphics::Light2D::createLight(lightType);
-            CHECK_EQ(lamp->getType(), lightType);
+            CHECK_EQ(lamp->getType(), primitiveType);
+            if (lightType == "multi") {
+                REQUIRE(light->has("count"));
+                CHECK(light->getValue<int>("count") > 1);
+            }
             const float radius = light->has("radius") ? float(light->getValue<double>("radius")) : 120.f;
             lamp->setRadius(radius);
             CHECK(std::fabs(lamp->getRadius() - radius) < 1e-3f);

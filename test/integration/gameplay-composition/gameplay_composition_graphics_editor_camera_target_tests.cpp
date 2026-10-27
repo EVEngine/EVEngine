@@ -234,12 +234,12 @@ TEST_CASE("editor.biome.rules_editor_installs_workspace_and_previews_determinist
     EditorWorkspace  workspace("biome.preview", "Biome Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("biome.layers"));
+    CHECK_EQ(workspace.getPanelId(0), std::string("biome.assets"));
     CHECK_EQ(workspace.getPanelCapability(0), std::string("biome.rules"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(0), std::string("assets"));
     CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("assets"));
+    CHECK_EQ(workspace.getPanelContext(2), std::string("list"));
+    CHECK_EQ(workspace.getPanelContext(3), std::string("inspector"));
     CHECK(editor.pointCount() > 0);
     CHECK_EQ(editor.previewRevision(), editor.revision());
     const int first = editor.pointCount();
@@ -825,7 +825,7 @@ TEST_CASE("editor.building.surface_attachment_survives_replace_and_undo") {
     CHECK_EQ(restored.value().surfaceRevision, uint64_t{27});
     CHECK_EQ(restored.value().surfaceSampleCount, 4);
     CHECK_EQ(restored.value().surfaceMaxSlopeDegrees, 14.0);
-    CHECK_EQ(restored.value().surfaceHeightDelta, 0.6);
+    CHECK_EQ(restored.value().surfaceHeightDelta, static_cast<double>(0.6f));
 }
 
 TEST_CASE("editor.building.set_preflights_final_definition_and_pose_atomically") {
@@ -946,7 +946,9 @@ TEST_CASE("editor.building.edge_curve_is_one_atomic_undoable_gesture") {
         world.placeEdge("editor-fence", memberBeforeUndo.edge.x, memberBeforeUndo.edge.y,
                         memberBeforeUndo.edge.axis == eve::building::EdgeAxis::Horizontal ? "north" : "west");
     REQUIRE(blocker > 0);
-    auto rejectedRedo = authority.preflight(transaction, operations);
+    auto blockedPlan = authority.preflight(transaction, operations);
+    REQUIRE(blockedPlan.ok());
+    auto rejectedRedo = authority.commit(blockedPlan.value());
     CHECK(!rejectedRedo.ok());
     CHECK_EQ(world.getBuildingCount(), 1);
     CHECK_EQ(world.getEdgeCurveGroupCount(), 0);
@@ -2488,7 +2490,9 @@ TEST_CASE("editor.v2.document_save_detects_external_revision_conflict") {
               .ok());
     auto conflict = documents.executeSave(staleTicket.value());
     CHECK_EQ(static_cast<int>(conflict.code()), static_cast<int>(EditorStatus::Conflict));
-    CHECK_EQ(static_cast<int>(conflict.value().state), static_cast<int>(DocumentState::Conflict));
+    const auto conflictedDocument = documents.snapshot(id);
+    REQUIRE(conflictedDocument.ok());
+    CHECK_EQ(static_cast<int>(conflictedDocument.value().state), static_cast<int>(DocumentState::Conflict));
 }
 
 TEST_CASE("editor.v2.import_place_save_and_reopen_headless_loop") {

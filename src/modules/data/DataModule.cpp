@@ -205,16 +205,18 @@ char *encode(std::string format, const char *src, size_t srclen, size_t &dstlen,
 {
 	if (format == "hex")
 		return bytesToHex((const uint8_t *) src, srclen, dstlen);
-	else
-		return b64_encode(src, srclen, linelen, dstlen);
+        else if (format == "base64")
+            return b64_encode(src, srclen, linelen, dstlen);
+        throw eve::Exception("Invalid encoding format.");
 }
 
 char *decode(std::string format, const char *src, size_t srclen, size_t &dstlen)
 {
 	if (format == "hex")
 		return (char *) hexToBytes(src, srclen, dstlen);
-	else
-		return b64_decode(src, srclen, dstlen);
+        else if (format == "base64")
+            return b64_decode(src, srclen, dstlen);
+        throw eve::Exception("Invalid encoding format.");
 }
 
 std::string hash(std::string function, Data *input)

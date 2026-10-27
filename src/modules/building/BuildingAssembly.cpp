@@ -142,7 +142,8 @@ Result<PreparedAssembly> AssemblyService::preparePlacement(const PlacementWorld&
     for (const auto& c : b.curves) {
         auto curve = transformedCurve(c.group, {}, pose, remap, {candidate->nextEdgeCurveGroupId_++});
         if (!curve.ok()) return fail<PreparedAssembly>("Invalid transformed curve");
-        candidate->edgeCurveGroups_.emplace(curve.value().id.value, std::move(curve).takeValue());
+        const auto curveId = curve.value().id.value;
+        candidate->edgeCurveGroups_.emplace(curveId, std::move(curve).takeValue());
     }
     candidate->assemblyState_->records.emplace(id, std::move(a));
     candidate->assemblyState_->handles[id] =

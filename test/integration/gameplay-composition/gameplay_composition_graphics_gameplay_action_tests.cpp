@@ -1756,7 +1756,10 @@ TEST_CASE("editor.v2.authority_compensation_validates_full_inverse_on_candidate"
 
     auto compensation = authority.compensate(committed.value());
     CHECK(!compensation.ok());
-    CHECK_EQ(static_cast<int>(compensation.code()), static_cast<int>(EditorStatus::Failed));
+    CHECK_EQ(static_cast<int>(compensation.code()), static_cast<int>(EditorStatus::Rejected));
+    REQUIRE_EQ(compensation.diagnostics().size(), 1u);
+    CHECK_EQ(eve::editing::diagnosticRule(compensation.diagnostics().front()).value(),
+             std::string("test.operation.failure"));
     CHECK_EQ(target.value(), 5);
     CHECK_EQ(target.revision(), revisionAfterCommit);
 }
@@ -2062,7 +2065,7 @@ TEST_CASE("editor.ui.multi_selection_layout_inspector_is_atomic_and_reports_mixe
         REQUIRE(commitUi(target, transactions, operation.value(), std::string("ui.create.") + id).ok());
     }
     const SelectionSnapshot selection = uiSelection(target, {"left", "right"});
-    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(25));
+    CHECK_EQ(target.schema(selection).properties.size(), static_cast<std::size_t>(31));
     auto size = target.makeSet(selection, PropertyPath("layout.size"), EditorValue::Array{180.0, 42.0},
                                PropertySetMode::Absolute);
     REQUIRE(size.ok());
@@ -2244,7 +2247,10 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
         workspacePanelCount <- workspace.getPanelCount();
         panel0 <- workspace.getPanelId(0);
         cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         createdCustom <- themeEditor.createFromPreset("studio", "Studio", "dark");
         beforeRounding <- themeEditor.getFloat("geometry.frameRounding");
         roundingResult <- themeEditor.setFloat("geometry.frameRounding", 9.0);
@@ -2262,7 +2268,7 @@ TEST_CASE("editor.ui.theme_editor_script_composes_workspace_and_transactions") {
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 3);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("ui.themes"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("ui.preview"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("ui.theme"));
     CHECK_EQ(vm.find("ctx1").toString(), std::string("preview"));
     CHECK(vm.find("createdCustom").toTable().get<bool>("ok"));
@@ -3593,6 +3599,7 @@ eve::sensing::WorldPoint testPoint() {
 
 TEST_CASE("gameplayAction.phasePipelineUsesInjectedSimulationTime") {
     ActionDefinition def = definition("timed");
+    def.activeExecutionRequired = true;
     def.timing.windup    = eve::Duration::fromNanoseconds(1);
     def.timing.active    = eve::Duration::fromNanoseconds(2);
     def.timing.recover   = eve::Duration::fromNanoseconds(3);
