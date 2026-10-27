@@ -4372,7 +4372,7 @@ Result<std::size_t> EffectSystem::step(const SimulationStep& step, combat::Damag
             const auto before = effects->values.snapshot();
             auto advanced = advanceEffects(effects->values, step);
             if (!advanced) return Result<std::size_t>::failure(advanced.status());
-            if (events && advanced.value() > 0) {
+            if (events) {
                 const auto after = effects->values.snapshot();
                 for (int index = 0; index < before.effects.effectCount(); ++index) {
                     const auto* instance = before.effects.effectAt(index);
@@ -4393,7 +4393,7 @@ Result<std::size_t> EffectSystem::step(const SimulationStep& step, combat::Damag
             const auto before = effects->values.snapshot();
             auto advanced = advanceEffects(effects->values, step);
             if (!advanced) return Result<std::size_t>::failure(advanced.status());
-            if (events && advanced.value() > 0) {
+            if (events) {
                 const auto after = effects->values.snapshot();
                 for (int index = 0; index < before.effects.effectCount(); ++index) {
                     const auto* instance = before.effects.effectAt(index);
