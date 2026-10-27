@@ -8,13 +8,13 @@
 // different Table, so an entity created through a domain module would be
 // invisible to `ecs::current()` in the caller (and vice versa).
 //
-// external/ECS.hpp is patched (cmake/patches/ecs-shared-default-table.patch) so
+// The canonical external/ECS.hpp header declares the compiled owner so
 // that in SHARED mode `ecs::default_table()` forwards to
 // `ecs::engine_default_table()`, and this translation unit -- compiled into the
 // foundation link unit, which every other group already depends on -- owns the
 // storage. The OBJECT/static route keeps the inline definition, so a release SDK
 // remains a single self-contained executable with no engine DLLs.
-// The current-slot patch routes ScopedTable's override through the same owner:
+// The canonical current-slot API routes ScopedTable's override through the same owner:
 // otherwise a factory in another link group still creates into the default
 // table instead of the caller's selected world. The override remains per-thread.
 //

@@ -78,8 +78,8 @@ THIRD_PARTY_INCLUDE_CANDIDATES = (
     "external/ECS.hpp/src",
     "external/ik.hpp",
     "external/zeroerr/include",
-    "external/VKBuilder/include",
-    "external/VKBuilder/test/include",
+    "third-party/VKBuilder/include",
+    "third-party/VKBuilder/test/include",
 )
 
 

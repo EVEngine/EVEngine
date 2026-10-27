@@ -244,8 +244,7 @@ check/adhoc-result-tables:
 # lines. The source-only gate never configures or builds the engine.
 # The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
 # the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.
-check/architecture-contracts:
-	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
+check/architecture-contracts: check/architecture-lint
 	python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 
 # Feature-specific task recipes are owned by independent fragments.
@@ -265,7 +264,7 @@ check/format:
 	bash .github/scripts/check-format.sh "$(CI_BASE)"
 
 check/depgraph:
-	python3 scripts/module_depgraph.py --check
+	python3 scripts/module_depgraph.py --check --check-layers --report
 
 check/versions:
 	python3 scripts/release.py check-versions
@@ -274,7 +273,7 @@ check/scripts:
 	python3 -m ruff check scripts
 
 check/scripts-test:
-	python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+	python3 -X utf8 scripts/run_source_quality.py --tests-only
 
 # Source-only gate matching CI job `source-quality`. Does not build the engine.
 # Host compile/test is a separate lane: make build/$(PLATFORM)-debug && make test

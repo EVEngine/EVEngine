@@ -1,9 +1,9 @@
 """Build the demo geometry-node converter's .blend inside Blender.
 
 Run once with your Blender:
-    blender --background --python modelconverter/scripts/build_nodegroup_blend.py
+    blender --background --python tools/modelconverter/scripts/build_nodegroup_blend.py
 
-Creates `modelconverter/converters/gn_displace/gn_displace.blend` containing a
+Creates `tools/modelconverter/converters/gn_displace/gn_displace.blend` containing a
 Geometry Node group named `EVE_Displace` (displaces a mesh along its normals by
 a seeded noise field). The `gn_displace` converter appends and applies it.
 """
@@ -37,7 +37,7 @@ def make_displace_group(name: str = "EVE_Displace") -> None:
                                    socket_type="NodeSocketGeometry")
     except AttributeError:
         # Fallback for older Blender node-tree interface.
-        in_geom = group.inputs.new("NodeSocketGeometry", "Geometry")
+        group.inputs.new("NodeSocketGeometry", "Geometry")
         in_strength = group.inputs.new("NodeSocketFloat", "Strength")
         in_seed = group.inputs.new("NodeSocketInt", "Seed")
         group.outputs.new("NodeSocketGeometry", "Geometry")

@@ -6,7 +6,6 @@ enable_testing()
 find_package(Python3 COMPONENTS Interpreter REQUIRED)
 if(NOT ANDROID AND NOT EVENGINE_ANDROID_TEST_APP AND NOT EVENGINE_IOS_TEST_APP)
   add_executable(assertion_contract_probe fixtures/assertion_contract.cpp)
-  target_include_directories(assertion_contract_probe BEFORE PRIVATE ${CMAKE_SOURCE_DIR}/cmake/overrides/zeroerr)
   target_link_libraries(assertion_contract_probe PRIVATE zeroerr eve_engine_includes)
   target_compile_options(assertion_contract_probe PRIVATE
     $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
@@ -29,9 +28,7 @@ add_test(NAME common.nodiscard_compile_diagnostics
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR})
 set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
-add_test(NAME cmake.third_party_patch_idempotence
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
-set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
+
 
 # Test sources are discovered like engine/module sources. Do not use
 # CONFIGURE_DEPENDS: Ninja glob verification plus files appearing during a

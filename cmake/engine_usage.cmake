@@ -27,16 +27,13 @@ endfunction()
 
 # This function will set the include directories for the project
 function(set_include)
+    target_compile_definitions(eve_engine_includes INTERFACE EVE_ECS_EXTERN_CONTAINERS=1)
     target_include_directories(eve_engine_includes INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/src/modules
         ${CMAKE_CURRENT_SOURCE_DIR}/src/scripts
         ${CMAKE_BINARY_DIR}/src/engine
         ${CMAKE_CURRENT_SOURCE_DIR}/platform
-        # Override only zeroerr/unittest.h so fixture-generated types include
-        # their fixture name. This avoids cross-TU ODR collisions under LTO
-        # without mutating the pinned zeroerr submodule checkout.
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/overrides/zeroerr
         # sunxfancy/ECS.hpp + ik.hpp (git submodules) + zeroerr headers
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src
         ${CMAKE_CURRENT_SOURCE_DIR}/external/ik.hpp
