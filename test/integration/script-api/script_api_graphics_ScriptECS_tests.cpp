@@ -1164,9 +1164,7 @@ TEST_CASE("reflectScriptExposesRuntimeApi") {
     runtime.initialize();
     requireRun(runtime, kReflectScript, "reflect-script-probe.nut");
 
-    auto                scope = runtime.enter();
-    const ssq::Function probe = runtime.vm().findFunc("reflectScriptProbe");
-    CHECK(runtime.vm().callFunc(probe, runtime.root()).toBool());
+    requireRun(runtime, "if (!reflectScriptProbe()) throw \"reflection probe failed\";", "reflect-script-invoke.nut");
 }
 }  // namespace test_ReflectScript
 #endif

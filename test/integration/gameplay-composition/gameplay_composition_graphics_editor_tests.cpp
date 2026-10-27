@@ -1730,7 +1730,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         timelineAsset <- {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:light-attack", durationNs=1000000000,
-            animationUri="asset://test/attack.glb#Attack",
+            animationUri="",
             metadata={},
             tracks=[{
                 id="test-track:gameplay", label="Gameplay", kind="gameplay",
