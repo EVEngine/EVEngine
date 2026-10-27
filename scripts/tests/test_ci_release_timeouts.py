@@ -11,7 +11,7 @@ WORKFLOW = ROOT / ".github" / "workflows" / "ci.yml"
 
 def job_block(workflow: str, job: str) -> str:
     start = workflow.index(f"  {job}:\n")
-    match = re.search(r"^  [a-z0-9-]+:\n", workflow[start + 1 :], re.MULTILINE)
+    match = re.search(r"^  [a-z0-9_-]+:\n", workflow[start + 1 :], re.MULTILINE)
     if match is None:
         return workflow[start:]
     return workflow[start : start + 1 + match.start()]
@@ -33,7 +33,7 @@ def step_timeout(job: str, step: str, workflow: str) -> int:
 class ReleaseJobTimeoutTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        cls.workflow = WORKFLOW.read_text(encoding="utf-8")
+        cls.workflow = WORKFLOW.read_text(encoding="utf-8") + "\n" + (WORKFLOW.parent / "release-ci.yml").read_text(encoding="utf-8")
 
     def test_release_job_budgets_cover_cold_builds_and_tests(self) -> None:
         minimums = {
@@ -65,7 +65,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
             ("linux-coverage", "Run linux unit tests (coverage)"): 90,
             # Full example smoke under Lavapipe has reached the former 20-minute
             # guard after a green 150/150 PASS summary; keep margin.
-            ("linux", "Smoke all examples (headless, >=2s alive each)"): 30,
+            ("example-smoke", "Smoke all examples (headless, >=2s alive each)"): 30,
         }
         for (job, step), minimum in minimums.items():
             with self.subTest(job=job, step=step):
@@ -92,7 +92,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
         # release.start moves the pre-release tag; checkout must use inputs.ref
         # rather than actions/checkout's original event SHA, including tool jobs.
         checkouts = re.findall(
-            r"^      - name: Checkout[^\n]*\n(.*?)(?=^      - name:|^  [a-z0-9-]+:|\Z)",
+            r"^      - name: Checkout[^\n]*\n(.*?)(?=^      - name:|^  [a-z0-9_-]+:|\Z)",
             self.workflow,
             re.MULTILINE | re.DOTALL,
         )
@@ -110,7 +110,7 @@ class ReleaseJobTimeoutTests(unittest.TestCase):
         self.assertIn("sccache --start-server", helper_text)
         self.assertIn("SCCACHE_GHA_ENABLED=false", helper_text)
 
-        for job in ("android", "android-release"):
+        for job in ("android",):
             with self.subTest(job=job):
                 block = job_block(self.workflow, job)
                 start = block.index("      - name: Start C/C++ compilation cache\n")
