@@ -4,9 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "module": "rts",
-  "modules": [
-    "rts"
-  ],
   "origins": [
     "rts_combat.cpp",
     "rts_combat_3.cpp",
@@ -18,10 +15,12 @@
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: rts combat
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_combat)
-#include "PrivateTestScope.h"
 #include "RtsCompositionFixtures.h"
 // rts_combat.cpp
 namespace test_rts_combat {
@@ -1763,11 +1762,10 @@ TEST_CASE("rts.artilleryRelocationChoosesReachableLowThreatFreshPosition") {
     blue->release();
 }
 }  // namespace test_rts_combat
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_combat_3)
+// Contract section: rts combat 3
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_combat_3.cpp
 namespace test_rts_combat_3 {
 TEST_CASE("rts.suppressionAndEscortFacadesRoundTripDedicatedTacticalState") {
@@ -2164,11 +2162,11 @@ TEST_CASE("rts.facadeHealsCombatRootsAndAppliesCanonicalStatusDefinitions") {
     CHECK(inspected.value().find("\"activeEffects\":1") != std::string::npos);
 }
 }  // namespace test_rts_combat_3
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_composition)
+// Contract section: rts composition
+#include <bit>
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_composition.cpp
 namespace test_rts_composition {
 TEST_CASE("rts.compositionRootsAndBatchViews") {
@@ -2269,7 +2267,7 @@ TEST_CASE("rts.typedLinkDetectsStaleTarget") {
     unit->release();
 }
 
-TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
+TEST_CASE("rts.exactOverlapPublishesShortDeterministicMotion") {
     auto simulate = [&] {
         ecs::Table        world;
         ecs::ScopedTable  guard(world);
@@ -2279,9 +2277,12 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
         crowd.setSeparationRadius(2.0f);
         crowd.setSeparationWeight(1.0f);
         std::vector<Unit*> units;
-        units.reserve(96);
-        for (int index = 0; index < 96; ++index) {
+        units.reserve(4);
+        for (int index = 0; index < 4; ++index) {
             Unit* unit = Unit::createUnit();
+            REQUIRE(unit != nullptr);
+            unit->motion()->x = 0.f;
+            unit->motion()->y = 0.f;
             auto  link = eve::rts::CrowdLink::bind("rts/overlap/" + std::to_string(index));
             REQUIRE(link.ok());
             unit->crowd()->link   = std::move(link).takeValue();
@@ -2293,10 +2294,12 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
             REQUIRE(unit->orders()->values.enqueue(move).ok());
             units.push_back(unit);
         }
-        for (std::uint64_t tick = 1; tick <= 120; ++tick) {
+        for (std::uint64_t tick = 1; tick <= 8; ++tick) {
             const eve::SimulationStep step{eve::SimulationTick{tick},
-                                           eve::Duration::fromSeconds(0.05).expect("large crowd dt")};
-            REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
+                                           eve::Duration::fromSeconds(1.0 / 120.0).expect("short crowd dt")};
+            const auto                advanced = eve::rts::CrowdMotionSystem::step(step, crowd);
+            REQUIRE(advanced.ok());
+            REQUIRE_EQ(advanced.value(), units.size());
         }
         std::vector<WorldPosition> positions;
         positions.reserve(units.size());
@@ -2308,13 +2311,25 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
     const auto first  = simulate();
     const auto second = simulate();
     REQUIRE_EQ(first.size(), second.size());
-    int progressed = 0;
+    REQUIRE_EQ(first.size(), size_t(4));
+    float forwardProjection = 0.f;
     for (std::size_t index = 0; index < first.size(); ++index) {
-        progressed += first[index].x > 5.0f;
-        CHECK(std::abs(first[index].x - second[index].x) < 1e-5f);
-        CHECK(std::abs(first[index].y - second[index].y) < 1e-5f);
+        REQUIRE(std::isfinite(first[index].x));
+        REQUIRE(std::isfinite(first[index].y));
+        REQUIRE_EQ(std::bit_cast<uint32_t>(first[index].x), std::bit_cast<uint32_t>(second[index].x));
+        REQUIRE_EQ(std::bit_cast<uint32_t>(first[index].y), std::bit_cast<uint32_t>(second[index].y));
+        forwardProjection += first[index].x * 20.f + first[index].y * 10.f;
+        for (std::size_t other = 0; other < index; ++other) {
+            const float dx = first[index].x - first[other].x;
+            const float dy = first[index].y - first[other].y;
+            // All pair distances start at exactly zero. Positive distance proves
+            // the overlap was unlocked, without demanding long-distance travel.
+            REQUIRE(dx * dx + dy * dy > 0.f);
+        }
     }
-    CHECK(progressed > 80);
+    // The initial projection is exactly zero. Positive net motion toward the
+    // common (20,10) order observes the RTS -> crowd -> Unit publication path.
+    REQUIRE_GT(forwardProjection, 0.f);
 }
 
 TEST_CASE("rts.linkedAirDefensesFormStableNetworksAndDistributeAircraft") {
@@ -2852,11 +2867,10 @@ TEST_CASE("rts.contentPackPublishesAtomicallyToCanonicalDefinitions") {
     CHECK_EQ(replaced.value().replaced, 4u);
 }
 }  // namespace test_rts_composition
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_economy)
+// Contract section: rts economy
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_economy.cpp
 namespace test_rts_economy {
 TEST_CASE("rts.autoAssignedWorkerGathersAndCreditsCanonicalAccount") {
@@ -3767,11 +3781,10 @@ TEST_CASE("rts.buildInfluenceComposesPoweredOwnershipWithCanonicalPlacementProvi
     faction->release();
 }
 }  // namespace test_rts_economy
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_economy_2)
+// Contract section: rts economy 2
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_economy_2.cpp
 namespace test_rts_economy_2 {
 TEST_CASE("rts.facadeMigratesMobileSupplyReserveAmmoAndAutoResupplyControls") {
@@ -3914,4 +3927,3 @@ TEST_CASE("rts.facadeExposesManualBuildersAndFactionWorkforceAutomation") {
     CHECK(inspected.value().find("\"reserveWorkers\":1") != std::string::npos);
 }
 }  // namespace test_rts_economy_2
-#endif

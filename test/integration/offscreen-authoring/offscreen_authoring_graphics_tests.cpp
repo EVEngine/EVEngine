@@ -19,7 +19,6 @@
 #include "graphics/Graphics.h"
 #include "procgen/graphics_editing/HeightmapMesh.h"
 #include "procgen/heightmap/Heightmap.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: heightmap_preview_admission
 namespace test_heightmap_preview_admission {
@@ -44,8 +43,6 @@ TEST_CASE("authoringPreview.heightmapMissingProviderPreservesSource") {
 }  // namespace test_heightmap_preview_admission
 
 #include "stylize/editor/EditorStylizeTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Responsibility: stylize_preview_admission
 namespace test_stylize_preview_admission {
 TEST_CASE("authoringPreview.stylizeMissingProviderPreservesDocument") {

@@ -4,17 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "physics-backend",
-  "cases": {
-    "module-composition": [
-      "container.adaptersFailureInjectionLeavesMembershipUnchanged",
-      "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams",
-      "pixelworld_physics.character_probe_and_sweep_query_authoritative_material"
-    ],
-    "script-binding": [
-      "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed",
-      "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam"
-    ]
-  },
   "module": "climbing",
   "modules": [
     "building",
@@ -52,23 +41,36 @@
     "physics_world_snapshot_topology.cpp",
     "pixelworld_physics.cpp",
     "targeting.cpp"
-  ]
+  ],
+  "cases": {
+    "module-composition": [
+      "container.adaptersFailureInjectionLeavesMembershipUnchanged",
+      "pixelworld_physics.character_probe_and_sweep_query_authoritative_material",
+      "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams"
+    ],
+    "script-binding": [
+      "climbing.services.scriptEventSinkFailureIsReportedNotSwallowed",
+      "climbing.services.scriptProviderAnswersTheEventSinkThroughTheSeam"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
 #include "physics/Box2DSimulationBackend.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_prediction)
+// Contract section: climbing prediction
 #include "PrivateTestScope.h"
+#include "zeroerr/assert.h"
+
 #include <memory>
 #include "climbing/Climbing.h"
 #include "physics/Body3D.h"
 #include "physics/Physics.h"
 #include "physics/Shape3D.h"
 #include "physics/World3D.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // climbing_prediction.cpp
 namespace test_climbing_prediction {
@@ -219,19 +221,11 @@ TEST_CASE("climbing.prediction.decisionRejectsMalformedOrFutureRuntimeSnapshot")
     CHECK_EQ(static_cast<int>(futureResult.error()->code()), static_cast<int>(eve::DiagnosticCode::UnknownVersion));
 }
 }  // namespace test_climbing_prediction
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_reload)
+// Contract section: climbing reload
 #include "PrivateTestScope.h"
-#include <memory>
-#include "climbing/Climbing.h"
+
 #include "climbing/ClimbingCodec.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_reload.cpp
 namespace test_climbing_reload {
 namespace {
@@ -329,24 +323,18 @@ TEST_CASE("climbing.reload.jsonProfileAndRuntimeRoundTrip") {
     CHECK_EQ(after.value(), before);
 }
 }  // namespace test_climbing_reload
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_services)
+// Contract section: climbing services
+#include "PrivateTestScope.h"
+
 #include <algorithm>
 #include <cmath>
-#include <memory>
 #include <string>
 #include <vector>
-#include "PrivateTestScope.h"
 #include "ScriptTest.h"
 #include "climbing/ClimbingServices.h"
 #include "common/Capability.h"
 #include "common/ScriptProvider.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_services.cpp
 namespace test_climbing_services {
 namespace {
@@ -712,17 +700,10 @@ TEST_CASE_FIXTURE(ScriptClimbingSinkTest, "climbing.services.scriptEventSinkFail
     CHECK(climbing::dispatchClimbingEvents(climbing::ClimbingServiceSubject(21), batch()).ok());
 }
 }  // namespace test_climbing_services
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_snapshot)
+
+// Contract section: climbing snapshot
 #include "PrivateTestScope.h"
-#include <memory>
-#include "climbing/Climbing.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // climbing_snapshot.cpp
 namespace test_climbing_snapshot {
 namespace {
@@ -823,14 +804,12 @@ TEST_CASE("climbing.snapshot.futureVersionAndStaleLinkFailuresAreAtomic") {
     CHECK(afterStale.value() == before.value());
 }
 }  // namespace test_climbing_snapshot
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_container_adapters)
+// Contract section: container adapters
 #include "PrivateTestScope.h"
+
 #include <stdexcept>
-#include <string>
 #include <type_traits>
-#include <vector>
 #include "building/BuildingDef.h"
 #include "building/ContainerAdapters.h"
 #include "building/PlacementSystem.h"
@@ -838,8 +817,6 @@ TEST_CASE("climbing.snapshot.futureVersionAndStaleLinkFailuresAreAtomic") {
 #include "common/Container.h"
 #include "game_event/GameEvent.h"
 #include "vehicle/ContainerAdapters.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // container_adapters.cpp
 namespace test_container_adapters {
 namespace {
@@ -990,19 +967,12 @@ TEST_CASE("container.adaptersFailureInjectionLeavesMembershipUnchanged") {
     eve::building::BuildingRegistry::clear();
 }
 }  // namespace test_container_adapters
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_fluids_volume_coupling)
+// Contract section: fluids volume coupling
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
+
 #include "fluids/VolumeFluid.h"
 #include "fluids/VolumeFluidCoupling.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // fluids_volume_coupling.cpp
 namespace test_fluids_volume_coupling {
 using namespace eve::fluids;
@@ -1119,19 +1089,11 @@ TEST_CASE("fluids.volumeCoupling.sdfObstacleTransfersImpulseToDynamicBody") {
     REQUIRE(bridge.step(*world, *fluid, 1.f / 120.f, 1).ok());
 }
 }  // namespace test_fluids_volume_coupling
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gameplay_control_climbing)
+// Contract section: gameplay control climbing
 #include "PrivateTestScope.h"
-#include <memory>
+
 #include "climbing/ClimbingControl.h"
-#include "common/Capability.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gameplay_control_climbing.cpp
 namespace test_gameplay_control_climbing {
 namespace {
@@ -1253,14 +1215,11 @@ TEST_CASE("gameplay.control.climbingRejectsUnauthorizedCharacterWithoutProbeMuta
     CHECK_EQ(runtime.pendingEventCount(), std::size_t{0});
 }
 }  // namespace test_gameplay_control_climbing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gts_terrain_collider)
+// Contract section: gts terrain collider
 #include "PrivateTestScope.h"
+
 #include <zeroerr/unittest.h>
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/World3D.h"
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/physics/GtsTerrainColliderRuntime.h"
 // gts_terrain_collider.cpp
@@ -1318,23 +1277,17 @@ TEST_CASE("procgen.physics.gtsTerrainCollider.replacesAtomicallyAndSurvivesWorld
     CHECK_EQ(runtime.getRevision(), uint64_t(3));
 }
 }  // namespace test_gts_terrain_collider
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_artifact_provider)
+// Contract section: physics artifact provider
 #include "PrivateTestScope.h"
+
 #include <array>
-#include <cmath>
 #include <cstdint>
 #include <span>
-#include <string>
-#include "common/Capability.h"
 #include "physics/ArtifactProvider.h"
-#include "physics/World3D.h"
 #include "procgen/ArtifactPublish.h"
 #include "procgen/GeneratedArtifact.h"
 #include "procgen/Params.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_artifact_provider.cpp
 namespace test_physics_artifact_provider {
 namespace {
@@ -1562,20 +1515,15 @@ TEST_CASE("physics.artifact.preparedStageOutlivesProviderWithoutOwnerCallback") 
     CHECK_EQ(sharedWorld.getBodyCount(), 0);
 }
 }  // namespace test_physics_artifact_provider
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_consumer_integration)
+// Contract section: physics consumer integration
 #include "PrivateTestScope.h"
-#include <memory>
-#include "physics/ArtifactProvider.h"
+
 #include "physics/World.h"
-#include "physics/World3D.h"
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/physics/PixelWorldPhysics.h"
 #include "pixelworld/physics/PixelWorldPhysicsModule.h"
 #include "scene/physics/ScenePhysics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_consumer_integration.cpp
 namespace test_physics_consumer_integration {
 TEST_CASE("physics.consumer.sceneRuntimeBindsGeneratedCollidersToGameplayWorld") {
@@ -1619,15 +1567,10 @@ TEST_CASE("pixelworld_physics.moduleCreatesProductionTerrainProjection") {
     cache->clearPhysics(world).expect("clear script-owned terrain cache");
 }
 }  // namespace test_physics_consumer_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_contact_query)
+// Contract section: physics contact query
 #include "PrivateTestScope.h"
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/unittest.h"
+
 // physics_contact_query.cpp
 namespace test_physics_contact_query {
 using namespace eve::physics;
@@ -1698,27 +1641,15 @@ TEST_CASE("physics.contacts.rejectsForeignStaleAndInvalidInputs") {
     CHECK(!stale.ok());
 }
 }  // namespace test_physics_contact_query
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_core_boundary)
+// Contract section: physics core boundary
 #include "PrivateTestScope.h"
+
 #include <Box2D/Box2D.h>
 #include <box3d/box3d.h>
-#include <cmath>
-#include <cstdint>
-#include <memory>
-#include <stdexcept>
-#include "common/Capability.h"
 #include "physics/Body.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
 #include "physics/PhysicsLink.h"
-#include "physics/Shape3D.h"
-#include "physics/World.h"
-#include "physics/World3D.h"
 #include "physics/backend/SimulationBackend.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_core_boundary.cpp
 namespace test_physics_core_boundary {
 using namespace eve::physics;
@@ -1986,22 +1917,15 @@ TEST_CASE("physics.core.worldAcceptsInjectedTickAndPhysicsLinkResolvesStale") {
     CHECK_EQ(stale.code(), eve::StatusCode::Rejected);
 }
 }  // namespace test_physics_core_boundary
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_destruction)
+// Contract section: physics destruction
 #include "PrivateTestScope.h"
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/PhysicsLink.h"
-#include "physics/World3D.h"
+
 #include "physics/destruction/Destruction.h"
 #include "physics/destruction/DestructionField.h"
 #include "physics/destruction/GeometryCollectionAsset.h"
 #include "physics/destruction/GeometryCollectionInstance.h"
 #include "schema/SchemaRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_destruction.cpp
 namespace test_physics_destruction {
 using eve::physics::BoneRuntimeState;
@@ -2151,22 +2075,11 @@ TEST_CASE("physics_destruction.anchorAndSleepFields") {
     REQUIRE_EQ(body1.value()->getType(), std::string("static"));
 }
 }  // namespace test_physics_destruction
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_destruction_p3)
+// Contract section: physics destruction p3
 #include "PrivateTestScope.h"
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "physics/destruction/Destruction.h"
-#include "physics/destruction/DestructionField.h"
-#include "physics/destruction/GeometryCollectionAsset.h"
-#include "physics/destruction/GeometryCollectionInstance.h"
+
 #include "physics/destruction/GeometryCollectionSnapshot.h"
-#include "schema/SchemaRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_destruction_p3.cpp
 namespace test_physics_destruction_p3 {
 using eve::physics::BoneRuntimeState;
@@ -2447,17 +2360,11 @@ TEST_CASE("physics_destruction_p3.impulseSkipsAnchoredAndAttached") {
     REQUIRE(instance.value()->boneClusterId(3) == 1);
 }
 }  // namespace test_physics_destruction_p3
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_joint_frames)
+// Contract section: physics joint frames
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include <vector>
-#include "physics/Body3D.h"
+
 #include "physics/Joint3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/unittest.h"
 // physics_joint_frames.cpp
 namespace test_physics_joint_frames {
 using namespace eve::physics;
@@ -2526,19 +2433,12 @@ TEST_CASE("physics.joints.rotatedFramesSurviveSnapshotRestore") {
     }
 }
 }  // namespace test_physics_joint_frames
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_jolt_cooking)
+// Contract section: physics jolt cooking
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <limits>
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
 #include "physics/box3d/Box3DWorldFactory.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 #if EVENGINE_TEST_HAS_JOLT
 #include "physics/jolt/JoltWorldFactory.h"
 #endif
@@ -2608,19 +2508,11 @@ TEST_CASE("physics.jolt.deferredDensityParity") {
 
 #endif
 }  // namespace test_physics_jolt_cooking
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_mechanism)
+// Contract section: physics mechanism
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "physics/Body3D.h"
-#include "physics/Joint3D.h"
+
 #include "physics/Mechanism3D.h"
-#include "physics/Physics.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_mechanism.cpp
 namespace test_physics_mechanism {
 using eve::physics::Body3D;
@@ -2744,20 +2636,12 @@ TEST_CASE("physics.mechanism.crankSliderConvertsRotationToStroke") {
                   false));
 }
 }  // namespace test_physics_mechanism
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_mechanism2d)
+// Contract section: physics mechanism2d
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include "physics/Body.h"
+
 #include "physics/Joint2D.h"
 #include "physics/Mechanism2D.h"
-#include "physics/Physics.h"
-#include "physics/World.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_mechanism2d.cpp
 namespace test_physics_mechanism2d {
 using eve::physics::Body;
@@ -2891,17 +2775,11 @@ TEST_CASE("physics.mechanism2d.crankSliderConvertsRotationToStroke") {
         (world->newCrankSlider(frame, crank, rod, slider, 0.f, 0.f, 30.f, 0.f, 70.f, 0.f, 0.f, 0.f, false), false));
 }
 }  // namespace test_physics_mechanism2d
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_rigid_backend)
+// Contract section: physics rigid backend
 #include "PrivateTestScope.h"
-#include <memory>
+
 #include "common/Exception.h"
-#include "physics/Body3D.h"
-#include "physics/Joint3D.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
-#include "zeroerr/unittest.h"
 // physics_rigid_backend.cpp
 namespace test_physics_rigid_backend {
 using namespace eve::physics;
@@ -2916,11 +2794,11 @@ template <class T>
     return eve::Result<T>::failure(eve::Diagnostic::error(eve::DiagnosticCode::Unsupported,
                                                           "injected provider rejection", "physics.backend.probe"));
 }
-#define PROBE_UNSUPPORTED(type, name, arguments, qualifiers) \
-    eve::Result<type> name arguments qualifiers override { return unsupported<type>(); }
 class BodyProbe final : public IBodyBackend3D {
 public:
-    PROBE_UNSUPPORTED(std::unique_ptr<IShapeBackend3D>, createShape, (const ShapeGeometry3D&, float, float, float), )
+    eve::Result<std::unique_ptr<IShapeBackend3D>> createShape(const ShapeGeometry3D&, float, float, float) override {
+        return unsupported<std::unique_ptr<IShapeBackend3D>>();
+    }
     void bindOwner(Body3D&) noexcept override {}
     explicit BodyProbe(ProbeState& state) : state_(state) {}
     ~BodyProbe() override { destroy(); }
@@ -2935,86 +2813,115 @@ public:
         return eve::Result<void>::success();
     }
     eve::Result<float> getX() const override { return eve::Result<float>::success(state_.x); }
-    PROBE_UNSUPPORTED(float, getY, (), const)
-    PROBE_UNSUPPORTED(float, getZ, (), const)
-    PROBE_UNSUPPORTED(void, setRotation, (float, float, float, float), )
-    PROBE_UNSUPPORTED(float, getRotX, (), const)
-    PROBE_UNSUPPORTED(float, getRotY, (), const)
-    PROBE_UNSUPPORTED(float, getRotZ, (), const)
-    PROBE_UNSUPPORTED(float, getRotW, (), const)
-    PROBE_UNSUPPORTED(void, setLinearVelocity, (float, float, float), )
-    PROBE_UNSUPPORTED(float, getLinearVelocityX, (), const)
-    PROBE_UNSUPPORTED(float, getLinearVelocityY, (), const)
-    PROBE_UNSUPPORTED(float, getLinearVelocityZ, (), const)
-    PROBE_UNSUPPORTED(float, getMass, (), const)
-    PROBE_UNSUPPORTED(void, setAngularVelocity, (float, float, float), )
-    PROBE_UNSUPPORTED(float, getAngularVelocityX, (), const)
-    PROBE_UNSUPPORTED(float, getAngularVelocityY, (), const)
-    PROBE_UNSUPPORTED(float, getAngularVelocityZ, (), const)
-    PROBE_UNSUPPORTED(std::vector<float>, localToWorldPoint, (float, float, float), const)
-    PROBE_UNSUPPORTED(PhysicsVector3D, localToWorldPointOwned, (float, float, float), const)
-    PROBE_UNSUPPORTED(std::vector<float>, worldToLocalPoint, (float, float, float), const)
-    PROBE_UNSUPPORTED(PhysicsVector3D, worldToLocalPointOwned, (float, float, float), const)
-    PROBE_UNSUPPORTED(std::vector<float>, localToWorldVector, (float, float, float), const)
-    PROBE_UNSUPPORTED(PhysicsVector3D, localToWorldVectorOwned, (float, float, float), const)
-    PROBE_UNSUPPORTED(std::vector<float>, worldToLocalVector, (float, float, float), const)
-    PROBE_UNSUPPORTED(std::vector<float>, getLocalPointVelocity, (float, float, float), const)
-    PROBE_UNSUPPORTED(PhysicsVector3D, getLocalPointVelocityOwned, (float, float, float), const)
-    PROBE_UNSUPPORTED(std::vector<float>, getWorldPointVelocity, (float, float, float), const)
-    PROBE_UNSUPPORTED(void, applyForce, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyForceAt, (float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, applyTorque, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLinearImpulse, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLinearImpulseAt, (float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, applyAngularImpulse, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalForce, (float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalForceToCenter, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalTorque, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalLinearImpulse, (float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalLinearImpulseToCenter, (float, float, float), )
-    PROBE_UNSUPPORTED(void, applyLocalAngularImpulse, (float, float, float), )
-    PROBE_UNSUPPORTED(void, setTargetTransform, (float, float, float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, setLinearDamping, (float), )
-    PROBE_UNSUPPORTED(float, getLinearDamping, (), const)
-    PROBE_UNSUPPORTED(void, setAngularDamping, (float), )
-    PROBE_UNSUPPORTED(float, getAngularDamping, (), const)
-    PROBE_UNSUPPORTED(void, setGravityScale, (float), )
-    PROBE_UNSUPPORTED(float, getGravityScale, (), const)
-    PROBE_UNSUPPORTED(void, setSleepEnabled, (bool), )
-    PROBE_UNSUPPORTED(bool, isSleepEnabled, (), const)
-    PROBE_UNSUPPORTED(void, setSleepThreshold, (float), )
-    PROBE_UNSUPPORTED(float, getSleepThreshold, (), const)
-    PROBE_UNSUPPORTED(void, setMotionLocks, (bool, bool, bool, bool, bool, bool), )
-    PROBE_UNSUPPORTED(bool, isLinearXLocked, (), const)
-    PROBE_UNSUPPORTED(bool, isLinearYLocked, (), const)
-    PROBE_UNSUPPORTED(bool, isLinearZLocked, (), const)
-    PROBE_UNSUPPORTED(bool, isAngularXLocked, (), const)
-    PROBE_UNSUPPORTED(bool, isAngularYLocked, (), const)
-    PROBE_UNSUPPORTED(bool, isAngularZLocked, (), const)
-    PROBE_UNSUPPORTED(void, setMassProperties, (float, float, float, float, float, float, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, resetMassProperties, (), )
-    PROBE_UNSUPPORTED(float, getInertiaXX, (), const)
-    PROBE_UNSUPPORTED(float, getInertiaYY, (), const)
-    PROBE_UNSUPPORTED(float, getInertiaZZ, (), const)
-    PROBE_UNSUPPORTED(float, getInertiaXY, (), const)
-    PROBE_UNSUPPORTED(float, getInertiaXZ, (), const)
-    PROBE_UNSUPPORTED(float, getInertiaYZ, (), const)
-    PROBE_UNSUPPORTED(float, getLocalCenterX, (), const)
-    PROBE_UNSUPPORTED(float, getLocalCenterY, (), const)
-    PROBE_UNSUPPORTED(float, getLocalCenterZ, (), const)
-    PROBE_UNSUPPORTED(float, getWorldCenterX, (), const)
-    PROBE_UNSUPPORTED(float, getWorldCenterY, (), const)
-    PROBE_UNSUPPORTED(float, getWorldCenterZ, (), const)
-    PROBE_UNSUPPORTED(void, setType, (const std::string&), )
-    PROBE_UNSUPPORTED(std::string, getType, (), const)
-    PROBE_UNSUPPORTED(void, setFixedRotation, (bool), )
-    PROBE_UNSUPPORTED(bool, isFixedRotation, (), const)
-    PROBE_UNSUPPORTED(void, setActive, (bool), )
-    PROBE_UNSUPPORTED(bool, isActive, (), const)
-    PROBE_UNSUPPORTED(void, setBullet, (bool), )
-    PROBE_UNSUPPORTED(bool, isBullet, (), const)
-    PROBE_UNSUPPORTED(void, setAwake, (bool), )
-    PROBE_UNSUPPORTED(bool, isAwake, (), const)
+    eve::Result<float>              getY() const override { return unsupported<float>(); }
+    eve::Result<float>              getZ() const override { return unsupported<float>(); }
+    eve::Result<void>               setRotation(float, float, float, float) override { return unsupported<void>(); }
+    eve::Result<float>              getRotX() const override { return unsupported<float>(); }
+    eve::Result<float>              getRotY() const override { return unsupported<float>(); }
+    eve::Result<float>              getRotZ() const override { return unsupported<float>(); }
+    eve::Result<float>              getRotW() const override { return unsupported<float>(); }
+    eve::Result<void>               setLinearVelocity(float, float, float) override { return unsupported<void>(); }
+    eve::Result<float>              getLinearVelocityX() const override { return unsupported<float>(); }
+    eve::Result<float>              getLinearVelocityY() const override { return unsupported<float>(); }
+    eve::Result<float>              getLinearVelocityZ() const override { return unsupported<float>(); }
+    eve::Result<float>              getMass() const override { return unsupported<float>(); }
+    eve::Result<void>               setAngularVelocity(float, float, float) override { return unsupported<void>(); }
+    eve::Result<float>              getAngularVelocityX() const override { return unsupported<float>(); }
+    eve::Result<float>              getAngularVelocityY() const override { return unsupported<float>(); }
+    eve::Result<float>              getAngularVelocityZ() const override { return unsupported<float>(); }
+    eve::Result<std::vector<float>> localToWorldPoint(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<PhysicsVector3D> localToWorldPointOwned(float, float, float) const override {
+        return unsupported<PhysicsVector3D>();
+    }
+    eve::Result<std::vector<float>> worldToLocalPoint(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<PhysicsVector3D> worldToLocalPointOwned(float, float, float) const override {
+        return unsupported<PhysicsVector3D>();
+    }
+    eve::Result<std::vector<float>> localToWorldVector(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<PhysicsVector3D> localToWorldVectorOwned(float, float, float) const override {
+        return unsupported<PhysicsVector3D>();
+    }
+    eve::Result<std::vector<float>> worldToLocalVector(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<std::vector<float>> getLocalPointVelocity(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<PhysicsVector3D> getLocalPointVelocityOwned(float, float, float) const override {
+        return unsupported<PhysicsVector3D>();
+    }
+    eve::Result<std::vector<float>> getWorldPointVelocity(float, float, float) const override {
+        return unsupported<std::vector<float>>();
+    }
+    eve::Result<void> applyForce(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyForceAt(float, float, float, float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyTorque(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLinearImpulse(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLinearImpulseAt(float, float, float, float, float, float) override {
+        return unsupported<void>();
+    }
+    eve::Result<void> applyAngularImpulse(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLocalForce(float, float, float, float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLocalForceToCenter(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLocalTorque(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLocalLinearImpulse(float, float, float, float, float, float) override {
+        return unsupported<void>();
+    }
+    eve::Result<void> applyLocalLinearImpulseToCenter(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> applyLocalAngularImpulse(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void> setTargetTransform(float, float, float, float, float, float, float, float) override {
+        return unsupported<void>();
+    }
+    eve::Result<void>  setLinearDamping(float) override { return unsupported<void>(); }
+    eve::Result<float> getLinearDamping() const override { return unsupported<float>(); }
+    eve::Result<void>  setAngularDamping(float) override { return unsupported<void>(); }
+    eve::Result<float> getAngularDamping() const override { return unsupported<float>(); }
+    eve::Result<void>  setGravityScale(float) override { return unsupported<void>(); }
+    eve::Result<float> getGravityScale() const override { return unsupported<float>(); }
+    eve::Result<void>  setSleepEnabled(bool) override { return unsupported<void>(); }
+    eve::Result<bool>  isSleepEnabled() const override { return unsupported<bool>(); }
+    eve::Result<void>  setSleepThreshold(float) override { return unsupported<void>(); }
+    eve::Result<float> getSleepThreshold() const override { return unsupported<float>(); }
+    eve::Result<void>  setMotionLocks(bool, bool, bool, bool, bool, bool) override { return unsupported<void>(); }
+    eve::Result<bool>  isLinearXLocked() const override { return unsupported<bool>(); }
+    eve::Result<bool>  isLinearYLocked() const override { return unsupported<bool>(); }
+    eve::Result<bool>  isLinearZLocked() const override { return unsupported<bool>(); }
+    eve::Result<bool>  isAngularXLocked() const override { return unsupported<bool>(); }
+    eve::Result<bool>  isAngularYLocked() const override { return unsupported<bool>(); }
+    eve::Result<bool>  isAngularZLocked() const override { return unsupported<bool>(); }
+    eve::Result<void> setMassProperties(float, float, float, float, float, float, float, float, float, float) override {
+        return unsupported<void>();
+    }
+    eve::Result<void>        resetMassProperties() override { return unsupported<void>(); }
+    eve::Result<float>       getInertiaXX() const override { return unsupported<float>(); }
+    eve::Result<float>       getInertiaYY() const override { return unsupported<float>(); }
+    eve::Result<float>       getInertiaZZ() const override { return unsupported<float>(); }
+    eve::Result<float>       getInertiaXY() const override { return unsupported<float>(); }
+    eve::Result<float>       getInertiaXZ() const override { return unsupported<float>(); }
+    eve::Result<float>       getInertiaYZ() const override { return unsupported<float>(); }
+    eve::Result<float>       getLocalCenterX() const override { return unsupported<float>(); }
+    eve::Result<float>       getLocalCenterY() const override { return unsupported<float>(); }
+    eve::Result<float>       getLocalCenterZ() const override { return unsupported<float>(); }
+    eve::Result<float>       getWorldCenterX() const override { return unsupported<float>(); }
+    eve::Result<float>       getWorldCenterY() const override { return unsupported<float>(); }
+    eve::Result<float>       getWorldCenterZ() const override { return unsupported<float>(); }
+    eve::Result<void>        setType(const std::string&) override { return unsupported<void>(); }
+    eve::Result<std::string> getType() const override { return unsupported<std::string>(); }
+    eve::Result<void>        setFixedRotation(bool) override { return unsupported<void>(); }
+    eve::Result<bool>        isFixedRotation() const override { return unsupported<bool>(); }
+    eve::Result<void>        setActive(bool) override { return unsupported<void>(); }
+    eve::Result<bool>        isActive() const override { return unsupported<bool>(); }
+    eve::Result<void>        setBullet(bool) override { return unsupported<void>(); }
+    eve::Result<bool>        isBullet() const override { return unsupported<bool>(); }
+    eve::Result<void>        setAwake(bool) override { return unsupported<void>(); }
+    eve::Result<bool>        isAwake() const override { return unsupported<bool>(); }
+
 private:
     ProbeState& state_;
 };
@@ -3034,72 +2941,73 @@ public:
         frames.bodyA[0] = state_.x;
         return eve::Result<JointFrames3D>::success(frames);
     }
-    PROBE_UNSUPPORTED(void, setCollideConnected, (bool), )
-    PROBE_UNSUPPORTED(bool, getCollideConnected, (), const)
-    PROBE_UNSUPPORTED(void, setForceThreshold, (float), )
-    PROBE_UNSUPPORTED(float, getForceThreshold, (), const)
-    PROBE_UNSUPPORTED(void, setTorqueThreshold, (float), )
-    PROBE_UNSUPPORTED(float, getTorqueThreshold, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintForceX, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintForceY, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintForceZ, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintTorqueX, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintTorqueY, (), const)
-    PROBE_UNSUPPORTED(float, getConstraintTorqueZ, (), const)
-    PROBE_UNSUPPORTED(float, getLinearSeparation, (), const)
-    PROBE_UNSUPPORTED(float, getAngularSeparation, (), const)
-    PROBE_UNSUPPORTED(void, setDistanceLength, (float), )
-    PROBE_UNSUPPORTED(float, getDistanceLength, (), const)
-    PROBE_UNSUPPORTED(float, getDistanceCurrentLength, (), const)
-    PROBE_UNSUPPORTED(void, setDistanceSpring, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setDistanceLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setDistanceMotor, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setRevoluteSpring, (bool, float, float, float), )
-    PROBE_UNSUPPORTED(void, setRevoluteLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setRevoluteMotor, (bool, float, float), )
-    PROBE_UNSUPPORTED(float, getRevoluteAngle, (), const)
-    PROBE_UNSUPPORTED(float, getRevoluteMotorTorque, (), const)
-    PROBE_UNSUPPORTED(void, setPrismaticSpring, (bool, float, float, float), )
-    PROBE_UNSUPPORTED(void, setPrismaticLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setPrismaticMotor, (bool, float, float), )
-    PROBE_UNSUPPORTED(float, getPrismaticTranslation, (), const)
-    PROBE_UNSUPPORTED(float, getPrismaticSpeed, (), const)
-    PROBE_UNSUPPORTED(float, getPrismaticMotorForce, (), const)
-    PROBE_UNSUPPORTED(void, setSphericalConeLimit, (bool, float), )
-    PROBE_UNSUPPORTED(void, setSphericalTwistLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setSphericalMotor, (bool, float, float, float, float), )
-    PROBE_UNSUPPORTED(float, getSphericalConeAngle, (), const)
-    PROBE_UNSUPPORTED(float, getSphericalTwistAngle, (), const)
-    PROBE_UNSUPPORTED(void, setWheelSuspension, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setWheelSuspensionLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setWheelSpinMotor, (bool, float, float), )
-    PROBE_UNSUPPORTED(void, setWheelSteering, (bool, float, float, float, float), )
-    PROBE_UNSUPPORTED(void, setWheelSteeringLimits, (bool, float, float), )
-    PROBE_UNSUPPORTED(float, getWheelSpinSpeed, (), const)
-    PROBE_UNSUPPORTED(float, getWheelSpinTorque, (), const)
-    PROBE_UNSUPPORTED(float, getWheelSteeringAngle, (), const)
-    PROBE_UNSUPPORTED(float, getWheelSteeringTorque, (), const)
-    PROBE_UNSUPPORTED(void, setWeldLinearSpring, (float, float), )
-    PROBE_UNSUPPORTED(void, setWeldAngularSpring, (float, float), )
-    PROBE_UNSUPPORTED(float, getWeldLinearHertz, (), const)
-    PROBE_UNSUPPORTED(float, getWeldLinearDampingRatio, (), const)
-    PROBE_UNSUPPORTED(float, getWeldAngularHertz, (), const)
-    PROBE_UNSUPPORTED(float, getWeldAngularDampingRatio, (), const)
-    PROBE_UNSUPPORTED(void, setMotorLinearVelocity, (float, float, float), )
-    PROBE_UNSUPPORTED(void, setMotorAngularVelocity, (float, float, float), )
-    PROBE_UNSUPPORTED(void, setMotorVelocityLimits, (float, float), )
-    PROBE_UNSUPPORTED(void, setMotorLinearSpring, (float, float, float), )
-    PROBE_UNSUPPORTED(void, setMotorAngularSpring, (float, float, float), )
-    PROBE_UNSUPPORTED(float, getMotorLinearVelocityX, (), const)
-    PROBE_UNSUPPORTED(float, getMotorLinearVelocityY, (), const)
-    PROBE_UNSUPPORTED(float, getMotorLinearVelocityZ, (), const)
-    PROBE_UNSUPPORTED(float, getMotorAngularVelocityX, (), const)
-    PROBE_UNSUPPORTED(float, getMotorAngularVelocityY, (), const)
-    PROBE_UNSUPPORTED(float, getMotorAngularVelocityZ, (), const)
-    PROBE_UNSUPPORTED(void, setParallelSpring, (float, float, float), )
-    PROBE_UNSUPPORTED(float, getParallelHertz, (), const)
-    PROBE_UNSUPPORTED(float, getParallelDampingRatio, (), const)
-    PROBE_UNSUPPORTED(float, getParallelMaxTorque, (), const)
+    eve::Result<void>  setCollideConnected(bool) override { return unsupported<void>(); }
+    eve::Result<bool>  getCollideConnected() const override { return unsupported<bool>(); }
+    eve::Result<void>  setForceThreshold(float) override { return unsupported<void>(); }
+    eve::Result<float> getForceThreshold() const override { return unsupported<float>(); }
+    eve::Result<void>  setTorqueThreshold(float) override { return unsupported<void>(); }
+    eve::Result<float> getTorqueThreshold() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintForceX() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintForceY() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintForceZ() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintTorqueX() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintTorqueY() const override { return unsupported<float>(); }
+    eve::Result<float> getConstraintTorqueZ() const override { return unsupported<float>(); }
+    eve::Result<float> getLinearSeparation() const override { return unsupported<float>(); }
+    eve::Result<float> getAngularSeparation() const override { return unsupported<float>(); }
+    eve::Result<void>  setDistanceLength(float) override { return unsupported<void>(); }
+    eve::Result<float> getDistanceLength() const override { return unsupported<float>(); }
+    eve::Result<float> getDistanceCurrentLength() const override { return unsupported<float>(); }
+    eve::Result<void>  setDistanceSpring(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setDistanceLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setDistanceMotor(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setRevoluteSpring(bool, float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setRevoluteLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setRevoluteMotor(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getRevoluteAngle() const override { return unsupported<float>(); }
+    eve::Result<float> getRevoluteMotorTorque() const override { return unsupported<float>(); }
+    eve::Result<void>  setPrismaticSpring(bool, float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setPrismaticLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setPrismaticMotor(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getPrismaticTranslation() const override { return unsupported<float>(); }
+    eve::Result<float> getPrismaticSpeed() const override { return unsupported<float>(); }
+    eve::Result<float> getPrismaticMotorForce() const override { return unsupported<float>(); }
+    eve::Result<void>  setSphericalConeLimit(bool, float) override { return unsupported<void>(); }
+    eve::Result<void>  setSphericalTwistLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setSphericalMotor(bool, float, float, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getSphericalConeAngle() const override { return unsupported<float>(); }
+    eve::Result<float> getSphericalTwistAngle() const override { return unsupported<float>(); }
+    eve::Result<void>  setWheelSuspension(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setWheelSuspensionLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setWheelSpinMotor(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setWheelSteering(bool, float, float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setWheelSteeringLimits(bool, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getWheelSpinSpeed() const override { return unsupported<float>(); }
+    eve::Result<float> getWheelSpinTorque() const override { return unsupported<float>(); }
+    eve::Result<float> getWheelSteeringAngle() const override { return unsupported<float>(); }
+    eve::Result<float> getWheelSteeringTorque() const override { return unsupported<float>(); }
+    eve::Result<void>  setWeldLinearSpring(float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setWeldAngularSpring(float, float) override { return unsupported<void>(); }
+    eve::Result<float> getWeldLinearHertz() const override { return unsupported<float>(); }
+    eve::Result<float> getWeldLinearDampingRatio() const override { return unsupported<float>(); }
+    eve::Result<float> getWeldAngularHertz() const override { return unsupported<float>(); }
+    eve::Result<float> getWeldAngularDampingRatio() const override { return unsupported<float>(); }
+    eve::Result<void>  setMotorLinearVelocity(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setMotorAngularVelocity(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setMotorVelocityLimits(float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setMotorLinearSpring(float, float, float) override { return unsupported<void>(); }
+    eve::Result<void>  setMotorAngularSpring(float, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getMotorLinearVelocityX() const override { return unsupported<float>(); }
+    eve::Result<float> getMotorLinearVelocityY() const override { return unsupported<float>(); }
+    eve::Result<float> getMotorLinearVelocityZ() const override { return unsupported<float>(); }
+    eve::Result<float> getMotorAngularVelocityX() const override { return unsupported<float>(); }
+    eve::Result<float> getMotorAngularVelocityY() const override { return unsupported<float>(); }
+    eve::Result<float> getMotorAngularVelocityZ() const override { return unsupported<float>(); }
+    eve::Result<void>  setParallelSpring(float, float, float) override { return unsupported<void>(); }
+    eve::Result<float> getParallelHertz() const override { return unsupported<float>(); }
+    eve::Result<float> getParallelDampingRatio() const override { return unsupported<float>(); }
+    eve::Result<float> getParallelMaxTorque() const override { return unsupported<float>(); }
+
 private:
     ProbeState& state_;
 };
@@ -3111,24 +3019,28 @@ public:
     void              invalidate() noexcept override { alive = false; }
     void              bindOwner(Shape3D&) noexcept override {}
     eve::Result<bool> isSensor() const override { return eve::Result<bool>::success(false); }
-    PROBE_UNSUPPORTED(ShapePlane3D, oneWayPlane, (const ShapeGeometry3D&, PhysicsVector3D, float), const)
-    PROBE_UNSUPPORTED(void, rebuild, (const ShapeGeometry3D&, ShapeBehavior3D, std::span<const SurfaceMaterial3D>), )
-    PROBE_UNSUPPORTED(float, density, (), const)
-    PROBE_UNSUPPORTED(void, setDensity, (float, bool), )
-    PROBE_UNSUPPORTED(float, friction, (), const)
-    PROBE_UNSUPPORTED(void, setFriction, (float), )
-    PROBE_UNSUPPORTED(float, restitution, (), const)
-    PROBE_UNSUPPORTED(void, setRestitution, (float), )
-    PROBE_UNSUPPORTED(SurfaceMaterial3D, material, (), const)
-    PROBE_UNSUPPORTED(void, setMaterial, (SurfaceMaterial3D), )
-    PROBE_UNSUPPORTED(ShapeFilter3D, filter, (), const)
-    PROBE_UNSUPPORTED(void, setFilter, (ShapeFilter3D, bool), )
-    PROBE_UNSUPPORTED(void, enableHitEvents, (bool), )
-    PROBE_UNSUPPORTED(void, enablePreSolveEvents, (bool), )
-    PROBE_UNSUPPORTED(int, meshMaterialCount, (), const)
-    PROBE_UNSUPPORTED(SurfaceMaterial3D, meshMaterial, (int), const)
-    PROBE_UNSUPPORTED(void, setMeshMaterial, (SurfaceMaterial3D, int), )
-    PROBE_UNSUPPORTED(bool, testPoint, (float, float, float), const)
+    eve::Result<ShapePlane3D> oneWayPlane(const ShapeGeometry3D&, PhysicsVector3D, float) const override {
+        return unsupported<ShapePlane3D>();
+    }
+    eve::Result<void> rebuild(const ShapeGeometry3D&, ShapeBehavior3D, std::span<const SurfaceMaterial3D>) override {
+        return unsupported<void>();
+    }
+    eve::Result<float>             density() const override { return unsupported<float>(); }
+    eve::Result<void>              setDensity(float, bool) override { return unsupported<void>(); }
+    eve::Result<float>             friction() const override { return unsupported<float>(); }
+    eve::Result<void>              setFriction(float) override { return unsupported<void>(); }
+    eve::Result<float>             restitution() const override { return unsupported<float>(); }
+    eve::Result<void>              setRestitution(float) override { return unsupported<void>(); }
+    eve::Result<SurfaceMaterial3D> material() const override { return unsupported<SurfaceMaterial3D>(); }
+    eve::Result<void>              setMaterial(SurfaceMaterial3D) override { return unsupported<void>(); }
+    eve::Result<ShapeFilter3D>     filter() const override { return unsupported<ShapeFilter3D>(); }
+    eve::Result<void>              setFilter(ShapeFilter3D, bool) override { return unsupported<void>(); }
+    eve::Result<void>              enableHitEvents(bool) override { return unsupported<void>(); }
+    eve::Result<void>              enablePreSolveEvents(bool) override { return unsupported<void>(); }
+    eve::Result<int>               meshMaterialCount() const override { return unsupported<int>(); }
+    eve::Result<SurfaceMaterial3D> meshMaterial(int) const override { return unsupported<SurfaceMaterial3D>(); }
+    eve::Result<void>              setMeshMaterial(SurfaceMaterial3D, int) override { return unsupported<void>(); }
+    eve::Result<bool>              testPoint(float, float, float) const override { return unsupported<bool>(); }
 };
 
 [[maybe_unused]] void checkPositionContract(Body3D& body) {
@@ -3141,7 +3053,6 @@ public:
     body.destroy();
     CHECK(!body.isValid());
 }
-#undef PROBE_UNSUPPORTED
 }  // namespace
 
 TEST_CASE("physics.backend.bodyDispatchDoesNotRequireNativeBody") {
@@ -3247,24 +3158,13 @@ TEST_CASE("physics.backend.failedMeshCookPreservesGeometryAndMaterials") {
     CHECK(shape->getTriangleMeshMaterialIndex(0) == 0);
 }
 }  // namespace test_physics_rigid_backend
-#undef PROBE_UNSUPPORTED
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_rope)
+// Contract section: physics rope
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <limits>
-#include <memory>
-#include "physics/Body3D.h"
+
 #include "physics/DistanceField3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
 #include "physics/rope/Rope.h"
 #include "physics/rope/Rope3D.h"
-#include "schema/SchemaRegistry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_rope.cpp
 namespace test_physics_rope {
 using namespace eve::physics;
@@ -3301,24 +3201,16 @@ TEST_CASE("physics.rope.dynamicRigidBodyReceivesReactionImpulse") {
     CHECK(body->getLinearVelocityY() < -0.01f);
 }
 }  // namespace test_physics_rope
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_trajectory_collision)
+// Contract section: physics trajectory collision
 #include "PrivateTestScope.h"
-#include <memory>
-#include <string>
+
 #include <unordered_map>
 #include "common/AttachmentPoint.h"
 #include "common/Identity.h"
 #include "common/SubjectRef.h"
-#include "physics/Body3D.h"
-#include "physics/Physics.h"
-#include "physics/Shape3D.h"
-#include "physics/World3D.h"
 #include "physics/trajectory/BoneCollider.h"
 #include "physics/trajectory/TrajectoryCollision.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_trajectory_collision.cpp
 namespace test_physics_trajectory_collision {
 namespace {
@@ -3533,22 +3425,12 @@ TEST_CASE("trajectoryCollision.filterBitsIgnoreNonMatchingCategory") {
     CHECK_EQ(hit.value().hits.size(), 1u);
 }
 }  // namespace test_physics_trajectory_collision
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_physics_world_snapshot_topology)
+// Contract section: physics world snapshot topology
 #include "PrivateTestScope.h"
-#include <cstdint>
+
 #include <string_view>
-#include <vector>
 #include "common/Snapshot.h"
-#include "physics/Body.h"
-#include "physics/Body3D.h"
-#include "physics/Joint3D.h"
-#include "physics/Shape3D.h"
-#include "physics/World.h"
-#include "physics/World3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // physics_world_snapshot_topology.cpp
 namespace test_physics_world_snapshot_topology {
 // physics_world_snapshot_topology.cpp
@@ -3834,17 +3716,10 @@ TEST_CASE("physics.snapshot_v2_roundtrips_closed_chain_geometry") {
 }
 
 }  // namespace test_physics_world_snapshot_topology
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_physics)
+// Contract section: pixelworld physics
 #include "PrivateTestScope.h"
-#include <cmath>
-#include "physics/Body.h"
-#include "physics/World.h"
-#include "pixelworld/PixelWorld.h"
-#include "pixelworld/physics/PixelWorldPhysics.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // pixelworld_physics.cpp
 namespace test_pixelworld_physics {
 using namespace eve::pixelworld;
@@ -4034,19 +3909,13 @@ TEST_CASE("pixelworld_physics.character_probe_and_sweep_query_authoritative_mate
     CHECK(!sweepTerrainCircle(pixels, 0.f, 0.f, 100.f, 100.f, 1.f, 4).ok());
 }
 }  // namespace test_pixelworld_physics
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_targeting)
+// Contract section: targeting
 #include "PrivateTestScope.h"
-#include <type_traits>
+
 #include <utility>
-#include "common/Capability.h"
-#include "common/Identity.h"
 #include "physics/TargetingLineOfSightAdapter.h"
-#include "physics/World3D.h"
 #include "sensing/Targeting.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // targeting.cpp
 namespace test_targeting {
 namespace {
@@ -4153,4 +4022,3 @@ TEST_CASE("targeting.physicsAdapterRequiresOneActiveWorld") {
     CHECK_EQ(afterRemove.code(), eve::StatusCode::Unsupported);
 }
 }  // namespace test_targeting
-#endif

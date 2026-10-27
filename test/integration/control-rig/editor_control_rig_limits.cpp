@@ -12,6 +12,7 @@
 }
 */
 // clang-format on
+
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/ControlRig.h"

@@ -150,9 +150,9 @@ void Graphics::ensureOffscreen3DResources() {
                                     1, vk::ImageLayout::eDepthStencilAttachmentOptimal))
                 .addExternalShaderReadDependencies()
                 .build();
-        meshPipeline = createMesh3DStylePipeline(
-            embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
-            renderPass, vk::SampleCountFlagBits::e1);
+        meshPipeline = createMesh3DStylePipeline(embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
+                                                 mesh3dPipelineLayout, renderPass, vk::SampleCountFlagBits::e1,
+                                                 BlendMode::Opaque, true, true, {MeshDepthCompare::LessEqual});
         for (int blendValue = 0; blendValue < 5; ++blendValue) {
             const auto blend = BlendMode(blendValue);
             for (int depthValue = 0; depthValue < 2; ++depthValue) {
@@ -160,9 +160,10 @@ void Graphics::ensureOffscreen3DResources() {
                     const size_t index =
                         mesh3dPipelineIndex(blend, depthValue != 0, doubleValue != 0);
                     surfacePipelines[index] = createMesh3DStylePipeline(
-                        embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv),
-                        mesh3dPipelineLayout, renderPass, vk::SampleCountFlagBits::e1,
-                        blend, depthValue != 0, doubleValue != 0);
+                        embeddedSpirv(mesh3d_vert_spv), embeddedSpirv(mesh3d_frag_spv), mesh3dPipelineLayout,
+                        renderPass, vk::SampleCountFlagBits::e1, blend, depthValue != 0, doubleValue != 0,
+                        {blend == BlendMode::Opaque && depthValue != 0 ? MeshDepthCompare::LessEqual
+                                                                       : MeshDepthCompare::Less});
                 }
             }
         }

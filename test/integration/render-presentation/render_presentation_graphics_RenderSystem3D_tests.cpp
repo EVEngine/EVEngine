@@ -3,86 +3,6 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "render-window": [
-      "GraphicsSmoke.clearAndPresentWindow",
-      "GraphicsSmoke.newTextureFromFileThrowsOnMissing",
-      "Canvas.offscreenGetPixelAndSampleOnScreen",
-      "Camera.panAndZoomAffectOffscreenPixels",
-      "Mesh.newMeshFromAssimpCube",
-      "Mesh.newMeshSphere",
-      "Graphics.screenGetPixelAfterPresent",
-      "RenderSystem3D.smokeRotatingCube",
-      "RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters",
-      "RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters",
-      "RenderSystem3D.shadowContributorRunsInCascadesAndUnregisters",
-      "RenderSystem3D.dynamicVertexRingTracksLatestUpdate",
-      "RenderSystem3D.textureCheckerPixels",
-      "RenderSystem3D.lightingAffectsPixels",
-      "Lighting3D.pointLightBrightensNearbyFace",
-      "Lighting3D.metallicIncreasesSpecularHighlight",
-      "RenderSystem3D.texCellBombChangesPixels",
-      "RenderSystem3D.parallaxChangesPixels",
-      "RenderSystem3D.entityIdMaskPixels",
-      "RenderSystem3D.readTextureBackPixels",
-      "ssr.createConfigureAndApply",
-      "graphics.shader shared images retain ownership and replacement isolation",
-      "Shadow3D.dirLightDarkensOccludedGround",
-      "Shadow3D.pcgLodTwoSidedCastsBackFacingGeometry",
-      "Shadow3D.pcgSpeedTreeLodKeepsComplementaryCasterCoverage",
-      "Shadow3D.receiveShadowFalseIgnoresMap",
-      "Shadow3D.shadowStrengthInterpolatesVisibility",
-      "Shadow3D.maskedCasterUsesAlbedoAlpha",
-      "graphics.sky atmosphere capture uses independent HDR lighting and detaches cleanly",
-      "graphics.sky filmic display preserves middle grey and keeps prior modes explicit",
-      "graphics.sky height fog fills the ground with independently integrated ambient light",
-      "graphics.sky lunar surface preserves phase earthlight occultation and source orientation",
-      "daynight.sky runtime advances one clock and publishes solar lighting to capture",
-      "daynight.sky injected cloud time changes authored wisps and closes the morph cycle",
-      "daynight.sky optical cycle survives midnight and restores the same rendered snapshot",
-      "daynight.sky script prepares an owned profile runtime and checks time commands",
-      "graphics.sky HDR volume uploads preserve interpolation and failed replacement",
-      "graphics.view preparation failures cancel dispatch and registrations detach",
-      "graphics.view preparation runs before offscreen target opens",
-      "graphics.sky descriptor limit rejects clouds and leaves atmosphere preparation usable",
-      "graphics.sky authored wisps composite into the shared capture path",
-      "graphics.sky wisps preserve phase blending and celestial vertex lighting",
-      "GraphicsSmoke.textureMipmapsAndAnisotropy",
-      "GraphicsSmoke.setTextureSamplerValidatesStrings",
-      "GraphicsSmoke.cubemapGeneratesMipChain",
-      "Renderable3D.gtsTerrainTileUploadsAndConfiguresRealLodChain",
-      "Renderable3D.pcgGenericLodsUploadAsOneAtomicChain",
-      "Renderable3D.gtsTerrainRuntimeReplacesTilesWithStableHandles",
-      "Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLifetimeOrder",
-      "UI.smoke.RenderSystemSameFrameVulkanOverlay",
-      "UI.smoke.panelGalleryPreview",
-      "UI.smoke.viewportEmbeddedRenderTarget",
-      "volumetric.qualityPresets",
-      "volumetric.occlusionMapAndScatter",
-      "volumetric.applyFromScene",
-      "volumetric.drawOcclusionRespectsFlag",
-      "volumetric.collectAndDriveSceneLights3D",
-      "volumetric.froxelSceneLightsValidateBoundsAndRankProxies",
-      "volumetric.froxelIntegratesEmissiveProxyAndSceneLights",
-      "volumetric.occlusionFromSceneLights2D",
-      "volumetric.spotConeScatter2D",
-      "volumetric.modeAndRayMarchQuality",
-      "volumetric.cloudModeParametersAndQuality",
-      "volumetric.rayMarchProducesScatter",
-      "volumetric.rayMarchShadowDarkensBehindOccluder",
-      "volumetric.drawOccluders2DUsesCastFlag",
-      "volumetric.paramRoundTripShared",
-      "volumetric.fogModeAndQuality",
-      "volumetric.fogParamsRoundTrip",
-      "volumetric.applyFogProducesOpacity",
-      "volumetric.fogDenserAtDistance",
-      "volumetric.froxelAtlasCompositesIntegratedMedia"
-    ],
-    "render-offscreen": [
-      "graphics.sky atmosphere survives graphics provider retirement",
-      "daynight.sky runtime rejects updates after provider retirement without advancing state"
-    ]
-  },
   "module": "filesystem",
   "modules": [
     "common",
@@ -109,16 +29,97 @@
     "TextureSampler.cpp",
     "UIOverlaySmoke.cpp",
     "Volumetric.cpp"
-  ]
+  ],
+  "cases": {
+    "render-offscreen": [
+      "daynight.sky runtime rejects updates after provider retirement without advancing state",
+      "graphics.sky atmosphere survives graphics provider retirement"
+    ],
+    "render-window": [
+      "Camera.panAndZoomAffectOffscreenPixels",
+      "Canvas.offscreenGetPixelAndSampleOnScreen",
+      "Graphics.screenGetPixelAfterPresent",
+      "GraphicsSmoke.clearAndPresentWindow",
+      "GraphicsSmoke.cubemapGeneratesMipChain",
+      "GraphicsSmoke.newTextureFromFileThrowsOnMissing",
+      "GraphicsSmoke.setTextureSamplerValidatesStrings",
+      "GraphicsSmoke.textureMipmapsAndAnisotropy",
+      "Lighting3D.metallicIncreasesSpecularHighlight",
+      "Lighting3D.pointLightBrightensNearbyFace",
+      "Mesh.newMeshFromAssimpCube",
+      "Mesh.newMeshSphere",
+      "RenderSystem3D.dynamicVertexRingTracksLatestUpdate",
+      "RenderSystem3D.entityIdMaskPixels",
+      "RenderSystem3D.forwardContributorRunsInMainPassAndUnregisters",
+      "RenderSystem3D.gpuOpaqueCollectorRunsBeforeCullAndUnregisters",
+      "RenderSystem3D.lightingAffectsPixels",
+      "RenderSystem3D.parallaxChangesPixels",
+      "RenderSystem3D.readTextureBackPixels",
+      "RenderSystem3D.shadowContributorRunsInCascadesAndUnregisters",
+      "RenderSystem3D.smokeRotatingCube",
+      "RenderSystem3D.texCellBombChangesPixels",
+      "RenderSystem3D.textureCheckerPixels",
+      "Renderable3D.gtsTerrainRuntimeReplacesTilesWithStableHandles",
+      "Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLifetimeOrder",
+      "Renderable3D.gtsTerrainTileUploadsAndConfiguresRealLodChain",
+      "Renderable3D.pcgGenericLodsUploadAsOneAtomicChain",
+      "Shadow3D.dirLightDarkensOccludedGround",
+      "Shadow3D.maskedCasterUsesAlbedoAlpha",
+      "Shadow3D.pcgLodTwoSidedCastsBackFacingGeometry",
+      "Shadow3D.pcgSpeedTreeLodKeepsComplementaryCasterCoverage",
+      "Shadow3D.receiveShadowFalseIgnoresMap",
+      "Shadow3D.shadowStrengthInterpolatesVisibility",
+      "UI.smoke.RenderSystemSameFrameVulkanOverlay",
+      "UI.smoke.panelGalleryPreview",
+      "UI.smoke.viewportEmbeddedRenderTarget",
+      "daynight.sky injected cloud time changes authored wisps and closes the morph cycle",
+      "daynight.sky optical cycle survives midnight and restores the same rendered snapshot",
+      "daynight.sky runtime advances one clock and publishes solar lighting to capture",
+      "daynight.sky script prepares an owned profile runtime and checks time commands",
+      "graphics.shader shared images retain ownership and replacement isolation",
+      "graphics.sky HDR volume uploads preserve interpolation and failed replacement",
+      "graphics.sky atmosphere capture uses independent HDR lighting and detaches cleanly",
+      "graphics.sky authored wisps composite into the shared capture path",
+      "graphics.sky descriptor limit rejects clouds and leaves atmosphere preparation usable",
+      "graphics.sky filmic display preserves middle grey and keeps prior modes explicit",
+      "graphics.sky height fog fills the ground with independently integrated ambient light",
+      "graphics.sky lunar surface preserves phase earthlight occultation and source orientation",
+      "graphics.sky wisps preserve phase blending and celestial vertex lighting",
+      "graphics.view preparation failures cancel dispatch and registrations detach",
+      "graphics.view preparation runs before offscreen target opens",
+      "ssr.createConfigureAndApply",
+      "volumetric.applyFogProducesOpacity",
+      "volumetric.applyFromScene",
+      "volumetric.cloudModeParametersAndQuality",
+      "volumetric.collectAndDriveSceneLights3D",
+      "volumetric.drawOccluders2DUsesCastFlag",
+      "volumetric.drawOcclusionRespectsFlag",
+      "volumetric.fogDenserAtDistance",
+      "volumetric.sharedParameterContracts",
+      "volumetric.froxelAtlasCompositesIntegratedMedia",
+      "volumetric.froxelIntegratesEmissiveProxyAndSceneLights",
+      "volumetric.froxelSceneLightsValidateBoundsAndRankProxies",
+      "volumetric.modeAndRayMarchQuality",
+      "volumetric.occlusionFromSceneLights2D",
+      "volumetric.occlusionMapAndScatter",
+      "volumetric.qualityPresets",
+      "volumetric.rayMarchProducesScatter",
+      "volumetric.rayMarchShadowDarkensBehindOccluder",
+      "volumetric.spotConeScatter2D"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: RenderSystem
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
 #include "ManualPreview.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem)
 #include <SDL2/SDL.h>
 #include <cmath>
 #include <cstdint>
@@ -130,13 +131,11 @@
 #include "filesystem/FileData.h"
 #include "filesystem/Filesystem.h"
 #include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Batcher.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
 #include "graphics/GraphicsVisibility.h"
 #include "graphics/Grass.h"
@@ -147,17 +146,14 @@
 #include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
 #include "graphics/Volumetric.h"
 #include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "image/Image.h"
 #include "image/ImageData.h"
 #include "medialoader/image/FormatHandler.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // RenderSystem.cpp
 namespace test_RenderSystem {
@@ -337,7 +333,7 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
     spriteA->sprite()->layer = 1;
     spriteB->sprite()->layer = 1;
 
-    for (int frame = 0; frame < 60; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         solid->transform()->x   = 40.0f + float(frame) * 0.8f;
         spriteA->transform()->y = 80.0f + float((frame % 40) - 20) * 0.5f;
         spriteB->transform()->x = 360.0f + float((frame % 30) - 15) * 0.4f;
@@ -347,7 +343,6 @@ TEST_CASE("GraphicsSmoke.clearAndPresentWindow") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     fs->remove(tmpName);
@@ -446,9 +441,8 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     onScreen->sprite()->b       = 1;
     onScreen->sprite()->visible = true;
 
-    for (int frame = 0; frame < 30; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 
     Color p2 = c2->getPixel(64, 64);
@@ -532,54 +526,24 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     win->close();
 }
 }  // namespace test_RenderSystem
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_RenderSystem3D)
+// Contract section: RenderSystem3D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
+
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
 #include <algorithm>
-#include <cmath>
-#include <cstdint>
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
-#include <vector>
 #include "Fixtures.h"
-#include "filesystem/FileData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
 #include "graphics/ClipSpace.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "medialoader/image/FormatHandler.h"
 #include "medialoader/model/ModelLoader.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // RenderSystem3D.cpp
 namespace test_RenderSystem3D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -808,8 +772,8 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
 
     RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
 
-    // ~1s of visible rotation so the smoke case is a real on-screen scene.
-    for (int i = 0; i < 60; ++i) {
+    // Submit distinct poses through the real 3D and overlay presentation path.
+    for (int i = 0; i < 3; ++i) {
         ent->transform()->yaw = float(i) * 0.05f;
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
@@ -817,7 +781,6 @@ TEST_CASE("RenderSystem3D.smokeRotatingCube") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     win->close();
@@ -1510,20 +1473,11 @@ TEST_CASE("RenderSystem3D.readTextureBackPixels") {
     win->close();
 }
 }  // namespace test_RenderSystem3D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ScreenSpaceReflection)
+// Contract section: ScreenSpaceReflection
 #include "PrivateTestScope.h"
-#include <memory>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "window/Window.h"
-#include "zeroerr/unittest.h"
+
+
 // ScreenSpaceReflection.cpp
 namespace test_ScreenSpaceReflection {
 using namespace eve::graphics;
@@ -1563,17 +1517,17 @@ TEST_CASE("ssr.createConfigureAndApply") {
     win->close();
 }
 }  // namespace test_ScreenSpaceReflection
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ShaderResourceSharing)
+// Contract section: ShaderResourceSharing
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
+
+
 #include <array>
-#include "Fixtures.h"
 #include "ShaderResourceSharingSpv.h"
-#include "graphics/Shader.h"
 #include "graphics/ShaderResources.h"
 #include "graphics/vulkan/ShaderResourceReload.h"
-#include "zeroerr/unittest.h"
 // ShaderResourceSharing.cpp
 namespace test_ShaderResourceSharing {
 TEST_CASE("graphics.shader shared images retain ownership and replacement isolation") {
@@ -1642,41 +1596,12 @@ TEST_CASE("graphics.shader shared images retain ownership and replacement isolat
 }  // namespace test_ShaderResourceSharing
 #endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Shadow3D)
+// Contract section: Shadow3D
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <algorithm>
-#include <cmath>
-#include <cstdint>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
+
+
 #include "graphics/Shadow.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
 #include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Shadow3D.cpp
 namespace test_Shadow3D {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -2042,28 +1967,19 @@ TEST_CASE("Shadow3D.maskedCasterUsesAlbedoAlpha") {
     win->close();
 }
 }  // namespace test_Shadow3D
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyAtmospherePass)
+// Contract section: SkyAtmospherePass
 #include "PrivateTestScope.h"
-#include <algorithm>
+
+
 #include <chrono>
-#include <cmath>
 #include <cstdlib>
-#include <fstream>
-#include <memory>
 #include <string_view>
-#include "Fixtures.h"
 #include "common/config.h"
-#include "graphics/Canvas.h"
 #include "graphics/DisplayOutputEncoding.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/ViewPreparation.h"
 #include "graphics/sky/SkyAtmosphereLuts.h"
 #include "graphics/sky/SkyAtmospherePass.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 #ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"
 #endif
@@ -2384,18 +2300,11 @@ TEST_CASE("graphics.sky atmosphere survives graphics provider retirement") {
 }
 #endif
 }  // namespace test_SkyAtmospherePass
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyMoon)
+// Contract section: SkyMoon
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
+
+
 #ifndef EVENGINE_WEBGPU
 #include "SkyWispsSpv.h"
 #endif
@@ -2449,29 +2358,19 @@ TEST_CASE("graphics.sky lunar surface preserves phase earthlight occultation and
 }
 #endif
 }  // namespace test_SkyMoon
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyRuntime)
+// Contract section: SkyRuntime
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <fstream>
+
+
 #include <iterator>
 #include <limits>
-#include "Fixtures.h"
 #include "SkyPreparationSupport.h"
 #include "common/Value.h"
-#include "common/config.h"
 #include "daynight/sky/SkyProfile.h"
 #include "daynight/sky/SkyRuntime.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Canvas.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/sky/SkyAtmospherePass.h"
 #include "graphics/sky/SkyWispsAsset.h"
 #include "graphics/sky/SkyWispsLayer.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 #ifndef EVENGINE_WEBGPU
 #include "graphics/vulkan/Graphics.h"
 #endif
@@ -2614,11 +2513,14 @@ TEST_CASE("daynight.sky injected cloud time changes authored wisps and closes th
     auto moved = capture();
     REQUIRE(moved != nullptr);
     int changed = 0;
+    bool movedFinite = true;
     for (int y = 0; y < 90; ++y)
         for (int x = 0; x < 160; ++x) {
             const auto a = first->getPixel(x, y), b = moved->getPixel(x, y);
+            movedFinite = (std::isfinite(b.r) && std::isfinite(b.g) && std::isfinite(b.b)) && movedFinite;
             if (std::abs(a.b - b.b) > .0001f) ++changed;
         }
+    REQUIRE(movedFinite);
     REQUIRE(changed > 100);
     REQUIRE(sky->frame().simulation.elapsedSeconds == 10);
     REQUIRE(!sky->advance(eve::Duration::fromNanoseconds(-1)).ok());
@@ -2629,13 +2531,18 @@ TEST_CASE("daynight.sky injected cloud time changes authored wisps and closes th
     REQUIRE(sky->frame().wispsMorphPhase == 0);
     auto cycle = capture();
     REQUIRE(cycle != nullptr);
+    bool  cycleFinite   = true;
+    float cycleMaxError = 0.f;
     for (int y = 0; y < 90; ++y)
         for (int x = 0; x < 160; ++x) {
             const auto a = first->getPixel(x, y), b = cycle->getPixel(x, y);
-            REQUIRE(std::abs(a.r - b.r) < .00001f);
-            REQUIRE(std::abs(a.g - b.g) < .00001f);
-            REQUIRE(std::abs(a.b - b.b) < .00001f);
+            for (const float error : {a.r - b.r, a.g - b.g, a.b - b.b}) {
+                cycleFinite   = std::isfinite(error) && cycleFinite;
+                cycleMaxError = std::max(cycleMaxError, std::abs(error));
+            }
         }
+    REQUIRE(cycleFinite);
+    REQUIRE(cycleMaxError < .00001f);
     sky.reset();
     REQUIRE(fs->unmountRealDirectory(source));
 }
@@ -2668,47 +2575,46 @@ TEST_CASE("daynight.sky optical cycle survives midnight and restores the same re
     REQUIRE(canvas != nullptr);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> before(canvas->newHDRImageData());
+    REQUIRE(before != nullptr);
     REQUIRE(sky->advance(eve::Duration::fromNanoseconds(2000000000)).ok());
     REQUIRE(sky->frame().simulation.hour == 1);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> after(canvas->newHDRImageData());
+    REQUIRE(after != nullptr);
     bool                                   changed = false;
+    bool                                   opticalFinite = true;
     for (int y = 0; y < 32; ++y)
         for (int x = 0; x < 32; ++x) {
             const auto a = before->getPixel(x, y), b = after->getPixel(x, y);
-            REQUIRE(std::isfinite(b.r));
-            REQUIRE(std::isfinite(b.g));
-            REQUIRE(std::isfinite(b.b));
+            opticalFinite = (std::isfinite(b.r) && std::isfinite(b.g) && std::isfinite(b.b)) && opticalFinite;
             changed = changed || a.r != b.r || a.g != b.g || a.b != b.b;
         }
+    REQUIRE(opticalFinite);
     REQUIRE(changed);
     REQUIRE(sky->advance(eve::Duration::fromNanoseconds(22000000000)).ok());
     REQUIRE(sky->frame().simulation.hour == 23);
     RenderSystem3D::renderToCanvas(*fixture.gfx, canvas, camera);
     std::unique_ptr<eve::image::ImageData> restored(canvas->newHDRImageData());
+    REQUIRE(restored != nullptr);
+    bool restoredEqual = true;
     for (int y = 0; y < 32; ++y)
         for (int x = 0; x < 32; ++x) {
             const auto a = before->getPixel(x, y), b = restored->getPixel(x, y);
-            REQUIRE(a.r == b.r);
-            REQUIRE(a.g == b.g);
-            REQUIRE(a.b == b.b);
+            restoredEqual = (a.r == b.r && a.g == b.g && a.b == b.b) && restoredEqual;
         }
+    REQUIRE(restoredEqual);
     sky->detach();
     REQUIRE(fs->unmountRealDirectory(source));
 #endif
 }
 }  // namespace test_SkyRuntime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyScriptBindings)
+// Contract section: SkyScriptBindings
 #include "PrivateTestScope.h"
-#include <fstream>
-#include <iterator>
+
+
 #include <simplesquirrel/simplesquirrel.hpp>
-#include "Fixtures.h"
 #include "common/Module.h"
-#include "common/config.h"
-#include "zeroerr/unittest.h"
 // SkyScriptBindings.cpp
 namespace test_SkyScriptBindings {
 TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time commands") {
@@ -2774,24 +2680,13 @@ TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time
     )"));
 }
 }  // namespace test_SkyScriptBindings
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyTextureGpu)
+// Contract section: SkyTextureGpu
 #include "PrivateTestScope.h"
-#include <array>
-#include <cmath>
-#include <memory>
-#include "Fixtures.h"
-#include "ShaderResourceSharingSpv.h"
+
+
 #include "SkyTextureGpuSpv.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "graphics/Mesh.h"
-#include "graphics/Shader.h"
 #include "graphics/ShaderResources.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
 // SkyTextureGpu.cpp
 namespace test_SkyTextureGpu {
 // sky_volume_vert: #version 450
@@ -2866,16 +2761,11 @@ TEST_CASE("graphics.sky HDR volume uploads preserve interpolation and failed rep
 #endif
 }
 }  // namespace test_SkyTextureGpu
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyViewPreparation)
+// Contract section: SkyViewPreparation
 #include "PrivateTestScope.h"
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/Canvas.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ViewPreparation.h"
-#include "zeroerr/unittest.h"
+
+
 // SkyViewPreparation.cpp
 namespace test_SkyViewPreparation {
 TEST_CASE("graphics.view preparation failures cancel dispatch and registrations detach") {
@@ -2940,28 +2830,11 @@ TEST_CASE("graphics.view preparation runs before offscreen target opens") {
     REQUIRE(calls == 1);
 }
 }  // namespace test_SkyViewPreparation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_SkyWisps)
+// Contract section: SkyWisps
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <cstring>
-#include <fstream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <memory>
-#include "Fixtures.h"
-#include "SkyPreparationSupport.h"
-#include "common/config.h"
-#include "graphics/Canvas.h"
-#include "graphics/ClipSpace.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ShaderResources.h"
-#include "graphics/sky/SkyAtmospherePass.h"
-#include "graphics/sky/SkyWispsLayer.h"
-#include "image/Image.h"
-#include "image/ImageData.h"
-#include "zeroerr/unittest.h"
+
+
 #ifndef EVENGINE_WEBGPU
 #include "SkyWispsSpv.h"
 #endif
@@ -3264,51 +3137,18 @@ TEST_CASE("graphics.sky wisps preserve phase blending and celestial vertex light
 }
 #endif
 }  // namespace test_SkyWisps
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_TextureSampler)
+// Contract section: TextureSampler
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <cstdint>
-#include <memory>
+
+
 #include <optional>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <vector>
-#include "Fixtures.h"
-#include "common/Exception.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
 #include "graphics/TextureSampler.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
 #include "procgen/GtsTerrainLod.h"
 #include "procgen/GtsTerrainLodRuntime.h"
 #include "procgen/PcgMeshLod.h"
 #include "procgen/PcgMeshLodBackup.h"
 #include "procgen/Procgen.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // TextureSampler.cpp
 namespace test_TextureSampler {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3590,43 +3430,16 @@ TEST_CASE("Renderable3D.gtsTerrainRuntimeRestoresSourceVisibilityAcrossEveryLife
     ecs::DestroyEntity(hiddenSource);
 }
 }  // namespace test_TextureSampler
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIOverlaySmoke)
+// Contract section: UIOverlaySmoke
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
+
+
 #include <string>
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UIHost.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UIOverlaySmoke.cpp
 namespace test_UIOverlaySmoke {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -3687,7 +3500,7 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
     REQUIRE(UIHost::resolve(smokeHost).has_value());
 
     int framesOk = 0;
-    for (int frame = 0; frame < 30; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         solid->transform()->x = 80.0f + float(frame) * 2.0f;
 
         // ImGui frame must be built before present (RenderSystem ends with present).
@@ -3703,15 +3516,13 @@ TEST_CASE("UI.smoke.RenderSystemSameFrameVulkanOverlay") {
 
         // After present+readback, swapchain content should be readable.
         Color p = gfx->getPixel(gfx->getWidth() / 2, gfx->getHeight() / 2);
-        CHECK(std::isfinite(p.r));
-        CHECK(std::isfinite(p.g));
-        CHECK(std::isfinite(p.b));
+        REQUIRE(std::isfinite(p.r));
+        REQUIRE(std::isfinite(p.g));
+        REQUIRE(std::isfinite(p.b));
         ++framesOk;
-
-        SDL_Delay(8);
     }
 
-    CHECK_EQ(framesOk, 30);
+    REQUIRE_EQ(framesOk, 3);
     CHECK(UIHost::resolve(UISystem::findHost("smoke")).has_value());
     auto currentHost = UIHost::resolve(ui->current());
     REQUIRE(currentHost.has_value());
@@ -3783,7 +3594,7 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
                                       "root"));
     REQUIRE(UIHost::resolve(galleryHost).has_value());
 
-    for (int frame = 0; frame < 90; ++frame) {
+    for (int frame = 0; frame < 3; ++frame) {
         bgA->transform()->x = 40.f + float(frame) * 1.2f;
         bgB->transform()->y = 220.f + std::sin(float(frame) * 0.08f) * 24.f;
         volume              = 0.35f + 0.3f * (0.5f + 0.5f * std::sin(float(frame) * 0.06f));
@@ -3813,7 +3624,6 @@ TEST_CASE("UI.smoke.panelGalleryPreview") {
             ui->processEvent(&e);
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
     CHECK(UIHost::resolve(UISystem::findHost("gallery")).has_value());
@@ -3906,43 +3716,12 @@ TEST_CASE("UI.smoke.viewportEmbeddedRenderTarget") {
     win->close();
 }
 }  // namespace test_UIOverlaySmoke
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Volumetric)
+// Contract section: Volumetric
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <glm/gtc/matrix_transform.hpp>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
+
+
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Volumetric.cpp
 namespace test_Volumetric {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -4513,56 +4292,56 @@ TEST_CASE("volumetric.drawOccluders2DUsesCastFlag") {
     CHECK(occ->getPixel(85, 30).r > 0.5f);
 }
 
-TEST_CASE("volumetric.paramRoundTripShared") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    vol->setDensity(0.42f);
-    CHECK(std::fabs(vol->getFloat("density") - 0.42f) < 1e-5f);
-    vol->setMode("raymarch");
-    vol->setDensity(0.33f);
-    CHECK(std::fabs(vol->getFloat("density") - 0.33f) < 1e-5f);
-    CHECK(vol->hasParam("invViewProj") == true);
-    CHECK(vol->hasParam("exposure") == true);
+TEST_CASE("volumetric.sharedParameterContracts") {
+    GfxFixture fixture;
+    REQUIRE(fixture.win != nullptr);
+    REQUIRE(fixture.win->isOpen());
+    auto *gfx = fixture.gfx;
+    REQUIRE(gfx != nullptr);
+    SUB_CASE("volumetric.paramRoundTripShared") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        vol->setDensity(0.42f);
+        REQUIRE(std::fabs(vol->getFloat("density") - 0.42f) < 1e-5f);
+        vol->setMode("raymarch");
+        vol->setDensity(0.33f);
+        REQUIRE(std::fabs(vol->getFloat("density") - 0.33f) < 1e-5f);
+        REQUIRE(vol->hasParam("invViewProj") == true);
+        REQUIRE(vol->hasParam("exposure") == true);
+    };
+    SUB_CASE("volumetric.fogModeAndQuality") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        REQUIRE(vol->getFogShader() != nullptr);
+
+        vol->setMode("fog");
+        REQUIRE(vol->getMode() == "fog");
+        vol->setQuality("low");
+        REQUIRE(vol->getSampleCount() == 8);
+        vol->setQuality("high");
+        REQUIRE(vol->getSampleCount() == 48);
+        vol->setQuality("medium");
+        REQUIRE(vol->getSampleCount() == 24);
+    };
+    SUB_CASE("volumetric.fogParamsRoundTrip") {
+        std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
+        REQUIRE(vol != nullptr);
+        vol->setMode("fog");
+        vol->setFogHeight(-1.5f);
+        vol->setFogHeightFalloff(0.22f);
+        vol->setFogStart(3.f);
+        vol->setFogEnd(25.f);
+        vol->setFogNoise(0.5f);
+        vol->setFogColor(0.4f, 0.5f, 0.7f);
+        REQUIRE(std::fabs(vol->getFloat("fogHeight") + 1.5f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("heightFalloff") - 0.22f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogStart") - 3.f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogEnd") - 25.f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("noiseAmount") - 0.5f) < 1e-5f);
+        REQUIRE(std::fabs(vol->getFloat("fogR") - 0.4f) < 1e-5f);
+    };
 }
 
-TEST_CASE("volumetric.fogModeAndQuality") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    REQUIRE(vol->getFogShader() != nullptr);
-
-    vol->setMode("fog");
-    CHECK(vol->getMode() == "fog");
-    vol->setQuality("low");
-    CHECK(vol->getSampleCount() == 8);
-    vol->setQuality("high");
-    CHECK(vol->getSampleCount() == 48);
-    vol->setQuality("medium");
-    CHECK(vol->getSampleCount() == 24);
-}
-
-TEST_CASE("volumetric.fogParamsRoundTrip") {
-    eve::window::Window *win = nullptr;
-    Graphics            *gfx = nullptr;
-    openGfxWindow(win, gfx);
-    std::unique_ptr<Volumetric> vol(gfx->newVolumetric());
-    vol->setMode("fog");
-    vol->setFogHeight(-1.5f);
-    vol->setFogHeightFalloff(0.22f);
-    vol->setFogStart(3.f);
-    vol->setFogEnd(25.f);
-    vol->setFogNoise(0.5f);
-    vol->setFogColor(0.4f, 0.5f, 0.7f);
-    CHECK(std::fabs(vol->getFloat("fogHeight") + 1.5f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("heightFalloff") - 0.22f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogStart") - 3.f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogEnd") - 25.f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("noiseAmount") - 0.5f) < 1e-5f);
-    CHECK(std::fabs(vol->getFloat("fogR") - 0.4f) < 1e-5f);
-}
 
 TEST_CASE("volumetric.applyFogProducesOpacity") {
     eve::window::Window *win = nullptr;
@@ -4697,4 +4476,3 @@ TEST_CASE("volumetric.froxelAtlasCompositesIntegratedMedia") {
     win->close();
 }
 }  // namespace test_Volumetric
-#endif

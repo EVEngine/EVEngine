@@ -1,0 +1,4550 @@
+{
+  "date": "2026-10-25",
+  "platform": "Windows x64 / MSVC Debug / SHARED / domain split ON / strict warnings ON",
+  "scope": "Only script_api_graphics_scene_tests.cpp; individual CTest parent processes; 4 jobs; 120-second case timeout; three sequential before and three after rounds; all samples retained",
+  "environment": {
+    "EVENGINE_VIEW_SECONDS": "0.3",
+    "EVENGINE_PERF_FRAMES": "30"
+  },
+  "source": {
+    "path": "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+    "before_parents": 150,
+    "after_parents": 108,
+    "after_subcases": 42,
+    "shared_parents": 13,
+    "before_lines": 5789,
+    "after_lines": 5590,
+    "before_includes": 156,
+    "after_includes": 128,
+    "local_define_count": 0,
+    "translation_units": 1,
+    "unity_or_origin_selector_rules_added": false
+  },
+  "before": {
+    "manifest": {
+      "executable": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.exe",
+      "sha256": "b4f83a55d428e075b6440788d6a87194b05b68f45fc90facafb62eee428e6ba0",
+      "cases": [
+        "runtime.scopeAndNativeStackAreRestored",
+        "runtime.reflectsAndUnloadsScriptClasses",
+        "runtimeWrapsCompileErrorsAndRestoresStack",
+        "runtimeRuntimeErrorCarriesLocationAndStack",
+        "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+        "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+        "runtimeCompileErrorCarriesLineColumnAndSnippet",
+        "devtools.runtimeErrorSink.reportsCompileError",
+        "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+        "rx.script.subject.onNext",
+        "rx.script.subject.operators",
+        "rx.script.map",
+        "rx.script.behaviorSubject",
+        "rx.script.take",
+        "rx.script.replaySubject",
+        "rx.script.fromEvent.pump",
+        "rx.script.throwingSubscriberIsReported",
+        "devtools.scenario.recordPersistLoadRoundTrip",
+        "devtools.scenario.replayReproducesStateDrivenError",
+        "Scene.link.syncRenderable3DWorldRotation",
+        "Scene.render.parentChildOrbitPreview",
+        "Scene.link.genericMultiLinkAndSync",
+        "Scene.link.physics2D",
+        "Scene.link.body3DPullRoundTripsEuler",
+        "Scene.script.entityLifecycle",
+        "Scene.script.nativeAccessReadsRegisteredComponentState",
+        "Scene.script.nativeAccessSkipsUnregisteredComponents",
+        "Scene.script.entityViewCacheAfterDetach",
+        "Scene.script.entityEnableAndDelayedDetach",
+        "Scene.script.linkPhysics2D",
+        "Scene.script.apiCompleteness",
+        "Scene.script.nodeEvents",
+        "Scene.script.componentOnMount",
+        "Scene.script.errorSemantics",
+        "Scene.script.attachRejectsPlainEntity",
+        "Scene.script.entityIsTheFirstEcsName",
+        "Scene.script.callbackFailureIsNotSilent",
+        "Scene.script.updateFailureIsNotSilent",
+        "Scene.script.serializeAndPick",
+        "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+        "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+        "Scene.script.visibilityArchitectureMapping",
+        "scene.editor.script_session_owns_target_and_projects_transaction_results",
+        "scene.editor.script_physics_placement_previews_and_commits",
+        "Scene.script.firstObjectLookupAndDelayedDetach",
+        "schema.module.scriptBinding",
+        "schema.module.reflectFromClass",
+        "scriptCompiler.recordsErasedLanguageMetadata",
+        "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+        "scriptCompiler.generatedModuleContractIsExecutable",
+        "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+        "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+        "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+        "scriptCompiler.bindingContractConvertsUnitLiterals",
+        "scriptCompiler.bindingContractChecksStringChoices",
+        "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+        "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+        "scriptCompiler.servesLanguageToolingQueries",
+        "scriptCompiler.bindingContractChecksLiteralTypes",
+        "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument",
+        "scriptCompiler.compilesRepositoryNutCompatibilityBaseline",
+        "scriptConfig.acceptsAbsentModuleRequirements",
+        "scriptConfig.rejectsMissingRequiredModule",
+        "scriptConfig.validatesOptionalModuleDeclarationShape",
+        "scriptConfig.instantiatesOnlyConfiguredModules",
+        "scriptConfig.ensureModuleLoadsOmittedSlot",
+        "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+        "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+        "scriptModule.rejectsCyclesBeforeExecution",
+        "scriptModule.reloadReplacesGenerationAtomically",
+        "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+        "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+        "scriptModule.instantiationFailureCarriesTheScriptError",
+        "scriptModule.dofileInstantiatesImports",
+        "property_access.reflection_builds_shared_schema_and_structured_values",
+        "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+        "property_access.script_validation_matches_shared_contract",
+        "scriptOwnership.ordersAndEffectsOwnedBinding",
+        "scriptOwnership.procgenAndStateModulesOwnedBindings",
+        "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+        "userDocs.economy",
+        "userDocs.attributes",
+        "userDocs.decision",
+        "userDocs.definitions",
+        "userDocs.tags",
+        "userDocs.gameEvent",
+        "userDocs.policyRegistry",
+        "userDocs.transaction",
+        "userDocs.profiler",
+        "userDocs.rope",
+        "userDocs.ecsLifecycle",
+        "userDocs.tutorialRules",
+        "userDocs.tutorialLifecycleAndSaveFailure",
+        "sensing.worldHandleAndScriptResultContract",
+        "settlementScript.runtimeOwnsRulesAndLedger",
+        "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+        "SimpleSquirrelTest.ExportClass",
+        "SimpleSquirrelTest.RefTest",
+        "SimpleSquirrelTest.TestDefClass",
+        "SimpleSquirrelTest.PerformInteration",
+        "SimpleSquirrelTest.GetterTest",
+        "SimpleSquirrelTest.GetAttr",
+        "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+        "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+        "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+        "social.script.bindings",
+        "squirrel_binding.value_round_trip_preserves_nested_value",
+        "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+        "squirrel_binding.value_enforces_depth_limit",
+        "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+        "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+        "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+        "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline",
+        "statepatch.script.batchConflictQueryAndSnapshot",
+        "tactics.graphScriptMovementSnapshotAndStaleRelease",
+        "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+        "tactics.scriptReachesPresentationAndSightQueries",
+        "tactics.scriptOwnedBattleRunsDeterministicTurn",
+        "tactics.scriptReleaseMakesProxyStale",
+        "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+        "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+        "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+        "tactics.scriptEdgesAreDirectedAndAffectReachability",
+        "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+        "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+        "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+        "tags.script.bindings",
+        "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+        "map.collision.scriptSinkCanTellLayersApart",
+        "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+        "map.collision.scriptOwnsTheWholeCollisionLoop",
+        "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+        "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+        "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+        "animation.motion.nonFloatShapesReachScriptSinksToo",
+        "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+        "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+        "scene.scriptLink.pushDrivesFollower",
+        "scene.scriptLink.pullDrivesNode",
+        "scene.scriptLink.absentInputsAreReported",
+        "scene.scriptLink.retiredProviderIsDropped",
+        "scene.scriptLink.rejectedPullKeepsNodeIntact",
+        "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+        "scene.scriptLink.scriptBindingReportsResult",
+        "sensing.script.candidateProviderAnswersTheResolver",
+        "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+        "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+        "sensing.script.malformedCandidateAnswersAreRejected",
+        "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+        "sensing.script.coordinateSpaceSpellingMatchesTheModuleName"
+      ],
+      "jobs": 4,
+      "environment": {
+        "EVENGINE_VIEW_SECONDS": "0.3",
+        "EVENGINE_PERF_FRAMES": "30"
+      },
+      "source_cases": 150,
+      "source_sha256": "890bd0038657dba74477975a2cdcb817df5adfb137cc5ca134259062e5c62988"
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "wall_seconds": 64.99968579993583,
+        "case_sum_seconds": 102.47820469999999,
+        "counts": {
+          "passed": 150
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.273529,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.271064,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeWrapsCompileErrorsAndRestoresStack",
+            "seconds": 0.275292,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorCarriesLocationAndStack",
+            "seconds": 0.273207,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+            "seconds": 0.291441,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+            "seconds": 0.272578,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCompileErrorCarriesLineColumnAndSnippet",
+            "seconds": 0.279355,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.361974,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.363908,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.onNext",
+            "seconds": 0.0847667,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.operators",
+            "seconds": 0.0855513,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.map",
+            "seconds": 0.0931986,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.behaviorSubject",
+            "seconds": 0.0878639,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.take",
+            "seconds": 0.0862701,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.replaySubject",
+            "seconds": 0.199845,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.0969492,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.0926775,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.292711,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.280141,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.0901541,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.render.parentChildOrbitPreview",
+            "seconds": 2.67533,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.198897,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.0878581,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.107888,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycle",
+            "seconds": 0.095946,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessReadsRegisteredComponentState",
+            "seconds": 0.0973559,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessSkipsUnregisteredComponents",
+            "seconds": 0.103975,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityViewCacheAfterDetach",
+            "seconds": 0.0996611,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityEnableAndDelayedDetach",
+            "seconds": 0.146336,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.20617,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.10038,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.112955,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.0921442,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.10028,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.098399,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.170625,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.callbackFailureIsNotSilent",
+            "seconds": 0.206164,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.updateFailureIsNotSilent",
+            "seconds": 0.266922,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.293465,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.225145,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.0946552,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.27957,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.09491,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.355681,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.844098,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.0963185,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.0939877,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.recordsErasedLanguageMetadata",
+            "seconds": 0.279467,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+            "seconds": 0.38884,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.453932,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+            "seconds": 0.368884,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+            "seconds": 0.365184,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+            "seconds": 1.04633,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractConvertsUnitLiterals",
+            "seconds": 0.369329,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksStringChoices",
+            "seconds": 0.363837,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+            "seconds": 0.282892,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+            "seconds": 0.276954,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.servesLanguageToolingQueries",
+            "seconds": 2.06612,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksLiteralTypes",
+            "seconds": 0.36218,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument",
+            "seconds": 0.36461,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.compilesRepositoryNutCompatibilityBaseline",
+            "seconds": 64.3864,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 1.14527,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.0439,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 1.02438,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.21647,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.04171,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.278451,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.290201,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.391051,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.281829,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.284505,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.292826,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.378759,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.279684,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.399303,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.285554,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.275011,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.0940099,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.13889,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.233618,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.economy",
+            "seconds": 0.327006,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.attributes",
+            "seconds": 0.326998,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.decision",
+            "seconds": 0.298967,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.definitions",
+            "seconds": 0.312511,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tags",
+            "seconds": 0.304177,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.gameEvent",
+            "seconds": 0.317787,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.policyRegistry",
+            "seconds": 0.395553,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.transaction",
+            "seconds": 0.313669,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.profiler",
+            "seconds": 0.311721,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.rope",
+            "seconds": 0.308621,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.420115,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.296232,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.416046,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.102955,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.096178,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.0868711,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.0856092,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.0874524,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.TestDefClass",
+            "seconds": 0.0926317,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.0845494,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetterTest",
+            "seconds": 0.0987068,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.0864113,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.085507,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.0879956,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.10104,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.101595,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0988296,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.0951927,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.107036,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.0910713,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+            "seconds": 0.086087,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+            "seconds": 0.0918087,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline",
+            "seconds": 0.0865039,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.0934289,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.0929344,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.0913048,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.0891871,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.0971164,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.102447,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.12725,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.0909255,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.0996807,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.0980618,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.107675,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.0973861,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.130388,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.220597,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+            "seconds": 0.0985842,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkCanTellLayersApart",
+            "seconds": 0.0888943,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.105159,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.100839,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.0907887,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+            "seconds": 0.093589,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.391307,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.nonFloatShapesReachScriptSinksToo",
+            "seconds": 0.105672,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.113558,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.0908765,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pushDrivesFollower",
+            "seconds": 0.0977578,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pullDrivesNode",
+            "seconds": 0.0876023,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.0871155,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.0909672,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.0896656,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.093091,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.scriptBindingReportsResult",
+            "seconds": 0.0915625,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.0895482,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.102958,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+            "seconds": 0.0984907,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.malformedCandidateAnswersAreRejected",
+            "seconds": 0.102727,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.0894993,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.0881605,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 66.54109840001911,
+        "case_sum_seconds": 105.8255606,
+        "counts": {
+          "passed": 150
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.289996,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.283664,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeWrapsCompileErrorsAndRestoresStack",
+            "seconds": 0.277961,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorCarriesLocationAndStack",
+            "seconds": 0.413322,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+            "seconds": 0.497085,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+            "seconds": 0.285628,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCompileErrorCarriesLineColumnAndSnippet",
+            "seconds": 0.291222,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.377473,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.360868,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.onNext",
+            "seconds": 0.10479,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.operators",
+            "seconds": 0.0952223,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.map",
+            "seconds": 0.100731,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.behaviorSubject",
+            "seconds": 0.101777,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.take",
+            "seconds": 0.0956729,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.replaySubject",
+            "seconds": 0.103468,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.0957746,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.0982604,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.28173,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.387443,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.0902077,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.render.parentChildOrbitPreview",
+            "seconds": 2.306,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.111152,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.104259,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.0965876,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycle",
+            "seconds": 0.106052,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessReadsRegisteredComponentState",
+            "seconds": 0.277837,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessSkipsUnregisteredComponents",
+            "seconds": 0.118695,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityViewCacheAfterDetach",
+            "seconds": 0.20666,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityEnableAndDelayedDetach",
+            "seconds": 0.164828,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.340294,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.120849,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.101062,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.110718,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.0959332,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.108744,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.160511,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.callbackFailureIsNotSilent",
+            "seconds": 0.104261,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.updateFailureIsNotSilent",
+            "seconds": 0.160823,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.36059,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.111757,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.102032,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.298561,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.115454,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.319234,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.936825,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.100395,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.0995942,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.recordsErasedLanguageMetadata",
+            "seconds": 0.394506,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+            "seconds": 0.336979,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.442165,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+            "seconds": 0.362891,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+            "seconds": 0.375816,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+            "seconds": 1.0095,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractConvertsUnitLiterals",
+            "seconds": 0.366592,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksStringChoices",
+            "seconds": 0.363548,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+            "seconds": 0.290112,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+            "seconds": 0.284439,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.servesLanguageToolingQueries",
+            "seconds": 1.90412,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksLiteralTypes",
+            "seconds": 0.373244,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument",
+            "seconds": 0.369252,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.compilesRepositoryNutCompatibilityBaseline",
+            "seconds": 65.9149,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 1.03783,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.01985,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 1.0302,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.05078,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.13403,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.39642,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.287994,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.289635,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.301075,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.288001,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.280565,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.276622,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.292804,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.282765,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.284048,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.402613,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.089674,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.127513,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.146859,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.economy",
+            "seconds": 0.36199,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.attributes",
+            "seconds": 0.344354,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.decision",
+            "seconds": 0.296576,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.definitions",
+            "seconds": 0.30148,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tags",
+            "seconds": 0.312682,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.gameEvent",
+            "seconds": 0.304875,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.policyRegistry",
+            "seconds": 0.299566,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.transaction",
+            "seconds": 0.30774,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.profiler",
+            "seconds": 0.314206,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.rope",
+            "seconds": 0.310256,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.423619,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.312873,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.428852,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.0989412,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.11177,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.0931317,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.0968627,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.0985034,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.TestDefClass",
+            "seconds": 0.0940031,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.103562,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetterTest",
+            "seconds": 0.087413,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.093202,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.108729,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.0878953,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.365464,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.0985833,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0890362,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.124086,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.0957261,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.0882597,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+            "seconds": 0.100109,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+            "seconds": 0.102605,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline",
+            "seconds": 0.1081,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.100834,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.104335,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.102918,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.101802,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.2398,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.277403,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.0975509,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.104886,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.0948572,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.29521,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.284081,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.101072,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.101088,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.216522,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+            "seconds": 0.0952836,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkCanTellLayersApart",
+            "seconds": 0.101624,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.0956633,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.216671,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.104433,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+            "seconds": 0.107396,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.0928936,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.nonFloatShapesReachScriptSinksToo",
+            "seconds": 0.0930821,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.102355,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.369593,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pushDrivesFollower",
+            "seconds": 0.0866518,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pullDrivesNode",
+            "seconds": 0.108187,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.374308,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.0905846,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.098364,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.102447,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.scriptBindingReportsResult",
+            "seconds": 0.310461,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.205891,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.0952034,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+            "seconds": 0.10923,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.malformedCandidateAnswersAreRejected",
+            "seconds": 0.0983369,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.200918,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.0992266,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 64.71799249993637,
+        "case_sum_seconds": 101.63326670000001,
+        "counts": {
+          "passed": 150
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.272288,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.28768,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeWrapsCompileErrorsAndRestoresStack",
+            "seconds": 0.268853,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorCarriesLocationAndStack",
+            "seconds": 0.287987,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+            "seconds": 0.274965,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+            "seconds": 0.282341,
+            "status": "passed"
+          },
+          {
+            "name": "runtimeCompileErrorCarriesLineColumnAndSnippet",
+            "seconds": 0.282764,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.350828,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.358234,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.onNext",
+            "seconds": 0.103053,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.subject.operators",
+            "seconds": 0.10103,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.map",
+            "seconds": 0.110338,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.behaviorSubject",
+            "seconds": 0.0902476,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.take",
+            "seconds": 0.0904928,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.replaySubject",
+            "seconds": 0.0932746,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.207388,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.100486,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.462604,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.280774,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.097778,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.render.parentChildOrbitPreview",
+            "seconds": 2.37681,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.105086,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.185705,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.0903486,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycle",
+            "seconds": 0.11962,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessReadsRegisteredComponentState",
+            "seconds": 0.119213,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeAccessSkipsUnregisteredComponents",
+            "seconds": 0.101395,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityViewCacheAfterDetach",
+            "seconds": 0.0996665,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityEnableAndDelayedDetach",
+            "seconds": 0.149478,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.0976897,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.118509,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.100523,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.110612,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.100002,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.205078,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.151471,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.callbackFailureIsNotSilent",
+            "seconds": 0.0981943,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.updateFailureIsNotSilent",
+            "seconds": 0.14556,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.0948209,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.113885,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.0992548,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.284889,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.260973,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.295604,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.81416,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.100772,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.0890174,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.recordsErasedLanguageMetadata",
+            "seconds": 0.287701,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+            "seconds": 0.281025,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.436398,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+            "seconds": 0.352428,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+            "seconds": 0.354856,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+            "seconds": 1.01716,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractConvertsUnitLiterals",
+            "seconds": 0.464361,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksStringChoices",
+            "seconds": 0.354414,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+            "seconds": 0.278452,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+            "seconds": 0.272899,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.servesLanguageToolingQueries",
+            "seconds": 1.88742,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractChecksLiteralTypes",
+            "seconds": 0.3499,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument",
+            "seconds": 0.354862,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.compilesRepositoryNutCompatibilityBaseline",
+            "seconds": 64.1012,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 1.05247,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.10831,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 0.998388,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.04641,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.10798,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.316017,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.287727,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.283936,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.289498,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.289895,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.282745,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.275981,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.281958,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.274739,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.289201,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.288942,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.102078,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.124643,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.317564,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.economy",
+            "seconds": 0.307713,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.attributes",
+            "seconds": 0.41467,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.decision",
+            "seconds": 0.299404,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.definitions",
+            "seconds": 0.303898,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tags",
+            "seconds": 0.320418,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.gameEvent",
+            "seconds": 0.296007,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.policyRegistry",
+            "seconds": 0.298567,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.transaction",
+            "seconds": 0.302524,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.profiler",
+            "seconds": 0.293312,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.rope",
+            "seconds": 0.401969,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.416591,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.30358,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.415781,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.0916859,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.0934549,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.0904915,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.0965222,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.0906285,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.TestDefClass",
+            "seconds": 0.0935476,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.102033,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetterTest",
+            "seconds": 0.0944949,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.0927418,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.0962141,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.101389,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.10331,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.095307,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0902669,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.19623,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.0994533,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.0920095,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+            "seconds": 0.100135,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+            "seconds": 0.0946279,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline",
+            "seconds": 0.0969496,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.101688,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.280611,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.107506,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.101061,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.0992556,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.0974448,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.100303,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.0986537,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.101753,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.0907852,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.11528,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.100795,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.113634,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.204667,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+            "seconds": 0.104183,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkCanTellLayersApart",
+            "seconds": 0.0913331,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.205262,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.0951376,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.093219,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+            "seconds": 0.200852,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.0974564,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.nonFloatShapesReachScriptSinksToo",
+            "seconds": 0.109261,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.096242,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.0927895,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pushDrivesFollower",
+            "seconds": 0.108916,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.pullDrivesNode",
+            "seconds": 0.0972967,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.0901005,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.103723,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.100397,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.113576,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.scriptBindingReportsResult",
+            "seconds": 0.0938123,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.108759,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.196153,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+            "seconds": 0.0951472,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.malformedCandidateAnswersAreRejected",
+            "seconds": 0.213584,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.0937269,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.0896744,
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "median_wall_seconds": 64.99968579993583,
+    "median_case_sum_seconds": 102.47820469999999
+  },
+  "after": {
+    "manifest": {
+      "executable": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.exe",
+      "sha256": "42f4a1f0d4de80109436d1103a3519243d5e8c7b6f09acb112eed89ee30d3498",
+      "cases": [
+        "runtime.scopeAndNativeStackAreRestored",
+        "runtime.reflectsAndUnloadsScriptClasses",
+        "runtime.error_diagnostics_and_stack_contract",
+        "devtools.runtimeErrorSink.reportsCompileError",
+        "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+        "rx.script.observableBindingContract",
+        "rx.script.fromEvent.pump",
+        "rx.script.throwingSubscriberIsReported",
+        "devtools.scenario.recordPersistLoadRoundTrip",
+        "devtools.scenario.replayReproducesStateDrivenError",
+        "Scene.link.syncRenderable3DWorldRotation",
+        "Scene.link.genericMultiLinkAndSync",
+        "Scene.link.physics2D",
+        "Scene.link.body3DPullRoundTripsEuler",
+        "Scene.script.entityLifecycleContracts",
+        "Scene.script.nativeComponentSnapshotContracts",
+        "Scene.script.linkPhysics2D",
+        "Scene.script.apiCompleteness",
+        "Scene.script.nodeEvents",
+        "Scene.script.componentOnMount",
+        "Scene.script.errorSemantics",
+        "Scene.script.attachRejectsPlainEntity",
+        "Scene.script.entityIsTheFirstEcsName",
+        "Scene.script.failurePropagationContracts",
+        "Scene.script.serializeAndPick",
+        "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+        "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+        "Scene.script.visibilityArchitectureMapping",
+        "scene.editor.script_session_owns_target_and_projects_transaction_results",
+        "scene.editor.script_physics_placement_previews_and_commits",
+        "Scene.script.firstObjectLookupAndDelayedDetach",
+        "schema.module.scriptBinding",
+        "schema.module.reflectFromClass",
+        "scriptCompiler.nativeBindingExecution",
+        "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+        "scriptCompiler.generatedModuleContractIsExecutable",
+        "scriptCompiler.importLoweringExecutesInVm",
+        "scriptConfig.acceptsAbsentModuleRequirements",
+        "scriptConfig.rejectsMissingRequiredModule",
+        "scriptConfig.validatesOptionalModuleDeclarationShape",
+        "scriptConfig.instantiatesOnlyConfiguredModules",
+        "scriptConfig.ensureModuleLoadsOmittedSlot",
+        "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+        "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+        "scriptModule.rejectsCyclesBeforeExecution",
+        "scriptModule.reloadReplacesGenerationAtomically",
+        "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+        "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+        "scriptModule.instantiationFailureCarriesTheScriptError",
+        "scriptModule.dofileInstantiatesImports",
+        "property_access.reflection_builds_shared_schema_and_structured_values",
+        "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+        "property_access.script_validation_matches_shared_contract",
+        "scriptOwnership.ordersAndEffectsOwnedBinding",
+        "scriptOwnership.procgenAndStateModulesOwnedBindings",
+        "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+        "userDocs.nativeBindingsAndTransactions",
+        "userDocs.ecsLifecycle",
+        "userDocs.tutorialRules",
+        "userDocs.tutorialLifecycleAndSaveFailure",
+        "sensing.worldHandleAndScriptResultContract",
+        "settlementScript.runtimeOwnsRulesAndLedger",
+        "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+        "SimpleSquirrelTest.ExportClass",
+        "SimpleSquirrelTest.RefTest",
+        "SimpleSquirrelTest.PerformInteration",
+        "SimpleSquirrelTest.GetAttr",
+        "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+        "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+        "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+        "social.script.bindings",
+        "squirrel_binding.value_round_trip_preserves_nested_value",
+        "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+        "squirrel_binding.value_enforces_depth_limit",
+        "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+        "squirrel_binding.call_arguments_and_stack_contract",
+        "statepatch.script.batchConflictQueryAndSnapshot",
+        "tactics.graphScriptMovementSnapshotAndStaleRelease",
+        "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+        "tactics.scriptReachesPresentationAndSightQueries",
+        "tactics.scriptOwnedBattleRunsDeterministicTurn",
+        "tactics.scriptReleaseMakesProxyStale",
+        "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+        "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+        "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+        "tactics.scriptEdgesAreDirectedAndAffectReachability",
+        "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+        "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+        "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+        "tags.script.bindings",
+        "map.collision.scriptSinkLayerDispatchContract",
+        "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+        "map.collision.scriptOwnsTheWholeCollisionLoop",
+        "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+        "animation.motion.scriptSinkValueShapeContract",
+        "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+        "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+        "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+        "scene.scriptLink.transformDirectionAndBindingContract",
+        "scene.scriptLink.absentInputsAreReported",
+        "scene.scriptLink.retiredProviderIsDropped",
+        "scene.scriptLink.rejectedPullKeepsNodeIntact",
+        "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+        "sensing.script.candidateProviderAnswersTheResolver",
+        "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+        "sensing.script.candidateAnswerValidationContract",
+        "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+        "sensing.script.coordinateSpaceSpellingMatchesTheModuleName"
+      ],
+      "jobs": 4,
+      "environment": {
+        "EVENGINE_VIEW_SECONDS": "0.3",
+        "EVENGINE_PERF_FRAMES": "30"
+      },
+      "source_cases": 108,
+      "source_sha256": "0efe7b09dd3d5e798f053df2903ff038beae1afb0c1c6ac367decadd4482c560"
+    },
+    "rounds": [
+      {
+        "round": 1,
+        "wall_seconds": 8.917472200002521,
+        "case_sum_seconds": 27.6456369,
+        "counts": {
+          "passed": 108
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.275135,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.278891,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.error_diagnostics_and_stack_contract",
+            "seconds": 0.3804,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.371048,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.366509,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.observableBindingContract",
+            "seconds": 0.103934,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.100551,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.105566,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.287478,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.281385,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.0978061,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.102268,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.219385,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.101294,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycleContracts",
+            "seconds": 0.113747,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeComponentSnapshotContracts",
+            "seconds": 0.113975,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.0995155,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.101929,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.0998325,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.0969304,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.207138,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.114146,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.145635,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.failurePropagationContracts",
+            "seconds": 0.205734,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.098609,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.101529,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.101739,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.283036,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.120289,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.336201,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.846383,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.102201,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.228601,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nativeBindingExecution",
+            "seconds": 1.17915,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+            "seconds": 1.92616,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.455685,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.importLoweringExecutesInVm",
+            "seconds": 0.281009,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 1.05241,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.22068,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 1.04404,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.22518,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.22693,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.274049,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.278714,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.274023,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.283397,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.283576,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.28227,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.276554,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.279286,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.285019,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.279223,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.27853,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.110076,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.142134,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.145471,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.nativeBindingsAndTransactions",
+            "seconds": 0.432698,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.427031,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.299665,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.434251,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.0904822,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.114901,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.208006,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.0999015,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.0993872,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.0991692,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.115358,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.0872364,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.0988904,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.190557,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.21624,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0966677,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.0935792,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.10068,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.309385,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_arguments_and_stack_contract",
+            "seconds": 0.101226,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.1036,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.296431,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.339409,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.103512,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.0975878,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.0911768,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.106765,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.105528,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.107727,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.210985,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.277404,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.100434,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.107856,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.0961747,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkLayerDispatchContract",
+            "seconds": 0.0943718,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.197385,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.0887821,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.102137,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkValueShapeContract",
+            "seconds": 0.112719,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.0924726,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.215746,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.0910817,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.transformDirectionAndBindingContract",
+            "seconds": 0.117593,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.0931896,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.0921326,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.105686,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.100885,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.1028,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.102187,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerValidationContract",
+            "seconds": 0.211086,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.107564,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.0855299,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 2,
+        "wall_seconds": 7.295446999836713,
+        "case_sum_seconds": 26.2726841,
+        "counts": {
+          "passed": 108
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.275058,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.286575,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.error_diagnostics_and_stack_contract",
+            "seconds": 0.283396,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.366002,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.360419,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.observableBindingContract",
+            "seconds": 0.095644,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.209816,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.101871,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.280743,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.290824,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.105459,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.0937678,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.0919501,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.0869482,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycleContracts",
+            "seconds": 0.12675,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeComponentSnapshotContracts",
+            "seconds": 0.126473,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.107031,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.117535,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.106038,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.106448,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.108277,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.100466,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.17328,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.failurePropagationContracts",
+            "seconds": 0.0995208,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.298124,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.105525,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.0994221,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.289072,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.0967745,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.300161,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.824666,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.192323,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.265251,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nativeBindingExecution",
+            "seconds": 1.1466,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+            "seconds": 1.91821,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.448257,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.importLoweringExecutesInVm",
+            "seconds": 0.462062,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 0.995666,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.00364,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 1.00463,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.02144,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.02202,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.279922,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.28031,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.277111,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.287343,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.296033,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.284139,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.277027,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.293231,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.277833,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.292477,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.280184,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.10819,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.131991,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.11562,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.nativeBindingsAndTransactions",
+            "seconds": 0.331767,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.414606,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.297316,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.430138,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.300719,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.100291,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.119055,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.115054,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.110202,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.207589,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.0843474,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.213255,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.101999,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.0878481,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.0939443,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0993421,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.107427,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.0919645,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.0942897,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_arguments_and_stack_contract",
+            "seconds": 0.0986355,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.107211,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.212465,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.113266,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.108798,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.091058,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.090958,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.0918578,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.097067,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.108757,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.285407,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.095138,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.107369,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.098511,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.0936759,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkLayerDispatchContract",
+            "seconds": 0.101815,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.116103,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.106015,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.0901916,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkValueShapeContract",
+            "seconds": 0.115944,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.280137,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.11206,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.102262,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.transformDirectionAndBindingContract",
+            "seconds": 0.0987418,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.0900513,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.109766,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.0935485,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.0956815,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.11333,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.0897405,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerValidationContract",
+            "seconds": 0.0967542,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.0935578,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.0901101,
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "round": 3,
+        "wall_seconds": 7.292203800054267,
+        "case_sum_seconds": 26.4075948,
+        "counts": {
+          "passed": 108
+        },
+        "cases": [
+          {
+            "name": "runtime.scopeAndNativeStackAreRestored",
+            "seconds": 0.298476,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.reflectsAndUnloadsScriptClasses",
+            "seconds": 0.291424,
+            "status": "passed"
+          },
+          {
+            "name": "runtime.error_diagnostics_and_stack_contract",
+            "seconds": 0.284361,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.reportsCompileError",
+            "seconds": 0.364914,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.runtimeErrorSink.noDoubleReportOnRuntimeError",
+            "seconds": 0.368351,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.observableBindingContract",
+            "seconds": 0.0906155,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.fromEvent.pump",
+            "seconds": 0.0987106,
+            "status": "passed"
+          },
+          {
+            "name": "rx.script.throwingSubscriberIsReported",
+            "seconds": 0.101779,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.recordPersistLoadRoundTrip",
+            "seconds": 0.282711,
+            "status": "passed"
+          },
+          {
+            "name": "devtools.scenario.replayReproducesStateDrivenError",
+            "seconds": 0.282798,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.syncRenderable3DWorldRotation",
+            "seconds": 0.105744,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.genericMultiLinkAndSync",
+            "seconds": 0.0912714,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.physics2D",
+            "seconds": 0.0970313,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.link.body3DPullRoundTripsEuler",
+            "seconds": 0.0882008,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityLifecycleContracts",
+            "seconds": 0.111256,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nativeComponentSnapshotContracts",
+            "seconds": 0.112655,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.linkPhysics2D",
+            "seconds": 0.107968,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.apiCompleteness",
+            "seconds": 0.100191,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.nodeEvents",
+            "seconds": 0.101114,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.componentOnMount",
+            "seconds": 0.123621,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.errorSemantics",
+            "seconds": 0.102954,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.attachRejectsPlainEntity",
+            "seconds": 0.115477,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.entityIsTheFirstEcsName",
+            "seconds": 0.156588,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.failurePropagationContracts",
+            "seconds": 0.10774,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.serializeAndPick",
+            "seconds": 0.0981672,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.script_owns_document_and_rejects_bad_bounds",
+            "seconds": 0.302434,
+            "status": "passed"
+          },
+          {
+            "name": "scene.authoring.director_compiles_and_missing_native_provider_is_observable",
+            "seconds": 0.105942,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.visibilityArchitectureMapping",
+            "seconds": 0.298325,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_session_owns_target_and_projects_transaction_results",
+            "seconds": 0.109693,
+            "status": "passed"
+          },
+          {
+            "name": "scene.editor.script_physics_placement_previews_and_commits",
+            "seconds": 0.308171,
+            "status": "passed"
+          },
+          {
+            "name": "Scene.script.firstObjectLookupAndDelayedDetach",
+            "seconds": 0.8296,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.scriptBinding",
+            "seconds": 0.123468,
+            "status": "passed"
+          },
+          {
+            "name": "schema.module.reflectFromClass",
+            "seconds": 0.193051,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.nativeBindingExecution",
+            "seconds": 1.14088,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+            "seconds": 1.90861,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.generatedModuleContractIsExecutable",
+            "seconds": 0.443019,
+            "status": "passed"
+          },
+          {
+            "name": "scriptCompiler.importLoweringExecutesInVm",
+            "seconds": 0.28577,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.acceptsAbsentModuleRequirements",
+            "seconds": 1.01055,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.rejectsMissingRequiredModule",
+            "seconds": 1.02313,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.validatesOptionalModuleDeclarationShape",
+            "seconds": 1.01823,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+            "seconds": 1.03227,
+            "status": "passed"
+          },
+          {
+            "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+            "seconds": 1.02197,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.defaultProviderUsesPlatformVirtualFileSystem",
+            "seconds": 0.303242,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.resolvesCachesAndInstantiatesDependencyGraph",
+            "seconds": 0.335982,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.rejectsCyclesBeforeExecution",
+            "seconds": 0.29853,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadReplacesGenerationAtomically",
+            "seconds": 0.301182,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRebuildsReverseDependencyGenerations",
+            "seconds": 0.295224,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.reloadAffectedRollsBackWholeGenerationGroup",
+            "seconds": 0.341506,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.instantiationFailureCarriesTheScriptError",
+            "seconds": 0.299055,
+            "status": "passed"
+          },
+          {
+            "name": "scriptModule.dofileInstantiatesImports",
+            "seconds": 0.418459,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.reflection_builds_shared_schema_and_structured_values",
+            "seconds": 0.336379,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.writes_and_refreshes_through_shared_mvvm_contract",
+            "seconds": 0.293264,
+            "status": "passed"
+          },
+          {
+            "name": "property_access.script_validation_matches_shared_contract",
+            "seconds": 0.30908,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.ordersAndEffectsOwnedBinding",
+            "seconds": 0.107417,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenAndStateModulesOwnedBindings",
+            "seconds": 0.119984,
+            "status": "passed"
+          },
+          {
+            "name": "scriptOwnership.procgenOwnedGridExposesAssetPlacement",
+            "seconds": 0.133818,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.nativeBindingsAndTransactions",
+            "seconds": 0.329215,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.ecsLifecycle",
+            "seconds": 0.403699,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialRules",
+            "seconds": 0.516522,
+            "status": "passed"
+          },
+          {
+            "name": "userDocs.tutorialLifecycleAndSaveFailure",
+            "seconds": 0.423229,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.worldHandleAndScriptResultContract",
+            "seconds": 0.190076,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.runtimeOwnsRulesAndLedger",
+            "seconds": 0.230888,
+            "status": "passed"
+          },
+          {
+            "name": "settlementScript.rejectsUnknownKindAndNormalizesSubjectCase",
+            "seconds": 0.105919,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.ExportClass",
+            "seconds": 0.121195,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.RefTest",
+            "seconds": 0.115312,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.PerformInteration",
+            "seconds": 0.197021,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.GetAttr",
+            "seconds": 0.085541,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.InstanceGetAndSetMetamethodsAreConsulted",
+            "seconds": 0.0971323,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrelTest.DeclaredFieldShadowsTheMetamethods",
+            "seconds": 0.101906,
+            "status": "passed"
+          },
+          {
+            "name": "SimpleSquirrel.DirectMemberConversionsAndLifetime",
+            "seconds": 0.0929087,
+            "status": "passed"
+          },
+          {
+            "name": "social.script.bindings",
+            "seconds": 0.102259,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_round_trip_preserves_nested_value",
+            "seconds": 0.0983713,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_rejects_non_finite_numbers_with_path_and_source",
+            "seconds": 0.0920272,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.value_enforces_depth_limit",
+            "seconds": 0.0977244,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.result_projection_and_explicit_ignore_are_uniform",
+            "seconds": 0.109316,
+            "status": "passed"
+          },
+          {
+            "name": "squirrel_binding.call_arguments_and_stack_contract",
+            "seconds": 0.100613,
+            "status": "passed"
+          },
+          {
+            "name": "statepatch.script.batchConflictQueryAndSnapshot",
+            "seconds": 0.0880733,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.graphScriptMovementSnapshotAndStaleRelease",
+            "seconds": 0.0996985,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptInteractionSessionTurnsClicksIntoIntents",
+            "seconds": 0.092427,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReachesPresentationAndSightQueries",
+            "seconds": 0.104725,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptOwnedBattleRunsDeterministicTurn",
+            "seconds": 0.113426,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReleaseMakesProxyStale",
+            "seconds": 0.108422,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptReactionWindowOpensAcceptsAndDeclines",
+            "seconds": 0.0987737,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEndTurnAndFinishAreReachableWithoutWait",
+            "seconds": 0.106169,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptPreviewReachabilityAndResourcesMatchCommit",
+            "seconds": 0.108035,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptEdgesAreDirectedAndAffectReachability",
+            "seconds": 0.103562,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptAbilityDeclarationIsCostedAndLogged",
+            "seconds": 0.0918412,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.scriptCommandLogIsReadableAndRevisionScoped",
+            "seconds": 0.110059,
+            "status": "passed"
+          },
+          {
+            "name": "tactics.snapshotScriptSurfaceRoundTripsThroughSquirrel",
+            "seconds": 0.094513,
+            "status": "passed"
+          },
+          {
+            "name": "tags.script.bindings",
+            "seconds": 0.0959295,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkLayerDispatchContract",
+            "seconds": 0.103052,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkFailureIsCountedNotSwallowed",
+            "seconds": 0.0895232,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptOwnsTheWholeCollisionLoop",
+            "seconds": 0.106688,
+            "status": "passed"
+          },
+          {
+            "name": "map.collision.scriptSinkSeamIsAbsentWithoutTheModule",
+            "seconds": 0.20476,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkValueShapeContract",
+            "seconds": 0.123439,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.sinkIsOptionalAndOnlyBindsWhenAsked",
+            "seconds": 0.101471,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.badValueTablesAreRejectedNotZeroFilled",
+            "seconds": 0.103937,
+            "status": "passed"
+          },
+          {
+            "name": "animation.motion.scriptSinkFailureCancelsInsteadOfBeingSwallowed",
+            "seconds": 0.104903,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.transformDirectionAndBindingContract",
+            "seconds": 0.199816,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.absentInputsAreReported",
+            "seconds": 0.206314,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.retiredProviderIsDropped",
+            "seconds": 0.0997131,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.rejectedPullKeepsNodeIntact",
+            "seconds": 0.105229,
+            "status": "passed"
+          },
+          {
+            "name": "scene.scriptLink.brokenTargetDoesNotStallSiblings",
+            "seconds": 0.0875413,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderAnswersTheResolver",
+            "seconds": 0.112,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderSeamIsAbsentWithoutTheModule",
+            "seconds": 0.0955064,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateAnswerValidationContract",
+            "seconds": 0.0924519,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.candidateProviderFailureIsReportedNotSwallowed",
+            "seconds": 0.118651,
+            "status": "passed"
+          },
+          {
+            "name": "sensing.script.coordinateSpaceSpellingMatchesTheModuleName",
+            "seconds": 0.193716,
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "median_wall_seconds": 7.295446999836713,
+    "median_case_sum_seconds": 26.4075948
+  },
+  "change": {
+    "wall_percent": -88.77618113064185,
+    "process_sum_percent": -74.23101343616727
+  },
+  "scope_reduction": {
+    "retired_identities": [
+      {
+        "to": null,
+        "case_names": [
+          "Scene.render.parentChildOrbitPreview"
+        ],
+        "reason": "Retired 90-frame interactive orbit preview without pixel oracle; its only handTravel transform assertion does not establish rendered correctness. Scene transform and link contracts remain; no equivalent visual coverage claimed. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "SimpleSquirrelTest.GetterTest"
+        ],
+        "reason": "Retired third-party-only probe: getterTest only returns true; TestDefClass primarily dumps private VM layout. Public member/attribute iteration and native member conversion/lifetime contracts remain, without claiming equivalent default-construction coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "SimpleSquirrelTest.TestDefClass"
+        ],
+        "reason": "Retired third-party-only probe: getterTest only returns true; TestDefClass primarily dumps private VM layout. Public member/attribute iteration and native member conversion/lifetime contracts remain, without claiming equivalent default-construction coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "rx.script.map"
+        ],
+        "reason": "Consolidated trivial subject/filter/map examples into one real script-native filter/map delivery contract with exact multi-value output; individual old snippets are no longer independently executed. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "rx.script.subject.onNext"
+        ],
+        "reason": "Consolidated trivial subject/filter/map examples into one real script-native filter/map delivery contract with exact multi-value output; individual old snippets are no longer independently executed. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "rx.script.subject.operators"
+        ],
+        "reason": "Consolidated trivial subject/filter/map examples into one real script-native filter/map delivery contract with exact multi-value output; individual old snippets are no longer independently executed. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "scriptCompiler.compilesRepositoryNutCompatibilityBaseline"
+        ],
+        "reason": "Retired repository-wide compile-only corpus sweep from routine integration; representative provider/import/compiler/VM execution remains, but full repository script compatibility is deliberately no longer asserted here. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.decision"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.definitions"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.economy"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.gameEvent"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.policyRegistry"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.profiler"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.rope"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      },
+      {
+        "to": null,
+        "case_names": [
+          "userDocs.tags"
+        ],
+        "reason": "Retired per-chapter documentation execution from routine integration; attributes/transaction, ECS and tutorial lifecycle/save-failure representatives remain. No claim of equivalent chapter-specific coverage. See docs/dev/testing/script-scene-contract-reduction.md."
+      }
+    ],
+    "repository_corpus_median_seconds": 64.3864,
+    "before_other_cases_median_process_sum_seconds": 38.0918047,
+    "equivalent_full_repository_or_documentation_chapter_coverage_claimed": false
+  },
+  "direct_subcase_checks": [
+    {
+      "parent": "runtime.error_diagnostics_and_stack_contract",
+      "subcases": [
+        "runtimeWrapsCompileErrorsAndRestoresStack",
+        "runtimeRuntimeErrorCarriesLocationAndStack",
+        "runtimeCaughtErrorExposesThrowSiteViaLastScriptError",
+        "runtimeRuntimeErrorMarksScriptFailedAndRestoresStack",
+        "runtimeCompileErrorCarriesLineColumnAndSnippet"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.32541769999079406
+    },
+    {
+      "parent": "rx.script.observableBindingContract",
+      "subcases": [
+        "subject_filter_map_delivery",
+        "rx.script.behaviorSubject",
+        "rx.script.take",
+        "rx.script.replaySubject"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.0967084001749754
+    },
+    {
+      "parent": "Scene.script.entityLifecycleContracts",
+      "subcases": [
+        "Scene.script.entityLifecycle",
+        "Scene.script.entityViewCacheAfterDetach",
+        "Scene.script.entityEnableAndDelayedDetach"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.12544209999032319
+    },
+    {
+      "parent": "Scene.script.nativeComponentSnapshotContracts",
+      "subcases": [
+        "Scene.script.nativeAccessReadsRegisteredComponentState",
+        "Scene.script.nativeAccessSkipsUnregisteredComponents"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.10720330011099577
+    },
+    {
+      "parent": "Scene.script.failurePropagationContracts",
+      "subcases": [
+        "Scene.script.callbackFailureIsNotSilent",
+        "Scene.script.updateFailureIsNotSilent"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.10193490004166961
+    },
+    {
+      "parent": "scriptCompiler.nativeBindingExecution",
+      "subcases": [
+        "scriptCompiler.bindingContractEnablesNativeNamedArguments",
+        "scriptCompiler.nestedBindingCallsKeepOuterSignatureStable",
+        "scriptCompiler.generatedContractsDriveSimpleSquirrelNamedArguments",
+        "scriptCompiler.bindingContractConvertsUnitLiterals",
+        "scriptCompiler.bindingContractChecksStringChoices",
+        "scriptCompiler.bindingContractChecksLiteralTypes",
+        "scriptCompiler.bindingContractScopesLiteralChecksToWholeArgument"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 1.1385818999260664
+    },
+    {
+      "parent": "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+      "subcases": [
+        "scriptCompiler.recordsErasedLanguageMetadata",
+        "scriptCompiler.mapsDebuggerLocationsBidirectionally",
+        "scriptCompiler.retainsStructuredDiagnosticsAfterFailure",
+        "scriptCompiler.requiresPluginAnnotationsToBeRegistered",
+        "scriptCompiler.servesLanguageToolingQueries"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 1.973613000009209
+    },
+    {
+      "parent": "userDocs.nativeBindingsAndTransactions",
+      "subcases": [
+        "userDocs.attributes",
+        "userDocs.transaction"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.3525221000891179
+    },
+    {
+      "parent": "squirrel_binding.call_arguments_and_stack_contract",
+      "subcases": [
+        "squirrel_binding.call_argument_c_string_literal_arrives_as_string",
+        "squirrel_binding.call_argument_c_string_pointer_arrives_as_string",
+        "squirrel_binding.call_argument_std_strings_scalars_and_stack_discipline"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.09698439994826913
+    },
+    {
+      "parent": "map.collision.scriptSinkLayerDispatchContract",
+      "subcases": [
+        "map.collision.scriptSinkReceivesLayerIdentityAndGeometry",
+        "map.collision.scriptSinkCanTellLayersApart"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.10951359989121556
+    },
+    {
+      "parent": "animation.motion.scriptSinkValueShapeContract",
+      "subcases": [
+        "animation.motion.scriptSinkReceivesEveryEvaluatedValue",
+        "animation.motion.nonFloatShapesReachScriptSinksToo"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.12313359999097884
+    },
+    {
+      "parent": "scene.scriptLink.transformDirectionAndBindingContract",
+      "subcases": [
+        "scene.scriptLink.pushDrivesFollower",
+        "scene.scriptLink.pullDrivesNode",
+        "scene.scriptLink.scriptBindingReportsResult"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.10531360004097223
+    },
+    {
+      "parent": "sensing.script.candidateAnswerValidationContract",
+      "subcases": [
+        "sensing.script.candidateAnswerMustStayInTheQuerySpace",
+        "sensing.script.malformedCandidateAnswersAreRejected"
+      ],
+      "exit_code": 0,
+      "missing": [],
+      "seconds": 0.10454490012489259
+    }
+  ],
+  "artifacts": {
+    "before": [
+      {
+        "FullName": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\script-api\\script_api_graphics_scene_tests.cpp.obj",
+        "Length": 31118530,
+        "LastWriteTime": "2026-10-25T19:10:39.5807718+08:00"
+      },
+      {
+        "FullName": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.pdb",
+        "Length": 625586176,
+        "LastWriteTime": "2026-10-25T19:51:47.9565023+08:00"
+      }
+    ],
+    "after": [
+      {
+        "FullName": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\CMakeFiles\\unit_test_graphics.dir\\integration\\script-api\\script_api_graphics_scene_tests.cpp.obj",
+        "Length": 30530929,
+        "LastWriteTime": "2026-10-25T21:08:26.5248866+08:00"
+      },
+      {
+        "FullName": "C:\\Users\\xiaofans\\.codex\\worktrees\\b069\\EVEngine\\build\\win32-debug\\test\\unit_test_graphics.pdb",
+        "Length": 444952576,
+        "LastWriteTime": "2026-10-25T21:11:06.3622887+08:00"
+      }
+    ],
+    "note": "One merged object remains. Before PDB was an existing incremental artifact; after PDB was freshly relinked. PDB reduction includes removal of historical incremental-link residue; not an isolated script-refactor gain or a controlled cold-build comparison."
+  },
+  "validation": {
+    "target_build_exit_code": 0,
+    "fresh_relink_exit_code": 0,
+    "make_check_exit_code": 0,
+    "make_check_base": "20394d720951b2aa13f035dd9b16104c3de3096e",
+    "python_tests": 511,
+    "python_skips": 3,
+    "historical_unresolved": 0,
+    "baseline_caveat": "Original warning-only checks masked three old test defects. Baseline passed statuses describe original harness behavior, not proof of the invalid oracles. Final critical checks use REQUIRE and corrected fixture semantics."
+  }
+}

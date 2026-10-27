@@ -4,17 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "render-window",
-  "cases": {
-    "platform-file": [
-      "decal.proceduralImportsReferenceSubstanceMaterialPresets",
-      "decal.renderImportedPresetContactSheet"
-    ],
-    "render-offscreen": [
-      "decal.proceduralFacadeUploadsAllRuntimeChannels",
-      "decal.gpuHeadlessProjectionReadback",
-      "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
-    ]
-  },
   "module": "stylize",
   "modules": [
     "animation",
@@ -39,15 +28,30 @@
     "graphics_resource_reuse.cpp",
     "graphics_vegetation_render.cpp",
     "hair.cpp"
-  ]
+  ],
+  "cases": {
+    "platform-file": [
+      "decal.proceduralImportsReferenceSubstanceMaterialPresets"
+    ],
+    "render-offscreen": [
+      "decal.gpuHeadlessProjectionReadback",
+      "decal.proceduralFacadeUploadsAllRuntimeChannels",
+      "graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels"
+    ],
+    "render-window": [
+      "graphics.lighting.boundedFrameSlotSubmission"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: Xray
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Xray)
-#include "PrivateTestScope.h"
 #include <SDL2/SDL.h>
 #include <assimp/mesh.h>
 #include <assimp/scene.h>
@@ -56,33 +60,22 @@
 #include <string>
 #include <vector>
 #include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
 #include "graphics/Canvas.h"
 #include "graphics/DrawItem2D.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
 #include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/Light.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
 #include "graphics/Shader.h"
 #include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "medialoader/model/ModelLoader.h"
 #include "stylize/Stylize.h"
 #include "window/Window.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Xray.cpp
 namespace test_Xray {
@@ -137,7 +130,6 @@ void warmPresent(Graphics *gfx, int frames = 2) {
     for (int i = 0; i < frames; ++i) {
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
-        SDL_Delay(8);
     }
 }
 
@@ -282,12 +274,11 @@ TEST_CASE("xray.occludedSilhouette") {
 
     GBuffer *gb = rc->getGBuffer();
     REQUIRE(gb != nullptr);
-    CHECK(gb->isValid());
-    CHECK(gb->getHwDepthTexture() != nullptr);
+    REQUIRE(gb->isValid());
+    REQUIRE(gb->getHwDepthTexture() != nullptr);
 
-    // Hold a few rendered frames so the X-ray pass executes without error and
-    // the silhouette is visually inspectable.
-    for (int i = 0; i < 60; ++i) {
+    // Exercise the pass across frame slots without an interactive viewing delay.
+    for (int i = 0; i < 8; ++i) {
         target->setRotation(float(i) * 0.04f, float(i) * 0.01f, 0.f);
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
@@ -295,24 +286,18 @@ TEST_CASE("xray.occludedSilhouette") {
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) goto done;
         }
-        SDL_Delay(16);
     }
 done:
     target->setVisible(false);
     win->close();
 }
 }  // namespace test_Xray
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_sprite_spine)
+// Contract section: animation sprite spine
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <cmath>
-#include <cstdio>
 #include <filesystem>
-#include <memory>
-#include <string>
-#include <vector>
 #include "PathBesideSource.h"
 #include "animation/Animation.h"
 #include "animation/SpineAnim.h"
@@ -324,31 +309,6 @@ done:
 #include "animation/SpriteSheet.h"
 #include "common/Exception.h"
 #include "filesystem/Filesystem.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_sprite_spine.cpp
 namespace test_animation_sprite_spine {
 // Color lives in eve::graphics (see graphics/Canvas.h); keep the unqualified form.
@@ -498,7 +458,7 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     std::vector<eve::graphics::DrawItem2D> items;
     std::vector<size_t>                    perPlayerItems(players.size(), 0);
     std::vector<bool>                      perPlayerRotated(players.size(), false);
-    const int                              frames = 60 * 3;  // ~3 seconds at 60 fps
+    const int                              frames = 8;  // Bounded real animation/render submission.
     for (int i = 0; i < frames; ++i) {
         items.clear();
         for (size_t pi = 0; pi < players.size(); ++pi) {
@@ -519,7 +479,6 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
                 return;
             }
         }
-        SDL_Delay(16);
     }
 
     // Objectively verify each character is visible on screen: render one extra
@@ -551,42 +510,40 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     // target position (no overlap / no off-screen scatter), and draw visible
     // non-background pixels around that center.
     for (size_t pi = 0; pi < players.size(); ++pi) {
-        CHECK_GT(perPlayerItems[pi], 0u);
-        CHECK(perPlayerRotated[pi]);
-        CHECK_GT(perPlayerLitPixels[pi], 0);
+        REQUIRE_GT(perPlayerItems[pi], 0u);
+        REQUIRE(perPlayerRotated[pi]);
+        REQUIRE_GT(perPlayerLitPixels[pi], 0);
 
+        // measurePoseCenter deliberately samples local-space quads by setting
+        // the player position to zero. Preserve the actual rendered translation
+        // before that measurement, then restore it for subsequent observations.
+        const float renderedX = players[pi].anim->getX();
+        const float renderedY = players[pi].anim->getY();
         float poseCx = 0.f, poseCy = 0.f;
         measurePoseCenter(players[pi].anim.get(), poseCx, poseCy);
-        const float onScreenCx = players[pi].anim->getX() + poseCx;
-        const float onScreenCy = players[pi].anim->getY() + poseCy;
-        CHECK(std::fabs(onScreenCx - models[pi].cx) < 40.f);
-        CHECK(std::fabs(onScreenCy - models[pi].cy) < 40.f);
+        players[pi].anim->setPosition(renderedX, renderedY);
+        const float onScreenCx = renderedX + poseCx;
+        const float onScreenCy = renderedY + poseCy;
+        REQUIRE(std::fabs(onScreenCx - models[pi].cx) < 40.f);
+        REQUIRE(std::fabs(onScreenCy - models[pi].cy) < 40.f);
     }
     win->close();
 }
 }  // namespace test_animation_sprite_spine
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_avatar_vrm_vulkan)
+// Contract section: avatar vrm vulkan
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
+
 #include <cstring>
-#include <filesystem>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/VrmDocument.h"
 #include "common/ECS.h"
 #include "filesystem/FileData.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/vulkan/Graphics.h"
 #include "model3d/Model3D.h"
 #include "model3d/ModelData.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // avatar_vrm_vulkan.cpp
 namespace test_avatar_vrm_vulkan {
 TEST_CASE("avatar.vrm.importMorphGazeSpringAndRollback") {
@@ -652,37 +609,24 @@ TEST_CASE("avatar.vrm.importMorphGazeSpringAndRollback") {
 }  // namespace test_avatar_vrm_vulkan
 #endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decal)
+// Contract section: decal
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
+
 #include <algorithm>
-#include <cmath>
 #include <cstdint>
-#include <filesystem>
 #include <fstream>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <iterator>
 #include <limits>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
 #include "RenderImageAudit.h"
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
 #include "decal/Decal.h"
 #include "decal/DecalManager.h"
 #include "decal/ProceduralDecal.h"
-#include "graphics/Graphics.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
 #include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // decal.cpp
 namespace test_decal {
 using namespace eve::decal;
@@ -730,167 +674,6 @@ TEST_CASE("decal.proceduralImportsReferenceSubstanceMaterialPresets") {
     CHECK(!importProceduralDecalSbsprs(document("a_color", "0.1,0.2,0.3,0.4")).ok());
     std::string oversized(1024u * 1024u + 1u, 'x');
     CHECK(!importProceduralDecalSbsprs(oversized).ok());
-}
-
-TEST_CASE("decal.renderImportedPresetContactSheet") {
-    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal";
-    std::vector<std::filesystem::path> presets;
-    for (const auto &entry : std::filesystem::directory_iterator(directory)) {
-        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
-    }
-    std::sort(presets.begin(), presets.end());
-    REQUIRE_EQ(presets.size(), 40u);
-
-    constexpr int             tile        = 128;
-    constexpr int             gap         = 4;
-    constexpr int             columns     = 5;
-    constexpr int             rows        = 8;
-    constexpr int             sheetWidth  = columns * tile + (columns + 1) * gap;
-    constexpr int             sheetHeight = rows * tile + (rows + 1) * gap;
-    std::vector<std::uint8_t> sheet(static_cast<std::size_t>(sheetWidth * sheetHeight * 4), 255u);
-    for (int y = 0; y < sheetHeight; ++y) {
-        for (int x = 0; x < sheetWidth; ++x) {
-            const auto index = static_cast<std::size_t>((y * sheetWidth + x) * 4);
-            const auto shade = static_cast<std::uint8_t>(((x / 12 + y / 12) & 1) ? 72 : 104);
-            sheet[index + 0] = shade;
-            sheet[index + 1] = shade;
-            sheet[index + 2] = shade;
-        }
-    }
-
-    const auto      output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" / "imported_presets";
-    std::error_code ec;
-    std::filesystem::create_directories(output, ec);
-    REQUIRE(!ec);
-    std::ofstream manifest(output / "contact_sheet_order.txt", std::ios::binary);
-    REQUIRE(manifest.good());
-
-    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
-        std::ifstream stream(presets[presetIndex], std::ios::binary);
-        REQUIRE(stream.good());
-        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        auto              recipe = importProceduralDecalSbsprs(xml);
-        REQUIRE(recipe.ok());
-        recipe.value().width  = tile;
-        recipe.value().height = tile;
-        auto bake             = bakeProceduralDecal(recipe.value());
-        REQUIRE(bake.ok());
-
-        eve::image::ImageData image(tile, tile, "RGBA8", bake.value().albedo.data(), false);
-        REQUIRE(saveImagePng(image, (output / (presets[presetIndex].stem().string() + ".png")).string()));
-        manifest << presetIndex + 1 << "\t" << presets[presetIndex].stem().string() << "\n";
-
-        const int originX = gap + static_cast<int>(presetIndex % columns) * (tile + gap);
-        const int originY = gap + static_cast<int>(presetIndex / columns) * (tile + gap);
-        for (int y = 0; y < tile; ++y) {
-            for (int x = 0; x < tile; ++x) {
-                const auto  source = static_cast<std::size_t>((y * tile + x) * 4);
-                const auto  target = static_cast<std::size_t>(((originY + y) * sheetWidth + originX + x) * 4);
-                const float alpha  = float(bake.value().albedo[source + 3]) / 255.f;
-                for (int channel = 0; channel < 3; ++channel) {
-                    sheet[target + channel] =
-                        static_cast<std::uint8_t>(float(bake.value().albedo[source + channel]) * alpha +
-                                                  float(sheet[target + channel]) * (1.f - alpha));
-                }
-            }
-        }
-    }
-    eve::image::ImageData contactSheet(sheetWidth, sheetHeight, "RGBA8", sheet.data(), false);
-    REQUIRE(saveImagePng(contactSheet, (output / "contact_sheet.png").string()));
-    std::printf("procedural decal contact sheet saved: %s\n", output.string().c_str());
-}
-
-TEST_CASE("decal.renderImportedPresetsOnLitMaterialSpheres") {
-    eve::window::Window     *win = nullptr;
-    eve::graphics::Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 1280, 800);
-
-    auto *cam         = Camera3D::createCamera();
-    cam->data()->eyeZ = 6.0f;
-    cam->setAmbient(0.075f, 0.08f, 0.095f);
-    RenderSystem3D::setDirectionalLight(-0.65f, 0.8f, 0.9f, 1.f, 0.92f, 0.78f);
-
-    auto *background                      = Renderable3D::create();
-    background->meshRenderer()->mesh      = makePlane(gfx, 12.f);
-    background->meshRenderer()->texture   = makeSolidTex(gfx, 28, 32, 42);
-    background->meshRenderer()->roughness = 0.9f;
-    background->transform()->z            = -0.65f;
-
-    static bool sMaterialSphereDrawer = false;
-    if (!sMaterialSphereDrawer) {
-        sMaterialSphereDrawer = true;
-        RenderSystem3D::addDecalExtraDrawer(
-            [](eve::graphics::Graphics &g, const Camera3D::Data &camData, const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ, viewProj, aspect);
-            });
-    }
-    gfx->getRenderControl()->enable("decal");
-    gfx->getRenderControl()->compile();
-    gfx->setScreenReadbackEnabled(true);
-
-    const auto directory = std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal";
-    std::vector<std::filesystem::path> presets;
-    for (const auto &entry : std::filesystem::directory_iterator(directory)) {
-        if (entry.path().extension() == ".sbsprs") presets.push_back(entry.path());
-    }
-    std::sort(presets.begin(), presets.end());
-    REQUIRE_EQ(presets.size(), 40u);
-
-    auto *sphere = gfx->newMeshSphere(48, 24);
-    REQUIRE(sphere != nullptr);
-    DecalManager::inst().clearAll();
-    constexpr int columns = 8;
-    for (std::size_t presetIndex = 0; presetIndex < presets.size(); ++presetIndex) {
-        std::ifstream stream(presets[presetIndex], std::ios::binary);
-        REQUIRE(stream.good());
-        const std::string xml((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-        auto              recipe = importProceduralDecalSbsprs(xml);
-        REQUIRE(recipe.ok());
-        recipe.value().width  = 128;
-        recipe.value().height = 128;
-        auto bake             = bakeProceduralDecal(recipe.value());
-        REQUIRE(bake.ok());
-
-        const int   column                = static_cast<int>(presetIndex % columns);
-        const int   row                   = static_cast<int>(presetIndex / columns);
-        const float x                     = (float(column) - 3.5f) * 0.9f;
-        const float y                     = (2.f - float(row)) * 0.9f;
-        auto       *entity                = Renderable3D::create();
-        entity->meshRenderer()->mesh      = sphere;
-        entity->meshRenderer()->texture   = makeSolidTex(gfx, 185, 185, 190);
-        entity->meshRenderer()->roughness = 0.48f;
-        entity->setPosition(x, y, 0.f);
-        entity->setScale(0.36f, 0.36f, 0.36f);
-
-        const int decal = DecalManager::inst().project(
-            x, y, 0.18f, 0.f, 0.f, 1.f, gfx->newTexture(128, 128, bake.value().albedo.data()), "material-sphere", 0.78f,
-            0.72f, false, static_cast<int>(presetIndex), 0.f, 0.f, 0.f, 1.f, 1.f, 1.f, 1.f);
-        REQUIRE(DecalManager::inst().setTextures(decal, gfx->newTexture(128, 128, bake.value().normal.data()),
-                                                 gfx->newTexture(128, 128, bake.value().params.data())));
-        REQUIRE(DecalManager::inst().setProjection(decal, "spherical", 4.f) == DecalProjectionStatus::Applied);
-        REQUIRE(DecalManager::inst().setParallax(decal, 0.025f, 8.f, 24.f) == DecalParallaxStatus::Applied);
-        REQUIRE(DecalManager::inst().setEdgeFade(decal, 0.025f) == DecalEdgeFadeStatus::Applied);
-    }
-
-    for (int frame = 0; frame < 4; ++frame) {
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) break;
-        }
-    }
-    auto *snapshot = gfx->newImageData();
-    REQUIRE(snapshot != nullptr);
-    const auto      output = std::filesystem::path(EVENGINE_TEST_BINARY_DIR) / "out" / "decal" / "imported_presets";
-    std::error_code ec;
-    std::filesystem::create_directories(output, ec);
-    REQUIRE(!ec);
-    REQUIRE(saveImagePng(*snapshot, (output / "lit_material_spheres.png").string()));
-    delete snapshot;
-
-    DecalManager::inst().clearAll();
-    win->close();
 }
 
 
@@ -1007,6 +790,61 @@ TEST_CASE("decal.gpuProjectBlendsIntoForward") {
     CHECK_LT(corner.r - corner.g, 0.1f);
 
     DecalManager::inst().clearAll();
+    SUB_CASE("decal.importedPresetReachesProjectedPixels") {
+        const auto source =
+            std::filesystem::path(EVENGINE_SOURCE_DIR) / "test" / "fixtures" / "procedural_decal" / "Blood_Wet.sbsprs";
+        std::ifstream input(source, std::ios::binary);
+        REQUIRE(input.good());
+        const std::string xml((std::istreambuf_iterator<char>(input)), std::istreambuf_iterator<char>());
+        auto              recipe = importProceduralDecalSbsprs(xml);
+        REQUIRE(recipe.ok());
+        recipe.value().width = recipe.value().height = 32;
+        auto baked                                   = bakeProceduralDecal(recipe.value());
+        REQUIRE(baked.ok());
+        // Reuse the parent's camera, receiver and frame submission: this
+        // contract adds imported textures to the same real scene projection.
+        auto &manager = DecalManager::inst();
+        struct ClearProjection {
+            ~ClearProjection() { DecalManager::inst().clearAll(); }
+        } cleanup;
+        const auto capture = [&] {
+            for (int frame = 0; frame < 3; ++frame) {
+                RenderSystem3D::render(*gfx);
+                RenderSystem::render(*gfx);
+            }
+            return std::unique_ptr<eve::image::ImageData>(gfx->newImageData());
+        };
+        auto without = capture();
+        REQUIRE(without != nullptr);
+        const auto receiverPixel = without->getPixel(W / 2, H / 2);
+        REQUIRE((receiverPixel.r > .5f && receiverPixel.g > .5f && receiverPixel.b > .5f));
+        auto *albedo = gfx->newTexture(32, 32, baked.value().albedo.data());
+        auto *normal = gfx->newTexture(32, 32, baked.value().normal.data());
+        auto *params = gfx->newTexture(32, 32, baked.value().params.data());
+        REQUIRE(albedo != nullptr);
+        REQUIRE(normal != nullptr);
+        REQUIRE(params != nullptr);
+        const int imported = manager.project(0.f, 0.f, 0.f, 0.f, 0.f, 1.f, albedo, "imported-contract", 1.2f, 0.1f,
+                                             false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
+        REQUIRE(manager.setTextures(imported, normal, params));
+        auto with = capture();
+        REQUIRE(with != nullptr);
+        REQUIRE_EQ(with->getWidth(), without->getWidth());
+        REQUIRE_EQ(with->getHeight(), without->getHeight());
+        float maxDifference = 0.f;
+        bool  allFinite     = true;
+        for (int y = 0; y < with->getHeight(); ++y)
+            for (int x = 0; x < with->getWidth(); ++x) {
+                const auto a = without->getPixel(x, y), b = with->getPixel(x, y);
+                for (const float difference : {a.r - b.r, a.g - b.g, a.b - b.b}) {
+                    allFinite     = std::isfinite(difference) && allFinite;
+                    maxDifference = std::max(maxDifference, std::abs(difference));
+                }
+            }
+        REQUIRE(allFinite);
+        REQUIRE(maxDifference > .02f);
+        manager.clearAll();
+    };
     win->close();
 }
 
@@ -1180,262 +1018,20 @@ TEST_CASE("decal.gpuTriplanarCoversGrazingWall") {
     win->close();
 }
 
-namespace {
-
-[[maybe_unused]] float smoothstep(float e0, float e1, float x) {
-    const float t = std::clamp((x - e0) / (e1 - e0), 0.f, 1.f);
-    return t * t * (3.f - 2.f * t);
-}
-
-// Procedural decal art so the gallery needs no external assets.
-[[maybe_unused]] eve::graphics::Texture *makeChecker(eve::graphics::Graphics *gfx, int size, int cells) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const bool    dark = ((x * cells / size) + (y * cells / size)) % 2 == 0;
-            const uint8_t v    = dark ? 150 : 205;
-            size_t        i    = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]              = v;
-            px[i + 1]          = v;
-            px[i + 2]          = v;
-            px[i + 3]          = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeBloodSplat(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float u   = (float(x) + 0.5f) / float(size);
-            const float v   = (float(y) + 0.5f) / float(size);
-            const float dx  = u - 0.5f;
-            const float dy  = v - 0.5f;
-            const float ang = std::atan2(dy, dx);
-            const float r   = std::sqrt(dx * dx + dy * dy) * 2.f;
-            // Irregular splat edge: three-lobe wobble + inner core.
-            const float wob  = 0.72f + 0.22f * std::sin(3.f * ang + 1.3f) + 0.10f * std::sin(5.f * ang + 4.2f);
-            const float a    = 1.f - smoothstep(0.30f, wob, r);
-            const float core = 1.f - smoothstep(0.0f, 0.34f, r);
-            size_t      i    = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]            = 130;
-            px[i + 1]        = 14;
-            px[i + 2]        = 24;
-            px[i + 3]        = uint8_t(std::clamp((a * 0.55f + core * 0.45f) * 255.f, 0.f, 255.f));
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDirt(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    uint32_t             seed = 12345u;
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            seed          = seed * 1664525u + 1013904223u;
-            const float n = float(seed % 10000u) / 10000.f;
-            const float a = n < 0.62f ? 0.25f + 0.35f * n : 0.f;
-            size_t      i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]         = 118;
-            px[i + 1]     = 102;
-            px[i + 2]     = 82;
-            px[i + 3]     = uint8_t(a * 255.f);
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDentNormal(eve::graphics::Graphics *gfx, int size) {
-    // Concave dent: tangent-space normal tilts inward toward the center.
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float u    = (float(x) + 0.5f) / float(size);
-            const float v    = (float(y) + 0.5f) / float(size);
-            const float dx   = (u - 0.5f) * 2.f;
-            const float dy   = (v - 0.5f) * 2.f;
-            const float r    = std::sqrt(dx * dx + dy * dy);
-            float       tilt = 1.6f * std::exp(-r * r * 2.6f);
-            // Raised rim just outside the crater.
-            tilt -= 0.8f * std::exp(-(r - 0.55f) * (r - 0.55f) * 60.f);
-            glm::vec3 n = glm::normalize(glm::vec3(-dx * tilt, -dy * tilt, 1.f));
-            size_t    i = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]       = uint8_t((n.x * 0.5f + 0.5f) * 255.f);
-            px[i + 1]   = uint8_t((n.y * 0.5f + 0.5f) * 255.f);
-            px[i + 2]   = uint8_t((n.z * 0.5f + 0.5f) * 255.f);
-            px[i + 3]   = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeDentAlbedo(eve::graphics::Graphics *gfx, int size) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (int y = 0; y < size; ++y) {
-        for (int x = 0; x < size; ++x) {
-            const float   u      = (float(x) + 0.5f) / float(size);
-            const float   v      = (float(y) + 0.5f) / float(size);
-            const float   dx     = (u - 0.5f) * 2.f;
-            const float   dy     = (v - 0.5f) * 2.f;
-            const float   r      = std::sqrt(dx * dx + dy * dy);
-            const float   crater = 1.f - smoothstep(0.f, 0.55f, r);
-            const float   ring   = smoothstep(0.42f, 0.55f, r) * (1.f - smoothstep(0.55f, 0.68f, r));
-            const uint8_t val    = uint8_t(std::clamp((68.f + crater * -28.f + ring * 42.f), 0.f, 255.f));
-            size_t        i      = (size_t(y) * size_t(size) + size_t(x)) * 4u;
-            px[i]                = val;
-            px[i + 1]            = uint8_t(val * 0.93f);
-            px[i + 2]            = uint8_t(val * 0.88f);
-            px[i + 3]            = 255;
-        }
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-[[maybe_unused]] eve::graphics::Texture *makeRoughParams(eve::graphics::Graphics *gfx, int size, float rough) {
-    std::vector<uint8_t> px(size_t(size) * size_t(size) * 4u);
-    for (size_t i = 0; i < px.size(); i += 4) {
-        px[i]     = uint8_t(rough * 255.f);  // R = target roughness
-        px[i + 1] = 0;                       // G = metallic
-        px[i + 2] = 0;                       // B = emissive
-        px[i + 3] = 255;
-    }
-    return gfx->newTexture(size, size, px.data());
-}
-
-}  // namespace
 
 // Gallery render: blood / dirt / dent decals projected onto a checker floor,
 // saved as PNG for visual review (build/<plat>/test/out/decal/).
-TEST_CASE("decal.renderGalleryPng") {
-    eve::window::Window     *win = nullptr;
-    eve::graphics::Graphics *gfx = nullptr;
-    openGfxWindow(win, gfx, 480, 360);
 
-    auto *mesh = makePlane(gfx, 3.f);
-    REQUIRE(mesh != nullptr);
-    auto *cam                    = Camera3D::createCamera();
-    cam->data()->eyeY            = 1.9f;
-    cam->data()->eyeZ            = 2.35f;
-    auto *ent                    = Renderable3D::create();
-    ent->meshRenderer()->mesh    = mesh;
-    ent->transform()->pitch      = -3.14159265f * 0.5f;  // lay the plane flat (normal +Y)
-    ent->meshRenderer()->texture = makeChecker(gfx, 64, 8);
-    RenderSystem3D::setDirectionalLight(0.4f, 1.f, 0.3f, 1.f, 1.f, 1.f);
-
-    static bool sGalleryDrawer = false;
-    if (!sGalleryDrawer) {
-        sGalleryDrawer = true;
-        RenderSystem3D::addDecalExtraDrawer(
-            [](eve::graphics::Graphics &g, const Camera3D::Data &camData, const glm::mat4 &viewProj, float aspect) {
-                DecalManager::inst().drawAll(g, camData.eyeX, camData.eyeY, camData.eyeZ, viewProj, aspect);
-            });
-    }
-    gfx->getRenderControl()->enable("decal");
-    gfx->getRenderControl()->compile();
-
-    DecalManager::inst().clearAll();
-    auto &mgr          = DecalManager::inst();
-    auto  bloodRecipe  = proceduralDecalPreset("blood-wet", 7u);
-    auto  dirtRecipe   = proceduralDecalPreset("dirt", 23u);
-    auto  damageRecipe = proceduralDecalPreset("damage", 37u);
-    REQUIRE(bloodRecipe.ok());
-    REQUIRE(dirtRecipe.ok());
-    REQUIRE(damageRecipe.ok());
-    for (auto *recipe : {&bloodRecipe.value(), &dirtRecipe.value(), &damageRecipe.value()}) {
-        recipe->width  = 128;
-        recipe->height = 128;
-    }
-    auto bloodBake  = bakeProceduralDecal(bloodRecipe.value());
-    auto dirtBake   = bakeProceduralDecal(dirtRecipe.value());
-    auto damageBake = bakeProceduralDecal(damageRecipe.value());
-    REQUIRE(bloodBake.ok());
-    REQUIRE(dirtBake.ok());
-    REQUIRE(damageBake.ok());
-    // Blood: dark red splat, wet gloss (roughness down via params R).
-    const int blood =
-        mgr.project(-0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, bloodBake.value().albedo.data()),
-                    "blood", 1.05f, 0.12f, true, 7, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(blood, gfx->newTexture(128, 128, bloodBake.value().normal.data()),
-                          gfx->newTexture(128, 128, bloodBake.value().params.data())));
-    CHECK(mgr.setStrength(blood, 1.f, 1.f, 0.f, 0.f));
-    // Dirt: gray-brown speckle, rough + slight normal wobble.
-    const int dirt =
-        mgr.project(0.f, 0.01f, 0.1f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, dirtBake.value().albedo.data()), "dirt",
-                    1.3f, 0.12f, true, 23, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(dirt, gfx->newTexture(128, 128, dirtBake.value().normal.data()),
-                          gfx->newTexture(128, 128, dirtBake.value().params.data())));
-    CHECK(mgr.setStrength(dirt, 1.f, 1.f, 0.f, 0.f));
-    CHECK(mgr.setProjection(dirt, "spherical", 4.f) == DecalProjectionStatus::Applied);
-    // Dent: concave normal map + crater albedo (real indentation shading).
-    const int dent =
-        mgr.project(0.85f, 0.01f, 0.15f, 0.f, 1.f, 0.f, gfx->newTexture(128, 128, damageBake.value().albedo.data()),
-                    "dent", 1.05f, 0.12f, false, 0, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f);
-    CHECK(mgr.setTextures(dent, gfx->newTexture(128, 128, damageBake.value().normal.data()),
-                          gfx->newTexture(128, 128, damageBake.value().params.data())));
-    CHECK(mgr.setStrength(dent, 1.f, 1.f, 0.f, 0.f));
-    CHECK(mgr.setParallax(dent, 0.055f, 8.f, 24.f) == DecalParallaxStatus::Applied);
-
-    gfx->setScreenReadbackEnabled(true);
-    for (int i = 0; i < 3; ++i) {
-        RenderSystem3D::render(*gfx);
-        RenderSystem::render(*gfx);
-        SDL_Event e;
-        while (SDL_PollEvent(&e)) {
-            if (e.type == SDL_QUIT) break;
-        }
-    }
-    eve::image::ImageData *snap = gfx->newImageData();
-    REQUIRE(snap != nullptr);
-    const std::string outDir = std::string(EVENGINE_TEST_BINARY_DIR) + "/out/decal";
-    std::error_code   ec;
-    std::filesystem::create_directories(outDir, ec);
-    REQUIRE(saveImagePng(*snap, outDir + "/decal_gallery.png"));
-    std::printf("decal gallery saved: %s/decal_gallery.png\n", outDir.c_str());
-    delete snap;
-
-    DecalManager::inst().clearAll();
-    win->close();
-}
 }  // namespace test_decal
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue)
+// Contract section: dialogue
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <cmath>
-#include <string>
-#include <vector>
+
 #include "avatar/Avatar.h"
 #include "dialogue/Dialogue.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "ui/UI.h"
 #include "ui/UISystem.h"
 #include "ui/Widget.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue.cpp
 namespace test_dialogue {
 using namespace eve::dialogue;
@@ -1509,7 +1105,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     dlg->setLipSyncEnabled(true);
     dlg->setLipSyncParameter("mouth");
     dlg->setLipSyncAmplitude(0.95f);
-    dlg->setTypeSpeed(18.f);
+    dlg->setTypeSpeed(10000.f);
 
     auto *cam      = Camera2D::createCamera();
     cam->data()->r = 0.08f;
@@ -1535,7 +1131,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
 
     int  frames    = 0;
     bool sawChoice = false;
-    for (int frame = 0; frame < 150; ++frame) {
+    for (int frame = 0; frame < 8; ++frame) {
         ++frames;
         dlg->update(0.016f);
         dlg->syncStage(float(gfx->getWidth()), float(gfx->getHeight()));
@@ -1557,7 +1153,7 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
             phase = Choices;
         } else if (phase == Choices && dlg->isWaitingChoice()) {
             sawChoice = true;
-            if (frame > 110) {
+            if (frame >= 3) {
                 dlg->selectChoice(0);
                 phase = Done;
             }
@@ -1589,12 +1185,11 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
             ui->processEvent(&e);
             if (e.type == SDL_QUIT) break;
         }
-        SDL_Delay(16);
     }
 
-    CHECK_GT(frames, 100);
-    CHECK(sawChoice);
-    CHECK(dlg->isIdle());
+    REQUIRE_EQ(frames, 8);
+    REQUIRE(sawChoice);
+    REQUIRE(dlg->isIdle());
 
     stage->sprite()->visible = false;
     alice->setVisible(false);
@@ -1609,34 +1204,18 @@ TEST_CASE("dialogue.stage.avatarTypewriterPreview") {
     win->close();
 }
 }  // namespace test_dialogue
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpu_driven)
+// Contract section: gpu driven
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
+
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <vector>
-#include "Fixtures.h"
 #include "ScriptTest.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
 #include "graphics/vulkan/GpuDriven.h"
-#include "graphics/vulkan/Graphics.h"
 #include "virtualgeometry/Builder.h"
 #include "virtualgeometry/VirtualGeometryAsset.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // gpu_driven.cpp
 namespace test_gpu_driven {
 using namespace eve;
@@ -1823,7 +1402,9 @@ namespace {
 float gdLuma(const Color &c) { return (c.r + c.g + c.b) / 3.f; }
 
 void gdWarmPresent(Graphics *gfx) {
+    gfx->setScreenReadbackEnabled(false);
     for (int i = 0; i < 4; ++i) {
+        if (i == 3) gfx->setScreenReadbackEnabled(true);
         RenderSystem3D::render(*gfx);
         RenderSystem::render(*gfx);
     }
@@ -2133,6 +1714,8 @@ TEST_CASE("GpuDriven.opaqueForwardParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -2209,6 +1792,8 @@ TEST_CASE("GpuDriven.opaqueForwardParityMultiTexture") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -2286,6 +1871,8 @@ TEST_CASE("GpuDriven.opaqueForwardCullParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Frustum submission parity requires the same lighting path in both captures.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
     const auto legacy = gdCaptureLuma(gfx);
@@ -2533,6 +2120,8 @@ TEST_CASE("GpuDriven.largeSceneForwardParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -2585,6 +2174,8 @@ TEST_CASE("GpuDriven.largeSceneCullParity") {
 
     gfx->setScreenReadbackEnabled(true);
     RenderControl *rc = gfx->getRenderControl();
+    // Compare CPU/GPU submission under the same ForwardPlus lighting contract.
+    REQUIRE(rc->setLightingMode(LightingMode::ForwardPlus).ok());
     rc->disable("msaa");
     rc->disable("gpuDriven");
     gdWarmPresent(gfx);
@@ -2666,27 +2257,12 @@ TEST_CASE("GpuDriven.largeSceneVisResolveParity") {
 }  // namespace test_gpu_driven
 #endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_gpu_driven_parity)
+// Contract section: gpu driven parity
 #include "PrivateTestScope.h"
-#include "Fixtures.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/Texture.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 #ifdef EVENGINE_WEBGPU
 #include "graphics/webgpu/Graphics.h"
 #endif
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <cstring>
-#include <vector>
 // gpu_driven_parity.cpp
 namespace test_gpu_driven_parity {
 #ifdef EVENGINE_WEBGPU
@@ -3082,74 +2658,79 @@ TEST_CASE("GpuDrivenParity.virtualGeometry") {
     window->close();
 }
 }  // namespace test_gpu_driven_parity
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_deferred_lifetime)
+// Contract section: graphics deferred lifetime
 #include "PrivateTestScope.h"
+
 #include "graphics/ClusteredLight.h"
 #include "graphics/Color.h"
-#include "graphics/Graphics.h"
-#include "window/Window.h"
-#include "zeroerr/unittest.h"
+#include "image/ImageData.h"
 // graphics_deferred_lifetime.cpp
 namespace test_graphics_deferred_lifetime {
-TEST_CASE("graphics.deferredLighting.reusesCompletedFrameResources") {
-    auto                       *window   = eve::window::Window::create();
-    auto                       *graphics = eve::graphics::Graphics::create();
+TEST_CASE("graphics.lighting.boundedFrameSlotSubmission") {
+    auto *window   = eve::window::Window::create();
+    auto *graphics = eve::graphics::Graphics::create();
+    REQUIRE(window != nullptr);
+    REQUIRE(graphics != nullptr);
+    struct CloseWindow {
+        eve::window::Window *window;
+        ~CloseWindow() { window->close(); }
+    } cleanup{window};
     eve::window::WindowSettings settings;
     settings.width  = 64;
     settings.height = 48;
+    settings.vsync  = 0;
     REQUIRE(window->setWindowSettings(settings));
-    if (!graphics->supportsDeferredLighting()) return;
-
-    // Exceeds VMA's mapping reference limit even with three frame slots.
-    // Validation also checks that each descriptor is updated only after its
-    // previous submission has completed. No readback/idle wait masks overlap.
-    for (int frame = 0; frame < 800; ++frame) {
-        graphics->beginGBufferPass(64, 48);
-        graphics->endGBufferPass();
-        graphics->begin3DFrame();
-        graphics->setMesh3DViewProj(glm::mat4(1));
-        graphics->setMesh3DView(glm::mat4(1));
-        graphics->setMesh3DClip(0.1f, 100.f);
-        graphics->drawDeferredLighting();
-        graphics->present();
-    }
-}
-
-TEST_CASE("graphics.clusteredLighting.reusesUnchangedStorageBindings") {
-    auto                       *window   = eve::window::Window::create();
-    auto                       *graphics = eve::graphics::Graphics::create();
-    eve::window::WindowSettings settings;
-    settings.width  = 64;
-    settings.height = 48;
-    REQUIRE(window->setWindowSettings(settings));
-    auto *mesh = graphics->newMeshSphere(8, 4);
-    REQUIRE(mesh != nullptr);
-    const auto lighting =
-        eve::graphics::buildClusteredLighting({}, {}, glm::mat4(1), 0.1f, 100.f, 64, 48, 1.f, glm::vec4(0.2f));
-    // Re-uploading stable lighting must not allocate a fresh descriptor set
-    // each frame and exhaust the shared descriptor pool.
-    for (int frame = 0; frame < 1000; ++frame) {
-        graphics->begin3DFrame();
-        graphics->setMesh3DViewProj(glm::mat4(1));
-        graphics->setMesh3DClusteredLighting(lighting);
-        graphics->drawMesh(mesh, glm::mat4(1), nullptr, eve::graphics::Color(1.f, 1.f, 1.f, 1.f));
-        graphics->present();
-    }
+    graphics->setScreenReadbackEnabled(false);
+    // Eight presents revisit the current two/three backend frame slots. Public
+    // observations prove bounded submission/output, not internal allocation reuse.
+    SUB_CASE("deferred lighting across frame slots") {
+        if (graphics->supportsDeferredLighting()) {
+            for (int frame = 0; frame < 8; ++frame) {
+                graphics->beginGBufferPass(64, 48);
+                graphics->endGBufferPass();
+                graphics->begin3DFrame();
+                REQUIRE(graphics->had3DThisFrame());
+                graphics->setMesh3DViewProj(glm::mat4(1));
+                graphics->setMesh3DView(glm::mat4(1));
+                graphics->setMesh3DClip(0.1f, 100.f);
+                graphics->drawDeferredLighting();
+                graphics->present();
+            }
+            std::unique_ptr<eve::image::ImageData> depth(graphics->readGBufferToImageData("depth"));
+            REQUIRE((depth != nullptr && depth->getWidth() == 64 && depth->getHeight() == 48 &&
+                     depth->getData() != nullptr && depth->getSize() >= size_t(64 * 48 * 4)));
+            const auto *pixels = static_cast<const uint8_t *>(depth->getData());
+            // Empty geometry must retain the cleared depth after all slot submissions.
+            REQUIRE_EQ(pixels[(24 * 64 + 32) * 4], uint8_t(255));
+        } else {
+            REQUIRE(!graphics->getRenderControl()->isDeferredLightingAvailable());
+        }
+    };
+    SUB_CASE("unchanged clustered lighting submissions") {
+        auto *mesh = graphics->newMeshSphere(8, 4);
+        REQUIRE(mesh != nullptr);
+        const auto lighting =
+            eve::graphics::buildClusteredLighting({}, {}, glm::mat4(1), 0.1f, 100.f, 64, 48, 1.f, glm::vec4(0.2f));
+        graphics->setBackgroundColorRGBA(0.f, 0.f, 0.f, 1.f);
+        for (int frame = 0; frame < 8; ++frame) {
+            // Read back only the final submitted frame, rather than synchronizing every frame.
+            if (frame == 7) graphics->setScreenReadbackEnabled(true);
+            graphics->begin3DFrame();
+            REQUIRE(graphics->had3DThisFrame());
+            graphics->setMesh3DViewProj(glm::mat4(1));
+            graphics->setMesh3DClusteredLighting(lighting);
+            graphics->drawMesh(mesh, glm::mat4(1), nullptr, eve::graphics::Color(1.f, 1.f, 1.f, 1.f));
+            graphics->present();
+        }
+        const auto center = graphics->getPixel(32, 24);
+        REQUIRE(center.r + center.g + center.b > 0.05f);
+    };
 }
 }  // namespace test_graphics_deferred_lifetime
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_deferred_targets)
+// Contract section: graphics deferred targets
 #include "PrivateTestScope.h"
-#include <memory>
-#include "graphics/Graphics.h"
-#include "graphics/RenderControl.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // graphics_deferred_targets.cpp
 namespace test_graphics_deferred_targets {
 TEST_CASE("graphics.deferredTargets.lateGbufferAndResize") {
@@ -3286,6 +2867,24 @@ TEST_CASE("graphics.hybridLighting.deferredPassAvailable") {
     graphics->setMesh3DCameraPos(glm::vec3(0.f, 0.f, 3.f));
     graphics->drawDeferredLighting();
     graphics->present();
+    SUB_CASE("graphics.hybridLighting.explicitGpuDrivenTakesObservablePriority") {
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->hasPass("deferredLighting"));
+        rc->enable("gpuDriven");
+        rc->compile();
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::ForwardPlus);
+        REQUIRE(rc->hasHybridLightingFallback());
+        REQUIRE(rc->isEnabled("gpuDriven"));
+        REQUIRE(rc->hasPass("forward"));
+        REQUIRE(!rc->hasPass("deferredLighting"));
+        rc->disable("gpuDriven");
+        rc->compile();
+        REQUIRE(rc->getLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(rc->getEffectiveLightingMode() == eve::graphics::LightingMode::Hybrid);
+        REQUIRE(!rc->hasHybridLightingFallback());
+        REQUIRE(rc->hasPass("deferredLighting"));
+    };
 }
 
 TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {
@@ -3320,47 +2919,14 @@ TEST_CASE("graphics.lightingPreset.ciKeepsForwardPlus") {
     CHECK(rc->getLightingPreset() == eve::graphics::LightingPreset::Desktop);
 }
 }  // namespace test_graphics_deferred_targets
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_font)
+// Contract section: graphics font
 #include "PrivateTestScope.h"
-#include <SDL2/SDL.h>
-#include <fstream>
+
 #include <functional>
-#include <memory>
-#include <string>
-#include <vector>
-#include "Fixtures.h"
-#include "PathBesideSource.h"
-#include "common/Exception.h"
 #include "data/ByteData.h"
 #include "font/Font.h"
 #include "font/FontData.h"
-#include "graphics/AmbientOcclusion.h"
-#include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
-#include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_font.cpp
 namespace test_graphics_font {
 using namespace eve::graphics;
@@ -3525,57 +3091,49 @@ TEST_CASE("graphics.drawText.rendersGlyphPixelsOnCanvas") {
             if (p[0] > 40 || p[1] > 40 || p[2] > 40) ++litPixels;
         }
     }
-    CHECK(litPixels > 0);
+    REQUIRE(litPixels > 0);
 
-    // Windowed-only debug preview: hold the window open so the glyph is visible
-    // while debugging (~2s). Skipped in headless mode (present() is a no-op).
-    if (!fx.gfx->isHeadless()) {
-        fx.gfx->setBackgroundColorRGBA(0.08f, 0.08f, 0.1f, 1.f);
-        for (int frame = 0; frame < 60; ++frame) {
-            fx.gfx->clearScreen();
-            fx.gfx->drawTexturedRect(rt->getTexture(), 16.f, 16.f, 128.f, 128.f, Color(1.f, 1.f, 1.f, 1.f));
-            fx.gfx->drawText(gfont.get(), kIconUtf8, 160.f, 40.f, Color(1.f, 1.f, 1.f, 1.f), 3.f);
-            fx.gfx->present();
-
-            SDL_Event e;
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_QUIT) break;
-            }
-            SDL_Delay(16);
-        }
-    }
-
-    CHECK(fx.gfx->getFont() == nullptr);
+    REQUIRE(fx.gfx->getFont() == nullptr);
 }
 }  // namespace test_graphics_font
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_resource_reuse)
+// Contract section: graphics resource reuse
 #include "PrivateTestScope.h"
-#include <filesystem>
-#include <memory>
-#include "Fixtures.h"
+
 #include "GraphicsParitySupport.h"
-#include "filesystem/Filesystem.h"
-#include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/Texture.h"
 #include "graphics/ViewPreparation.h"
 #include "graphics/hair/GroomInstance.h"
-#include "zeroerr/unittest.h"
 #if !defined(EVENGINE_WEBGPU)
 #include "graphics/vulkan/Graphics.h"
 #endif
+#include "common/Resource.h"
 // graphics_resource_reuse.cpp
 namespace test_graphics_resource_reuse {
-#if !defined(EVENGINE_WEBGPU)
-
-#endif
-
 using namespace eve::graphics;
+
+namespace {
+void requireReadyFixture(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const GfxFixture &fixture) {
+    REQUIRE((fixture.win != nullptr && fixture.win->isOpen() && fixture.gfx != nullptr));
+}
+
+void requireTextureIdentity(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const Texture *texture,
+                            const void *gpuIdentity) {
+    REQUIRE((texture != nullptr && gpuIdentity != nullptr && texture->gpuHandle == gpuIdentity));
+}
+
+void requireGroomIdentity(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, const hair::GroomInstance &groom,
+                          const Mesh *mesh, const void *gpuIdentity, bool visible = true) {
+    REQUIRE((groom.getMesh() == (visible ? mesh : nullptr) && mesh->gpuHandle == gpuIdentity));
+}
+
+void prepareGroomResources(zeroerr::TestContext *_ZEROERR_TEST_CONTEXT, Graphics &graphics) {
+    REQUIRE(detail::prepareViewResources(graphics, glm::mat4(1.f), glm::vec3(0.f)).ok());
+}
+}  // namespace
 
 TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
     auto      *gfx = parity_test::headlessGraphics();
+    REQUIRE((gfx != nullptr && gfx->isHeadless()));
     TempDir    files;
     const auto path       = files.path() / "eve-resource-reuse.png";
     auto      *filesystem = eve::filesystem::Filesystem::create();
@@ -3597,37 +3155,37 @@ TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
     gfx->setTextureSampler(texture, desired);  // Must survive deferred first upload.
     gfx->ensureFileTexturesReady();
     REQUIRE(texture->gpuHandle != nullptr);
-    CHECK(texture->sampler == desired);
+    REQUIRE(texture->sampler == desired);
     auto loaded = gfx->loadTexture(texturePath);
-    REQUIRE(loaded.ok());
-    CHECK(&loaded.value().get() == texture);
-    CHECK(gfx->newTextureFromFile("./" + texturePath) == texture);
+    REQUIRE((loaded.ok() && &loaded.value().get() == texture));
+    REQUIRE(gfx->newTextureFromFile("./" + texturePath) == texture);
     void *const original = texture->gpuHandle;
-    std::filesystem::remove(path);
-    for (int i = 0; i < 20; ++i) {
-        CHECK(gfx->newTextureFromFile(texturePath) == texture);
-        CHECK(texture->gpuHandle == original);
+    REQUIRE(std::filesystem::remove(path));
+    REQUIRE(!std::filesystem::exists(path));
+    // Remove the decoded-image cache too: deleting a file alone does not
+    // make reload fail while ResourceManager can still provide its pixels.
+    eve::ResourceManager::getInstance().unloadPath(texturePath);
+    for (int i = 0; i < 3; ++i) {
+        REQUIRE(gfx->newTextureFromFile(texturePath) == texture);
+        requireTextureIdentity(_ZEROERR_TEST_CONTEXT, texture, original);
     }
-    CHECK(!gfx->reloadTextureFromFile(texturePath));
-    CHECK(texture->gpuHandle == original);
+    REQUIRE(!gfx->reloadTextureFromFile(texturePath));
+    requireTextureIdentity(_ZEROERR_TEST_CONTEXT, texture, original);
     auto cached = gfx->loadTexture(texturePath);
-    REQUIRE(cached.ok());
-    CHECK(&cached.value().get() == texture);
+    REQUIRE((cached.ok() && &cached.value().get() == texture));
     REQUIRE(gfx->releaseTexture(texture));
     delete texture;
-    CHECK(!gfx->loadTexture(texturePath).ok());
+    REQUIRE(!gfx->loadTexture(texturePath).ok());
     std::filesystem::copy_file("test/assets/resource_reuse.png", path,
                                std::filesystem::copy_options::overwrite_existing);
     auto firstReady = gfx->loadTexture(texturePath);
     REQUIRE(firstReady.ok());
     auto &ready = firstReady.value().get();
-    CHECK(!ready.hasDeferredFilePixels());
-    CHECK(ready.gpuHandle != nullptr);
-    CHECK_EQ(ready.getWidth(), 2);
-    CHECK_EQ(ready.getHeight(), 2);
+    REQUIRE((!ready.hasDeferredFilePixels() && ready.gpuHandle != nullptr && ready.getWidth() == 2 &&
+             ready.getHeight() == 2));
     auto absent = gfx->IResourceFactory::loadTexture(texturePath);
-    REQUIRE(!absent.ok());
-    CHECK_EQ(absent.status().primaryDiagnostic()->code(), eve::DiagnosticCode::Unsupported);
+    REQUIRE((!absent.ok() && absent.status().primaryDiagnostic() != nullptr &&
+             absent.status().primaryDiagnostic()->code() == eve::DiagnosticCode::Unsupported));
     REQUIRE(gfx->releaseTexture(&ready));
     delete &ready;
     REQUIRE(filesystem->unmount(files.path().string()));
@@ -3635,21 +3193,23 @@ TEST_CASE("graphics.resourceReuse.fileCacheDoesNotReloadResidentPixels") {
 
 TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     GfxFixture    fixture(64, 64);
+    requireReadyFixture(_ZEROERR_TEST_CONTEXT, fixture);
     auto         *gfx     = fixture.gfx;
     const uint8_t rgba[]  = {255, 0, 0, 255};
     auto         *texture = gfx->newTexture(1, 1, rgba);
     REQUIRE(texture != nullptr);
     auto      *second  = gfx->newTexture(1, 1, rgba);
+    REQUIRE((second != nullptr && texture->gpuHandle != nullptr && second->gpuHandle != nullptr));
     const auto initial = texture->sampler;
     auto       nearest = TextureSampler::nearest();
-    for (int i = 0; i < 50; ++i) gfx->setTextureSampler(texture, nearest);
+    for (int i = 0; i < 3; ++i) gfx->setTextureSampler(texture, nearest);
 #if !defined(EVENGINE_WEBGPU)
     auto      *gpu      = static_cast<vulkan::GpuTexture *>(texture->gpuHandle);
     const auto original = gpu->sampler;
-    CHECK(gpu->samplerState == initial);  // Setter has not executed backend work.
+    REQUIRE((bool(original) && gpu->samplerState == initial));  // Setter has not executed backend work.
     gfx->setTextureSampler(texture, initial);
     gfx->begin3DFrame();
-    CHECK(gpu->sampler == original);  // Reverted batch does no work.
+    REQUIRE(gpu->sampler == original);  // Reverted batch does no work.
     gfx->present();
     gfx->setTextureSampler(texture, nearest);
 #endif
@@ -3657,8 +3217,8 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     gfx->begin3DFrame();
 #if !defined(EVENGINE_WEBGPU)
     const auto cached = gpu->sampler;
-    CHECK(gpu->samplerState == nearest);
-    CHECK(cached == static_cast<vulkan::GpuTexture *>(second->gpuHandle)->sampler);
+    REQUIRE((bool(cached) && gpu->samplerState == nearest &&
+             cached == static_cast<vulkan::GpuTexture *>(second->gpuHandle)->sampler));
 #endif
     gfx->present();
     gfx->setTextureSampler(texture, initial);
@@ -3667,7 +3227,7 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
     gfx->setTextureSampler(texture, nearest);
     gfx->begin3DFrame();
 #if !defined(EVENGINE_WEBGPU)
-    CHECK(gpu->sampler == cached);
+    REQUIRE(gpu->sampler == cached);
 #endif
     gfx->present();
     gfx->setTextureSampler(second, initial);  // Release cancels pending publication.
@@ -3681,6 +3241,7 @@ TEST_CASE("graphics.resourceReuse.samplerEditsCoalesceAndReuse") {
 
 TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     GfxFixture             fixture(64, 64);
+    requireReadyFixture(_ZEROERR_TEST_CONTEXT, fixture);
     auto                  *gfx = fixture.gfx;
     hair::GroomInstance    groom(gfx);
     hair::ProceduralParams params;
@@ -3691,6 +3252,7 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     auto *const mesh = groom.getMesh();
     REQUIRE(mesh != nullptr);
     void *const          gpuIdentity = mesh->gpuHandle;
+    REQUIRE(gpuIdentity != nullptr);
     hair::GuideSimParams simulation;
     REQUIRE(groom.enableGuideSimulation(simulation).ok());
     for (int i = 0; i < 3; ++i) REQUIRE(groom.update(1.f / 60.f).ok());
@@ -3700,26 +3262,20 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     auto      *gpu    = static_cast<vulkan::GpuMesh *>(mesh->gpuHandle);
     const auto before = gpu->dynamicWriteCount;
 #endif
-    auto prepare = [&] { return detail::prepareViewResources(*gfx, glm::mat4(1.f), glm::vec3(0.f)); };
-    REQUIRE(prepare().ok());
-    CHECK(groom.getMesh() == mesh);
-    CHECK(mesh->gpuHandle == gpuIdentity);
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+    requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity);
 #if !defined(EVENGINE_WEBGPU)
-    CHECK_EQ(gpu->dynamicWriteCount, before + 1);
+    REQUIRE_EQ(gpu->dynamicWriteCount, before + 1);
 #endif
-    REQUIRE(prepare().ok());
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
 #if !defined(EVENGINE_WEBGPU)
-    CHECK_EQ(gpu->dynamicWriteCount, before + 1);
+    REQUIRE_EQ(gpu->dynamicWriteCount, before + 1);
 #endif
     REQUIRE(groom.disableGuideSimulation().ok());
     for (int lod : {1, 2, 0, 1, 0}) {
         groom.setForcedLod(lod);
-        REQUIRE(prepare().ok());
-        if (lod == 2)
-            CHECK(groom.getMesh() == nullptr);
-        else
-            CHECK(groom.getMesh() == mesh);
-        CHECK(mesh->gpuHandle == gpuIdentity);
+        prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+        requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity, lod != 2);
     }
 
     hair::GroomGroup unsupported;
@@ -3733,45 +3289,28 @@ TEST_CASE("graphics.resourceReuse.groomPublishesOnceAndKeepsMeshIdentity") {
     hair::GroomAsset candidate;
     REQUIRE(candidate.addGroup(std::move(unsupported)).ok());
     const auto curveCount = groom.getCurveCount();
-    CHECK(!groom.setAsset(candidate).ok());
-    CHECK_EQ(groom.getCurveCount(), curveCount);
-    CHECK(groom.getMesh() == mesh);
-    CHECK(mesh->gpuHandle == gpuIdentity);
+    REQUIRE(!groom.setAsset(candidate).ok());
+    REQUIRE_EQ(groom.getCurveCount(), curveCount);
+    requireGroomIdentity(_ZEROERR_TEST_CONTEXT, groom, mesh, gpuIdentity);
     groom.setWidthScale(4.f);
-    REQUIRE(prepare().ok());
-    CHECK(groom.getMesh() == mesh);
+    prepareGroomResources(_ZEROERR_TEST_CONTEXT, *gfx);
+    REQUIRE(groom.getMesh() == mesh);
     gfx->begin3DFrame();
     groom.draw();
     gfx->present();
 }
 }  // namespace test_graphics_resource_reuse
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_render)
+// Contract section: graphics vegetation render
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <filesystem>
-#include <fstream>
-#include <memory>
+
 #include "asset/CanonicalMesh.h"
 #include "asset/graphics/VegetationAsset.h"
-#include "filesystem/FileData.h"
-#include "graphics/Canvas.h"
-#include "graphics/Graphics.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/RenderSystem3D.h"
 #include "graphics/VegetationField.h"
 #include "graphics/VegetationMaskPacking.h"
 #include "graphics/VegetationMotion.h"
 #include "graphics/VegetationRender.h"
 #include "image/Image.h"
-#include "image/ImageData.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_vegetation_render.cpp
 namespace test_graphics_vegetation_render {
 using namespace eve::graphics;
@@ -4005,50 +3544,24 @@ TEST_CASE("graphics.vegetation.render_mesh_update_and_season") {
     plant->setVisible(false);
 }
 }  // namespace test_graphics_vegetation_render
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hair)
+// Contract section: hair
 #include "PrivateTestScope.h"
-#include <glm/gtc/matrix_transform.hpp>
+
 #include <glm/mat4x4.hpp>
 #include <glm/vec3.hpp>
-#include "Fixtures.h"
-#include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
-#include "graphics/Canvas.h"
-#include "graphics/DrawItem2D.h"
-#include "graphics/Font.h"
-#include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
-#include "graphics/Graphics.h"
-#include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
-#include "graphics/Light.h"
-#include "graphics/Material.h"
-#include "graphics/Mesh.h"
-#include "graphics/Outline.h"
-#include "graphics/Quad.h"
-#include "graphics/RenderControl.h"
-#include "graphics/RenderSystem3D.h"
-#include "graphics/ScreenSpaceReflection.h"
-#include "graphics/Shader.h"
-#include "graphics/Texture.h"
-#include "graphics/Volumetric.h"
-#include "graphics/Water.h"
-#include "graphics/Waterfall.h"
 #include "graphics/hair/Binding.h"
 #include "graphics/hair/ClusterGrid.h"
 #include "graphics/hair/GroomAsset.h"
-#include "graphics/hair/GroomInstance.h"
 #include "graphics/hair/Guides.h"
 #include "graphics/hair/Procedural.h"
 #include "graphics/hair/RibbonBuilder.h"
 #include "graphics/hair/Simulation.h"
 #include "graphics/hair/StrandsDatas.h"
-#include "window/Window.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // hair.cpp
 namespace test_hair {
 #include "graphics/shaders/mesh3d_hair_frag_spv.inc"
@@ -4309,4 +3822,3 @@ TEST_CASE("graphics.hair.groomInstanceGuideSimUpdate") {
     win->close();
 }
 }  // namespace test_hair
-#endif

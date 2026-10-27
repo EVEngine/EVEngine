@@ -4,26 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "concurrency",
-  "cases": {
-    "script-binding": [
-      "devtools.mcp.consoleToolsRoundTripScriptPrint",
-      "procgen.result.squirrelExecutionAndSchedulerShareProjection",
-      "procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically"
-    ],
-    "runtime-lifecycle": [
-      "devtools.mcp.inputBatchWaitCompletesAcrossPoll"
-    ],
-    "platform-network": [
-      "event.VariantMessage",
-      "network.NetWorkerQueue",
-      "network.Channel.fragmentedAndCoalescedFrames",
-      "network.Channel.rejectsOversizedFrameHeader",
-      "network.Network.timeoutAndVerifySsl",
-      "network.Network.cppFactoriesReturnOwners",
-      "network.NetWriterReaderRoundtrip",
-      "network.NetReaderOverrunIsSticky"
-    ]
-  },
   "module": "animation",
   "modules": [
     "animation",
@@ -56,15 +36,37 @@
     "render_graph.cpp",
     "thread.cpp",
     "voxel.cpp"
-  ]
+  ],
+  "cases": {
+    "platform-network": [
+      "event.VariantMessage",
+      "network.Channel.fragmentedAndCoalescedFrames",
+      "network.Channel.rejectsOversizedFrameHeader",
+      "network.NetReaderOverrunIsSticky",
+      "network.NetWorkerQueue",
+      "network.NetWriterReaderRoundtrip",
+      "network.Network.cppFactoriesReturnOwners",
+      "network.Network.timeoutAndVerifySsl"
+    ],
+    "runtime-lifecycle": [
+      "devtools.mcp.inputBatchWaitCompletesAcrossPoll"
+    ],
+    "script-binding": [
+      "devtools.mcp.consoleToolsRoundTripScriptPrint",
+      "procgen.result.squirrelExecutionAndSchedulerShareProjection",
+      "procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: animation batch lod
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_batch_lod)
-#include "PrivateTestScope.h"
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -72,7 +74,6 @@
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // animation_batch_lod.cpp
 namespace test_animation_batch_lod {
@@ -108,11 +109,12 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
     }
 }
 }  // namespace test_animation_batch_lod
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_binary)
+// Contract section: animation binary
+#include <stdexcept>
+#include "PrivateTestScope.h"
+
 #include <bit>
-#include <cmath>
 #include <cstdint>
 #include <limits>
 #include <stdexcept>
@@ -121,10 +123,6 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
 #include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimParallelInternal.h"
-#include "animation/AnimPose.h"
-#include "animation/AnimSkeleton.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_binary.cpp
 namespace test_animation_binary {
 using namespace eve::animation;
@@ -219,19 +217,17 @@ TEST_CASE("animation.binary.parallelWorkersJoinBeforeFailureReturns") {
     for (int item : visited) CHECK(item == 1);
 }
 }  // namespace test_animation_binary
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_cmdline_sdk_hash)
+// Contract section: cmdline sdk hash
 #include "PrivateTestScope.h"
+
 #include <array>
 #include <barrier>
 #include <fstream>
 #include <future>
 #include <string>
-#include <vector>
 #include "Fixtures.h"
 #include "cmdline/sdk_tools.h"
-#include "zeroerr/unittest.h"
 // cmdline_sdk_hash.cpp
 namespace test_cmdline_sdk_hash {
 TEST_CASE("cmdline.sdkSha256IndependentConcurrentReads") {
@@ -271,22 +267,19 @@ TEST_CASE("cmdline.sdkSha256IndependentConcurrentReads") {
     REQUIRE(eve::cmd::sdk::fileSha256((dir.path() / "missing.bin").string()).empty());
 }
 }  // namespace test_cmdline_sdk_hash
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_common_diagnostic_vector_instances)
+// Contract section: common diagnostic vector instances
 #include "PrivateTestScope.h"
+
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include <atomic>
 #include <thread>
 #include <type_traits>
 #include <utility>
-#include <vector>
 #include "common/Diagnostic.h"
 #include "common/StringMapInstances.h"
 #include "common/Subscription.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // common_diagnostic_vector_instances.cpp
 namespace test_common_diagnostic_vector_instances {
 // common_diagnostic_vector_instances.cpp
@@ -341,21 +334,18 @@ TEST_CASE("common.stringMap.independentContainersOnThreads") {
 
 // common_subscription.cpp
 }  // namespace test_common_diagnostic_vector_instances
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_architecture_graph)
+// Contract section: mcp architecture graph
 #include "PrivateTestScope.h"
+
 #include <Poco/JSON/Parser.h>
 #include <chrono>
 #include <sstream>
-#include <thread>
 #include "common/BindingContracts.h"
 #include "common/ScriptCompiler.h"
 #include "devtools/McpArchitectureTools.hpp"
 #include "devtools/McpServer.hpp"
 #include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_architecture_graph.cpp
 namespace test_mcp_architecture_graph {
 namespace {
@@ -418,19 +408,12 @@ TEST_CASE("devtools.architecture.mcpStdioListsAndQueriesGraph") {
     CHECK(checked);
 }
 }  // namespace test_mcp_architecture_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_binding_architecture)
+// Contract section: mcp binding architecture
 #include "PrivateTestScope.h"
+
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <thread>
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_binding_architecture.cpp
 namespace test_mcp_binding_architecture {
 TEST_CASE("devtools.mcp.bindingArchitectureEvidence") {
@@ -542,26 +525,14 @@ TEST_CASE("devtools.mcp.eveApiGetSuggestsOnMiss") {
     CHECK(sawResolved);
 }
 }  // namespace test_mcp_binding_architecture
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_console)
+// Contract section: mcp console
 #include "PrivateTestScope.h"
+
 #include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <cstdint>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_console.cpp
 namespace test_mcp_console {
 // MCP runtime-console tools: an unattended agent must be able to read the same
@@ -772,18 +743,10 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
     CHECK(unknown->getValue<std::string>("protocolVersion") == "2025-06-18");
 }
 }  // namespace test_mcp_console
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_domain_tools)
+// Contract section: mcp domain tools
 #include "PrivateTestScope.h"
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
+
 #include "common/Capability.h"
 #include "common/DecalQuery.h"
 #include "common/Module.h"
@@ -792,11 +755,8 @@ TEST_CASE("devtools.mcp.initializeNegotiatesSupportedProtocol") {
 #include "common/SensingQuery.h"
 #include "decal/Decal.h"
 #include "devtools/McpDomainTools.hpp"
-#include "devtools/McpServer.hpp"
 #include "profiler/Profiler.h"
 #include "sensing/Sensing.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_domain_tools.cpp
 namespace test_mcp_domain_tools {
 // Capability-backed MCP domain tools.
@@ -975,26 +935,13 @@ TEST_CASE("devtools.mcp.sensingToolsReadLiveWorldQueries") {
     CHECK(callToolOnce("eve_sensing_last_query", R"({"world":3})").find("no live sensing world") != std::string::npos);
 }
 }  // namespace test_mcp_domain_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_editor_targets)
+// Contract section: mcp editor targets
 #include "PrivateTestScope.h"
-#include <Poco/Dynamic/Var.h>
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "common/Capability.h"
+
 #include "common/EditorAutomation.h"
-#include "devtools/McpServer.hpp"
 #include "editor/Editor.h"
 #include "voxel/editor/VoxelEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_editor_targets.cpp
 namespace test_mcp_editor_targets {
 // Editor target discovery over MCP.
@@ -1148,25 +1095,13 @@ TEST_CASE("devtools.mcp.editorTargetListRejectsUnknownType") {
     CHECK(findTarget(callToolOnce("eve_editor_target_list", "{}"), "agent.nope") == nullptr);
 }
 }  // namespace test_mcp_editor_targets
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_input_tools)
+// Contract section: mcp input tools
 #include "PrivateTestScope.h"
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
-#include "common/Capability.h"
+
 #include "common/InputInjection.h"
 #include "common/Result.h"
 #include "devtools/McpInputTools.hpp"
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_input_tools.cpp
 namespace test_mcp_input_tools {
 // MCP playtest input tools: inject via IInputInjection, defer wait/capture across
@@ -1366,16 +1301,10 @@ TEST_CASE("devtools.mcp.inputBatchReportsMissingProvider") {
     CHECK(batch->has("hint"));
 }
 }  // namespace test_mcp_input_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_stdio)
+// Contract section: mcp stdio
 #include "PrivateTestScope.h"
-#include <chrono>
-#include <sstream>
-#include <thread>
-#include "devtools/McpServer.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // mcp_stdio.cpp
 namespace test_mcp_stdio {
 TEST_CASE("devtools.mcp.stdioTransport") {
@@ -1414,25 +1343,13 @@ TEST_CASE("devtools.mcp.stdioTransport") {
     REQUIRE(resp.find("eve_host_status") != std::string::npos);
 }
 }  // namespace test_mcp_stdio
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_mcp_tool_filter)
-#include <Poco/JSON/Array.h>
-#include <Poco/JSON/Object.h>
-#include <Poco/JSON/Parser.h>
-#include <chrono>
-#include <cstdlib>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <vector>
+// Contract section: mcp tool filter
 #include "PrivateTestScope.h"
+
+#include <cstdlib>
 #include "devtools/AgentDevelopmentSession.hpp"
-#include "devtools/McpServer.hpp"
 #include "devtools/McpTaskProfile.hpp"
-#include "devtools/McpToolFilter.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // mcp_tool_filter.cpp
 namespace test_mcp_tool_filter {
 // MCP toolset / read-only / exclude filters: tools/list and tools/call must agree.
@@ -1605,16 +1522,12 @@ TEST_CASE("devtools.mcp.taskProfileStacksWithToolsetAndEscalates") {
     CHECK_EQ(mcpProfileToolsetEnv("verify.play"), std::string("agent,core,play,input"));
 }
 }  // namespace test_mcp_tool_filter
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_network)
+// Contract section: network
 #include "PrivateTestScope.h"
-#include <atomic>
-#include <chrono>
+
 #include <cstdio>
 #include <cstring>
-#include <string>
-#include <thread>
 #include "data/ByteData.h"
 #include "network/Channel.h"
 #include "network/HttpRequest.h"
@@ -1628,8 +1541,6 @@ TEST_CASE("devtools.mcp.taskProfileStacksWithToolsetAndEscalates") {
 #include "network/UdpLink.h"
 #include "network/UdpSocket.h"
 #include "platform_event/PlatformEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // network.cpp
 namespace test_network {
 using eve::platform_event::Message;
@@ -2497,21 +2408,15 @@ TEST_CASE("network.NetHostPeers") {
     recordPhase("destroy client and host");
 }
 }  // namespace test_network
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_pixelworld_parallel)
+// Contract section: pixelworld parallel
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <chrono>
-#include <cstdlib>
 #include <iostream>
-#include <memory>
-#include <vector>
 #include "pixelworld/PixelWorld.h"
 #include "pixelworld/thread/PixelWorldThread.h"
 #include "thread/JobSystem.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // pixelworld_parallel.cpp
 namespace test_pixelworld_parallel {
 using namespace eve::pixelworld;
@@ -2605,16 +2510,13 @@ TEST_CASE("pixelworld.benchmark_million_mobile_pixels_reports_p50_p95") {
     CHECK(p95 >= p50);
 }
 }  // namespace test_pixelworld_parallel
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_result_contract)
+// Contract section: procgen result contract
 #include "PrivateTestScope.h"
-#include <future>
-#include <memory>
+
 #include "procgen/PointGraph.h"
 #include "procgen/Procgen.h"
 #include "procgen/RuntimeGeneration.h"
-#include "zeroerr/unittest.h"
 // procgen_result_contract.cpp
 namespace test_procgen_result_contract {
 using namespace eve;
@@ -2854,15 +2756,13 @@ TEST_CASE("procgen.scriptHostCommitsAndRollsBackGeneratorsAtomically") {
     CHECK_EQ(vm.find("afterUnfinishedRevision").toInt(), 1);
 }
 }  // namespace test_procgen_result_contract
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_procgen_rng_contract)
+// Contract section: procgen rng contract
 #include "PrivateTestScope.h"
+
 #include <DTL/Shape/CellularAutomatonIsland.hpp>
-#include <future>
 #include "procgen/GeneratorRegistry.h"
 #include "procgen/Semantic.h"
-#include "zeroerr/unittest.h"
 // procgen_rng_contract.cpp
 namespace test_procgen_rng_contract {
 using namespace eve::procgen;
@@ -2906,24 +2806,15 @@ TEST_CASE("procgen.cave.cellular.parallelJobsHaveIsolatedRandomStreams") {
     CHECK(sameCells(expectedB.second, actualB.second));
 }
 }  // namespace test_procgen_rng_contract
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_render_graph)
+// Contract section: render graph
+#include "common/config.h"
+#if !defined(EVENGINE_WEBGPU)
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <atomic>
-#include <chrono>
-#include <cstdint>
-#include <memory>
+
 #include <mutex>
-#include <string>
-#include <thread>
-#include <vector>
 #include "graphics/vulkan/FrameGraphJobs.h"
-#include "thread/JobSystem.h"
 #include "vkbuilder/framegraph.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // render_graph.cpp
 namespace test_render_graph {
 // Device-free tests for the FrameGraph-based render pipeline planning and the
@@ -3304,24 +3195,15 @@ TEST_CASE("render_graph.recordCycleConcurrent") {
 }  // namespace test_render_graph
 #endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_thread)
+// Contract section: thread
 #include "PrivateTestScope.h"
-#include <atomic>
-#include <chrono>
+
 #include <functional>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
 #include "common/Exception.h"
-#include "platform_event/PlatformEvent.h"
 #include "thread/Channel.h"
-#include "thread/JobSystem.h"
 #include "thread/Task.h"
 #include "thread/Thread.h"
 #include "thread/ThreadPool.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // thread.cpp
 namespace test_thread {
 namespace {
@@ -3963,19 +3845,10 @@ TEST_CASE("thread.jobsystem.defaultSystem") {
     delete job;
 }
 }  // namespace test_thread
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_voxel)
+// Contract section: voxel
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <chrono>
-#include <cmath>
-#include <cstring>
-#include <memory>
-#include <string>
-#include <thread>
-#include <vector>
-#include "data/ByteData.h"
+
 #include "procgen/heightmap/TerrainAsset.h"
 #include "procgen/heightmap/TerrainSampler.h"
 #include "voxel/Chunk.h"
@@ -3987,8 +3860,6 @@ TEST_CASE("thread.jobsystem.defaultSystem") {
 #include "voxel/VoxelPack.h"
 #include "voxel/VoxelRectDecode.h"
 #include "voxel/VoxelWorld.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // voxel.cpp
 namespace test_voxel {
 using namespace eve::voxel;
@@ -4110,4 +3981,3 @@ TEST_CASE("voxel.world.streamAround_create_budget_spreads_across_calls") {
     CHECK_EQ(world.getInflightStreamCount(), 0);
 }
 }  // namespace test_voxel
-#endif

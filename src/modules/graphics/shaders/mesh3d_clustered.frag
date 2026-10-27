@@ -44,6 +44,9 @@ layout(set = 0, binding = 1) uniform sampler2D albedoSampler;
 layout(set = 0, binding = 2) uniform sampler2D normalSampler;
 layout(set = 0, binding = 3) uniform samplerCube envSampler;
 layout(set = 0, binding = 9) uniform sampler2D heightSampler;
+layout(set = 0, binding = 10) uniform sampler2D decalAlbedoSampler;
+layout(set = 0, binding = 11) uniform sampler2D decalNormalSampler;
+layout(set = 0, binding = 12) uniform sampler2D decalParamsSampler;
 layout(set = 0, binding = 18) uniform samplerCube reflectionProbe0;
 layout(set = 0, binding = 19) uniform samplerCube reflectionProbe1;
 
@@ -368,6 +371,28 @@ void main() {
     }
     if (length(nSample - vec3(0.5, 0.5, 1.0)) > 0.04)
         N = applyNormalMap(N, nSample, vWorldPos, uv);
+    // The clustered ForwardPlus overwrite path consumes the same decal layer
+    // as packed lighting; disabled decals bind zero-coverage placeholders.
+    vec3 emissive = vec3(0.0);
+    vec2 decalUV = gl_FragCoord.xy / vec2(textureSize(decalAlbedoSampler, 0));
+    vec4 decalA = texture(decalAlbedoSampler, decalUV);
+    float decalCov = clamp(decalA.a, 0.0, 1.0);
+    if (decalCov > 0.001) {
+        albedo = mix(albedo, decalA.rgb, decalCov);
+        vec4 decalN = texture(decalNormalSampler, decalUV);
+        float nWeight = clamp(decalN.a, 0.0, 1.0);
+        if (nWeight > 0.001) {
+            vec3 decalNormal = normalize(decalN.rgb * 2.0 - 1.0);
+            N = normalize(mix(N, decalNormal, nWeight));
+        }
+        vec4 decalP = texture(decalParamsSampler, decalUV);
+        float pWeight = clamp(decalP.a, 0.0, 1.0);
+        if (pWeight > 0.001) {
+            roughness = mix(roughness, decalP.r, pWeight);
+            metallic = mix(metallic, decalP.g, pWeight);
+            emissive += decalA.rgb * decalP.b;
+        }
+    }
     vec3 Lo = vec3(0.0);
     vec3 primaryL = normalize(ubo.lightDir.xyz);
     float shadowVis = sampleShadowPCF(vWorldPos, N, max(-vViewPos.z, 0.0), max(dot(N, primaryL), 0.0));
@@ -464,5 +489,6 @@ void main() {
     }
 
 
+    color += emissive;
     outColor = vec4(color, 1.0);
 }
