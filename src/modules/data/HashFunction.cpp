@@ -42,102 +42,91 @@ inline uint64_t rightrot(uint64_t x, uint8_t amount)
  * information is present. I believe this note, and the zlib license of this
  * project satisfy the conditions of the license.
  **/
-class MD5 : public HashFunction
-{
+class MD5 : public HashFunction {
 private:
-	static const uint8_t shifts[64];
-	static const uint32_t constants[64];
+    static const uint8_t  shifts[64];
+    static const uint32_t constants[64];
 
 public:
-	bool isSupported(std::string function) const override
-	{
-		return function == "md5";
-	}
+    bool isSupported(std::string function) const override { return function == "md5"; }
 
-	void hash(std::string function, const char *input, uint64_t length, Value &output) const override
-	{
-		if (function != "md5")
-			throw eve::Exception("Hash function not supported by MD5 implementation");
+    void hash(std::string function, const char *input, uint64_t length, Value &output) const override {
+        if (function != "md5") throw eve::Exception("Hash function not supported by MD5 implementation");
 
-		uint32_t a0 = 0x67452301;
-		uint32_t b0 = 0xefcdab89;
-		uint32_t c0 = 0x98badcfe;
-		uint32_t d0 = 0x10325476;
+        uint32_t a0 = 0x67452301;
+        uint32_t b0 = 0xefcdab89;
+        uint32_t c0 = 0x98badcfe;
+        uint32_t d0 = 0x10325476;
 
-		//Do the required padding (MD5, SHA1 and SHA2 use the same padding)
-		uint64_t paddedLength = length + 1; //Consider the appended bit
-		if (paddedLength % 64 < 56)
-			paddedLength += 56 - paddedLength % 64;
-		if (paddedLength % 64 > 56)
-			paddedLength += 120 - paddedLength % 64;
+        // Do the required padding (MD5, SHA1 and SHA2 use the same padding)
+        uint64_t paddedLength = length + 1;  // Consider the appended bit
+        if (paddedLength % 64 < 56) paddedLength += 56 - paddedLength % 64;
+        if (paddedLength % 64 > 56) paddedLength += 120 - paddedLength % 64;
 
-		uint8_t *padded = new uint8_t[paddedLength + 8];
-		if (length != 0)
-			memcpy(padded, input, length);
-		memset(padded + length, 0, paddedLength - length);
-		padded[length] = 0x80;
+        uint8_t *padded = new uint8_t[paddedLength + 8];
+        if (length != 0) memcpy(padded, input, length);
+        memset(padded + length, 0, paddedLength - length);
+        padded[length] = 0x80;
 
-		//Now we need the length in bits
-                const uint64_t bitLength = length * 8;
-                for (int byte = 0; byte < 8; ++byte)
-                    padded[paddedLength + byte] = static_cast<uint8_t>(bitLength >> (byte * 8));
-                paddedLength += 8;
+        // Now we need the length in bits
+        const uint64_t bitLength = length * 8;
+        for (int byte = 0; byte < 8; ++byte)
+            padded[paddedLength + byte] = static_cast<uint8_t>(bitLength >> (byte * 8));
+        paddedLength += 8;
 
-                for (uint64_t i = 0; i < paddedLength; i += 64)
-		{
-                    uint32_t chunk[16];
-                    memcpy(chunk, padded + i, sizeof(chunk));
+        for (uint64_t i = 0; i < paddedLength; i += 64) {
+            uint32_t chunk[16];
+            memcpy(chunk, padded + i, sizeof(chunk));
 
-                    uint32_t A = a0;
-                    uint32_t B = b0;
-                    uint32_t C = c0;
-                    uint32_t D = d0;
-                    uint32_t F;
-                    uint32_t g;
+            uint32_t A = a0;
+            uint32_t B = b0;
+            uint32_t C = c0;
+            uint32_t D = d0;
+            uint32_t F;
+            uint32_t g;
 
-                    for (int j = 0; j < 64; j++) {
-                        if (j < 16) {
-                            F = (B & C) | (~B & D);
-                            g = j;
-                        } else if (j < 32) {
-                            F = (D & B) | (~D & C);
-                            g = (5 * j + 1) % 16;
-                        } else if (j < 48) {
-                            F = B ^ C ^ D;
-                            g = (3 * j + 5) % 16;
-                        } else {
-                            F = C ^ (B | ~D);
-                            g = (7 * j) % 16;
-                        }
+            for (int j = 0; j < 64; j++) {
+                if (j < 16) {
+                    F = (B & C) | (~B & D);
+                    g = j;
+                } else if (j < 32) {
+                    F = (D & B) | (~D & C);
+                    g = (5 * j + 1) % 16;
+                } else if (j < 48) {
+                    F = B ^ C ^ D;
+                    g = (3 * j + 5) % 16;
+                } else {
+                    F = C ^ (B | ~D);
+                    g = (7 * j) % 16;
+                }
 
-                        uint32_t temp = D;
-                        D             = C;
-                        C             = B;
-                        B += leftrot(A + F + constants[j] + chunk[g], shifts[j]);
-                        A = temp;
-                    }
+                uint32_t temp = D;
+                D             = C;
+                C             = B;
+                B += leftrot(A + F + constants[j] + chunk[g], shifts[j]);
+                A = temp;
+            }
 
-                        a0 += A;
-			b0 += B;
-			c0 += C;
-			d0 += D;
-		}
+            a0 += A;
+            b0 += B;
+            c0 += C;
+            d0 += D;
+        }
 
-		delete[] padded;
+        delete[] padded;
 
-		memcpy(&output.data[ 0], &a0, 4);
-		memcpy(&output.data[ 4], &b0, 4);
-		memcpy(&output.data[ 8], &c0, 4);
-		memcpy(&output.data[12], &d0, 4);
-		output.size = 16;
-	}
+        memcpy(&output.data[0], &a0, 4);
+        memcpy(&output.data[4], &b0, 4);
+        memcpy(&output.data[8], &c0, 4);
+        memcpy(&output.data[12], &d0, 4);
+        output.size = 16;
+    }
 } md5;
 
 const uint8_t MD5::shifts[64] = {
-	7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22, 7, 12, 17, 22,
-	5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20, 5, 9, 14, 20,
-	4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23, 4, 11, 16, 23,
-	6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21, 6, 10, 15, 21,
+    7,  12, 17, 22, 7,  12, 17, 22, 7,  12, 17, 22, 7,  12, 17, 22, 5,  9,  14, 20, 5,  9,
+    14, 20, 5,  9,  14, 20, 5,  9,  14, 20, 4,  11, 16, 23, 4,  11, 16, 23, 4,  11, 16, 23,
+    4,  11, 16, 23, 6,  10, 15, 21, 6,  10, 15, 21, 6,  10, 15, 21, 6,  10, 15, 21,
 };
 
 const uint32_t MD5::constants[64] = {
