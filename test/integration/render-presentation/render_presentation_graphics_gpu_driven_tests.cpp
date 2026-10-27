@@ -335,6 +335,8 @@ struct SpineDemoModel {
     const char *animation;
     float       cx = 0.f, cy = 0.f;  // target CENTER of the model's bounding box on screen
     float       scale = 1.f;
+    const char *unsupported = nullptr;  // Expected rejection for full-runtime assets.
+    const char *regionJson = nullptr;   // Explicit supported fixture; never strip source features.
 };
 
 struct SpineDemoPlayer {
@@ -372,8 +374,9 @@ struct SpineDemoPlayer {
 }  // namespace
 
 /**
- * Renders three real Spine models (downloaded via scripts/download_spine_models.py)
- * into a window for a few seconds, each playing a looped animation.
+ * Checks explicit rejection of full-runtime assets and renders the supported
+ * region-only fixture using the real dragon atlas (downloaded via
+ * scripts/download_spine_models.py).
  * Skips (returns) when the assets have not been downloaded.
  */
 TEST_CASE("animation.spine.windowDemoRealModels") {
@@ -411,18 +414,45 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
 
     const SpineDemoModel models[] = {
         // (cx, cy) is the desired on-screen CENTER of each model's bounding box;
-        // the actual root-anchor offset is measured at runtime so all three
-        // characters are laid out side by side without overlap.
-        {"spineboy/export/spineboy.json", "spineboy/export/spineboy.atlas", "run", 250.f, 420.f, 0.55f},
-        {"hero/export/hero.json", "hero/export/hero.atlas", "Walk", 640.f, 430.f, 1.2f},
-        {"dragon/export/dragon.json", "dragon/export/dragon.atlas", "flying", 1030.f, 400.f, 0.5f},
+        // the actual root-anchor offset is measured at runtime.
+        {"spineboy/export/spineboy.json", "spineboy/export/spineboy.atlas", "run", 250.f, 420.f, 0.55f,
+         "blend mode in slot 'muzzle'"},
+        {"hero/export/hero.json", "hero/export/hero.atlas", "Walk", 640.f, 430.f, 1.2f, "constraint 'ik'"},
+        {"dragon/export/dragon.json", "dragon/export/dragon.atlas", "flying", 1030.f, 400.f, 0.5f, "Bezier"},
+        // A deliberately small region-only skeleton still exercises texture upload,
+        // animation, draw submission and screen readback with the real dragon atlas.
+        {"dragon/export/dragon.json", "dragon/export/dragon.atlas", "sway", 640.f, 420.f, 3.f, nullptr,
+         R"JSON({
+           "bones": [{"name": "root"}],
+           "slots": [{"name": "leg", "bone": "root", "attachment": "L_front_leg"}],
+           "skins": {"default": {"leg": {"L_front_leg": {"width": 84, "height": 57}}}},
+           "animations": {"sway": {"bones": {"root": {"rotate": [
+             {"time": 0, "angle": 0}, {"time": 0.5, "angle": 20}, {"time": 1, "angle": 0}
+           ]}}}}
+         })JSON"},
     };
 
     std::vector<SpineDemoPlayer> players;
+    std::vector<const SpineDemoModel *> renderedModels;
     for (const auto &m : models) {
         SpineDemoPlayer p;
-        p.data.reset(anim->newSpineSkeletonDataFromFile(m.relPath));
+        p.data.reset(anim->newSpineSkeletonData());
         REQUIRE(p.data.get() != nullptr);
+        std::string error;
+        const bool loaded = m.regionJson ? p.data->loadFromJson(m.regionJson, &error)
+                                         : p.data->loadFromFile(m.relPath, &error);
+        if (m.unsupported) {
+            // These models need the full runtime; validate the exact diagnostic
+            // instead of accepting the old silently incomplete rendering.
+            REQUIRE(!loaded);
+            REQUIRE(error.find("SpineSkeletonData: unsupported ") == 0);
+            REQUIRE(error.find(m.unsupported) != std::string::npos);
+            REQUIRE_EQ(p.data->getBoneCount(), 0);
+            REQUIRE_EQ(p.data->getSlotCount(), 0);
+            REQUIRE_EQ(p.data->getSkinCount(), 0);
+            continue;
+        }
+        REQUIRE(loaded);
         p.atlas.reset(anim->newSpineAtlasFromFile(m.atlasRel));
         REQUIRE(p.atlas.get() != nullptr);
         p.skeleton.reset(anim->newSpineSkeleton(p.data.get()));
@@ -454,8 +484,10 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
         measurePoseCenter(p.anim.get(), poseCx, poseCy);
         p.anim->setPosition(m.cx - poseCx, m.cy - poseCy);
         players.push_back(std::move(p));
+        renderedModels.push_back(&m);
     }
 
+    REQUIRE_EQ(players.size(), 1u);  // The explicit region fixture must render.
     gfx->setBackgroundColorRGBA(0.10f, 0.12f, 0.15f, 1.f);
     std::vector<eve::graphics::DrawItem2D> items;
     std::vector<size_t>                    perPlayerItems(players.size(), 0);
@@ -497,8 +529,8 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     std::vector<int> perPlayerLitPixels(players.size(), 0);
     const Color      bg = gfx->getPixel(4, 4);
     for (size_t pi = 0; pi < players.size(); ++pi) {
-        const int cx = static_cast<int>(models[pi].cx);
-        const int cy = static_cast<int>(models[pi].cy);
+        const int cx = static_cast<int>(renderedModels[pi]->cx);
+        const int cy = static_cast<int>(renderedModels[pi]->cy);
         // A posed skeleton's bounding-box center can lie in the gap between
         // its body and an extended weapon; sample its own layout cell.
         for (int dy = -96; dy <= 96; dy += 16) {
@@ -516,9 +548,9 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     // non-background pixels around that center.
     for (size_t pi = 0; pi < players.size(); ++pi) {
         std::printf("spine model %zu: lit samples=%d\n", pi, perPlayerLitPixels[pi]);
-        CHECK_GT(perPlayerItems[pi], 0u);
-        CHECK(perPlayerRotated[pi]);
-        CHECK_GT(perPlayerLitPixels[pi], 0);
+        REQUIRE_GT(perPlayerItems[pi], 0u);
+        REQUIRE(perPlayerRotated[pi]);
+        REQUIRE_GT(perPlayerLitPixels[pi], 0);
 
         // measurePoseCenter deliberately samples local-space quads by setting
         // the player position to zero. Preserve the actual rendered translation
@@ -530,8 +562,8 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
         players[pi].anim->setPosition(renderedX, renderedY);
         const float onScreenCx = renderedX + poseCx;
         const float onScreenCy = renderedY + poseCy;
-        REQUIRE(std::fabs(onScreenCx - models[pi].cx) < 40.f);
-        REQUIRE(std::fabs(onScreenCy - models[pi].cy) < 40.f);
+        REQUIRE(std::fabs(onScreenCx - renderedModels[pi]->cx) < 40.f);
+        REQUIRE(std::fabs(onScreenCy - renderedModels[pi]->cy) < 40.f);
     }
     win->close();
 }
@@ -3840,3 +3872,4 @@ TEST_CASE("graphics.hair.groomInstanceGuideSimUpdate") {
     win->close();
 }
 }  // namespace test_hair
+

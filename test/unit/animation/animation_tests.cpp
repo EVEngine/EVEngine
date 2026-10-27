@@ -2483,6 +2483,112 @@ TEST_CASE("animation.spine.skeletonAnimationAndDrawItemsFollowJsonData") {
     player->collectDrawItems(items);
     CHECK_EQ(items.size(), std::size_t{2});
 }
+TEST_CASE("animation.spine.unsupportedFeaturesFailLoading") {
+    SpineSkeletonData data;
+    std::string error;
+    for (const std::string type : {"mesh", "linkedmesh", "weightedmesh", "clipping", "boundingbox", "path"}) {
+        for (bool arraySkin : {false, true}) {
+            const std::string attachments =
+                "{\"body\":{\"bodyMesh\":{\"type\":\"" + type + "\"}}}";
+            const std::string skins = arraySkin
+                ? "[{\"name\":\"default\",\"attachments\":" + attachments + "}]"
+                : "{\"default\":" + attachments + "}";
+            REQUIRE(!data.loadFromJson(
+                "{\"bones\":[{\"name\":\"root\"}],"
+                "\"slots\":[{\"name\":\"body\",\"bone\":\"root\"}],\"skins\":" + skins + "}", &error));
+            REQUIRE(error.find(type) != std::string::npos);
+            REQUIRE(error.find("default") != std::string::npos);
+            REQUIRE(error.find("bodyMesh") != std::string::npos);
+            REQUIRE_EQ(data.getBoneCount(), 0);
+            REQUIRE_EQ(data.getSkinCount(), 0);
+        }
+    }
+    REQUIRE(!data.loadFromJson(R"({"ik":[{"name":"arm"}]})", &error));
+    REQUIRE(error.find("constraint 'ik'") != std::string::npos);
+    REQUIRE(!data.loadFromJson(R"({"animations":{"walk":{"deform":{"default":{}}}}})", &error));
+    REQUIRE(error.find("deform") != std::string::npos);
+    REQUIRE(error.find("walk") != std::string::npos);
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root"}],"ik":[],"animations":{"idle":{"deform":{}}}})", &error));
+    REQUIRE(error.empty());
+    REQUIRE_EQ(data.getBoneCount(), 1);
+    // The script-style path without an error output must reject unsupported data too.
+    REQUIRE(!data.loadFromJson(R"({"path":[{"name":"path"}]})"));
+}
+
+TEST_CASE("animation.spine.rejectsSilentDowngrades") {
+    SpineSkeletonData data;
+    std::string error;
+    const std::pair<const char *, const char *> cases[] = {
+        {R"({"slots":[{"name":"body","bone":"missing"}]})", "missing"},
+        {R"({"slots":[{"name":"body","bone":"root","color":"ffffff00"}]})", "color"},
+        {R"({"slots":[{"name":"body","bone":"root","blend":"additive"}]})", "blend"},
+        {R"({"bones":[{"name":"root","shearX":10}]})", "shear"},
+        {R"({"bones":[{"name":"root","inherit":"onlyTranslation"}]})", "inherit"},
+        {R"({"skins":{"default":{"missing":{"mesh":{"type":"mesh"}}}}})", "missing"},
+        {R"({"animations":{"walk":{"bones":{"missing":{"rotate":[]}}}}})", "missing"},
+        {R"({"animations":{"walk":{"bones":{"root":{"shear":[]}}}}})", "shear"},
+        {R"({"animations":{"walk":{"bones":{"root":{"rotate":[{"curve":[0.2,0,0.8,1]}]}}}}})", "Bezier"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"animations":{"walk":{"slots":{"body":{"rgba":[]}}}}})", "rgba"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"skins":{"default":{"body":{"a":{"color":"ffffff00"}}}}})", "color"},
+        {R"({"slots":[{"name":"body","bone":"root"}],"skins":{"default":{"body":{"a":{"sequence":{}}}}}})", "sequence"},
+    };
+    for (const auto &[json, expected] : cases) {
+        REQUIRE(!data.loadFromJson(json, &error));
+        REQUIRE(error.find(expected) != std::string::npos);
+        REQUIRE_EQ(data.getBoneCount(), 0);
+    }
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root","shearX":0,"inherit":"normal"}],
+        "slots":[{"name":"body","bone":"root","color":"ffffffff","blend":"normal"}],
+        "animations":{"walk":{"bones":{"root":{"rotate":[{"curve":"stepped"},{"time":1,"curve":"linear"}]}}}}})", &error));
+    REQUIRE(error.empty());
+}
+
+TEST_CASE("animation.spine.trimOffsetAndMissingReferences") {
+    SpineSkeletonData data;
+    REQUIRE(data.loadFromJson(R"({"bones":[{"name":"root"}],
+        "slots":[{"name":"body","bone":"root","attachment":"a"}],
+        "skins":{"default":{"body":{"a":{"width":100,"height":80}}}}})"));
+    SpineAtlas atlas;
+    REQUIRE(atlas.loadFromText("hero.png\nsize: 128,128\na\n  xy: 0,0\n  size: 40,30\n  orig: 100,80\n  offset: 10,20\n"));
+    SpineSkeleton skeleton(&data);
+    SpineAnim player(&skeleton);
+    player.setFlipY(false);
+    player.setAtlas(&atlas);
+    std::vector<eve::graphics::DrawItem2D> items;
+    player.collectDrawItems(items);
+    REQUIRE_EQ(items.size(), 1u);
+    REQUIRE(std::fabs(items[0].x - (-40.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 40.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 30.f) < 1e-4f);
+    player.setFlipY(true);
+    player.setScale(2.f, 2.f);
+    items.clear();
+    player.collectDrawItems(items);
+    REQUIRE_EQ(items.size(), 1u);
+    REQUIRE(std::fabs(items[0].x - (-80.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].y - (-20.f)) < 1e-4f);
+    REQUIRE(std::fabs(items[0].w - 80.f) < 1e-4f);
+    REQUIRE(std::fabs(items[0].h - 60.f) < 1e-4f);
+    // apply() restores setup pose each frame, so exercise setup attachment names.
+    SpineSkeletonData missingData;
+    REQUIRE(missingData.loadFromJson(R"({"bones":[{"name":"root"}],
+        "slots":[{"name":"body","bone":"root","attachment":"missing"}]})"));
+    SpineSkeleton missingSkeleton(&missingData);
+    SpineAnim missingPlayer(&missingSkeleton);
+    REQUIRE_THROWS((missingPlayer.collectDrawItems(items), false));
+    SpineSkeletonData hiddenData;
+    REQUIRE(hiddenData.loadFromJson(R"({"slots":[{"name":"body","bone":"root"}]})"));
+    SpineSkeleton hiddenSkeleton(&hiddenData);
+    SpineAnim hiddenPlayer(&hiddenSkeleton);
+    items.clear();
+    hiddenPlayer.collectDrawItems(items);
+    REQUIRE(items.empty());
+    SpineAtlas missing;
+    REQUIRE(missing.loadFromText("hero.png\nsize: 128,128\nother\n  xy: 0,0\n  size: 10,10\n"));
+    REQUIRE_THROWS((player.setAtlas(&missing), player.collectDrawItems(items), false));
+}
+
 }  // namespace test_animation_sprite_spine
 #endif
 
@@ -2808,3 +2914,4 @@ TEST_CASE("animation.smr.neural.featureBatchShapes") {
     CHECK(static_cast<int>(batch.sourceDmi.size()) == batch.frames * std::max(batch.pairs, 1) * 10);
 }
 }  // namespace test_smr_feature_math_unit
+

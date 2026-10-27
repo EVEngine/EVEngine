@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <memory>
 
 namespace eve::animation {
@@ -38,11 +39,12 @@ std::string asString(const Poco::Dynamic::Var &v, const std::string &fallback = 
 
 bool keyStepped(Poco::JSON::Object::Ptr obj) {
     if (!obj || !obj->has("curve")) return false;
-    try {
-        return asString(obj->get("curve")) == "stepped";
-    } catch (...) {
-        return false;
-    }
+    const std::string curve = asString(obj->get("curve"));
+    if (curve == "stepped") return true;
+    if (curve == "linear") return false;
+    throw Exception("SpineSkeletonData: unsupported Bezier curve in timeline key at time %g",
+                    asFloat(obj->get("time")));
+
 }
 
 }  // namespace
@@ -187,6 +189,7 @@ bool SpineSkeletonData::loadFromFile(const std::string &path, std::string *error
 
 bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error) {
     clear();
+    if (error) error->clear();
     auto *dm = eve::data::DataModule::create();
     std::string err;
     std::unique_ptr<data::JsonDocument> doc(dm->decodeJson(json, &err));
@@ -197,6 +200,17 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
     Poco::JSON::Object::Ptr root = doc->object();
 
     try {
+        auto rejectUnsupported = [](const std::string &context) {
+            const std::string message = "SpineSkeletonData: unsupported " + context +
+                "; region attachments and basic bone/attachment timelines only; "
+                "use the official spine-cpp runtime for full support";
+            // Script loaders and module factories do not expose the error out parameter.
+            throw Exception("%s", message.c_str());
+        };
+        for (const char *feature : {"ik", "transform", "path", "physics"}) {
+            if (root->has(feature) && root->isArray(feature) && root->getArray(feature)->size() > 0)
+                rejectUnsupported(std::string("constraint '") + feature + "'");
+        }
         if (root->has("skeleton")) {
             auto skel = root->getObject("skeleton");
             if (skel) spineVersion_ = asString(skel->get("spine"));
@@ -212,6 +226,11 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
                     BoneData b;
                     b.name = asString(obj->get("name"));
                     if (b.name.empty()) continue;
+                    if (asFloat(obj->get("shearX")) != 0.f || asFloat(obj->get("shearY")) != 0.f)
+                        rejectUnsupported("shear in bone '" + b.name + "'");
+                    for (const char *mode : {"transform", "inherit"})
+                        if (obj->has(mode) && asString(obj->get(mode)) != "normal")
+                            rejectUnsupported(std::string(mode) + " mode in bone '" + b.name + "'");
                     if (obj->has("parent")) {
                         std::string parent = asString(obj->get("parent"));
                         b.parent           = findBone(parent);
@@ -249,7 +268,14 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
                     s.name = asString(obj->get("name"));
                     std::string boneName = asString(obj->get("bone"));
                     s.bone               = findBone(boneName);
-                    if (s.bone < 0) s.bone = 0;
+                    if (s.bone < 0)
+                        throw Exception("SpineSkeletonData: unknown bone '%s' in slot '%s'",
+                                        boneName.c_str(), s.name.c_str());
+                    if (obj->has("color") && asString(obj->get("color")) != "ffffffff")
+                        rejectUnsupported("color in slot '" + s.name + "'");
+                    if (obj->has("dark")) rejectUnsupported("dark color in slot '" + s.name + "'");
+                    if (obj->has("blend") && asString(obj->get("blend")) != "normal")
+                        rejectUnsupported("blend mode in slot '" + s.name + "'");
                     if (obj->has("attachment")) s.attachment = asString(obj->get("attachment"));
                     slotByName_[s.name] = static_cast<int>(slots_.size());
                     slots_.push_back(std::move(s));
@@ -278,15 +304,22 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
             // Format B (older skins object): same without wrapper
             for (const auto &slotName : attachmentsRoot->getNames()) {
                 int slotIndex = findSlot(slotName);
-                if (slotIndex < 0) continue;
+                if (slotIndex < 0)
+                    throw Exception("SpineSkeletonData: unknown slot '%s' in skin '%s'",
+                                    slotName.c_str(), skin.name.c_str());
                 auto slotObj = attachmentsRoot->getObject(slotName);
                 if (!slotObj) continue;
                 for (const auto &attName : slotObj->getNames()) {
                     auto attObj = slotObj->getObject(attName);
                     if (!attObj) continue;
-                    // Skip non-region types (mesh, boundingbox, ...)
+                    // Never report success after discarding an attachment.
                     std::string type = attObj->has("type") ? asString(attObj->get("type")) : "region";
-                    if (!type.empty() && type != "region") continue;
+                    if (!type.empty() && type != "region")
+                        rejectUnsupported("attachment type '" + type + "' in skin '" + skin.name +
+                                          "', slot '" + slotName + "', attachment '" + attName + "'");
+                    if (attObj->has("color") && asString(attObj->get("color")) != "ffffffff")
+                        rejectUnsupported("color in attachment '" + attName + "' of slot '" + slotName + "'");
+                    if (attObj->has("sequence")) rejectUnsupported("sequence in attachment '" + attName + "'");
                     skin.attachments[slotIndex][attName] = parseRegion(attName, attObj);
                 }
             }
@@ -336,6 +369,16 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
                 for (const auto &animName : animsObj->getNames()) {
                     auto animObj = animsObj->getObject(animName);
                     if (!animObj) continue;
+                    for (const char *feature : {"ik", "transform", "paths", "physics", "deform", "ffd",
+                                                "drawOrder", "draworder", "events", "attachments"}) {
+                        if (!animObj->has(feature)) continue;
+                        const bool nonempty = animObj->isArray(feature)
+                            ? animObj->getArray(feature)->size() > 0
+                            : animObj->getObject(feature) && animObj->getObject(feature)->size() > 0;
+                        if (nonempty)
+                            rejectUnsupported("timeline '" + std::string(feature) + "' in animation '" +
+                                              animName + "'");
+                    }
                     AnimationData anim;
                     anim.name = animName;
                     float maxT = 0.f;
@@ -345,9 +388,15 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
                         if (bonesObj) {
                             for (const auto &boneName : bonesObj->getNames()) {
                                 int bi = findBone(boneName);
-                                if (bi < 0) continue;
+                                if (bi < 0)
+                                    throw Exception("SpineSkeletonData: unknown bone '%s' in animation '%s'",
+                                                    boneName.c_str(), animName.c_str());
                                 auto btObj = bonesObj->getObject(boneName);
                                 if (!btObj) continue;
+                                for (const auto &timeline : btObj->getNames())
+                                    if (timeline != "rotate" && timeline != "translate" && timeline != "scale")
+                                        rejectUnsupported("bone timeline '" + timeline + "' for bone '" +
+                                                          boneName + "' in animation '" + animName + "'");
                                 BoneTimeline bt;
                                 bt.boneIndex = bi;
 
@@ -409,9 +458,15 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
                         if (slotsObj) {
                             for (const auto &slotName : slotsObj->getNames()) {
                                 int si = findSlot(slotName);
-                                if (si < 0) continue;
+                                if (si < 0)
+                                    throw Exception("SpineSkeletonData: unknown slot '%s' in animation '%s'",
+                                                    slotName.c_str(), animName.c_str());
                                 auto stObj = slotsObj->getObject(slotName);
                                 if (!stObj) continue;
+                                for (const auto &timeline : stObj->getNames())
+                                    if (timeline != "attachment")
+                                        rejectUnsupported("slot timeline '" + timeline + "' for slot '" +
+                                                          slotName + "' in animation '" + animName + "'");
                                 SlotTimeline st;
                                 st.slotIndex = si;
                                 if (stObj->has("attachment")) {
@@ -440,6 +495,7 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
             }
         }
     } catch (const std::exception &ex) {
+        std::fprintf(stderr, "%s\n", ex.what());
         if (error) *error = ex.what();
         clear();
         return false;
@@ -449,3 +505,4 @@ bool SpineSkeletonData::loadFromJson(const std::string &json, std::string *error
 }
 
 }  // namespace eve::animation
+
