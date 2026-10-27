@@ -129,6 +129,7 @@ TEST_CASE("graphics.Shader.customSpvOnSprite") {
     ent->sprite()->height  = 80;
     ent->sprite()->texture = tex;
     ent->sprite()->shader  = shader;
+    ent->sprite()->receiveLight = false;
     ent->sprite()->visible = true;
 
     gfx->setScreenReadbackEnabled(true);

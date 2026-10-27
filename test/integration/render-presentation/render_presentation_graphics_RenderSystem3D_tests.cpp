@@ -432,6 +432,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     off->sprite()->g       = 0.8f;
     off->sprite()->b       = 0.3f;
     off->sprite()->canvas  = c2;
+    off->sprite()->receiveLight = false;
     off->sprite()->visible = true;
 
     auto *onScreen              = Renderable2D::create();
@@ -440,6 +441,7 @@ TEST_CASE("Canvas.offscreenGetPixelAndSampleOnScreen") {
     onScreen->sprite()->width   = 192;
     onScreen->sprite()->height  = 192;
     onScreen->sprite()->texture = c2->getTexture();
+    onScreen->sprite()->receiveLight = false;
     onScreen->sprite()->r       = 1;
     onScreen->sprite()->g       = 1;
     onScreen->sprite()->b       = 1;
@@ -502,6 +504,7 @@ TEST_CASE("Camera.panAndZoomAffectOffscreenPixels") {
     sp->sprite()->g       = 0.f;
     sp->sprite()->b       = 0.f;
     sp->sprite()->canvas  = rt;
+    sp->sprite()->receiveLight = false;
     sp->sprite()->visible = true;
 
     RenderSystem::render(*gfx);
