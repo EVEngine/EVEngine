@@ -11,6 +11,7 @@
 #include "weapon/CombatCarrier.h"
 #include "weapon/SpellFragmentCompiler.h"
 #include "weapon/Weapon.h"
+#include "weapon/WorldHitProbe.h"
 
 #include <algorithm>
 #include <cmath>
@@ -53,30 +54,6 @@ private:
     }
 
     std::map<std::uint64_t, ProjectilePoint> positions_;
-};
-
-class ScriptWorldHitProbe final : public ICarrierHitProbe {
-public:
-    explicit ScriptWorldHitProbe(std::unique_ptr<IWorldSphereSweep> source) : source_(std::move(source)) {}
-    Result<std::vector<Contact>> query(CarrierHandle, const CarrierMotion& previous,
-                                       const CarrierMotion& current) const override {
-        auto hits = source_->query(previous.position.x, previous.position.y, previous.position.z, current.position.x,
-                                   current.position.y, current.position.z);
-        if (!hits) return Result<std::vector<Contact>>::failure(hits.status());
-        std::vector<Contact> contacts;
-        for (const auto& hit : hits.value()) {
-            Contact c;
-            c.point        = {hit.x, hit.y, hit.z};
-            c.normal       = {hit.nx, hit.ny, hit.nz};
-            c.fraction     = hit.fraction;
-            c.worldContact = hit;
-            contacts.push_back(c);
-        }
-        return Result<std::vector<Contact>>::success(std::move(contacts));
-    }
-
-private:
-    std::unique_ptr<IWorldSphereSweep> source_;
 };
 
 class ScriptCircleHitProbe final : public ICarrierHitProbe {
@@ -195,6 +172,7 @@ Value encodeEvent(const CarrierEvent& event) {
         object.emplace("worldIndex", Value(static_cast<std::int64_t>(hit.identity.world & 0xffffffffu)));
         object.emplace("worldGeneration", Value(static_cast<std::int64_t>(hit.identity.world >> 32)));
         object.emplace("fraction", Value(hit.fraction));
+        object.emplace("worldEpoch", Value(static_cast<std::int64_t>(hit.worldEpoch)));
     }
     object.emplace("damage", Value(event.damage));
     object.emplace("splashRadius", Value(event.splashRadius));
@@ -582,7 +560,7 @@ public:
         auto bound = factory->bind(token, {radius, static_cast<std::uint32_t>(category),
                                            static_cast<std::uint32_t>(mask), static_cast<int>(ignoredBody)});
         if (!bound) return Result<Value>::failure(bound.status());
-        worldHits_ = std::make_unique<ScriptWorldHitProbe>(std::move(bound).takeValue());
+        worldHits_ = std::make_unique<WorldHitProbe>(std::move(bound).takeValue());
         return Result<Value>::success(Value{});
     }
     [[nodiscard]] Result<Value> clearWorld3D() {
@@ -734,7 +712,7 @@ private:
     CombatCarrierRuntime  runtime_;
     ScriptTargetProvider  targets_;
     ScriptCircleHitProbe  hits_;
-    std::unique_ptr<ScriptWorldHitProbe> worldHits_;
+    std::unique_ptr<WorldHitProbe> worldHits_;
     CarrierFrame          lastFrame_{};
     std::uint64_t         castSeq_ = 0;
 };

@@ -25,6 +25,7 @@
 
 #include "common/Exception.h"
 #include "common/SquirrelBinding.h"
+#include "physics/WorldSphereSweepScript.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>
 
@@ -145,6 +146,10 @@ void Physics::expose(ssq::Table &table) {
     auto world3 =
         table.addClass<World3D>("World3D", std::function<World3D*()>([]() -> World3D* { return nullptr; }), true);
     world3.addFunc("queryToken", &World3D::queryToken);
+    world3.addFunc("applySweepContactImpulse",
+                   [](World3D* self, ssq::Object event, float ix, float iy, float iz, float px, float py, float pz) {
+                       return projectSweepContactImpulse(self, event, {ix, iy, iz}, {px, py, pz});
+                   });
     world3.addFunc("update", &World3D::update);
     world3.addFunc("updateFull", &World3D::updateFull);
     world3.addFunc("setGravity", &World3D::setGravity);
