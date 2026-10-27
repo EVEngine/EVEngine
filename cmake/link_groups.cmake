@@ -72,7 +72,7 @@ if(WIN32)
     target_compile_definitions(eve_engine_includes INTERFACE BOX3D_DLL)
     # Box2D's data symbols are the load-bearing part here: MSVC's all-symbols .def
     # generation covers functions only, so b2Vec2_zero and b2_version are
-    # annotated explicitly (cmake/patches/box2d-shared-library.patch).
+    # annotated explicitly (third-party/Box2D/Common/b2Settings.h).
     target_compile_definitions(eve_engine_includes INTERFACE BOX2D_DLL)
 endif()
 
@@ -126,7 +126,7 @@ foreach(_eve_group IN LISTS EVE_LINK_GROUP_NAMES)
     # resolved: a static third-party library defining the DLL entry symbol does.
     # SDL2's CRT-less _DllMainCRTStartup stub did exactly that and made every
     # group link fail on __acrt_initialize / __vcrt_initialize (see
-    # cmake/patches/sdl2-static-library-crt-entry.patch). link_group.cpp exists
+    # third-party/SDL2/CMakeLists.txt). link_group.cpp exists
     # only to give the target a source of its own.
     add_library(${_eve_group} SHARED "${CMAKE_SOURCE_DIR}/cmake/link_group.cpp")
     target_compile_definitions(${_eve_group} PRIVATE

@@ -253,34 +253,11 @@ if(EVENGINE_BUILD_PROFILE_CHECKS)
     enable_testing()
 endif()
 
-set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/vkbuilder.hpp")
+set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/third-party/VKBuilder/include/vkbuilder.hpp")
 set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
 function(eve_prepare_vkbuilder_headers)
 if(EXISTS "${_vkbuilder_header}")
     file(READ "${_vkbuilder_header}" _vkbuilder_source)
-    set(_vkbuilder_original [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
-    use_default_color_blending = false;
-    this->color_blending = color_blending;
-    return *this;
-  }]=])
-    set(_vkbuilder_fixed [=[  PipelineBuilder& setColorBlending(vk::PipelineColorBlendStateCreateInfo color_blending) {
-    use_default_color_blending = false;
-    this->color_blending = color_blending;
-    if (color_blending.attachmentCount > 0 && color_blending.pAttachments) {
-      colorBlendAttachments.assign(color_blending.pAttachments,
-                                   color_blending.pAttachments + color_blending.attachmentCount);
-    } else {
-      colorBlendAttachments.clear();
-    }
-    return *this;
-  }]=])
-    string(FIND "${_vkbuilder_source}" "${_vkbuilder_original}" _vkbuilder_patch_offset)
-    if(_vkbuilder_patch_offset EQUAL -1)
-        message(FATAL_ERROR "Pinned VKBuilder no longer matches the custom-blending compatibility fix")
-    endif()
-    string(REPLACE "${_vkbuilder_original}" "${_vkbuilder_fixed}" _vkbuilder_source
-        "${_vkbuilder_source}")
-    include(cmake/vkbuilder_capture.cmake)
     if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
         set(_vkbuilder_vulkan_root "${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/vulkan")
         if(NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.h" OR
@@ -308,7 +285,7 @@ if(EXISTS "${_vkbuilder_header}")
             "${_vkbuilder_pinned_vulkan}" _vkbuilder_source "${_vkbuilder_source}")
     endif()
     file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
-    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/external/VKBuilder/include/"
+    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/third-party/VKBuilder/include/"
         DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
     file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
 endif()
