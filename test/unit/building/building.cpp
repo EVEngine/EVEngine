@@ -1629,8 +1629,8 @@ TEST_CASE("building.structure.spec.supportAndReload") {
         CHECK_EQ(rebuilt.value().changedCount, 1);
         CHECK_EQ(world.getBuildingSupportAt(upperId, 0), baseId);
 
-        BuildingDefinition incompatible = base;
-        incompatible.tags.clear();
+        BuildingDefinition incompatible = upper;
+        incompatible.supportTag         = "missing-support";
         BuildingRegistry::registerBuilding(incompatible);
         const auto linksBeforeFailure = world.buildings().at(upperId).supportInstanceIds;
         auto       rejected           = PlacementSystem::rebuildStructuralLinksResult(&world);
