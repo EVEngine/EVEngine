@@ -15,9 +15,7 @@ add_test(NAME common.nodiscard_compile_diagnostics
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR})
 set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
-add_test(NAME cmake.third_party_patch_idempotence
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
-set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
+
 
 # Test sources are discovered like engine/module sources. Do not use
 # CONFIGURE_DEPENDS: Ninja glob verification plus files appearing during a

@@ -14,7 +14,7 @@ primitive box  →  EVEngine native plugin  →  python -m eve_blender_converter
 ## Layout
 
 ```text
-modelconverter/
+tools/modelconverter/
   plugin/             C++ native plugin (ModelConverter module, EVPlugins)
   python/             Python runtime package (eve_blender_converter, imports bpy)
   converters/         Editable converter catalog (manifest.json + script/.blend)
@@ -33,7 +33,7 @@ docs/dev/模型转换器插件设计.md  design doc
    package, including the Geometry Nodes engine. Recent `bpy` (>= 5.x) requires
    CPython **3.13** (e.g. `py -3.13 -m pip install bpy`).
 2. (Optional) Build the node-group demo blend once:
-   `py -3.13 modelconverter/scripts/build_nodegroup_blend.py`
+   `py -3.13 tools/modelconverter/scripts/build_nodegroup_blend.py`
    (or `blender --background --python ...`)
 3. Build the plugin against an EVEngine SDK:
    `cmake -B build -DEVEngine_DIR=<sdk>/cmake && cmake --build build`
@@ -43,7 +43,7 @@ docs/dev/模型转换器插件设计.md  design doc
 ```squirrel
 plugins.load("build/modelconverter.dll");
 mc <- eve.ModelConverter();
-mc.configure("modelconverter/converters", "python", "modelconverter/python");
+mc.configure("tools/modelconverter/converters", "python", "tools/modelconverter/python");
 
 local p = mc.newParams();
 p.setInt("seed", 1847);

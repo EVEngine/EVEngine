@@ -99,7 +99,7 @@ class SdkReleaseArchitectureTests(unittest.TestCase):
             path = build / "src/engine/common" / filename
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text("fixture", encoding="utf-8")
-        (build / "generated/simplesquirrel/simplesquirrel").mkdir(parents=True)
+        (source / "third-party/simplesquirrel/include/simplesquirrel").mkdir(parents=True)
         (source / "main.cpp").write_text("int main() { return 0; }\n", encoding="utf-8")
         (source / "CMakeLists.txt").write_text(f"""
 cmake_minimum_required(VERSION 3.21)
