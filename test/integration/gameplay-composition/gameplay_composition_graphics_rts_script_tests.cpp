@@ -439,7 +439,7 @@ TEST_CASE("rts.scriptConstructionAtomicallyPaysBuildsAndCompletesCanonicalOrder"
     CHECK_EQ(barracks->construction()->progress, 0.0f);
     auto order = builder->orders()->values.current();
     REQUIRE(order.ok());
-    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Move));
+    CHECK_EQ(static_cast<int>(order.value().kind), static_cast<int>(OrderKind::Build));
     for (int index = 0; index < 8 && barracks->construction()->progress < 1.0f; ++index)
         REQUIRE(rts.stepScript(1.0).ok());
     CHECK_EQ(barracks->construction()->progress, 1.0f);
