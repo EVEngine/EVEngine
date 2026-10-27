@@ -309,6 +309,29 @@ versions.
   SDL global `_this`, or window flags) — instrument the state before touching
   the SDL/driver layer.
 
+## Third-party source ownership (mandatory)
+
+- **Dependency fixes belong in the owning source repository.** Modify and commit
+  the dependency's actual sources, then update the consuming revision. Do not
+  modify third-party code through patch files, `git apply`, CMake `PATCH_COMMAND`,
+  configure/build-time text replacement, or overwrite/override header directories.
+  Generated replacement headers, include-path shadowing and copied modified
+  dependency implementations are equally prohibited; moving such a workaround
+  into another directory or into the third-party aggregate does not satisfy this
+  rule. Source builds, prebuilt packages and SDK consumers must use the same
+  canonical dependency implementation.
+- **Keep dependency development ownership explicit.** Stable bundled dependencies
+  are managed by the `third-party` repository. ECS and zeroerr remain independently
+  developed submodules under `external/ECS.hpp` and `external/zeroerr`; do not move
+  them into the third-party aggregate or tie their updates to its release pin.
+  Apply their fixes directly in their respective repositories and update their
+  engine submodule revisions independently.
+- **Complete the migration when removing a workaround.** Update build/include and
+  SDK install rules to consume the canonical sources, remove the obsolete patch,
+  override directory and application/generation steps, and verify the affected
+  source, package and linkage contracts. Do not leave a second implementation as
+  a compatibility shortcut.
+
 ## Collaboration conventions (multi-agent parallel work)
 
 These rules exist to keep several agents working in the same tree without
