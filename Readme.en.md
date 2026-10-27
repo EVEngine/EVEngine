@@ -530,7 +530,8 @@ See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 Daily checks live in `.github/workflows/ci.yml`. Release-only platforms and
 checks (Intel macOS, Windows/Linux ARM64, Dawn, examples, profiles and coverage)
 live in `.github/workflows/release-ci.yml`, so they do not appear as skipped
-jobs in daily runs. The `Release CI` workflow (`release.yml`) runs release validation, then `SDK Release`,
+jobs in daily runs. Daily example changes smoke only the changed examples;
+release validation still smokes every example. The `Release CI` workflow (`release.yml`) runs release validation, then `SDK Release`,
 which builds Windows x64/ARM64, Linux x64/ARM64, macOS ARM64/x86_64, Android and
 iOS SDKs and verifies the complete eight-archive set before publishing.
 Run `Release CI` with a pre-release tag for the complete test and SDK pipeline;
@@ -544,6 +545,17 @@ python3 -m pip install ruff pillow
 make check                 # vs origin/dev
 make check CI_BASE=<sha>   # vs a specific PR base
 ```
+
+Daily change classification also selects steps within jobs. Documentation-only
+changes skip source gates and native tests. Repository-script changes run Python
+lint and script tests. Example-only changes build the Linux engine without unit
+tests and smoke only changed examples; shared example inputs select all examples.
+Module C++ changes use the existing `test_impact.py` index to select transitive
+consumers on Windows, macOS, Linux and ASan. Shared-library or monolithic target
+closures can still select broad sets. Unknown dependencies and core/build-system
+changes retain full native testing. Compilation remains necessary to obtain a
+trustworthy dependency index; selection does not imply module-only compilation.
+Release validation retains the complete test and example coverage.
 
 Source checks and script test modules share a bounded worker pool. Adjust it
 with `make check SOURCE_QUALITY_JOBS=2`; run only script tests with

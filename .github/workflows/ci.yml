@@ -874,7 +874,7 @@ jobs:
           ALSOFT_DRIVERS: "null"
           MIN_RUN_SECONDS: "2"
           SMOKE_EXAMPLES: ${{ needs.change-scope.outputs.changed_examples }}
-        run: xvfb-run -a -s "-screen 0 1280x800x24" make smoke/examples
+        run: xvfb-run -a -s "-screen 0 1280x800x24" make check/examples smoke/examples
 
   linux-asan:
     name: Linux (ASan+UBSan)

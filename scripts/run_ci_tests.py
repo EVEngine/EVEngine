@@ -22,7 +22,7 @@ def main():
         return 0
     if mode == "affected":
         paths = json.loads(os.environ["CI_NATIVE_PATHS"])
-        if not isinstance(paths, list) or not paths or not all(isinstance(p, str) for p in paths):
+        if not isinstance(paths, list) or not paths or not all(isinstance(p, str) and p for p in paths):
             parser.error("affected mode requires a nonempty JSON array of changed native paths")
         command = [sys.executable, "-X", "utf8", str(Path(__file__).with_name("test_impact.py")),
                    "run", "--build-dir", "build/" + args.platform, "--jobs", str(args.jobs)]
