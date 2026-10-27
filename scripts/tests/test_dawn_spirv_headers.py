@@ -191,7 +191,7 @@ endif()
 
 class DawnCiConfigureTests(unittest.TestCase):
     def check_dependencies(self, root, cmake_status):
-        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        workflow = (ROOT / ".github/workflows/release-ci.yml").read_text(encoding="utf-8")
         step = workflow.split("      - name: Configure native Dawn smoke lane\n", 1)[1]
         step = step.split("      - name:", 1)[0]
         script = textwrap.dedent(step.split("        run: |\n", 1)[1])
