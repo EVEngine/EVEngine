@@ -35,14 +35,16 @@ group() {
     fi
 }
 
-if ! python3 -m ruff --version >/dev/null 2>&1; then
+if [[ "${SOURCE_QUALITY_MODE:-full}" =~ ^(full|scripts)$ ]] && ! python3 -m ruff --version >/dev/null 2>&1; then
     echo "error: ruff is required for the same gate CI runs (python3 -m ruff check scripts)" >&2
     echo "  python3 -m pip install ruff pillow" >&2
     exit 1
 fi
 
-group "changed lines are clang-format clean" \
-    bash .github/scripts/check-format.sh "$BASE"
+if [ "${SOURCE_QUALITY_MODE:-full}" = "full" ]; then
+    group "changed lines are clang-format clean" \
+        bash .github/scripts/check-format.sh "$BASE"
+fi
 # Bound subprocess parallelism; logs are emitted as complete groups.
 # Keep formatting first, then share one worker pool across checks and tests.
 python3 scripts/run_source_quality.py --base "$BASE" --jobs "${SOURCE_QUALITY_JOBS:-4}"

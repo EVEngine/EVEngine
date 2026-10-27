@@ -64,8 +64,17 @@ def main() -> int:
     test_commands = [(path.stem, [python, "-X", "utf8", str(Path(__file__).resolve()),
                                  "--test-module", path.stem])
                      for path in sorted((ROOT / "scripts/tests").glob("test_*.py"))]
+    mode = os.environ.get("SOURCE_QUALITY_MODE", "full")
     if args.tests_only:
         commands = test_commands
+    elif mode == "none":
+        print("No source checks or script tests required for this change.")
+        return 0
+    elif mode == "scripts":
+        commands = [("check/scripts", [os.environ.get("MAKE", "make"), "--no-print-directory", "check/scripts"])]
+        commands.extend(test_commands)
+    elif mode == "examples":
+        commands = [("check/examples", [os.environ.get("MAKE", "make"), "--no-print-directory", "check/examples"])]
     else:
         # Make owns the inventory and command flags. One query avoids keeping
         # a second hand-maintained list in this scheduler.
@@ -74,7 +83,8 @@ def main() -> int:
                                           cwd=ROOT, encoding="utf-8").split()
         commands = [(target, [make, "--no-print-directory", target, f"CI_BASE={args.base}"])
                     for target in targets]
-        commands.extend(test_commands)
+        if os.environ.get("SOURCE_QUALITY_SCRIPT_TESTS", "true") == "true":
+            commands.extend(test_commands)
     return run_commands(commands, args.jobs)
 
 
