@@ -98,6 +98,7 @@ void OffscreenCanvas::clear(std::optional<Color> colorOpt, std::optional<int>, s
 
 void OffscreenCanvas::readAllPixels(std::vector<uint8_t> &outRgba) {
     if (hdr) throw Exception("HDR Canvas pixel readback requires an explicit tone-map pass");
+    if (owner->getCanvas() == this) owner->flushBatch();
     auto &device = owner->getDevice();
     device->waitIdle();
 
