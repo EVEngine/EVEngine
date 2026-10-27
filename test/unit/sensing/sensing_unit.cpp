@@ -149,7 +149,7 @@ TEST_CASE("sensing.world.mutationAndSnapshotHaveDocumentedLifecycle") {
     CHECK(!world.setZones("a", "invalid zone").ok());
     auto snapshot = world.snapshotJson();
     CHECK(snapshot.find("\"schema\":\"eve.sensing.world\"") != std::string::npos);
-    CHECK(snapshot.find("\"version\":1") != std::string::npos);
+    CHECK(snapshot.find("\"version\":2") != std::string::npos);
     CHECK(snapshot.find("\"id\":\"a\"") < snapshot.find("\"id\":\"b\""));
 
     SensingWorld restored;
