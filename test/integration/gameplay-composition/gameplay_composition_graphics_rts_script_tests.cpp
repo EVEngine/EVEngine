@@ -2382,7 +2382,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     REQUIRE(rotated.ok());
     REQUIRE(rotated.value()->setHandlePosition(100, 100, 100).ok());
     REQUIRE(rotated.value()->setHandleRotation(0, 0, 1.57079632679).ok());
-    REQUIRE(rotated.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(rotated.value()->step(tick, 1.0 / 60.0).ok());
     auto rotateFrame = rotated.value()->placementFrame();
     REQUIRE(rotateFrame.ok());
     CHECK(std::abs(rotateFrame.value().objects[0].transform.x) < 0.1);
@@ -2393,7 +2393,7 @@ TEST_CASE("scene.physicsPlacement.rotate_and_point_are_distinct_tool_policies") 
     auto pointed = ScenePhysicsPlacementBackend::create(std::move(point));
     REQUIRE(pointed.ok());
     REQUIRE(pointed.value()->setHandlePosition(5, 0, 0).ok());
-    REQUIRE(pointed.value()->step(1, 1.0 / 60.0).ok());
+    for (std::uint64_t tick = 1; tick <= 30; ++tick) REQUIRE(pointed.value()->step(tick, 1.0 / 60.0).ok());
     auto pointFrame = pointed.value()->placementFrame();
     REQUIRE(pointFrame.ok());
     CHECK(std::abs(pointFrame.value().objects[0].transform.x) < 0.01);
