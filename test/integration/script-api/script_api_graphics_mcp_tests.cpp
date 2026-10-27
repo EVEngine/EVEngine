@@ -653,27 +653,31 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     CHECK(vcfgText.find("{") != std::string::npos);
     CHECK(vcfgText.find("apiKeySet") != std::string::npos);
 
-    // A plain VM has no native authoring providers. Tools report the absence
-    // instead of creating an independent script-only scene owner.
+    // A plain VM defers authoring-kit installation to the next update.
+    auto checkDeferred = [](const std::string& text) {
+        Poco::JSON::Parser parser;
+        auto               result = parser.parse(text).extract<Poco::JSON::Object::Ptr>();
+        CHECK(!result->getValue<bool>("ok"));
+        CHECK(result->getValue<bool>("retryable"));
+        CHECK_EQ(result->getValue<std::string>("reason"), std::string("deferred-to-update"));
+    };
     const std::string sdStat = textOf(11, "{\"name\":\"eve_scene_director_status\",\"arguments\":{}}");
-    CHECK(sdStat.find("error") != std::string::npos);
+    checkDeferred(sdStat);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
-    CHECK(resetText.find("error") != std::string::npos);
+    checkDeferred(resetText);
 
     const std::string infoText = textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
-    CHECK(infoText.find("error") != std::string::npos);
+    checkDeferred(infoText);
 
     const std::string camText = textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
-    CHECK(camText.find("error") != std::string::npos);
+    checkDeferred(camText);
 
     const std::string modInfo = textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
-    CHECK(modInfo.find("error") != std::string::npos);
-    // Unknown action must surface as a controlled error, not crash the server.
+    checkDeferred(modInfo);
+    // An unknown action is also deferred until installation completes.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
-    const bool        modBadHasError =
-        modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos;
-    CHECK(modBadHasError);
+    checkDeferred(modBad);
     const std::string editorCommands = textOf(17, "{\"name\":\"eve_editor_commands\",\"arguments\":{}}");
     CHECK(editorCommands.find("mcp.test-command") != std::string::npos);
     const std::string editorExecuted =

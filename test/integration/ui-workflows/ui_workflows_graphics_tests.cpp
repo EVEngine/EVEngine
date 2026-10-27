@@ -178,7 +178,7 @@ function verifyScheduledComponent() {
 }
 )SQ");
 TEST_CASE_FIXTURE(UIScheduledScriptTest, "UI.componentScheduling.scriptCoalescingAndFailureRecovery") {
-    CHECK(vm.callFunc(vm.findFunc("verifyScheduledComponent"), vm).toBool());
+    CHECK(callScript("verifyScheduledComponent"));
 }
 }  // namespace test_UIComponentScheduling
 #endif
@@ -263,6 +263,9 @@ TEST_CASE("UI.editorKit.desktopCompositionRenders") {
     io.Fonts->GetTexDataAsRGBA32(&pixels, &width, &height);
     (void)pixels;
 
+    ImGui::NewFrame();
+    UISystem::render();
+    ImGui::EndFrame();
     const ImVec4 buttonBefore = ImGui::GetStyleColorVec4(ImGuiCol_Button);
 
     ImGui::NewFrame();
