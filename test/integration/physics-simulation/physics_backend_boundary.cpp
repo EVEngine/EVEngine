@@ -3,6 +3,8 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
+  "module": "physics_backend",
+  "default": "module-composition",
   "origins": [
     "physics_core_boundary.cpp"
   ]
@@ -10,6 +12,7 @@
 */
 // clang-format on
 
+#include "physics/Box2DSimulationBackend.h"
 #include "zeroerr/unittest.h"
 
 #include "physics/backend/SimulationBackend.h"

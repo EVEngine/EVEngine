@@ -1,4 +1,5 @@
 #include "particles/ParticleEmitter.h"
+#include "particles/ParticleRecording.h"
 
 #include "common/Module.h"
 #include "graphics/GpuParticles.h"
@@ -146,6 +147,8 @@ void ParticleEmitter::pause() {
 
 void ParticleEmitter::reset() {
     auto s               = sim();
+    for (int i = 0; i < s->alive; ++i)
+        recordParticleEvent(*config(), *s, s->particles[std::size_t(i)], ParticleRecordEventKind::Death);
     s->alive             = 0;
     s->emitAccum         = 0.f;
     s->distanceEmitAccum = 0.f;

@@ -111,12 +111,13 @@ TEST_CASE("animation.batch.parallelEvaluationAndBoneLod") {
 #endif
 
 #if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_binary)
-#include "PrivateTestScope.h"
 #include <bit>
 #include <cmath>
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
 #include <vector>
+#include "PrivateTestScope.h"
 #include "animation/AnimClip.h"
 #include "animation/AnimClipBinary.h"
 #include "animation/AnimParallelInternal.h"
