@@ -655,7 +655,6 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     // A plain VM defers authoring-kit installation to the next update.
     auto checkDeferred = [&](const std::string& text) {
-        std::cerr << "[deferred authoring response] " << text << std::endl;
         Poco::JSON::Parser parser;
         auto               result = parser.parse(text).extract<Poco::JSON::Object::Ptr>();
         CHECK(!result->getValue<bool>("ok"));
@@ -666,19 +665,19 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
     checkDeferred(sdStat);
 
     const std::string resetText = textOf(12, "{\"name\":\"eve_scene_reset\",\"arguments\":{}}");
-    checkDeferred(resetText);
+    CHECK(resetText.find("error") != std::string::npos);
 
     const std::string infoText = textOf(13, "{\"name\":\"eve_scene_info\",\"arguments\":{}}");
-    checkDeferred(infoText);
+    CHECK(infoText.find("error") != std::string::npos);
 
     const std::string camText = textOf(14, "{\"name\":\"eve_camera_generate\",\"arguments\":{\"count\":2}}");
-    checkDeferred(camText);
+    CHECK(camText.find("error") != std::string::npos);
 
     const std::string modInfo = textOf(15, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"info\"}}");
-    checkDeferred(modInfo);
-    // An unknown action is also deferred until installation completes.
+    CHECK(modInfo.find("error") != std::string::npos);
+    // Unknown action must surface as a controlled error, not crash the server.
     const std::string modBad = textOf(16, "{\"name\":\"eve_scene_modify\",\"arguments\":{\"action\":\"no_such\"}}");
-    checkDeferred(modBad);
+    CHECK(modBad.find("error") != std::string::npos || modBad.find("unknown action") != std::string::npos);
     const std::string editorCommands = textOf(17, "{\"name\":\"eve_editor_commands\",\"arguments\":{}}");
     CHECK(editorCommands.find("mcp.test-command") != std::string::npos);
     const std::string editorExecuted =
@@ -3590,7 +3589,8 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
         pbrSetResult <- pbrParams == null ? { ok = false, hasValue = false } :
             procgen.generatePbrMaterial("pbr.rock", pbrParams);
         pbrResultOk <- pbrSetResult.ok && pbrSetResult.hasValue &&
-            pbrSetResult.value.ownership() == "owned" && !pbrSetResult.value.isStale();
+            pbrSetResult.ownership == "owned" && pbrSetResult.ownerEpoch > 0 && pbrSetResult.handle > 0 &&
+            pbrSetResult.value != null;
         meshParamsResult <- procgen.newParams();
         meshParamsResultOk <- meshParamsResult.ok;
         meshParams <- meshParamsResult.ok ? meshParamsResult.value : null;
@@ -3606,7 +3606,8 @@ TEST_CASE("procgen.script.reflects_schema_and_generates_from_dynamic_values") {
         meshBuildResult <- meshParams == null ? { ok = false, hasValue = false } :
             procgen.buildMesh("mesh.fence", meshParams);
         meshBuildOk <- meshBuildResult.ok && meshBuildResult.hasValue &&
-            meshBuildResult.value.ownership() == "owned" && !meshBuildResult.value.isStale();
+            meshBuildResult.ownership == "owned" && meshBuildResult.ownerEpoch > 0 && meshBuildResult.handle > 0 &&
+            meshBuildResult.value != null;
     )"));
 
     CHECK(vm.find("paramsResultOk").toBool());
