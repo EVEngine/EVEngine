@@ -2686,6 +2686,7 @@ TEST_CASE("daynight.sky script prepares an owned profile runtime and checks time
 
 
 #include "SkyTextureGpuSpv.h"
+#include "graphics/ShaderResources.h"
 // SkyTextureGpu.cpp
 namespace test_SkyTextureGpu {
 // sky_volume_vert: #version 450
