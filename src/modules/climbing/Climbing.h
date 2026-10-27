@@ -338,7 +338,7 @@ public:
      * @brief Consider a candidate while reusing slot-owned action-id storage on the production probe path.
      * @param actionId Stable definition id borrowed only for this synchronous call.
      */
-    void considerWithActionId(ClimbingCandidate candidate, std::string_view actionId);
+    void considerWithActionId(const ClimbingCandidate& candidate, std::string_view actionId);
     /** @brief Sort by canonical deterministic selection key and clamp to a validated limit. */
     void sortAndLimit(std::size_t limit);
     /** @brief Exchange complete owning slot storage without allocating. */
@@ -877,6 +877,7 @@ private:
     std::optional<Execution>               execution_;
     mutable std::vector<ClimbingCandidate> lastCandidates_;
     mutable ClimbingCandidateSet            probeScratch_;
+    mutable ClimbingCandidate                      probeCandidate_;
     mutable std::uint32_t                  lastQueryCount_ = 0;
     mutable ClimbingRuntimeCounters         lastCounters_;
     mutable ClimbingTelemetryBuffer         telemetry_;

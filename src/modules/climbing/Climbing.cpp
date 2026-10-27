@@ -10,14 +10,31 @@
 #include "physics/World3D.h"
 
 #include <algorithm>
-#include <chrono>
 #include <charconv>
+#include <chrono>
 #include <cmath>
 #include <limits>
+#include <tuple>
 #include <utility>
 
 namespace eve::climbing {
 using namespace runtime_detail;
+
+namespace {
+void swapCandidates(ClimbingCandidate& a, ClimbingCandidate& b) noexcept {
+    const auto fields = [](ClimbingCandidate& c) {
+        return std::tie(c.actionId, c.definitionGeneration, c.world, c.obstacleBody, c.obstacleShape, c.obstacleBodyId,
+                        c.obstacleShapeId, c.ignoredBodyId, c.frontPoint, c.topPoint, c.landingFeet, c.surfaceNormal,
+                        c.surfaceTangent, c.leftHandAnchor, c.rightHandAnchor, c.bodyLocalTop, c.bodyLocalLanding,
+                        c.obstacleHeight, c.obstacleDepth, c.gapDistance, c.clearanceHeight, c.slopeRadians,
+                        c.curvature, c.supportShapeTag, c.supportMaterialId, c.probeRecipe, c.score, c.kind, c.support);
+    };
+    auto left  = fields(a);
+    auto right = fields(b);
+    // Member swaps retain MSVC's debug string proxies as well as character storage.
+    left.swap(right);
+}
+}  // namespace
 
 
 void ClimbingCandidateSet::consider(ClimbingCandidate candidate) {
@@ -26,16 +43,10 @@ void ClimbingCandidateSet::consider(ClimbingCandidate candidate) {
     considerWithActionId(std::move(candidate), actionId);
 }
 
-void ClimbingCandidateSet::considerWithActionId(ClimbingCandidate candidate, std::string_view actionId) {
+void ClimbingCandidateSet::considerWithActionId(const ClimbingCandidate& candidate, std::string_view actionId) {
     const auto store = [&](ClimbingCandidate& slot) {
-        std::string reused = std::move(slot.actionId);
-        slot = std::move(candidate);
-        if (reused.capacity() >= actionId.size()) {
-            reused.assign(actionId);
-            slot.actionId.swap(reused);
-        } else {
-            slot.actionId.assign(actionId);
-        }
+        slot = candidate;
+        slot.actionId.assign(actionId);
     };
     if (size_ < Capacity) {
         store(values_[size_++]);
@@ -53,12 +64,14 @@ void ClimbingCandidateSet::considerWithActionId(ClimbingCandidate candidate, std
 }
 
 void ClimbingCandidateSet::sortAndLimit(std::size_t limit) {
-    std::sort(values_.begin(), values_.begin() + static_cast<std::ptrdiff_t>(size_), isCandidateLess);
+    for (std::size_t i = 1; i < size_; ++i)
+        for (std::size_t j = i; j > 0 && isCandidateLess(values_[j], values_[j - 1]); --j)
+            swapCandidates(values_[j], values_[j - 1]);
     size_ = std::min(size_, std::min(limit, Capacity));
 }
 
 void ClimbingCandidateSet::swap(ClimbingCandidateSet& other) noexcept {
-    values_.swap(other.values_);
+    for (std::size_t i = 0; i < Capacity; ++i) swapCandidates(values_[i], other.values_[i]);
     std::swap(size_, other.size_);
 }
 
@@ -305,7 +318,9 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
                         boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "clearance_blocked"});
                     continue;
                 }
-                ClimbingCandidate candidate;
+                const static ClimbingCandidate emptyCandidate;
+                ClimbingCandidate&             candidate = probeCandidate_;
+                candidate                                = emptyCandidate;
                 candidate.definitionGeneration = definitionGeneration_;
                 candidate.world = world.runtimeHandle();
                 candidate.obstacleBody = ground.body;
@@ -382,7 +397,9 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
                     rejectCandidate();
                     continue;
                 }
-                ClimbingCandidate candidate;
+                const static ClimbingCandidate emptyCandidate;
+                ClimbingCandidate&             candidate = probeCandidate_;
+                candidate                                = emptyCandidate;
                 candidate.definitionGeneration = definitionGeneration_;
                 candidate.world = world.runtimeHandle();
                 candidate.obstacleBody = hit.body;
@@ -615,7 +632,9 @@ eve::Result<void> ClimbingRuntime::probeInto(physics::World3D& world, const Clim
             boundedDebugPush(lastEvidence_, ClimbingCandidateEvidence{action.id, "accepted", biasCost, heightCost,
                                                                        distanceCost, score});
         }
-        ClimbingCandidate  candidate;
+        const static ClimbingCandidate emptyCandidate;
+        ClimbingCandidate&             candidate = probeCandidate_;
+        candidate                                = emptyCandidate;
         candidate.definitionGeneration = definitionGeneration_;
         candidate.world           = world.runtimeHandle();
         candidate.obstacleBody    = front.body;
