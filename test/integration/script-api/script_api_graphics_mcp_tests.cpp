@@ -655,6 +655,7 @@ TEST_CASE("devtools.mcp.initializeToolsStatus") {
 
     // A plain VM defers authoring-kit installation to the next update.
     auto checkDeferred = [&](const std::string& text) {
+        std::cerr << "[deferred authoring response] " << text << std::endl;
         Poco::JSON::Parser parser;
         auto               result = parser.parse(text).extract<Poco::JSON::Object::Ptr>();
         CHECK(!result->getValue<bool>("ok"));

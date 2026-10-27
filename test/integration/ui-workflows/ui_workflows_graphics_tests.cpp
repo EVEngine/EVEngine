@@ -151,7 +151,9 @@ function verifyScheduledComponent() {
             builds += 1
             if (edit) { edit = false; markDirty(); eve_ui_flush_components() }
             if (fail) throw "injected script publication failure"
+            this.ui().beginWindow("Scheduled", "script-window")
             this.ui().text("published", "script-label")
+            this.ui().end()
         }
     }
     local first = Scheduled(eve.UI())
