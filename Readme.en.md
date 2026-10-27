@@ -41,8 +41,8 @@ other hosts, targets and compilers. Engine builds use
 `make test/macosx-x86_64[-debug]` for host tests. The existing `make debug`
 default stays unchanged.
 
-CI uses native `macos-15-intel` runners and follows `build_type` for Debug,
-Release, or both. Like Windows ARM64, it compiles and links the engine and test
+Release CI uses native `macos-15-intel` runners for both Debug and Release.
+The Intel lane is absent from the daily CI workflow. Like Windows ARM64, it compiles and links the engine and test
 binaries using the matching prebuilt dependencies. These lanes do not run
 graphics tests. SDK release jobs additionally validate native plugins and packaged
 games on runners matching both architectures.
@@ -102,15 +102,15 @@ Linux graphics tests still require a display/Vulkan ICD and audio backend;
 use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
 These explicit targets do not change the existing `make debug` default.
 
-CI builds these targets on native GitHub-hosted `windows-11-arm` and
-`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
-scopes: normal runs build Debug; `build_type=release` builds Release and
-`build_type=both` builds both configurations. Each lane compiles and links the
+Release CI builds both Debug and Release on native GitHub-hosted
+`windows-11-arm` and `ubuntu-24.04-arm` runners. These lanes are absent
+from the daily CI workflow. Each lane compiles and links the
 engine and test binaries, requiring the matching ARM64 third-party release
 packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
 packaging belong to the third-party repository. Missing packages fail explicitly
-instead of rebuilding dependencies in these CI lanes. These are build checks;
-ARM64 graphics tests and SDK release packaging are not part of these lanes.
+instead of rebuilding dependencies in these CI lanes. ARM64 tests run on the
+native software Vulkan backend. SDK Release then builds and validates the
+matching Windows/Linux ARM64 archives.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
@@ -271,8 +271,9 @@ code-model flags. `PREBUILT` requires a supported package. An explicit
 `EVENGINE_THIRD_PARTY_BINARY_DIR` still supports a compatible offline/local prefix.
 Changing the dependency release requires updating both pin values after the upstream
 release assets have been published. Dependency patches are owned and applied by the
-pinned third-party repository; engine-owned `external/ECS.hpp` and `external/zeroerr`
-patches remain here.
+pinned third-party repository. ECS and zeroerr remain independently updated
+engine submodules; their fixes live directly in their own source repositories.
+The engine does not maintain replacement dependency headers or patch files.
 
 These are complete library install trees with headers, static/shared libraries,
 runtime binaries, metadata and license notices. You still need platform build tools,
@@ -526,6 +527,15 @@ See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 
 ### Match CI locally
 
+Daily checks live in `.github/workflows/ci.yml`. Release-only platforms and
+checks (Intel macOS, Windows/Linux ARM64, Dawn, examples, profiles and coverage)
+live in `.github/workflows/release-ci.yml`, so they do not appear as skipped
+jobs in daily runs. The `Release CI` workflow (`release.yml`) runs release validation, then `SDK Release`,
+which builds Windows x64/ARM64, Linux x64/ARM64, macOS ARM64/x86_64, Android and
+iOS SDKs and verifies the complete eight-archive set before publishing.
+Run `Release CI` with a pre-release tag for the complete test and SDK pipeline;
+`release-ci.yml` is the reusable validation stage.
+
 CI's **Source quality** job is `make check` (no compiler, a few minutes). It
 needs `python3`, `ruff`, `pillow`, and clang-format 18 plus `git clang-format`:
 
@@ -534,6 +544,32 @@ python3 -m pip install ruff pillow
 make check                 # vs origin/dev
 make check CI_BASE=<sha>   # vs a specific PR base
 ```
+
+Source checks and script test modules share a bounded worker pool. Adjust it
+with `make check SOURCE_QUALITY_JOBS=2`; run only script tests with
+`make check/scripts-test`. The check inventory lives in
+`cmake/tasks/source-quality.mk`; each entry is independently runnable, such as
+`make check/bindings` or `make check/architecture-lint CI_BASE=<sha>`.
+
+Runtime checks consume an existing build and can also run independently:
+
+```sh
+make smoke/examples SMOKE_EXAMPLES="basic tree-generator"
+make test/devlab
+make test/headless-gpu
+make check/resource-fixtures
+make check/resource-results RUNTIME_BUILD_DIR=build/linux-debug
+make check/resource-exports
+make package/smoke-runtime RUNTIME_BUILD_DIR=build/linux SMOKE_RUNTIME_ARCHIVE=build/smoke.tar.gz
+```
+
+The runtime targets live in `cmake/tasks/runtime-checks.mk`. On headless Linux,
+use the software Vulkan/null audio environment described above and wrap windowed
+checks with `xvfb-run -a`. `test/headless-gpu` runs without a display server.
+The Linux smoke archive target bundles the executable and non-system shared
+libraries; its consumer needs matching system packages. Set `EVE` to run example
+smokes with an executable restored from an artifact, or `RUNTIME_EVE` to override
+the executable used by DevLab and runtime packaging.
 
 The Windows/Linux debug compile lane also treats warnings as errors. After
 `make check`:

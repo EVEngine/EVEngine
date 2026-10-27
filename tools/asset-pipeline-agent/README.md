@@ -112,8 +112,3 @@ python -m unittest discover -s tests -p "test_*.py"
 - 每个候选携带 `author` / `author_url` / `attribution`，处理脚本在导出时把版权信息
   写入 `<asset>.attribution.json`，入库元数据同步带出——**版权信息永久留存**。
 - Poly Haven 全部资产为 CC0，天然合规；付费资源与违规爬取在检索层即被拒绝。
-
-## openCode 集成
-
-仓库提供 `.opencode/agent/asset-pipeline-brain.md`，把该工具封装为 openCode 子代理；
-也可直接命令行调用。修改 openCode 配置后需**退出并重启 openCode** 生效。

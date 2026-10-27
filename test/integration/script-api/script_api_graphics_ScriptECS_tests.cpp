@@ -56,16 +56,17 @@
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: DatabasePanel
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_DatabasePanel)
-#include "PrivateTestScope.h"
 #include <string>
 #include "common/Runtime.h"
 #include "ui/DatabasePanel.h"
 #include "ui/ObjectRegistry.h"
 #include "ui/UIHost.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // DatabasePanel.cpp
 namespace test_DatabasePanel {
@@ -227,19 +228,17 @@ TEST_CASE("database.registryReleasesRootsBeforeRuntimeShutdown") {
     CHECK_EQ(registry.count("CharacterData"), size_t(0));
 }
 }  // namespace test_DatabasePanel
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ECS)
+// Contract section: ECS
+#include "PrivateTestScope.h"
+
 #include <cmath>
 #include <functional>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <type_traits>
 #include <vector>
-#include "PrivateTestScope.h"
 #include "common/ECS.h"
 #include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ECS.cpp
 namespace test_ECS {
 class Node : public ecs::Entity {
@@ -580,16 +579,12 @@ public:
     COMPONENT(SeededComponent, seeded)
 };
 }  // namespace test_ECS
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_EditorShell)
+
+// Contract section: EditorShell
 #include "PrivateTestScope.h"
-#include "common/Runtime.h"
-#include "ui/DatabasePanel.h"
+
 #include "ui/EditorShell.h"
 #include "ui/Inspector.h"
-#include "ui/UIHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // EditorShell.cpp
 namespace test_EditorShell {
 using namespace eve;
@@ -673,19 +668,12 @@ TEST_CASE("editorShell.menuDocksAndSwitchesPanels") {
     CHECK(!databaseHost.meta()->visible);
 }
 }  // namespace test_EditorShell
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_Inspector)
+// Contract section: Inspector
 #include "PrivateTestScope.h"
+
 #include <algorithm>
 #include <cstring>
-#include <string>
-#include <vector>
-#include "common/Runtime.h"
-#include "ui/Inspector.h"
-#include "ui/UIHost.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Inspector.cpp
 namespace test_Inspector {
 using namespace eve;
@@ -1022,13 +1010,10 @@ TEST_CASE("inspector.pickSceneInspectsPickedObject") {
     CHECK_EQ(runtime.readProperty(inspector.selectedInstance(), "name").asString(), std::string("picked"));
 }
 }  // namespace test_Inspector
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ReflectScript)
+// Contract section: ReflectScript
 #include "PrivateTestScope.h"
-#include "common/Runtime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // ReflectScript.cpp
 namespace test_ReflectScript {
 using namespace eve;
@@ -1168,18 +1153,15 @@ TEST_CASE("reflectScriptExposesRuntimeApi") {
     CHECK(runtime.vm().callFunc(probe, runtime.root()).toBool());
 }
 }  // namespace test_ReflectScript
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ScriptECS)
+// Contract section: ScriptECS
 #include "PrivateTestScope.h"
+
 #include <cstdint>
 #include <string_view>
 #include "ScriptTest.h"
-#include "common/ECS.h"
 #include "common/ScriptComponentSnapshot.h"
 #include "common/ScriptComponentStore.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // ScriptECS.cpp
 namespace test_ScriptECS {
 using namespace eve;
@@ -1790,7 +1772,10 @@ function testViewOrderSpansSubclassesByCreation() {
 }
 )SQ";
 
-UnitSciptTest(ScriptEcsTest, kScriptEcsContent);
+class ScriptEcsTest : public ScriptTest {
+public:
+    ScriptEcsTest() : ScriptTest(kScriptEcsContent) {}
+};
 
 TEST_CASE_FIXTURE(ScriptEcsTest, "ScriptECS.ready") { REQUIRE(callScript("testEcsReady")); }
 
@@ -1960,7 +1945,10 @@ function registerReshapedGeneration() {
 }
 )SQ";
 
-UnitSciptTest(ComponentIdentityTest, kComponentIdentityScript);
+class ComponentIdentityTest : public ScriptTest {
+public:
+    ComponentIdentityTest() : ScriptTest(kComponentIdentityScript) {}
+};
 
 // `callScript` 是 protected，而"注册表按 VM 隔离"这条要在同一个 TEST_CASE 里先后建两个 VM。
 class ComponentIdentityTwiceTest : public ScriptTest {
@@ -2180,7 +2168,10 @@ function registerMarked() {
 }
 )SQ";
 
-UnitSciptTest(ComponentStoreTest, kComponentStoreScript);
+class ComponentStoreTest : public ScriptTest {
+public:
+    ComponentStoreTest() : ScriptTest(kComponentStoreScript) {}
+};
 
 TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.registeredComponentValuesLiveInTheEngineStore") {
     REQUIRE(callScript("makeProbe"));
@@ -2314,7 +2305,10 @@ function readMigratedFields() {
 }
 )SQ";
 
-UnitSciptTest(ComponentMigrationTest, kComponentMigrationScript);
+class ComponentMigrationTest : public ScriptTest {
+public:
+    ComponentMigrationTest() : ScriptTest(kComponentMigrationScript) {}
+};
 
 TEST_CASE_FIXTURE(ComponentMigrationTest, "ScriptECS.reRegistrationMigratesStoredValuesToTheNewSchema") {
     REQUIRE(callScript("makeMig"));
@@ -2400,7 +2394,10 @@ class HotNode extends eve.Entity { hp = HotPos }
 eve.component("HotPos", 1, HotPos)
 )SQ";
 
-UnitSciptTest(HotReloadEcsTest, kHotReloadBeforeScript);
+class HotReloadEcsTest : public ScriptTest {
+public:
+    HotReloadEcsTest() : ScriptTest(kHotReloadBeforeScript) {}
+};
 
 TEST_CASE_FIXTURE(HotReloadEcsTest, "ScriptECS.hotReloadMigrationHandsTheNewClassTheOldEntities") {
     REQUIRE(callScript("makeHot"));
@@ -2575,17 +2572,14 @@ TEST_CASE_FIXTURE(ComponentStoreTest, "ScriptECS.toolJsonReportsEngineSideCompon
     CHECK(empty.value().find("\"entities\":[]") != std::string::npos);
 }
 }  // namespace test_ScriptECS
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_action_ability_script)
-#include <simplesquirrel/simplesquirrel.hpp>
+
+// Contract section: action ability script
 #include "PrivateTestScope.h"
+
 #include "action/AbilityAsset.h"
 #include "action/AbilityRuntime.h"
 #include "action/ActionModule.h"
-#include "common/Module.h"
 #include "common/SquirrelBinding.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // action_ability_script.cpp
 namespace test_action_ability_script {
 namespace {
@@ -2695,16 +2689,13 @@ TEST_CASE("actionScript.advanceAbilitiesSynchronizesTerminalFailures") {
     CHECK_EQ(vm.find("recoveredActive").toInt(), 0);
 }
 }  // namespace test_action_ability_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_script)
+// Contract section: agent script
 #include "PrivateTestScope.h"
+
 #include <filesystem>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include "PathBesideSource.h"
 #include "agent/AgentModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // agent_script.cpp
 namespace test_agent_script {
 namespace {
@@ -2759,17 +2750,13 @@ TEST_CASE("agent.scriptCallbackFailureAndReentry") {
     )"));
 }
 }  // namespace test_agent_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_agent_tensor_script)
+// Contract section: agent tensor script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "agent/Agent.h"
-#include "agent/AgentModule.h"
 #include "agent/tensor/TensorBackend.h"
 #include "common/Capability.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // agent_tensor_script.cpp
 namespace test_agent_tensor_script {
 TEST_CASE("agent.scriptTensorTrainingLoop") {
@@ -2802,17 +2789,11 @@ TEST_CASE("agent.scriptTensorTrainingLoop") {
     )"));
 }
 }  // namespace test_agent_tensor_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_animation_clip_editing)
+// Contract section: animation clip editing
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include "animation/AnimClip.h"
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // animation_clip_editing.cpp
 namespace test_animation_clip_editing {
 using namespace eve::animation;
@@ -2848,20 +2829,15 @@ TEST_CASE("animation.script.composesClipTimelineFromReflectedKeys") {
     CHECK(vm.find("keyRemoved").toBool());
 }
 }  // namespace test_animation_clip_editing
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_async)
+// Contract section: async
 #include "PrivateTestScope.h"
+
 #include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "common/Module.h"
 #include "platform_event/PlatformEvent.h"
 #include "scripts.h"
 #include "thread/Thread.h"
 #include "timer/Timer.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // async.cpp
 namespace test_async {
 namespace {
@@ -3059,16 +3035,11 @@ TEST_CASE("async.hotReloadCancelsOldContinuations") {
     CHECK(out.find("async continuation cancelled: test reload") != std::string::npos);
 }
 }  // namespace test_async
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_authority)
+// Contract section: authority
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include "authority/Authority.h"
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // authority.cpp
 namespace test_authority {
 using namespace eve::authority;
@@ -3101,16 +3072,11 @@ TEST_CASE("authority.script.explainQueryAndLifecycle") {
     CHECK_EQ(vm.find("result").toString(), std::string("ok"));
 }
 }  // namespace test_authority
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_avatar)
+// Contract section: avatar
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include <unordered_map>
-#include <vector>
-#include "animation/AnimClip.h"
 #include "animation/AnimLayerMixer.h"
 #include "animation/AnimPlayer.h"
 #include "animation/AnimSkeleton.h"
@@ -3120,15 +3086,11 @@ TEST_CASE("authority.script.explainQueryAndLifecycle") {
 #include "avatar/Avatar.h"
 #include "avatar/AvatarInstance.h"
 #include "avatar/Live2DNullBackend.h"
-#include "common/ECS.h"
-#include "common/Module.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
 #include "graphics/RenderSystem.h"
 #include "graphics/RenderSystem3D.h"
 #include "inventory/Equipment.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // avatar.cpp
 namespace test_avatar {
 // avatar.cpp
@@ -3210,13 +3172,10 @@ TEST_CASE("avatar.script.buildsInspectorAndMotionBrowserFromMetadata") {
 
 // avatar_attachment_point.cpp
 }  // namespace test_avatar
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_binding_selfcheck)
+// Contract section: binding selfcheck
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // binding_selfcheck.cpp
 namespace test_binding_selfcheck {
 using namespace eve;
@@ -3276,25 +3235,17 @@ TEST_CASE("binding.selfcheck.scriptSurface") {
     )");
 }
 }  // namespace test_binding_selfcheck
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_building_placement_regression)
+// Contract section: building placement regression
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "building/BuildingDef.h"
 #include "building/Ghost.h"
 #include "building/PlacementSession.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
 #include "building/fx/BuildingFx.h"
-#include "common/ECS.h"
-#include "common/Module.h"
 #include "graphics/Graphics.h"
-#include "graphics/Mesh.h"
-#include "graphics/RenderSystem3D.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // building_placement_regression.cpp
 namespace test_building_placement_regression {
 // building_placement_regression.cpp
@@ -3338,16 +3289,11 @@ TEST_CASE("buildingfx.scriptMeshResolverValidatesAndCopiesResources") {
     eve::building::BuildingRegistry::clear();
 }
 }  // namespace test_building_placement_regression
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card)
-#include <cmath>
+// Contract section: card
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 #include "card/Card.h"
-#include "common/ECS.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // card.cpp
 namespace test_card {
 using namespace eve;
@@ -3416,7 +3362,10 @@ function testCardCppView() {
 }
 )SQ";
 
-UnitSciptTest(CardViewScriptTest, kCardViewScript);
+class CardViewScriptTest : public ScriptTest {
+public:
+    CardViewScriptTest() : ScriptTest(kCardViewScript) {}
+};
 
 TEST_CASE_FIXTURE(CardViewScriptTest, "card.script.viewSeesNewCard") { REQUIRE(callScript("testCardCppView")); }
 
@@ -3430,23 +3379,16 @@ namespace {
 
 }  // namespace
 }  // namespace test_card
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_gameplay_control)
+
+// Contract section: card gameplay control
 #include "PrivateTestScope.h"
-#include <cstdint>
+
 #include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
 #include <utility>
-#include "card/Card.h"
 #include "card/CardTypes.h"
-#include "common/Capability.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayControlJson.h"
 #include "common/GameplayInstanceCatalog.h"
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // card_gameplay_control.cpp
 namespace test_card_gameplay_control {
 // 卡牌玩法域契约测试：真实 Card 模块 + 手牌/牌库走共享玩法协议，
@@ -3622,24 +3564,15 @@ TEST_CASE("gameplay.control.cardScriptPublishesItsHand") {
     CHECK_EQ(static_cast<int>(vm.find("scriptRemaining").toInt()), 0);
 }
 }  // namespace test_card_gameplay_control
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_climbing_anchor_authoring)
+// Contract section: climbing anchor authoring
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <cmath>
-#include <filesystem>
+
 #include <fstream>
 #include <sstream>
-#include <string>
-#include <utility>
-#include "PathBesideSource.h"
 #include "climbing/ClimbingAnchorAuthoring.h"
 #include "climbing/ClimbingCodec.h"
 #include "climbing/ClimbingTelemetry.h"
-#include "common/Runtime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // climbing_anchor_authoring.cpp
 namespace test_climbing_anchor_authoring {
 // climbing_anchor_authoring.cpp
@@ -3732,21 +3665,14 @@ TEST_CASE("climbing.playground.mainScriptCompilesThroughEveScriptFrontend") {
 using namespace eve;
 using namespace eve::climbing;
 }  // namespace test_climbing_anchor_authoring
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_carrier)
+// Contract section: combat carrier
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <map>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string_view>
 #include "common/Diagnostic.h"
-#include "common/Module.h"
-#include "common/SquirrelBinding.h"
 #include "weapon/CombatCarrier.h"
 #include "weapon/Weapon.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_carrier.cpp
 namespace test_combat_carrier {
 // combat_carrier.cpp
@@ -3941,16 +3867,11 @@ TEST_CASE("combatCarrierScript.castUniquifiesRecipeIds") {
     CHECK(sawFifteen);
 }
 }  // namespace test_combat_carrier
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_combat_script)
+// Contract section: combat script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "combat/Combat.h"
-#include "common/Module.h"
-#include "common/SquirrelBinding.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // combat_script.cpp
 namespace test_combat_script {
 TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
@@ -4013,17 +3934,10 @@ TEST_CASE("combatScript.runtimeOwnsMovementAndDamageState") {
     CHECK(!vm.find("invalidAbility").toTable().get<bool>("ok"));
 }
 }  // namespace test_combat_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_composable_gameplay)
+// Contract section: composable gameplay
 #include "PrivateTestScope.h"
-#include <fstream>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <sstream>
-#include <string>
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // composable_gameplay.cpp
 namespace test_composable_gameplay {
 TEST_CASE("composableGameplay.scriptBuildsRebellionWithoutDomainCpp") {
@@ -4154,16 +4068,12 @@ TEST_CASE("composableGameplay.cardAndRtsAdaptersShareDefinitionsTerrainAndIdenti
     CHECK(vm.find("authoredTerrainCost").toFloat() > 1.f);
 }
 }  // namespace test_composable_gameplay
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_console)
+// Contract section: console
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include "devtools/ConsolePanel.hpp"
 #include "devtools/DevTool.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // console.cpp
 namespace test_console {
 using namespace eve::dev;
@@ -4227,16 +4137,13 @@ TEST_CASE("devtools.console.persistentAcrossVms") {
     console.clear();
 }
 }  // namespace test_console
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_crowd_contacts)
+// Contract section: crowd contacts
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include "crowd/Crowd.h"
 #include "crowd/CrowdField.h"
-#include "zeroerr/unittest.h"
 // crowd_contacts.cpp
 namespace test_crowd_contacts {
 using namespace eve::crowd;
@@ -4272,30 +4179,29 @@ TEST_CASE("crowd.contacts.scriptAdvanceUsesCanonicalResult") {
     )"));
 }
 }  // namespace test_crowd_contacts
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_crowd_script)
+// Contract section: crowd script
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* crowd_content;
 // crowd_script.cpp
 namespace test_crowd_script {
 using namespace eve;
 
 
-UnitSciptTest(CrowdScriptTest, crowd_content);
+class CrowdScriptTest : public ScriptTest {
+public:
+    CrowdScriptTest() : ScriptTest(crowd_content) {}
+};
 
 TEST_CASE_FIXTURE(CrowdScriptTest, "CrowdScriptTest.basic") { REQUIRE(callScript("basic")); }
 
 TEST_CASE_FIXTURE(CrowdScriptTest, "CrowdScriptTest.invalidIds") { REQUIRE(callScript("invalidIds")); }
 }  // namespace test_crowd_script
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_crowd_spawn)
+
+// Contract section: crowd spawn
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "crowd/Crowd.h"
-#include "zeroerr/unittest.h"
+
 // crowd_spawn.cpp
 namespace test_crowd_spawn {
 using namespace eve::crowd;
@@ -4326,24 +4232,16 @@ TEST_CASE("crowd.spawn.scriptTransactionAndMalformedInput") {
     )"));
 }
 }  // namespace test_crowd_spawn
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_state_script_provider)
-#include <algorithm>
-#include <string>
-#include <utility>
-#include <vector>
+// Contract section: dialogue state script provider
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Capability.h"
+
 #include "common/ConditionKeys.h"
 #include "common/ScriptProvider.h"
 #include "common/StateAccess.h"
 #include "dialogue/Dialogue.h"
 #include "dialogue/DialogueState.h"
 #include "dialogue/StateAccessScriptSeam.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue_state_script_provider.cpp
 namespace test_dialogue_state_script_provider {
 // ---------------------------------------------------------------------------
@@ -4642,18 +4540,10 @@ TEST_CASE_FIXTURE(ScriptStateAccessTest, "dialogue.state.scriptMutationFailuresA
     REQUIRE(ScriptProviderRegistry::instance().hasCapabilitySeam(eve::IStateMutation::capabilityName));
 }
 }  // namespace test_dialogue_state_script_provider
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_script_provider)
-#include <algorithm>
-#include <cmath>
-#include <memory>
-#include <string>
-#include <vector>
+// Contract section: script provider
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
-#include "common/Diagnostic.h"
-#include "common/ScriptProvider.h"
+
 #include "common/Status.h"
 // script_provider.cpp
 namespace test_script_provider {
@@ -5082,4 +4972,3 @@ TEST_CASE_FIXTURE(ScriptProviderTest, "ScriptProvider.structuredReturnsComeBackA
     REQUIRE(registry.call(published.value(), "ping").ok());
 }
 }  // namespace test_script_provider
-#endif

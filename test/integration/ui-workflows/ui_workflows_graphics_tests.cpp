@@ -4,17 +4,7 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "ui-render",
-  "cases": {
-    "script-binding": [
-      "UI.componentScheduling.scriptCoalescingAndFailureRecovery",
-      "UI.adv.scriptUIComponent",
-      "UI.p0.scriptEventCallbacks"
-    ]
-  },
   "module": "ui",
-  "modules": [
-    "ui"
-  ],
   "origins": [
     "UIComponentScheduling.cpp",
     "UIEditorKit.cpp",
@@ -23,15 +13,24 @@
     "UISystem.cpp",
     "ui_overlay_chrome.cpp",
     "ui_progress_size.cpp"
-  ]
+  ],
+  "cases": {
+    "script-binding": [
+      "UI.adv.scriptUIComponent",
+      "UI.componentScheduling.scriptCoalescingAndFailureRecovery",
+      "UI.p0.scriptEventCallbacks"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: UIComponentScheduling
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIComponentScheduling)
-#include "PrivateTestScope.h"
 #include <imgui.h>
 #include <stdexcept>
 #include "ScriptTest.h"
@@ -140,7 +139,10 @@ TEST_CASE("UI.componentScheduling.failedBatchRetainsRemainingWork") {
 }
 
 
-UnitSciptTest(UIScheduledScriptTest, R"SQ(
+class UIScheduledScriptTest : public ScriptTest {
+public:
+    UIScheduledScriptTest()
+        : ScriptTest(R"SQ(
 function verifyScheduledComponent() {
     ::ui <- eve.UI()
     class Scheduled extends eve.UIComponent {
@@ -176,26 +178,22 @@ function verifyScheduledComponent() {
     eve_ui_flush_components()
     return !first.dirty && !second.dirty && second.builds == 2
 }
-)SQ");
+)SQ") {}
+};
 TEST_CASE_FIXTURE(UIScheduledScriptTest, "UI.componentScheduling.scriptCoalescingAndFailureRecovery") {
     CHECK(vm.callFunc(vm.findFunc("verifyScheduledComponent"), vm).toBool());
 }
 }  // namespace test_UIComponentScheduling
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIEditorKit)
-#include <imgui.h>
+// Contract section: UIEditorKit
+#include "PrivateTestScope.h"
+
 #include <imgui_internal.h>
 #include <string>
-#include "PrivateTestScope.h"
 #include "ui/ControlPrimitives.h"
 #include "ui/Theme.h"
 #include "ui/UI.h"
 #include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UIEditorKit.cpp
 namespace test_UIEditorKit {
 using namespace eve::ui;
@@ -346,22 +344,12 @@ TEST_CASE("UI.editorKit.textControlsInteraction") {
 }
 
 }  // namespace test_UIEditorKit
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIPhaseAdv)
-#include <imgui.h>
-#include <cmath>
-#include <string>
+// Contract section: UIPhaseAdv
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
+#include <cmath>
 #include "ui/Layout.h"
-#include "ui/Theme.h"
-#include "ui/UI.h"
-#include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UIPhaseAdv.cpp
 namespace test_UIPhaseAdv {
 using namespace eve;
@@ -469,7 +457,10 @@ function testScriptComponent() {
 }
 )SQ";
 
-UnitSciptTest(UIScriptComponentTest, kScriptComponentContent);
+class UIScriptComponentTest : public ScriptTest {
+public:
+    UIScriptComponentTest() : ScriptTest(kScriptComponentContent) {}
+};
 
 TEST_CASE_FIXTURE(UIScriptComponentTest, "UI.adv.scriptUIComponent") { REQUIRE(callScript("testScriptComponent")); }
 
@@ -546,7 +537,10 @@ function fireTestEvents() {
 }
 )SQ";
 
-UnitSciptTest(UIScriptCallbackTest, kScriptCallbackContent);
+class UIScriptCallbackTest : public ScriptTest {
+public:
+    UIScriptCallbackTest() : ScriptTest(kScriptCallbackContent) {}
+};
 
 TEST_CASE_FIXTURE(UIScriptCallbackTest, "UI.p0.scriptEventCallbacks") {
     REQUIRE(callScript("testScriptCallbacks"));
@@ -662,20 +656,11 @@ TEST_CASE("UI.p1.scrollListHeadlessRenderLarge") {
     if (saved) ImGui::SetCurrentContext(saved);
 }
 }  // namespace test_UIPhaseAdv
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UIPhaseB)
+
+// Contract section: UIPhaseB
 #include "PrivateTestScope.h"
-#include <imgui.h>
-#include <string>
+
 #include <vector>
-#include "ui/Component.h"
-#include "ui/Theme.h"
-#include "ui/UI.h"
-#include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UIPhaseB.cpp
 namespace test_UIPhaseB {
 using namespace eve::ui;
@@ -741,19 +726,13 @@ TEST_CASE("UI.b.themeAppliesCompleteModernStyle") {
     ImGui::DestroyContext();
 }
 }  // namespace test_UIPhaseB
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_UISystem)
+// Contract section: UISystem
 #include "PrivateTestScope.h"
-#include <imgui.h>
+
 #include "common/Capability.h"
 #include "common/UIAutomation.h"
 #include "ui/UIAutomationCapabilities.h"
-#include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // UISystem.cpp
 namespace test_UISystem {
 using namespace eve::ui;
@@ -808,18 +787,10 @@ TEST_CASE("UISystem.render.headlessImGuiWalk") {
     CHECK(!h->tree()->dirty);
 }
 }  // namespace test_UISystem
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ui_overlay_chrome)
+// Contract section: ui overlay chrome
 #include "PrivateTestScope.h"
-#include <imgui.h>
-#include <imgui_internal.h>
-#include "ui/Theme.h"
-#include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // ui_overlay_chrome.cpp
 namespace test_ui_overlay_chrome {
 TEST_CASE("UI.overlay.transparentHostHasNoChromeAndRestoresStyle") {
@@ -882,18 +853,10 @@ TEST_CASE("UI.overlay.transparentHostHasNoChromeAndRestoresStyle") {
     host->get().setVisible(false);
 }
 }  // namespace test_ui_overlay_chrome
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_ui_progress_size)
+// Contract section: ui progress size
 #include "PrivateTestScope.h"
-#include <imgui.h>
-#include <imgui_internal.h>
-#include "ui/Theme.h"
-#include "ui/UIHost.h"
-#include "ui/UISystem.h"
-#include "ui/Widget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // ui_progress_size.cpp
 namespace test_ui_progress_size {
 TEST_CASE("UI.progress.explicitSizeMatchesRenderedContent") {
@@ -938,4 +901,3 @@ TEST_CASE("UI.progress.explicitSizeMatchesRenderedContent") {
     host->get().setVisible(false);
 }
 }  // namespace test_ui_progress_size
-#endif

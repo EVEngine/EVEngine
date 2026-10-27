@@ -1,5 +1,6 @@
 #include "particles/ParticleEmitter.h"
 #include "particles/ParticleConfig.h"
+#include "particles/ParticleRecording.h"
 
 #include "animation/AnimMath.h"
 #include "animation/AnimPose.h"
@@ -306,8 +307,8 @@ void syncIk3DAttach(ParticleEmitter::Config &cfg, ParticleEmitter::Attach &attac
                    cfg.y);
 }
 
-void fireSubEmitter(ParticleEmitter::Config &cfg, const std::string &trigger, float x, float y,
-                    float vx, float vy) {
+void fireSubEmitter(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sourceSim, const std::string &trigger, float x,
+                    float y, float vx, float vy) {
     static int g_subDepth = 0;
     if (g_subDepth >= 8) return;  // cycle guard (A→B→A chains)
     for (const auto &se : cfg.subEmitters) {
@@ -317,6 +318,20 @@ void fireSubEmitter(ParticleEmitter::Config &cfg, const std::string &trigger, fl
         auto tc = se.target->config();
         auto ts = se.target->sim();
         if (ts->alive >= int(ts->particles.size())) continue;
+        // A sub-emitter birth occurs at the source's executed step boundary, even if
+        // the target is visited later by the scheduler. Never advance its own clock.
+        struct RestoreRecordingTime {
+            double &time;
+            double  previous;
+            ~RestoreRecordingTime() { time = previous; }
+        } restore{ts->recordingSeconds, ts->recordingSeconds};
+        if (ts->recording.state() == ParticleRecordState::Recording) {
+            if (sourceSim.recording.state() != ParticleRecordState::Recording ||
+                ts->recordingSeconds > sourceSim.recordingSeconds)
+                ts->recording.invalidate();
+            else
+                ts->recordingSeconds = sourceSim.recordingSeconds;
+        }
         ++g_subDepth;
         const bool spawned = spawnParticleAt(*tc, *ts, x, y);
         --g_subDepth;
@@ -324,6 +339,7 @@ void fireSubEmitter(ParticleEmitter::Config &cfg, const std::string &trigger, fl
             Particle &p = ts->particles[size_t(ts->alive - 1)];
             p.vx += vx * se.inheritVelocity;
             p.vy += vy * se.inheritVelocity;
+            recordParticleEvent(*tc, *ts, p, ParticleRecordEventKind::Snapshot);
         }
     }
 }
@@ -339,6 +355,10 @@ void setWorldCollisionResolver(WorldCollisionFn fn) { g_worldCollision = fn; }
 WorldCollisionFn getWorldCollisionResolver() { return g_worldCollision; }
 
 bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, float x, float y) {
+    if (sim.nextBirthSerial == 0) {
+        ++sim.droppedSpawnsThisFrame;
+        return false;
+    }
     if (sim.spawnQuota == 0) {
         ++sim.droppedSpawnsThisFrame;
         return false;
@@ -346,6 +366,7 @@ bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, fl
     if (sim.alive >= int(sim.particles.size())) return false;
 
     Particle &p = sim.particles[size_t(sim.alive++)];
+    p.birthSerial = sim.nextBirthSerial++;
     if (sim.spawnQuota > 0) --sim.spawnQuota;
     ++sim.spawnedThisFrame;
     float ox = 0.f, oy = 0.f;
@@ -353,11 +374,16 @@ bool spawnParticleAt(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, fl
     p.x = x + ox;
     p.y = y + oy;
     fillParticleMotion(cfg, sim, p);
-    fireSubEmitter(cfg, "birth", p.x, p.y, p.vx, p.vy);
+    recordParticleEvent(cfg, sim, p, ParticleRecordEventKind::Snapshot);
+    fireSubEmitter(cfg, sim, "birth", p.x, p.y, p.vx, p.vy);
     return true;
 }
 
 bool spawnParticle(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim) {
+    if (sim.nextBirthSerial == 0) {
+        ++sim.droppedSpawnsThisFrame;
+        return false;
+    }
     if (sim.spawnQuota == 0) {
         ++sim.droppedSpawnsThisFrame;
         return false;
@@ -417,6 +443,13 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
     if (sim.paused || dt <= 0.f) return;
     if (cfg.maxDeltaTime > 0.f && dt > cfg.maxDeltaTime) dt = cfg.maxDeltaTime;
 
+    if (sim.recording.state() == ParticleRecordState::Recording) {
+        const double next = sim.recordingSeconds + dt;
+        if (!std::isfinite(next) || next <= sim.recordingSeconds)
+            sim.recording.invalidate();
+        else
+            sim.recordingSeconds = next;
+    }
     // Emitter velocity for inheritVelocity (before lastX/lastY refresh).
     float emitVx = 0.f, emitVy = 0.f;
     if (cfg.inheritVelocity > 0.f && sim.hasLastPos) {
@@ -444,7 +477,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
         Particle &p = sim.particles[size_t(i)];
         p.life -= dt;
         if (p.life <= 0.f) {
-            fireSubEmitter(cfg, "death", p.x, p.y, p.vx, p.vy);
+            recordParticleEvent(cfg, sim, p, ParticleRecordEventKind::Death);
+            fireSubEmitter(cfg, sim, "death", p.x, p.y, p.vx, p.vy);
             continue;
         }
 
@@ -575,8 +609,11 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
                 }
             }
             if (hit) {
-                fireSubEmitter(cfg, "collision", p.x, p.y, p.vx, p.vy);
-                if (killMode) continue;
+                fireSubEmitter(cfg, sim, "collision", p.x, p.y, p.vx, p.vy);
+                if (killMode) {
+                    recordParticleEvent(cfg, sim, p, ParticleRecordEventKind::Death);
+                    continue;
+                }
                 if (stopMode) {
                     p.vx = 0.f;
                     p.vy = 0.f;
@@ -587,7 +624,10 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
                 }
                 if (lifeLoss > 0.f) {
                     p.life -= p.lifetime * lifeLoss;
-                    if (p.life <= 0.f) continue;
+                    if (p.life <= 0.f) {
+                        recordParticleEvent(cfg, sim, p, ParticleRecordEventKind::Death);
+                        continue;
+                    }
                 }
             }
         }
@@ -598,6 +638,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
     sim.alive = write;
 
     if (!sim.active) {
+        for (int i = 0; i < sim.alive; ++i)
+            recordParticleEvent(cfg, sim, sim.particles[std::size_t(i)], ParticleRecordEventKind::Snapshot);
         sim.lastX = cfg.x;
         sim.lastY = cfg.y;
         sim.hasLastPos = true;
@@ -705,6 +747,8 @@ void stepEmitterSim(ParticleEmitter::Config &cfg, ParticleEmitter::Sim &sim, flo
         }
     }
 
+    for (int i = 0; i < sim.alive; ++i)
+        recordParticleEvent(cfg, sim, sim.particles[std::size_t(i)], ParticleRecordEventKind::Snapshot);
     sim.lastX = cfg.x;
     sim.lastY = cfg.y;
     sim.hasLastPos = true;

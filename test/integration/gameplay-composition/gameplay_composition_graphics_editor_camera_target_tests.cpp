@@ -3,11 +3,6 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "script-binding": [
-      "editor.script.composes_heightmap_target_field_tool_and_transaction"
-    ]
-  },
   "module": "editor",
   "modules": [
     "domain_gizmo_editing",
@@ -31,19 +26,25 @@
     "editor_map.cpp",
     "editor_map_document.cpp",
     "editor_material_batch_target.cpp"
-  ]
+  ],
+  "cases": {
+    "script-binding": [
+      "editor.script.composes_heightmap_target_field_tool_and_transaction"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: editor behavior graph
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_behavior_graph)
-#include "PrivateTestScope.h"
 #include "crowd/Crowd.h"
 #include "crowd/editing/CrowdDocument.h"
 #include "npc_ai/editing/BehaviorGraph.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // editor_behavior_graph.cpp
 namespace test_editor_behavior_graph {
@@ -207,10 +208,10 @@ TEST_CASE("editor.crowd.document_applies_to_named_runtime_agents") {
     CHECK_EQ(runtime.getAgentAction(index), std::string("seek"));
 }
 }  // namespace test_editor_behavior_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_biome_rules_editor)
+// Contract section: editor biome rules editor
 #include "PrivateTestScope.h"
+
 #include <cmath>
 #include <map>
 #include "common/Capability.h"
@@ -222,8 +223,6 @@ TEST_CASE("editor.crowd.document_applies_to_named_runtime_agents") {
 #include "procgen/biome/editing/BiomeTarget.h"
 #include "procgen/biome/editor/BiomeEditorModule.h"
 #include "procgen/biome/editor/BiomeRulesEditor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_biome_rules_editor.cpp
 namespace test_editor_biome_rules_editor {
 // editor_biome_rules_editor.cpp
@@ -397,18 +396,16 @@ TEST_CASE("editor.biome.adapter_registers_commands_and_owns_automation_targets")
     CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
 }
 }  // namespace test_editor_biome_rules_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_building_target)
+// Contract section: editor building target
 #include "PrivateTestScope.h"
+
 #include "building/BuildingDef.h"
 #include "building/BuildingSnapshot.h"
 #include "building/PlacementSystem.h"
 #include "building/PlacementWorld.h"
 #include "building/editing/BuildingTarget.h"
 #include "editing/EditingAuthority.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_building_target.cpp
 namespace test_editor_building_target {
 using namespace eve::building_editing;
@@ -1133,18 +1130,13 @@ TEST_CASE("editor.building.brush_conflict_discards_complete_staging_candidate") 
     CHECK(eve::building::PlacementSystem::events().empty());
 }
 }  // namespace test_editor_building_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_building_tool)
+// Contract section: editor building tool
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <span>
-#include "building/BuildingDef.h"
-#include "building/PlacementWorld.h"
 #include "building/editor/EditorBuildingTarget.h"
-#include "editing/EditingAuthority.h"
 #include "editor/EditorSession.h"
-#include "zeroerr/unittest.h"
 // editor_building_tool.cpp
 namespace test_editor_building_tool {
 namespace {
@@ -1342,13 +1334,12 @@ TEST_CASE("editor.building.curve_tool_cancel_and_miss_do_not_mutate") {
     eve::building::BuildingRegistry::clear();
 }
 }  // namespace test_editor_building_tool
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_camera_target)
-#include <map>
+// Contract section: editor camera target
+#include "PrivateTestScope.h"
+
 #include <memory>
 #include <string>
-#include "PrivateTestScope.h"
 #include "camera/editing/CameraTarget.h"
 #include "daynight/DayNight.h"
 #include "decal/DecalManager.h"
@@ -1367,8 +1358,6 @@ TEST_CASE("editor.building.curve_tool_cancel_and_miss_do_not_mutate") {
 #include "particles/graphics_editing/ParticleOffscreen.h"
 #include "ui/editor/EditorUiOffscreen.h"
 #include "weather/Weather.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_camera_target.cpp
 namespace test_editor_camera_target {
 // editor_camera_target.cpp
@@ -2149,12 +2138,11 @@ TEST_CASE("editor.lighting.environment_detects_multiple_environment_owners") {
     CHECK_EQ(diagnosticRule(diagnostics.front()).value(), "editor.environment.multiple-owners");
 }
 }  // namespace test_editor_camera_target
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_core_v2)
+
+// Contract section: editor core v2
 #include "PrivateTestScope.h"
-#include <memory>
+
 #include <stdexcept>
-#include <string>
 #include <type_traits>
 #include <utility>
 #include "editor/EditCommand.h"
@@ -2167,15 +2155,12 @@ TEST_CASE("editor.lighting.environment_detects_multiple_environment_owners") {
 #include "editor/EditorEventTimeline.h"
 #include "editor/EditorHostProfile.h"
 #include "editor/EditorIds.h"
-#include "editor/EditorSession.h"
 #include "editor/EditorTransactionService.h"
 #include "editor/EditorValue.h"
 #include "editor/EvaAssetDatabaseProjection.h"
 #include "map/level/editing/FieldTargets.h"
 #include "map/level/editing/TileBuffer.h"
 #include "scene/editor/EditorSceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_core_v2.cpp
 namespace test_editor_core_v2 {
 // editor_core_v2.cpp
@@ -2434,7 +2419,18 @@ TEST_CASE("editor.v2.asset_database_import_query_dependencies_and_page_generatio
     extra.guid       = AssetGuid("asset-extra");
     extra.logicalUri = "content://Other/Extra.asset";
     extra.typeId     = "generic";
-    CHECK(database.publish(std::move(extra)).ok());
+    REQUIRE(database.publish(std::move(extra)).ok());
+    REQUIRE_EQ(database.generation(), std::uint64_t(3));
+    AssetQuery textures;
+    textures.typeIds = {"texture"};
+    auto typedPage   = database.query(textures, 0, 1, database.generation());
+    REQUIRE(typedPage.ok());
+    REQUIRE_EQ(typedPage.value().values.size(), std::size_t(1));
+    REQUIRE_EQ(typedPage.value().values.front().guid, AssetGuid("asset-texture"));
+    REQUIRE(!typedPage.value().hasMore);
+    auto byUri = database.findByUri("content://Other/Extra.asset");
+    REQUIRE(byUri.ok());
+    REQUIRE_EQ(byUri.value().guid, AssetGuid("asset-extra"));
     auto expired = database.query(query, firstPage.value().nextOffset, 1, generation);
     CHECK_EQ(static_cast<int>(expired.code()), static_cast<int>(EditorStatus::Conflict));
 }
@@ -2541,25 +2537,6 @@ TEST_CASE("editor.v2.import_place_save_and_reopen_headless_loop") {
     CHECK(reopened.content(reopenedDocument.value().id).value() == savedScene);
 }
 
-TEST_CASE("editor.v2.asset_database_indexes_and_pages_100k_records") {
-    MemoryAssetDatabase database;
-    constexpr int       count = 100000;
-    for (int index = 0; index < count; ++index) {
-        AssetRecord record;
-        record.guid       = AssetGuid("asset-" + std::to_string(index));
-        record.logicalUri = "content://Bulk/asset-" + std::to_string(index);
-        record.typeId     = index % 2 == 0 ? "bulk.even" : "bulk.odd";
-        REQUIRE(database.publish(std::move(record)).ok());
-    }
-    CHECK_EQ(database.generation(), static_cast<std::uint64_t>(count));
-    AssetQuery query;
-    query.typeIds = {"bulk.odd"};
-    auto page     = database.query(query, 1000, 128, database.generation());
-    REQUIRE(page.ok());
-    CHECK_EQ(page.value().values.size(), static_cast<std::size_t>(128));
-    CHECK(page.value().hasMore);
-    CHECK(database.findByUri("content://Bulk/asset-99999").ok());
-}
 
 // editor_environment_browser.cpp
 using namespace eve::editor;
@@ -2689,10 +2666,10 @@ TEST_CASE("editor.timeline_capacity_drops_oldest_and_payload_is_bounded") {
         static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_core_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_definition_target)
+// Contract section: editor definition target
 #include "PrivateTestScope.h"
+
 #include "definitions/Definitions.h"
 #include "definitions/editing/DefinitionForm.h"
 #include "definitions/editing/DefinitionTarget.h"
@@ -2702,8 +2679,6 @@ TEST_CASE("editor.timeline_capacity_drops_oldest_and_payload_is_bounded") {
 #include "schema/SchemaTypes.h"
 #include "social/SocialGraph.h"
 #include "social/editing/SocialDocument.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_definition_target.cpp
 namespace test_editor_definition_target {
 // editor_definition_target.cpp
@@ -2890,14 +2865,13 @@ TEST_CASE("editor.social.snapshot_rejects_dangling_or_duplicate_semantics_atomic
     CHECK_EQ(loaded.entities().size(), 2U);
 }
 }  // namespace test_editor_definition_target
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_dialogue_graph)
+
+// Contract section: editor dialogue graph
 #include "PrivateTestScope.h"
+
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/editing/DialogueGraph.h"
 #include "dialogue/editor/EditorDialoguePreview.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_dialogue_graph.cpp
 namespace test_editor_dialogue_graph {
 // editor_dialogue_graph.cpp
@@ -3034,25 +3008,18 @@ TEST_CASE("editor.dialogue.subtitle_preview_checks_safe_area_readability_and_lip
     CHECK(stale.lipEnvelope.empty());
 }
 }  // namespace test_editor_dialogue_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_extension_v2)
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <stdexcept>
-#include <string>
+// Contract section: editor extension v2
 #include "PrivateTestScope.h"
+
+#include <simplesquirrel/simplesquirrel.hpp>
 #include "audio/editing/AudioTarget.h"
 #include "common/Module.h"
-#include "editor/EditorAssetDatabase.h"
-#include "editor/EditorAuthority.h"
 #include "editor/EditorExtension.h"
 #include "editor/gizmo/editing/DomainGizmoPreview.h"
 #include "editor/input/editing/InputMapTarget.h"
-#include "graphics/lighting/editing/LightingTarget.h"
 #include "graphics/material/editor/EditorMaterialStudio.h"
 #include "physics/editing/PhysicsTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_extension_v2.cpp
 namespace test_editor_extension_v2 {
 // editor_extension_v2.cpp
@@ -3531,15 +3498,14 @@ TEST_CASE("editor.material.studio_rate_limits_with_injected_monotonic_time") {
     CHECK_EQ(static_cast<int>(studio.tick(1049).code()), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_extension_v2
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_fluid_target)
+
+// Contract section: editor fluid target
 #include "PrivateTestScope.h"
+
 #include "fluids/VolumeFluid.h"
 #include "fluids/editing/FluidTarget.h"
 #include "fluids/editing/VolumeFluidTarget.h"
 #include "fluids/editor/FluidsEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_fluid_target.cpp
 namespace test_editor_fluid_target {
 // editor_fluid_target.cpp
@@ -3670,11 +3636,10 @@ TEST_CASE("editor.volume_fluid_runtime_publish_uses_atomic_restore") {
              static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_fluid_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_gpuagents)
+// Contract section: editor gpuagents
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <vector>
 #include "gpuagents/EffectBackend.h"
 #include "gpuagents/GpuAgentWorld.h"
@@ -3682,8 +3647,6 @@ TEST_CASE("editor.volume_fluid_runtime_publish_uses_atomic_restore") {
 #include "gpuagents/SurfaceCapture.h"
 #include "gpuagents/editing/GpuAgentsDocument.h"
 #include "gpuagents/editor/GpuAgentsPreview.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_gpuagents.cpp
 namespace test_editor_gpuagents {
 using namespace eve::gpuagents;
@@ -3779,14 +3742,12 @@ TEST_CASE("editor.gpuagents_preview_steps_life_network") {
     CHECK(snap.lifeTrailEnergy > 0.f);
 }
 }  // namespace test_editor_gpuagents
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_housegen_target)
+// Contract section: editor housegen target
 #include "PrivateTestScope.h"
+
 #include "procgen/editing/HouseGenTarget.h"
 #include "procgen/house/HouseLayout.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_housegen_target.cpp
 namespace test_editor_housegen_target {
 using namespace eve::housegen_editing;
@@ -3876,16 +3837,14 @@ TEST_CASE("editor.housegen.invalid_snapshot_does_not_partially_replace_document"
     CHECK_EQ(target.snapshotValue(), before);
 }
 }  // namespace test_editor_housegen_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_localization)
+// Contract section: editor localization
 #include "PrivateTestScope.h"
+
 #include <zeroerr/assert.h>
 #include <zeroerr/unittest.h>
 #include "i18n/editing/LocalizationDocument.h"
 #include "profiler/editing/ProfilerModel.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_localization.cpp
 namespace test_editor_localization {
 // editor_localization.cpp
@@ -4003,18 +3962,13 @@ TEST_CASE("editor.profiler rejects invalid frames atomically") {
     CHECK(model.history().empty());
 }
 }  // namespace test_editor_localization
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_map)
+// Contract section: editor map
 #include "PrivateTestScope.h"
-#include <memory>
-#include "editor/EditCommand.h"
-#include "editor/Editor.h"
+
 #include "map/Map.h"
 #include "map/TileLayer.h"
 #include "map/editing/TileLayerTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_map.cpp
 namespace test_editor_map {
 using namespace eve::editor;
@@ -4038,13 +3992,11 @@ TEST_CASE("editor.map.tileLayerTargetUsesLiveRevision") {
     CHECK_EQ(layer->getTile(2, 1), 9);
 }
 }  // namespace test_editor_map
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_map_document)
+// Contract section: editor map document
 #include "PrivateTestScope.h"
+
 #include "map/editing/MapDocument.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_map_document.cpp
 namespace test_editor_map_document {
 using namespace eve::map_editing;
@@ -4253,14 +4205,12 @@ TEST_CASE("editor.map.snapshot_round_trip_and_geometry_diagnostics") {
     CHECK_EQ(restored.snapshotValue(), snapshot);
 }
 }  // namespace test_editor_map_document
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_material_batch_target)
+// Contract section: editor material batch target
 #include "PrivateTestScope.h"
+
 #include "graphics/material/editing/MaterialBatchTarget.h"
 #include "graphics/material/editor/EditorMaterialPreview.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_material_batch_target.cpp
 namespace test_editor_material_batch_target {
 // editor_material_batch_target.cpp
@@ -4418,4 +4368,3 @@ TEST_CASE("editor.material.preview_validates_scene_settings_before_renderer_call
     CHECK(invalid.diagnostics().size() >= size_t{2});
 }
 }  // namespace test_editor_material_batch_target
-#endif

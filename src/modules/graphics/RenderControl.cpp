@@ -243,7 +243,10 @@ void RenderControl::compile() {
 
     const bool wantHybrid   = lightingMode_ == LightingMode::Hybrid;
     const bool gbufferOn    = isEnabled("gbuffer") || isEnabled("gbufferAlbedo") || isEnabled("ao") || isEnabled("gi");
-    const bool canHybrid    = wantHybrid && isDeferredLightingAvailable() && gbufferOn;
+    // GPU-driven opaque and visibility resolve belong to ForwardPlus. Preserve
+    // the requested mode while exposing this explicit feature's priority in the
+    // effective pass list instead of silently disabling it during rendering.
+    const bool canHybrid    = wantHybrid && isDeferredLightingAvailable() && gbufferOn && !isEnabled("gpuDriven");
     effectiveLightingMode_  = canHybrid ? LightingMode::Hybrid : LightingMode::ForwardPlus;
     hybridLightingFallback_ = wantHybrid && !canHybrid;
 

@@ -38,6 +38,7 @@ function initDust(bodyAsset) {
     dustModule=eve.DestructionDust();dustClip=eve.CollapseDust();
     local path=bodyAsset+"-"+clip.contentKey(fs.readText("dust.nut"))+".evedust";local loaded=dustClip.load(path);
     if(!loaded.ok) {
+        if(!missingBakeAsset(loaded)) checked(loaded);
         dustFluid=dustValue(fluids.newVolumeSimulator(dustDefinition()));
         local dt=1.0/config.dust.fixedHz;local fired={};checked(dustClip.capture(dustFluid,0.0));
         for(local frame=1;frame<=(config.collapse.seconds*config.dust.fixedHz).tointeger();++frame) {
@@ -59,6 +60,7 @@ function initDust(bodyAsset) {
     dustFog.integrateFroxel(1.10,1.02,0.86,1.0);dustFog.uploadFroxel(gfx);
 }
 function drawDust() {
+    local playTime=playback.time();
     if(!dustEnabled||playTime<config.collapse.impacts[0].time)return;
     local seconds=(playTime*config.dust.displayHz).tointeger().tofloat()/config.dust.displayHz;
     dustFog.setCamera(sin(orbit)*23.0,11.0,cos(orbit)*23.0,0.0,3.5,0.0,0.0,1.0,0.0,39.0,1280.0/860.0,0.2,65.0);

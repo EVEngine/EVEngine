@@ -3764,3 +3764,62 @@ TEST_CASE("ECS view supports explicit only components and constructor side effec
 }
 }  // namespace test_ecs_view_contract
 #endif
+
+#include <limits>
+#include <type_traits>
+#include "common/Identity.h"
+#include "common/RuntimeHandle.h"
+
+namespace test_identity_value_audit_unit {
+namespace {
+template <class Id>
+Id parsedId(const char* text) {
+    const auto parsed = Id::parse(text);
+    return parsed ? *parsed : Id::nil();
+}
+}  // namespace
+static_assert(!std::is_convertible_v<eve::AssetGuid, eve::DocumentId>);
+static_assert(!std::is_convertible_v<eve::EventId, eve::TransactionId>);
+static_assert(!std::is_convertible_v<eve::TransactionId, eve::OperationId>);
+static_assert(!std::is_convertible_v<eve::SceneObjectId, eve::PersistentId>);
+
+
+TEST_CASE("identity.audit.domainIdsShareOneUuidImplementation") {
+    constexpr const char* text  = "01020304-0506-0708-090a-0b0c0d0e0f10";
+    const auto            asset = parsedId<eve::AssetGuid>(text);
+    REQUIRE(!asset.isNil());
+    CHECK_EQ(asset.format(), text);
+    CHECK_EQ(eve::DocumentId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::SceneObjectId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::ArtifactId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::EventId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::TransactionId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::OperationId::fromUuid(asset).format(), text);
+    CHECK_EQ(eve::EffectId::fromUuid(asset).format(), text);
+
+    CHECK(!eve::AssetGuid::parse("asset-01020304-0506-0708-090a-0b0c0d0e0f10").has_value());
+    CHECK(!eve::AssetGuid::parse("{01020304-0506-0708-090a-0b0c0d0e0f10}").has_value());
+}
+
+TEST_CASE("identity.audit.logicalNamespaceIsCanonicalAndNamesRemainCaseSensitive") {
+    REQUIRE(eve::LogicalId::parse("rpg:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("RPG:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("rpg_:Skill.Fire").has_value());
+    CHECK(!eve::LogicalId::parse("rpg:skill/fire").has_value());
+    CHECK(eve::LogicalId::fromParts("game_event", "Damage.Applied").has_value());
+}
+
+TEST_CASE("identity.audit.runtimeHandleGenerationMakesStaleReuseObservable") {
+    struct RegistryTag {};
+    using Handle = eve::RuntimeHandle<RegistryTag>;
+
+    constexpr Handle oldHandle(4u, 1u);
+    const auto       next = oldHandle.nextGeneration();
+    REQUIRE(next.has_value());
+    CHECK(next.value() != oldHandle);
+    CHECK_EQ(next->index(), oldHandle.index());
+    CHECK_EQ(next->generation(), 2u);
+    CHECK(!Handle(4u, std::numeric_limits<Handle::generation_type>::max()).nextGeneration().has_value());
+    CHECK_EQ(Handle::fromPacked(oldHandle.packed()), oldHandle);
+}
+}  // namespace test_identity_value_audit_unit

@@ -15,9 +15,7 @@ add_test(NAME common.nodiscard_compile_diagnostics
   COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/check_nodiscard.py
           --source-dir ${CMAKE_SOURCE_DIR})
 set_tests_properties(common.nodiscard_compile_diagnostics PROPERTIES LABELS "quality")
-add_test(NAME cmake.third_party_patch_idempotence
-  COMMAND ${Python3_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/test_patch_third_party.py)
-set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "quality;cmake")
+
 
 # Test sources are discovered like engine/module sources. Do not use
 # CONFIGURE_DEPENDS: Ninja glob verification plus files appearing during a
@@ -28,14 +26,16 @@ set_tests_properties(cmake.third_party_patch_idempotence PROPERTIES LABELS "qual
 file(GLOB all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
 file(GLOB_RECURSE organized_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/unit/*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/integration/*.cpp")
 set(all_test_cpp ${EVE_TEST_DESKTOP_ORIGINS})
+option(EVENGINE_BUILD_TEST_BENCHMARKS "Build explicit timing workloads with the host test runner" OFF)
+if(EVENGINE_BUILD_TEST_BENCHMARKS)
+  file(GLOB_RECURSE _eve_benchmark_sources "${CMAKE_CURRENT_SOURCE_DIR}/benchmark/*.cpp")
+  list(APPEND all_test_cpp ${_eve_benchmark_sources})
+endif()
 list(REMOVE_ITEM all_test_cpp
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/crowd-runtime/CrowdThread.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/integration/rts-crowd/CrowdMotion.cpp")
-# These updated legacy sources run in cmake/crowd_check's process-isolated
-# Crowd/RTS executables. Their pre-reorganization cases also live in the
-# consolidated unit/integration files, so the main suite must not register
-# the same case names twice.
-list(FILTER all_test_cpp EXCLUDE REGEX "/(crowd_avoidance|result|rts_crowd|rts_crowd_production|rts_formation|rts_groups|value)\\.cpp$")
+# Canonical sources are deduplicated by eve_resolve_test_sources below. Former
+# basename exclusions would silently omit the newly separated workflows.
 eve_test_source_properties(physics_jolt.cpp physics_jolt_cooking.cpp physics_jolt_contacts.cpp PROPERTIES COMPILE_DEFINITIONS "EVENGINE_TEST_HAS_JOLT=$<BOOL:${EVENGINE_BUILD_JOLT}>")
 # Resource sharing must test the same optional validation provider as EVGraphics.
 get_target_property(_eve_graphics_definitions EVGraphics COMPILE_DEFINITIONS)
@@ -98,10 +98,10 @@ endif()
 
 # These tests intentionally exercise Vulkan implementation details rather than
 # the backend-neutral graphics API, so they cannot be linked into a WebGPU test
-# binary. Backend parity coverage lives in graphics_backend_parity.cpp.
+# binary. Merged Vulkan-only contract sections select the backend in source.
+# Backend parity coverage lives in graphics_backend_parity.cpp.
 if(BUILD_PLATFORM STREQUAL "webgpu")
-  foreach(_eve_vulkan_test IN ITEMS gpu_driven.cpp render_graph.cpp avatar_vrm_vulkan.cpp ShaderResourceSharing.cpp
-                                    shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
+  foreach(_eve_vulkan_test IN ITEMS shader_reload_vulkan.cpp physics_layered_cloth_gpu.cpp)
     list(FILTER all_test_cpp EXCLUDE REGEX "/${_eve_vulkan_test}$")
   endforeach()
 endif()
@@ -292,18 +292,7 @@ else()
   set(EVENGINE_TEST_DOMAIN_SPLIT "${_eve_test_split_default}" CACHE BOOL
       "Build one test executable per domain instead of a single unit_test (default: on for SHARED, off for OBJECT)")
 
-  # Compile the heavy graphics fixture headers once across desktop test domains.
-  add_library(eve_graphics_window_fixtures STATIC GraphicsWindowFixtures.cpp)
-  # Fixtures.h reaches Assimp's generated config.h through Graphics.h.
-  add_dependencies(eve_graphics_window_fixtures third-party)
-  target_link_libraries(eve_graphics_window_fixtures PRIVATE eve_engine_includes zeroerr)
-  target_compile_options(eve_graphics_window_fixtures PRIVATE
-    $<$<CXX_COMPILER_ID:MSVC>:/UZEROERR_NO_ASSERT>
-    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-UZEROERR_NO_ASSERT>)
-  if(WIN32)
-    target_compile_definitions(eve_graphics_window_fixtures PRIVATE
-      POCO_STATIC POCO_NO_AUTOMATIC_LIBS NOMINMAX)
-  endif()
+  eve_ensure_graphics_window_fixtures()
   list(REMOVE_ITEM all_test_cpp "${CMAKE_CURRENT_SOURCE_DIR}/GraphicsWindowFixtures.cpp")
 
   if(EVENGINE_TEST_DOMAIN_SPLIT)

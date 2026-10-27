@@ -1124,6 +1124,40 @@ TEST_CASE("ui.photoMode.sessionRejectsMismatchedOrMalformedProfilesAtomically") 
     };
 }
 
+TEST_CASE("ui.pcgPhotoModeValues.roundTripsAllFieldsAndRejectsUnknownSchema") {
+    PcgPhotoModeValues source;
+    REQUIRE(source.setBool("m_showFPS", true).ok());
+    REQUIRE(source.setInt("m_targetFPS", 144).ok());
+    REQUIRE(source.setFloat("m_pcgWindSpeed", 0.875f).ok());
+    REQUIRE(source.setString("m_lastSceneName", "Alpine World").ok());
+    REQUIRE(source.setColor("m_sunColor", 1.25f, .5f, .25f, 2.0f).ok());
+    auto encoded = source.snapshotJson();
+    REQUIRE(encoded.ok());
+    PcgPhotoModeValues restored;
+    REQUIRE(restored.restoreJson(encoded.value()).ok());
+    auto again = restored.snapshotJson();
+    REQUIRE(again.ok());
+    CHECK_EQ(again.value(), encoded.value());
+    auto fps  = restored.getInt("m_targetFPS");
+    auto wind = restored.getFloat("m_pcgWindSpeed");
+    REQUIRE(fps.ok());
+    REQUIRE(wind.ok());
+    CHECK_EQ(fps.value(), int64_t(144));
+    CHECK_EQ(wind.value(), .875f);
+    REQUIRE(restored.selectColor("m_sunColor").ok());
+    CHECK_EQ(restored.getColorR(), 1.25f);
+    CHECK_EQ(restored.getColorA(), 2.0f);
+    const auto  before = again.value();
+    std::string wrong  = before;
+    auto        pos    = wrong.find("eve.ui.pcg-photo-mode-values");
+    REQUIRE(pos != std::string::npos);
+    wrong.replace(pos, 29, "eve.ui.wrong-photo-values");
+    CHECK(!restored.restoreJson(wrong).ok());
+    auto after = restored.snapshotJson();
+    REQUIRE(after.ok());
+    CHECK_EQ(after.value(), before);
+}
+
 TEST_CASE("ui.photoMode.valueSchemaDefaultsTypesAndResetContract") {
     PcgPhotoModeValues values;
     CHECK_EQ(values.getFieldCount(), std::uint64_t{102});

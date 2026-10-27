@@ -355,6 +355,13 @@ public:
     int   getRows() const { return rows_; }
     /** @brief Returns the particle count. */
     int   getParticleCount() const { return static_cast<int>(particles_.size()); }
+    /** @brief Copy current surviving triangle corners into an owning ordered index stream.
+     * @ownership Owns returned indices; no pointers to the simulation are retained.
+     * @thread Simulation owner thread, excluding concurrent mutation; no callbacks.
+     * @return Complete connectivity snapshot for baking, valid after source destruction.
+     * @cost Linear in topology size with one output allocation; capture outside playback.
+     */
+    [[nodiscard]] eve::Result<std::vector<std::uint32_t>> captureTriangleIndices() const;
     /** @brief Return the current render/collision triangle count, reduced by tearing. */
     [[nodiscard]] int getTriangleCount() const;
     /** @brief Return the current distance-constraint count. */

@@ -645,3 +645,149 @@ TEST_CASE("Runtime definition binary codec contract") {
 }
 }  // namespace test_asset_runtime_definition
 #endif
+
+#include <utility>
+#include "asset/ShaderAsset.h"
+
+namespace test_asset_shader_codec_unit {
+using namespace eve;
+using namespace eve::asset;
+namespace {
+Value shaderDefinition() {
+    auto value = Value::fromJson(R"({"schema":"eve.shader","schemaVersion":1,
+      "interface":"mesh3d","format":"spirv-1.6",
+      "vertex":[119734787,67072,0,2,0,327695,0,1,1852399981,0],
+      "fragment":[119734787,67072,0,2,0,327695,4,1,1852399981,0],
+      "parameters":[{"name":"strength","default":[1.0]}]})");
+    REQUIRE(value.ok());
+    return std::move(value).takeValue();
+}
+}  // namespace
+
+TEST_CASE("asset.shader decodes owning parameter and stage data") {
+    auto result = decodeShaderAsset(shaderDefinition());
+    REQUIRE(result.ok());
+    REQUIRE_EQ(result.value().parameters.size(), std::size_t(1));
+    REQUIRE_EQ(result.value().parameters[0].name, std::string("strength"));
+    REQUIRE_EQ(result.value().parameters[0].defaults[0], 1.f);
+    REQUIRE_EQ(result.value().vertex.size(), std::size_t(10));
+}
+
+TEST_CASE("asset.shader rejects future versions unknown fields and wrong stages") {
+    auto  definition        = shaderDefinition();
+    auto& fields            = *definition.getIf<Value::Object>();
+    fields["schemaVersion"] = Value(std::int64_t(2));
+    REQUIRE(!decodeShaderAsset(definition).ok());
+    fields["schemaVersion"] = Value(std::int64_t(1));
+    fields["unexpected"]    = Value(true);
+    REQUIRE(!decodeShaderAsset(definition).ok());
+    fields.erase("unexpected");
+    fields["fragment"] = fields["vertex"];
+    REQUIRE(!decodeShaderAsset(definition).ok());
+}
+
+TEST_CASE("asset.shader rejects duplicate parameters and exhausted ABI") {
+    auto  definition = shaderDefinition();
+    auto& fields     = *definition.getIf<Value::Object>();
+    auto& parameters = *fields["parameters"].getIf<Value::Array>();
+    parameters.push_back(parameters.front());
+    REQUIRE(!decodeShaderAsset(definition).ok());
+    parameters.clear();
+    for (int i = 0; i < 33; ++i)
+        parameters.emplace_back(
+            Value::Object{{"name", Value("p" + std::to_string(i))}, {"default", Value(Value::Array{Value(0.0)})}});
+    REQUIRE(!decodeShaderAsset(definition).ok());
+}
+
+TEST_CASE("asset.shader rejects truncated instructions and byte budgets") {
+    auto              definition = shaderDefinition();
+    ShaderAssetLimits limits;
+    limits.maximumStageWords = 9;
+    REQUIRE(!decodeShaderAsset(definition, limits).ok());
+    auto& words = *definition.getIf<Value::Object>()->at("vertex").getIf<Value::Array>();
+    words.pop_back();
+    REQUIRE(!decodeShaderAsset(definition).ok());
+}
+}  // namespace test_asset_shader_codec_unit
+
+#include <limits>
+#include "asset/CanonicalMesh.h"
+
+namespace test_asset_mesh_attributes_unit {
+using namespace eve;
+namespace {
+asset::CanonicalMeshData triangle() {
+    asset::CanonicalMeshData m;
+    m.positions                = {0, 0, 0, 1, 0, 0, 0, 1, 0};
+    m.indices                  = {0, 1, 2};
+    m.texcoords[0]             = {0, 0, 1, 0, 0, 1};
+    m.attributes["_UNITY_UV0"] = {4, {0, 0, 4194303, 1048063, 1, 0, 0, 1, 0, 1, 2, 3}};
+    m.attributes["COLOR_0"]    = {4, {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1}};
+    return m;
+}
+}  // namespace
+
+TEST_CASE("asset.mesh.attributeCodecPreservesPackedBitsAndRejectsMalformedDescriptors") {
+    auto m       = triangle();
+    auto encoded = asset::encodeCanonicalMesh(m);
+    REQUIRE(encoded.ok());
+    REQUIRE_EQ(encoded.value()[7], uint8_t(3));
+    auto decoded = asset::decodeCanonicalMesh(encoded.value());
+    REQUIRE(decoded.ok());
+    REQUIRE_EQ(decoded.value().attributes.at("_UNITY_UV0").values, m.attributes.at("_UNITY_UV0").values);
+    REQUIRE_EQ(decoded.value().attributes.at("COLOR_0").components, 4u);
+    auto bad     = encoded.value();
+    bad[32 + 68] = 1;  // Reserved descriptor word.
+    REQUIRE(!asset::decodeCanonicalMesh(bad).ok());
+    bad          = encoded.value();
+    bad[32 + 64] = 5;
+    REQUIRE(!asset::decodeCanonicalMesh(bad).ok());
+    bad         = encoded.value();
+    bad[32 + 8] = 'X';  // Nonzero bytes after semantic terminator.
+    REQUIRE(!asset::decodeCanonicalMesh(bad).ok());
+    bad = encoded.value();
+    bad.pop_back();
+    REQUIRE(!asset::decodeCanonicalMesh(bad).ok());
+    REQUIRE(!asset::decodeCanonicalMesh(encoded.value(), {3, 3, 64}).ok());
+    m.attributes.at("_UNITY_UV0").values[2] = std::numeric_limits<float>::infinity();
+    REQUIRE(!asset::encodeCanonicalMesh(m).ok());
+    m.attributes.clear();
+    auto legacy = asset::encodeCanonicalMesh(m);
+    REQUIRE(legacy.ok());
+    REQUIRE_EQ(legacy.value()[7], uint8_t(2));
+    REQUIRE(asset::decodeCanonicalMesh(legacy.value()).ok());
+}
+}  // namespace test_asset_mesh_attributes_unit
+
+
+namespace test_asset_mesh_vertex_codec_unit {
+using namespace eve;
+
+TEST_CASE("asset.mesh.encoderRoundTripsCanonicalVersion3WithVertexColors") {
+    asset::CanonicalMeshData source;
+    source.positions    = {0, 0, 0, 1, 0, 0, 0, 1, 0};
+    source.normals      = {0, 0, 1, 0, 0, 1, 0, 0, 1};
+    source.texcoords[0] = {0, 0, 1, 0, 0, 1};
+    source.colors       = {1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 0.5f};
+    source.indices      = {0, 1, 2};
+    auto encoded        = asset::encodeCanonicalMesh(source);
+    REQUIRE(encoded.ok());
+    auto decoded = asset::decodeCanonicalMesh(encoded.value());
+    REQUIRE(decoded.ok());
+    CHECK_EQ(decoded.value().positions, source.positions);
+    CHECK_EQ(decoded.value().normals, source.normals);
+    CHECK_EQ(encoded.value()[7], std::uint8_t(3));
+    CHECK_EQ(decoded.value().texcoords, source.texcoords);
+    CHECK_EQ(decoded.value().colors, source.colors);
+    CHECK_EQ(decoded.value().indices, source.indices);
+    auto invalid = source;
+    invalid.texcoords[0].pop_back();
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
+    invalid = source;
+    invalid.colors.pop_back();
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
+    invalid            = source;
+    invalid.indices[2] = 3;
+    REQUIRE(!asset::encodeCanonicalMesh(invalid).ok());
+}
+}  // namespace test_asset_mesh_vertex_codec_unit

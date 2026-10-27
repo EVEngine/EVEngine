@@ -309,9 +309,7 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
     // a per-pixel flat entity-ID color).
     std::vector<GBufferDraw> idDraws;
     idDraws.reserve(draws.size());
-    auto u8 = [](float x) -> uint32_t {
-        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
-    };
+    auto u6 = [](float x) -> uint32_t { return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f)); };
     for (const auto &d : draws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         GBufferDraw gd{};
@@ -321,8 +319,7 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
         gd.push.modelR0 = glm::vec4(d.model[0][0], d.model[1][0], d.model[2][0], d.model[3][0]);
         gd.push.modelR1 = glm::vec4(d.model[0][1], d.model[1][1], d.model[2][1], d.model[3][1]);
         gd.push.modelR2 = glm::vec4(d.model[0][2], d.model[1][2], d.model[2][2], d.model[3][2]);
-        const uint32_t packed = u8(d.idColor.r) | (u8(d.idColor.g) << 8) |
-                                (u8(d.idColor.b) << 16) | (u8(d.idColor.a) << 24);
+        const uint32_t packed = u6(d.idColor.r) | (u6(d.idColor.g) << 6) | (u6(d.idColor.b) << 12);
         gd.push.clip = glm::vec4(0.1f, 100.f, glm::uintBitsToFloat(packed), 0.f);
         idDraws.push_back(gd);
     }
@@ -337,11 +334,11 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
 
     vkb::executeImmediately(device.instance, uploadPool, device.getQueue(vkb::QueueType::graphics),
                             [&](vk::CommandBuffer cb) {
-                                std::array<vk::ClearValue, 4> clears{};
+                                std::array<vk::ClearValue, 6> clears{};
                                 clears[0].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
                                 clears[1].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
                                 clears[2].color = vk::ClearColorValue(std::array<float, 4>{0, 0, 0, 0});
-                                clears[3].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
+                                clears[5].depthStencil = vk::ClearDepthStencilValue{1.0f, 0};
                                 vk::RenderPassBeginInfo rpBegin{};
                                 rpBegin.renderPass = gbufferRenderPass;
                                 rpBegin.framebuffer = slot->framebuffer;
@@ -351,6 +348,8 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
                                 slot->normal.beginColorAttachment();
                                 slot->depthColor.beginColorAttachment();
                                 slot->albedo.beginColorAttachment();
+                                slot->pbrParams.beginColorAttachment();
+                                slot->emissive.beginColorAttachment();
                                 slot->depth.beginDepthAttachment();
                                 cb.beginRenderPass(rpBegin, vk::SubpassContents::eInline);
                                 setViewportAndScissor(cb, w, h);
@@ -374,6 +373,8 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
                                 slot->normal.endSampledLayout();
                                 slot->depthColor.endSampledLayout();
                                 slot->albedo.endSampledLayout();
+                                slot->pbrParams.endSampledLayout();
+                                slot->emissive.endSampledLayout();
                                 slot->depth.endSampledLayout();
 
                                 // Copy the albedo attachment (location 2 = ID colors) to CPU.

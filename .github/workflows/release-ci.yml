@@ -1,0 +1,1295 @@
+# Full release validation: daily debug checks plus release-only platforms,
+# coverage, trimmed profiles and example smoke. SDK creation follows in Release.
+name: Release validation
+
+on:
+  workflow_call:
+    inputs:
+      ref:
+        description: Release candidate branch or tag
+        type: string
+        default: ""
+
+concurrency:
+  group: release-ci-${{ github.workflow }}-${{ inputs.ref || github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  # Single source of truth: repository variables (Settings -> Secrets and
+  # variables -> Actions -> Variables), falling back to these defaults.
+  VULKAN_VERSION: ${{ vars.VULKAN_VERSION || '1.4.304.1' }}
+  # Aligned to the NDK preinstalled on the windows-latest / macos-latest runner
+  # images (27.3.13750724), so setup-android downloads nothing extra.
+  ANDROID_NDK_VERSION: ${{ vars.ANDROID_NDK_VERSION || '27.3.13750724' }}
+  ANDROID_API: ${{ vars.ANDROID_API || '34' }}
+
+jobs:
+  debug-checks:
+    name: Debug checks
+    uses: ./.github/workflows/ci.yml
+    with:
+      ref: ${{ inputs.ref || github.ref }}
+    secrets: inherit
+
+  profile-matrix:
+    name: Profile ${{ matrix.profile }}
+    # Full trimmed-profile builds belong to release validation.
+    needs: [debug-checks]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 130
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [minimal, 2d, 3d, procgen-core-only, physics-core-only, asset-core-only, headless, server]
+    env:
+      PROFILE: ${{ matrix.profile }}
+      PROFILE_BUILD_ROOT: /tmp/evengine-profile-matrix
+      PROFILE_JOBS: 2
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install profile toolchain
+        timeout-minutes: 15
+        run: |
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          sudo apt-get update \
+            -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+            -o Dir::Etc::sourceparts=- -o Acquire::Retries=2
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build libvulkan-dev \
+            libx11-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev \
+            libxext-dev libxss-dev libwayland-dev libxkbcommon-dev \
+            libbz2-dev libpng-dev libxxf86vm-dev libasound2-dev
+
+      - name: Configure profile
+        timeout-minutes: 30
+        run: make profile/configure
+
+      - name: Build independent profile smoke target
+        # Cold 3d builds reached 1609/1758 edges at the old 35-minute limit.
+        timeout-minutes: 60
+        run: make profile/build
+
+      - name: Run independent capability smoke probes
+        timeout-minutes: 10
+        run: make profile/smoke
+
+  macos-x86_64:
+    name: macOS x86_64 (${{ matrix.configuration }}, build)
+    needs: [debug-checks]
+    runs-on: macos-15-intel
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native Intel runner
+        timeout-minutes: 5
+        run: test "$(uname -s)" = Darwin && test "$(uname -m)" = x86_64
+
+      - name: Install build tools
+        timeout-minutes: 10
+        run: brew install ninja
+
+      - name: Install Vulkan SDK (MoltenVK)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve Vulkan SDK paths
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Build macOS x86_64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          mkdir -p build
+          log="build/macosx-x86_64${suffix}.log"
+          if make "build/macosx-x86_64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF" >"$log" 2>&1; then
+            tail -n 30 "$log"
+          else
+            awk '/error:|FAILED:|Undefined symbols|^ld:/ {remaining=12} remaining>0 {if (shown++ < 240) print; remaining--}' "$log"
+            tail -n 40 "$log"
+            exit 1
+          fi
+
+      - name: Upload Intel macOS build diagnostics
+        if: failure()
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: macosx-x86_64-${{ matrix.configuration }}-build-logs
+          path: build/macosx-x86_64*.log
+          if-no-files-found: ignore
+
+  # Native ARM64 lanes also run the process-isolated tests and validate SDKs.
+  windows-arm64:
+    name: Windows ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [debug-checks]
+    runs-on: windows-11-arm
+    timeout-minutes: 360
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          if ([System.Runtime.InteropServices.RuntimeInformation]::OSArchitecture -ne 'Arm64') {
+            throw 'This lane requires a native Windows ARM64 host'
+          }
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Install native ARM64 Vulkan SDK
+        timeout-minutes: 20
+        # This pinned action selects the Windows ARM64 SDK from the host arch.
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Probe native Vulkan driver and loader surface extensions
+        timeout-minutes: 5
+        env:
+          VK_LOADER_DEBUG: error,warn
+        run: |
+          cmake/with-msvc.cmd --arm64 cmake -G Ninja -S .github/scripts/vulkan-probe -B build/arm64-vulkan-probe -DCMAKE_BUILD_TYPE=Release
+          cmake/with-msvc.cmd --arm64 cmake --build build/arm64-vulkan-probe
+          build/arm64-vulkan-probe/vulkan_probe.exe "$PWD/build/arm64-swiftshader-runtime/vk_swiftshader.dll" "$EVE_VULKAN_LOADER"
+
+      - name: Build Windows ARM64
+        timeout-minutes: 190
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/win32-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+          # Executable-local lookup precedes any system Vulkan loader.
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/test/vulkan-1.dll"
+          cp "$EVE_VULKAN_LOADER" "build/win32-arm64${suffix}/src/engine/vulkan-1.dll"
+
+      - name: Probe real SDL Vulkan window with loader diagnostics
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          VK_LOADER_DEBUG: all
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          ctest --test-dir "build/win32-arm64${suffix}" --no-tests=error -V -R '^WindowTest\.basicWindow$'
+
+      - name: Run Windows ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "test/win32-arm64${suffix}" JOBS=4 CTEST_JOBS=2 \
+            LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Windows ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/win32-arm64${suffix}" --prefix "dist/eve-sdk/win32-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/win32-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py win32-arm64 ci
+          bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-win32-arm64-ci.zip win32 "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: win32-arm64-${{ matrix.configuration }}-test-logs
+          path: build/win32-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
+  linux-arm64:
+    name: Linux ARM64 (${{ matrix.configuration }}, build + test)
+    needs: [debug-checks]
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 300
+    strategy:
+      fail-fast: false
+      matrix:
+        configuration: [debug, release]
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Verify native ARM64 runner
+        timeout-minutes: 5
+        run: test "$(uname -m)" = aarch64
+
+      - name: Install native system packages
+        timeout-minutes: 25
+        # Preserve the ARM ports mirror supplied by the runner image.
+        run: |
+          sudo apt-get update -o Acquire::Retries=2 \
+            -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build lld gdb \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            libvulkan-dev glslc glslang-tools \
+            mesa-vulkan-drivers vulkan-tools vulkan-validationlayers xvfb xauth
+
+      - name: Setup native software Vulkan
+        timeout-minutes: 90
+        uses: ./.github/actions/setup-arm64-vulkan
+
+      - name: Build Linux ARM64
+        timeout-minutes: 140
+        env:
+          CONFIGURATION: ${{ matrix.configuration }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          make "build/linux-arm64${suffix}" JOBS=4 \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Probe ray tracing with validation and backtraces
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          bash .github/scripts/probe-arm64-blas.sh
+          python3 .github/scripts/probe-raytracing.py "build/linux-arm64${suffix}"
+
+      - name: Run Linux ARM64 tests
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          if [ "$CONFIGURATION" = debug ]; then suffix="-debug"; fi
+          xvfb-run -a make "test/linux-arm64${suffix}" JOBS=4 CTEST_JOBS="$(nproc)" \
+            LABEL_FILTER='' \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=PREBUILT -DEVENGINE_COMPILER_CACHE=OFF"
+
+      - name: Install and validate Linux ARM64 Release SDK
+        if: matrix.configuration == 'release'
+        timeout-minutes: 20
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDK_TEST_ARCH: arm64
+          SDK_TEST_REQUIRE_RUN: "1"
+          CONFIGURATION: ${{ matrix.configuration }}
+        run: |
+          suffix=""
+          cmake --install "build/linux-arm64${suffix}" --prefix "dist/eve-sdk/linux-arm64${suffix}"
+          version="$(cat "dist/eve-sdk/linux-arm64${suffix}/share/eve/VERSION")"
+          python3 .github/scripts/zip-sdk.py linux-arm64 ci
+          xvfb-run -a bash .github/scripts/test-arm64-sdk.sh artifacts/eve-sdk-linux-arm64-ci.zip linux "$version"
+
+      - name: Upload ARM64 test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-arm64-${{ matrix.configuration }}-test-logs
+          path: build/linux-arm64*/Testing/Temporary/
+          if-no-files-found: ignore
+
+  dawn:
+    name: Dawn (Linux smoke)
+    needs: [debug-checks]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 300
+    env:
+      CC: gcc
+      CXX: g++
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install system packages
+        # apt update may consume most of ten minutes while retrying a slow
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
+        timeout-minutes: 25
+        run: |
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build pkg-config \
+            libx11-dev libx11-xcb-dev libxcb1-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev libgbm-dev libdrm-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb xauth
+          # Check Dawn platform headers before starting the dependency build.
+          printf '#include <X11/Xlib-xcb.h>\n#include <gbm.h>\n#include <xf86drm.h>\n' | \
+            g++ $(pkg-config --cflags gbm libdrm) -x c++ -fsyntax-only -
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh linux >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: linux
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Setup Dawn generator Python
+        timeout-minutes: 5
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Configure native Dawn smoke lane
+        # Reset incomplete dependency checkouts before retrying configuration.
+        timeout-minutes: 25
+        run: |
+          set -euo pipefail
+          third_party_args=()
+          if [ "${{ steps.third-party-cache.outputs.cache-hit }}" = "true" ]; then
+            third_party_args+=("${{ steps.third-party-cache.outputs.cmake-args }}")
+          fi
+          configure_dawn() {
+            cmake -S . -B build/webgpu-native -G Ninja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DEVENGINE_BUILD_PLATFORM=webgpu -DBUILD_PLATFORM=webgpu -DBUILD_TESTING=ON \
+              -DEVENGINE_COMPILER_CACHE=OFF \
+              "${third_party_args[@]}" \
+              -DEVENGINE_DOWNLOAD_SPINE_MODELS=OFF \
+              -DEVENGINE_DOWNLOAD_SKINNED_CHARACTER=OFF
+          }
+          for attempt in 1 2 3; do
+            echo "Dawn smoke configure attempt ${attempt}/3"
+            # CMake validates the pinned support checkouts in eve_dawn_support.
+            if configure_dawn; then
+              exit 0
+            fi
+            rm -rf build/webgpu-native
+            if [ "$attempt" -lt 3 ]; then sleep $((attempt * 10)); fi
+          done
+          echo 'Dawn smoke configure failed after 3 attempts' >&2
+          exit 1
+
+      - name: Verify native Dawn platform selection
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          grep -Eq '^#define EVENGINE_WEBGPU[[:space:]]*$' \
+            build/webgpu-native/src/engine/common/config.h
+          grep -Eq 'graphics/webgpu/' build/webgpu-native/src/modules/graphics_src.txt
+          if grep -Eq 'graphics/vulkan/' build/webgpu-native/src/modules/graphics_src.txt; then
+            echo 'native Dawn graphics source list still contains Vulkan' >&2
+            exit 1
+          fi
+
+      - name: Build native Dawn smoke lane
+        # Build dependencies explicitly so a cold independent runner works too.
+        timeout-minutes: 180
+        run: |
+          set -euo pipefail
+          cmake --build build/webgpu-native --target deps -j "$(nproc)"
+          cmake --build build/webgpu-native --target unit_test -j "$(nproc)"
+
+      - name: Run native Dawn smoke
+        timeout-minutes: 10
+        env:
+          ALSOFT_DRIVERS: "null"
+          SDL_VIDEODRIVER: x11
+        run: |
+          set -euo pipefail
+          export XDG_RUNTIME_DIR="$(mktemp -d)"
+          trap 'rm -rf "$XDG_RUNTIME_DIR"' EXIT
+          xvfb-run -a -s "-screen 0 1280x800x24" \
+            ctest --test-dir build/webgpu-native \
+              -R '^Graphics\.screenGetPixelAfterPresent$' \
+              --no-tests=error --timeout 300 --output-on-failure
+
+  windows-release:
+    name: Windows (Release)
+    needs: [debug-checks]
+    runs-on: windows-latest
+    # A cold Release build took 55 minutes and the process-isolated 3510-case
+    # suite reached 3060/3510 at the former 30-minute test guard. Preserve
+    # bounded hang detection while budgeting setup, build, and the full suite.
+    timeout-minutes: 300
+    env:
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: |
+          choco install make ninja -y --no-progress
+          echo "VS_GENERATOR=Visual Studio 17 2022" >> $env:GITHUB_ENV
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          install_runtime: true
+          install_swiftshader: true
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (SwiftShader)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vsRoot = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          $toolsetFile = Join-Path $vsRoot "VC\Auxiliary\Build\Microsoft.VCToolsVersion.default.txt"
+          $toolset = (Get-Content $toolsetFile -Raw).Trim()
+          $sdkVersion = (& cmd.exe /d /s /c `
+            'cmake\with-msvc.cmd cmd.exe /d /c echo %WindowsSDKVersion%').Trim().TrimEnd('\')
+          $cmakeVersion = ((cmake --version | Select-Object -First 1) -split '\s+')[-1]
+          "id=msvc-$toolset-winsdk-$sdkVersion-cmake-$cmakeVersion" >> $env:GITHUB_OUTPUT
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: win32
+          configuration: Release
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build win32 release
+        # Release run 38235152198 reached 2622/2840 edges at 160 minutes.
+        timeout-minutes: 210
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          make build/win32 JOBS="${NUMBER_OF_PROCESSORS:-8}"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" win32 Release build/win32/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Run win32 release unit tests
+        timeout-minutes: 120
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          make test/win32
+          LABEL_FILTER=''
+
+      - name: Sample settlement release benchmark
+        id: settlement-benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/win32 -C Release \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-windows.log
+
+      - name: Upload settlement benchmark sample
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-windows-release
+          path: build/settlement-benchmark-windows.log
+          if-no-files-found: error
+
+  android-release:
+    name: Android (Release)
+    needs: [debug-checks]
+    runs-on: windows-latest
+    # The release build step alone may take up to 90 minutes on a cold runner.
+    # Leave room for toolchain setup and cache reporting at the job level.
+    timeout-minutes: 180
+    env:
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install build tools
+        timeout-minutes: 15
+        shell: pwsh
+        run: choco install make ninja -y --no-progress
+
+      - name: Setup Java 17
+        timeout-minutes: 10
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Android SDK
+        timeout-minutes: 20
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
+        with:
+          packages: >-
+            platform-tools
+            platforms;android-${{ env.ANDROID_API }}
+            build-tools;${{ env.ANDROID_API }}.0.0
+            ndk;${{ env.ANDROID_NDK_VERSION }}
+
+      - name: Resolve Android SDK / NDK paths
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-android-sdk.sh
+
+      - name: Write Gradle local.properties
+        timeout-minutes: 5
+        run: |
+          printf 'sdk.dir=%s\n' "$ANDROID_HOME" > platform/android/apk/local.properties
+          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh android >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: android
+          configuration: Release
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build android release
+        # Native compilation consumed 88 minutes before Gradle APK packaging.
+        timeout-minutes: 120
+        run: |
+          test -f "$ANDROID_NDK/build/cmake/android.toolchain.cmake"
+          make build/android \
+            ANDROID_SDK="$ANDROID_SDK" \
+            ANDROID_NDK="$ANDROID_NDK" \
+            JAVA_HOME="$JAVA_HOME" \
+            CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}" \
+            ANDROID_JOBS="${NUMBER_OF_PROCESSORS:-8}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" android Release build/android/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+  macos-release:
+    name: macOS (Release)
+    needs: [debug-checks]
+    runs-on: macos-latest
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install tools
+        timeout-minutes: 10
+        run: brew install ninja || true
+
+      - name: Install Vulkan SDK (MoltenVK + iOS)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh macosx >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: macosx
+          configuration: Release
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build macosx release
+        timeout-minutes: 75
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          make build/macosx JOBS="$(sysctl -n hw.ncpu)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" macosx Release build/macosx/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Run macosx release unit tests
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: >-
+          make test/macosx
+          LABEL_FILTER=''
+
+      - name: Sample settlement release benchmark
+        id: settlement-benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/macosx \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-macos.log
+
+      - name: Upload settlement benchmark sample
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-macos-release
+          path: build/settlement-benchmark-macos.log
+          if-no-files-found: error
+
+  ios-release:
+    name: iOS (Release)
+    needs: [debug-checks]
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install tools
+        timeout-minutes: 10
+        run: brew install ninja || true
+
+      - name: Install Vulkan SDK (MoltenVK + iOS)
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          destination: ${{ runner.temp }}/VulkanSDK
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve VULKAN_SDK
+        timeout-minutes: 5
+        run: bash .github/scripts/resolve-vulkan-macos.sh "${{ runner.temp }}/VulkanSDK"
+
+      - name: Setup iOS signing (optional)
+        timeout-minutes: 5
+        env:
+          IOS_CERTIFICATE_P12_BASE64: ${{ secrets.IOS_CERTIFICATE_P12_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_DEVELOPMENT_TEAM: ${{ secrets.IOS_DEVELOPMENT_TEAM }}
+          IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        run: bash .github/scripts/setup-ios-signing.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh ios >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: ios
+          configuration: Release
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build ios release
+        timeout-minutes: 50
+        run: |
+          set -euo pipefail
+          JOBS="$(sysctl -n hw.ncpu)"
+          if [ "${IOS_SIGNING:-0}" = "1" ] && [ -n "${IOS_DEVELOPMENT_TEAM:-}" ]; then
+            echo "Building signed iOS (team=$IOS_DEVELOPMENT_TEAM)"
+            make build/ios \
+              IOS_DEVELOPMENT_TEAM="$IOS_DEVELOPMENT_TEAM" \
+              CMAKE_EXTRA_ARGS="${{ steps.third-party-cache.outputs.cmake-args }}" \
+              ANDROID_JOBS="$JOBS"
+          else
+            echo "Building unsigned iOS"
+            make build/ios \
+              IOS_DEVELOPMENT_TEAM= \
+              CMAKE_EXTRA_ARGS="${{ steps.third-party-cache.outputs.cmake-args }}" \
+              ANDROID_JOBS="$JOBS"
+          fi
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" ios Release build/ios/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+  example-smoke:
+    name: Example smoke (Linux)
+    needs: [linux-release]
+    # Run even if later unit tests fail, provided the build published a runtime.
+    if: ${{ !cancelled() && needs.linux-release.outputs.smoke-runtime != '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install system packages
+        # apt update may consume most of ten minutes while retrying a slow
+        # mirror, and Mesa can download at well below 100 KiB/s. Keep enough
+        # time for an active transfer to finish.
+        timeout-minutes: 25
+        run: |
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#https://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          # Package downloads can exceed the old ten-minute step budget.
+          # Keep bounded transport retries and signature/hash verification.
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb ffmpeg python3-pil
+
+      - name: Download example smoke runtime
+        timeout-minutes: 10
+        uses: actions/download-artifact@v4
+        with:
+          name: linux-example-smoke-runtime
+          path: ${{ runner.temp }}/example-smoke-artifact
+
+      - name: Restore example smoke runtime
+        timeout-minutes: 5
+        run: |
+          mkdir -p "$RUNNER_TEMP/example-smoke-runtime"
+          tar -xzf "$RUNNER_TEMP/example-smoke-artifact/example-smoke-runtime.tar.gz" \
+            -C "$RUNNER_TEMP/example-smoke-runtime"
+          echo "EVE=$RUNNER_TEMP/example-smoke-runtime/eve" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=$RUNNER_TEMP/example-smoke-runtime/lib" >> "$GITHUB_ENV"
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      # 150 headless Lavapipe smokes have finished green then still hit the old
+      # 20-minute step guard during teardown (PR #586 run 38844868063;
+      # run 38775560674). Keep headroom above the ~15+ minute live window.
+      - name: Smoke all examples (headless, >=2s alive each)
+        # 151 examples take up to 151 * (6s run + 3s termination grace),
+        # already over 22 minutes before process/display setup overhead.
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+          # Contract for examples/README.md "示例规范": every runnable example
+          # must still be running MIN_RUN_SECONDS after launch, with no error
+          # markers in its log; dying early or exiting non-zero fails the job.
+          MIN_RUN_SECONDS: "2"
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" make smoke/examples
+
+  linux-release:
+    name: Linux (Release)
+    outputs:
+      smoke-runtime: ${{ steps.smoke-runtime.outputs.artifact-id }}
+    needs: [debug-checks]
+    runs-on: ubuntu-24.04
+    # The 75-minute build and 30-minute test guards must both fit inside the
+    # job budget, together with checkout and toolchain setup.
+    timeout-minutes: 150
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install system packages
+        # Keep parity with the debug lane's full native dependency install.
+        timeout-minutes: 15
+        run: |
+          # GitHub-hosted ubuntu-24.04 images sometimes pin the retired
+          # azure.archive.ubuntu.com mirror, which hangs instead of failing.
+          # Normalize to the canonical mirror so apt has a reachable source.
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh linux >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: linux
+          configuration: Release
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build linux release
+        # The v0.6.0 cold build reached 93% at 75 minutes; allow the remaining
+        # compilation and links to finish while retaining a bounded hang guard.
+        timeout-minutes: 105
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          make build/linux JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF -DEVENGINE_ENABLE_ASSERTS=ON ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Package example smoke runtime
+        timeout-minutes: 5
+        run: >-
+          make package/smoke-runtime RUNTIME_BUILD_DIR=build/linux
+          SMOKE_RUNTIME_ARCHIVE="$RUNNER_TEMP/example-smoke-runtime.tar.gz"
+
+      - name: Upload example smoke runtime
+        id: smoke-runtime
+        timeout-minutes: 10
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: linux-example-smoke-runtime
+          path: ${{ runner.temp }}/example-smoke-runtime.tar.gz
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" linux Release build/linux/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Run linux release unit tests
+        timeout-minutes: 30
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: xvfb-run -a -s "-screen 0 1280x800x24" make test/linux
+
+      - name: Sample settlement release benchmark
+        id: settlement-benchmark
+        timeout-minutes: 5
+        env:
+          ALSOFT_DRIVERS: "null"
+          EVENGINE_SETTLEMENT_BENCHMARK: "1"
+        shell: bash
+        run: |
+          set -o pipefail
+          ctest --test-dir build/linux \
+            -R '^settlement\.benchmark\.' -V \
+            | tee build/settlement-benchmark-linux.log
+
+      - name: Upload settlement benchmark sample
+        if: ${{ always() && steps.settlement-benchmark.outcome != 'skipped' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: settlement-benchmark-linux-release
+          path: build/settlement-benchmark-linux.log
+          if-no-files-found: error
+
+  linux-coverage:
+    name: Linux (Coverage)
+    # Coverage is collected during release validation, outside daily CI.
+    needs: [debug-checks]
+    runs-on: ubuntu-24.04
+    # Coverage reached 6409/7169 cases at its former 60-minute test guard.
+    # Leave room for the cold build, complete suite and report generation.
+    timeout-minutes: 210
+    steps:
+      - name: Checkout
+        timeout-minutes: 10
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          submodules: recursive
+
+      - name: Install system packages
+        # Keep parity with the other full native Linux dependency installs.
+        timeout-minutes: 15
+        run: |
+          sudo sed -i -E 's#https?://[^/]*archive\.ubuntu\.com/ubuntu#http://archive.ubuntu.com/ubuntu#g' \
+            /etc/apt/apt-mirrors.txt /etc/apt/sources.list /etc/apt/sources.list.d/*.sources 2>/dev/null || true
+          printf 'Acquire::Retries "2";\nAcquire::http::Timeout "30";\nAcquire::https::Timeout "30";\n' | \
+            sudo tee /etc/apt/apt.conf.d/90eve-timeouts >/dev/null
+          sudo pkill -f "unattended-upgrade" || true
+          sudo systemctl stop apt-daily.service apt-daily-upgrade.service 2>/dev/null || true
+          # Only Ubuntu indexes are needed for this toolchain.
+          test -s /etc/apt/sources.list.d/ubuntu.sources
+          apt_ok=0
+          for i in 1 2 3; do
+            timeout 120 sudo apt-get update -o Acquire::Retries=2 \
+              -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/ubuntu.sources \
+              -o Dir::Etc::sourceparts=- \
+              -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 && { apt_ok=1; break; }
+            [ "$i" -lt 3 ] && sleep 20
+          done
+          [ "$apt_ok" -eq 1 ] || exit 1
+          sudo apt-get install -y --no-install-recommends \
+            build-essential cmake ninja-build \
+            libx11-dev libxxf86vm-dev libxi-dev libxcursor-dev \
+            libxrandr-dev libxinerama-dev libxext-dev libxss-dev \
+            libgl1-mesa-dev \
+            libbz2-dev libpng-dev \
+            libwayland-dev libxkbcommon-dev libasound2-dev \
+            mesa-vulkan-drivers vulkan-tools \
+            xvfb gcovr
+
+      - name: Install Vulkan SDK
+        timeout-minutes: 20
+        uses: jakoch/install-vulkan-sdk-action@d17de7e2f5e50efb5d2123efed18497d3c58c533 # v1
+        with:
+          vulkan_version: ${{ env.VULKAN_VERSION }}
+          cache: true
+          cache_save_if: ${{ github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup software Vulkan ICD (Lavapipe)
+        timeout-minutes: 5
+        run: bash .github/scripts/setup-software-vulkan.sh
+
+      - name: Identify third-party toolchain
+        id: third-party-toolchain
+        timeout-minutes: 5
+        run: bash .github/scripts/identify-third-party-toolchain.sh linux >> "$GITHUB_OUTPUT"
+
+      - name: Restore verified third-party cache
+        id: third-party-cache
+        timeout-minutes: 20
+        uses: ./.github/actions/restore-third-party
+        with:
+          platform: linux
+          configuration: Debug
+          toolchain: ${{ steps.third-party-toolchain.outputs.id }}
+
+      - name: Build linux debug (coverage)
+        timeout-minutes: 75
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: >-
+          make build/linux-coverage JOBS="$(nproc)"
+          CMAKE_EXTRA_ARGS="-DEVENGINE_COMPILER_CACHE=OFF ${{ steps.third-party-cache.outputs.cmake-args }}"
+
+      - name: Verify built third-party cache
+        timeout-minutes: 5
+        run: bash .github/scripts/verify-third-party-cache.sh "${{ steps.third-party-cache.outputs.prefix }}" linux Release build/linux-coverage/CMakeCache.txt
+
+      - name: Save third-party cache
+        if: >-
+          steps.third-party-cache.outputs.cache-hit != 'true' &&
+          (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/main' ||
+           startsWith(github.ref, 'refs/tags/v') || startsWith(github.ref, 'refs/heads/v') || startsWith(inputs.ref, 'v'))
+        timeout-minutes: 15
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.third-party-cache.outputs.path }}
+          key: ${{ steps.third-party-cache.outputs.key }}
+
+      - name: Run linux unit tests (coverage)
+        timeout-minutes: 90
+        env:
+          ALSOFT_DRIVERS: "null"
+        run: |
+          xvfb-run -a -s "-screen 0 1280x800x24" make test/linux-coverage CTEST_JOBS="$(nproc)"
+
+      - name: Generate coverage report
+        timeout-minutes: 10
+        run: |
+          gcovr -r . --object-directory build/linux-coverage \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
+            --gcov-ignore-errors=no_working_dir_found \
+            -x build/linux-coverage/coverage.xml
+          gcovr -r . --object-directory build/linux-coverage \
+            --exclude 'build/' --exclude 'external/' --exclude 'third-party/' --exclude 'test/' \
+            --gcov-ignore-parse-errors \
+            --gcov-ignore-errors=no_working_dir_found \
+            --html --html-details -o build/linux-coverage/coverage.html
+
+      - name: Upload coverage artifact
+        timeout-minutes: 5
+        uses: actions/upload-artifact@v7
+        with:
+          name: linux-coverage
+          path: |
+            build/linux-coverage/coverage.xml
+            build/linux-coverage/coverage.html
+

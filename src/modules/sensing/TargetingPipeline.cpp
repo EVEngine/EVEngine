@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "sensing/TargetingPipeline.h"
 
 #include "common/Capability.h"
@@ -141,12 +142,16 @@ public:
                                                            "sensing.filter.los requires ILineOfSightQuery capability",
                                                            "pipeline.los", {}, "sensing"));
         }
-        auto from = WorldPoint::world2D(context.origin.x, context.origin.y);
+        auto from = context.origin.space == CoordinateSpace::World3D
+                        ? WorldPoint::world3D(context.origin.x, context.origin.y, context.origin.z)
+                        : WorldPoint::world2D(context.origin.x, context.origin.y);
         if (!from) return Result<void>::failure(from.status());
         std::vector<RankedCandidate> kept;
         kept.reserve(inout.size());
         for (const auto& candidate : inout) {
-            auto to = WorldPoint::world2D(candidate.x, candidate.y);
+            auto to = candidate.space == CoordinateSpace::World3D
+                          ? WorldPoint::world3D(candidate.x, candidate.y, candidate.z)
+                          : WorldPoint::world2D(candidate.x, candidate.y);
             if (!to) return Result<void>::failure(to.status());
             auto visible = los->query(TargetLocation{from.value()}, TargetLocation{to.value()});
             if (!visible) return Result<void>::failure(visible.status());

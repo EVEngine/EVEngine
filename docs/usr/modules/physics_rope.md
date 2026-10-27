@@ -57,3 +57,12 @@ setCollideWorld/setCollideSdf 的引用，最后释放 provider。newRope3D 的�
 `getLastTornElement()`、`getParticleCount()`、`getParticleX()`、`getParticleY()`、
 `getParticleZ()`、`getSampleX()`、`getSampleY()`、`getSampleZ()`、
 `getSampleTangentX()`、`getSampleTangentY()`、`getSampleTangentZ()`。
+
+### 脚本工厂释放
+
+`newRope3D` 和 `newRope3DFromJson` 均通过标准 owned VM 实例交付原生对象，最后一个
+脚本引用释放时删除 Rope3D。参数、实例返回值与失败抛异常的兼容接口保持；发布失败
+自动删除候选对象。C++ 原生工厂仍转移所有权给调用者，裸指针不会自行取得 VM owner。
+不得在脚本 owner 释放后使用原生借出指针；保留绑定者需要同时保留脚本 owner。
+烘焙帧与资产不持有源绳索指针，因此源删除后可以继续保存/加载/播放。
+这不是新的持久 Link 或 provider；既有 world/SDF 借用仍须在 provider 销毁前解除。

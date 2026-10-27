@@ -244,8 +244,7 @@ check/adhoc-result-tables:
 # lines. The source-only gate never configures or builds the engine.
 # The unit test runs with -X utf8: its own stdout/stderr would otherwise follow
 # the host ANSI code page (cp936 on a Chinese Windows) and mangle test output.
-check/architecture-contracts:
-	python3 scripts/check_architecture_contracts.py $(if $(ARCHITECTURE_BASE),--base "$(ARCHITECTURE_BASE)")
+check/architecture-contracts: check/architecture-lint
 	python3 -X utf8 -m unittest scripts.tests.test_architecture_contracts -v
 
 # Feature-specific task recipes are owned by independent fragments.
@@ -265,7 +264,7 @@ check/format:
 	bash .github/scripts/check-format.sh "$(CI_BASE)"
 
 check/depgraph:
-	python3 scripts/module_depgraph.py --check
+	python3 scripts/module_depgraph.py --check --check-layers --report
 
 check/versions:
 	python3 scripts/release.py check-versions
@@ -274,7 +273,7 @@ check/scripts:
 	python3 -m ruff check scripts
 
 check/scripts-test:
-	python3 -X utf8 -m unittest discover -s scripts/tests -p "test_*.py" -v
+	python3 -X utf8 scripts/run_source_quality.py --tests-only
 
 # Source-only gate matching CI job `source-quality`. Does not build the engine.
 # Host compile/test is a separate lane: make build/$(PLATFORM)-debug && make test
@@ -576,11 +575,14 @@ PERF_FRAMES ?= 30
 CTEST_ENV = EVENGINE_VIEW_SECONDS=$(VIEW_SECONDS) EVENGINE_PERF_FRAMES=$(PERF_FRAMES)
 
 # Run discovered zeroerr cases via CTest (see cmake/ZeroErrDiscoverTests.cmake).
+# Keep normal SDL SHOWN/rendering semantics on an inactive Windows desktop.
+# Explicit interactive opt-out: make test/win32-debug TEST_WINDOWS=visible
+TEST_WINDOWS ?= hidden
 test/win32: ensure-built/win32
-	$(CTEST_ENV) ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) python3 scripts/run_ctest.py --windows "$(TEST_WINDOWS)" -- ctest --test-dir build/win32 -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/win32-debug: ensure-built/win32-debug
-	$(CTEST_ENV) ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
+	$(CTEST_ENV) python3 scripts/run_ctest.py --windows "$(TEST_WINDOWS)" -- ctest --test-dir build/win32-debug --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)
 
 test/linux: ensure-built/linux
 	$(CTEST_ENV) ctest --test-dir build/linux -C Release --output-on-failure -j $(CTEST_JOBS) $(CTEST_RUN_SEL) $(CTEST_DOMAIN_SEL) $(CTEST_LABEL_FILTER) $(CTEST_FILTER) $(CTEST_REPEAT)

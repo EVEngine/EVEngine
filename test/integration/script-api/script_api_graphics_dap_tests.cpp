@@ -4,14 +4,6 @@
   "schema": "evengine.test-policy",
   "version": 1,
   "default": "script-binding",
-  "cases": {
-    "platform-network": [
-      "devtools.dap.stopOnEntry",
-      "devtools.dap.exceptionBreakpoints",
-      "devtools.dap.breakpointVerificationEvent",
-      "devtools.dap.setBreakpointsStoresCondition"
-    ]
-  },
   "module": "devtools",
   "modules": [
     "decal",
@@ -53,11 +45,14 @@
     "inventory_gameplay_control.cpp",
     "joystick_script.cpp"
   ],
-  "generated": [
-    "FilesystemTest.",
-    "I18nScriptTest.",
-    "JoystickScript."
-  ]
+  "cases": {
+    "platform-network": [
+      "devtools.dap.breakpointVerificationEvent",
+      "devtools.dap.exceptionBreakpoints",
+      "devtools.dap.setBreakpointsStoresCondition",
+      "devtools.dap.stopOnEntry"
+    ]
+  }
 }
 */
 // clang-format on
@@ -66,11 +61,13 @@
 #include "editor_preview_test_support.h"
 
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: dap
+#include "PrivateTestScope.h"
 #include "graphics/Shader.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dap)
-#include "PrivateTestScope.h"
 #include <Poco/Dynamic/Var.h>
 #include <Poco/Exception.h>
 #include <Poco/JSON/Array.h>
@@ -93,7 +90,6 @@
 #include "devtools/DebugAdapter.hpp"
 #include "devtools/Debugger.hpp"
 #include "devtools/DevTool.hpp"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // dap.cpp
 namespace test_dap {
@@ -1264,25 +1260,17 @@ TEST_CASE("devtools.dap.errorSliceReturnsLastReportAndLocations") {
     dap.stop();
 }
 }  // namespace test_dap
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_debugger)
-#include <squirrel.h>
-#include <cstdio>
-#include <cstring>
-#include <fstream>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+// Contract section: debugger
 #include "PrivateTestScope.h"
+
+#include <cstdio>
+#include <fstream>
 #include "common/Capability.h"
 #include "common/IStateProvider.h"
 #include "common/Module.h"
 #include "common/StateValue.h"
-#include "devtools/Debugger.hpp"
-#include "devtools/DevTool.hpp"
 #include "devtools/Snapshot.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // debugger.cpp
 namespace test_debugger {
 using namespace eve::dev;
@@ -2152,18 +2140,11 @@ TEST_CASE("devtools.debugger.scriptApiSetBreakpointCondition") {
     dt.detach();
 }
 }  // namespace test_debugger
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_debugger_audit)
+
+// Contract section: debugger audit
 #include "PrivateTestScope.h"
-#include <squirrel.h>
-#include <cstring>
+
 #include <functional>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <vector>
-#include "devtools/Debugger.hpp"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // debugger_audit.cpp
 namespace test_debugger_audit {
 using namespace eve::dev;
@@ -2554,10 +2535,10 @@ TEST_CASE("devtools.audit.localsAtBreakpoint") {
     CHECK(ev.value.find("7") != std::string::npos);
 }
 }  // namespace test_debugger_audit
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_decal_script)
+// Contract section: decal script
 #include "PrivateTestScope.h"
+
 #include "ScriptTest.h"
 extern const char* decal_content;
 // decal_script.cpp
@@ -2565,20 +2546,19 @@ namespace test_decal_script {
 using namespace eve;
 
 
-UnitSciptTest(DecalScriptTest, decal_content);
+class DecalScriptTest : public ScriptTest {
+public:
+    DecalScriptTest() : ScriptTest(decal_content) {}
+};
 
 TEST_CASE_FIXTURE(DecalScriptTest, "DecalScriptTest.basic") { REQUIRE(callScript("basic")); }
 }  // namespace test_decal_script
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_definitions)
+
+// Contract section: definitions
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include <stdexcept>
-#include <string>
-#include "common/Module.h"
 #include "definitions/Definitions.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // definitions.cpp
 namespace test_definitions {
 using namespace eve::definitions;
@@ -2609,21 +2589,16 @@ TEST_CASE("definitions.scriptRegisterReplaceEnumerateAndRestore") {
     CHECK_EQ(vm.find("result").toString(), std::string("{\"rank\":3}"));
 }
 }  // namespace test_definitions
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_authoring)
+// Contract section: dialogue authoring
 #include "PrivateTestScope.h"
+
 #include <cstdint>
 #include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
 #include <utility>
-#include <vector>
-#include "common/Capability.h"
 #include "common/GameplayControl.h"
 #include "common/GameplayControlJson.h"
 #include "common/GameplayInstanceCatalog.h"
-#include "common/Module.h"
 #include "common/ServiceInterfaces.h"
 #include "dialogue/ConversationAuthoring.h"
 #include "dialogue/ConversationCompiler.h"
@@ -2634,8 +2609,6 @@ TEST_CASE("definitions.scriptRegisterReplaceEnumerateAndRestore") {
 #include "dialogue/DnutParser.h"
 #include "dnut_interpreter/DnutCompiler.h"
 #include "dnut_interpreter/SequenceRuntime.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // dialogue_authoring.cpp
 namespace test_dialogue_authoring {
 // dialogue_authoring.cpp
@@ -2899,44 +2872,33 @@ public:
 // dialogue_importers.cpp
 using namespace eve::dialogue;
 }  // namespace test_dialogue_authoring
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_proc_script)
+// Contract section: dialogue proc script
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* dialogue_proc_script_content;
 // dialogue_proc_script.cpp
 namespace test_dialogue_proc_script {
 using namespace eve;
 
 
-UnitSciptTest(DialogueProcScriptTest, dialogue_proc_script_content);
+class DialogueProcScriptTest : public ScriptTest {
+public:
+    DialogueProcScriptTest() : ScriptTest(dialogue_proc_script_content) {}
+};
 
 TEST_CASE_FIXTURE(DialogueProcScriptTest, "DialogueProcScriptTest.basicPools") { REQUIRE(callScript("basicPools")); }
 }  // namespace test_dialogue_proc_script
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_economy)
+
+// Contract section: economy
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <cstdio>
-#include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
-#include <vector>
-#include "common/Capability.h"
-#include "common/GameplayControl.h"
-#include "common/GameplayControlJson.h"
-#include "common/GameplayInstanceCatalog.h"
+
 #include "common/IEconomy.h"
-#include "common/Module.h"
 #include "economy/Collector.h"
 #include "economy/Economy.h"
 #include "economy/EconomySystem.h"
 #include "economy/GatherNode.h"
 #include "economy/ResourceType.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // economy.cpp
 namespace test_economy {
 // economy.cpp
@@ -3157,15 +3119,10 @@ TEST_CASE("gameplay.control.economyScriptPublishesItsLedger") {
     CHECK_EQ(static_cast<int>(vm.find("scriptRemaining").toInt()), 0);
 }
 }  // namespace test_economy
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_voxel_catalog_script)
+// Contract section: editor voxel catalog script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // editor_voxel_catalog_script.cpp
 namespace test_editor_voxel_catalog_script {
 // editor_voxel_catalog_script.cpp
@@ -3279,18 +3236,12 @@ TEST_CASE("editor.script.composes_voxel_target_volume_tool_and_transaction") {
     CHECK_EQ(vm.find("afterSameWrite").toInt(), vm.find("beforeSameWrite").toInt());
 }
 }  // namespace test_editor_voxel_catalog_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_effects)
+// Contract section: effects
 #include "PrivateTestScope.h"
+
 #include <cmath>
-#include <cstdint>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include "common/Module.h"
 #include "effects/Effects.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // effects.cpp
 namespace test_effects {
 // effects.cpp
@@ -3338,17 +3289,12 @@ TEST_CASE("effects.script.containerLifecycle") {
 // effects_lifecycle.cpp
 using namespace eve::effects;
 }  // namespace test_effects
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_eventstream)
+// Contract section: eventstream
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include "GameEventTestSupport.h"
-#include "common/Module.h"
 #include "game_event/GameEvent.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // eventstream.cpp
 namespace test_eventstream {
 using namespace eve::game_event;
@@ -3387,41 +3333,36 @@ TEST_CASE("game_event.script.emitQueryCursorAndSnapshot") {
     CHECK_EQ(vm.find("result").toString(), std::string("career-4"));
 }
 }  // namespace test_eventstream
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_filesystem)
+// Contract section: filesystem
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* filesystem_content;
 // filesystem.cpp
 namespace test_filesystem {
 using namespace eve;
 
 
-UnitSciptTest(FilesystemTest, filesystem_content);
+class FilesystemTest : public ScriptTest {
+public:
+    FilesystemTest() : ScriptTest(filesystem_content) {}
+};
 
-#define TestScript(func) \
-    TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest." #func) { REQUIRE(callScript(#func)); }
+TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest.basic") { REQUIRE(callScript("basic")); }
 
-// clang-format off
-TestScript(basic)
-TestScript(getPaths)
-TestScript(readDir)
-TestScript(textRoundTrip)
-TestScript(atomicTextRoundTrip)
-// clang-format on
-// TestScript(readFile)
-// TestScript(writeFile)
+TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest.getPaths") { REQUIRE(callScript("getPaths")); }
+
+TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest.readDir") { REQUIRE(callScript("readDir")); }
+
+TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest.textRoundTrip") { REQUIRE(callScript("textRoundTrip")); }
+
+TEST_CASE_FIXTURE(FilesystemTest, "FilesystemTest.atomicTextRoundTrip") { REQUIRE(callScript("atomicTextRoundTrip")); }
 }  // namespace test_filesystem
-#undef TestScript
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_shader_spv_script)
+
+// Contract section: graphics shader spv script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
+
 #include "filesystem/Filesystem.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // graphics_shader_spv_script.cpp
 namespace test_graphics_shader_spv_script {
 TEST_CASE("graphics.shaderSpvScript.failuresAreStructuredBeforeUpload") {
@@ -3447,14 +3388,10 @@ TEST_CASE("graphics.shaderSpvScript.failuresAreStructuredBeforeUpload") {
     REQUIRE(fs->remove("malformed.spv"));
 }
 }  // namespace test_graphics_shader_spv_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_graphics_vegetation_script)
+// Contract section: graphics vegetation script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "common/Module.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // graphics_vegetation_script.cpp
 namespace test_graphics_vegetation_script {
 TEST_CASE("graphics.vegetation.script_owned_field_roundtrip") {
@@ -3491,18 +3428,16 @@ TEST_CASE("graphics.vegetation.script_owned_field_roundtrip") {
     )"));
 }
 }  // namespace test_graphics_vegetation_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_grass_wind)
+// Contract section: grass wind
 #include "PrivateTestScope.h"
+
 #include <algorithm>
 #include <array>
 #include <limits>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include "graphics/Grass.h"
 #include "graphics/GrassWind.h"
 #include "graphics/VegetationWind.h"
-#include "zeroerr/unittest.h"
 // grass_wind.cpp
 namespace test_grass_wind {
 namespace {
@@ -3562,19 +3497,15 @@ TEST_CASE("graphics.GrassWind.scriptCheckedAdvanceApplyAndRollback") {
     CHECK(std::abs(shader.pushConstantData()[31] - 0.909297427F) < 0.000001F);
 }
 }  // namespace test_grass_wind
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_hexmap_sphere_script)
+// Contract section: hexmap sphere script
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
+
 #include "common/ECS.h"
-#include "common/Module.h"
 // Earlier Windows/Poco headers define legacy near/far macros.
 #undef near
 #undef far
 #include "hexmap/HexMapModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // hexmap_sphere_script.cpp
 namespace test_hexmap_sphere_script {
 TEST_CASE("hexmap.sphereScriptDirectionsAreNativeArrays") {
@@ -3597,38 +3528,37 @@ TEST_CASE("hexmap.sphereScriptDirectionsAreNativeArrays") {
     )"));
 }
 }  // namespace test_hexmap_sphere_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_i18n_script)
+// Contract section: i18n script
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* i18n_content;
 // i18n_script.cpp
 namespace test_i18n_script {
 using namespace eve;
 
 
-UnitSciptTest(I18nScriptTest, i18n_content);
+class I18nScriptTest : public ScriptTest {
+public:
+    I18nScriptTest() : ScriptTest(i18n_content) {}
+};
 
-#define TestScript(func) \
-    TEST_CASE_FIXTURE(I18nScriptTest, "I18nScriptTest." #func) { REQUIRE(callScript(#func)); }
-
-// clang-format off
-TestScript(basic)
-// clang-format on
+TEST_CASE_FIXTURE(I18nScriptTest, "I18nScriptTest.basic") { REQUIRE(callScript("basic")); }
 }  // namespace test_i18n_script
-#undef TestScript
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_image_script)
+
+// Contract section: image script
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* image_content;
 // image_script.cpp
 namespace test_image_script {
 using namespace eve;
 
 
-UnitSciptTest(ImageScript, image_content);
+class ImageScript : public ScriptTest {
+public:
+    ImageScript() : ScriptTest(image_content) {}
+};
 
 // One case per line, deliberately, and spelled out rather than via a wrapper macro:
 // zeroerr registers each case with getTestSet(type).insert(tc) into a std::set whose
@@ -3653,15 +3583,13 @@ TEST_CASE_FIXTURE(ImageScript, "ImageScript.paste") { REQUIRE(callScript("paste"
 
 TEST_CASE_FIXTURE(ImageScript, "ImageScript.pcgScale") { REQUIRE(callScript("pcgScale")); }
 }  // namespace test_image_script
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_inventory_binding_architecture)
+
+// Contract section: inventory binding architecture
 #include "PrivateTestScope.h"
+
 #include <simplesquirrel/vm.hpp>
-#include "common/Module.h"
 #include "inventory/Bag.h"
 #include "inventory/Inventory.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // inventory_binding_architecture.cpp
 namespace test_inventory_binding_architecture {
 TEST_CASE("inventory.script.architectureExtraState") {
@@ -3680,29 +3608,15 @@ TEST_CASE("inventory.script.architectureExtraState") {
     CHECK_EQ(bag->getExtra("quest", "missing"), std::string("ready"));
 }
 }  // namespace test_inventory_binding_architecture
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_inventory_gameplay_control)
+// Contract section: inventory gameplay control
 #include "PrivateTestScope.h"
-#include <cstdint>
-#include <initializer_list>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
-#include <utility>
-#include "common/Capability.h"
-#include "common/GameplayControl.h"
-#include "common/GameplayControlJson.h"
-#include "common/GameplayInstanceCatalog.h"
-#include "common/Module.h"
+
 #include "common/Value.h"
-#include "inventory/Bag.h"
 #include "inventory/Equipment.h"
-#include "inventory/Inventory.h"
 #include "inventory/InventorySaveSession.h"
 #include "inventory/InventorySystem.h"
 #include "inventory/Item.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // inventory_gameplay_control.cpp
 namespace test_inventory_gameplay_control {
 // inventory_gameplay_control.cpp
@@ -3930,28 +3844,26 @@ TEST_CASE("gameplay.control.inventoryScriptPublishesAndUnpublishesItsInstance") 
 // inventory_save_session.cpp
 using namespace eve::inventory;
 }  // namespace test_inventory_gameplay_control
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_joystick_script)
+// Contract section: joystick script
 #include "PrivateTestScope.h"
-#include "ScriptTest.h"
+
 extern const char* joystick_content;
 // joystick_script.cpp
 namespace test_joystick_script {
 using namespace eve;
 
 
-UnitSciptTest(JoystickScript, joystick_content);
+class JoystickScript : public ScriptTest {
+public:
+    JoystickScript() : ScriptTest(joystick_content) {}
+};
 
-#define TestScript(func) \
-    TEST_CASE_FIXTURE(JoystickScript, "JoystickScript." #func) { REQUIRE(callScript(#func)); }
-
-// clang-format off
-TestScript(basic)
-TestScript(padClass)
-TestScript(query)
-TestScript(axes)
-// clang-format on
+TEST_CASE_FIXTURE(JoystickScript, "JoystickScript.bindings") {
+    auto* const fixture = this;
+    SUB_CASE("basic") { REQUIRE(fixture->callScript("basic")); };
+    SUB_CASE("padClass") { REQUIRE(fixture->callScript("padClass")); };
+    SUB_CASE("query") { REQUIRE(fixture->callScript("query")); };
+    SUB_CASE("axes") { REQUIRE(fixture->callScript("axes")); };
+}
 }  // namespace test_joystick_script
-#undef TestScript
-#endif

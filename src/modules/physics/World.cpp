@@ -1,5 +1,6 @@
 ﻿#include "physics/World.h"
 #include "physics/Body.h"
+#include "physics/Box2DSimulationBackend.h"
 #include "physics/Fixture.h"
 #include "physics/Joint2D.h"
 #include "physics/Mechanism2D.h"

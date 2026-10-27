@@ -165,7 +165,7 @@ function(eve_thirdparty_libs out_var)
             # release SDK route, which must stay a single self-contained
             # executable. Both exist in one install tree, so no build order can
             # change which one the route gets. See
-            # cmake/patches/box2d-shared-library.patch.
+            # third-party/Box2D/Common/b2Settings.h.
             if(EVENGINE_MODULE_LINKAGE STREQUAL "SHARED")
                 list(APPEND _libs Box2D-dynamic)
             elseif(_win_debug)

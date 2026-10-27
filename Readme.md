@@ -205,7 +205,7 @@ make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
 macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
 原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
 升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
-依赖补丁由 third-party 仓库维护；引擎自有 `external/ECS.hpp`、`external/zeroerr` 的补丁留在本仓库。
+third-party 管理稳定依赖；ECS 和 zeroerr 保留在 external 下独立更新，修改直接进入各自源码仓库。引擎不再保留依赖覆盖头文件或补丁。
 
 zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
 Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。

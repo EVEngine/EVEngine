@@ -1,0 +1,3669 @@
+{
+  "date": "2026-10-25",
+  "platform": "Windows x64 / MSVC Debug / SHARED",
+  "scope": "All 138 active integration CPPs, individual processes, including legacy integration-source performance identities for consistency with historical sweeps; migrated benchmark sources excluded.",
+  "case_count": 3453,
+  "file_count": 138,
+  "jobs": 4,
+  "per_case_timeout_seconds": 120,
+  "environment": {
+    "EVENGINE_VIEW_SECONDS": "0.3",
+    "EVENGINE_PERF_FRAMES": "30"
+  },
+  "windows": "private background desktop, verified child inheritance",
+  "rounds": [
+    {
+      "round": 1,
+      "wall_seconds": 282.1181812998839,
+      "exit_code": 8,
+      "counts": {
+        "passed": 3414,
+        "skipped": 15,
+        "failed": 24
+      }
+    }
+  ],
+  "wall_seconds": 282.1181812998839,
+  "observed_case_seconds_total": 1113.7629186,
+  "files": [
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp",
+      "case_count": 76,
+      "sum_case_seconds": 81.89984,
+      "counts": {
+        "passed": 73,
+        "failed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "daynight.sky injected cloud time changes authored wisps and closes the morph cycle",
+          "seconds": 4.24811
+        },
+        {
+          "name": "daynight.sky optical cycle survives midnight and restores the same rendered snapshot",
+          "seconds": 3.92228
+        },
+        {
+          "name": "graphics.sky authored wisps composite into the shared capture path",
+          "seconds": 2.86471
+        },
+        {
+          "name": "UI.smoke.panelGalleryPreview",
+          "seconds": 2.84436
+        },
+        {
+          "name": "RenderSystem3D.smokeRotatingCube",
+          "seconds": 2.42327
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp",
+      "case_count": 58,
+      "sum_case_seconds": 66.870557,
+      "counts": {
+        "passed": 56,
+        "failed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.imageAudit.materialsAndCamera",
+          "seconds": 1.65899
+        },
+        {
+          "name": "graphics.imageAudit.pipelineConfigs",
+          "seconds": 1.50973
+        },
+        {
+          "name": "graphics.imageAudit.stylizeAndSsaa",
+          "seconds": 1.40587
+        },
+        {
+          "name": "graphics.imageAudit.lightsAndXform",
+          "seconds": 1.39483
+        },
+        {
+          "name": "graphics.imageAudit.uiAndMap",
+          "seconds": 1.39276
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp",
+      "case_count": 51,
+      "sum_case_seconds": 54.831345,
+      "counts": {
+        "passed": 40,
+        "failed": 11
+      },
+      "slowest_cases": [
+        {
+          "name": "decal.renderImportedPresetsOnLitMaterialSpheres",
+          "seconds": 2.6902
+        },
+        {
+          "name": "decal.renderImportedPresetContactSheet",
+          "seconds": 1.82925
+        },
+        {
+          "name": "graphics.vegetation.render_mesh_update_and_season",
+          "seconds": 1.75954
+        },
+        {
+          "name": "GpuDrivenParity.maskedAlphaCutoff",
+          "seconds": 1.62476
+        },
+        {
+          "name": "dialogue.stage.avatarTypewriterPreview",
+          "seconds": 1.5165
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_backend_parity_tests.cpp",
+      "case_count": 67,
+      "sum_case_seconds": 53.4141339,
+      "counts": {
+        "passed": 67
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.backendParity.pixelWorldMillionPixelAtlas",
+          "seconds": 3.29348
+        },
+        {
+          "name": "fluids.ssf.customMaterialUniformColorOnlyRemainsGpuFastPath",
+          "seconds": 1.55945
+        },
+        {
+          "name": "gpgpu.meshDeformationProvider.runsRealCompute",
+          "seconds": 1.49759
+        },
+        {
+          "name": "fluids.ssf.uniformVolumeColorOnlyGpuPath",
+          "seconds": 1.47986
+        },
+        {
+          "name": "fluids.gpu.surfaceFlow",
+          "seconds": 1.36247
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp",
+      "case_count": 56,
+      "sum_case_seconds": 51.2491987,
+      "counts": {
+        "passed": 34,
+        "skipped": 15,
+        "failed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "ClassicScenes.pbrChart.flythroughConfigs",
+          "seconds": 2.91406
+        },
+        {
+          "name": "ClassicScenes.perf.maxFps",
+          "seconds": 2.70353
+        },
+        {
+          "name": "ClassicScenes.cornell.flythroughConfigs",
+          "seconds": 2.5805
+        },
+        {
+          "name": "ClusteredLighting.manyPointLightsBrightenCenter",
+          "seconds": 2.27374
+        },
+        {
+          "name": "IBL.outdoorSkyDiffersFromStudio",
+          "seconds": 1.75453
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_voxel_face_dir_tests.cpp",
+      "case_count": 43,
+      "sum_case_seconds": 45.802626,
+      "counts": {
+        "passed": 43
+      },
+      "slowest_cases": [
+        {
+          "name": "softbody.cloth3d.collidesWithWorld3D",
+          "seconds": 4.00043
+        },
+        {
+          "name": "softbody.cloth3d.momentumExchangeScalesWithMass",
+          "seconds": 3.00089
+        },
+        {
+          "name": "softbody.gpu.clothLargeSelfCollision",
+          "seconds": 1.59364
+        },
+        {
+          "name": "UI.textureBridge.preservesPainterOrderAndClipping",
+          "seconds": 1.58835
+        },
+        {
+          "name": "UI.textureBridge.viewportPixelsReachSwapchain",
+          "seconds": 1.52998
+        }
+      ]
+    },
+    {
+      "source": "test/integration/asset-import/asset_import_graphics_tests.cpp",
+      "case_count": 102,
+      "sum_case_seconds": 42.6672966,
+      "counts": {
+        "passed": 102
+      },
+      "slowest_cases": [
+        {
+          "name": "animation.mixamo.skeletonIdleRunJumpPreview",
+          "seconds": 3.64958
+        },
+        {
+          "name": "model3d.render.rock1Fbx",
+          "seconds": 2.54193
+        },
+        {
+          "name": "model3d.render.rock1ToonShader",
+          "seconds": 2.53757
+        },
+        {
+          "name": "model3d.render.cesiumManGltf",
+          "seconds": 2.49271
+        },
+        {
+          "name": "model3d.render.sofaObjMtl",
+          "seconds": 2.33377
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-pipeline/render_pipeline_graphics_graphics_vegetation_extras_tests.cpp",
+      "case_count": 40,
+      "sum_case_seconds": 36.271544,
+      "counts": {
+        "passed": 40
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.Grass.gpuRenderScreenshot",
+          "seconds": 2.28393
+        },
+        {
+          "name": "tensor.onnx.gpu.parallelCompilation",
+          "seconds": 1.55007
+        },
+        {
+          "name": "tensor.gpu.quantizedWeightsMatchEager",
+          "seconds": 1.49181
+        },
+        {
+          "name": "tensor.gpu.compiledFunctionElementwiseAndMatmul",
+          "seconds": 1.43917
+        },
+        {
+          "name": "tensor.gpu.compiledFunctionWhereTranspose",
+          "seconds": 1.40107
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp",
+      "case_count": 30,
+      "sum_case_seconds": 35.2802688,
+      "counts": {
+        "passed": 29,
+        "failed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "particles.gpu.residentSimulationAndIndirectRendering",
+          "seconds": 3.41248
+        },
+        {
+          "name": "particles.scalability.renderBudgetStressScene",
+          "seconds": 2.93731
+        },
+        {
+          "name": "particles.playback.renderDistanceTrailAndLoopingBurst",
+          "seconds": 2.91384
+        },
+        {
+          "name": "particles.gpu.residentRibbonStaysOnGpuAndRendersSegments",
+          "seconds": 2.37567
+        },
+        {
+          "name": "particles.gpu.softDepthFadeUsesSceneLinearDepth",
+          "seconds": 1.96991
+        }
+      ]
+    },
+    {
+      "source": "test/integration/file-io/file_io_graphics_tensor_llm_tests.cpp",
+      "case_count": 31,
+      "sum_case_seconds": 32.5709895,
+      "counts": {
+        "passed": 31
+      },
+      "slowest_cases": [
+        {
+          "name": "devtools.projectIndex.automaticWithoutManifestReflectsDomainChainAndFields",
+          "seconds": 7.00653
+        },
+        {
+          "name": "devtools.languageServer.completesChainedAndConstructedNativeTypes",
+          "seconds": 4.09609
+        },
+        {
+          "name": "devtools.projectIndex.automaticRejectsShadowedAndDynamicNativeLookalikes",
+          "seconds": 3.63181
+        },
+        {
+          "name": "devtools.projectIndex.realQuestChainAndVersionedContext",
+          "seconds": 2.85722
+        },
+        {
+          "name": "devtools.projectIndex.stdioDiscoveryAndTaskContext",
+          "seconds": 2.79848
+        }
+      ]
+    },
+    {
+      "source": "test/integration/file-io/file_io_graphics_hex_level_data_tests.cpp",
+      "case_count": 91,
+      "sum_case_seconds": 31.661292200000002,
+      "counts": {
+        "passed": 91
+      },
+      "slowest_cases": [
+        {
+          "name": "filesystem.watch.coalescesOverlappingRegistrations",
+          "seconds": 2.68895
+        },
+        {
+          "name": "animation.skinned.render.playerDriven",
+          "seconds": 2.66757
+        },
+        {
+          "name": "animation.skinned.render.applyToMesh",
+          "seconds": 2.00034
+        },
+        {
+          "name": "animation.skinned.render.clipSampledMovesPixels",
+          "seconds": 1.90586
+        },
+        {
+          "name": "filesystem.watch.fileModified",
+          "seconds": 1.56589
+        }
+      ]
+    },
+    {
+      "source": "test/integration/asset-pipeline/asset_pipeline_graphics_import_workflows_tests.cpp",
+      "case_count": 139,
+      "sum_case_seconds": 30.2165716,
+      "counts": {
+        "passed": 139
+      },
+      "slowest_cases": [
+        {
+          "name": "asset.import.unityFbxCharacterProducesSkinAndAnimation",
+          "seconds": 2.31924
+        },
+        {
+          "name": "asset.import.unityStaticPrefabRendersOwnedEcsInstances",
+          "seconds": 2.08394
+        },
+        {
+          "name": "asset.import.unityVegetationNormalPreservesLinearSourceAndGeneratesHeight",
+          "seconds": 1.77761
+        },
+        {
+          "name": "asset.import.structuredModelsScadCompilerTimeout",
+          "seconds": 1.11788
+        },
+        {
+          "name": "asset.procgen.terrainDetailSidecarPublishesDecodableRuntimeResource",
+          "seconds": 0.900043
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_hex_level_simulation_tests.cpp",
+      "case_count": 37,
+      "sum_case_seconds": 29.434307,
+      "counts": {
+        "passed": 37
+      },
+      "slowest_cases": [
+        {
+          "name": "inventory.bag.uiPreview",
+          "seconds": 2.91833
+        },
+        {
+          "name": "ik.solver2d.armReachPreview",
+          "seconds": 2.82823
+        },
+        {
+          "name": "map.path.astar.routePreview",
+          "seconds": 2.54012
+        },
+        {
+          "name": "hd2d.scene.tilemapPlusBillboard",
+          "seconds": 1.29796
+        },
+        {
+          "name": "hd2d.sprite.imageOrientationAndTransparentCorners",
+          "seconds": 1.23626
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_graphics_scene_tests.cpp",
+      "case_count": 108,
+      "sum_case_seconds": 29.0852457,
+      "counts": {
+        "passed": 108
+      },
+      "slowest_cases": [
+        {
+          "name": "scriptCompiler.sourceMetadataDiagnosticsAndTooling",
+          "seconds": 1.92277
+        },
+        {
+          "name": "scriptConfig.instantiatesOnlyConfiguredModules",
+          "seconds": 1.21926
+        },
+        {
+          "name": "scriptConfig.rejectsMissingRequiredModule",
+          "seconds": 1.1813
+        },
+        {
+          "name": "scriptCompiler.nativeBindingExecution",
+          "seconds": 1.18129
+        },
+        {
+          "name": "scriptConfig.ensureModuleLoadsOmittedSlot",
+          "seconds": 1.13226
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_graphics_mcp_tests.cpp",
+      "case_count": 87,
+      "sum_case_seconds": 27.6270493,
+      "counts": {
+        "passed": 87
+      },
+      "slowest_cases": [
+        {
+          "name": "devtools.mcp.stderrCaptureFeedsConsole",
+          "seconds": 4.74073
+        },
+        {
+          "name": "moduleExpose.allBindingsPreserveProcgenRockSurface",
+          "seconds": 1.50434
+        },
+        {
+          "name": "moduleExpose.allBindingsPreserveScriptEcsOverrides",
+          "seconds": 1.05139
+        },
+        {
+          "name": "moduleExpose.eagerCompatibilityKeepsCanonicalSpriteBinding",
+          "seconds": 1.02216
+        },
+        {
+          "name": "moduleExpose.osSlotUsesUnambiguousName",
+          "seconds": 0.899721
+        }
+      ]
+    },
+    {
+      "source": "test/integration/concurrency/concurrency_graphics_tests.cpp",
+      "case_count": 113,
+      "sum_case_seconds": 23.9743752,
+      "counts": {
+        "passed": 113
+      },
+      "slowest_cases": [
+        {
+          "name": "devtools.architecture.mcpStdioListsAndQueriesGraph",
+          "seconds": 1.51384
+        },
+        {
+          "name": "render_graph.jobSystemEngineFramePattern",
+          "seconds": 1.27582
+        },
+        {
+          "name": "devtools.mcp.everyDeclaredToolIsRouted",
+          "seconds": 1.27037
+        },
+        {
+          "name": "pixelworld.parallel_thermal_candidates_are_bit_exact_with_reference",
+          "seconds": 1.15046
+        },
+        {
+          "name": "network.NetHostPeers",
+          "seconds": 0.884385
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_core_boundary_tests.cpp",
+      "case_count": 118,
+      "sum_case_seconds": 22.8762648,
+      "counts": {
+        "passed": 118
+      },
+      "slowest_cases": [
+        {
+          "name": "ui.pcgPhotoModeApply.lightingSkyboxAuthorityDrivesProceduralSkyAndRestores",
+          "seconds": 1.38541
+        },
+        {
+          "name": "ui.pcgPhotoModeApply.lightingSunAuthorityPersistsAcrossDayNightUpdates",
+          "seconds": 1.21036
+        },
+        {
+          "name": "procgen.e2e.snapshotRoundTripPreservesIdentityBuildKeyAndQueries",
+          "seconds": 1.19026
+        },
+        {
+          "name": "physics_destruction_graphics.drawsActiveAndBatchesSleepingBones",
+          "seconds": 1.07799
+        },
+        {
+          "name": "ui.pcgPhotoModeApply.lightingAmbientAuthorityDrivesGradientAndSunMultiplier",
+          "seconds": 0.889517
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_rts_script_tests.cpp",
+      "case_count": 121,
+      "sum_case_seconds": 22.4124734,
+      "counts": {
+        "passed": 121
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.sandboxInitializesStepsAndRebuildsAcrossReload",
+          "seconds": 1.92485
+        },
+        {
+          "name": "softbody.volume.renderPreview",
+          "seconds": 1.61273
+        },
+        {
+          "name": "softbody.volume.pinsAndWorldCollision",
+          "seconds": 0.732691
+        },
+        {
+          "name": "rts.sandboxScriptCompilesThroughEveScriptFrontend",
+          "seconds": 0.592473
+        },
+        {
+          "name": "scene.authoring.rejected_source_schema_camera_and_parent_preserve_state",
+          "seconds": 0.391612
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_editor_camera_target_tests.cpp",
+      "case_count": 127,
+      "sum_case_seconds": 20.957842,
+      "counts": {
+        "passed": 127
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.v2.asset_database_indexes_and_pages_100k_records",
+          "seconds": 4.37025
+        },
+        {
+          "name": "editor.material.studio_coalesces_live_gesture_into_one_transaction",
+          "seconds": 0.409376
+        },
+        {
+          "name": "editor.building.replace_commits_undoes_and_redoes_through_authority",
+          "seconds": 0.374172
+        },
+        {
+          "name": "editor.building.edge_curve_handles_preview_and_update_group_atomically",
+          "seconds": 0.353585
+        },
+        {
+          "name": "editor.building.surface_curve_create_preview_and_gizmo_share_frames",
+          "seconds": 0.307814
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_graphics_vegetation_tests.cpp",
+      "case_count": 108,
+      "sum_case_seconds": 20.8565816,
+      "counts": {
+        "passed": 108
+      },
+      "slowest_cases": [
+        {
+          "name": "GraphicsPrimitives.sceneCacheOnlyRebuildsUpdatedSlots",
+          "seconds": 1.81506
+        },
+        {
+          "name": "graphics.vegetation.gpu_field_binding_is_coherent_stale_safe_and_atomic",
+          "seconds": 0.971312
+        },
+        {
+          "name": "graphics.vegetation.prebaked_layers_upload_bind_and_release_atomically",
+          "seconds": 0.839139
+        },
+        {
+          "name": "graphics.raytracing.probeAndUnsupportedOps",
+          "seconds": 0.770618
+        },
+        {
+          "name": "graphics.backendParity.primitive2DAnd3DReadback",
+          "seconds": 0.648681
+        }
+      ]
+    },
+    {
+      "source": "test/integration/layered-cloth/physics_layered_cloth_gpu.cpp",
+      "case_count": 12,
+      "sum_case_seconds": 19.687,
+      "counts": {
+        "passed": 12
+      },
+      "slowest_cases": [
+        {
+          "name": "PhysicsLayeredClothGPU.pinnedPoseAndReset",
+          "seconds": 2.54894
+        },
+        {
+          "name": "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices",
+          "seconds": 2.38481
+        },
+        {
+          "name": "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering",
+          "seconds": 1.71378
+        },
+        {
+          "name": "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass",
+          "seconds": 1.71183
+        },
+        {
+          "name": "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift",
+          "seconds": 1.57814
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_animation_inertializer_tests.cpp",
+      "case_count": 129,
+      "sum_case_seconds": 19.3037924,
+      "counts": {
+        "passed": 129
+      },
+      "slowest_cases": [
+        {
+          "name": "audio.modplug.midi.play",
+          "seconds": 1.52385
+        },
+        {
+          "name": "audio.streamSource.pump",
+          "seconds": 0.705493
+        },
+        {
+          "name": "audio.actionBlockProviderOwnsRealSourceEnterExit",
+          "seconds": 0.40594
+        },
+        {
+          "name": "audio.device",
+          "seconds": 0.331051
+        },
+        {
+          "name": "audio_editing.publication_failure_is_atomic_and_success_commits_candidate",
+          "seconds": 0.303209
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_simulation_graphics_box3d_tests.cpp",
+      "case_count": 127,
+      "sum_case_seconds": 18.362893,
+      "counts": {
+        "passed": 127
+      },
+      "slowest_cases": [
+        {
+          "name": "box2d.render.fallingStackPreview",
+          "seconds": 2.95787
+        },
+        {
+          "name": "climbing.anchorGraph.nodeReferencesCannotCrossGraphIdentity",
+          "seconds": 0.57102
+        },
+        {
+          "name": "climbing.parkour.slideUsesCompactCapsulePath",
+          "seconds": 0.412077
+        },
+        {
+          "name": "box3d.query.rayAndShapeCastExposeMeshAndHeightFieldTriangleIndex",
+          "seconds": 0.292394
+        },
+        {
+          "name": "box3d.joint.revoluteMotorHonorsLimitAndBodyDestructionInvalidatesWrapper",
+          "seconds": 0.287582
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_graphics_ScriptECS_tests.cpp",
+      "case_count": 108,
+      "sum_case_seconds": 17.1638051,
+      "counts": {
+        "passed": 108
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.playground.mainScriptCompilesThroughEveScriptFrontend",
+          "seconds": 0.546882
+        },
+        {
+          "name": "ECS.script.systemOverCppEntities",
+          "seconds": 0.493879
+        },
+        {
+          "name": "actionScript.runtimeOwnsAbilityLifecycle",
+          "seconds": 0.417942
+        },
+        {
+          "name": "database.registryReleasesRootsBeforeRuntimeShutdown",
+          "seconds": 0.394053
+        },
+        {
+          "name": "ScriptProvider.scriptErrorsAreReportedNotRaised",
+          "seconds": 0.391407
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_editor_tests.cpp",
+      "case_count": 117,
+      "sum_case_seconds": 16.202836,
+      "counts": {
+        "passed": 117
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.animation.state_graph_compiles_stable_clip_references_and_conditions",
+          "seconds": 0.396636
+        },
+        {
+          "name": "editor.audio.property_command_keeps_bound_document_histories_independent",
+          "seconds": 0.396438
+        },
+        {
+          "name": "editor.audio.source_editor_property_edits_do_not_stale_audition",
+          "seconds": 0.390661
+        },
+        {
+          "name": "editor.api.coordinator_unregisters_captured_command_callbacks_before_destruction",
+          "seconds": 0.388654
+        },
+        {
+          "name": "editor.animation.clip_builds_real_runtime_asset_and_rejects_missing_bones",
+          "seconds": 0.317571
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_editor_material_target_tests.cpp",
+      "case_count": 102,
+      "sum_case_seconds": 16.0798411,
+      "counts": {
+        "passed": 102
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.scene.component_payload_registry_routes_schema_transactions_and_undo",
+          "seconds": 0.567087
+        },
+        {
+          "name": "editor.spritestack.failed_rebake_preserves_generation_and_stale_publish_fails_first",
+          "seconds": 0.547557
+        },
+        {
+          "name": "editor.material.missing_vegetation_vertex_texture_rejects_atomically",
+          "seconds": 0.512839
+        },
+        {
+          "name": "editor.material.missing_vegetation_motion_texture_rejects_atomically",
+          "seconds": 0.417233
+        },
+        {
+          "name": "editor.material.vegetation_motion_snapshot_reaches_bound_runtime_material",
+          "seconds": 0.408545
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_graphics_window_cpp_tests.cpp",
+      "case_count": 19,
+      "sum_case_seconds": 15.6148629,
+      "counts": {
+        "passed": 19
+      },
+      "slowest_cases": [
+        {
+          "name": "window.lifecycle.desktopEventContract",
+          "seconds": 3.07162
+        },
+        {
+          "name": "window.pixelSizeAndDpiRoundTrip",
+          "seconds": 1.02149
+        },
+        {
+          "name": "window.setFullscreenDesktopRoundTrip",
+          "seconds": 0.982002
+        },
+        {
+          "name": "window.setFullscreenDesktopRoundTripUsesSettings",
+          "seconds": 0.956979
+        },
+        {
+          "name": "graphics.lifecycle.appBackgroundForegroundResume",
+          "seconds": 0.951319
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_rts_combat_tests.cpp",
+      "case_count": 62,
+      "sum_case_seconds": 15.302170199999999,
+      "counts": {
+        "passed": 62
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.largeExactlyOverlappingCrowdUnlocksDeterministically",
+          "seconds": 6.46019
+        },
+        {
+          "name": "rts.attackMovePausesInWeaponRangeThenResumesAndGuardsDestination",
+          "seconds": 0.398641
+        },
+        {
+          "name": "rts.infrastructureAllocatesPowerByPriorityAndCreditsCanonicalIncome",
+          "seconds": 0.397356
+        },
+        {
+          "name": "rts.volleyCommitmentsBudgetShieldBeforeArmoredHealth",
+          "seconds": 0.338768
+        },
+        {
+          "name": "rts.supplyRendezvousAvoidsVisibleHostileCoverage",
+          "seconds": 0.283041
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_gameplay_action_tests.cpp",
+      "case_count": 117,
+      "sum_case_seconds": 14.8301346,
+      "counts": {
+        "passed": 117
+      },
+      "slowest_cases": [
+        {
+          "name": "effects.card.immediateDamageAndHealUseSettlementWithoutAdvancingPeriodicEffects",
+          "seconds": 0.421569
+        },
+        {
+          "name": "gpuagents.reset_clears_alive",
+          "seconds": 0.374743
+        },
+        {
+          "name": "editor.surface_fluid.preview_replays_forward_and_backward_scrub_deterministically",
+          "seconds": 0.293295
+        },
+        {
+          "name": "editor.stylize.recipe_rejects_mixed_stages_and_loads_atomically",
+          "seconds": 0.281033
+        },
+        {
+          "name": "editor.v2.validation_and_diagnostics_are_extension_owned",
+          "seconds": 0.257657
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_graphics_dap_tests.cpp",
+      "case_count": 68,
+      "sum_case_seconds": 14.7362631,
+      "counts": {
+        "passed": 68
+      },
+      "slowest_cases": [
+        {
+          "name": "devtools.dap.initializeLaunchContinueStep",
+          "seconds": 1.03569
+        },
+        {
+          "name": "devtools.dap.realScriptBreakpointAndCallStack",
+          "seconds": 0.663553
+        },
+        {
+          "name": "gameplay.control.dialogueScriptPublishesItsRunner",
+          "seconds": 0.54787
+        },
+        {
+          "name": "devtools.dap.frameScopesAndVariableTree",
+          "seconds": 0.526766
+        },
+        {
+          "name": "devtools.dap.caughtErrorPausesAtReportSite",
+          "seconds": 0.491833
+        }
+      ]
+    },
+    {
+      "source": "test/integration/crowd-runtime/CrowdThread.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 13.920177299999999,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "crowd.thread.predictiveAvoidanceMatchesSerialWithFourWorkers",
+          "seconds": 8.07068
+        },
+        {
+          "name": "crowd.thread.partialVelocityFailureRollsBackClockAndMotion",
+          "seconds": 3.62092
+        },
+        {
+          "name": "crowd.thread.serialParallelContactAndReportsAreBitExact",
+          "seconds": 0.938718
+        },
+        {
+          "name": "crowd.thread.preferredBoidsSeekFlowAndHoldAreBitExact",
+          "seconds": 0.482918
+        },
+        {
+          "name": "crowd.thread.partialGatherFailureRollsBackWithoutSerialRetry",
+          "seconds": 0.480306
+        }
+      ]
+    },
+    {
+      "source": "test/integration/runtime-lifecycle/runtime_lifecycle_graphics_tests.cpp",
+      "case_count": 86,
+      "sum_case_seconds": 13.5908017,
+      "counts": {
+        "passed": 86
+      },
+      "slowest_cases": [
+        {
+          "name": "plugins.load.nativeLibraryAndInstantiateCppModule",
+          "seconds": 0.792807
+        },
+        {
+          "name": "devtools.renderflow.simulateSpriteBatch",
+          "seconds": 0.552632
+        },
+        {
+          "name": "gameplay.control.squirrelFacadeUsesTheSharedJsonRouter",
+          "seconds": 0.520225
+        },
+        {
+          "name": "devtools.renderflow.drawWithoutBinds",
+          "seconds": 0.332727
+        },
+        {
+          "name": "keyboard.textInput",
+          "seconds": 0.329165
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_buildingfx_tests.cpp",
+      "case_count": 94,
+      "sum_case_seconds": 13.0752868,
+      "counts": {
+        "passed": 94
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.motionMatchingDemoScriptCompilesAndDocumentsUeOnlyBoundary",
+          "seconds": 0.653526
+        },
+        {
+          "name": "combatNavigation.locomotionFollowsDetourAndArrives",
+          "seconds": 0.5486
+        },
+        {
+          "name": "buildingfx.edgeTopologyRefreshesResourceRotationAndMirror",
+          "seconds": 0.389012
+        },
+        {
+          "name": "buildingfx.freeCustomVisualUsesCommittedFootprintBounds",
+          "seconds": 0.309613
+        },
+        {
+          "name": "climbing.motionMatchingDemoLoadsRedistributableMannequinAndActionClips",
+          "seconds": 0.303048
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_simulation_graphics_physics_rigid_backend_tests.cpp",
+      "case_count": 94,
+      "sum_case_seconds": 12.9797344,
+      "counts": {
+        "passed": 94
+      },
+      "slowest_cases": [
+        {
+          "name": "pixelworld_physics.terrain_contours_are_simplified_and_suppress_chunk_seams",
+          "seconds": 0.574489
+        },
+        {
+          "name": "physics.jolt.deferredDensityParity",
+          "seconds": 0.548366
+        },
+        {
+          "name": "targeting.physicsAdapterRequiresOneActiveWorld",
+          "seconds": 0.343989
+        },
+        {
+          "name": "climbing.prediction.mismatchCorrectsWithoutStartingClientTarget",
+          "seconds": 0.307249
+        },
+        {
+          "name": "physics.artifact.rollbackAndValidationLeaveNoCollider",
+          "seconds": 0.305596
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_graphics_terrain_probe_tests.cpp",
+      "case_count": 88,
+      "sum_case_seconds": 11.2293044,
+      "counts": {
+        "passed": 88
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.terrain.performance.real1kRoundTripAnd1k4k8kRandomAccess",
+          "seconds": 0.762168
+        },
+        {
+          "name": "procgen.heightmapFilter.convolveAndScriptBinding",
+          "seconds": 0.572148
+        },
+        {
+          "name": "procgen.tree.scriptRemoveAndPrototypeRefresh",
+          "seconds": 0.300422
+        },
+        {
+          "name": "procgen.terrainObject.multiTileExecutesThroughRealVm",
+          "seconds": 0.298949
+        },
+        {
+          "name": "weapon.script.viewSeesEveryNativeEntityClass",
+          "seconds": 0.297999
+        }
+      ]
+    },
+    {
+      "source": "test/integration/rts-unit-lifecycle/rts_unit_lifecycle_tactics_rts_tests.cpp",
+      "case_count": 64,
+      "sum_case_seconds": 9.6004503,
+      "counts": {
+        "passed": 64
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.groups.pacingWorksWithAndWithoutCrowd",
+          "seconds": 0.743957
+        },
+        {
+          "name": "rts.groups.mixedSpeedSquadClearsSingleCellPassage",
+          "seconds": 0.581366
+        },
+        {
+          "name": "rts.groups.opposingSquadsReserveWholeCorridor",
+          "seconds": 0.555096
+        },
+        {
+          "name": "rts.groups.trappedOpponentsEvacuateAndResumeOrders",
+          "seconds": 0.543956
+        },
+        {
+          "name": "rts.crowd.scriptProfileCrossingReachesBothDestinations",
+          "seconds": 0.376553
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_stylize_attack_vfx_layers_tests.cpp",
+      "case_count": 41,
+      "sum_case_seconds": 9.1665453,
+      "counts": {
+        "passed": 41
+      },
+      "slowest_cases": [
+        {
+          "name": "stylize.effects.gpu.meshShaders",
+          "seconds": 0.922773
+        },
+        {
+          "name": "stylize.effects.gpu.postPasses",
+          "seconds": 0.764342
+        },
+        {
+          "name": "stylize.ysa.realGpuPipeline",
+          "seconds": 0.73056
+        },
+        {
+          "name": "stylize.ysa.vertexColorFeedsMaterialColor",
+          "seconds": 0.582446
+        },
+        {
+          "name": "stylize.ysa.skinnedMeshFollowsPalette",
+          "seconds": 0.580068
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_graphics_procgen_road_editing_tests.cpp",
+      "case_count": 45,
+      "sum_case_seconds": 7.6830302,
+      "counts": {
+        "passed": 45
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.simulation.crystalCave",
+          "seconds": 1.9313
+        },
+        {
+          "name": "procgen.simulation.dungeonDelve",
+          "seconds": 0.47565
+        },
+        {
+          "name": "procgen.simulation.lootPropBake",
+          "seconds": 0.327839
+        },
+        {
+          "name": "resource.gameplay.cardPlayCompositionIsOneAtomicCrossWrite",
+          "seconds": 0.281149
+        },
+        {
+          "name": "resource.gameplay.cardManaPaymentIsAtomicAndUsesPlayerAccount",
+          "seconds": 0.243323
+        }
+      ]
+    },
+    {
+      "source": "test/integration/vsync-config/vsync_config_tests.cpp",
+      "case_count": 5,
+      "sum_case_seconds": 5.860645,
+      "counts": {
+        "passed": 5
+      },
+      "slowest_cases": [
+        {
+          "name": "scriptConfig.vsyncExplicitTrue",
+          "seconds": 1.46707
+        },
+        {
+          "name": "scriptConfig.vsyncDefaultsEnabled",
+          "seconds": 1.35115
+        },
+        {
+          "name": "scriptConfig.vsyncFalseUsesUnsynchronizedPresent",
+          "seconds": 1.30575
+        },
+        {
+          "name": "scriptConfig.vsyncAppliedBeforeEditorWindow",
+          "seconds": 1.18482
+        },
+        {
+          "name": "scriptConfig.vsyncRejectsNonBoolean",
+          "seconds": 0.551855
+        }
+      ]
+    },
+    {
+      "source": "test/integration/asset-pipeline/asset_pipeline_graphics_file_admission_tests.cpp",
+      "case_count": 41,
+      "sum_case_seconds": 5.8159279,
+      "counts": {
+        "passed": 41
+      },
+      "slowest_cases": [
+        {
+          "name": "asset.mesh.unityV11AuthoringChannelsSurviveCookAndRuntimeLoad",
+          "seconds": 0.500727
+        },
+        {
+          "name": "asset.import.gltfMaterialExtensionsRetainParametersAndTextures",
+          "seconds": 0.312518
+        },
+        {
+          "name": "asset.migration.materialV14AddsDisabledAlphaToCoverage",
+          "seconds": 0.295228
+        },
+        {
+          "name": "asset.import.gltfPermissiveClampsSpecularAndWarns",
+          "seconds": 0.290763
+        },
+        {
+          "name": "asset.import.gltfMaterialSelectsNonzeroUvWithoutTransform",
+          "seconds": 0.222854
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_profile_editing.cpp",
+      "case_count": 26,
+      "sum_case_seconds": 3.2682377,
+      "counts": {
+        "passed": 26
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.editing.commandsDriveRegisteredTargetAndExposeSnapshot",
+          "seconds": 0.274462
+        },
+        {
+          "name": "procgen.road.editing.snapEndpointChoosesNearestStableNodeAndConnects",
+          "seconds": 0.249581
+        },
+        {
+          "name": "procgen.road.editing.junctionControlUsesExistingAuthorityUndo",
+          "seconds": 0.242504
+        },
+        {
+          "name": "procgen.road.editing.pointProfilesUndoRestoresExactAuthorValues",
+          "seconds": 0.239192
+        },
+        {
+          "name": "procgen.road.editing.manualLaneLinksUseExistingTransactionUndo",
+          "seconds": 0.198932
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_vehicle_tires3d.cpp",
+      "case_count": 10,
+      "sum_case_seconds": 3.2379426,
+      "counts": {
+        "passed": 10
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.vehicleTires3D.brakesHoldOnSlopeAndStopForwardMotion",
+          "seconds": 1.42953
+        },
+        {
+          "name": "physics.vehicleTires3D.suspensionMobilityDrivesAndSteersByForces",
+          "seconds": 0.921775
+        },
+        {
+          "name": "physics.vehicleTires3D.airborneAndZeroFrictionCannotDriveChassis",
+          "seconds": 0.194268
+        },
+        {
+          "name": "physics.vehicleTires3D.dynamicGroundReceivesOppositeImpulse",
+          "seconds": 0.172756
+        },
+        {
+          "name": "physics.vehicleTires3D.meshTriangleFrictionOverridesBaseMaterial",
+          "seconds": 0.159617
+        }
+      ]
+    },
+    {
+      "source": "test/integration/rts-crowd/CrowdMotion.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 3.0237381,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.crowd.parallelConsumerMatchesSerialMotionAndArrival",
+          "seconds": 1.38242
+        },
+        {
+          "name": "rts.crowd.parallelConsumerRejectsExpiredProviderWithoutPublishingMotion",
+          "seconds": 0.76287
+        },
+        {
+          "name": "rts.crowd.partialParallelGatherRollsBackBothConsumerPoses",
+          "seconds": 0.657646
+        },
+        {
+          "name": "rts.crowd.pendingSharedFlowFailurePreservesArrivalUntilPoseCommit",
+          "seconds": 0.0773872
+        },
+        {
+          "name": "rts.thread.scriptCrowdExecutionRequiresConfiguredWorldAndScheduler",
+          "seconds": 0.076721
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ocean-voyage/ocean_gpu.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 2.9763316,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.ocean.gpuSpectrumLargeBandParity",
+          "seconds": 1.08627
+        },
+        {
+          "name": "fluids.ocean.gpuSpectrumMatchesCpuAndRejectsStaleFrames",
+          "seconds": 1.01087
+        },
+        {
+          "name": "fluids.ocean.gpuSeaTransitionMatchesCpuFieldsAndLevel",
+          "seconds": 0.809295
+        },
+        {
+          "name": "fluids.ocean.gpuSpectrumReportsUnavailableProvider",
+          "seconds": 0.0698966
+        }
+      ]
+    },
+    {
+      "source": "test/integration/rts-crowd/rts_formation.cpp",
+      "case_count": 13,
+      "sum_case_seconds": 2.7843578,
+      "counts": {
+        "passed": 13
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.formation.largeTranslatedGridDoesNotReverseMarchingRows",
+          "seconds": 1.08268
+        },
+        {
+          "name": "rts.attackSlots.waitingMembersNeverProduceRealWeaponFire",
+          "seconds": 0.641671
+        },
+        {
+          "name": "rts.attackSlots.frontPositionsAreUniqueAndRearCannotFire",
+          "seconds": 0.232009
+        },
+        {
+          "name": "rts.performanceNestedPassengerCleanupKeepsRecursiveLifecycle",
+          "seconds": 0.161182
+        },
+        {
+          "name": "rts.attackSlots.mixedRadiiAndRangesKeepSmallUnitEligible",
+          "seconds": 0.0841859
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ocean-voyage/ocean_render.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 2.610421,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.ocean.residentRenderingMatchesCpuWithWakeAndFloatingOrigin",
+          "seconds": 0.910555
+        },
+        {
+          "name": "fluids.ocean.scriptRenderBuildersOwnInputsAcrossGc",
+          "seconds": 0.864901
+        },
+        {
+          "name": "fluids.ocean.rendererPublishesSharedSurfaceAndFoam",
+          "seconds": 0.834965
+        }
+      ]
+    },
+    {
+      "source": "test/integration/save-restore/save_restore_graphics_tests.cpp",
+      "case_count": 12,
+      "sum_case_seconds": 2.5714429,
+      "counts": {
+        "passed": 12
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.canvas.separateSubmissionsPreserveAndClearRGBA8",
+          "seconds": 0.73287
+        },
+        {
+          "name": "rpg.saveSession.explicitIdMigrationRewritesOwningPayloadBeforeValidation",
+          "seconds": 0.311607
+        },
+        {
+          "name": "rpg.saveSession.roundTripAndCrossParticipantRollback",
+          "seconds": 0.272686
+        },
+        {
+          "name": "rpg.saveSession.explicitQuestAdditionMigrationPreservesOldProgress",
+          "seconds": 0.229176
+        },
+        {
+          "name": "gameSave.absentProviderAndContentMigrationAreExplicit",
+          "seconds": 0.203743
+        }
+      ]
+    },
+    {
+      "source": "test/integration/rts-crowd/rts_crowd_flow_navigation.cpp",
+      "case_count": 23,
+      "sum_case_seconds": 2.5310027,
+      "counts": {
+        "passed": 23
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.crowd.movementGroupSharesBarrierRouteAndArrivesAtDistinctSlots",
+          "seconds": 0.260698
+        },
+        {
+          "name": "rts.crowd.sharedFlowStartsOldestRequestBeforeNewLowerKey",
+          "seconds": 0.247181
+        },
+        {
+          "name": "rts.crowd.sharedStaticGoalsSpendOneQuotaAndReuseOneField",
+          "seconds": 0.191059
+        },
+        {
+          "name": "rts.crowd.reconfigureAndClearReenableCannotRefundFailedTickWork",
+          "seconds": 0.186754
+        },
+        {
+          "name": "rts.crowd.sharedFlowCheckpointRenewsOwnerAndRebindsCachedField",
+          "seconds": 0.178224
+        }
+      ]
+    },
+    {
+      "source": "test/integration/audio-playback/audio_playback_graphics_tests.cpp",
+      "case_count": 12,
+      "sum_case_seconds": 2.4163694000000002,
+      "counts": {
+        "passed": 12
+      },
+      "slowest_cases": [
+        {
+          "name": "demo.newPlanetTexture",
+          "seconds": 0.82218
+        },
+        {
+          "name": "sound.invalidData",
+          "seconds": 0.388989
+        },
+        {
+          "name": "demo.newSound.music",
+          "seconds": 0.294036
+        },
+        {
+          "name": "sound.newSoundData.wav",
+          "seconds": 0.114618
+        },
+        {
+          "name": "sound.newSoundDataEmpty",
+          "seconds": 0.10643
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ui-workflows/ui_workflows_graphics_tests.cpp",
+      "case_count": 14,
+      "sum_case_seconds": 2.2113118,
+      "counts": {
+        "passed": 14
+      },
+      "slowest_cases": [
+        {
+          "name": "UI.p1.scrollListHeadlessRenderLarge",
+          "seconds": 0.462713
+        },
+        {
+          "name": "UI.componentScheduling.coalescesAndPreservesReentrantEdits",
+          "seconds": 0.368439
+        },
+        {
+          "name": "UI.p0.scriptEventCallbacks",
+          "seconds": 0.230231
+        },
+        {
+          "name": "UI.adv.scriptUIComponent",
+          "seconds": 0.118154
+        },
+        {
+          "name": "UISystem.render.headlessImGuiWalk",
+          "seconds": 0.114293
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/fluids_shore_backend_tests.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 2.1005789999999998,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.shore.gpuMatchesCpuOnSlopingWetDryBed",
+          "seconds": 1.30002
+        },
+        {
+          "name": "fluids.shore.scriptSurfaceSyncChecksInputsAndPublishesMesh",
+          "seconds": 0.800559
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-pipeline/render_pipeline_graphics_frame_capture_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 2.02822,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.frameCapture.sameFrameNativeAttachmentsAndFrozenSnapshots",
+          "seconds": 2.02822
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ocean-voyage/ocean_boat.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 1.9353123,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.ocean.boatWakeChangesSecondRigidBody",
+          "seconds": 0.935554
+        },
+        {
+          "name": "fluids.ocean.boatRespondsToSpectralWaves",
+          "seconds": 0.444818
+        },
+        {
+          "name": "fluids.ocean.boatFloatsAndPropelsRealRigidBody",
+          "seconds": 0.35586
+        },
+        {
+          "name": "fluids.ocean.dryPropellerAndAdapterFirstDestruction",
+          "seconds": 0.0755559
+        },
+        {
+          "name": "fluids.ocean.boatRejectsRepeatedStepAndStaleOwners",
+          "seconds": 0.0636684
+        }
+      ]
+    },
+    {
+      "source": "test/integration/performance/performance_graphics_tests.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 1.9043036,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "stylize.meshVfx.sceneColorRefractionSamplesBoundTexture",
+          "seconds": 1.24133
+        },
+        {
+          "name": "emergence.perf.tenThousandRulesSingleKeyWakeIsSublinear",
+          "seconds": 0.485419
+        },
+        {
+          "name": "stylize.mesh_vfx_benchmark",
+          "seconds": 0.0916078
+        },
+        {
+          "name": "settlement.benchmark.traceAndIndependentBatchReportP50P95",
+          "seconds": 0.0859468
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_snapshot3d_ownership.cpp",
+      "case_count": 13,
+      "sum_case_seconds": 1.791573,
+      "counts": {
+        "passed": 13
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.snapshot3d.meshMaterialsAndSensorBehavior",
+          "seconds": 0.280167
+        },
+        {
+          "name": "physics.snapshot3d.transmissionPhaseTopologyAndTrajectory",
+          "seconds": 0.261192
+        },
+        {
+          "name": "physics.snapshot3d.localShapeTransformPreservesCenterOfMass",
+          "seconds": 0.2188
+        },
+        {
+          "name": "physics.snapshot3d.scriptReferencesDoNotRetargetAfterRestore",
+          "seconds": 0.185188
+        },
+        {
+          "name": "physics.snapshot3d.contactEventsUseRestoredSparseShapeIds",
+          "seconds": 0.17264
+        }
+      ]
+    },
+    {
+      "source": "test/integration/card-rts-payment/card_rts_payment_card_tests.cpp",
+      "case_count": 11,
+      "sum_case_seconds": 1.6652275,
+      "counts": {
+        "passed": 11
+      },
+      "slowest_cases": [
+        {
+          "name": "production.cardFacadeRoutesAttributesEffectsAndPlay",
+          "seconds": 0.345895
+        },
+        {
+          "name": "card.rtsScriptShortCollectionConstructionAndAtomicPlayContract",
+          "seconds": 0.284936
+        },
+        {
+          "name": "card.genericBatchCompensatesAndProtectsMergedCosts",
+          "seconds": 0.193655
+        },
+        {
+          "name": "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard",
+          "seconds": 0.191872
+        },
+        {
+          "name": "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+          "seconds": 0.174254
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_spacing_portals.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 1.6410844,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.rigidDistributionMatchesMeasuredReferenceAndBudget",
+          "seconds": 0.606592
+        },
+        {
+          "name": "procgen.road.authoring.tunnelPortalHolesPreserveRoofAcrossSplitSaveUndoAndNativeWriteback",
+          "seconds": 0.40578
+        },
+        {
+          "name": "procgen.road.authoring.automaticPrefabSpacingRetainsPhaseOnSplitSaveAndUndo",
+          "seconds": 0.288952
+        },
+        {
+          "name": "procgen.road.authoring.rigidDistributionHonorsExclusionsAndEmptySpans",
+          "seconds": 0.0959491
+        },
+        {
+          "name": "procgen.road.authoring.smoothingGroupsCrossUvSeamsButPreserveHardGroups",
+          "seconds": 0.0939958
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_joint2d_snapshot.cpp",
+      "case_count": 9,
+      "sum_case_seconds": 1.553905,
+      "counts": {
+        "passed": 9
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.joint2d.snapshotRejectsSolverCallbackReentrancy",
+          "seconds": 0.353074
+        },
+        {
+          "name": "physics.joint2d.snapshotAllKindsPreserveParametersAndInvalidateLinks",
+          "seconds": 0.303462
+        },
+        {
+          "name": "physics.joint2d.snapshotGearPreservesOriginalPhaseAndDependencyTeardown",
+          "seconds": 0.266801
+        },
+        {
+          "name": "physics.snapshot2d.invalidMaterialAndDynamicsPreserveLiveWorld",
+          "seconds": 0.206638
+        },
+        {
+          "name": "physics.joint2d.snapshotRejectsInvalidTopologyAtomically",
+          "seconds": 0.0969509
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ui-hud/hud_tests.cpp",
+      "case_count": 13,
+      "sum_case_seconds": 1.54049,
+      "counts": {
+        "passed": 13
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.ui.hud_fill_snapshot_roundtrip_and_runtime_publication_are_atomic",
+          "seconds": 0.252707
+        },
+        {
+          "name": "UI.hud.renderScalesHitRectAndRestoresDesignMetrics",
+          "seconds": 0.216698
+        },
+        {
+          "name": "UI.hud.texturedFillMatchesQueuedAndNativeDrawGeometry",
+          "seconds": 0.200913
+        },
+        {
+          "name": "UI.hud.nodeHandlesSurvivePropsButRejectReplacementAndDestroyedHosts",
+          "seconds": 0.183437
+        },
+        {
+          "name": "UI.hud.ninePatchScalePreservesSourceTexelBorders",
+          "seconds": 0.169088
+        }
+      ]
+    },
+    {
+      "source": "test/integration/frame-recording/frame_recording_tests.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 1.503094,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "graphics.frameRecording.fxaaSlotReuseResizeAndPersistentCanvas",
+          "seconds": 1.39675
+        },
+        {
+          "name": "graphics.frameRecording.inlineBudgetAndPeriodicReprobe",
+          "seconds": 0.106344
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ocean-voyage/ocean_spray_render.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 1.434039,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.ocean.sprayBatchRendersAndRejectsInvalidPublication",
+          "seconds": 0.718662
+        },
+        {
+          "name": "fluids.ocean.sprayRendererObservesProviderRetirement",
+          "seconds": 0.537867
+        },
+        {
+          "name": "fluids.ocean.sprayScriptBuildersSurviveGc",
+          "seconds": 0.17751
+        }
+      ]
+    },
+    {
+      "source": "test/integration/rts-crowd/rts_crowd_registry.cpp",
+      "case_count": 12,
+      "sum_case_seconds": 1.3331225,
+      "counts": {
+        "passed": 12
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.crowd.surfaceTrackingPublishesOnlyOnChangedInputsAndRejectsBeforeSimulation",
+          "seconds": 0.290095
+        },
+        {
+          "name": "rts.crowd.mapAdapterInflatesNavigationAndPublishesRawPhysicalGeometry",
+          "seconds": 0.242748
+        },
+        {
+          "name": "rts.crowd.invalidClockRejectsBeforeBindingOrIntentMutation",
+          "seconds": 0.169348
+        },
+        {
+          "name": "rts.crowd.duplicateBindingNamesRejectBeforeCreation",
+          "seconds": 0.0783738
+        },
+        {
+          "name": "rts.crowd.surfaceTrackingRequiresProvidersAndRetainsSettingsAfterRejectedConfiguration",
+          "seconds": 0.0772182
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_side_terrain.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 1.3207448,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.sideAlignmentProducesOwnedEulerPoseAndRejectsInvalidNormals",
+          "seconds": 0.324848
+        },
+        {
+          "name": "procgen.road.authoring.sideTerrainBoundsModesConsumeProviderAndStandardRecipe",
+          "seconds": 0.300707
+        },
+        {
+          "name": "procgen.road.authoring.assetBoundsDriveFootprintAndRetainAdmittedIdentity",
+          "seconds": 0.229125
+        },
+        {
+          "name": "procgen.road.authoring.sideAlignmentVerticalFramesAndSharedProjectionBudget",
+          "seconds": 0.206952
+        },
+        {
+          "name": "procgen.road.authoring.sideTerrainAbsenceMissFailureAndSharedBudgetPreserveAuthor",
+          "seconds": 0.16936
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_terrain_author_policy.cpp",
+      "case_count": 5,
+      "sum_case_seconds": 1.2016121,
+      "counts": {
+        "passed": 5
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.terrain.authorPolicyMatchesReferenceDisjointSelectionFixture",
+          "seconds": 0.473498
+        },
+        {
+          "name": "procgen.road.terrain.authorPolicyNetworkSaveConsumesOneAtomicPlan",
+          "seconds": 0.306836
+        },
+        {
+          "name": "procgen.road.terrain.authorPolicyPresetInheritanceHistoryAndValidation",
+          "seconds": 0.200001
+        },
+        {
+          "name": "procgen.road.terrain.authorPolicySharedJunctionUsesExplicitWorldPolicy",
+          "seconds": 0.136288
+        },
+        {
+          "name": "procgen.road.terrain.authorPolicyDisabledPlanPreservesHistory",
+          "seconds": 0.0849891
+        }
+      ]
+    },
+    {
+      "source": "test/integration/house-collapse/physics_voronoi_fracture.cpp",
+      "case_count": 11,
+      "sum_case_seconds": 1.1622546,
+      "counts": {
+        "passed": 11
+      },
+      "slowest_cases": [
+        {
+          "name": "physics_voronoi.survivingBondsKeepDetachedChunkTogether",
+          "seconds": 0.235687
+        },
+        {
+          "name": "physics_voronoi.weldedWorldFirstTeardown",
+          "seconds": 0.170076
+        },
+        {
+          "name": "physics_voronoi.houseSeedsRemainClosed",
+          "seconds": 0.15133
+        },
+        {
+          "name": "physics_voronoi.closedVolumePartitionAndDeterminism",
+          "seconds": 0.0890511
+        },
+        {
+          "name": "physics_voronoi.failedAdmissionDoesNotLeakBodies",
+          "seconds": 0.0848792
+        }
+      ]
+    },
+    {
+      "source": "test/integration/material-studio/material_studio_scripts.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 1.161568,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.material.studio_publication_clears_resources_and_preserves_preview_on_failure",
+          "seconds": 0.368131
+        },
+        {
+          "name": "editor.material.preview_geometry_has_recessed_rings_valid_normals_and_matching_sky_edges",
+          "seconds": 0.341468
+        },
+        {
+          "name": "editor.material.facade_script_projects_owned_values_and_checked_failures",
+          "seconds": 0.323305
+        },
+        {
+          "name": "editor.material.preview_selection_failures_preserve_active_resources_and_fit_shared_bounds",
+          "seconds": 0.128664
+        }
+      ]
+    },
+    {
+      "source": "test/integration/audio-playback/PcmStream.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 1.142017,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "audio.pcm.bothDestructionOrders",
+          "seconds": 0.64651
+        },
+        {
+          "name": "audio.pcm.scriptResultAndOwnership",
+          "seconds": 0.228197
+        },
+        {
+          "name": "audio.pcm.starvationPauseResumeAndDrain",
+          "seconds": 0.145091
+        },
+        {
+          "name": "audio.pcm.validationAndBackpressureAreAtomic",
+          "seconds": 0.122219
+        }
+      ]
+    },
+    {
+      "source": "test/integration/house-collapse/physics_destruction_graphics_depth.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 1.0843,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWithRenderer",
+          "seconds": 1.0843
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_joint2d.cpp",
+      "case_count": 9,
+      "sum_case_seconds": 1.070694,
+      "counts": {
+        "passed": 9
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.joint2d.lockedWorldRejectsMutation",
+          "seconds": 0.277219
+        },
+        {
+          "name": "physics.joint2d.prismaticDistanceWheelAndWeld",
+          "seconds": 0.218295
+        },
+        {
+          "name": "physics.joint2d.gearRatioAndSourceDestruction",
+          "seconds": 0.196946
+        },
+        {
+          "name": "physics.joint2d.pulleyConservesWeightedLength",
+          "seconds": 0.0659217
+        },
+        {
+          "name": "physics.joint2d.invalidInputDoesNotCreateConstraints",
+          "seconds": 0.0643443
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_extensions.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 1.0596060999999999,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.prefabContinuationRejectsSameLabelWithDifferentOwnedGeometry",
+          "seconds": 0.25404
+        },
+        {
+          "name": "procgen.road.authoring.multiArmFacilityRoutesSaveUndoAndMigrateSplitIdentities",
+          "seconds": 0.175784
+        },
+        {
+          "name": "procgen.road.authoring.terrainChannelsRollbackAllTilesAndRetainRedoOnLateFailure",
+          "seconds": 0.168981
+        },
+        {
+          "name": "procgen.road.authoring.terrainChannelsPersistUndoRedoAndProtectBridgeTunnelRoofs",
+          "seconds": 0.145352
+        },
+        {
+          "name": "procgen.road.authoring.prefabStartMiddleEndRepeatsWeldsAndReversesWithoutLosingAssets",
+          "seconds": 0.112435
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_force_application.cpp",
+      "case_count": 9,
+      "sum_case_seconds": 1.0480258999999998,
+      "counts": {
+        "passed": 9
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.applicationRejectsStaticWithoutMutation",
+          "seconds": 0.179581
+        },
+        {
+          "name": "physics.forces.tireImplicitImpulseMatchesRealChassis",
+          "seconds": 0.175414
+        },
+        {
+          "name": "physics.forces.angularDampingBatchUsesActualInertia",
+          "seconds": 0.17253
+        },
+        {
+          "name": "physics.forces.batchRejectsInvalidTailBeforeWaking",
+          "seconds": 0.168653
+        },
+        {
+          "name": "physics.forces.application3DForceAndOffCenterTorque",
+          "seconds": 0.0858649
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_presets.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 1.0026058,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.presetCombinedProfilesValidateFinalCustomPortsAndPreserveTraffic",
+          "seconds": 0.236363
+        },
+        {
+          "name": "procgen.road.authoring.sharedPresetsPropagateWithExplicitOverridesAndBake",
+          "seconds": 0.205061
+        },
+        {
+          "name": "procgen.road.authoring.presetCandidatesRejectCyclesStaleOwnersAndLateFailuresAtomically",
+          "seconds": 0.198589
+        },
+        {
+          "name": "procgen.road.authoring.presetRestoreRejectsLateHistoryFailureAndMigratesAbsentOverrides",
+          "seconds": 0.116578
+        },
+        {
+          "name": "procgen.road.authoring.presetExplicitFalseAndEmptyArraysRoundTripAndUnbindingRestoresSource",
+          "seconds": 0.0911588
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_vehicle_tires.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 0.9854744,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.vehicleTires2D.brakeAndAirborneRespectContactCapacity",
+          "seconds": 0.291869
+        },
+        {
+          "name": "physics.vehicleTires2D.forcesDriveAndSteerWithoutVelocitySetters",
+          "seconds": 0.19078
+        },
+        {
+          "name": "physics.vehicleTires2D.pendingRetryCannotPublishOrDoubleApply",
+          "seconds": 0.182382
+        },
+        {
+          "name": "physics.vehicleTires2D.compatibilityMobilityQueuesInsteadOfTeleporting",
+          "seconds": 0.168179
+        },
+        {
+          "name": "physics.vehicleTires2D.offCenterCombinedSlipDissipatesAtMultipleScales",
+          "seconds": 0.0795167
+        }
+      ]
+    },
+    {
+      "source": "test/integration/render-presentation/render_presentation_impasto_tests.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.9366823,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "stylize.impasto.realGpuPipeline",
+          "seconds": 0.842841
+        },
+        {
+          "name": "stylize.impasto.independentMaterialContract",
+          "seconds": 0.0938413
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_coupling3d.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 0.9331882,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.coupling3d.gearTracksMultipleTurnsAndSourceDeath",
+          "seconds": 0.239997
+        },
+        {
+          "name": "physics.coupling3d.pulleyConservesWeightedLength",
+          "seconds": 0.194102
+        },
+        {
+          "name": "physics.coupling3d.slackRopeDoesNotPush",
+          "seconds": 0.188209
+        },
+        {
+          "name": "physics.coupling3d.mixedRackAndPinion",
+          "seconds": 0.0996411
+        },
+        {
+          "name": "physics.coupling3d.backendFailureRollsBackProjectionAndPhase",
+          "seconds": 0.0827364
+        }
+      ]
+    },
+    {
+      "source": "test/integration/sprite-atlas/animation_atlas_rotation.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.927793,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "animation.sprite.rotatedAtlasPixelsAndLayout",
+          "seconds": 0.927793
+        }
+      ]
+    },
+    {
+      "source": "test/integration/weather-lightning/weather_lightning_runtime.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.90649,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "weather.lightning weapon endpoints pulse and stale entity",
+          "seconds": 0.90649
+        }
+      ]
+    },
+    {
+      "source": "test/integration/control-rig/editor_control_rig_automation.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 0.8976546,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.controlRig.automation.plansRejectStaleAndInvalidAtomically",
+          "seconds": 0.304294
+        },
+        {
+          "name": "editor.controlRig.automation.lifecycleAndAbsentHost",
+          "seconds": 0.251583
+        },
+        {
+          "name": "editor.controlRig.automation.sharedDocumentHistoryAndSchema",
+          "seconds": 0.0952377
+        },
+        {
+          "name": "editor.controlRig.automation.oldOwnerCannotRemoveReplacement",
+          "seconds": 0.0866779
+        },
+        {
+          "name": "editor.controlRig.automation.keysNodesAndGeneration",
+          "seconds": 0.0809243
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/climbing_foot_contacts.cpp",
+      "case_count": 8,
+      "sum_case_seconds": 0.7800766,
+      "counts": {
+        "passed": 8
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.footContacts.ladderSocketsFollowMovingBody",
+          "seconds": 0.189751
+        },
+        {
+          "name": "climbing.footContacts.overheadLedgeLeavesFeetFree",
+          "seconds": 0.157654
+        },
+        {
+          "name": "climbing.corner.innerRightAngleKeepsCapsuleOutsideBothWalls",
+          "seconds": 0.0819405
+        },
+        {
+          "name": "climbing.contactTransfer.staggeredHandsRestoreTheirSource",
+          "seconds": 0.0773151
+        },
+        {
+          "name": "climbing.footContacts.narrowWallSupportsOnlyOneFoot",
+          "seconds": 0.0717279
+        }
+      ]
+    },
+    {
+      "source": "test/integration/transaction-authority/editor_authority_atomic.cpp",
+      "case_count": 5,
+      "sum_case_seconds": 0.775848,
+      "counts": {
+        "passed": 5
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.atomic.legacy_rollback_exception_is_reported_and_cleanup_continues",
+          "seconds": 0.206272
+        },
+        {
+          "name": "editor.atomic.forged_plan_target_rejected_before_mutation",
+          "seconds": 0.178741
+        },
+        {
+          "name": "editor.atomic.two_agents_same_revision_only_one_commits",
+          "seconds": 0.169196
+        },
+        {
+          "name": "editor.atomic.publish_failure_has_no_effect_and_can_retry",
+          "seconds": 0.156633
+        },
+        {
+          "name": "editor.atomic.candidate_failure_preserves_revision_and_history",
+          "seconds": 0.065006
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_reference.cpp",
+      "case_count": 6,
+      "sum_case_seconds": 0.7578207,
+      "counts": {
+        "passed": 6
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.network.coincidentEndpointPositionsDoNotMergeNodeIdentity",
+          "seconds": 0.198239
+        },
+        {
+          "name": "procgen.road.authoring.referenceCubicWidthIsExplicitAndLegacySnapshotsRetainLinear",
+          "seconds": 0.170616
+        },
+        {
+          "name": "procgen.road.terrain.elevatedOriginMapsNormalizedHeightsAndAllChannels",
+          "seconds": 0.1703
+        },
+        {
+          "name": "procgen.road.authoring.referenceWorldUpFramePreservesHorizontalSectionsAndMigrates",
+          "seconds": 0.0785976
+        },
+        {
+          "name": "procgen.road.network.nodeMoveRejectsDegenerateIncidentEdgeAtomically",
+          "seconds": 0.0724783
+        }
+      ]
+    },
+    {
+      "source": "test/integration/material-studio/material_preview_shadows.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.727774,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.material.preview_shadows_affect_pixels_and_capture_path_stays_unshadowed",
+          "seconds": 0.727774
+        }
+      ]
+    },
+    {
+      "source": "test/integration/control-rig/editor_control_rig.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 0.7214146,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.controlRig.genericGraphRoundTripAndStaleRevision",
+          "seconds": 0.180157
+        },
+        {
+          "name": "editor.controlRig.matchPoseIsOneUndoableEdit",
+          "seconds": 0.102851
+        },
+        {
+          "name": "editor.controlRig.failedHistoryPreviewRestoresDocument",
+          "seconds": 0.101737
+        },
+        {
+          "name": "editor.controlRig.transactionHistoryAndRoundTrip",
+          "seconds": 0.0859755
+        },
+        {
+          "name": "editor.controlRig.dragPreviewDoesNotMutateHistory",
+          "seconds": 0.0855826
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/climbing_pose_contacts.cpp",
+      "case_count": 7,
+      "sum_case_seconds": 0.679971,
+      "counts": {
+        "passed": 7
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.poseContacts.disabledHandsAreNoOp",
+          "seconds": 0.173145
+        },
+        {
+          "name": "climbing.poseContacts.nonHandContactsDoNotPinReleasedHands",
+          "seconds": 0.163164
+        },
+        {
+          "name": "climbing.poseContacts.rejectsNonfiniteInputBeforeChangingEitherHand",
+          "seconds": 0.0747087
+        },
+        {
+          "name": "climbing.poseContacts.invalidFootRejectsBeforeHandMutation",
+          "seconds": 0.0725758
+        },
+        {
+          "name": "climbing.poseContacts.aggregateOnlyContactRespectsModelPlacement",
+          "seconds": 0.0698837
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-rendering/script_rendering_graphics_tests.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.652506,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "WindowTest.basicWindow",
+          "seconds": 0.291614
+        },
+        {
+          "name": "GraphicTest.bindings",
+          "seconds": 0.206205
+        },
+        {
+          "name": "WindowTest.settingsFields",
+          "seconds": 0.154687
+        }
+      ]
+    },
+    {
+      "source": "test/integration/projectile-behavior/world_sweep.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.638287,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "carrierWorldSweep.carrierPierceSnapshotAndFailure",
+          "seconds": 0.240682
+        },
+        {
+          "name": "carrierWorldSweep.bodyDestructionAndBudget",
+          "seconds": 0.227767
+        },
+        {
+          "name": "carrierWorldSweep.box3dContractAndRestore",
+          "seconds": 0.169838
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_joint2d_script.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.550965,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.joint2d.scriptResultAndOwningRelease",
+          "seconds": 0.550965
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_recipe_snapshot.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.508942,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.recipeSnapshotConsumesEditorAuthorDataAndLOD",
+          "seconds": 0.508942
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_collision_regression.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 0.499875,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.collision.stack.remainsSupportedAfterTenSeconds",
+          "seconds": 0.182804
+        },
+        {
+          "name": "physics.collision.ccd.sphereStopsAtThinWall",
+          "seconds": 0.17787
+        },
+        {
+          "name": "physics.collision.ccd.dynamicPairMaintainsOrderWithFourSubsteps",
+          "seconds": 0.0769512
+        },
+        {
+          "name": "physics.collision.query.primitiveHitsHaveNoSourceTriangle",
+          "seconds": 0.0622498
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_wing_assembly.cpp",
+      "case_count": 4,
+      "sum_case_seconds": 0.4845558,
+      "counts": {
+        "passed": 4
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.wingAssemblyFailureIsAtomic",
+          "seconds": 0.192597
+        },
+        {
+          "name": "physics.forces.wingAssembly3DControlSurfacesAndWind",
+          "seconds": 0.170748
+        },
+        {
+          "name": "physics.forces.wingReverseFlowAndStallContinuity",
+          "seconds": 0.0651627
+        },
+        {
+          "name": "physics.forces.wingAssembly2DUsesRotatedPointVelocity",
+          "seconds": 0.0560481
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_noop.cpp",
+      "case_count": 5,
+      "sum_case_seconds": 0.4826219,
+      "counts": {
+        "passed": 5
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.editingNoOp.sameEndpointStillPlansMissingTurnsAndUndo",
+          "seconds": 0.200765
+        },
+        {
+          "name": "procgen.road.editing.reconnectEndpointUndoRestoresOldJunctionConnections",
+          "seconds": 0.0733025
+        },
+        {
+          "name": "procgen.road.editing.connectAllTurnsIsAtomicAndUndoable",
+          "seconds": 0.0732405
+        },
+        {
+          "name": "procgen.road.editingNoOp.buildersReturnSuccessAndPreserveAuthor",
+          "seconds": 0.0726569
+        },
+        {
+          "name": "procgen.road.editingNoOp.commandAdaptersOmitNoChangeOperations",
+          "seconds": 0.062657
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_force_script.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.46957859999999996,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.scriptWingAssembliesControlBothDimensions",
+          "seconds": 0.305822
+        },
+        {
+          "name": "physics.forces.scriptFieldSetsOwnValuesAndBatchRights",
+          "seconds": 0.0947587
+        },
+        {
+          "name": "physics.forces.scriptModelsProjectResults",
+          "seconds": 0.0689979
+        }
+      ]
+    },
+    {
+      "source": "test/integration/ocean-voyage/ocean_script.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.4333915,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "fluids.ocean.scriptBoatWakeUsesOneFixedClock",
+          "seconds": 0.340559
+        },
+        {
+          "name": "fluids.ocean.scriptOwnsSpectrumAndFrameBuilders",
+          "seconds": 0.0928325
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_coupling3d_script.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.415203,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.coupling3d.scriptWorldFirstInvalidation",
+          "seconds": 0.236472
+        },
+        {
+          "name": "physics.coupling3d.scriptOwnershipAndTypeSafety",
+          "seconds": 0.178731
+        }
+      ]
+    },
+    {
+      "source": "test/integration/performance/performance_action_montage_tests.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.3954388,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "actionMontage.rvaluePresentTransfersOwningTimelineProjectionStorage",
+          "seconds": 0.261861
+        },
+        {
+          "name": "actionMontage.preparedTopologyHandlesDenseSectionSweepsAndJumps",
+          "seconds": 0.0737062
+        },
+        {
+          "name": "actionMontage.benchmarkPreparedPresentReportsP50P95AndMeasuredAllocationBoundary",
+          "seconds": 0.0598716
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/climbing_grounding.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.3913626,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.grounding.tallStepRemainsBlocked",
+          "seconds": 0.247012
+        },
+        {
+          "name": "climbing.grounding.lowStepUsesProductionMotor",
+          "seconds": 0.0768034
+        },
+        {
+          "name": "climbing.grounding.lowCeilingRejectsStepWithoutPublishingRaisedPose",
+          "seconds": 0.0675472
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/climbing_contact_presentation.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.38484,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "climbing.contactPresentation.fixedStepBlendReleasesAndRejectsAtomically",
+          "seconds": 0.38484
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_merge_contract.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.372668,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.merge.spatialAddedJointKindsRetainParameters",
+          "seconds": 0.194405
+        },
+        {
+          "name": "physics.merge.planarFactoriesShareIdentityAndSnapshot",
+          "seconds": 0.178263
+        }
+      ]
+    },
+    {
+      "source": "test/integration/offscreen-authoring/offscreen_authoring_graphics_tests.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.36342399999999997,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "authoringPreview.stylizeMissingProviderPreservesDocument",
+          "seconds": 0.257876
+        },
+        {
+          "name": "authoringPreview.heightmapMissingProviderPreservesSource",
+          "seconds": 0.105548
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_force_receipt.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.3506435,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.receiptRequiresAutomaticForceClearing2D",
+          "seconds": 0.182306
+        },
+        {
+          "name": "physics.forces.receiptRestoreAndDestroyCancelPendingOnly",
+          "seconds": 0.0881025
+        },
+        {
+          "name": "physics.forces.receiptRejectsWrongStepAndRetriesBackendOnce",
+          "seconds": 0.080235
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_connections.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.350623,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.closedBeamConnectionValidatesTheEntireSeamLoop",
+          "seconds": 0.176063
+        },
+        {
+          "name": "procgen.road.authoring.customConnectionSnapshotUndoAndSplitRebindStableIds",
+          "seconds": 0.17456
+        }
+      ]
+    },
+    {
+      "source": "test/integration/house-collapse/physics_collapse_animation.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.33621460000000003,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "physics_collapse_animation.contentKeyIncludesEveryByte",
+          "seconds": 0.205267
+        },
+        {
+          "name": "physics_collapse_animation.emptyAndStaleRecording",
+          "seconds": 0.0665696
+        },
+        {
+          "name": "physics_collapse_animation.savedPlaybackOutlivesWorld",
+          "seconds": 0.064378
+        }
+      ]
+    },
+    {
+      "source": "test/integration/house-collapse/physics_collapse_dust.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.3199085,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "physics_collapse_dust.ownedWorkerIsBoundedNonblockingAndOutlivesSources",
+          "seconds": 0.144789
+        },
+        {
+          "name": "physics_collapse_dust.savedGasInjectsExistingFogWithBoundedFootprints",
+          "seconds": 0.102809
+        },
+        {
+          "name": "physics_collapse_dust.savedGasOutlivesSolverAndRejectsPartialLoad",
+          "seconds": 0.0723105
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_buoyancy_geometry.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.2889308,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.immersionMatchesIndependentSliceIntegration",
+          "seconds": 0.160465
+        },
+        {
+          "name": "physics.forces.geometricBuoyancyBalancesGravity2DAnd3D",
+          "seconds": 0.0691179
+        },
+        {
+          "name": "physics.forces.immersionHalfDryFullAndThickness",
+          "seconds": 0.0593479
+        }
+      ]
+    },
+    {
+      "source": "test/integration/module-composition/module_composition_devtools_frame_capture_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.2715,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "mcp.frameCapture.providerAbsentAndSchemaRoutes",
+          "seconds": 0.2715
+        }
+      ]
+    },
+    {
+      "source": "test/integration/scene-editing/scene_transaction_observer.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.263884,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "scene.transaction.observer_exception_does_not_reject_published_state",
+          "seconds": 0.263884
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/terrain_road_write_vm.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.255074,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.terrain.squirrelProductionMeshWriteAndUndo",
+          "seconds": 0.255074
+        }
+      ]
+    },
+    {
+      "source": "test/integration/profiler-capture/profile_capture_tests.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.2542089,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "profiler.capture.automaticFrameBeginIncludesEarlier3DWork",
+          "seconds": 0.0965431
+        },
+        {
+          "name": "profiler.core.reportMeasuresCapturedSpan",
+          "seconds": 0.0853193
+        },
+        {
+          "name": "profiler.core.sameNameDifferentStorageAggregates",
+          "seconds": 0.0723465
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_position_split.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.24932089999999998,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.editing.connectNodeAtPositionSnapsToVisibleCurve",
+          "seconds": 0.181245
+        },
+        {
+          "name": "procgen.road.editing.positionSplitUndoRedoKeepsProjectedPointAndIds",
+          "seconds": 0.0680759
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_field_set.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.24723879999999998,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.forces.fieldSet3DOrderAndAtomicFailures",
+          "seconds": 0.171398
+        },
+        {
+          "name": "physics.forces.fieldSetFiltersAndSuperposes2D",
+          "seconds": 0.0758408
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/terrain_road_batch_vm.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.236117,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.terrain.squirrelBatchProductionPoliciesAndAtomicFailure",
+          "seconds": 0.236117
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/scene_procgen_rotation.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.2085963,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "Scene.procgenSink.preservesDegreeRotationAcrossSnapshotsAndDeltas",
+          "seconds": 0.0865438
+        },
+        {
+          "name": "Scene.procgenSink.deltaSnapshotBuilderPreservesIdentityAndRejectsMalformedOrder",
+          "seconds": 0.0616676
+        },
+        {
+          "name": "Scene.procgenSink.coordinatesReplacementWithoutLeakingCandidateHosts",
+          "seconds": 0.0603849
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_side_placement.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.2046149,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.sidePlacementRotatesTerrainFootprintBeforeWorldUpOffset",
+          "seconds": 0.119917
+        },
+        {
+          "name": "procgen.road.authoring.sidePlacementPresetHistoryMigrationAndAtomicFailure",
+          "seconds": 0.0846979
+        }
+      ]
+    },
+    {
+      "source": "test/integration/physics-simulation/physics_mover_grounding.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.197107,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "physics.mover.grounding.supportAndFilteringContract",
+          "seconds": 0.197107
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_action_upper_body_orientation_tests.cpp",
+      "case_count": 3,
+      "sum_case_seconds": 0.1938073,
+      "counts": {
+        "passed": 3
+      },
+      "slowest_cases": [
+        {
+          "name": "actionMontage.upperBodyCompensationObservesProviderMaskAndFullBodyPolicy",
+          "seconds": 0.0748474
+        },
+        {
+          "name": "actionMontage.upperBodyCompensationRunsBeforeAdditiveLayersDeterministically",
+          "seconds": 0.0602494
+        },
+        {
+          "name": "actionMontage.upperBodyProfileReplacementIsTransactional",
+          "seconds": 0.0587105
+        }
+      ]
+    },
+    {
+      "source": "test/integration/layered-cloth/physics_layered_cloth_script.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.1902,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "PhysicsLayeredCloth.scriptBindings",
+          "seconds": 0.1902
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_strength.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.186037,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.splineStrengthPresetOverrideSaveAndUndo",
+          "seconds": 0.186037
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_authoring.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.1848496,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.bridgeTunnelIntervalsKeepTerrainEvenNearItsSurface",
+          "seconds": 0.113308
+        },
+        {
+          "name": "procgen.road.authoring.intervalsSplitAndSnapshotsUndoWithoutDuplication",
+          "seconds": 0.0715416
+        }
+      ]
+    },
+    {
+      "source": "test/integration/control-rig/editor_control_rig_limits.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.18322,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "editor.controlRig.limits.sharedHistoryAndAtomicRejection",
+          "seconds": 0.18322
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/rts_terrain_combat.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.179692,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "rts.terrainRidgeStopsFireAndTerrainEditsReopenFireLine",
+          "seconds": 0.179692
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/gameplay_composition_action_preview_profile_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.178865,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "actionPreviewProfile.sidecarStoreRoundTripsAndRejectsIdentityMismatch",
+          "seconds": 0.178865
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/script_api_procgen_cave_generation_stages_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.174051,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.stages.scriptOwnsFieldsAndComposesCaveWithoutGraphics",
+          "seconds": 0.174051
+        }
+      ]
+    },
+    {
+      "source": "test/integration/sensing/environment_query_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.173794,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "sensing.environment.scriptPositionsUseCanonicalExecutor",
+          "seconds": 0.173794
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_sampling_defaults.cpp",
+      "case_count": 2,
+      "sum_case_seconds": 0.1594953,
+      "counts": {
+        "passed": 2
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.presetV2MigratesEveryHistoryRootWithoutChangingChildInheritance",
+          "seconds": 0.0798625
+        },
+        {
+          "name": "procgen.road.authoring.presetV2ExplicitSamplingOverridesRetainPresence",
+          "seconds": 0.0796328
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_junction_style.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.14932,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.junctionStyle.saveRestoreAndUndoReproduceGeometry",
+          "seconds": 0.14932
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_full_roll.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.144561,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.fullRollPreservesReferenceRotationAndAtomicHistory",
+          "seconds": 0.144561
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_roll_pivot.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.136429,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.rollPivotRecipeSnapshotReverseSplitAndUndo",
+          "seconds": 0.136429
+        }
+      ]
+    },
+    {
+      "source": "test/integration/file-io/file_io_devtools_frame_capture_tests.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.109797,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "mcp.frameCapture.protocolPreviewAndAtomicNativeExport",
+          "seconds": 0.109797
+        }
+      ]
+    },
+    {
+      "source": "test/integration/crowd-runtime/CrowdScript.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.101352,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "crowd.script.runtimeBindingContracts",
+          "seconds": 0.101352
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_controllers.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0901859,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.outgoingControllerPresetSaveAndUndo",
+          "seconds": 0.0901859
+        }
+      ]
+    },
+    {
+      "source": "test/integration/avatar-appearance/avatar_appearance_script.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0855467,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "avatar.appearance.scriptBoundaryUsesCheckedResults",
+          "seconds": 0.0855467
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_sampling.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0835774,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.samplingSettingsSaveUndoMigrateAndRejectBudgets",
+          "seconds": 0.0835774
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_circular.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0823756,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.circularArcLimitsAndPresetUndo",
+          "seconds": 0.0823756
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/procgen_native_proxy_reuse.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0814599,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.script.nativeProxyAddressReuseInvalidatesOldInstance",
+          "seconds": 0.0814599
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_surface_path.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0797537,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.surfacePath.retainsPresetHistoryAndMigratesMissingPolicy",
+          "seconds": 0.0797537
+        }
+      ]
+    },
+    {
+      "source": "test/integration/gameplay-composition/procgen_road_parameter_sampling.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0776732,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.authoring.parameterScanPolicySaveUndoAndLegacyMigration",
+          "seconds": 0.0776732
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/procgen_everyday_material_optics.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0747329,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.everyday.scriptOpticsMatchNative",
+          "seconds": 0.0747329
+        }
+      ]
+    },
+    {
+      "source": "test/integration/script-api/terrain_world_origin_vm.cpp",
+      "case_count": 1,
+      "sum_case_seconds": 0.0734761,
+      "counts": {
+        "passed": 1
+      },
+      "slowest_cases": [
+        {
+          "name": "procgen.road.worldOrigin.squirrelCreationAndWorldHeightUseBaseline",
+          "seconds": 0.0734761
+        }
+      ]
+    }
+  ],
+  "nonpassing_cases": [
+    {
+      "name": "ClassicScenes.sponza.flythroughConfigs",
+      "seconds": 0.197037,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.damagedHelmet.flythroughConfigs",
+      "seconds": 0.0894016,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.flightHelmet.flythroughConfigs",
+      "seconds": 0.10274,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.boomBox.flythroughConfigs",
+      "seconds": 0.0904654,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.scifiHelmet.flythroughConfigs",
+      "seconds": 0.0997328,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.metalRoughSpheres.flythroughConfigs",
+      "seconds": 0.100757,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.suzanne.flythroughConfigs",
+      "seconds": 0.0924408,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.duck.flythroughConfigs",
+      "seconds": 0.0948518,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.avocado.flythroughConfigs",
+      "seconds": 0.101739,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.waterBottle.flythroughConfigs",
+      "seconds": 0.100953,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.lantern.flythroughConfigs",
+      "seconds": 0.0928392,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.antiqueCamera.flythroughConfigs",
+      "seconds": 0.0900474,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.cesiumMilkTruck.flythroughConfigs",
+      "seconds": 0.0996212,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.barramundiFish.flythroughConfigs",
+      "seconds": 0.0995159,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "ClassicScenes.corset.flythroughConfigs",
+      "seconds": 0.0918556,
+      "status": "skipped",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.metallicPicksUpEnvColor",
+      "seconds": 1.65687,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.envIntensityScalesMetalBrightness",
+      "seconds": 1.4588,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.clearEnvMapDisablesReflection",
+      "seconds": 1.38861,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.dielectricEnvWeakerThanMetal",
+      "seconds": 1.71855,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.plusZFaceTintsSmoothMetal",
+      "seconds": 1.27611,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.studioEnvBrightensMetal",
+      "seconds": 1.3915,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "IBL.outdoorSkyDiffersFromStudio",
+      "seconds": 1.75453,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_ClassicScenes_tests.cpp"
+    },
+    {
+      "name": "RenderScenes.ibl.metalBrighterThanDielectric",
+      "seconds": 1.26898,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp"
+    },
+    {
+      "name": "RenderScenes.unlit.ignoresDirectionalLight",
+      "seconds": 1.2266,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderImageAudit_tests.cpp"
+    },
+    {
+      "name": "RenderSystem3D.texCellBombChangesPixels",
+      "seconds": 1.21528,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
+    },
+    {
+      "name": "RenderSystem3D.parallaxChangesPixels",
+      "seconds": 1.15036,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
+    },
+    {
+      "name": "Shadow3D.receiveShadowFalseIgnoresMap",
+      "seconds": 1.64465,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_RenderSystem3D_tests.cpp"
+    },
+    {
+      "name": "decal.gpuTriplanarCoversGrazingWall",
+      "seconds": 1.28059,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.opaqueForwardParityMultiTexture",
+      "seconds": 1.24234,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.opaqueForwardCullParity",
+      "seconds": 1.42035,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.visResolveParity",
+      "seconds": 1.32566,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.vgVisResolve",
+      "seconds": 1.25402,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.largeSceneForwardParity",
+      "seconds": 1.32969,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDriven.largeSceneCullParity",
+      "seconds": 1.38746,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDrivenParity.cameraFacingCardTurnsTowardSideCamera",
+      "seconds": 1.32732,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDrivenParity.maskedAlphaCutoff",
+      "seconds": 1.62476,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDrivenParity.opaqueStage1",
+      "seconds": 1.4761,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "GpuDrivenParity.virtualGeometry",
+      "seconds": 1.27349,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp"
+    },
+    {
+      "name": "graphics.waterfall.render.flowAndFoam",
+      "seconds": 1.48511,
+      "status": "failed",
+      "source": "test/integration/render-presentation/render_presentation_graphics_procgen_tests.cpp"
+    }
+  ],
+  "compiled_preflight": [
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_animation.exe",
+      "sha256": "a8293a2622269dd4293ad9fc48b57e630d5d5ab82f9fc665af68de75569645bc",
+      "selected_cases": 157
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_audio.exe",
+      "sha256": "a7f4f96780368d2c4ca1c753c0c95cc8e6cb51299e63d818e3e1729be761fb24",
+      "selected_cases": 4
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_card.exe",
+      "sha256": "4e6e596b3c084b7087e3618163fbee14ccf9d48679c955957eb123b56d3eaa89",
+      "selected_cases": 11
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_climbing.exe",
+      "sha256": "ddaaebd87e27f4b24dcd2c03122c5695da255629bb47e6cc912bae05bc851ab8",
+      "selected_cases": 1
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_combat.exe",
+      "sha256": "d262f43043d92115fe790bf0cd4c61df3ec3fb96e84caf152af73525879753bf",
+      "selected_cases": 1
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_core.exe",
+      "sha256": "13c286e38393625a11d2af3907b92282e0f6934e4ae6d78515ccfdccf37cc30b",
+      "selected_cases": 3
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_devtools.exe",
+      "sha256": "27ebedafd8eaafd64564b1860ee14ec2656f4d6147678469202c17675f3a214c",
+      "selected_cases": 2
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_editor.exe",
+      "sha256": "a82435266b276af2f9201e85291807d9d39d5067a53d0cd25509e33daeffafe8",
+      "selected_cases": 5
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_fluids.exe",
+      "sha256": "503078d0b1beb845b5d317acf642b17ac17e2fd5ca4ea2e401906c3733c6d425",
+      "selected_cases": 12
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_graphics.exe",
+      "sha256": "382c033aa7ed05053c3a87f8a9aa05426507ef81b6acdbc3351da2577f619cf2",
+      "selected_cases": 2891
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_npc_ai.exe",
+      "sha256": "ba83c1147c9270ed29b5f6d404246a9c5ed776f76b32b35f1e11a26f5545d3ee",
+      "selected_cases": 15
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_physics.exe",
+      "sha256": "6a6befa2841fab14541cf68449cf2bf8c1ad2508e9a0f29f3b637fe34cf51b0e",
+      "selected_cases": 126
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_procgen.exe",
+      "sha256": "c7d8bd4633f1a32644b0833a9d5b5413d2c217dbeb2ef6ff0967ad0a00190bb3",
+      "selected_cases": 95
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_scene.exe",
+      "sha256": "406ffd9fec2e567c3b384faf7bbc839ed555a4676a824c62e5a995a660724aef",
+      "selected_cases": 4
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_tactics_rts.exe",
+      "sha256": "b5cd93dce4683dc6c1d655d583fb818fc5075b4a2829ac89df326793178c899d",
+      "selected_cases": 113
+    },
+    {
+      "executable": "C:/Users/xiaofans/.codex/worktrees/b069/EVEngine/build/win32-debug/test/unit_test_ui.exe",
+      "sha256": "2f64cfdbf52bea95ba18ad216a60fec5c2e0767da187da62cd28cbc7c1f0affe",
+      "selected_cases": 13
+    }
+  ],
+  "comparison": {
+    "baseline": "integration-full-runtime.json",
+    "baseline_wall_seconds": 300.0634587998502,
+    "current_wall_seconds": 282.1181812998839,
+    "saved_wall_seconds": 17.945277499966323,
+    "wall_reduction_percent": 5.980494116724911,
+    "same_nonpassing_names_and_statuses": true,
+    "new_nonpassing": [],
+    "resolved_nonpassing": [],
+    "limitation": "One complete run each. Baseline windows were visible; current windows are isolated on a private desktop. Both test simplification and window placement changed; this is observed cost, not an isolated A/B speedup."
+  }
+}

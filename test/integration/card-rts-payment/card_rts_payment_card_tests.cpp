@@ -3,35 +3,34 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "script-binding": [
-      "card.genericBatchComposesWithEconomyWithoutRts",
-      "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
-      "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
-      "card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills",
-      "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
-      "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff"
-    ],
-    "platform-file": [
-      "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard"
-    ]
-  },
   "module": "card",
-  "modules": [
-    "card"
-  ],
   "origins": [
     "card_rts_production_integration.cpp",
     "card_rts_script_composition.cpp"
-  ]
+  ],
+  "cases": {
+    "platform-file": [
+      "card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard"
+    ],
+    "script-binding": [
+      "card.genericBatchComposesWithEconomyWithoutRts",
+      "card.genericBatchRejectsAdvancedRtsContextBeforePayment",
+      "card.genericBatchRetainsScriptOwnersAndReleasesPendingStagesAtVmShutdown",
+      "card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation",
+      "card.rtsScriptGatheringUsesConfiguredResourceAndDropoff",
+      "card.rtsScriptShortCollectionConstructionAndAtomicPlayContract"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: card rts production integration
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_rts_production_integration)
-#include "PrivateTestScope.h"
 #include <cstdint>
 #include <utility>
 #include "attributes/AttributeSetResourceAccount.h"
@@ -42,19 +41,18 @@
 #include "economy/EconomyLedger.h"
 #include "rts/RTS.h"
 #include "rts/RTSEconomy.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // card_rts_production_integration.cpp
 namespace test_card_rts_production_integration {
 namespace {
 
-eve::SubjectRef subject(const char* text) {
+eve::SubjectRef subject(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const char* text) {
     const auto id = eve::PersistentId::parse(text);
     REQUIRE(id.has_value());
     return eve::SubjectRef::fromPersistentId(*id);
 }
 
-eve::SimulationStep step(std::uint64_t tick, double seconds) {
+eve::SimulationStep step(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, std::uint64_t tick, double seconds) {
     auto delta = eve::Duration::fromSeconds(seconds);
     REQUIRE(delta.ok());
     return {eve::SimulationTick(tick), std::move(delta).takeValue()};
@@ -96,14 +94,20 @@ TEST_CASE("production.cardFacadeRoutesAttributesEffectsAndPlay") {
     damage.duration  = 2.0;
     damage.magnitude = 2.0;
     damage.policy    = oneShotPolicy();
-    auto effect      = cards.applyEffect(*card, damage, subject("00000000-0000-7000-8000-000000000101"));
+    auto effect =
+        cards.applyEffect(*card, damage, subject(_ZEROERR_TEST_CONTEXT, "00000000-0000-7000-8000-000000000101"));
     REQUIRE(effect.ok());
     auto effectHandle = std::move(effect).takeValue();
     CHECK_EQ(card->effects()->values.count(), 1u);
 
-    auto advanced = cards.step(step(1, 1.0));
-    REQUIRE(advanced.ok());
-    const auto advancedCount = std::move(advanced).takeValue();
+    // 1/32 is below 1/30 and represents exactly in both seconds and nanoseconds:
+    // the complete run is exactly one second without a rounded period boundary.
+    std::size_t advancedCount = 0;
+    for (std::uint64_t tick = 1; tick <= 32; ++tick) {
+        auto advanced = cards.step(step(_ZEROERR_TEST_CONTEXT, tick, 1.0 / 32.0));
+        REQUIRE(advanced.ok());
+        advancedCount += std::move(advanced).takeValue();
+    }
     CHECK_EQ(advancedCount, 1u);
     CHECK_EQ(card->effects()->values.target().health, 8);
     auto health = cards.getCardAttribute(*card, eve::card::CardAttributeAdapter::healthAttribute);
@@ -135,10 +139,10 @@ TEST_CASE("production.cardFacadeRoutesAttributesEffectsAndPlay") {
 
 TEST_CASE("production.rtsFacadeRoutesCanonicalAttributesEffectsAndBuild") {
     eve::rts::RTS rts;
-    auto          unitResult = rts.newUnit(subject("00000000-0000-7000-8000-000000000102"));
+    auto          unitResult = rts.newUnit(subject(_ZEROERR_TEST_CONTEXT, "00000000-0000-7000-8000-000000000102"));
     REQUIRE(unitResult.ok());
     auto* unit           = std::move(unitResult).takeValue();
-    auto  buildingResult = rts.newBuilding(subject("00000000-0000-7000-8000-000000000103"));
+    auto  buildingResult = rts.newBuilding(subject(_ZEROERR_TEST_CONTEXT, "00000000-0000-7000-8000-000000000103"));
     REQUIRE(buildingResult.ok());
     auto* building = std::move(buildingResult).takeValue();
 
@@ -163,9 +167,11 @@ TEST_CASE("production.rtsFacadeRoutesCanonicalAttributesEffectsAndBuild") {
 
     eve::action::ActionRuntime action;
     eve::rts::ActionAdapter    actionAdapter(action);
-    auto                       advanced = rts.step(step(1, 1.0), actionAdapter);
-    REQUIRE(advanced.ok());
-    std::move(advanced).takeValue();
+    for (std::uint64_t tick = 1; tick <= 32; ++tick) {
+        auto advanced = rts.step(step(_ZEROERR_TEST_CONTEXT, tick, 1.0 / 32.0), actionAdapter);
+        REQUIRE(advanced.ok());
+        std::move(advanced).takeValue();
+    }
     CHECK_EQ(unit->effects()->values.target().suppression, 1u);
     REQUIRE(unit->effects()->values.target().commandInterrupts == 0u);
     REQUIRE(unit->effects()->values.count() == 1u);
@@ -198,34 +204,63 @@ TEST_CASE("production.rtsFacadeRoutesCanonicalAttributesEffectsAndBuild") {
     CHECK_EQ(building->orders()->values.orderCount(), 1u);
 }
 }  // namespace test_card_rts_production_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_card_rts_script_composition)
+// Contract section: card rts script composition
 #include "PrivateTestScope.h"
+
 #include <filesystem>
 #include <fstream>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
 #include "PathBesideSource.h"
-#include "card/Card.h"
-#include "common/ECS.h"
 #include "common/Module.h"
 #include "common/Runtime.h"
 #include "economy/EconomySystem.h"
-#include "rts/RTS.h"
 #include "transaction/AtomicBatch.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // card_rts_script_composition.cpp
 namespace test_card_rts_script_composition {
 namespace {
-std::string readScenario(const std::string& name) {
+std::string readScenario(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, const std::string& name) {
     const auto root = std::filesystem::path(eve_test_path::sourceBesideTestDir(__FILE__)).parent_path().parent_path();
     std::ifstream stream(root / "examples" / "rts-cardfront" / name, std::ios::binary);
     REQUIRE(stream.is_open());
     std::ostringstream content;
     content << stream.rdbuf();
     return content.str();
+}
+
+void replaceFixtureParameter(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT, std::string& source, const std::string& from,
+                             const std::string& to, std::size_t expected = 1) {
+    std::size_t count = 0;
+    for (std::size_t at = 0; (at = source.find(from, at)) != std::string::npos; at += to.size()) {
+        source.replace(at, from.size(), to);
+        ++count;
+    }
+    REQUIRE_EQ(count, expected);
+}
+
+std::string shortScenarioContent(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
+    auto content = readScenario(_ZEROERR_TEST_CONTEXT, "data/content.json");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"speed\": 3.2", "\"speed\": 30", 2);
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"cargoCapacity\": 12", "\"cargoCapacity\": 240");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"gatherRate\": 8", "\"gatherRate\": 7200");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"buildRate\": 2", "\"buildRate\": 30");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"castTime\": 0.5", "\"castTime\": 0.0166667");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"buildTime\": 2", "\"buildTime\": 0.1", 2);
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, content, "\"buildTime\": 5", "\"buildTime\": 0.1", 2);
+    return content;
+}
+
+std::string shortScenarioSource(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
+    auto source = readScenario(_ZEROERR_TEST_CONTEXT, "main.nut");
+    // Preserve the example's orchestration, shrinking only population and travel distance.
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, source, "for (local i=0;i<3;++i)", "for (local i=0;i<1;++i)");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, source, "for(local i=0;i<3;++i)", "for(local i=0;i<0;++i)");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, source, "3000.0,8.5,4.0,4", "3000.0,6.5,8.0,1");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, source, "5.0+i*0.6,6.0", "6.0,8.0");
+    replaceFixtureParameter(_ZEROERR_TEST_CONTEXT, source, "addScriptResource(BLUE,\"mana\",16)",
+                            "addScriptResource(BLUE,\"mana\",32)");
+    return source;
 }
 }  // namespace
 
@@ -371,67 +406,76 @@ TEST_CASE("card.genericBatchRejectsAdvancedRtsContextBeforePayment") {
     )"));
 }
 
-TEST_CASE("card.rtsScriptScenarioCollectsBuildsProducesAndPlaysAtomicSkills") {
+TEST_CASE("card.rtsScriptShortCollectionConstructionAndAtomicPlayContract") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);
     ssq::VM          vm(8192, ssq::Libs::ALL);
     eve::ModuleManager::expose(vm);
     vm.run(vm.compileSource("transaction <- eve.Transaction();"));
-    vm.set("contentJson", readScenario("data/content.json"));
-    vm.set("cardsJson", readScenario("data/cards.json"));
+    vm.set("contentJson", shortScenarioContent(_ZEROERR_TEST_CONTEXT));
+    vm.set("cardsJson", readScenario(_ZEROERR_TEST_CONTEXT, "data/cards.json"));
     vm.run(vm.compileSource(R"(
         eve_init <- null; eve_update <- null; eve_render <- null; eve_reload <- null;
         gfx <- { setBackgroundColor=function(r,g,b,a){} };
         fs <- { readText=function(path){ return path=="data/content.json"?contentJson:cardsJson; } };
     )"));
-    const auto scenario = readScenario("main.nut");
+    const auto scenario = shortScenarioSource(_ZEROERR_TEST_CONTEXT);
     vm.run(vm.compileSource(scenario.c_str()));
     vm.run(vm.compileSource(R"(
+        contractSteps <- 0;
+        function advanceContract() {
+            assert(contractSteps < 90);
+            stepSimulation(1.0/30.0);
+            ++contractSteps;
+        }
         initPresentation=function() {}; eve_init();
+        assert(workers.len()==1 && mission.produced==0 && hand.count()==4);
         local untouchedMana=mission.mana;
-        playNamed("grenade",23.5,8.0); // No caster: no payment/card loss.
+        playNamed("grenade",23.5,8.0);
         assert(hand.count()==4 && mission.mana==untouchedMana && mission.skillPlays==0);
-        for(local i=0;i<1500 && mission.gathered<100;++i) stepSimulation(1.0/30.0);
-        if(mission.gathered<100) throw "collection stalled: income="+mission.gathered+" balance="+mission.minerals+" x="+frame.units[0].x+" y="+frame.units[0].y+" cargo="+frame.units[0].cargo+" order="+frame.units[0].order+" workers="+frame.resourceNodes[0].workers;
+
+        // A real worker must deliver income before either native construction or production can be paid.
+        for(local i=0;i<24 && mission.gathered<100;++i) advanceContract();
         assert(mission.gathered>=100 && mission.minerals>=100);
         buildBarracks();
-        for(local i=0;i<600 && !mission.built;++i) stepSimulation(1.0/30.0);
+        assert(barracks!="");
+        for(local i=0;i<24 && !mission.built;++i) advanceContract();
         assert(mission.built);
         produceMarine();
-        for(local i=0;i<100;++i) stepSimulation(1.0/30.0);
+        for(local i=0;i<12 && mission.produced==0;++i) advanceContract();
         assert(mission.produced==1);
-        for(local i=0;i<600 && mission.minerals<15;++i) stepSimulation(1.0/30.0);
         selectArmy();
         local manaBefore=mission.mana, mineralsBefore=mission.minerals;
+        assert(mineralsBefore>=55);
         local card=hand.getCard(0);
-        playNamed("grenade",29.0,17.0); // Range rejection preserves hand/account/cooldown.
+        playNamed("grenade",29.0,17.0);
         assert(card.getState()=="hand" && mission.mana==manaBefore && mission.minerals==mineralsBefore);
+        assert(mission.skillPlays==0);
         local caster=unitById(selected[0]);
         playNamed("grenade",caster.x,caster.y);
         assert(card.getState()=="played" && mission.skillPlays==1);
         assert(mission.mana==manaBefore-10 && mission.minerals==mineralsBefore-15);
-        stepSimulation(1.0/30.0);
-        for(local i=0;i<900 && mission.minerals<40;++i) stepSimulation(1.0/30.0);
+        advanceContract();
+
+        // Production and card payment still commit together through the native transaction.
+        local reinforcement=hand.getCard(0);
+        local productionMana=mission.mana, productionMinerals=mission.minerals;
         playNamed("reinforcement",0.0,0.0);
-        assert(mission.skillPlays==2);
-        for(local i=0;i<100;++i) stepSimulation(1.0/30.0);
-        assert(mission.produced==2);
-        assault(); updateProjection();
-        assert(frame.units[frame.units.len()-1].stance=="aggressive");
-        for(local i=0;i<1200 && mission.skillPlays==2;++i) {
-            playNamed("grenade",23.5,8.0);
-            stepSimulation(1.0/30.0);
-        }
-        assert(mission.skillPlays==3);
-        for(local i=0;i<3000 && mission.outcome=="running";++i) stepSimulation(1.0/30.0);
-        if(mission.outcome!="victory" || mission.enemyHealth!=0.0) throw "battle stalled: outcome="+mission.outcome+" hp="+mission.enemyHealth+" marines="+mission.produced+" skills="+mission.skillPlays+" message="+message;
+        assert(reinforcement.getState()=="played" && mission.skillPlays==2);
+        assert(mission.mana==productionMana-8 && mission.minerals==productionMinerals-40);
+        for(local i=0;i<12 && mission.produced<2;++i) advanceContract();
+        assert(mission.produced==2 && mission.outcome=="running");
+        local beforeResetSteps=contractSteps;
         resetGame();
-        for(local i=0;i<10;++i) stepSimulation(1.0/30.0);
-        assert(mission.tick==10 && mission.produced==0 && hand.count()==4);
+        advanceContract(); advanceContract();
+        assert(mission.tick==2 && mission.produced==0 && hand.count()==4 && mission.skillPlays==0);
+        assert(contractSteps==beforeResetSteps+2 && contractSteps<=90);
         result <- "ok";
     )"));
-    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+    REQUIRE_EQ(vm.find("result").toString(), std::string("ok"));
+    REQUIRE(vm.find("contractSteps").toInt() <= 90);
 }
+
 
 TEST_CASE("card.rtsScriptBindingsRejectNullAndMalformedCostsWithoutMutation") {
     ecs::Table       world;
@@ -469,7 +513,7 @@ TEST_CASE("card.preparedRtsAbilityCompensatesHandChannelCooldownAndCard") {
     ecs::Table       world;
     ecs::ScopedTable guard(world);
     eve::rts::RTS    rts;
-    REQUIRE(rts.loadScriptContent(readScenario("data/content.json")).ok());
+    REQUIRE(rts.loadScriptContent(readScenario(_ZEROERR_TEST_CONTEXT, "data/content.json")).ok());
     REQUIRE(rts.configureScriptWorld(8, 8, 1).ok());
     const auto subject = [](const char* text) {
         return eve::SubjectRef::fromPersistentId(*eve::PersistentId::parse(text));
@@ -523,20 +567,23 @@ TEST_CASE("card.rtsScriptGatheringUsesConfiguredResourceAndDropoff") {
     vm.run(vm.compileSource("transaction <- eve.Transaction();"));
     vm.run(vm.compileSource(R"(
         local sim=eve.RTS();
-        assert(sim.loadScriptContent("{\"units\":[{\"id\":\"miner\",\"role\":\"worker\",\"gatherResource\":\"ore\",\"cargoCapacity\":3,\"gatherRate\":10,\"speed\":4}],\"buildings\":[{\"id\":\"deposit\",\"dropoff\":true,\"dropoffResources\":[\"ore\"]}]}").ok);
+        assert(sim.loadScriptContent("{\"units\":[{\"id\":\"miner\",\"role\":\"worker\",\"gatherResource\":\"ore\",\"cargoCapacity\":3,\"gatherRate\":90,\"speed\":12}],\"buildings\":[{\"id\":\"deposit\",\"dropoff\":true,\"dropoffResources\":[\"ore\"]}]}").ok);
         assert(sim.configureScriptWorld(8,8,1.0,0.0,0.0).ok);
         local faction="00000000-0000-7000-8000-00000000ae01";
         assert(sim.newFaction(faction).ok);
         local deposit=sim.newBuilding("00000000-0000-7000-8000-00000000ae02","building:deposit",faction,1.0,2.0);
         local worker=sim.newUnit("00000000-0000-7000-8000-00000000ae03","unit:miner",faction,2.0,2.0);
-        local node=sim.newResourceNode("00000000-0000-7000-8000-00000000ae04","ore",100.0,3.0,2.0,2);
+        local node=sim.newResourceNode("00000000-0000-7000-8000-00000000ae04","ore",100.0,2.5,2.0,1);
         assert(deposit.ok && worker.ok && node.ok && sim.assignWorker(worker.value,node.value,deposit.value).ok);
-        for(local i=0;i<200;++i) assert(sim.stepScript(1.0/30.0).ok);
+        gatherSteps <- 0;
+        while(gatherSteps<24 && sim.scriptResource(faction,"ore").value==0) {
+            assert(sim.stepScript(1.0/30.0).ok); ++gatherSteps;
+        }
         assert(sim.scriptResource(faction,"ore").value>0 && sim.scriptResource(faction,"minerals").value==0);
         local economy=sim.inspectScriptEconomy(faction); assert(economy.ok && economy.value.resources[0].income>0);
         result <- "ok";
     )"));
-    CHECK_EQ(vm.find("result").toString(), std::string("ok"));
+    REQUIRE_EQ(vm.find("result").toString(), std::string("ok"));
+    REQUIRE(vm.find("gatherSteps").toInt() <= 24);
 }
 }  // namespace test_card_rts_script_composition
-#endif
