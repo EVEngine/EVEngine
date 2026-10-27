@@ -540,8 +540,10 @@ TEST_CASE("animation.spine.windowDemoRealModels") {
     for (size_t pi = 0; pi < players.size(); ++pi) {
         const int cx = static_cast<int>(models[pi].cx);
         const int cy = static_cast<int>(models[pi].cy);
-        for (int dy = -24; dy <= 24; dy += 8) {
-            for (int dx = -24; dx <= 24; dx += 8) {
+        // A posed skeleton's bounding-box center can lie in the gap between
+        // its body and an extended weapon; sample its own layout cell.
+        for (int dy = -96; dy <= 96; dy += 16) {
+            for (int dx = -96; dx <= 96; dx += 16) {
                 const Color c    = gfx->getPixel(cx + dx, cy + dy);
                 const float dist = std::fabs(c.r - bg.r) + std::fabs(c.g - bg.g) + std::fabs(c.b - bg.b);
                 if (dist > 0.15f) ++perPlayerLitPixels[pi];
