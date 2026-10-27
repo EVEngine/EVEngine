@@ -2297,7 +2297,9 @@ TEST_CASE("rts.largeExactlyOverlappingCrowdUnlocksDeterministically") {
             REQUIRE(unit->orders()->values.enqueue(move).ok());
             units.push_back(unit);
         }
-        for (std::uint64_t tick = 1; tick <= 120; ++tick) {
+        // Include time to separate 96 coincident discs as well as the 5.6s
+        // unobstructed travel time to the target at four units per second.
+        for (std::uint64_t tick = 1; tick <= 240; ++tick) {
             const eve::SimulationStep step{eve::SimulationTick{tick},
                                            eve::Duration::fromSeconds(0.05).expect("large crowd dt")};
             REQUIRE(eve::rts::CrowdMotionSystem::step(step, crowd).ok());
