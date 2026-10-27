@@ -1423,7 +1423,8 @@ TEST_CASE("procgen.terrainTextureAligner.bindsRealVm") {
         local r=eve.alignTerrainSplatTextures(a(),b(),s);
         assert(r.ok);
     )"));
-    CHECK(a.sample(0, 1, 0).value() < 1.0F);
+    // Pcg's X-adjacent Top/Bottom edges use the splatmap's second coordinate.
+    CHECK(a.sample(0, 1, 1).value() < 1.0F);
     CHECK(b.sample(0, 0, 0).value() > 0.0F);
 }
 
