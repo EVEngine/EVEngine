@@ -345,9 +345,9 @@ install(CODE "
 ")
 
 # Plugins use the same member and stateless binding templates as the engine.
-install(DIRECTORY "${CMAKE_BINARY_DIR}/generated/simplesquirrel/simplesquirrel"
+install(DIRECTORY "${CMAKE_SOURCE_DIR}/third-party/simplesquirrel/include/simplesquirrel"
     DESTINATION include)
-install(FILES "${CMAKE_BINARY_DIR}/generated/ecs/ECS.hpp" DESTINATION include OPTIONAL)
+install(FILES "${CMAKE_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp" DESTINATION include OPTIONAL)
 
 # ---- Marker files ----
 install(CODE "

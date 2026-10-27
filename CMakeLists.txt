@@ -253,45 +253,6 @@ if(EVENGINE_BUILD_PROFILE_CHECKS)
     enable_testing()
 endif()
 
-set(_vkbuilder_header "${CMAKE_CURRENT_SOURCE_DIR}/third-party/VKBuilder/include/vkbuilder.hpp")
-set(EVENGINE_VKBUILDER_INCLUDE_DIR "${CMAKE_BINARY_DIR}/generated/vkbuilder")
-function(eve_prepare_vkbuilder_headers)
-if(EXISTS "${_vkbuilder_header}")
-    file(READ "${_vkbuilder_header}" _vkbuilder_source)
-    if(APPLE AND EVENGINE_THIRD_PARTY_BINARY_DIR)
-        set(_vkbuilder_vulkan_root "${EVENGINE_THIRD_PARTY_BINARY_DIR}/include/vulkan")
-        if(NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.h" OR
-           NOT EXISTS "${_vkbuilder_vulkan_root}/vulkan.hpp")
-            message(FATAL_ERROR "Prebuilt third-party install is missing pinned Vulkan headers")
-        endif()
-        # The release prebuilt archives compile Vulkan-Hpp without its Debug-only
-        # DispatchLoaderBase fields. Keep that layout in Debug consumers too;
-        # otherwise an inline dispatcher call can read a function pointer 16
-        # bytes before the member that Graphics initialized.
-        string(CONCAT _vkbuilder_pinned_vulkan
-            "#include \"${_vkbuilder_vulkan_root}/vulkan.h\"\n"
-            "#if !defined(NDEBUG)\n"
-            "#include <cassert>\n"
-            "#pragma push_macro(\"assert\")\n"
-            "#undef assert\n#define assert(...) ((void)0)\n"
-            "#define NDEBUG 1\n#define EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT 1\n"
-            "#endif\n"
-            "#include \"${_vkbuilder_vulkan_root}/vulkan.hpp\"\n"
-            "#if defined(EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT)\n"
-            "#undef NDEBUG\n#pragma pop_macro(\"assert\")\n"
-            "#undef EVENGINE_VKBUILDER_RESTORE_DEBUG_ASSERT\n"
-            "#endif")
-        string(REPLACE "#include <vulkan/vulkan.hpp>"
-            "${_vkbuilder_pinned_vulkan}" _vkbuilder_source "${_vkbuilder_source}")
-    endif()
-    file(MAKE_DIRECTORY "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
-    file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/third-party/VKBuilder/include/"
-        DESTINATION "${EVENGINE_VKBUILDER_INCLUDE_DIR}")
-    file(WRITE "${EVENGINE_VKBUILDER_INCLUDE_DIR}/vkbuilder.hpp" "${_vkbuilder_source}")
-endif()
-endfunction()
-
-
 # Build order: platform -> manifest/profile -> dependencies -> engine modules
 # -> link groups -> consumers -> SDK installation. Keep target creation here;
 # helper implementations below are loaded before main() is called.
@@ -321,6 +282,7 @@ function(main)
     eve_resolve_modules()
 
     load_third_party()
+    include("${CMAKE_SOURCE_DIR}/third-party/cmake/engine_headers.cmake")
     eve_prepare_vkbuilder_headers()
     include(${CMAKE_SOURCE_DIR}/cmake/image_webp.cmake)
     load_image_webp()
@@ -495,42 +457,6 @@ function(main)
         set(EVENGINE_TP_DESC "unknown")
     endif()
 
-    # external/ECS.hpp is patched the same way third-party is, and for the same
-    # reason: `ecs::default_table()` is an inline function whose function-local
-    # static is duplicated by every image once the engine is split into link-group
-    # DLLs, so a domain module and its caller would address different default
-    # Tables. The patch forwards to an exported owner compiled into the foundation
-    # link unit (src/engine/common/EcsDefaultTable.cpp); the OBJECT / static route
-    # and the release SDK are unaffected.
-    #
-    # It runs at configure time because the header is compiled by module
-    # translation units and nothing orders a patch step in front of them. Skipped
-    # when the submodule is absent (profiles and tools that do not use ECS), and
-    # skipped without touching anything when the checkout already carries it.
-    # Runtime patches also skip fully initialized component words and avoid
-    # scanning the entity registry on commits with no deferred creation.
-    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp/src/ECS.hpp")
-        foreach(_eve_ecs_patch ecs-shared-default-table ecs-view-preparation ecs-idle-commit ecs-view-scope-and-iteration ecs-view-live-slots ecs-query-and-record-lifetime)
-            set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
-                "${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch")
-            execute_process(
-                COMMAND ${CMAKE_COMMAND}
-                    -DPATCH=${CMAKE_CURRENT_SOURCE_DIR}/cmake/patches/${_eve_ecs_patch}.patch
-                    -DPATCH_DIR=${CMAKE_CURRENT_SOURCE_DIR}/external/ECS.hpp
-                    -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/patch_third_party.cmake
-                RESULT_VARIABLE _eve_ecs_patch_result)
-            if(NOT _eve_ecs_patch_result EQUAL 0)
-                message(FATAL_ERROR
-                    "Patching external/ECS.hpp failed (exit ${_eve_ecs_patch_result}). "
-                    "The vendored submodule moved away from the pinned commit; "
-                    "update cmake/patches/${_eve_ecs_patch}.patch.")
-            endif()
-        endforeach()
-    endif()
-    # set_include() generated the ECS overlay before the patch above. Refresh
-    # it now so a clean checkout compiles the patched default-table API.
-    eve_prepare_ecs_container_headers()
-
     add_subdirectory(src/engine)
     add_subdirectory(src/modules)
 
@@ -586,7 +512,6 @@ include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/platform_selection.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/asset_dependencies.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/compiler_options.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/engine_usage.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/ecs_container_headers.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/simplesquirrel_headers.cmake")
 
 main()

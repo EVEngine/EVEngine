@@ -271,8 +271,9 @@ code-model flags. `PREBUILT` requires a supported package. An explicit
 `EVENGINE_THIRD_PARTY_BINARY_DIR` still supports a compatible offline/local prefix.
 Changing the dependency release requires updating both pin values after the upstream
 release assets have been published. Dependency patches are owned and applied by the
-pinned third-party repository; engine-owned `external/ECS.hpp` and `external/zeroerr`
-patches remain here.
+pinned third-party repository. ECS and zeroerr remain independently updated
+engine submodules; their fixes live directly in their own source repositories.
+The engine does not maintain replacement dependency headers or patch files.
 
 These are complete library install trees with headers, static/shared libraries,
 runtime binaries, metadata and license notices. You still need platform build tools,
