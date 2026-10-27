@@ -5601,7 +5601,7 @@ bool setMemberNumber(const ssq::Object& instance, const char* name, float value)
     sq_pushobject(vm, instance.getRaw());
     sq_pushstring(vm, name, -1);
     sq_pushfloat(vm, SQFloat(value));
-    const bool ok = SQ_SUCCEEDED(sq_newslot(vm, -3, SQFalse));
+    const bool ok = SQ_SUCCEEDED(sq_set(vm, -3));
     sq_settop(vm, top);
     return ok;
 }
