@@ -531,7 +531,6 @@ jobs:
     # suite reached 3060/3510 at the former 30-minute test guard. Preserve
     # bounded hang detection while budgeting setup, build, and the full suite.
     timeout-minutes: 300
-    env:
     defaults:
       run:
         shell: bash
@@ -650,7 +649,6 @@ jobs:
     # The release build step alone may take up to 90 minutes on a cold runner.
     # Leave room for toolchain setup and cache reporting at the job level.
     timeout-minutes: 180
-    env:
     defaults:
       run:
         shell: bash
