@@ -1120,9 +1120,16 @@ TEST_CASE("graphics.Grass.gpuRenderScreenshot") {
     int       litGreen  = 0;
     const int w         = gfx->getWidth();
     const int h         = gfx->getHeight();
+    // Screen readback is display encoded; classify light and shadow in linear RGB.
+    const auto linearize = [](float value) {
+        return value <= 0.04045f ? value / 12.92f : std::pow((value + 0.055f) / 1.055f, 2.4f);
+    };
     for (int y = 0; y < h; y += 2) {
         for (int x = 0; x < w; x += 2) {
-            const auto c = frame->getPixel(x, y);
+            auto c = frame->getPixel(x, y);
+            c.r    = linearize(c.r);
+            c.g    = linearize(c.g);
+            c.b    = linearize(c.b);
             if (c.g > c.r + 0.04f && c.g > c.b + 0.02f) {
                 ++greenish;
                 const float luma = (c.r + c.g + c.b) / 3.f;
