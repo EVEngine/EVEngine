@@ -1154,10 +1154,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit*    beam = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e903"), *beamType).value();
     Unit*    beamTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e904"), *targetType).value();
-    beam->motion()->x       = 1.5f;
-    beam->motion()->y       = 1.5f;
-    beamTarget->motion()->x = 7.5f;
-    beamTarget->motion()->y = 1.5f;
+    beam->motion()->x       = 1.f;
+    beam->motion()->y       = 1.f;
+    beamTarget->motion()->x = 7.f;
+    beamTarget->motion()->y = 1.f;
     REQUIRE(module.setScriptNavigationBlocked(4, 1, true).ok());
     REQUIRE(module.stepScript(0.2).ok());
     CHECK_EQ(beamTarget->durability()->state.health, 50.0);
@@ -1168,10 +1168,10 @@ TEST_CASE("rts.scriptGridBlocksHitscanAndNewObstaclesInterceptProjectiles") {
     Unit* shell = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e905"), *shellType).value();
     Unit* shellTarget =
         module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e906"), *targetType).value();
-    shell->motion()->x       = 1.5f;
-    shell->motion()->y       = 4.5f;
-    shellTarget->motion()->x = 7.5f;
-    shellTarget->motion()->y = 4.5f;
+    shell->motion()->x       = 1.f;
+    shell->motion()->y       = 4.f;
+    shellTarget->motion()->x = 7.f;
+    shellTarget->motion()->y = 4.f;
     REQUIRE(module.stepScript(0.1).ok());
     REQUIRE(module.setScriptTerrainElevation(4, 4, 2.0f).ok());
     REQUIRE(module.stepScript(1.0).ok());
@@ -1202,10 +1202,10 @@ TEST_CASE("rts.scriptTerrainHeightDrivesFogFireLinesAndCheckpoints") {
     Faction* red  = module.newFaction(subject("00000000-0000-7000-8000-00000000e802")).value();
     Unit* shooter = module.newFactionUnit(*blue, subject("00000000-0000-7000-8000-00000000e803"), *shooterType).value();
     Unit* target  = module.newFactionUnit(*red, subject("00000000-0000-7000-8000-00000000e804"), *targetType).value();
-    shooter->motion()->x = 1.5f;
-    shooter->motion()->y = 2.5f;
-    target->motion()->x  = 7.5f;
-    target->motion()->y  = 2.5f;
+    shooter->motion()->x = 1.f;
+    shooter->motion()->y = 2.f;
+    target->motion()->x  = 7.f;
+    target->motion()->y  = 2.f;
     CHECK_EQ(shooter->combat()->firingHeight, 1.0f);
     CHECK_EQ(target->combat()->targetHeight, 1.0f);
     REQUIRE(module.setScriptTerrainElevation(4, 2, 2.0f).ok());
