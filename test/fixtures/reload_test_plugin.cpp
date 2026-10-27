@@ -68,6 +68,12 @@ void RemovedTestPlugin::expose(ssq::Class& cls) { cls.addFunc("version", &Remove
 
 }  // namespace eve::plugins::reload_test
 
+#if PLUGIN_FAILURE == 2
+namespace {
+int throwInitializationFailure() { throw std::runtime_error("intentional plugin initializer failure"); }
+}  // namespace
+#endif
+
 #if PLUGIN_FAILURE == 5
 EVE_PLUGIN_EXPORT int different_entrypoint() { return 0; }
 #else
@@ -75,7 +81,7 @@ EVE_PLUGIN_EXPORT int eve_plugin_init() {
 #if PLUGIN_FAILURE == 1
     return 17;
 #elif PLUGIN_FAILURE == 2
-    throw std::runtime_error("intentional plugin initializer failure");
+    return throwInitializationFailure();
 #else
     return 0;
 #endif

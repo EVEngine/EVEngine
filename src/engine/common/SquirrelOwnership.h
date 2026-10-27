@@ -175,8 +175,7 @@ namespace detail {
 template <class T>
 /** @brief Squirrel type hash. */
 [[nodiscard]] inline std::size_t squirrelTypeHash() {
-    static const std::size_t value = std::hash<std::string>{}(typeid(T).name());
-    return value;
+    return ssq::detail::stableTypeHash<T>();
 }
 
 template <class T>
