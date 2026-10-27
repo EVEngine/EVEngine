@@ -19,6 +19,46 @@ Evolutionary Vision Engine
 
 ## Documentation
 
+### Native Intel macOS x86_64 builds
+
+On an Intel Mac, initialize submodules (`make init/submodules`) and install Xcode
+command-line tools, CMake, Ninja, and an x86_64 Vulkan SDK with MoltenVK. Build
+the configurations separately:
+
+```sh
+make build/macosx-x86_64-debug JOBS=4
+make build/macosx-x86_64 JOBS=4
+```
+
+These targets explicitly select `CMAKE_OSX_ARCHITECTURES=x86_64` and macOS 13.3 as
+the deployment target for floating-point `std::format` support in libc++. They reject
+other hosts, targets and compilers. Engine builds use
+`build/macosx-x86_64[-debug]`; source dependencies build into
+`build/third-party/macosx-x86_64[-debug]` and install into
+`build/third-party-binary/macosx-x86_64[-debug]`. Prebuilt dependencies select
+`macosx-x86_64-Release`, including for Debug engines. Use
+`make deps/macosx-x86_64[-debug]` for dependencies only and
+`make test/macosx-x86_64[-debug]` for host tests. The existing `make debug`
+default stays unchanged.
+
+Release CI uses native `macos-15-intel` runners for both Debug and Release.
+The Intel lane is absent from the daily CI workflow. Like Windows ARM64, it compiles and links the engine and test
+binaries using the matching prebuilt dependencies. These lanes do not run
+graphics tests. SDK release jobs additionally validate native plugins and packaged
+games on runners matching both architectures.
+
+Build SDKs separately:
+
+```sh
+make sdk/macosx-arm64 JOBS=4
+make sdk/macosx-x86_64 JOBS=4
+```
+
+Debug SDK targets are `sdk/macosx-arm64-debug` and `sdk/macosx-x86_64-debug`.
+Release archives are `eve-sdk-macosx-arm64-<version>.zip` and
+`eve-sdk-macosx-x86_64-<version>.zip`. Choose the target Mac's CPU architecture.
+`TARGET_PLATFORM` remains `macosx`; `TARGET_ARCHITECTURE` records the CPU.
+
 ### Native ARM64 builds (Windows and Linux)
 
 Run these commands on an ARM64 host; these configurations reject cross compilation
@@ -62,15 +102,15 @@ Linux graphics tests still require a display/Vulkan ICD and audio backend;
 use the aarch64 system's installed Lavapipe ICD rather than an x86_64 ICD path.
 These explicit targets do not change the existing `make debug` default.
 
-CI builds these targets on native GitHub-hosted `windows-11-arm` and
-`ubuntu-24.04-arm` runners. The lanes follow the existing Windows/Linux change
-scopes: normal runs build Debug; `build_type=release` builds Release and
-`build_type=both` builds both configurations. Each lane compiles and links the
+Release CI builds both Debug and Release on native GitHub-hosted
+`windows-11-arm` and `ubuntu-24.04-arm` runners. These lanes are absent
+from the daily CI workflow. Each lane compiles and links the
 engine and test binaries, requiring the matching ARM64 third-party release
 packages (`EVENGINE_THIRD_PARTY_MODE=PREBUILT`). Dependency source fixes and binary
 packaging belong to the third-party repository. Missing packages fail explicitly
-instead of rebuilding dependencies in these CI lanes. These are build checks;
-ARM64 graphics tests and SDK release packaging are not part of these lanes.
+instead of rebuilding dependencies in these CI lanes. ARM64 tests run on the
+native software Vulkan backend. SDK Release then builds and validates the
+matching Windows/Linux ARM64 archives.
 
 English user guides are maintained by hand; Chinese is the authoritative source. Guides not yet translated are marked Chinese in the English handbook.
 
@@ -129,7 +169,8 @@ Go to the [EVEngine release page](https://github.com/EVEngine/EVEngine/releases)
 |-----------------|----------|-------|
 | Windows | `eve-sdk-win32-<version>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<version>.zip` | Ubuntu 20.04+ etc. (requires a Vulkan driver) |
-| macOS | `eve-sdk-macosx-<version>.zip` | macOS 12+ (Apple Silicon / Intel) |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<version>.zip` | macOS 13.3+, Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<version>.zip` | macOS 13.3+, Intel |
 | Android | `eve-sdk-android-<version>.zip` | Assemble an arm64 APK on a dev machine |
 | iOS | `eve-sdk-ios-<version>.zip` | Assemble an arm64 .app on a macOS dev machine |
 
@@ -230,8 +271,9 @@ code-model flags. `PREBUILT` requires a supported package. An explicit
 `EVENGINE_THIRD_PARTY_BINARY_DIR` still supports a compatible offline/local prefix.
 Changing the dependency release requires updating both pin values after the upstream
 release assets have been published. Dependency patches are owned and applied by the
-pinned third-party repository; engine-owned `external/ECS.hpp` and `external/zeroerr`
-patches remain here.
+pinned third-party repository. ECS and zeroerr remain independently updated
+engine submodules; their fixes live directly in their own source repositories.
+The engine does not maintain replacement dependency headers or patch files.
 
 These are complete library install trees with headers, static/shared libraries,
 runtime binaries, metadata and license notices. You still need platform build tools,
@@ -284,10 +326,10 @@ sudo apt install -y \
 
 | Component | Recommended |
 |-----------|-------------|
-| OS | macOS 12+ (Apple Silicon / Intel) |
+| OS | macOS 13.3+ (Apple Silicon / Intel, matching SDK architecture) |
 | Toolchain | **Xcode Command Line Tools** (`xcode-select --install`) |
 | CMake | Homebrew: `brew install cmake` (≥ 3.21) |
-| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |
+| Vulkan | Install the **macOS Vulkan SDK** from [LunarG](https://vulkan.lunarg.com/) (includes **MoltenVK**) — build/development only; `dist/eve-sdk/macosx-<arm64|x86_64>` bundles the Vulkan loader + MoltenVK, so player machines do not need the SDK |
 
 Set up the environment (run in each new terminal, or add to `~/.zshrc`):
 
@@ -485,6 +527,15 @@ See [module trimming](docs/en/usr/TRIMMING.md) for the `minimal`, `2d`, `3d`,
 
 ### Match CI locally
 
+Daily checks live in `.github/workflows/ci.yml`. Release-only platforms and
+checks (Intel macOS, Windows/Linux ARM64, Dawn, examples, profiles and coverage)
+live in `.github/workflows/release-ci.yml`, so they do not appear as skipped
+jobs in daily runs. The `Release CI` workflow (`release.yml`) runs release validation, then `SDK Release`,
+which builds Windows x64/ARM64, Linux x64/ARM64, macOS ARM64/x86_64, Android and
+iOS SDKs and verifies the complete eight-archive set before publishing.
+Run `Release CI` with a pre-release tag for the complete test and SDK pipeline;
+`release-ci.yml` is the reusable validation stage.
+
 CI's **Source quality** job is `make check` (no compiler, a few minutes). It
 needs `python3`, `ruff`, `pillow`, and clang-format 18 plus `git clang-format`:
 
@@ -493,6 +544,32 @@ python3 -m pip install ruff pillow
 make check                 # vs origin/dev
 make check CI_BASE=<sha>   # vs a specific PR base
 ```
+
+Source checks and script test modules share a bounded worker pool. Adjust it
+with `make check SOURCE_QUALITY_JOBS=2`; run only script tests with
+`make check/scripts-test`. The check inventory lives in
+`cmake/tasks/source-quality.mk`; each entry is independently runnable, such as
+`make check/bindings` or `make check/architecture-lint CI_BASE=<sha>`.
+
+Runtime checks consume an existing build and can also run independently:
+
+```sh
+make smoke/examples SMOKE_EXAMPLES="basic tree-generator"
+make test/devlab
+make test/headless-gpu
+make check/resource-fixtures
+make check/resource-results RUNTIME_BUILD_DIR=build/linux-debug
+make check/resource-exports
+make package/smoke-runtime RUNTIME_BUILD_DIR=build/linux SMOKE_RUNTIME_ARCHIVE=build/smoke.tar.gz
+```
+
+The runtime targets live in `cmake/tasks/runtime-checks.mk`. On headless Linux,
+use the software Vulkan/null audio environment described above and wrap windowed
+checks with `xvfb-run -a`. `test/headless-gpu` runs without a display server.
+The Linux smoke archive target bundles the executable and non-system shared
+libraries; its consumer needs matching system packages. Set `EVE` to run example
+smokes with an executable restored from an artifact, or `RUNTIME_EVE` to override
+the executable used by DevLab and runtime packaging.
 
 The Windows/Linux debug compile lane also treats warnings as errors. After
 `make check`:
@@ -514,6 +591,26 @@ The report lists the largest `.o`/`.obj` files, high-impact directly included
 project headers, and template-bearing headers. It is an explicit target rather
 than part of every incremental build, so collecting diagnostics does not slow
 normal development builds.
+
+To see *which* `.h` / `.cpp` files include each project header (and which
+headers pull the largest include sets into other headers — the usual place to
+forward-declare or move includes into a `.cpp`):
+
+```sh
+make stats/headers
+make stats/headers HEADER_STATS_ARGS='--header graphics/Graphics.h'
+python3 scripts/analyze_header_includes.py --json /tmp/headers.json --limit 0
+```
+
+`priority` is `header_users * outgoing_project`: headers that both include many
+project headers *and* are themselves included by many other headers are the
+cheapest wins for shrinking object size and compile time. The summary also
+reports `expL` / `incL` / `projL` / `sysL` — unique lines in the transitive
+`#include` closure (project **and** resolved system/third-party headers), that
+total minus the header itself, and the project/system split. Include roots come
+from the host C++ driver, vendored `third-party/` / prebuilt include trees, and
+`compile_commands.json` `-I`/`-isystem` when `make stats/headers` finds one.
+Sort with `HEADER_STATS_ARGS='--sort expand'` or `--sort impact`.
 
 Output layout:
 
@@ -566,6 +663,7 @@ Optional CMake variables:
 | Variable | Default | Notes |
 |----------|---------|-------|
 | `CMAKE_BUILD_TYPE` | `Debug` (if unset) | `Debug` or `Release`; affects third-party install path suffixes (e.g. `win32-debug`) |
+| `EVENGINE_DEBUG_LEVEL` | `normal` | Debug only: `normal` (`-g0 -O2` / MSVC `/Od`, no DWARF) or `detail` (`-g2 -O1` / MSVC `/Zi /O1`). Makefile: `DEBUG_LEVEL=` |
 | `BUILD_PLATFORM` | Auto from host | `win32` / `linux` / `macosx`, etc. |
 | `BUILD_TESTING` | `ON` | Build unit tests |
 | `EVENGINE_COMPILER_CACHE` | `AUTO` | `AUTO` uses `sccache` when found; `SCCACHE` requires it; `CCACHE_HARDLINK` opts into Windows/Ninja/MSVC object sharing; `OFF` disables auto-detection |
@@ -657,7 +755,7 @@ Inside the container, configure and build with the Linux flow. You still need to
    The Makefile defaults to `-j 32`. On machines with fewer cores, use `-j$(nproc)` (Linux) / `-j$(sysctl -n hw.ncpu)` (macOS) or a smaller number to avoid OOM.
 
 6. **macOS window / rendering fails**  
-   If the error is `Installed Vulkan doesn't implement the VK_KHR_surface extension` (SDL's wording), the runnable Vulkan lacks surface support — on macOS that means MoltenVK was not loaded. For **distributed builds**, ship the `lib/` folder from `dist/eve-sdk/macosx` (it contains `libvulkan.1.dylib`, `libMoltenVK.dylib` and `MoltenVK_icd.json`); eve points SDL and the loader at these bundled files at startup (`bootstrapBundledVulkan` in `platform/macosx`), so players do not need the SDK. For **dev builds**, confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
+   If the error is `Installed Vulkan doesn't implement the VK_KHR_surface extension` (SDL's wording), the runnable Vulkan lacks surface support — on macOS that means MoltenVK was not loaded. For **distributed builds**, ship the `lib/` folder from `dist/eve-sdk/macosx-<arm64|x86_64>` (it contains `libvulkan.1.dylib`, `libMoltenVK.dylib` and `MoltenVK_icd.json`); eve points SDL and the loader at these bundled files at startup (`bootstrapBundledVulkan` in `platform/macosx`), so players do not need the SDK. For **dev builds**, confirm `VK_ICD_FILENAMES` points at the MoltenVK ICD (`setup-env.sh` sets this) and the SDK `lib` is on `DYLD_LIBRARY_PATH`. The engine uses SDL2 Vulkan surface + MoltenVK; no separate Metal backend is required.
 
 7. **Android APK / device**  
    Match the NDK version to the Makefile; ensure `local.properties` `sdk.dir` is correct; enable USB debugging and check `adb devices`. v1 expects a Vulkan device; without one, at least verify `make build/android-debug` produces an APK.

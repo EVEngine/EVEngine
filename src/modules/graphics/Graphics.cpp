@@ -13,6 +13,7 @@
 #include "graphics/Exposure.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/GraphicsMeshBindings.h"
+#include "graphics/GraphicsRgb.h"
 #include "graphics/Grass.h"
 #include "graphics/HairCards.h"
 #include "graphics/HairShader.h"
@@ -28,13 +29,13 @@
 #include "graphics/AmbientOcclusion.h"
 #include "graphics/AntiAliasing.h"
 #include "graphics/CanvasScriptBindings.h"
+#include "graphics/DamageNumbersBindings.h"
 #include "graphics/FogVolume.h"
 #include "graphics/Font.h"
 #include "graphics/GBuffer.h"
 #include "graphics/GlobalIllumination.h"
 #include "graphics/GrassWind.h"
 #include "graphics/Light.h"
-#include "graphics/ShadowScheme.h"
 #include "graphics/MapFog.h"
 #include "graphics/Material.h"
 #include "graphics/Mesh.h"
@@ -51,6 +52,7 @@
 #include "graphics/Renderable3DBindings.h"
 #include "graphics/ScreenSpaceReflection.h"
 #include "graphics/ShaderScriptBindings.h"
+#include "graphics/ShadowScheme.h"
 #include "graphics/Texture.h"
 #include "graphics/VegetationScriptBindings.h"
 #include "graphics/Volumetric.h"
@@ -298,15 +300,7 @@ void Graphics::expose(ssq::Table& table) {
     exposeVegetationScriptBindings(table, cls);
     exposeCanvasScriptBindings(table);
 
-#ifndef EVENGINE_WEBGPU
-    auto fontCls =
-        table.addClass<Font>("GraphicsFont", std::function<Font*()>([]() -> Font* { return nullptr; }), true);
-    fontCls.addFunc("getHeight", &Font::getHeight);
-    fontCls.addFunc("getAscent", &Font::getAscent);
-    fontCls.addFunc("getBaseline", &Font::getBaseline);
-    fontCls.addFunc("getWidth", &Font::getWidth);
-    fontCls.addFunc("hasGlyph", &Font::hasGlyph);
-#endif
+    exposeFontAndDamageNumberBindings(table, cls);
 
     auto maskCls = table.addClass<AlphaMask>("AlphaMask",
                                              std::function<AlphaMask*()>([]() -> AlphaMask* { return nullptr; }), true);
@@ -1373,7 +1367,7 @@ void Graphics::expose(ssq::Class& cls) {
     cls.addFunc("renderSprites", &Graphics::renderSprites);
     cls.addFunc("newSprite2D", &Graphics::newSprite2D);
     cls.addFunc("drawTexturedRectRotated", &Graphics::drawTexturedRectRotatedRGBA);
-    cls.addFunc("newFont", &Graphics::newFont);
+    cls.addFunc("newFont", static_cast<Font* (Graphics::*)(font::FontData*, std::string)>(&Graphics::newFont));
     cls.addFunc("setFont", &Graphics::setFont);
     cls.addFunc("getFont", &Graphics::getFont);
     cls.addFunc("drawText", &Graphics::drawTextRGBA);
@@ -1653,11 +1647,15 @@ Texture* Graphics::prepareFinalSceneTexture(Texture* scene, Texture* motion) {
     }
     Texture* meterSource = resolved;
     resolved             = pipelineBloom()->apply(resolved, getSceneBloomIntensity(), getSceneBloomThreshold());
-    return pipelineExposure()->apply(resolved, getSceneExposure(), getSceneAutoExposure(), getSceneAutoExposureMinEV(),
-                                     getSceneAutoExposureMaxEV(), getSceneColorFilter(), getSceneLift(),
-                                     getSceneInverseGamma(), getSceneGain(), getSceneTransitionVignette(),
-                                     getSceneTransitionVignetteSmoothness(), getSceneTransitionLensDistortion(),
-                                     getSceneTransitionLensScale(), meterSource);
+    const RgbF filter    = getSceneColorFilter();
+    const RgbF lift      = getSceneLift();
+    const RgbF invG      = getSceneInverseGamma();
+    const RgbF gain      = getSceneGain();
+    return pipelineExposure()->apply(
+        resolved, getSceneExposure(), getSceneAutoExposure(), getSceneAutoExposureMinEV(), getSceneAutoExposureMaxEV(),
+        glm::vec3(filter.r, filter.g, filter.b), glm::vec3(lift.r, lift.g, lift.b), glm::vec3(invG.r, invG.g, invG.b),
+        glm::vec3(gain.r, gain.g, gain.b), getSceneTransitionVignette(), getSceneTransitionVignetteSmoothness(),
+        getSceneTransitionLensDistortion(), getSceneTransitionLensScale(), meterSource);
 }
 
 Canvas& Graphics::prepareFramePostTarget(FramePostTarget target, int width, int height) {
@@ -1879,9 +1877,9 @@ Texture* Graphics::newTextureWithSampler(image::ImageData* data, bool repeatU, b
                                          float lodBias) {
     TextureCreateInfo info;
     info.generateMipmaps = generateMipmaps;
-    info.sampler.min     = TextureSampler::parseFilter(filter);
+    info.sampler.min     = TextureSampler::parseFilter(filter.c_str());
     info.sampler.mag     = info.sampler.min;
-    info.sampler.mipmap  = TextureSampler::parseMipmap(mipmap);
+    info.sampler.mipmap  = TextureSampler::parseMipmap(mipmap.c_str());
     if (generateMipmaps && info.sampler.mipmap == MipmapMode::Disabled) info.sampler.mipmap = MipmapMode::Linear;
     info.sampler.repeatU       = repeatU;
     info.sampler.repeatV       = repeatV;
@@ -1903,15 +1901,17 @@ void Graphics::setTextureSampler(Texture* texture, const std::string& filter, co
         throw eve::Exception("Graphics::setTextureSampler: unknown mipmap mode '%s'", mipmap.c_str());
     }
     TextureSampler s = texture->getSampler();
-    s.min            = TextureSampler::parseFilter(filter);
+    s.min            = TextureSampler::parseFilter(filter.c_str());
     s.mag            = s.min;
-    s.mipmap         = TextureSampler::parseMipmap(mipmap);
+    s.mipmap         = TextureSampler::parseMipmap(mipmap.c_str());
     s.maxAnisotropy  = maxAnisotropy;
     s.lodBias        = lodBias;
     setTextureSampler(texture, s);
 }
 
 Quad* Graphics::newQuad(int x, int y, int w, int h) { return new Quad(x, y, w, h); }
+
+Font* Graphics::newFont(font::FontData* data) { return newFont(data, Font::defaultCharset()); }
 
 Font* Graphics::newFont(font::FontData* data, std::string charset) { return new Font(this, data, std::move(charset)); }
 

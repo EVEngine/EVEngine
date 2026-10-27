@@ -2,9 +2,11 @@
 #include "common/Capability.h"
 #include "common/FrameCaptureImage.h"
 #include "devtools/FrameCapturePreview.hpp"
+#include "devtools/FrameContactSheet.hpp"
 #include "devtools/McpArgs.hpp"
 #include "devtools/McpJson.hpp"
 #include "devtools/McpServer.hpp"
+#include "devtools/McpToolFamilies.hpp"
 
 #include <Poco/Base64Encoder.h>
 #include <Poco/JSON/Array.h>
@@ -80,7 +82,7 @@ struct JobOutput {
 };
 struct Job {
     uint64_t                              generation;
-    std::string                           capture;
+    std::vector<std::string>              captures;
     std::string                           key;
     std::future<JobOutput>                future;
     std::string                           response;
@@ -137,10 +139,11 @@ bool validArguments(Object::Ptr args, const std::set<std::string>& allowed) {
     if (!args) return true;
     for (const auto& [key, value] : *args) {
         if (!allowed.contains(key)) return false;
-        if (key == "buffers") {
+        if (key == "buffers" || key == "tokens") {
             if (value.type() != typeid(Array::Ptr)) return false;
         } else if (key == "timeoutMs" || key == "x" || key == "y" || key == "channel" || key == "maxWidth" ||
-                   key == "maxHeight" || key == "maxBytes") {
+                   key == "maxHeight" || key == "maxBytes" || key == "columns" || key == "cellWidth" ||
+                   key == "cellHeight") {
             if (!value.isInteger() || value.convert<double>() < -2147483648.0 || value.convert<double>() > 2147483647.0)
                 return false;
         } else if (key == "rangeMin" || key == "rangeMax" || key == "exposure") {
@@ -155,7 +158,8 @@ bool validArguments(Object::Ptr args, const std::set<std::string>& allowed) {
 bool isMcpFrameCaptureTool(std::string_view name) {
     return name == "eve_frame_capture_capabilities" || name == "eve_frame_capture" ||
            name == "eve_frame_capture_status" || name == "eve_frame_buffer_image" || name == "eve_frame_pixel" ||
-           name == "eve_frame_capture_export" || name == "eve_frame_capture_release";
+           name == "eve_frame_capture_export" || name == "eve_frame_capture_release" ||
+           name == "eve_frame_contact_sheet";
 }
 
 void resetMcpFrameCapture() {
@@ -179,6 +183,97 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
             it = jobs.erase(it);
         else
             ++it;
+    }
+    if (name == "eve_frame_contact_sheet") {
+        if (!validArguments(args, {"tokens", "columns", "cellWidth", "cellHeight", "maxBytes"}) || !args ||
+            !args->has("tokens"))
+            return error("InvalidArguments");
+        const auto requested = args->getArray("tokens");
+        if (requested->size() == 0 || requested->size() > 16) return error("InvalidArguments");
+        FrameContactSheetOptions options;
+        options.columns    = static_cast<uint32_t>(getArgInt(args, "columns", (std::min)(2, int(requested->size()))));
+        options.cellWidth  = static_cast<uint32_t>(getArgInt(args, "cellWidth", 512));
+        options.cellHeight = static_cast<uint32_t>(getArgInt(args, "cellHeight", 512));
+        options.maxBytes   = static_cast<size_t>(getArgInt(args, "maxBytes", 2097152));
+        if (!options.columns || options.columns > requested->size() || !options.cellWidth || !options.cellHeight ||
+            options.cellWidth > 2048 || options.cellHeight > 2048 || options.maxBytes < 1024 ||
+            options.maxBytes > 16777216 || options.columns * options.cellWidth > 2048 ||
+            ((requested->size() + options.columns - 1) / options.columns) * options.cellHeight > 2048)
+            return error("InvalidContactSheetOptions");
+        std::vector<std::string>        tokens;
+        std::vector<FrameCaptureBuffer> frames;
+        auto                            cells = array();
+        for (unsigned i = 0; i < requested->size(); ++i) {
+            if (!requested->get(i).isString()) return error("InvalidArguments");
+            const auto token    = requested->getElement<std::string>(i);
+            auto       captured = service->snapshot(token);
+            if (!captured) return resultError(captured.status());
+            const auto& snapshot = captured.value();
+            if (snapshot.phase != FrameCapturePhase::Ready)
+                return error("CaptureNotReady", snapshot.phase == FrameCapturePhase::Queued ||
+                                                    snapshot.phase == FrameCapturePhase::Recording ||
+                                                    snapshot.phase == FrameCapturePhase::ReadbackPending);
+            const auto found = std::find_if(snapshot.buffers.begin(), snapshot.buffers.end(),
+                                            [](const auto& b) { return b.attachment == FrameAttachment::Final; });
+            if (found == snapshot.buffers.end() || !found->bytes) return error("AttachmentUnavailable");
+            frames.push_back(*found);
+            tokens.push_back(token);
+            auto cell = object();
+            cell->set("index", i);
+            cell->set("token", token);
+            cell->set("frameId", static_cast<Poco::UInt64>(snapshot.frameId));
+            cell->set("producerFrameId", static_cast<Poco::UInt64>(found->producerFrameId));
+            cell->set("sourceWidth", found->width);
+            cell->set("sourceHeight", found->height);
+            cell->set("backend", snapshot.backend);
+            cell->set("providerGeneration", static_cast<Poco::UInt64>(snapshot.generation));
+            cell->set("x", (i % options.columns) * options.cellWidth);
+            cell->set("y", (i / options.columns) * options.cellHeight);
+            cell->set("width", options.cellWidth);
+            cell->set("height", options.cellHeight);
+            cells->add(cell);
+        }
+        const auto key = std::string(name) + ":" + mcpStringify(Poco::Dynamic::Var(args));
+        for (const auto& [jobToken, job] : jobs)
+            if (job.generation == caps.generation && job.key == key) return pollJob(jobToken, caps.generation);
+        while (jobs.size() >= 2) {
+            const auto disposable = std::find_if(jobs.begin(), jobs.end(), [](const auto& pair) {
+                return !pair.second.response.empty() ||
+                       pair.second.future.wait_for(std::chrono::seconds(0)) == std::future_status::ready;
+            });
+            if (disposable == jobs.end()) return error("WorkerBudgetExceeded");
+            jobs.erase(disposable);
+        }
+        const auto jobToken  = "job:" + std::to_string(nextJob++);
+        auto       cancelled = std::make_shared<std::atomic<bool>>(false);
+        auto       future    = std::async(std::launch::async,
+                                          [frames = std::move(frames), options, cells, cancelled, jobToken]() -> JobOutput {
+                                     try {
+                                         if (cancelled->load()) return {error("CancelledJob")};
+                                         auto sheet = frameContactSheet(frames, options);
+                                         if (!sheet) return {resultError(sheet.status())};
+                                         if (cancelled->load()) return {error("CancelledJob")};
+                                         auto metadata = envelope("ready");
+                                         metadata->set("jobToken", jobToken);
+                                         metadata->set("layout", "row-major");
+                                         metadata->set("cells", cells);
+                                         metadata->set("width", sheet.value().width);
+                                         metadata->set("height", sheet.value().height);
+                                         metadata->set("sameSimulationInstantVerified", false);
+                                         return {imageContentResult(base64(sheet.value().png), "image/png",
+                                                                             mcpStringify(Poco::Dynamic::Var(metadata)))};
+                                     } catch (const std::exception& exception) {
+                                         return {error(std::string("ContactSheetFailed: ") + exception.what())};
+                                     }
+                                 });
+        jobs.emplace(jobToken, Job{caps.generation,
+                                   std::move(tokens),
+                                   key,
+                                   std::move(future),
+                                   {},
+                                   std::chrono::steady_clock::now() + std::chrono::seconds(60),
+                                   std::move(cancelled)});
+        return pending(jobToken);
     }
     if (name == "eve_frame_capture_capabilities") {
         if (!validArguments(args, {})) return error("InvalidArguments");
@@ -235,7 +330,8 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
         if (!result) return resultError(result.status());
         for (auto& [jobToken, job] : jobs) {
             (void)jobToken;
-            if (job.capture == token) job.cancelled->store(true);
+            if (std::find(job.captures.begin(), job.captures.end(), token) != job.captures.end())
+                job.cancelled->store(true);
         }
         auto o = envelope(std::string(frameCapturePhaseName(result.value())));
         o->set("token", token);
@@ -437,7 +533,7 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
             }
         });
     jobs.emplace(jobToken, Job{caps.generation,
-                               token,
+                               {token},
                                key,
                                std::move(future),
                                {},
@@ -449,10 +545,10 @@ std::string callMcpFrameCaptureTool(std::string_view name, Object::Ptr args) {
 std::string_view mcpFrameCaptureSchemas() {
     static const std::string schemas = [] {
         std::string                      out;
-        const std::array<std::string, 7> names{
-            "eve_frame_capture_capabilities", "eve_frame_capture", "eve_frame_capture_status",
-            "eve_frame_buffer_image",         "eve_frame_pixel",   "eve_frame_capture_export",
-            "eve_frame_capture_release"};
+        const std::array<std::string, 8> names{
+            "eve_frame_capture_capabilities", "eve_frame_capture",      "eve_frame_capture_status",
+            "eve_frame_buffer_image",         "eve_frame_pixel",        "eve_frame_capture_export",
+            "eve_frame_capture_release",      "eve_frame_contact_sheet"};
         for (const auto& name : names) {
             auto tool = object();
             tool->set("name", name);
@@ -471,7 +567,23 @@ std::string_view mcpFrameCaptureSchemas() {
                 props->set(key, p);
                 if (need) required->add(key);
             };
-            if (name == "eve_frame_capture") {
+            if (name == "eve_frame_contact_sheet") {
+                tool->set("description",
+                          "Compose 1-16 ready final-color capture tokens into a row-major PNG image. "
+                          "Preserves aspect ratio with black letterboxing; no camera or gameplay changes. "
+                          "This does not acquire views or certify equal simulation time. Returns jobToken; "
+                          "poll eve_frame_capture_status for the image and source-cell metadata.");
+                property("tokens", "array", true);
+                auto items = object();
+                items->set("type", "string");
+                props->getObject("tokens")->set("items", items);
+                props->getObject("tokens")->set("minItems", 1);
+                props->getObject("tokens")->set("maxItems", 16);
+                property("columns", "integer");
+                property("cellWidth", "integer");
+                property("cellHeight", "integer");
+                property("maxBytes", "integer");
+            } else if (name == "eve_frame_capture") {
                 property("buffers", "array", true);
                 auto items = object();
                 items->set("type", "string");
@@ -522,6 +634,9 @@ std::string_view mcpFrameCaptureSchemas() {
             bounds("maxWidth", 1, 2048);
             bounds("maxHeight", 1, 2048);
             bounds("maxBytes", 1024, 16777216);
+            bounds("columns", 1, 16);
+            bounds("cellWidth", 1, 2048);
+            bounds("cellHeight", 1, 2048);
             bounds("x", 0, 2147483647);
             bounds("y", 0, 2147483647);
             schema->set("properties", props);
@@ -534,4 +649,8 @@ std::string_view mcpFrameCaptureSchemas() {
     }();
     return schemas;
 }
+}  // namespace eve::dev
+
+namespace eve::dev {
+EVE_MCP_TOOL_FAMILY(FrameCapture, mcpFrameCaptureSchemas, callMcpFrameCaptureTool, ContentEnvelope)
 }  // namespace eve::dev

@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Validate the complete C++ test-level catalogue and emit CTest metadata.
 
-The catalogue owns file defaults and case overrides. Source inspection supplies
-literal identities and rejects obvious rendering/script setup in unit cases;
-new sources still require an explicit policy. Runtime discovery remains
-authoritative for active/preprocessed cases.
+Canonical directories supply file defaults; source headers own exceptions and
+relocation provenance. The complete catalogue is generated in memory. Runtime
+discovery remains authoritative for compiled identities.
 """
 
 from __future__ import annotations
@@ -18,9 +17,17 @@ import sys
 import tempfile
 
 import utf8_stdio
+from cpp_source import mask_cpp
 
 ROOT = Path(__file__).resolve().parents[1]
-CATALOGUE = ROOT / "test" / "test_levels.json"
+TEST_DIR = ROOT / "test"
+
+
+def source_catalogue() -> dict:
+    """Create the source-derived policy projection; no persisted file list."""
+    return {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+
+
 CLASSIFICATIONS = {
     "local-logic": ("unit", ()),
     "local-format": ("unit", ()),
@@ -44,18 +51,7 @@ CLASSIFICATIONS = {
     "performance": ("integration", ()),
     "fuzz-property": ("unit", ()),
 }
-# Same-length lexical mask: comments and literals cannot invent test declarations
-# or upset the brace matching used to separate cases from adjacent helpers.
-LEXEME = re.compile(
-    r'//[^\n]*|/\*.*?\*/|R"(?P<delimiter>[^ ()\\\t\r\n]{0,16})\(.*?\)(?P=delimiter)"'
-    r'|"(?:\\.|[^"\\])*"|(?<![A-Za-z0-9_])(?:u8|[uUL])?\'(?:\\.|[^\'\\\r\n])*\'', re.DOTALL
-)
 CASE = re.compile(r'\b(?:FUZZ_)?TEST_CASE(?:_FIXTURE)?\s*\(')
-
-
-def mask_cpp(text: str) -> str:
-    """Keep source positions/newlines while hiding comments and literal contents."""
-    return LEXEME.sub(lambda m: re.sub(r"[^\n]", " ", m[0]), text)
 
 
 def generated_prefixes_in(text: str) -> set[str]:
@@ -167,19 +163,103 @@ def expanded_catalogue(data: dict, inventory: dict) -> dict:
     """Build the full v1 consumer projection in memory; never persist identities.
 
     Version 1 remains readable for existing tools/fixtures and migration checks.
-    Version 2 stores only overrides. Unknown versions are rejected by validation.
+    V2 stores case overrides; v3 also derives unlisted files from paths/local
+    declarations. Unknown versions are rejected before publishing metadata.
     """
     sources = {}
-    for source, policy in data["sources"].items():
+    for source, policy in resolved_source_policies(data, inventory).items():
         policy = source_policy(source, policy)
-        if data.get("version") != 2:
+        if data.get("version") not in {2, 3}:
             sources[source] = policy
             continue
         groups = {}
         for name, category in classified_cases(policy, inventory[source]["cases"]).items():
             groups.setdefault(category, []).append(name)
         sources[source] = {**policy, "cases": groups}
-    return {**data, "sources": sources, **({"version": 1} if data.get("version") == 2 else {})}
+    return {**data, "sources": sources, **({"version": 1} if data.get("version") in {2, 3} else {})}
+
+
+def source_header_policy(text: str) -> dict:
+    """Read one versioned policy from leading comments, never embedded scripts.
+
+    ``// eve-test-policy: {"schema":"evengine.test-policy","version":1,...}``
+    declares only facts that cannot be derived from the canonical source path.
+    Unknown fields are rejected by the same validator as catalogue exceptions.
+    """
+    declarations = []
+    cursor = 0
+    continued = False
+    while match := re.match(r"\s*(//[^\n]*|/\*.*?\*/)", text[cursor:], re.DOTALL):
+        comment = match[1]
+        if comment.startswith("// eve-test-policy:"):
+            declarations.append(comment.partition(":")[2].strip())
+            continued = True
+        elif comment.startswith("/* eve-test-policy:"):
+            declarations.append(comment[2:-2].partition(":")[2].strip())
+            continued = False
+        elif continued and comment.startswith("//"):
+            # clang-format may reflow a compact policy across line comments.
+            declarations[-1] += "\n" + comment[2:].strip()
+        if continued:
+            try:
+                json.loads(declarations[-1])
+                continued = False
+            except ValueError:
+                pass
+        cursor += match.end()
+    if not declarations:
+        return {}
+    if len(declarations) != 1:
+        raise ValueError("duplicate eve-test-policy declarations")
+    policy = json.loads(declarations[0])
+    if (not isinstance(policy, dict) or policy.get("schema") != "evengine.test-policy"
+            or type(policy.get("version")) is not int or policy["version"] != 1):
+        raise ValueError("unsupported source policy schema/version")
+    for field in ("role", "default", "module", "task"):
+        if field in policy and not isinstance(policy[field], str):
+            raise ValueError(f"source policy {field} must be a string")
+    for field in ("generated", "origins", "modules"):
+        if field in policy and (not isinstance(policy[field], list)
+                                or any(not isinstance(item, str) for item in policy[field])):
+            raise ValueError(f"source policy {field} must be a string list")
+    if "cases" in policy and (not isinstance(policy["cases"], dict)
+                              or any(not isinstance(names, list) or any(not isinstance(name, str) for name in names)
+                                     for names in policy["cases"].values())):
+        raise ValueError("source policy cases must map classifications to string lists")
+    return {key: value for key, value in policy.items() if key not in {"schema", "version"}}
+
+
+def resolved_source_policies(data: dict, inventory: dict) -> dict:
+    """Resolve v3 sparse exceptions and local declarations without writing them.
+
+    V1/v2 keep their complete-file-list contract. V3 derives unit ownership and
+    integration task names from paths. Integration module ownership and resource
+    exceptions remain explicit semantics, colocated with a newly added source.
+    An explicit field has exactly one owner: catalogue or source, never both.
+    """
+    if data.get("version") != 3:
+        return data["sources"]
+    result = dict(data["sources"])
+    for source, info in inventory.items():
+        parts = Path(source).parts
+        canonical = len(parts) >= 3 and parts[0] in {"unit", "integration"}
+        policy = {}
+        if canonical:
+            policy = {"role": "tests" if info["cases"] or info.get("generated") else "helper",
+                      "default": "local-logic" if parts[0] == "unit" else "module-composition"}
+        try:
+            local = source_header_policy(info["text"])
+        except (ValueError, TypeError) as error:
+            raise ValueError(f"{source}: {error}") from error
+        stored = data["sources"].get(source, {})
+        duplicate = set(local) & set(stored)
+        if duplicate:
+            raise ValueError(f"{source}: policy fields declared in both source and catalogue: {sorted(duplicate)}")
+        policy.update(stored)
+        policy.update(local)
+        if policy:
+            result[source] = source_policy(source, policy)
+    return result
 
 
 UNIT_SETUP = re.compile(
@@ -272,11 +352,14 @@ def generator_line_collisions(text: str) -> list[int]:
 
 def catalogue_errors(data: dict, inventory: dict) -> list[str]:
     errors = []
-    if data.get("schema") != "evengine.test-levels" or data.get("version") not in {1, 2}:
+    if data.get("schema") != "evengine.test-levels" or data.get("version") not in {1, 2, 3}:
         errors.append("unsupported test-level catalogue schema/version")
     if set(data) != {"schema", "version", "sources"}:
         errors.append("unknown catalogue fields")
-    sources = data.get("sources", {})
+    try:
+        sources = resolved_source_policies(data, inventory)
+    except (ValueError, TypeError) as error:
+        return [str(error)]
     for source in sorted(set(inventory) - set(sources)):
         errors.append(f"{source}: missing explicit test classification")
     for source in sorted(set(sources) - set(inventory)):
@@ -291,6 +374,8 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
             errors.append(f"{source}: invalid source role")
         if policy.get("default") not in CLASSIFICATIONS:
             errors.append(f"{source}: invalid default classification")
+        if data.get("version") == 3 and source.startswith("integration/") and not policy.get("module"):
+            errors.append(f"{source}: declare semantic module ownership in an eve-test-policy source header")
         owners = policy.get("modules", [policy.get("module")])
         if "modules" in policy and (not source.startswith("integration/") or not isinstance(owners, list)
                                     or not owners or any(not isinstance(owner, str) for owner in owners)
@@ -312,13 +397,16 @@ def catalogue_errors(data: dict, inventory: dict) -> list[str]:
         if cases and policy.get("role") not in {"tests", "fuzz"}:
             errors.append(f"{source}: case-owning source must have tests or fuzz role")
         groups = policy.get("cases", {})
+        if not isinstance(groups, dict):
+            errors.append(f"{source}: invalid classification groups")
+            continue
         for category, names in groups.items():
             if category not in CLASSIFICATIONS or not isinstance(names, list) or not all(isinstance(n, str) for n in names):
                 errors.append(f"{source}: invalid classification group {category}")
         if errors and any(error.startswith(source + ": invalid classification group") for error in errors):
             continue
         explicit = classified_cases(policy)
-        declared = classified_cases(policy, cases if data.get("version") == 2 else None)
+        declared = classified_cases(policy, cases if data.get("version") in {2, 3} else None)
         if sum(len(names) for names in groups.values()) != len(explicit):
             errors.append(f"{source}: case appears in more than one classification group")
         for name in sorted(set(cases) - set(declared)):
@@ -377,16 +465,54 @@ def cmake_quote(text: str) -> str:
     return '"' + text.replace("\\", "/").replace('"', '\\"').replace("$", "\\$") + '"'
 
 
+def origin_guard_ranges(text: str) -> list[tuple[int, int, int, tuple[str, ...]]]:
+    """Match legacy selection guards to their real, possibly nested closing directive."""
+    directives = re.finditer(
+        r"^[ \t]*#[ \t]*(if|ifdef|ifndef|endif)\b(?:[^\n]*\\\n)*[^\n]*(?:\n|$)",
+        mask_cpp(text), re.MULTILINE,
+    )
+    stack = []
+    ranges = []
+    for directive in directives:
+        kind = directive[1]
+        if kind != "endif":
+            expression = directive[0].replace("\\\n", " ")
+            origins = tuple(re.findall(r"defined\s*\(\s*EVE_TEST_ORIGIN_(\w+)\s*\)", expression))
+            selected = origins if kind == "if" and "EVE_TEST_FILTER_ORIGINS" in expression else ()
+            stack.append((directive.start(), directive.end(), selected))
+        elif stack:
+            start, body, origins = stack.pop()
+            if origins:
+                ranges.append((start, body, directive.end(), origins))
+    return sorted(ranges)
+
+
+def source_text_in_ranges(text: str, ranges: list[tuple[int, int]]) -> str:
+    """Keep selected C++ intervals and mask the rest without changing source positions."""
+    result = list(re.sub(r"[^\n]", " ", text))
+    for start, end in ranges:
+        result[start:end] = text[start:end]
+    return "".join(result)
+
+
+def always_source_text(text: str) -> str:
+    """Return code outside all origin-selection blocks, preserving other backend guards."""
+    result = list(text)
+    for start, _, end, _ in origin_guard_ranges(text):
+        result[start:end] = re.sub(r"[^\n]", " ", text[start:end])
+    return "".join(result)
+
+
 def origin_source_sections(text: str, policy: dict) -> dict[str, str]:
     """Select relocated responsibilities while retaining physical source line numbers."""
-    result = {}
-    guards = list(re.finditer(r"^#if !defined\(EVE_TEST_FILTER_ORIGINS\)(?:[^\n]*\\\n)*[^\n]*\n", text, re.MULTILINE))
-    for index, guard in enumerate(guards):
-        end = guards[index + 1].start() if index + 1 < len(guards) else len(text)
-        for origin in re.findall(r"defined\(EVE_TEST_ORIGIN_(\w+)\)", guard[0].replace("\\\n", " ")):
-            result[origin + ".cpp"] = "\n" * text.count("\n", 0, guard.end()) + text[guard.end():end]
+    intervals: dict[str, list[tuple[int, int]]] = {}
+    for _, start, end, origins in origin_guard_ranges(text):
+        for origin in origins:
+            intervals.setdefault(origin + ".cpp", []).append((start, end))
+    result = {origin: source_text_in_ranges(text, ranges) for origin, ranges in intervals.items()}
+    unconditional = always_source_text(text)
     for origin in policy.get("origins", []):
-        result.setdefault(origin, text)
+        result.setdefault(origin, unconditional)
     return result
 
 
@@ -401,28 +527,34 @@ def origin_case_policies(text: str, policy: dict) -> dict[str, dict[str, str]]:
 
 def emit_cmake(data: dict, output: Path) -> None:
     """Emit one policy for source defaults and each literal compiled identity."""
-    if data.get("version") == 2:
-        data = expanded_catalogue(data, source_inventory(CATALOGUE.parent))
-    lines = ["# Generated from test/test_levels.json; do not edit."]
+    if data.get("version") in {2, 3}:
+        data = expanded_catalogue(data, source_inventory(TEST_DIR))
+    lines = ["# Generated from test sources and local policy comments; do not edit."]
     seen = set()
     aliases: dict[str, list[str]] = {}
     origin_policies = {}
-    root = CATALOGUE.parent
+    root = TEST_DIR
     for source, policy in data["sources"].items():
         basename = Path(source).name
         if basename in seen:
             raise ValueError(f"ambiguous zeroerr source basename: {basename}")
         seen.add(basename)
         path = root / source
-        origin_policies[source] = origin_case_policies(path.read_text(encoding="utf-8"), policy) if path.exists() else {}
+        source_text = path.read_text(encoding="utf-8") if path.exists() else ""
+        origin_policies[source] = origin_case_policies(source_text, policy)
         for origin in policy.get("origins", []):
             aliases.setdefault(origin, []).append(source)
         lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + basename)} {cmake_quote(';'.join(policy.get('generated', [])))})")
         lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + basename)} {cmake_quote(';'.join(classified_cases(policy)))})")
+        if origin_guard_ranges(source_text):
+            always = ';'.join(cases_in(always_source_text(source_text)))
+            lines.append(f"set({cmake_quote('EVE_TEST_ALWAYS_CASE_NAMES_' + basename)} {cmake_quote(always)})")
         for name, category in [("", policy["default"]), *classified_cases(policy).items()]:
             key = f"{basename}|{name}"
             level, resources = CLASSIFICATIONS[category]
             labels = [level, "reason:" + category]
+            if source.startswith("benchmark/"):
+                labels.append("benchmark")
             labels.extend("requires:" + resource for resource in resources)
             if "graphics" not in resources and "window" not in resources:
                 labels.append("no-render")
@@ -435,6 +567,8 @@ def emit_cmake(data: dict, output: Path) -> None:
         if "/" not in source or (source.startswith(("unit/", "integration/")) and not policy.get("origins")):
             desktop.append(str(root / source))
     for origin, destinations in sorted(aliases.items()):
+        origin_basename = Path(origin).name
+        canonical_metadata = origin_basename in seen
         key = 'EVE_TEST_RELOCATED_' + Path(origin).name
         lines.append(f"set({cmake_quote(key)} {cmake_quote(';'.join(str(root / s) for s in destinations))})")
         desktop.append(str(root / origin))
@@ -449,10 +583,16 @@ def emit_cmake(data: dict, output: Path) -> None:
                 labels = [level, 'reason:' + category] + ['requires:' + r for r in resources]
                 if 'graphics' not in resources and 'window' not in resources:
                     labels.append('no-render')
-                lines.append(f"set({cmake_quote('EVE_TEST_LEVEL_' + Path(origin).name + '|' + name)} {cmake_quote(';'.join(labels))})")
-        lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + Path(origin).name)} {cmake_quote(';'.join(names))})")
-        lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + Path(origin).name)} {cmake_quote(';'.join(prefixes))})")
-        if prefixes:
+                if not canonical_metadata:
+                    lines.append(f"set({cmake_quote('EVE_TEST_LEVEL_' + origin_basename + '|' + name)} {cmake_quote(';'.join(labels))})")
+        # Physical source metadata has precedence over a deleted origin with
+        # the same basename. Keep that origin's distinct selection available
+        # only through its explicit legacy-selector namespace.
+        lines.append(f"set({cmake_quote('EVE_TEST_ORIGIN_CASE_NAMES_' + origin_basename)} {cmake_quote(';'.join(names))})")
+        if not canonical_metadata:
+            lines.append(f"set({cmake_quote('EVE_TEST_CASE_NAMES_' + origin_basename)} {cmake_quote(';'.join(names))})")
+            lines.append(f"set({cmake_quote('EVE_TEST_GENERATED_' + origin_basename)} {cmake_quote(';'.join(prefixes))})")
+        if prefixes and not canonical_metadata:
             policy = data['sources'][destinations[0]]
             level, resources = CLASSIFICATIONS[policy['default']]
             labels = [level, 'reason:' + policy['default']] + ['requires:' + r for r in resources]
@@ -477,7 +617,7 @@ def main() -> int:
     parser.add_argument("--emit-cmake", type=Path)
     parser.add_argument("--summary", action="store_true")
     args = parser.parse_args()
-    data = json.loads(CATALOGUE.read_text(encoding="utf-8"))
+    data = source_catalogue()
     inventory = source_inventory(ROOT / "test")
     errors = catalogue_errors(data, inventory)
     if errors:

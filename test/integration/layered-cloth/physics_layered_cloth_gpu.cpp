@@ -1,25 +1,64 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "physics_cloth",
+  "origins": [
+    "physics_layered_cloth_gpu.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <algorithm>
-#include <chrono>
+#include <array>
 #include <cmath>
-#include <filesystem>
-#include <fstream>
+#include <cstdint>
+#include <cstdlib>
 #include <glm/gtc/matrix_transform.hpp>
-#include <iterator>
+#include <iostream>
 #include <limits>
-#include "Fixtures.h"
-#include "LayeredClothGeometryOracle.h"
+#include <memory>
+#include <string>
+#include <vector>
 #include "gpgpu/ComputeShader.h"
 #include "gpgpu/Gpgpu.h"
 #include "gpgpu/GpuBuffer.h"
 #include "gpgpu/Sequence.h"
+#include "graphics/Graphics.h"
+#include "image/ImageData.h"
 #include "physics/cloth/LayeredCloth3D.h"
 #include "physics/cloth/LayeredClothGPU.h"
 #include "physics/cloth/LayeredClothGpuKernel.inc"
+#include "window/Window.h"
+#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 namespace {
-struct GpuClothFixture : GfxFixture {
-    eve::gpgpu::Gpgpu& compute;
-    GpuClothFixture() : GfxFixture(320, 240), compute(*eve::gpgpu::Gpgpu::create()) { REQUIRE(compute.isAvailable()); }
+struct GpuClothFixture {
+    eve::window::Window*     win = nullptr;
+    eve::graphics::Graphics* gfx = nullptr;
+    eve::gpgpu::Gpgpu&       initialize(zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
+        REQUIRE(std::getenv("EVENGINE_TEST_NO_RENDER") == nullptr);
+        win = eve::window::Window::create();
+        gfx = eve::graphics::Graphics::create();
+        REQUIRE(win != nullptr);
+        REQUIRE(gfx != nullptr);
+        eve::window::WindowSettings settings;
+        settings.width    = 320;
+        settings.height   = 240;
+        settings.centered = true;
+        settings.vsync    = 0;
+        REQUIRE(win->setWindowSettings(settings));
+        auto* compute = eve::gpgpu::Gpgpu::create();
+        REQUIRE(compute != nullptr);
+        REQUIRE(compute->isAvailable());
+        return *compute;
+    }
+    ~GpuClothFixture() {
+        if (win) win->close();
+    }
 };
 using eve::physics::LayeredClothGPU;
 void freeAll(LayeredClothGPU& cloth, float mass = 1.f) {
@@ -71,6 +110,13 @@ void main() {
         params[24] = 1;
         params[26] = 1;
     }
+    void reset(const std::array<float, 32>& initial) {
+        params = initial;
+        for (auto& buffer : buffers) {
+            std::vector<uint8_t> zeros(size_t(buffer->getSize()), 0);
+            buffer->uploadBytes(zeros.data(), zeros.size());
+        }
+    }
     template <class State>
     State run(const State& current, const State& previous, int probe, int iterations = 1) {
         const size_t bytes = current.size() * sizeof(float);
@@ -106,9 +152,11 @@ std::array<float, 32> edgePose(float y) {
     // Two perpendicular edge interiors cross; all four endpoints miss the other edge.
     return {-1, y, 0, 1, 1, y, 0, 1, -1, y, 0, 0, 1, y, 0, 0, 0, 0, -1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 0, 1, 0};
 }
-using cloth_test_geometry::sheetSeparation;
 }  // namespace
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState") {
+TEST_CASE("PhysicsLayeredClothGPU.freeFallMatchesReferenceAndKeepsResidentState") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     LayeredClothGPU cloth(compute, *gfx, 2, 3, 3, 0.25f, 0.1f, 0, 2, 0);
     cloth.setSolver(1, 4);
     cloth.setInterCollision(false);
@@ -152,7 +200,10 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.freeFallMatchesRefere
     auto stats = cloth.readDiagnostics();
     REQUIRE(stats[2] == 0);
 }
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.pinnedPoseAndReset") {
+TEST_CASE("PhysicsLayeredClothGPU.pinnedPoseAndReset") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     LayeredClothGPU cloth(compute, *gfx, 3, 4, 4, 0.25f, 0.09f, 0, 2, 0);
     cloth.setSolver(2, 8);
     cloth.setWind(0.2f, 0.1f, 0.3f);
@@ -173,7 +224,10 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.pinnedPoseAndReset") 
     REQUIRE(data[4 * 12 + 1] == 2.f);
     REQUIRE(cloth.readDiagnostics()[2] == 0);
 }
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled") {
+TEST_CASE("PhysicsLayeredClothGPU.contactsReactByMassAndCanBeDisabled") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     LayeredClothGPU cloth(compute, *gfx, 2, 2, 2, 0.5f, 0.02f, 0, 2, 0);
     cloth.setGravity(0, 0, 0);
     cloth.setSolver(1, 16);
@@ -201,7 +255,10 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.contactsReactByMassAn
     REQUIRE(std::abs(positions[4 * 4 + 1] - positions[1] - 0.02f) < 1e-5f);
     REQUIRE(cloth.readDiagnostics()[2] == 0);
 }
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan") {
+TEST_CASE("PhysicsLayeredClothGPU.hashOverflowUsesExplicitGpuScan") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     LayeredClothGPU cloth(compute, *gfx, 2, 2, 2, 0.001f, 0.001f, 0, 2, 0);
     cloth.setSolver(1, 1);
     cloth.setGravity(0, 0, 0);
@@ -214,7 +271,10 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.hashOverflowUsesExpli
     auto positions = cloth.readPositions();
     for (float value : positions) REQUIRE(std::isfinite(value));
 }
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.rendersComputeGeneratedVertices") {
+TEST_CASE("PhysicsLayeredClothGPU.rendersComputeGeneratedVertices") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     LayeredClothGPU cloth(compute, *gfx, 3, 6, 6, 0.25f, 0.12f, -0.6f, 1, -0.6f);
     cloth.setWind(1, 0, 0.4f);
     for (int frame = 0; frame < 12; frame++) {
@@ -227,7 +287,7 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.rendersComputeGenerat
     auto view = glm::lookAtRH(glm::vec3(2, 3, 4), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
     auto proj = glm::perspectiveRH_ZO(glm::radians(45.f), 320.f / 240.f, 0.1f, 100.f);
     proj[1][1] *= -1;
-    for (int i = 0; i < 3; ++i) {
+    auto capture = [&](zeroerr::TestContext* _ZEROERR_TEST_CONTEXT) {
         gfx->begin3DFrame();
         gfx->setMesh3DViewProj(proj * view);
         gfx->setMesh3DView(view);
@@ -236,181 +296,173 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.rendersComputeGenerat
         auto draw = cloth.draw();
         REQUIRE(draw.ok());
         gfx->present();
-    }
-    const auto path = std::filesystem::temp_directory_path() / "layered-cloth-gpu-test.png";
-    REQUIRE(gfx->saveFramePng(path.string()));
-    REQUIRE(std::filesystem::file_size(path) > 300);
-    std::ifstream           deformedFile(path, std::ios::binary);
-    const std::vector<char> deformed((std::istreambuf_iterator<char>(deformedFile)), {});
+        std::unique_ptr<eve::image::ImageData> image(gfx->newImageData());
+        REQUIRE(image != nullptr);
+        REQUIRE_EQ(image->getWidth(), gfx->getPixelWidth());
+        REQUIRE_EQ(image->getHeight(), gfx->getPixelHeight());
+        REQUIRE_GT(image->getWidth(), 0);
+        REQUIRE_GT(image->getHeight(), 0);
+        REQUIRE_EQ(image->getSize(), size_t(image->getWidth()) * size_t(image->getHeight()) * 4);
+        const auto* pixels = static_cast<const uint8_t*>(image->getData());
+        REQUIRE(pixels != nullptr);
+        bool hasGeometry = false;
+        for (size_t i = 4; i < image->getSize(); i += 4) {
+            if (pixels[i] != pixels[0] || pixels[i + 1] != pixels[1] || pixels[i + 2] != pixels[2]) {
+                hasGeometry = true;
+                break;
+            }
+        }
+        REQUIRE(hasGeometry);
+        return std::vector<uint8_t>(pixels, pixels + image->getSize());
+    };
+    const auto deformed = capture(_ZEROERR_TEST_CONTEXT);
     cloth.reset();
-    for (int i = 0; i < 3; ++i) {
-        gfx->begin3DFrame();
-        gfx->setMesh3DViewProj(proj * view);
-        gfx->setMesh3DView(view);
-        gfx->setMesh3DClip(0.1f, 100);
-        gfx->setMesh3DCameraPos(glm::vec3(2, 3, 4));
-        auto draw = cloth.draw();
-        REQUIRE(draw.ok());
-        gfx->present();
-    }
-    const auto resetPath = std::filesystem::temp_directory_path() / "layered-cloth-gpu-reset-test.png";
-    REQUIRE(gfx->saveFramePng(resetPath.string()));
-    std::ifstream           resetFile(resetPath, std::ios::binary);
-    const std::vector<char> rest((std::istreambuf_iterator<char>(resetFile)), {});
+    const auto rest = capture(_ZEROERR_TEST_CONTEXT);
     REQUIRE(deformed != rest);
 }
 
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide") {
-    ContactProbe probe(compute);
-    probe.params[29] = 2;
-    auto previous = pointFacePose(0.8f), current = pointFacePose(-0.8f);
-    auto result = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 1);
-    REQUIRE(std::abs(result[1] - 0.82f) < 1e-4f);
-    REQUIRE(std::abs(result[0]) + std::abs(result[2]) < 1e-5f);
-    // Starting within the contact shell must not tunnel on the next substep.
-    previous = pointFacePose(0.01f);
-    result   = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 1);
-    REQUIRE(result[1] > 0.8f);
-    previous = pointFacePose(-0.8f);
-    current  = pointFacePose(0.8f);
-    result   = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 1);
-    REQUIRE(result[1] < -0.8f);
-    // A fast trajectory outside the triangle is a miss, not a speculative plane hit.
-    previous[0] = current[0] = 4;
-    result                   = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 0);
-    previous = pointFacePose(0.8f);
-    current  = previous;
-    for (int i = 4; i < 8; i++) current[size_t(i * 4 + 1)] = 1.6f;
-    result = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 1);  // Moving face sweeps through a stationary point.
-    REQUIRE(std::abs(result[1] - 0.82f) < 1e-4f);
-}
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy") {
-    ContactProbe probe(compute);
-    auto         previous = edgePose(0.6f), current = edgePose(-0.6f);
-    auto         result = probe.run(current, previous, 2);
-    REQUIRE(result[3] == 1);
-    REQUIRE(std::abs(result[4] - 0.5f) < 1e-4f);
-    REQUIRE(std::abs(result[5] - 0.5f) < 1e-4f);
-    REQUIRE(result[1] > 1.2f);  // denominator is 0.5 for the mobile edge.
-    previous = edgePose(0.01f);
-    current  = previous;
-    result   = probe.run(current, previous, 2);
-    REQUIRE(result[3] == 1);
-    REQUIRE(result[1] > 0);
-    // Collapse one segment: still a finite point/segment constraint.
-    for (int k = 0; k < 3; k++) current[size_t(k + 4)] = current[size_t(k)];
-    previous = current;
-    result   = probe.run(current, previous, 2);
-    for (float value : result) REQUIRE(std::isfinite(value));
-}
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace") {
-    ContactProbe probe(compute);
-    auto         previous = pointFacePose(0.8f), current = pointFacePose(-0.8f);
-    auto         hashed = probe.run(current, previous, 0, 48);
-    REQUIRE(hashed[1] > 0.019f);
-    REQUIRE(hashed[1] < 0.021f);
-    std::array<unsigned, 4> stats{};
-    probe.buffers[6]->downloadBytes(stats.data(), 16);
-    REQUIRE(stats[1] == 0);
-    probe.params[20] = 1;  // Exhaust reference capacity deliberately, not just the per-box cell limit.
-    auto scanned     = probe.run(current, previous, 0, 48);
-    REQUIRE(std::abs(scanned[1] - hashed[1]) < 1e-5f);
-    probe.buffers[6]->downloadBytes(stats.data(), 16);
-    REQUIRE(stats[1] == 1);
-    REQUIRE(stats[3] > 0);
-    for (int i = 4; i < 8; i++)
-        for (int k = 0; k < 4; k++) REQUIRE(scanned[size_t(i * 4 + k)] == current[size_t(i * 4 + k)]);
-}
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass") {
-    ContactProbe probe(compute);
-    auto         previous = edgePose(0.6f), current = edgePose(-0.6f);
-    // Different physical masses on the two edge endpoints.
-    current[7] = previous[7] = 0.25f;
-    auto solved              = probe.run(current, previous, 0, 48);
-    REQUIRE((solved[1] + solved[5]) * 0.5f > 0.015f);
-    // Free every vertex: pinned duplicate endpoints would be external supports,
-    // so the mobile vertices alone would not form a closed system.
-    for (int i = 0; i < 8; i++)
-        current[size_t(i * 4 + 3)] = previous[size_t(i * 4 + 3)] = i < 4 ? (i % 2 ? 0.25f : 1.f) : 0.5f;
-    solved       = probe.run(current, previous, 0, 1);
-    float before = 0, after = 0;
-    for (int i = 0; i < 8; i++) {
-        before += current[size_t(i * 4 + 1)] / current[size_t(i * 4 + 3)];
-        after += solved[size_t(i * 4 + 1)] / current[size_t(i * 4 + 3)];
-    }
-    REQUIRE(std::abs(before - after) < 1e-4f);
-}
-
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering") {
-    ContactProbe probe(compute);
-    probe.params[29] = 2;
-    probe.params[17] = 0.5f;
-    auto previous = pointFacePose(0.01f), current = previous;
-    current[0] += 0.1f;
-    auto result = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 1);
-    REQUIRE(std::abs(result[0] + 0.005f) < 1e-5f);
-    REQUIRE(std::abs(result[1] - 0.01f) < 1e-5f);
-    current = pointFacePose(0.4f);
-    result  = probe.run(current, previous, 1);
-    REQUIRE(result[3] == 0);  // separating motion is not stuck to its starting surface.
-    probe.params[3]  = 4;
-    probe.params[4]  = 1;
-    probe.params[16] = 0;
-    probe.params[18] = 1;
-    probe.params[30] = 6;
-    previous         = edgePose(0.6f);
-    current          = edgePose(-0.6f);
-    for (int k = 0; k < 8; k++) {
-        previous[size_t(24 + k)] = previous[size_t(16 + k)];
-        current[size_t(24 + k)]  = current[size_t(16 + k)];
-    }
-    result = probe.run(current, previous, 2);
-    REQUIRE(result[3] == 1);  // nonlocal edges in the same sheet.
-    probe.params[18] = 0;
-    result           = probe.run(current, previous, 2);
-    REQUIRE(result[3] == 0);
-    probe.params[18] = 1;
-    probe.params[30] = 4;
-    result           = probe.run(current, previous, 2);
-    REQUIRE(result[3] == 0);  // local topological neighbours remain excluded.
-}
-
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.stabilityAndSynchronousTimingBaseline") {
-    LayeredClothGPU cloth(compute, *gfx, 3, 4, 4, 0.25f, 0.09f, 0, 2, 0);
-    cloth.setSolver(2, 8);
-    cloth.setWind(0.3f, 0, 0.2f);
-    std::vector<double> samples;
-    std::ofstream       csv(std::filesystem::temp_directory_path() / "layered-cloth-gpu-benchmark.csv");
-    REQUIRE(csv.good());
-    csv << "frame,particles,substeps,iterations,update_wall_ms\n";
-    for (int frame = 0; frame < 124; frame++) {
-        const auto   begin  = std::chrono::steady_clock::now();
-        auto         result = cloth.update(1.f / 60.f);
-        const double ms = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - begin).count();
-        REQUIRE(result.ok());
-        if (frame >= 4) {
-            samples.push_back(ms);
-            csv << frame << ",48,2,8," << ms << '\n';
+TEST_CASE("PhysicsLayeredClothGPU.contactNarrowPhaseContract") {
+    GpuClothFixture fixture;
+    auto&           compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    ContactProbe    shared(compute);
+    auto*           sharedProbe = &shared;
+    const auto      initial     = shared.params;
+    SUB_CASE("PhysicsLayeredClothGPU.ccdPointFacePreservesStartingSide") {
+        auto& probe = *sharedProbe;
+        probe.reset(initial);
+        probe.params[29] = 2;
+        auto previous = pointFacePose(0.8f), current = pointFacePose(-0.8f);
+        auto result = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 1);
+        REQUIRE(std::abs(result[1] - 0.82f) < 1e-4f);
+        REQUIRE(std::abs(result[0]) + std::abs(result[2]) < 1e-5f);
+        // Starting within the contact shell must not tunnel on the next substep.
+        previous = pointFacePose(0.01f);
+        result   = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 1);
+        REQUIRE(result[1] > 0.8f);
+        previous = pointFacePose(-0.8f);
+        current  = pointFacePose(0.8f);
+        result   = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 1);
+        REQUIRE(result[1] < -0.8f);
+        // A fast trajectory outside the triangle is a miss, not a speculative plane hit.
+        previous[0] = current[0] = 4;
+        result                   = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 0);
+        previous = pointFacePose(0.8f);
+        current  = previous;
+        for (int i = 4; i < 8; i++) current[size_t(i * 4 + 1)] = 1.6f;
+        result = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 1);  // Moving face sweeps through a stationary point.
+        REQUIRE(std::abs(result[1] - 0.82f) < 1e-4f);
+    };
+    SUB_CASE("PhysicsLayeredClothGPU.ccdEdgeInteriorsAndDegeneracy") {
+        auto& probe = *sharedProbe;
+        probe.reset(initial);
+        auto previous = edgePose(0.6f), current = edgePose(-0.6f);
+        auto result = probe.run(current, previous, 2);
+        REQUIRE(result[3] == 1);
+        REQUIRE(std::abs(result[4] - 0.5f) < 1e-4f);
+        REQUIRE(std::abs(result[5] - 0.5f) < 1e-4f);
+        REQUIRE(result[1] > 1.2f);  // denominator is 0.5 for the mobile edge.
+        previous = edgePose(0.01f);
+        current  = previous;
+        result   = probe.run(current, previous, 2);
+        REQUIRE(result[3] == 1);
+        REQUIRE(result[1] > 0);
+        // Collapse one segment: still a finite point/segment constraint.
+        for (int k = 0; k < 3; k++) current[size_t(k + 4)] = current[size_t(k)];
+        previous = current;
+        result   = probe.run(current, previous, 2);
+        for (float value : result) REQUIRE(std::isfinite(value));
+    };
+    SUB_CASE("PhysicsLayeredClothGPU.contactFrictionAndSelfFiltering") {
+        auto& probe = *sharedProbe;
+        probe.reset(initial);
+        probe.params[29] = 2;
+        probe.params[17] = 0.5f;
+        auto previous = pointFacePose(0.01f), current = previous;
+        current[0] += 0.1f;
+        auto result = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 1);
+        REQUIRE(std::abs(result[0] + 0.005f) < 1e-5f);
+        REQUIRE(std::abs(result[1] - 0.01f) < 1e-5f);
+        current = pointFacePose(0.4f);
+        result  = probe.run(current, previous, 1);
+        REQUIRE(result[3] == 0);  // separating motion is not stuck to its starting surface.
+        probe.params[3]  = 4;
+        probe.params[4]  = 1;
+        probe.params[16] = 0;
+        probe.params[18] = 1;
+        probe.params[30] = 6;
+        previous         = edgePose(0.6f);
+        current          = edgePose(-0.6f);
+        for (int k = 0; k < 8; k++) {
+            previous[size_t(24 + k)] = previous[size_t(16 + k)];
+            current[size_t(24 + k)]  = current[size_t(16 + k)];
         }
-    }
-    auto positions = cloth.readPositions();
-    for (float value : positions) REQUIRE(std::isfinite(value));
-    for (int sheet = 0; sheet < 3; sheet++)
-        for (int col = 0; col < 4; col++)
-            REQUIRE(std::abs(positions[size_t((sheet * 16 + col) * 4 + 1)] - (2.f + float(sheet) * 0.09f)) < 1e-6f);
-    std::sort(samples.begin(), samples.end());
-    std::cout << "cloth baseline: 48 particles / 2 substeps / 8 iterations; synchronous update wall ms: median="
-              << samples[60] << ", p95=" << samples[113] << ", max=" << samples.back()
-              << "; hash overflow events in last step=" << cloth.readDiagnostics()[3] << '\n';
+        result = probe.run(current, previous, 2);
+        REQUIRE(result[3] == 1);  // nonlocal edges in the same sheet.
+        probe.params[18] = 0;
+        result           = probe.run(current, previous, 2);
+        REQUIRE(result[3] == 0);
+        probe.params[18] = 1;
+        probe.params[30] = 4;
+        result           = probe.run(current, previous, 2);
+        REQUIRE(result[3] == 0);  // local topological neighbours remain excluded.
+    };
 }
-
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre") {
+TEST_CASE("PhysicsLayeredClothGPU.sweptContactSolverContract") {
+    GpuClothFixture fixture;
+    auto&           compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    ContactProbe    shared(compute);
+    auto*           sharedProbe = &shared;
+    const auto      initial     = shared.params;
+    SUB_CASE("PhysicsLayeredClothGPU.sweptHashAndScanKeepCrossingPointAboveFace") {
+        auto& probe = *sharedProbe;
+        probe.reset(initial);
+        auto previous = pointFacePose(0.8f), current = pointFacePose(-0.8f);
+        auto hashed = probe.run(current, previous, 0, 48);
+        REQUIRE(hashed[1] > 0.019f);
+        REQUIRE(hashed[1] < 0.021f);
+        std::array<unsigned, 4> stats{};
+        probe.buffers[6]->downloadBytes(stats.data(), 16);
+        REQUIRE(stats[1] == 0);
+        probe.params[20] = 1;  // Exhaust reference capacity deliberately, not just the per-box cell limit.
+        auto scanned     = probe.run(current, previous, 0, 48);
+        REQUIRE(std::abs(scanned[1] - hashed[1]) < 1e-5f);
+        probe.buffers[6]->downloadBytes(stats.data(), 16);
+        REQUIRE(stats[1] == 1);
+        REQUIRE(stats[3] > 0);
+        for (int i = 4; i < 8; i++)
+            for (int k = 0; k < 4; k++) REQUIRE(scanned[size_t(i * 4 + k)] == current[size_t(i * 4 + k)]);
+    };
+    SUB_CASE("PhysicsLayeredClothGPU.sweptEdgesReactWithBalancedMass") {
+        auto& probe = *sharedProbe;
+        probe.reset(initial);
+        auto previous = edgePose(0.6f), current = edgePose(-0.6f);
+        // Different physical masses on the two edge endpoints.
+        current[7] = previous[7] = 0.25f;
+        auto solved              = probe.run(current, previous, 0, 48);
+        REQUIRE((solved[1] + solved[5]) * 0.5f > 0.015f);
+        // Free every vertex: pinned duplicate endpoints would be external supports,
+        // so the mobile vertices alone would not form a closed system.
+        for (int i = 0; i < 8; i++)
+            current[size_t(i * 4 + 3)] = previous[size_t(i * 4 + 3)] = i < 4 ? (i % 2 ? 0.25f : 1.f) : 0.5f;
+        solved       = probe.run(current, previous, 0, 1);
+        float before = 0, after = 0;
+        for (int i = 0; i < 8; i++) {
+            before += current[size_t(i * 4 + 1)] / current[size_t(i * 4 + 3)];
+            after += solved[size_t(i * 4 + 1)] / current[size_t(i * 4 + 3)];
+        }
+        REQUIRE(std::abs(before - after) < 1e-4f);
+    };
+}
+TEST_CASE("PhysicsLayeredClothGPU.denseContactsBoundCorrectionAndConserveCentre") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     ContactProbe probe(compute, 8);
     probe.params[6] = 0.1f;
     std::vector<float> pose(32 * 4);
@@ -433,7 +485,10 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.denseContactsBoundCor
     REQUIRE(std::abs(before - after) / 32 < 1e-6f);
 }
 
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift") {
+TEST_CASE("PhysicsLayeredClothGPU.foldedSelfContactSeparatesWithoutCentreDrift") {
+    GpuClothFixture        fixture;
+    auto&                  compute = fixture.initialize(_ZEROERR_TEST_CONTEXT);
+    [[maybe_unused]] auto* gfx     = fixture.gfx;
     ContactProbe probe(compute, 1, 2, 8);
     probe.params[6]  = 0.08f;
     probe.params[16] = 0;
@@ -462,36 +517,4 @@ TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.foldedSelfContactSepa
     REQUIRE(maxMove < 0.15f);
     REQUIRE(std::abs(before - after) < 1e-5f);
     for (float value : solved) REQUIRE(std::isfinite(value));
-}
-
-TEST_CASE_FIXTURE(GpuClothFixture, "PhysicsLayeredClothGPU.fallingSheetsRemainSeparatedForOneSimulatedMinute") {
-    LayeredClothGPU cloth(compute, *gfx, 4, 2, 2, 0.5f, 0.03f, 0, 0.25f, 0);
-    cloth.setSolver(2, 8);
-    cloth.setContact(0.08f, 0.4f);
-    cloth.setFloor(0);
-    freeAll(cloth);
-    float highest = 0, leastGap = 100;
-    for (int frame = 0; frame < 1800; frame++) {
-        auto result = cloth.update(1.f / 30.f);
-        REQUIRE(result.ok());
-        if (frame % 120 != 119) continue;
-        const auto pose = cloth.readPositions();
-        for (int i = 0; i < 16; i++) {
-            for (int k = 0; k < 4; k++) REQUIRE(std::isfinite(pose[size_t(i * 4 + k)]));
-            REQUIRE(pose[size_t(i * 4 + 1)] >= -1e-6f);
-            highest = std::max(highest, pose[size_t(i * 4 + 1)]);
-        }
-        const double separation = sheetSeparation(pose);
-        leastGap                = std::min(leastGap, float(separation));
-    }
-    std::cout << "60-second stack: max height=" << highest << ", minimum geometric layer gap=" << leastGap << '\n';
-    REQUIRE(highest < 1.f);
-    REQUIRE(leastGap > 0.03f);
-    const double finalGap = sheetSeparation(cloth.readPositions());
-    REQUIRE(finalGap > 0.075);
-    std::cout << "60-second final geometric gap=" << finalGap << '\n';
-    cloth.reset();
-    auto result = cloth.update(1.f / 30.f);
-    REQUIRE(result.ok());
-    for (float value : cloth.readPositions()) REQUIRE(std::isfinite(value));
 }

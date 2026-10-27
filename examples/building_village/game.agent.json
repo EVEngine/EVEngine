@@ -1,0 +1,127 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/building_village",
+  "entry": "main.nut",
+  "clock": {
+    "defaultStep": "frame"
+  },
+  "observations": [
+    {
+      "id": "visitor",
+      "kind": "script-root",
+      "path": "navObservation",
+      "fields": [
+        "x",
+        "z",
+        "inside",
+        "phase",
+        "revision",
+        "moving",
+        "remaining",
+        "selected",
+        "target",
+        "mode",
+        "contacts",
+        "collisionBodies",
+        "y",
+        "level",
+        "grounded",
+        "velocityY",
+        "verticalTravel",
+        "stairSteps",
+        "multiTest",
+        "workshopTest",
+        "workshopParts",
+        "blueprintParts"
+      ]
+    }
+  ],
+  "actions": {
+    "source": "script-map",
+    "map": [
+      {
+        "id": "walk-demo",
+        "script": "action(\"walkDemo\")"
+      },
+      {
+        "id": "visit",
+        "script": "action(\"visit\")"
+      },
+      {
+        "id": "outside",
+        "script": "action(\"outside\")"
+      },
+      {
+        "id": "door",
+        "script": "action(\"door\")"
+      },
+      {
+        "id": "select-next",
+        "script": "action(\"selectNext\")"
+      },
+      {
+        "id": "reset-visitor",
+        "script": "action(\"resetVisitor\")"
+      },
+      {
+        "id": "collision-demo",
+        "script": "action(\"collisionDemo\")"
+      },
+      {
+        "id": "north",
+        "script": "action(\"north\")"
+      },
+      {
+        "id": "south",
+        "script": "action(\"south\")"
+      },
+      {
+        "id": "west",
+        "script": "action(\"west\")"
+      },
+      {
+        "id": "east",
+        "script": "action(\"east\")"
+      },
+      {
+        "id": "multilevel-demo",
+        "script": "action(\"multiDemo\")"
+      },
+      {
+        "id": "upper",
+        "script": "action(\"upper\")"
+      },
+      {
+        "id": "ground",
+        "script": "action(\"ground\")"
+      },
+      {
+        "id": "remove-stairs",
+        "script": "action(\"removeStairs\")"
+      },
+      {
+        "id": "drop-floor",
+        "script": "action(\"dropFloor\")"
+      },
+      {
+        "id": "resume-demo",
+        "script": "action(\"resumeDemo\")"
+      },
+      {
+        "id": "load-blueprint",
+        "script": "action(\"loadBlueprint\")"
+      }
+    ]
+  },
+  "capture": {
+    "requiredFor": [
+      "visual"
+    ],
+    "backend": "engine-readback"
+  },
+  "tolerances": {
+    "screenshot": "human-or-vlm",
+    "numericAbs": 1e-05
+  }
+}

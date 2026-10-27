@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_map>
 #include <utility>
 
 namespace eve::rpg {
@@ -223,19 +224,14 @@ eve::Result<void> RPGSettlementAdapter::validate(settlement::SettlementContext& 
             eve::DiagnosticCode::Unsupported, "RPG settlement adapter supports damage, healing and trigger kinds only",
             "kind"));
 
-    auto       health   = readBase(config_.healthAttribute);
-    const bool healthOk = health.ok();
-    if (!healthOk) {
-        const auto status = health.status();
-        return eve::Result<void>::failure(status);
-    }
-    auto       maximum   = readBase(config_.maxHealthAttribute);
+    const double health    = VitalsSystem::getCurrent(&target_, config_.healthAttribute);
+    auto         maximum   = readFinal(config_.maxHealthAttribute, 0.0);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
         return eve::Result<void>::failure(status);
     }
-    if (health.value() > maximum.value())
+    if (health > maximum.value())
         return eve::Result<void>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation, "RPG health exceeds max health", "health"));
     context.setStageDetail("policy", "rpg");
@@ -402,19 +398,14 @@ eve::Result<void> RPGSettlementAdapter::armorShield(settlement::SettlementContex
 }
 
 eve::Result<void> RPGSettlementAdapter::clamp(settlement::SettlementContext& context) {
-    auto       health   = readBase(config_.healthAttribute);
-    const bool healthOk = health.ok();
-    if (!healthOk) {
-        const auto status = health.status();
-        return eve::Result<void>::failure(status);
-    }
-    auto       maximum   = readBase(config_.maxHealthAttribute);
+    const double health    = VitalsSystem::getCurrent(&target_, config_.healthAttribute);
+    auto         maximum   = readFinal(config_.maxHealthAttribute, 0.0);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
         return eve::Result<void>::failure(status);
     }
-    const double bound        = isDamage(context) ? health.value() : maximum.value() - health.value();
+    const double bound        = isDamage(context) ? health : maximum.value() - health;
     auto         configured   = context.setClampMax(std::max(0.0, bound));
     const bool   configuredOk = configured.ok();
     if (!configuredOk) {
@@ -427,13 +418,8 @@ eve::Result<void> RPGSettlementAdapter::clamp(settlement::SettlementContext& con
 
 eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
     const settlement::SettlementContext& context) {
-    auto       health   = readBase(config_.healthAttribute);
-    const bool healthOk = health.ok();
-    if (!healthOk) {
-        const auto status = health.status();
-        return eve::Result<settlement::PreparedApply>::failure(status);
-    }
-    auto       maximum   = readBase(config_.maxHealthAttribute);
+    const double health    = VitalsSystem::getCurrent(&target_, config_.healthAttribute);
+    auto         maximum   = readFinal(config_.maxHealthAttribute, 0.0);
     const bool maximumOk = maximum.ok();
     if (!maximumOk) {
         const auto status = maximum.status();
@@ -441,13 +427,11 @@ eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
     }
 
     auto         candidate = target_.attributes()->values;
-    const double nextHealth =
-        isDamage(context) ? health.value() - context.magnitude() : health.value() + context.magnitude();
+    const double nextHealth = isDamage(context) ? health - context.magnitude() : health + context.magnitude();
     if (!std::isfinite(nextHealth) || nextHealth < 0.0 || nextHealth > maximum.value())
         return eve::Result<settlement::PreparedApply>::failure(
             eve::Diagnostic::error(eve::DiagnosticCode::InvariantViolation,
                                    "RPG settlement candidate health is outside its validated bounds", "health"));
-    candidate.setBase(config_.healthAttribute, nextHealth);
 
     if (isDamage(context) && !config_.shieldAttribute.empty() && context.absorbed() > 0.0) {
         auto       shield   = readBase(config_.shieldAttribute);
@@ -465,22 +449,30 @@ eve::Result<settlement::PreparedApply> RPGSettlementAdapter::prepareApply(
         }
     }
 
+    auto vitalsCandidate                     = target_.vitals()->current;
+    vitalsCandidate[config_.healthAttribute] = nextHealth;
     struct Pending {
-        RPGActor*                     actor = nullptr;
-        eve::attributes::AttributeSet before;
-        eve::attributes::AttributeSet candidate;
-        bool                          published = false;
+        RPGActor*                               actor = nullptr;
+        eve::attributes::AttributeSet           before;
+        eve::attributes::AttributeSet           candidate;
+        std::unordered_map<std::string, double> vitalsBefore;
+        std::unordered_map<std::string, double> vitalsCandidate;
+        bool                                    published = false;
     };
-    auto pending =
-        std::make_shared<Pending>(Pending{&target_, target_.attributes()->values, std::move(candidate), false});
+    auto pending = std::make_shared<Pending>(Pending{&target_, target_.attributes()->values, std::move(candidate),
+                                                     target_.vitals()->current, std::move(vitalsCandidate), false});
     return eve::Result<settlement::PreparedApply>::success(settlement::PreparedApply(
         [pending]() -> eve::Result<void> {
             pending->actor->attributes()->values = std::move(pending->candidate);
+            pending->actor->vitals()->current    = std::move(pending->vitalsCandidate);
             pending->published                   = true;
             return success(eve::StatusCode::Applied);
         },
         [pending]() {
-            if (pending->published) pending->actor->attributes()->values = pending->before;
+            if (pending->published) {
+                pending->actor->attributes()->values = pending->before;
+                pending->actor->vitals()->current    = std::move(pending->vitalsBefore);
+            }
         }));
 }
 
@@ -507,9 +499,8 @@ eve::Result<std::vector<settlement::SettlementRequest>> RPGSettlementAdapter::pr
     if (!shield.ok() && shield.code() != eve::StatusCode::NotFound)
         return eve::Result<std::vector<settlement::SettlementRequest>>::failure(shield.status());
 
-    auto health = readBase(config_.healthAttribute);
-    if (!health) return eve::Result<std::vector<settlement::SettlementRequest>>::failure(health.status());
-    const bool died = config_.emitLifeTransitions && health.value() > 0.0 && result.applied >= health.value();
+    const double health = VitalsSystem::getCurrent(&target_, config_.healthAttribute);
+    const bool   died   = config_.emitLifeTransitions && health > 0.0 && result.applied >= health;
     if (died) {
         append("death");
         if (context.request().source.isValid() && context.request().source != context.request().target) append("kill");

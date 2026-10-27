@@ -18,7 +18,7 @@ public:
 private:
  float startScale_=.15f,endScale_=1,variance_=.25f,duration_=5,startTime_=0,actualEnd_=0,scale_=.15f,deathTime_=0;bool started_=false,finished_=false,dying_=false;
 };
-/** @brief Advance growth on a real scene node; returns true when it removed the node. */
+/** @brief Advance growth on a real scene leaf; returns true after removal, and rejects nodes with children. */
 [[nodiscard]] EVENGINE_API_PLATFORM Result<bool> applyPcgGrowth(PcgGrowth& growth, SceneNodeRef& node, float now);
 /** @brief Register Pcg Growth bindings. */ void exposePcgGrowthBindings(ssq::Table& table);
 }  // namespace eve::scene

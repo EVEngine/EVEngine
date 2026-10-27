@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 import json
 from pathlib import Path
 import re
@@ -265,9 +265,9 @@ def parse_parameters(text: str) -> list[Parameter]:
     return result
 
 
-def class_blocks(source: str) -> dict[str, list[str]]:
+def class_blocks(source: str, masked: str | None = None) -> dict[str, list[str]]:
     result: dict[str, list[str]] = {}
-    masked = mask_comments(source)
+    masked = mask_comments(source) if masked is None else masked
     # The engine's per-link-group export macro (src/engine/common/Export.h) sits
     # between the class key and the class name -- `class EVENGINE_API_DOMAINS
     # Widget {` -- so the token after `class`/`struct` is not always the name.
@@ -290,16 +290,25 @@ class SignatureIndex:
         self.masked = {path: mask_comments(source) for path, source in sources.items()}
         self.classes: dict[str, list[str]] = {}
         self.aliases: dict[str, str] = {}
-        for source in sources.values():
-            for name, blocks in class_blocks(source).items():
+        for path, source in sources.items():
+            for name, blocks in class_blocks(source, self.masked[path]).items():
                 self.classes.setdefault(name, []).extend(blocks)
             for match in re.finditer(
                 r"\busing\s+([A-Za-z_]\w*)\s*=\s*(?:[A-Za-z_]\w*::)*([A-Za-z_]\w*)\s*(?:<[^;]+>)?\s*;",
-                mask_comments(source),
+                self.masked[path],
             ):
                 self.aliases[match.group(1)] = match.group(2)
         for concrete_class in self.classes:
             self.aliases.pop(concrete_class, None)
+        self.masked_blocks = {block: mask_comments(block)
+                              for blocks in self.classes.values() for block in blocks}
+        # Index identifiers once: unresolved/inherited methods must not rescan
+        # every class body for every binding. Preserve original block order.
+        self.method_blocks: dict[str, list[str]] = {}
+        for blocks in self.classes.values():
+            for block in blocks:
+                for name in set(re.findall(r"\b([A-Za-z_]\w*)\s*\(", self.masked_blocks[block])):
+                    self.method_blocks.setdefault(name, []).append(block)
         self.member_cache: dict[tuple[str, str], tuple[str, list[Parameter]] | None] = {}
         self.free_cache: dict[str, tuple[str, list[Parameter]] | None] = {}
 
@@ -314,7 +323,7 @@ class SignatureIndex:
             rf"(?m)(?:^|[;{{}}])\s*{CXX_DECL_PREFIX}"
             rf"([A-Za-z_~][\w:\s<>,*&]*?)\b{re.escape(method)}\s*\(")
         for block in self.classes.get(lookup_class, []):
-            masked = mask_comments(block)
+            masked = self.masked_blocks[block]
             for match in declaration_pattern.finditer(masked):
                 opening = declaration_opening_paren(match)
                 closing = matching(block, opening)
@@ -341,15 +350,14 @@ class SignatureIndex:
             candidates.append(("std::string", []))
         if not candidates:
             inherited: list[tuple[str, list[Parameter]]] = []
-            for blocks in self.classes.values():
-                for block in blocks:
-                    masked = mask_comments(block)
-                    for match in declaration_pattern.finditer(masked):
-                        opening = declaration_opening_paren(match)
-                        closing = matching(block, opening)
-                        if closing is not None:
-                            inherited.append((match.group(1).strip().splitlines()[-1].strip(),
-                                              parse_parameters(block[opening + 1 : closing])))
+            for block in self.method_blocks.get(method, []):
+                masked = self.masked_blocks[block]
+                for match in declaration_pattern.finditer(masked):
+                    opening = declaration_opening_paren(match)
+                    closing = matching(block, opening)
+                    if closing is not None:
+                        inherited.append((match.group(1).strip().splitlines()[-1].strip(),
+                                          parse_parameters(block[opening + 1 : closing])))
             shapes = {
                 (return_type, tuple((parameter.name, parameter.cpp_type) for parameter in parameters))
                 for return_type, parameters in inherited
@@ -498,12 +506,13 @@ def resolve_slot_module(path: Path, host_module: str, cpp_class: str, script_cla
     return host_module
 
 
-def class_bindings(source: str) -> list[tuple[int, str, str]]:
+def class_bindings(source: str, masked: str | None = None) -> list[tuple[int, str, str]]:
+    masked = mask_comments(source) if masked is None else masked
     pattern = re.compile(
         r"\b(?:auto|ssq::Class)\s+([A-Za-z_]\w*)\s*=\s*[A-Za-z_]\w*\.addClass"
         r"(?:<\s*([A-Za-z_:]\w*(?:::\w+)*)[^>]*>)?\s*\(")
     result = []
-    for match in pattern.finditer(mask_comments(source)):
+    for match in pattern.finditer(masked):
         opening = source.find("(", match.start())
         closing = matching(source, opening)
         if closing is None:
@@ -513,7 +522,10 @@ def class_bindings(source: str) -> list[tuple[int, str, str]]:
         # Do not infer scriptClass from Type::create: that rewrites contract keys
         # (module/Class.method) and invalidates reviewed semantics maps.
         result.append((match.start(), match.group(1), literal.group(1) if literal else (match.group(2) or "")))
-    return result
+    helper_pattern = re.compile(r'\bauto\s+(\w+)\s*=\s*(?:editor::)?addScriptClass\s*<[^>]+>\s*\(\s*\w+\s*,\s*"([^"\n]+)"')
+    for match in helper_pattern.finditer(masked):
+        result.append((match.start(), match.group(1), match.group(2)))
+    return sorted(result)
 
 
 def callable_signature(expression: str, signatures: SignatureIndex) -> tuple[str, str, list[Parameter]] | None:
@@ -548,21 +560,48 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
     signatures = SignatureIndex(sources)
     contracts: dict[str, Contract] = {}
     unresolved: list[str] = []
+    helper_contracts: dict[str, list[Contract]] = {}
+    helper_pattern = re.compile(
+        r"template\s*<[^>]+>\s*void\s+(\w+)\s*\(\s*ssq::Class\s*&\s*(\w+)"
+    )
     slots = slot_index if slot_index is not None else load_slot_index()
+    class_aliases: dict[str, set[str]] = {}
+    for path, source in sources.items():
+        relative = path.relative_to(ROOT).parts
+        if (enabled_modules is not None and relative[:2] == ("src", "modules")
+                and relative[2] not in enabled_modules):
+            continue
+        for position, _, script_class in class_bindings(source):
+            declaration = source[position:source.find("(", position)]
+            cpp_class = re.search(r"\.addClass\s*<\s*([^,>]+)", declaration)
+            if cpp_class:
+                mapped, _ = script_type(cpp_class.group(1))
+                if mapped not in {"dynamic", "int", "float", "bool", "string", "void",
+                                  "Array<dynamic>", "Table<string, dynamic>"} and script_class:
+                    class_aliases.setdefault(mapped, set()).add(script_class)
+    aliases = {cpp: next(iter(names)) for cpp, names in class_aliases.items() if len(names) == 1}
     # SimpleSquirrel addFunc plus the table-driven helpers in SquirrelBindContext.h.
     # Helpers must be qualified (`script::bindMethod`) so the helper definitions themselves
     # are not scraped. Method names stay string literals in argument 1.
     call_pattern = re.compile(
-        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindNullSafe)\s*\()|"
+        r"(?:(?:eve::)?script::(?P<helper>bindMethod|bindPointerMethod|bindNullSafe)\s*\()|"
         r"(?:(?P<receiver>[A-Za-z_]\w*)\.addFunc\s*\()"
     )
+    bindings_by_path: dict[Path, list[tuple[int, str, str]]] = {}
     for path, source in sources.items():
         relative = path.relative_to(ROOT).parts
         if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
                 and relative[2] not in enabled_modules):
             continue
-        bindings = class_bindings(source)
-        masked = mask_comments(source)
+        masked = signatures.masked[path]
+        bindings = class_bindings(source, masked)
+        bindings_by_path[path] = bindings
+        helpers = []
+        for helper in helper_pattern.finditer(masked):
+            opening = masked.find("{", helper.end())
+            closing = matching(source, opening, "{", "}") if opening >= 0 else None
+            if closing is not None:
+                helpers.append((opening, closing, helper.group(1), helper.group(2)))
         for match in call_pattern.finditer(masked):
             opening = source.find("(", match.start())
             closing = matching(source, opening)
@@ -630,6 +669,9 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                     and receiver_expr not in {"table", "eve", "root", "vm"}):
                 parameters = parameters[1:]
             mapped_return, return_nullable = script_type(return_cpp)
+            mapped_return = aliases.get(mapped_return, mapped_return)
+            parameters = [replace(parameter, script_type=aliases.get(parameter.script_type, parameter.script_type))
+                          for parameter in parameters]
             ownership = "borrowed" if "*" in return_cpp else "value"
             host_module = module_for(path)
             module = resolve_slot_module(path, host_module, slot_owner, script_class, slots)
@@ -637,6 +679,11 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                                 "main", [platform] if platform else [],
                                 f"{module}.{script_class + '.' if script_class else ''}{method}",
                                 f"{path.relative_to(ROOT).as_posix()}:{source.count(chr(10), 0, match.start()) + 1}")
+            helper_name = next((name for start, end, name, receiver in helpers
+                                if start < match.start() < end and receiver == receiver_expr), None)
+            if helper_name:
+                helper_contracts.setdefault(helper_name, []).append(contract)
+                continue
             existing = contracts.get(contract.key)
             direct_member = re.fullmatch(r"\s*&\s*([A-Za-z_]\w*(?:::[A-Za-z_]\w*)+)\s*", expression)
             if direct_member:
@@ -645,6 +692,28 @@ def extract_contracts(sources: dict[Path, str], enabled_modules: set[str] | None
                 p.name.startswith("arg") for p in existing.parameters
             ):
                 contracts[contract.key] = contract
+    # Expand shared template binders at actual class-registration call sites.
+    # The methods still come from addFunc declarations, so no duplicate API list
+    # or per-domain registration wrapper is needed for discovery/LSP.
+    for name, methods in helper_contracts.items():
+        pattern = re.compile(r"\b" + re.escape(name) + r"\s*(?:<[^{}();]+>)?\s*\(\s*(\w+)\s*[,)]")
+        for path, source in sources.items():
+            relative = path.relative_to(ROOT).parts
+            if (enabled_modules is not None and len(relative) >= 3 and relative[:2] == ("src", "modules")
+                    and relative[2] not in enabled_modules):
+                continue
+            masked = signatures.masked[path]
+            bindings = bindings_by_path[path]
+            for call in pattern.finditer(masked):
+                bound_class = next((bound for position, receiver, bound in reversed(bindings)
+                                    if position < call.start() and receiver == call.group(1)), "")
+                if not bound_class:
+                    continue
+                module = resolve_slot_module(path, module_for(path), "", bound_class, slots)
+                for method in methods:
+                    contract = replace(method, module=module, script_class=bound_class,
+                                       documentation_id=f"{module}.{bound_class}.{method.method}")
+                    contracts[contract.key] = contract
     return sorted(contracts.values(), key=lambda item: item.key), unresolved
 
 

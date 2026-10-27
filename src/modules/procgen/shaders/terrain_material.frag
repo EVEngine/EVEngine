@@ -12,10 +12,10 @@ layout(set=0,binding=0,std140) uniform Frame {
     mat4 view; vec4 clipInfo; vec4 cloud; vec4 cloudWind;
 } ubo;
 layout(set=0,binding=1) uniform sampler2D splatSampler;
-layout(set=0,binding=22) uniform sampler2D terrainAlbedoAtlas;
-layout(set=0,binding=23) uniform sampler2D terrainNormalAtlas;
-layout(set=0,binding=24) uniform sampler2D terrainMaskAtlas;
-layout(set=0,binding=25) uniform sampler2D terrainHoles;
+layout(set=0,binding=8) uniform sampler2D terrainAlbedoAtlas;
+layout(set=0,binding=9) uniform sampler2D terrainNormalAtlas;
+layout(set=0,binding=10) uniform sampler2D terrainMaskAtlas;
+layout(set=0,binding=18) uniform sampler2D terrainHoles;
 layout(push_constant) uniform TerrainParams { float data[32]; } terrain;
 layout(set=0,binding=4,std140) uniform ShadowFrame {
     mat4 lightVP[3]; vec4 splits; vec4 bias; vec4 cascadeBias; vec4 cascadeTexel;

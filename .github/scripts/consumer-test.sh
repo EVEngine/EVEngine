@@ -61,6 +61,17 @@ mkdir -p "$WORK"
 
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
+HOST_SDK_ID="$HOST"
+if [ "$HOST" = macosx ]; then
+  MACOS_ARCH="${EVE_SDK_ARCHITECTURE:-$(uname -m)}"
+  case "$MACOS_ARCH" in
+    arm64|x86_64) ;;
+    *) fail "unsupported macOS architecture: $MACOS_ARCH" ;;
+  esac
+  [ "$(uname -m)" = "$MACOS_ARCH" ] || fail "consumer runner architecture mismatch"
+  HOST_SDK_ID="macosx-$MACOS_ARCH"
+fi
+
 echo "== consumer-test: host=$HOST tag=$TAG =="
 
 PY="$(command -v python3 2>/dev/null || command -v python 2>/dev/null)"
@@ -86,16 +97,38 @@ for name in z.namelist():
 PYEOF
 }
 
+verify_archive() {
+  "$PY" - "$1" "$WORK/SHA256SUMS" <<'PYEOF'
+import hashlib
+import pathlib
+import sys
+
+archive = pathlib.Path(sys.argv[1])
+entries = dict(line.split(None, 1)[::-1] for line in pathlib.Path(sys.argv[2]).read_text(encoding="utf-8").splitlines() if line.strip())
+digest = hashlib.sha256()
+with archive.open("rb") as stream:
+    for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+        digest.update(chunk)
+if entries.get(archive.name) != digest.hexdigest():
+    raise SystemExit(f"SHA256 mismatch or missing entry: {archive.name}")
+PYEOF
+}
+
 # 1. Download + extract the host SDK (the real release artifact).
-curl -fL --retry 3 -o "$WORK/eve-sdk-$HOST-$TAG.zip" \
-  "$BASE/eve-sdk-$HOST-$TAG.zip" || fail "cannot download host SDK zip"
-extract_zip "$WORK/eve-sdk-$HOST-$TAG.zip" "$WORK" || fail "cannot extract host SDK zip"
-HOST_SDK="$WORK/eve-sdk/$HOST"
+curl -fL --retry 3 -o "$WORK/SHA256SUMS" "$BASE/SHA256SUMS" || fail "cannot download SDK checksums"
+curl -fL --retry 3 -o "$WORK/eve-sdk-$HOST_SDK_ID-$TAG.zip" \
+  "$BASE/eve-sdk-$HOST_SDK_ID-$TAG.zip" || fail "cannot download host SDK zip"
+verify_archive "$WORK/eve-sdk-$HOST_SDK_ID-$TAG.zip" || fail "host SDK checksum failed"
+extract_zip "$WORK/eve-sdk-$HOST_SDK_ID-$TAG.zip" "$WORK" || fail "cannot extract host SDK zip"
+HOST_SDK="$WORK/eve-sdk/$HOST_SDK_ID"
 [ -f "$HOST_SDK/bin/$RUNTIME" ] || fail "host SDK missing bin/$RUNTIME"
 if [ "$HOST" != "win32" ]; then
   chmod +x "$HOST_SDK/bin/$RUNTIME" || fail "cannot chmod host runtime"
 fi
 [ "$(cat "$HOST_SDK/share/eve/TARGET_PLATFORM")" = "$HOST" ] || fail "host SDK TARGET_PLATFORM mismatch"
+if [ "$HOST" = macosx ]; then
+  bash "$(dirname "$0")/check-macos-sdk.sh" "$HOST_SDK" "$MACOS_ARCH"
+fi
 EVE="$HOST_SDK/bin/$RUNTIME"
 
 # 2. Runtime executes and reports the expected version.
@@ -148,7 +181,7 @@ if [ -n "${ANDROID_HOME:-}" ]; then
     echo "WARN: could not confirm launcher activity (aapt missing or mismatch)"
   fi
 fi
-cp "$APK" "$WORK/eve-android-$HOST.apk"
+cp "$APK" "$WORK/eve-android-$HOST_SDK_ID.apk"
 
 # 5. Package the host game and run it headless until the marker appears.
 "$EVE" package "$GAME" --sdk "$HOST_SDK" -o "$WORK/pkg-$HOST" >/dev/null || fail "eve package ($HOST) failed"
@@ -180,6 +213,7 @@ for target in ${EVE_CROSS_TARGETS:-}; do
   echo "== cross-packaging host=$HOST -> target=$target =="
   curl -fL --retry 3 -o "$WORK/eve-sdk-$target-$TAG.zip" \
     "$BASE/eve-sdk-$target-$TAG.zip" || fail "cannot download $target SDK zip"
+  verify_archive "$WORK/eve-sdk-$target-$TAG.zip" || fail "$target SDK checksum failed"
   extract_zip "$WORK/eve-sdk-$target-$TAG.zip" "$WORK" || fail "cannot extract $target SDK zip"
   TARGET_SDK="$WORK/eve-sdk/$target"
   "$EVE" package "$GAME" --sdk "$TARGET_SDK" -o "$WORK/pkg-$target" >/dev/null \

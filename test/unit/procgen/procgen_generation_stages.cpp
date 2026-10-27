@@ -1,3 +1,15 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "origins": [
+    "procgen_generation_stages.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include "procgen/GridGraph.h"
 #include "procgen/MeshBuild.h"
 #include "procgen/Params.h"
@@ -11,79 +23,87 @@
 #include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 
-
+#include <algorithm>
 #include <limits>
+#include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 using namespace eve::procgen;
 using namespace eve::housegen;
 
 namespace {
-HouseComponentLibrary kit() {
-    HouseComponentLibrary library;
-    for (const auto* category :
+HouseComponentLibrary componentKit() {
+    HouseComponentLibrary kit;
+    for (const char* category :
          {"foundation", "floor", "wall", "door", "roof", "stairs", "interior_wall", "interior_door"}) {
         HouseComponent component;
         component.id        = category;
         component.category  = category;
         component.modelPath = std::string(category) + ".glb";
-        auto result         = library.registerComponent(component);
-        REQUIRE(result.ok());
+        REQUIRE(kit.registerComponent(component).ok());
     }
-    return library;
+    return kit;
 }
-Params caveParams() {
+
+Params caveRecipe() {
     Params params;
     params.setSeed(20260830);
     params.setInt("resolution", 16);
     params.setInt("dripstones", 2);
     params.setInt("flowstones", 1);
     params.setInt("curtains", 1);
-    params.setFloat("curvatureDissolution", 0.5f);
+    params.setFloat("curvatureDissolution", .5f);
     return params;
 }
-void prepare(CaveGeneration& generation, const Params& params) {
-    REQUIRE(generation.configure(params).ok());
-    REQUIRE(generation.buildSkeleton().ok());
-    REQUIRE(generation.sampleField().ok());
+
+void sample(CaveGeneration& cave, const Params& params) {
+    REQUIRE(cave.configure(params).ok());
+    REQUIRE(cave.buildSkeleton().ok());
+    REQUIRE(cave.sampleField().ok());
 }
 }  // namespace
 
-TEST_CASE("procgen.stages.scalarFieldIsOwningBoundedAndTransactional") {
+TEST_CASE("procgen.field.resize_copy_and_invalid_mutation_contract") {
     ScalarField3D field;
     REQUIRE(field.resize(4, 3, 2, 1.f).ok());
-    auto copy = field;
+    CHECK_EQ(field.width(), 4);
+    auto independent = field;
     REQUIRE(field.setSample(1, 1, 1, -1.f).ok());
-    REQUIRE(copy.sample(1, 1, 1).ok());
-    CHECK_EQ(copy.sample(1, 1, 1).value(), 1.f);
+    REQUIRE(independent.sample(1, 1, 1).ok());
+    CHECK_EQ(independent.sample(1, 1, 1).value(), 1.f);
+
     CHECK(!field.setSample(-1, 0, 0, 1.f).ok());
+    CHECK(!field.setSample(4, 0, 0, 1.f).ok());
     CHECK(!field.setSample(1, 1, 1, std::numeric_limits<float>::quiet_NaN()).ok());
     CHECK(!field.resize(0, 3, 2, 0.f).ok());
     CHECK(!field.assign(4, 3, 2, {}).ok());
-    CHECK_EQ(field.sample(1, 1, 1).value(), -1.f);
     CHECK_EQ(field.width(), 4);
+    CHECK_EQ(field.sample(1, 1, 1).value(), -1.f);
 }
 
-TEST_CASE("procgen.stages.scalarFieldProducesReusableParametricGeometry") {
+TEST_CASE("procgen.field.carving_produces_geometry_and_rejects_bad_shape_atomically") {
     ScalarField3D field;
     REQUIRE(field.resize(17, 17, 17, 1.f).ok());
     CHECK(!field.extractMesh(0.f).ok());
-    REQUIRE(field.carveEllipsoid(0.f, 0.f, 0.f, 0.6f, 0.4f, 0.5f).ok());
-    auto mesh = field.extractMesh(0.f);
-    REQUIRE(mesh.ok());
-    CHECK(mesh.value().getVertexCount() > 0);
-    auto prior = field;
-    CHECK(!field.carveEllipsoid(0.f, 0.f, 0.f, -1.f, 0.4f, 0.5f).ok());
-    CHECK(std::equal(field.samples().begin(), field.samples().end(), prior.samples().begin()));
-    REQUIRE(field.carveEllipsoid(0.3f, 0.f, 0.f, 0.4f, 0.2f, 0.2f).ok());
-    auto changed = field.extractMesh(0.f);
-    REQUIRE(changed.ok());
-    CHECK(changed.value().positions() != mesh.value().positions());
+    REQUIRE(field.carveEllipsoid(0.f, 0.f, 0.f, .6f, .4f, .5f).ok());
+    const auto first = field.extractMesh(0.f);
+    REQUIRE(first.ok());
+    CHECK(first.value().getVertexCount() > 0);
+    const std::vector<float> before(field.samples().begin(), field.samples().end());
+    CHECK(!field.carveEllipsoid(0.f, 0.f, 0.f, -1.f, .4f, .5f).ok());
+    CHECK_EQ(field.samples().size(), before.size());
+    CHECK(std::equal(field.samples().begin(), field.samples().end(), before.begin()));
+    REQUIRE(field.carveEllipsoid(.3f, 0.f, 0.f, .4f, .2f, .2f).ok());
+    const auto second = field.extractMesh(0.f);
+    REQUIRE(second.ok());
+    CHECK(second.value().positions() != first.value().positions());
 }
 
-TEST_CASE("procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit") {
+TEST_CASE("procgen.house.staged_default_schedule_matches_single_call_recipe") {
     static_assert(!std::is_copy_constructible_v<HouseGeneration>);
-    auto         library = kit();
+    auto         kit = componentKit();
     HouseRequest request;
     request.seed          = 20260815;
     request.width         = 8;
@@ -92,142 +112,144 @@ TEST_CASE("procgen.stages.houseDefaultScheduleMatchesCompatibilityAndOwnsKit") {
     request.footprint     = "rectangle";
     request.roof          = "gable";
     request.requiredRooms = {"living", "kitchen", "bedroom"};
-    HouseLayout compatibility;
-    REQUIRE(HouseGenerator(library).generate(request, compatibility).ok());
-    HouseGeneration generation;
-    REQUIRE(generation.configure(request, library).ok());
-    library.clear();
+    HouseLayout singleCall;
+    REQUIRE(HouseGenerator(kit).generate(request, singleCall).ok());
+
+    HouseGeneration staged;
+    REQUIRE(staged.configure(request, kit).ok());
+    kit.clear();  // Configuration must own the component data it needs.
     for (int floor = 0; floor < request.floors; ++floor) {
-        auto grid = generation.nextFloorGrid();
+        const auto grid = staged.nextFloorGrid();
         REQUIRE(grid.ok());
-        auto repeated = generation.nextFloorGrid();
-        REQUIRE(repeated.ok());
-        CHECK(grid.value().cells() == repeated.value().cells());
-        REQUIRE(generation.emitFloor(grid.value(), request.requiredRooms).ok());
+        const auto repeat = staged.nextFloorGrid();
+        REQUIRE(repeat.ok());
+        CHECK_EQ(grid.value().cells(), repeat.value().cells());
+        REQUIRE(staged.emitFloor(grid.value(), request.requiredRooms).ok());
     }
-    auto result = generation.finish();
-    REQUIRE(result.ok());
-    CHECK_EQ(result.value().toJson(), compatibility.toJson());
-    auto moved = std::move(generation);
-    CHECK_EQ(generation.floorCount(), 0);
-    REQUIRE(moved.finish().ok());
+    const auto finished = staged.finish();
+    REQUIRE(finished.ok());
+    CHECK_EQ(finished.value().toJson(), singleCall.toJson());
+    auto moved = std::move(staged);
+    CHECK_EQ(staged.floorCount(), 0);
+    CHECK(moved.finish().ok());
 }
 
-TEST_CASE("procgen.stages.houseGraphControlsGenerationAndFailuresPreserveStage") {
-    auto         library = kit();
+TEST_CASE("procgen.house.invalid_floor_and_request_do_not_replace_completed_stage") {
+    auto         kit = componentKit();
     HouseRequest request;
     request.width     = 9;
     request.depth     = 9;
     request.floors    = 2;
     request.footprint = "rectangle";
-    HouseGeneration generation;
-    CHECK(!generation.finish().ok());
-    REQUIRE(generation.configure(request, library).ok());
-    auto base = generation.nextFloorGrid();
-    REQUIRE(base.ok());
-    REQUIRE(generation.emitFloor(base.value(), {"living"}).ok());
-    auto planned = generation.nextFloorGrid();
-    REQUIRE(planned.ok());
-    Grid2D unsupported;
-    unsupported.resize(10, 9);
-    unsupported.fill(1);
-    CHECK(!generation.emitFloor(unsupported, {"upper"}).ok());
-    CHECK_EQ(generation.floorCount(), 1);
+    HouseGeneration house;
+    CHECK(!house.finish().ok());
+    REQUIRE(house.configure(request, kit).ok());
+    const auto ground = house.nextFloorGrid();
+    REQUIRE(ground.ok());
+    REQUIRE(house.emitFloor(ground.value(), {"living"}).ok());
+    const auto upper = house.nextFloorGrid();
+    REQUIRE(upper.ok());
+    Grid2D wrongSize;
+    wrongSize.resize(10, 9);
+    wrongSize.fill(1);
+    CHECK(!house.emitFloor(wrongSize, {"bedroom"}).ok());
+    CHECK_EQ(house.floorCount(), 1);
+
     GridGraph graph;
     REQUIRE(graph.addNode("input", "grid.input").ok());
     REQUIRE(graph.addNode("inset", "grid.shrink").ok());
     REQUIRE(graph.connect("input", "inset").ok());
-    REQUIRE(graph.setNodeGrid("input", planned.value()).ok());
+    REQUIRE(graph.setNodeGrid("input", upper.value()).ok());
     REQUIRE(graph.setNodeInt("inset", "radius", 1).ok());
     auto result = graph.execute("inset");
     REQUIRE(result.ok());
-    auto upper = std::get<Grid2D>(std::move(result).takeValue());
-    // Keep the authoritative vertical stair column when editing a floor mask.
+    auto edited = std::get<Grid2D>(std::move(result).takeValue());
     for (int y = 1; y < 3; ++y)
-        for (int x = 1; x < 3; ++x) upper.setCell(x, y, 1);
-    REQUIRE(generation.emitFloor(upper, {"bedroom"}).ok());
-    auto layout = generation.finish();
-    REQUIRE(layout.ok());
-    CHECK_EQ(layout.value().rooms.back().z, 1);
-    CHECK_EQ(generation.floorCount(), 2);
-    auto bad  = request;
-    bad.width = 0;
-    CHECK(!generation.configure(bad, library).ok());
-    CHECK_EQ(generation.floorCount(), 2);
-    REQUIRE(generation.finish().ok());
+        for (int x = 1; x < 3; ++x) edited.setCell(x, y, 1);
+    REQUIRE(house.emitFloor(edited, {"bedroom"}).ok());
+    const auto complete = house.finish();
+    REQUIRE(complete.ok());
+    CHECK_EQ(complete.value().rooms.back().z, 1);
+    auto invalid  = request;
+    invalid.width = 0;
+    CHECK(!house.configure(invalid, kit).ok());
+    CHECK_EQ(house.floorCount(), 2);
+    CHECK(house.finish().ok());
 }
 
-TEST_CASE("procgen.stages.caveDefaultScheduleMatchesRecipe") {
-    auto params = caveParams();
+TEST_CASE("procgen.cave.staged_default_schedule_matches_recipe_and_repeats") {
+    const auto params = caveRecipe();
     MeshRecipeRegistry::instance().registerBuiltins();
-    MeshBuild   expected;
+    MeshBuild   reference;
     std::string error;
-    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.cave", params, expected, error));
-    CaveGeneration generation;
-    prepare(generation, params);
-    for (auto op : {CaveSurfaceOperation::Reactivity, CaveSurfaceOperation::ReactivePatches,
-                    CaveSurfaceOperation::Condensation, CaveSurfaceOperation::Curvature})
-        REQUIRE(generation.evolveSurface(op).ok());
-    REQUIRE(generation.deposit().ok());
-    auto mesh = generation.buildMesh();
+    REQUIRE(MeshRecipeRegistry::instance().generate("mesh.cave", params, reference, error));
+
+    CaveGeneration cave;
+    sample(cave, params);
+    for (auto operation : {CaveSurfaceOperation::Reactivity, CaveSurfaceOperation::ReactivePatches,
+                           CaveSurfaceOperation::Condensation, CaveSurfaceOperation::Curvature})
+        REQUIRE(cave.evolveSurface(operation).ok());
+    REQUIRE(cave.deposit().ok());
+    const auto mesh = cave.buildMesh();
     REQUIRE(mesh.ok());
-    CHECK(mesh.value().positions() == expected.positions());
-    CHECK(mesh.value().normals() == expected.normals());
-    CHECK(mesh.value().indices() == expected.indices());
-    auto repeated = generation.buildMesh();
-    REQUIRE(repeated.ok());
-    CHECK(mesh.value().positions() == repeated.value().positions());
+    CHECK_EQ(mesh.value().positions(), reference.positions());
+    CHECK_EQ(mesh.value().normals(), reference.normals());
+    CHECK_EQ(mesh.value().indices(), reference.indices());
+    const auto repeat = cave.buildMesh();
+    REQUIRE(repeat.ok());
+    CHECK_EQ(repeat.value().positions(), mesh.value().positions());
 }
 
-TEST_CASE("procgen.stages.caveFieldEditsAffectOutputAndFailedExtractionKeepsInput") {
-    CaveGeneration generation;
-    CHECK(!generation.sampleField().ok());
-    auto params = caveParams();
-    prepare(generation, params);
-    auto snapshot = generation.field();
-    REQUIRE(snapshot.ok());
-    auto baseline = generation.buildMesh();
+TEST_CASE("procgen.cave.field_replacement_is_owned_and_failed_extraction_keeps_phase") {
+    CaveGeneration cave;
+    CHECK(!cave.sampleField().ok());
+    const auto params = caveRecipe();
+    sample(cave, params);
+    auto field = cave.field();
+    REQUIRE(field.ok());
+    const auto baseline = cave.buildMesh();
     REQUIRE(baseline.ok());
+
     ScalarField3D empty;
     REQUIRE(empty.resize(16, 12, 16, 1.f).ok());
-    REQUIRE(generation.replaceField(empty).ok());
-    CHECK(!generation.buildMesh().ok());
-    CHECK(generation.phase() == CaveGenerationPhase::Sampled);
-    REQUIRE(generation.replaceField(snapshot.value()).ok());
-    auto restored = generation.buildMesh();
+    REQUIRE(cave.replaceField(empty).ok());
+    CHECK(!cave.buildMesh().ok());
+    CHECK(cave.phase() == CaveGenerationPhase::Sampled);
+    REQUIRE(cave.replaceField(field.value()).ok());
+    const auto restored = cave.buildMesh();
     REQUIRE(restored.ok());
-    CHECK(restored.value().positions() == baseline.value().positions());
-    // An owning field can be modified while the staged source remains unchanged.
-    REQUIRE(snapshot.value().setSample(8, 6, 8, 1.f).ok());
-    REQUIRE(generation.replaceField(snapshot.value()).ok());
-    auto changed = generation.buildMesh();
+    CHECK_EQ(restored.value().positions(), baseline.value().positions());
+
+    REQUIRE(field.value().setSample(8, 6, 8, 1.f).ok());
+    REQUIRE(cave.replaceField(field.value()).ok());
+    const auto changed = cave.buildMesh();
     REQUIRE(changed.ok());
     CHECK(changed.value().positions() != baseline.value().positions());
-    REQUIRE(generation.deposit().ok());
-    CHECK(!generation.replaceField(snapshot.value()).ok());
-    CHECK(!generation.evolveSurface(CaveSurfaceOperation::Curvature).ok());
+    REQUIRE(cave.deposit().ok());
+    CHECK(!cave.replaceField(field.value()).ok());
+    CHECK(!cave.evolveSurface(CaveSurfaceOperation::Curvature).ok());
     auto invalid = params;
     invalid.setInt("nx", 1);
-    CHECK(!generation.configure(invalid).ok());
-    CHECK(generation.phase() == CaveGenerationPhase::Deposited);
+    CHECK(!cave.configure(invalid).ok());
+    CHECK(cave.phase() == CaveGenerationPhase::Deposited);
 }
 
-TEST_CASE("procgen.stages.caveSkeletonAndSurfacePoliciesAreEditable") {
-    auto params = caveParams();
-    params.setFloat("surfaceSlopeReactivity", 0.5f);
-    CaveGeneration generation;
-    REQUIRE(generation.configure(params).ok());
-    REQUIRE(generation.buildSkeleton().ok());
-    CHECK(!generation.setChamber(-1, 0.f, 0.f, 0.f, 0.2f, 0.2f, 0.2f).ok());
-    REQUIRE(generation.setChamber(0, 0.f, 0.f, 0.f, 0.5f, 0.4f, 0.5f).ok());
-    REQUIRE(generation.sampleField().ok());
-    CHECK(!generation.setChamber(0, 0.f, 0.f, 0.f, 0.2f, 0.2f, 0.2f).ok());
-    REQUIRE(generation.evolveSurface(CaveSurfaceOperation::Curvature).ok());
-    REQUIRE(generation.evolveSurface(CaveSurfaceOperation::Reactivity).ok());
-    REQUIRE(generation.evolveSurface(CaveSurfaceOperation::Curvature).ok());
-    auto mesh = generation.buildMesh();
+TEST_CASE("procgen.cave.skeleton_and_surface_edits_follow_phase_order") {
+    auto params = caveRecipe();
+    params.setFloat("surfaceSlopeReactivity", .5f);
+    CaveGeneration cave;
+    REQUIRE(cave.configure(params).ok());
+    REQUIRE(cave.buildSkeleton().ok());
+    CHECK(!cave.setChamber(-1, 0.f, 0.f, 0.f, .2f, .2f, .2f).ok());
+    REQUIRE(cave.setChamber(0, 0.f, 0.f, 0.f, .5f, .4f, .5f).ok());
+    REQUIRE(cave.sampleField().ok());
+    CHECK(!cave.setChamber(0, 0.f, 0.f, 0.f, .2f, .2f, .2f).ok());
+    REQUIRE(cave.evolveSurface(CaveSurfaceOperation::Curvature).ok());
+    REQUIRE(cave.evolveSurface(CaveSurfaceOperation::Reactivity).ok());
+    REQUIRE(cave.evolveSurface(CaveSurfaceOperation::Curvature).ok());
+    const auto mesh = cave.buildMesh();
     REQUIRE(mesh.ok());
-    CHECK_EQ(mesh.value().getMeta("surfaceSchedule", ""), "curvature,reactivity,curvature");
-    CHECK_EQ(mesh.value().getMeta("depositionStage", ""), "omitted");
-    CHECK_EQ(mesh.value().getMeta("skeletonEdited", ""), "true");
+    CHECK_EQ(mesh.value().getMeta("surfaceSchedule", ""), std::string("curvature,reactivity,curvature"));
+    CHECK_EQ(mesh.value().getMeta("depositionStage", ""), std::string("omitted"));
+    CHECK_EQ(mesh.value().getMeta("skeletonEdited", ""), std::string("true"));
 }

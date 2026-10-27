@@ -2,7 +2,6 @@
 
 from pathlib import Path
 import re
-import json
 import shlex
 import shutil
 import subprocess
@@ -15,11 +14,26 @@ ROOT = Path(__file__).resolve().parents[2]
 DISCOVERY = ROOT / "cmake" / "ZeroErrDiscoverTestsImpl.cmake"
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
-from test_levels import CATALOGUE, CLASSIFICATIONS, classified_cases, emit_cmake, expanded_catalogue, source_inventory  # noqa: E402
+from test_levels import TEST_DIR, source_catalogue, CLASSIFICATIONS, classified_cases, emit_cmake, expanded_catalogue, source_inventory  # noqa: E402
 
 
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required for discovery tests")
 class ZeroerrDiscoveryTests(unittest.TestCase):
+    def test_benchmark_source_is_opt_in_independently_of_case_name_and_keeps_gpu_requirements(self):
+        policy = {"sources": {"benchmark/graphics/stability.cpp": {
+            "role": "tests", "default": "render-window",
+            "cases": {"render-window": ["resources.reuse"]},
+        }}}
+        result, generated = self.discover(
+            [("resources.reuse", "stability.cpp", 1)], "plain", catalogue=policy)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in ("resources.reuse", "bundle/stability.cpp"):
+            labels = self.labels_of(generated, name)
+            self.assertIn("benchmark", labels)
+            self.assertIn("requires:graphics", labels)
+            self.assertIn("requires:window", labels)
+            self.assertNotIn("no-render", labels)
+
     def test_local_logic_and_composition_cases_have_exclusive_levels(self):
         result, generated = self.discover(
             [("math.local", "math.cpp", 10),
@@ -35,13 +49,18 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
             self.assertIn("integration", labels)
             self.assertNotIn("unit", labels)
 
-    def discover(self, entries, listing_format, name_prefix="", levels=None, omit_metadata=False, catalogue=None):
+    def discover(self, entries, listing_format, name_prefix="", levels=None, omit_metadata=False, catalogue=None,
+                 runtime_output=None):
         with tempfile.TemporaryDirectory(prefix="eve discovery ") as directory:
             root = Path(directory)
             listing = root / "listing.py"
             listing.write_text(
                 "import sys\n"
                 f"entries = {entries!r}\n"
+                f"runtime_output = {runtime_output!r}\n"
+                "if runtime_output is not None and not any(a.startswith('--list') for a in sys.argv):\n"
+                "    print(runtime_output)\n"
+                "    raise SystemExit(0)\n"
                 "plain = '--list-format=plain' in sys.argv\n"
                 f"if plain and {listing_format!r} == 'legacy':\n"
                 "    print('legacy runner: no plain listing available')\n"
@@ -94,7 +113,25 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
                 timeout=120 if catalogue is not None else 30,
             )
             generated = registry.read_text(encoding="utf-8") if registry.exists() else None
+            if runtime_output is not None:
+                (root / "CTestTestfile.cmake").write_text(generated, encoding="utf-8")
+                execution = subprocess.run(
+                    ["ctest", "--test-dir", str(root), "--no-tests=error", "-V"],
+                    capture_output=True, text=True, encoding="utf-8", timeout=30,
+                )
+                return result, generated, execution
             return result, generated
+
+    def test_zero_exit_assertion_output_fails_case_and_bundle(self):
+        for severity in ("WARN", "ERROR"):
+            with self.subTest(severity=severity):
+                result, _, execution = self.discover(
+                    [("fixture.assertion", "fixture.cpp", 1)], "plain",
+                    runtime_output=severity + " Assertion Failed: deliberate failure",
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertNotEqual(execution.returncode, 0, execution.stdout + execution.stderr)
+                self.assertIn("0% tests passed, 2 tests failed", execution.stdout)
 
     @staticmethod
     def labels_of(generated, test_name):
@@ -176,8 +213,8 @@ class ZeroerrDiscoveryTests(unittest.TestCase):
         self.assertIsNone(re.fullmatch(file_pattern, "metadata.cpp"))
 
     def test_complete_catalogue_and_generator_policies_are_accepted_by_runtime_discovery(self):
-        catalogue = json.loads(CATALOGUE.read_text(encoding="utf-8"))
-        catalogue = expanded_catalogue(catalogue, source_inventory(CATALOGUE.parent))
+        catalogue = source_catalogue()
+        catalogue = expanded_catalogue(catalogue, source_inventory(TEST_DIR))
         entries, expected = [], {}
         for source, policy in catalogue["sources"].items():
             for name, category in classified_cases(policy).items():

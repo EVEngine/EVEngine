@@ -1,3 +1,24 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "platform-audio",
+  "cases": {
+    "script-binding": [
+      "audio.pcm.scriptResultAndOwnership"
+    ],
+    "platform-audio": [
+      "audio.pcm.bothDestructionOrders",
+      "audio.pcm.starvationPauseResumeAndDrain",
+      "audio.pcm.validationAndBackpressureAreAtomic"
+    ]
+  },
+  "module": "audio"
+}
+*/
+// clang-format on
+
 #include "audio/PcmStream.h"
 #include "audio/Audio.h"
 #include "common/Module.h"

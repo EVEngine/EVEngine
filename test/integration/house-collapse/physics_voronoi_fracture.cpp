@@ -1,3 +1,16 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "physics_destruction_cook",
+  "origins": [
+    "physics_voronoi_fracture.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <array>
 #include <bit>
 #include <cmath>
@@ -6,9 +19,11 @@
 #include <stdexcept>
 #include "asset/CanonicalMesh.h"
 #include "physics/World3D.h"
+#include "physics/backend/bake/collapse/CollapsePlayback.h"
 #include "physics/destruction/CollapseAnimation.h"
 #include "physics/destruction/FractureGeometry.h"
 #include "physics/destruction/FractureRecipe.h"
+#include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/cook/AssemblyFractureSettings.h"
 #include "physics/destruction/cook/VoronoiCook.h"
 #include "zeroerr/assert.h"
@@ -122,14 +137,19 @@ TEST_CASE("physics_voronoi.invalidInputAndMeshBudgets") {
 }
 TEST_CASE("physics_voronoi.meshBakeSurvivesWorldAndDisk") {
     FractureRecipe r;
-    r.siteCountMin           = 3;
-    r.siteCountMax           = 3;
-    auto              cooked = cookVoronoi(cube(), r).expect("cook");
+    r.siteCountMin                     = 3;
+    r.siteCountMax                     = 3;
+    auto              cooked           = cookVoronoi(cube(), r).expect("cook");
+    const auto        expectedGeometry = cooked.geometry;
     CollapseAnimation clip;
     {
         World3D world(0.f, -9.8f, 0.f, true);
         auto instance = GeometryCollectionInstance::createFractured(world, cooked.collection, cooked.geometry, 0, 4, 0)
                             .expect("convex instance");
+        // Authored input is mutable and caller-owned; the live instance must own its copy.
+        cooked.geometry.fragments.clear();
+        cooked.collection.bones.clear();
+        cooked.collection.edges.clear();
         REQUIRE(clip.capture(*instance, 0).ok());
         DestructionField field;
         field.radius    = 100;
@@ -141,15 +161,21 @@ TEST_CASE("physics_voronoi.meshBakeSurvivesWorldAndDisk") {
         REQUIRE(clip.capture(*instance, .5f).ok());
     }
     REQUIRE(clip.fragmentGeometry() != nullptr);
+    auto player = CollapsePlayback::prepare(clip).expect("freeze mesh playback");
+    auto other  = player;
+    clip        = CollapseAnimation{};
+    REQUIRE(player.seek(.5).ok());
+    REQUIRE(other.seek(0).ok());
+    REQUIRE(player.sample(0).expect("owned end pose").worldY < other.sample(0).expect("owned start pose").worldY - .1f);
     const auto path = std::filesystem::temp_directory_path() / "eve-voronoi-bake.evecollapse";
     std::filesystem::remove(path);
-    REQUIRE(clip.save(path.string()).ok());
+    REQUIRE(player.animation()->save(path.string()).ok());
     auto restored = CollapseAnimation::load(path.string()).expect("reload meshes");
     REQUIRE(restored.fragmentGeometry()->fragments.size() == 3);
     for (std::size_t i = 0; i < 3; ++i) {
-        REQUIRE(restored.fragmentGeometry()->fragments[i].positions == cooked.geometry.fragments[i].positions);
-        REQUIRE(restored.fragmentGeometry()->fragments[i].indices == cooked.geometry.fragments[i].indices);
-        REQUIRE(restored.fragmentGeometry()->fragments[i].materials == cooked.geometry.fragments[i].materials);
+        REQUIRE(restored.fragmentGeometry()->fragments[i].positions == expectedGeometry.fragments[i].positions);
+        REQUIRE(restored.fragmentGeometry()->fragments[i].indices == expectedGeometry.fragments[i].indices);
+        REQUIRE(restored.fragmentGeometry()->fragments[i].materials == expectedGeometry.fragments[i].materials);
     }
     REQUIRE(restored.sample(.5f, 0).expect("pose").worldY < restored.sample(0, 0).expect("initial").worldY - .1f);
     // Unknown version rejects before a candidate is published.
@@ -192,6 +218,10 @@ TEST_CASE("physics_voronoi.legacyBoxBakeVersionOneMigration") {
     std::ifstream     in(path, std::ios::binary);
     std::vector<char> bytes((std::istreambuf_iterator<char>(in)), {});
     in.close();
+    REQUIRE(bytes.size() >= 56);
+    REQUIRE(bytes[8] == 3);
+    // Version 1 predates both the geometry count and the version 3 checksum.
+    bytes.resize(bytes.size() - 32);
     bytes[8] = 1;
     bytes.erase(bytes.begin() + 20, bytes.begin() + 24);
     {

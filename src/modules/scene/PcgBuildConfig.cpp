@@ -133,9 +133,11 @@ Result<bool> applyPcgGrowth(PcgGrowth& g, SceneNodeRef& node, float now) {
     if (!due) return Result<bool>::failure(due.status());
     if (due.value()) {
         auto* s = node.getScene();
-        if (!s || !s->removeNodeAt(node.getHostName(), node.getNodeId()))
+        if (!s)
             return Result<bool>::failure(Diagnostic::error(DiagnosticCode::InvalidArgument,
                                                            "growth node cannot be removed", "scene.pcgGrowth.node"));
+        auto removed = s->removeLeafAt(node.getHostName(), node.getNodeId());
+        if (!removed.ok()) return Result<bool>::failure(removed.status());
         return Result<bool>::success(true);
     }
     auto scale = g.advance(now);

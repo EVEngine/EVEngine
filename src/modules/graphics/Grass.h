@@ -4,7 +4,6 @@
 
 #include "common/Result.h"
 #include "common/PcgPhotoModeApply.h"
-#include "graphics/Shader.h"
 
 #include <cstdint>
 #include <string>
@@ -20,6 +19,7 @@ namespace eve::graphics {
 
 class Graphics;
 class Mesh;
+class Shader;
 class Texture;
 
 /**

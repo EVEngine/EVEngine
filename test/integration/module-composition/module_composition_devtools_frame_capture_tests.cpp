@@ -1,3 +1,13 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "devtools"
+}
+*/
+// clang-format on
+
 #include <Poco/InflatingStream.h>
 #include <Poco/JSON/Array.h>
 #include <Poco/JSON/Parser.h>
@@ -21,10 +31,12 @@ TEST_CASE("mcp.frameCapture.providerAbsentAndSchemaRoutes") {
     if (previous) eve::cap::revoke<eve::IRenderFrameCapture>(previous);
     const auto response = eve::dev::callMcpFrameCaptureTool("eve_frame_capture_capabilities", nullptr);
     ASSERT(response.find("ProviderAbsent") != std::string::npos);
+    ASSERT(eve::dev::callMcpFrameCaptureTool("eve_frame_contact_sheet", nullptr).find("ProviderAbsent") !=
+           std::string::npos);
     Poco::JSON::Parser parser;
     auto               tools =
         parser.parse("[" + std::string(eve::dev::mcpFrameCaptureSchemas()) + "]").extract<Poco::JSON::Array::Ptr>();
-    ASSERT(tools->size() == 7);
+    ASSERT(tools->size() == 8);
     ASSERT(eve::dev::mcpToolMutates("eve_frame_capture_export"));
     ASSERT(!eve::dev::mcpToolMutates("eve_frame_capture"));
     for (unsigned i = 0; i < tools->size(); ++i)

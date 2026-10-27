@@ -171,17 +171,17 @@ void GraphicsArtifactProvider::uploadIfAvailable(Graphics* graphics, RuntimeReso
             static_cast<int>(descriptor.indices.size()));
         if (runtime.uploadedMesh) {
             const auto backend = graphics->describeMesh(runtime.uploadedMesh);
-            if (!backend || backend->vertexCount != descriptor.positions.size() / 3u ||
-                backend->indexCount != descriptor.indices.size() || backend->vertexStride == 0u ||
-                (backend->indexElementSize != 2u && backend->indexElementSize != 4u)) {
+            if (!backend.ok() || backend.value().vertexCount != descriptor.positions.size() / 3u ||
+                backend.value().indexCount != descriptor.indices.size() || backend.value().vertexStride == 0u ||
+                (backend.value().indexElementSize != 2u && backend.value().indexElementSize != 4u)) {
                 (void)graphics->releaseMesh(runtime.uploadedMesh);
                 runtime.uploadedMesh   = nullptr;
                 descriptor.uploadState = "cpu-fallback";
                 descriptor.gpuResident = false;
                 return;
             }
-            descriptor.backendVertexStride     = backend->vertexStride;
-            descriptor.backendIndexElementSize = backend->indexElementSize;
+            descriptor.backendVertexStride     = backend.value().vertexStride;
+            descriptor.backendIndexElementSize = backend.value().indexElementSize;
             descriptor.uploadState             = "uploaded";
             descriptor.gpuResident             = true;
         }

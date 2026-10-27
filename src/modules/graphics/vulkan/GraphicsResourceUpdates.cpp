@@ -59,6 +59,8 @@ bool Graphics::reloadTextureFromFile(const std::string &filename) {
     image::ImageData *data = nullptr;
     eve::ResourcePin  keepAlive;
     try {
+        auto reloaded = eve::ResourceManager::getInstance().reload(filename);
+        if (!reloaded.ok() || !reloaded.value()) return false;
         auto *imgMod = image::Image::create();
         data         = imgMod->newImageDataFromFile(filename);
         if (data != nullptr) {

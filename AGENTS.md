@@ -33,6 +33,15 @@ compiler override.
 ### Building
 - `make debug` configures + builds `build/linux-debug` (equivalently: cmake configure,
   then `--target deps`, then the engine).
+- Debug has two compiler profiles (`EVENGINE_DEBUG_LEVEL` / Makefile `DEBUG_LEVEL`):
+  **`normal`** (default, CI) = GCC/Clang `-g0 -O2` (MSVC `/Od`, no `/Zi`) so sccache
+  does not store DWARF-bloated `.o` into GitHub Actions cache; **`detail`** =
+  `-g2 -O1` (MSVC `/Zi /O1`) for richer DWARF when triaging. MSVC normal stays
+  `/Od` because `/O2` cold-compiles past the Windows CI build-step budget.
+  Example: `make debug DEBUG_LEVEL=detail JOBS=4`. Asserts stay on for
+  `CONFIG:Debug` either way.
+  ASan/UBSan is a separate RelWithDebInfo lane with `-O1 -g1` (line tables for
+  sanitizer stacks; not full `-g`, not `-g0`).
 - The first configure downloads the `third-party/` sources from GitHub and the `deps`
   target compiles them (SDL2, Poco, OpenAL, Box2D/box3d, FreeType, …). This is slow the
   first time and cached afterward. `build/` is git-ignored and tied to its source tree.
@@ -300,6 +309,29 @@ versions.
   SDL global `_this`, or window flags) — instrument the state before touching
   the SDL/driver layer.
 
+## Third-party source ownership (mandatory)
+
+- **Dependency fixes belong in the owning source repository.** Modify and commit
+  the dependency's actual sources, then update the consuming revision. Do not
+  modify third-party code through patch files, `git apply`, CMake `PATCH_COMMAND`,
+  configure/build-time text replacement, or overwrite/override header directories.
+  Generated replacement headers, include-path shadowing and copied modified
+  dependency implementations are equally prohibited; moving such a workaround
+  into another directory or into the third-party aggregate does not satisfy this
+  rule. Source builds, prebuilt packages and SDK consumers must use the same
+  canonical dependency implementation.
+- **Keep dependency development ownership explicit.** Stable bundled dependencies
+  are managed by the `third-party` repository. ECS and zeroerr remain independently
+  developed submodules under `external/ECS.hpp` and `external/zeroerr`; do not move
+  them into the third-party aggregate or tie their updates to its release pin.
+  Apply their fixes directly in their respective repositories and update their
+  engine submodule revisions independently.
+- **Complete the migration when removing a workaround.** Update build/include and
+  SDK install rules to consume the canonical sources, remove the obsolete patch,
+  override directory and application/generation steps, and verify the affected
+  source, package and linkage contracts. Do not leave a second implementation as
+  a compatibility shortcut.
+
 ## Collaboration conventions (multi-agent parallel work)
 
 These rules exist to keep several agents working in the same tree without
@@ -356,10 +388,22 @@ composed dependency contract, see
 - **Tests stay per-module.** New tests go into their own file under `test/`
   (zeroerr cases; each case is process-isolated via CTest). Do not grow a
   shared test main.
+  Ordinary `test/unit/<module>/` C++ files are discovered without registration;
+  exceptional classifications and integration ownership belong in source-local
+  `eve-test-policy` comments. There is no central Test Levels JSON; see `test/README.md`.
+- **Native MCP tools own their family.** Declare `EVE_MCP_TOOL_FAMILY` beside
+  a provider's schema and handler. Composition is generated from compiled sources;
+  do not append new families to `McpServer.cpp` schema arrays or dispatch chains.
+  The protocol host keeps lifecycle and filtering. See `docs/dev/AI与MCP支持.md`.
+- **Build rules and guides have owners.** Platform recipes live under
+  `cmake/platforms/`, feature checks under `cmake/tasks/`, and module-specific
+  settings beside their sources in `BuildSettings.cmake`. Keep declaration and
+  dependency wiring in the existing module manifest. Extend graphics topic
+  pages under `docs/usr/modules/graphics/` rather than growing the overview.
 - **Examples are a tested surface.** A new `examples/<name>/` must be runnable
   (`main.nut` + a `config.nut` that assigns the engine `config` table), or be
   listed with a reason in `scripts/check_examples.py`'s `NON_RUNNABLE_EXAMPLES`;
-  it must own a `README.md` and a row in `examples/README.md`. `make check/examples`
+  it must own a `README.md`; overview rows are optional documentation maintenance. `make check/examples`
   (source-quality) enforces that layout, and `scripts/smoke_examples.sh` launches
   every runnable example in CI for at least `MIN_RUN_SECONDS` (2s) — dying early,
   exiting non-zero, or printing an error marker fails the job. Run
@@ -462,7 +506,7 @@ Override with `make check CI_BASE=<sha>` — CI passes the pull-request base SHA
 (`scripts/check_architecture_contracts.py`: api-shape, raw-pointer lifetime
 tags, runtime `getModInst` ban, hot-path primitive ban, `@cost`). There is no
 JSON contract catalogue — do not reintroduce hand-copied `provides`/`requires`/
-`systems` lists. Hot-path files live in `HOT_PATH_GLOBS` inside that script.
+`systems` lists. Hot-path files declare `// eve-hot-path` in leading comments. Directory policies live in a local `.eve-hot-path` file containing `eve.hot-path-directory/v1:*.cpp`.
 See `docs/dev/superpowers/specs/2026-10-14-architecture-contracts-code-first.md`.
 A compatibility facade may retain a legacy shape only when the public
 documentation states that it is compatibility-only and the canonical

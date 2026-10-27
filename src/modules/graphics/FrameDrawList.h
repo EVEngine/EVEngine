@@ -1,6 +1,5 @@
 #pragma once
 
-#include "graphics/Mesh.h"
 #include "graphics/RenderSystem3D.h"
 
 #include <glm/glm.hpp>

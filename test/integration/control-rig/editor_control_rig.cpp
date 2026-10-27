@@ -1,3 +1,26 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "cases": {
+    "module-composition": [
+      "editor.controlRig.documentRejectsForeignPublication",
+      "editor.controlRig.dragPreviewDoesNotMutateHistory",
+      "editor.controlRig.failedHistoryPreviewRestoresDocument",
+      "editor.controlRig.genericGraphRoundTripAndStaleRevision",
+      "editor.controlRig.matchPoseIsOneUndoableEdit",
+      "editor.controlRig.transactionHistoryAndRoundTrip"
+    ],
+    "script-binding": [
+      "editor.controlRig.scriptFacadeProjectsNumericTimeAndOwnedResults"
+    ]
+  },
+  "module": "animation"
+}
+*/
+// clang-format on
+
 #include <simplesquirrel/simplesquirrel.hpp>
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"

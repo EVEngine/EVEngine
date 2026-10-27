@@ -15,6 +15,149 @@ import test_levels as levels  # noqa: E402
 
 
 class TestLevelCatalogueTests(unittest.TestCase):
+    def test_default_ctest_selection_excludes_physical_gpu_benchmarks_and_their_bundles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            metadata = base / "levels.cmake"
+            levels.emit_cmake({"sources": {
+                "integration/native.cpp": {"role": "tests", "default": "module-composition",
+                                           "cases": {"module-composition": ["native.contract"]}},
+                "benchmark/graphics/gpu.cpp": {"role": "tests", "default": "render-window",
+                                               "cases": {"render-window": ["resources.reuse"]}},
+            }}, metadata)
+            project = (
+                'cmake_minimum_required(VERSION 3.21)\nproject(selection NONE)\nenable_testing()\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'include("{metadata.as_posix()}")\n'
+                'if("${EVE_TEST_DESKTOP_ORIGINS}" MATCHES "/benchmark/")\n'
+                'message(FATAL_ERROR "benchmark entered default source discovery")\nendif()\n'
+                'add_test(NAME native.contract COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME resources.reuse COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME bundle/gpu.cpp COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'set(native_key "EVE_TEST_LEVEL_native.cpp|native.contract")\n'
+                'set_tests_properties(native.contract PROPERTIES LABELS "${${native_key}}")\n'
+                'set(key "EVE_TEST_LEVEL_gpu.cpp|resources.reuse")\n'
+                'set_tests_properties(resources.reuse PROPERTIES LABELS "${${key}}")\n'
+                'eve_merge_test_metadata(bundle_labels ${${key}})\n'
+                'set_tests_properties(bundle/gpu.cpp PROPERTIES LABELS "bundle;${bundle_labels}")\n'
+            )
+            (base / "CMakeLists.txt").write_text(project, encoding="utf-8")
+            configured = subprocess.run(["cmake", "-S", str(base), "-B", str(base / "build")],
+                                        capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+
+            def selected(*arguments):
+                result = subprocess.run(["ctest", "--test-dir", str(base / "build"),
+                                         "-C", "Debug", "--show-only=json-v1", *arguments], capture_output=True,
+                                        text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                return {test["name"]: test for test in json.loads(result.stdout)["tests"]}
+
+            self.assertEqual(set(selected("-E", "^bundle/", "-LE", "benchmark")), {"native.contract"})
+            self.assertEqual(set(selected("-E", "^bundle/")), {"native.contract", "resources.reuse"})
+            bundles = selected("-L", "bundle")
+            self.assertEqual(set(bundles), {"bundle/gpu.cpp"})
+            labels = next(prop["value"] for prop in bundles["bundle/gpu.cpp"]["properties"]
+                          if prop["name"] == "LABELS")
+            self.assertTrue({"benchmark", "requires:graphics", "requires:window"}.issubset(labels))
+    def test_formatter_reflow_preserves_policy(self):
+        policy = '// eve-test-policy:\n// {"schema":"evengine.test-policy",\n// "version":1,"default":"local-format"}\n'
+        self.assertEqual(levels.source_header_policy(policy + '#include "x.h"'), {"default": "local-format"})
+        self.assertEqual(levels.source_header_policy('/* eve-test-policy:\n{"schema":"evengine.test-policy","version":1,"module":"rules"}\n*/'), {"module": "rules"})
+
+    def test_v3_discovers_unit_sources_without_catalogue_entries(self):
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        text = 'TEST_CASE("rules.added") { CHECK(true); }'
+        inventory = {"unit/rules/new_rule.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()},
+                     "unit/rules/helper.cpp": {"text": "int helper() { return 1; }", "cases": {}, "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        expanded = levels.expanded_catalogue(data, inventory)
+        self.assertEqual(expanded["sources"]["unit/rules/new_rule.cpp"]["module"], "rules")
+        self.assertEqual(expanded["sources"]["unit/rules/helper.cpp"]["role"], "helper")
+        self.assertEqual(levels.classified_cases(expanded["sources"]["unit/rules/new_rule.cpp"]),
+                         {"rules.added": "local-logic"})
+        self.assertEqual(data["sources"], {})
+        inventory["unit/rules/new_rule.cpp"]["text"] = 'TEST_CASE("rules.added") { openHeadlessGfx(gfx); }'
+        inventory["unit/rules/new_rule.cpp"]["cases"] = levels.cases_in(inventory["unit/rules/new_rule.cpp"]["text"])
+        self.assertTrue(any("external setup" in error for error in levels.catalogue_errors(data, inventory)))
+
+    def test_v3_local_integration_semantics_and_resource_labels(self):
+        from unittest.mock import patch
+
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        policy = {"schema": "evengine.test-policy", "version": 1, "module": "graphics", "default": "render-window"}
+        text = '// eve-test-policy: ' + json.dumps(policy) + '\nTEST_CASE("new.render") { CHECK(true); }'
+        inventory = {"integration/rendering/new_render.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory), [])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "integration/rendering/new_render.cpp"
+            source.parent.mkdir(parents=True)
+            source.write_text(text, encoding="utf-8")
+            output = root / "levels.cmake"
+            with patch.object(levels, "TEST_DIR", root):
+                levels.emit_cmake(data, output)
+            rendered = output.read_text(encoding="utf-8")
+            self.assertIn("integration;reason:render-window;requires:graphics;requires:window", rendered)
+            self.assertIn(source.as_posix(), rendered)
+        no_owner = text.replace(', "module": "graphics"', '')
+        inventory["integration/rendering/new_render.cpp"]["text"] = no_owner
+        self.assertTrue(any("semantic module ownership" in error for error in levels.catalogue_errors(data, inventory)))
+
+    def test_v3_header_policy_rejects_invalid_and_duplicate_authorities(self):
+        data = {"schema": "evengine.test-levels", "version": 3, "sources": {}}
+        declaration = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"default":"local-format"}\n'
+        body = 'TEST_CASE("rules.case") { CHECK(true); }'
+        def inventory(text):
+            return {"unit/rules/rules.cpp": {"text": text, "cases": levels.cases_in(text), "generated": set()}}
+        self.assertEqual(levels.catalogue_errors(data, inventory(declaration + body)), [])
+        for header in ('// eve-test-policy: not-json\n', declaration + declaration,
+                       declaration.replace('"version":1', '"version":999'),
+                       declaration.replace('"version":1', '"version":true'),
+                       declaration.replace('"default":"local-format"', '"unknown":"value"'),
+                       declaration.replace('"default":"local-format"', '"default":[]'),
+                       declaration.replace('"default":"local-format"', '"module":{}'),
+                       declaration.replace('"default":"local-format"', '"generated":[1]'),
+                       declaration.replace('"default":"local-format"', '"cases":{"local-logic":[1]}'),
+                       declaration.replace('"default":"local-format"', '"cases":[]')):
+            with self.subTest(header=header):
+                self.assertTrue(levels.catalogue_errors(data, inventory(header + body)))
+        data["sources"]["unit/rules/rules.cpp"] = {"default": "local-format"}
+        self.assertTrue(any("both source and catalogue" in e for e in levels.catalogue_errors(data, inventory(declaration + body))))
+        self.assertEqual(levels.source_header_policy('const char* s = R"x(\n' + declaration + ')x";'), {})
+        self.assertEqual(levels.source_header_policy('int value;\n' + declaration), {})
+
+    def test_v3_new_source_addition_and_removal_refresh_cmake(self):
+        import shutil
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for folder in ("cmake", "scripts", "test/unit/rules"):
+                (root / folder).mkdir(parents=True)
+            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/cpp_source.py", "scripts/utf8_stdio.py"):
+                shutil.copyfile(levels.ROOT / relative, root / relative)
+            (root / "test/unit/rules/first.cpp").write_text('TEST_CASE("first.case") { CHECK(true); }', encoding="utf-8")
+            (root / "CMakeLists.txt").write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(SourceDiscovery NONE)\n'
+                'include(cmake/TestLevels.cmake)\neve_configure_test_levels(metadata)\n', encoding="utf-8")
+            build = root / "build"
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(root), "-B", str(build)],
+                                    capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            # No catalogue or existing .cpp changes: a new nested directory and
+            # source alone must refresh the CTest metadata on the next build.
+            added = root / "test/unit/rules/extra/added.cpp"
+            added.parent.mkdir()
+            added.write_text('TEST_CASE("added.case") { CHECK(true); }', encoding="utf-8")
+            def rebuild():
+                result = subprocess.run(["cmake", "--build", str(build)], capture_output=True,
+                                        text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                return (build / "test_levels.cmake").read_text(encoding="utf-8")
+            self.assertIn('EVE_TEST_LEVEL_added.cpp|added.case', rebuild())
+            added.unlink()
+            self.assertNotIn('EVE_TEST_LEVEL_added.cpp|added.case', rebuild())
+
     def fixture(self, text='TEST_CASE("local.case") { CHECK(1 == 1); }'):
         inventory = {"fixture.cpp": {"text": text, "cases": levels.cases_in(text),
                                      "generated": levels.generated_prefixes_in(text)}}
@@ -67,7 +210,7 @@ class TestLevelCatalogueTests(unittest.TestCase):
             root = Path(directory)
             (root / "fixture.cpp").write_text(text, encoding="utf-8")
             before, after = root / "before.cmake", root / "after.cmake"
-            with patch.object(levels, "CATALOGUE", root / "test_levels.json"):
+            with patch.object(levels, "TEST_DIR", root):
                 levels.emit_cmake(data, before)
                 levels.emit_cmake(compact, after)
             self.assertEqual(before.read_text(encoding="utf-8"), after.read_text(encoding="utf-8"))
@@ -80,14 +223,14 @@ class TestLevelCatalogueTests(unittest.TestCase):
             root = Path(directory)
             for folder in ("cmake", "scripts", "test"):
                 (root / folder).mkdir()
-            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/utf8_stdio.py"):
+            for relative in ("cmake/TestLevels.cmake", "scripts/test_levels.py", "scripts/cpp_source.py", "scripts/utf8_stdio.py"):
                 shutil.copyfile(levels.ROOT / relative, root / relative)
             data, _ = self.fixture()
             data["version"] = 2
             del data["sources"]["fixture.cpp"]["cases"]
-            (root / "test/test_levels.json").write_text(json.dumps(data), encoding="utf-8")
             source = root / "test/fixture.cpp"
-            source.write_text('TEST_CASE("local.case") { CHECK(true); }', encoding="utf-8")
+            header = '// eve-test-policy: {"schema":"evengine.test-policy","version":1,"role":"tests","default":"local-logic"}\n'
+            source.write_text(header + 'TEST_CASE("local.case") { CHECK(true); }', encoding="utf-8")
             (root / "CMakeLists.txt").write_text(
                 'cmake_minimum_required(VERSION 3.21)\nproject(LevelRefresh NONE)\n'
                 'include(cmake/TestLevels.cmake)\neve_configure_test_levels(metadata)\n', encoding="utf-8")
@@ -200,7 +343,7 @@ TEST_CASE("same.case") { CHECK(true); }
             self.assertIn("unit;reason:local-logic;no-render", output.read_text(encoding="utf-8"))
 
     def test_repository_catalogue_covers_every_source_and_case(self):
-        data = json.loads(levels.CATALOGUE.read_text(encoding="utf-8"))
+        data = levels.source_catalogue()
         inventory = levels.source_inventory(levels.ROOT / "test")
         self.assertEqual(levels.catalogue_errors(data, inventory), [])
 
@@ -270,6 +413,63 @@ void build() { ScriptTest script("fixture"); }
         text = '#define Generate(name) TEST_CASE("generated." #name) { CHECK(true); }\nGenerate(one) Generate(two)\n'
         self.assertEqual(levels.generator_line_collisions(text), [2])
         self.assertEqual(levels.generator_line_collisions(text.replace("Generate(one) Generate(two)", "Generate(one)\nGenerate(two)")), [])
+
+    def test_integration_sources_do_not_use_legacy_origin_selectors(self):
+        for source in (levels.ROOT / "test/integration").rglob("*.cpp"):
+            text = levels.mask_cpp(source.read_text(encoding="utf-8"))
+            self.assertNotIn("EVE_TEST_FILTER_ORIGINS", text, str(source))
+            self.assertNotIn("EVE_TEST_ORIGIN_", text, str(source))
+
+    def test_merged_integration_source_selection_keeps_all_compiled_cases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workflow = base / "integration/journey"
+            workflow.mkdir(parents=True)
+            merged, sibling = workflow / "merged.cpp", workflow / "sibling.cpp"
+            merged.write_text('TEST_CASE("journey.first") {}\nTEST_CASE("journey.second") {}\n', encoding="utf-8")
+            sibling.write_text('TEST_CASE("journey.sibling") {}\n', encoding="utf-8")
+            cmake = base / "CMakeLists.txt"
+            cmake.write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(workflows NONE)\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'set(EVE_TEST_RELOCATED_old.cpp "{merged.as_posix()}")\n'
+                f'eve_test_origin_definitions(definitions "{(base / "old.cpp").as_posix()}")\n'
+                'if(definitions)\nmessage(FATAL_ERROR "merged integration selection generated origin macros")\nendif()\n'
+                f'eve_resolve_test_sources(selected "{(base / "old.cpp").as_posix()}" "{merged.as_posix()}")\n'
+                f'if(NOT selected STREQUAL "{merged.as_posix()}")\n'
+                'message(FATAL_ERROR "merged source was duplicated or pulled in a sibling")\nendif()\n'
+                'add_custom_target(focused SOURCES ${selected})\n'
+                'get_target_property(actual focused SOURCES)\n'
+                f'if(NOT actual STREQUAL "{merged.as_posix()}")\n'
+                'message(FATAL_ERROR "target does not compile the complete merged source")\nendif()\n'
+                # A native legacy selector on the same target cannot hide the
+                # integration cases that the physical source actually compiles.
+                'set_property(TARGET focused PROPERTY EVE_TEST_ORIGIN_DEFINITIONS '
+                'EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_native)\n'
+                'set(EVE_TEST_CASE_NAMES_merged.cpp journey.first journey.second)\n'
+                'set(EVE_TEST_CASE_NAMES_native.cpp native.case)\n'
+                f'eve_test_source_case_names("{merged.as_posix()}" names focused)\n'
+                'if(NOT names STREQUAL "journey.first;journey.second")\n'
+                'message(FATAL_ERROR "unit selection hid merged integration cases")\nendif()\n',
+                encoding="utf-8")
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(base), "-B", str(base / "build")],
+                                    text=True, encoding="utf-8", capture_output=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_test_targets_do_not_add_unity_build_configuration(self):
+        for relative in ("cmake/TestLevels.cmake", "test/CMakeLists.txt"):
+            text = (levels.ROOT / relative).read_text(encoding="utf-8")
+            self.assertNotIn("UNITY_BUILD", text, relative)
+            self.assertNotIn("UNITY_GROUP", text, relative)
+            self.assertNotIn("eve_group_integration_sources", text, relative)
+
+    def test_result_header_contract_checks_backend_before_assertion_headers(self):
+        header_contract = levels.ROOT / "test/unit/editing/editing_tests.cpp"
+        self.assertTrue(header_contract.is_file())
+        contract_text = header_contract.read_text(encoding="utf-8")
+        isolation_check = contract_text.index('#error "Result headers must not expose the zeroerr assertion backend"')
+        self.assertLess(isolation_check, contract_text.index('#include "zeroerr/assert.h"'))
+        self.assertLess(isolation_check, contract_text.index('#include <zeroerr/unittest.h>'))
 
     def test_origin_case_policy_does_not_expand_to_the_whole_merged_file(self):
         text = """#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_local)

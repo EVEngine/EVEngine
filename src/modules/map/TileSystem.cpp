@@ -1,13 +1,14 @@
 #include "map/TileSystem.h"
-#include "map/TileLayer.h"
-#include "map/TileConfig.h"
-#include "map/TileProjection.h"
-#include "graphics/Graphics.h"
-#include "graphics/RenderSystem.h"
-#include "graphics/Canvas.h"
-#include "filesystem/Filesystem.h"
 #include "common/Module.h"
 #include "common/Profile.h"
+#include "filesystem/Filesystem.h"
+#include "graphics/Canvas.h"
+#include "graphics/Graphics.h"
+#include "graphics/RenderSystem.h"
+#include "graphics/Texture.h"
+#include "map/TileConfig.h"
+#include "map/TileLayer.h"
+#include "map/TileProjection.h"
 
 #include <unordered_set>
 #include <vector>

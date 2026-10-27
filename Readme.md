@@ -19,6 +19,41 @@ Evolutionary Vision Engine
 
 ## 文档导航
 
+### Intel macOS x86_64 原生构建
+
+在 Intel Mac 上初始化子模块（`make init/submodules`），安装 Xcode 命令行工具、
+CMake、Ninja 和支持 x86_64 的 Vulkan SDK（含 MoltenVK），然后分别构建：
+
+```sh
+make build/macosx-x86_64-debug JOBS=4
+make build/macosx-x86_64 JOBS=4
+```
+
+这两个入口显式设置 `CMAKE_OSX_ARCHITECTURES=x86_64`，最低目标版本为 macOS 13.3，
+满足浮点数 `std::format` 所需的系统标准库版本；同时检查宿主、目标和编译器，拒绝其他平台或架构。
+引擎使用 `build/macosx-x86_64[-debug]`；源码依赖构建和安装分别使用
+`build/third-party/macosx-x86_64[-debug]` 和
+`build/third-party-binary/macosx-x86_64[-debug]`。
+预编译依赖按 `macosx-x86_64-Release` 选择，Debug 引擎也使用 Release 依赖。
+只构建依赖可用 `make deps/macosx-x86_64[-debug]`；运行测试可用
+`make test/macosx-x86_64[-debug]`。原有 `make debug` 默认入口保持不变。
+
+CI 使用 `macos-15-intel` 原生 runner，按 `build_type` 选择 Debug、Release 或两者，
+与 Windows ARM64 一样验证引擎及测试程序的编译和链接，要求对应预编译依赖可用。
+编译检查不运行图形测试；SDK 发布另外在两种架构的原生 runner 上验证原生插件和打包游戏。
+
+分别生成 SDK：
+
+```sh
+make sdk/macosx-arm64 JOBS=4
+make sdk/macosx-x86_64 JOBS=4
+```
+
+Debug SDK 对应 `sdk/macosx-arm64-debug` 和 `sdk/macosx-x86_64-debug`。
+发布包分别命名为 `eve-sdk-macosx-arm64-<版本>.zip` 和
+`eve-sdk-macosx-x86_64-<版本>.zip`，选择与目标 Mac CPU 匹配的包。
+`TARGET_PLATFORM` 保持 `macosx`，`TARGET_ARCHITECTURE` 标记 CPU 架构。
+
 - 想先直观感受引擎的渲染效果？浏览[示例渲染画廊](docs/images/examples/README.md)——每张截图都由引擎把交换链上实际呈现的一帧原样输出。
 - [游戏开发者文档](docs/usr/README.md)：下载引擎、创建并运行游戏、调试与打包发布；[模块使用手册](docs/usr/MODULES.md) 逐个说明脚本 API 和示例。
 - [在线 API 参考（Doxygen）](https://evengine.github.io/EVEngine/)：随 GitHub Pages 持续发布，包含 C++ API 与用户手册。
@@ -73,7 +108,8 @@ Evolutionary Vision Engine
 |----------|----------|------|
 | Windows | `eve-sdk-win32-<版本>.zip` | Windows 10/11 x64 |
 | Linux | `eve-sdk-linux-<版本>.zip` | Ubuntu 20.04+ 等（需 Vulkan 驱动） |
-| macOS | `eve-sdk-macosx-<版本>.zip` | macOS 12+（Apple Silicon / Intel） |
+| macOS ARM64 | `eve-sdk-macosx-arm64-<版本>.zip` | macOS 13.3+，Apple Silicon |
+| macOS x86_64 | `eve-sdk-macosx-x86_64-<版本>.zip` | macOS 13.3+，Intel |
 | Android | `eve-sdk-android-<版本>.zip` | 在开发机上组装 arm64 APK |
 | iOS | `eve-sdk-ios-<版本>.zip` | 在 macOS 开发机上组装 arm64 .app |
 
@@ -169,7 +205,7 @@ make build/win32-debug CMAKE_EXTRA_ARGS="-DEVENGINE_THIRD_PARTY_MODE=SOURCE"
 macOS 通用架构和自定义 sanitizer/code-model 构建使用源码。`PREBUILT` 则要求目标有预编译包。
 原有 `EVENGINE_THIRD_PARTY_BINARY_DIR` 仍可指定兼容的离线/本机依赖目录。
 升级依赖时，先等 third-party 独立 release 上传完成，再更新引擎中的 tag 和提交两个固定值。
-依赖补丁由 third-party 仓库维护；引擎自有 `external/ECS.hpp`、`external/zeroerr` 的补丁留在本仓库。
+third-party 管理稳定依赖；ECS 和 zeroerr 保留在 external 下独立更新，修改直接进入各自源码仓库。引擎不再保留依赖覆盖头文件或补丁。
 
 zip 包含头文件、静态/动态库、运行时文件、版本信息和许可文件。仍需安装平台构建工具、
 Vulkan SDK、系统开发库，并初始化引擎子模块；配置时也会拉取 ImGui 等直接参与引擎编译的源码。
@@ -218,10 +254,10 @@ sudo apt install -y \
 
 | 组件 | 推荐配置 |
 |------|----------|
-| 操作系统 | macOS 12+（Apple Silicon / Intel） |
+| 操作系统 | macOS 13.3+（Apple Silicon / Intel，使用对应架构的 SDK） |
 | 工具链 | **Xcode Command Line Tools**（`xcode-select --install`） |
 | CMake | Homebrew：`brew install cmake`（≥ 3.21） |
-| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
+| Vulkan | 从 [LunarG](https://vulkan.lunarg.com/) 安装 **macOS Vulkan SDK**（内含 **MoltenVK**），仅**构建/开发**需要；`dist/eve-sdk/macosx-<arm64|x86_64>` 发布包已内置 Vulkan loader + MoltenVK，玩家机器无需再装 SDK |
 
 配置环境（每次新开终端执行，或写入 `~/.zshrc`）：
 
@@ -587,7 +623,7 @@ docker run -it --rm --volume="$(pwd):/home/evengine/src" evengine /bin/bash
    Makefile 默认 `-j 32`。机器核心较少时可改为 `-j$(nproc)`（Linux）/`-j$(sysctl -n hw.ncpu)`（macOS）或较小数字，避免内存不足。
 
 6. **macOS 窗口/渲染失败**  
-   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
+   如果报错是 `Installed Vulkan doesn't implement the VK_KHR_surface extension`（SDL 原文），说明运行时可用的 Vulkan 没有实现 surface 扩展，macOS 上即 MoltenVK 未被加载。**发布包**请确认把 `dist/eve-sdk/macosx-<arm64|x86_64>` 的 `lib/` 一起发给玩家（内含 `libvulkan.1.dylib`、`libMoltenVK.dylib`、`MoltenVK_icd.json`），eve 启动时会自动指向这些文件（`platform/macosx` 的 `bootstrapBundledVulkan`），玩家无需安装 SDK。**开发构建**请确认 `VK_ICD_FILENAMES` 指向 MoltenVK ICD（`setup-env.sh` 会设置），且 SDK 的 `lib` 在 `DYLD_LIBRARY_PATH` 中。引擎通过 SDL2 Vulkan surface + MoltenVK 运行，无需单独写 Metal 后端。
 
 7. **Android APK / 真机**  
    确认 NDK 版本与 Makefile 一致；`local.properties` 的 `sdk.dir` 正确；设备开启 USB 调试且 `adb devices` 可见。首版要求真机 Vulkan；无设备时至少验证 `make build/android-debug` 产出 APK。

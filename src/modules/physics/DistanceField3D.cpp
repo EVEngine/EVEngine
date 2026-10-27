@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "physics/DistanceField3D.h"
 
 #include "common/Exception.h"

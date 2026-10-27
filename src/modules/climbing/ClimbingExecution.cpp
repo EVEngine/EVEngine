@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "climbing/Climbing.h"
 #include "climbing/ClimbingRuntimeInternal.h"
 #include "climbing/ClimbingTrajectory.h"
@@ -253,6 +254,14 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
         if (!overlap) return eve::Result<ClimbingAdvance>::failure(overlap.status());
         ++lastQueryCount_;
         lastCounters_.queryCount = lastQueryCount_;
+        if (debugCapture_ == ClimbingDebugCapture::Enabled)
+            boundedDebugPush(lastDebugQueries_,
+                             ClimbingDebugQuery{execution.candidate.actionId,
+                                                "climbing.hang.clearance",
+                                                {execution.currentFeet.x, lowerY, execution.currentFeet.z},
+                                                {execution.currentFeet.x, upperY, execution.currentFeet.z},
+                                                profile_.capsuleRadius,
+                                                profile_.capsuleHeight});
         if (overlap.value().bodyCount != 0) {
             enqueueEvent({ClimbingEventKind::Failed, execution.candidate.actionId, step.tick, execution.executionId});
             phase_        = ClimbingPhase::Failed;
@@ -440,6 +449,10 @@ eve::Result<ClimbingAdvance> ClimbingRuntime::advance(physics::World3D& world, e
     const physics::CapsuleMove3D movement = std::move(moved).takeValue();
     lastCounters_.moverIterations         = static_cast<std::uint32_t>(std::max(0, movement.iterations));
     const Vec3 actual{movement.deltaX, movement.deltaY, movement.deltaZ};
+    if (debugCapture_ == ClimbingDebugCapture::Enabled)
+        boundedDebugPush(lastDebugQueries_,
+                         ClimbingDebugQuery{execution.candidate.actionId, "climbing.active.move", execution.currentFeet,
+                                            execution.currentFeet + desired, profile_.capsuleRadius, collisionHeight});
     execution.currentFeet            = execution.currentFeet + actual;
     execution.lastPlannedFeet        = planned;
     const Vec3 residual              = desired - actual;

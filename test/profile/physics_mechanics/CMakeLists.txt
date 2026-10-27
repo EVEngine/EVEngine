@@ -97,6 +97,7 @@ set(src
  src/modules/physics/forces/WingAssembly.cpp
  src/modules/physics/forces/TireDynamics.cpp src/modules/physics/forces/ForceApplication.cpp src/modules/physics/forces/ForceBindings.cpp
  src/modules/physics/World.cpp src/modules/physics/World3D.cpp
+ src/modules/physics/Box2DSimulationBackend.cpp src/modules/physics/World3D.cpp
     src/modules/physics/World3DSimulation.cpp
     src/modules/physics/mechanics/Coupling3D.cpp
     src/modules/physics/mechanics/Coupling3DStep.cpp src/modules/physics/Body.cpp src/modules/physics/Body3D.cpp

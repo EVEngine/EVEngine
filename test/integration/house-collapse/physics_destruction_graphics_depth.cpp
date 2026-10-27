@@ -1,3 +1,17 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "default": "render-window",
+  "module": "physics_destruction_graphics",
+  "origins": [
+    "physics_destruction_graphics_depth.cpp"
+  ]
+}
+*/
+// clang-format on
+
 #include <cmath>
 #include <memory>
 #include "graphics/GBuffer.h"
@@ -7,6 +21,8 @@
 #include "graphics/RenderSystem3D.h"
 #include "physics/World3D.h"
 #include "physics/destruction/CollapseAnimation.h"
+#include "physics/destruction/CollapsePlayback.h"
+#include "physics/destruction/GeometryCollectionInstance.h"
 #include "physics/destruction/cook/AssemblyFractureSettings.h"
 #include "physics/destruction/cook/VoronoiCook.h"
 #include "physics/destruction/graphics/GeometryCollectionRenderer.h"
@@ -43,10 +59,16 @@ TEST_CASE("physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWi
                         .expect("instance");
     CollapseAnimation clip;
     REQUIRE(clip.capture(*instance, 0).ok());
+    auto playback = CollapsePlayback::prepare(std::move(clip)).expect("freeze playback");
+    instance.reset();
+    world.destroy();
     graphics->setScreenReadbackEnabled(true);
     auto depth = [&](GeometryCollectionRenderer* renderer, float z) {
         graphics->clearScreen();
-        if (renderer) REQUIRE(renderer->submitAnimation(clip, 0, 0, 0, z).ok());
+        if (renderer) {
+            REQUIRE(playback.setPlacement({0, 0, z}).ok());
+            REQUIRE(renderer->submitPlayback(playback).ok());
+        }
         graphics->render3D();
         auto* texture = control->getGBuffer()->getDepthTexture();
         REQUIRE(texture != nullptr);
@@ -57,7 +79,7 @@ TEST_CASE("physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWi
     float first = 0.f;
     {
         GeometryCollectionRenderer renderer(nullptr);
-        REQUIRE(renderer.prepareAnimation(clip, graphics).ok());
+        REQUIRE(renderer.preparePlayback(playback, graphics).ok());
         first               = depth(&renderer, 0.f);
         const float farther = depth(&renderer, -4.f);
         REQUIRE(first > 0.05f);
@@ -67,7 +89,7 @@ TEST_CASE("physics_destruction_graphics.depthTracksCurrentSubmissionAndExpiresWi
     REQUIRE(depth(nullptr, 0.f) > 0.95f);
     {
         GeometryCollectionRenderer replacement(nullptr);
-        REQUIRE(replacement.prepareAnimation(clip, graphics).ok());
+        REQUIRE(replacement.preparePlayback(playback, graphics).ok());
         REQUIRE(std::abs(depth(&replacement, 0.f) - first) < 0.02f);
     }
     REQUIRE(depth(nullptr, 0.f) > 0.95f);

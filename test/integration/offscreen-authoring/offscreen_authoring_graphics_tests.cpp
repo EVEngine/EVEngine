@@ -1,10 +1,24 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "procgen_graphics_editing",
+  "modules": [
+    "procgen_graphics_editing",
+    "stylize_editor"
+  ],
+  "origins": []
+}
+*/
+// clang-format on
+
 #include "zeroerr/assert.h"
 
 #include "common/Module.h"
 #include "graphics/Graphics.h"
 #include "procgen/graphics_editing/HeightmapMesh.h"
 #include "procgen/heightmap/Heightmap.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // Responsibility: heightmap_preview_admission
 namespace test_heightmap_preview_admission {
@@ -29,8 +43,6 @@ TEST_CASE("authoringPreview.heightmapMissingProviderPreservesSource") {
 }  // namespace test_heightmap_preview_admission
 
 #include "stylize/editor/EditorStylizeTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // Responsibility: stylize_preview_admission
 namespace test_stylize_preview_admission {
 TEST_CASE("authoringPreview.stylizeMissingProviderPreservesDocument") {

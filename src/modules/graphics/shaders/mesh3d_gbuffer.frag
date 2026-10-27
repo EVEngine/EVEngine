@@ -9,7 +9,7 @@ layout(push_constant) uniform Push {
     vec4 modelR0;
     vec4 modelR1;
     vec4 modelR2;
-    vec4 clip; // x=near, y=far, z=packedTint+PBR, w=packedMotion
+    vec4 clip; // x=near, y=far, z=packedTint+PBR, w=packedMotion; w<0 selects RGBA8 entity IDs in z
 } pc;
 
 layout(binding = 0) uniform sampler2D MainTex;
@@ -28,6 +28,14 @@ void main() {
     float farZ = max(pc.clip.y, nearZ + 1e-4);
     float zEye = (nearZ * farZ) / max(farZ - z * (farZ - nearZ), 1e-6);
     float linear01 = clamp((zEye - nearZ) / (farZ - nearZ), 0.0, 1.0);
+    if (pc.clip.w < 0.0) {
+        outNormal = vec4(n * 0.5 + 0.5, 0.0);
+        outDepth = vec4(linear01, 0.5, 0.5, 1.0);
+        outAlbedo = unpackUnorm4x8(floatBitsToUint(pc.clip.z));
+        outPbrParams = vec4(0.0, 1.0, 1.0, 1.0);
+        outEmissive = vec4(0.0);
+        return;
+    }
     uint packedMotion = uint(pc.clip.w + 0.5);
     vec2 motion = (vec2(packedMotion & 4095u, (packedMotion >> 12) & 4095u) - 2047.0) / 2047.0;
     uint packedTint = floatBitsToUint(pc.clip.z);

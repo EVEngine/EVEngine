@@ -152,9 +152,10 @@ Result<OceanGpuFrameToken> OceanGpuFrameBuilder::submit() const {
         return Output::failure(diagnostic(DiagnosticCode::InvalidArgument, "Invalid ocean GPU time"));
     ++state.revision;
     state.status = OceanGpuSpectrum::Impl::State::Failed;
-    // Rebase phase in double once per 16 simulation seconds. The shader sees only a small
-    // relative time, preventing float clocks from freezing or losing phase in long sessions.
-    const double anchor     = std::floor(time_ / 16.0) * 16.0;
+    // Rebase phase in double once per 16 simulation seconds, around the nearest
+    // anchor. A signed relative time in [-8, 8) halves the worst float phase
+    // error while retaining the same coefficient upload frequency.
+    const double anchor     = std::floor((time_ + 8.0) / 16.0) * 16.0;
     const double u          = state.target ? std::clamp((time_ - state.start) / state.duration, 0.0, 1.0) : 0.0;
     const double weight     = u * u * u * (10.0 + u * (-15.0 + 6.0 * u));
     const double rate       = state.target ? 30.0 * u * u * (1.0 - u) * (1.0 - u) / state.duration : 0.0;

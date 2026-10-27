@@ -112,11 +112,11 @@ class ExampleLayoutTests(unittest.TestCase):
         self.write_index(["alpha"])
         self.assert_reports("entry 'alpha' is stale", {"alpha": "now runnable"})
 
-    def test_example_missing_from_the_overview_is_reported(self):
+    def test_new_example_needs_no_overview_edit(self):
         self.add_example("alpha")
         self.add_example("beta")
         self.write_index(["alpha"])
-        self.assert_reports("examples/beta is not listed in the overview table")
+        self.assertEqual([], self.findings())
 
     def test_dead_index_link_is_reported(self):
         self.add_example("alpha")

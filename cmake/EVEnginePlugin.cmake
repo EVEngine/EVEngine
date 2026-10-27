@@ -29,6 +29,10 @@ function(add_eve_plugin _eve_plugin_name)
             message(WARNING "add_eve_plugin: eve import library not found under ${EVENGINE_LIB_DIR}")
         endif()
     elseif(APPLE)
+        if(EVENGINE_TARGET_PLATFORM STREQUAL "macosx")
+            set_target_properties(${_eve_plugin_name} PROPERTIES
+                OSX_ARCHITECTURES "${EVENGINE_TARGET_ARCHITECTURE}")
+        endif()
         # Resolve ModuleManager etc. from the host at load time.
         target_link_options(${_eve_plugin_name} PRIVATE
             "LINKER:-undefined,dynamic_lookup"

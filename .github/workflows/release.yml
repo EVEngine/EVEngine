@@ -2,7 +2,7 @@
 #   start → strict tests (debug+release) → SDK zips → finish (opens PRs)
 # See docs/dev/发布流程.md and scripts/release.py.
 
-name: Release
+name: Release CI
 
 on:
   release:
@@ -57,16 +57,15 @@ jobs:
           echo "branch=$TAG" >> "$GITHUB_OUTPUT"
 
   strict-tests:
-    name: strict tests
+    name: Full release validation
     needs: start
-    uses: ./.github/workflows/ci.yml
+    uses: ./.github/workflows/release-ci.yml
     with:
-      build_type: both
       ref: ${{ needs.start.outputs.branch }}
     secrets: inherit
 
   sdk:
-    name: SDK pack
+    name: SDKs (all platforms and architectures)
     needs: [start, strict-tests]
     uses: ./.github/workflows/sdk-release.yml
     with:

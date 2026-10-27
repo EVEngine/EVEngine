@@ -1,12 +1,36 @@
 # C++ test levels
 
-The source policy is [test_levels.json](test_levels.json). It covers every
-C++ source under `test/`, including standalone projects, profile checks, fuzzing,
-helpers and manual probes. Literal case names come from C++ declarations; file
-defaults classify them unless an explicit case override applies.
-The six existing script-test generator macros have bounded name-prefix policies.
-Unknown sources still require an explicit file policy. The full per-case catalogue
-and CTest labels are generated in the build directory, not maintained in Git.
+Every C++ source under `test/` is discovered from disk. Literal case names come
+from C++ declarations. A normal source under `unit/<module>/` needs no registration:
+its module comes from the path, cases default to `local-logic`, and a file without
+cases is a helper. Files under `integration/<task>/` derive their task and default
+to `module-composition`; their semantic module owner must be declared locally.
+
+There is no central Test Levels JSON. CMake generates the full per-case catalogue
+and CTest labels in the build directory. Source creation/removal triggers CMake
+regeneration. Existing classifications, resource labels and relocation origins
+are preserved in their owning source files.
+
+For semantics the path cannot provide, put one policy in the leading comments,
+before includes or other C++ code:
+
+```cpp
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"graphics","default":"render-window"}
+```
+
+The source policy supports `role`, `default`, `cases`, `generated`, `module`,
+`modules`, `task`, and legacy relocation `origins`. Large policies use a leading
+`/* eve-test-policy: { ... } */` block, protected with clang-format off/on comments.
+Ordinary new files need no origins. Unknown fields or versions, duplicate headers,
+and stale case overrides are errors. Policy-looking strings in test bodies do
+not change classification. Helpers and probes outside conventional directories
+can declare their role, module and default locally.
+
+Unit safety checks still reject rendering, VM, file, worker and wall-clock setup,
+including reachable helpers. Macro-generated names still require explicit bounded
+prefixes, which new sources can declare with `generated` in their local policy.
+Module ownership, resource classifications and stale overrides remain validated;
+automatic discovery does not relax those contracts.
 
 ## Running
 
@@ -75,10 +99,40 @@ A module normally owns one C++ source under `test/unit/<module>/`. Only a suite 
 5000 lines is divided along named responsibilities; each resulting file stays
 below that threshold. The module coverage audit enforces this rule. Integration
 sources combine related cases by task goal; they are not module unit files.
-Consolidated sections use private namespaces to isolate helpers. Source provenance
-also drives compile selectors so standalone and trimmed builds retain their
-existing responsibility selection instead of compiling every merged section.
-Composition ownership remains independent of physical file count.
+Consolidated unit sections use private namespaces to isolate helpers. Integration
+workflows use physically merged `.cpp` sources and do not use origin-selection
+macros. The intermediate mechanical split into hundreds of scenario files has
+been reverted. Related scenarios share one real translation unit; this does not
+rely on CMake Unity or generated wrapper translation units. Helpers keep private
+namespaces so consolidation preserves ownership and avoids name collisions.
+A focused harness may own a genuinely separate contract source when linking the
+aggregate would introduce unrelated runtime dependencies. Existing unit-only
+legacy selectors remain outside this integration reorganization.
+
+The [coverage audit](../docs/dev/testing/integration-audit.md) lists every original
+case, its current location, named subcase or explicit retirement reason. The
+[optimization notes](../docs/dev/testing/integration-optimization.md) explain
+boundary decisions, fixture sharing, mocks and verification limits. Regenerate
+the audit with `python -X utf8 scripts/audit_integration_tests.py`.
+
+Timing and long-running stability workloads under `benchmark/` are excluded from
+the normal build. Routine integration cases use short, bounded simulations with
+small time steps; long matches, endurance loops and frame-count exhaustion
+regressions remain explicit benchmark workloads.
+To build and run them explicitly:
+
+```sh
+make test/win32-debug CMAKE_EXTRA_ARGS=-DEVENGINE_BUILD_TEST_BENCHMARKS=ON INCLUDE_BENCHMARKS=1 LABEL_FILTER='^benchmark$'
+```
+
+On Windows, `make test/win32-debug` and `make test/win32` run CTest on a private
+background desktop by default. SDL windows remain shown and rendering normally on
+that desktop, including visibility and presentation assertions; the user's active
+desktop is never switched. The launcher verifies child desktop placement before
+starting tests and fails explicitly if isolation is unavailable. Use
+`TEST_WINDOWS=visible` for interactive debugging. Direct `ctest` calls bypass this
+default; wrap them with `python3 scripts/run_ctest.py -- ctest ...` to isolate them.
+Closing the launcher also terminates its remaining test process tree.
 
 Human preview holds require `EVENGINE_TEST_MANUAL_PREVIEW=1`. Automatic tests
 still render the frames needed by their assertions; no preview is required by
@@ -95,8 +149,9 @@ rules belong here; invoking their Squirrel bindings is integration coverage.
 
 Integration tests verify actual module composition, script bindings, asset
 pipelines, physics backends, OS services, runtime lifecycles and rendering.
-Measured performance workloads are integration tests too. They can still be
-CPU-only: a card/RTS payment transaction or script-binding contract does not
+Timing workloads use the explicit benchmark build/run lane; their boundary labels
+still describe the exercised contracts. Integration tests can be CPU-only:
+a card/RTS payment transaction or script-binding contract does not
 need a renderer. A geometry/tessellation test in the graphics domain can be unit.
 
 Labels are independent dimensions:
@@ -125,13 +180,15 @@ include all source branches; normal per-case discovery uses compiled identities.
 - Standalone project entrypoints, probes, compile contracts and shared fixture
   implementations retain their dedicated directories/roles.
 
-All formerly mixed desktop sources are physically separated. Literal case names
-and assertions are preserved; bundles follow the new physical source files.
-Default per-case process isolation and opt-in performance policy remain intact.
-Canonical paths own unit modules and integration tasks. The catalogue retains
-integration module ownership and `origins` migration provenance. CMake profile/standalone references to an old name resolve to the
-canonical source(s); an already canonical file is never expanded again. There
-are no legacy forwarding `.cpp` files or a second manually maintained source list.
+Integration workflows are physically consolidated by task. Literal case names,
+assertions and named subcases remain traceable in the audit; local-only cases
+stay in their owning unit files. Default per-case process isolation and opt-in
+benchmark policy remain intact. Canonical source paths own unit modules and
+integration tasks. Catalogue provenance may resolve a former scenario basename
+to its owning aggregate for existing profile/standalone callers; it is not a
+second compilation source or a preprocessor selection mechanism. There are no
+legacy forwarding `.cpp` files, generated Unity wrappers, or manually duplicated
+live test source lists.
 
 Unit registrations set `EVENGINE_TEST_NO_RENDER=1`. Desktop test main checks SDL
 video state before and after execution; shared window/offscreen fixtures reject

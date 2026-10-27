@@ -1,3 +1,4 @@
+// eve-hot-path
 #include "graphics/RenderSystem3D.h"
 #include "common/Assert.h"
 #include "common/Capability.h"
@@ -19,6 +20,7 @@
 #include "graphics/Mesh.h"
 #include "graphics/Outline.h"
 #include "graphics/PrimitiveScene.h"
+#include "graphics/ReflectionProbeUpload.h"
 #include "graphics/RenderControl.h"
 #include "graphics/RenderTransformProjection.h"
 #include "graphics/RenderableInstances.h"
@@ -1208,22 +1210,33 @@ void RenderSystem3D::render(Graphics& gfx) {
     // light probes, and x-ray stay on the forward path.
     auto isDeferredCoreOpaque = [&](const CulledItem& item) -> bool {
         if (!doDeferredLighting) return false;
+        // The core deferred shader has no environment/decal samplers or
+        // per-renderable shadow-receive policy. Keep those surfaces on the
+        // existing opaque ForwardPlus overwrite path, alongside custom PBR.
+        if (doDecal && !g_decalDrawers.empty()) return false;
+        const auto* camera = cams[size_t(item.camIdx)].data;
+        if (camera->envMap && camera->envIntensity > 0.f) return false;
+        if (!item.receiveShadow) return false;
         if (item.surfaceMode == SurfaceMode::Transparent) return false;
         if (item.hair || item.xray || item.speedTreeFade) return false;
         if (item.mr->instances || item.lightProbeUsage != 0) return false;
         if (item.shader) return false;
         Material* mat = item.material;
         if (mat) {
+            if (!mat->getReceiveShadow()) return false;
+            if (mat->getTexCellBombStrength() > 0.f) return false;
+            if (mat->getHeightTexture() && mat->getParallaxScale() > 0.f) return false;
             if (mat->effectiveShader()) return false;
             if (mat->isTransparentHair()) return false;
             const std::string model = mat->getShadingModel();
             if (model != "pbr") return false;
             if (!mat->getReceiveLight()) return false;
-            if (mat->hasPbrSurface()) {
-                const PbrSurface s = mat->pbrSurface();
-                if (s.clearcoatFactor > 1e-4f || s.anisotropyStrength > 1e-4f) return false;
-            }
+            // The core G-buffer does not carry the dedicated PBR surface's
+            // texture bindings, authored normal mode or vegetation factors.
+            if (mat->hasPbrSurface()) return false;
         } else {
+            if (item.mr->texBombStrength > 0.f) return false;
+            if (item.mr->heightTexture && item.mr->parallaxScale > 0.f) return false;
             if (item.mr->shader) return false;
             if (!item.mr->receiveLight) return false;
         }

@@ -1,3 +1,4 @@
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"module":"plugins","default":"module-composition"}
 #include "common/Runtime.h"
 #include "fixtures/PluginReloadChecks.h"
 #include "plugins/Plugins.h"

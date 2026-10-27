@@ -731,9 +731,9 @@ void erodeOnce(HexMap& map, GeneratorScratch& scratch, std::int32_t cellIndex) {
     const HexCoordinates targetCoordinates = map.coordinatesAt(targetIndex);
     const std::int32_t   targetElevation   = map.elevation(targetCoordinates);
 
-    // Erosion moves land around rather than removing it, so the cell itself stays
-    // land; the running count only has to follow the erosion it performs.
-    --scratch.landCells;
+    // Count only crossings of the waterline, not every erosion transfer.
+    if (cellElevation == map.waterLevel(cellCoordinates)) --scratch.landCells;
+    if (targetElevation + 1 == map.waterLevel(targetCoordinates)) ++scratch.landCells;
     writeElevation(map, cellCoordinates, cellElevation - 1);
     writeElevation(map, targetCoordinates, targetElevation + 1);
     requeueErodible(scratch, cellIndex, cellElevation);

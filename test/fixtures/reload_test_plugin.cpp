@@ -1,3 +1,4 @@
+// eve-test-policy: {"schema":"evengine.test-policy","version":1,"role":"helper","default":"module-composition","module":"plugins"}
 #include "common/Module.h"
 
 #include <simplesquirrel/simplesquirrel.hpp>

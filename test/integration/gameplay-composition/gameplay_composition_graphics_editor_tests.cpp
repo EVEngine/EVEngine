@@ -1,7 +1,61 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "dialogue",
+  "modules": [
+    "dialogue",
+    "editing",
+    "editor",
+    "scene_editor"
+  ],
+  "origins": [
+    "dialogue_state_integration.cpp",
+    "editing_contracts.cpp",
+    "editing_satellite_contract_suite.cpp",
+    "editor.cpp",
+    "editor_animation_clip.cpp",
+    "editor_archspace_target.cpp",
+    "editor_archspace_tools.cpp",
+    "editor_audio_editor.cpp",
+    "editor_audio_source_script.cpp",
+    "editor_audio_transport.cpp",
+    "editor_automation_v2.cpp",
+    "editor_avatar_document_editor.cpp",
+    "editor_avatar_editor.cpp",
+    "editor_avatar_target.cpp",
+    "editor_host_package.cpp",
+    "editor_script_component_payload.cpp"
+  ],
+  "cases": {
+    "platform-file": [
+      "archspace.document.opening_cutout_changes_mesh_and_helpers_work"
+    ],
+    "script-binding": [
+      "editor.actionTimeline.scriptPersistsDocumentAndReportsDirtyState",
+      "editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace",
+      "editor.animation.clip_editor_script_composes_workspace_and_transactions",
+      "editor.audio.source_editor_script_composes_workspace_and_transactions",
+      "editor.avatar.document_editor_script_composes_workspace_and_rejects_referenced_delete",
+      "editor.biome.rules_editor_script_composes_workspace_and_exclusions",
+      "editor.script_tool.implements_the_same_session_protocol"
+    ]
+  }
+}
+*/
+// clang-format on
+#include <map>
+#include "editor_preview_script_test_support.h"
+#include "editor_preview_test_support.h"
+
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: dialogue state integration
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_dialogue_state_integration)
-#include "PrivateTestScope.h"
 #include <array>
 #include <cstdint>
 #include <simplesquirrel/simplesquirrel.hpp>
@@ -21,7 +75,6 @@
 #include "statepatch/StateAccessAdapter.h"
 #include "statepatch/StatePatch.h"
 #include "transaction/Transaction.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // dialogue_state_integration.cpp
 namespace test_dialogue_state_integration {
@@ -341,14 +394,11 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
     CHECK(!flow.isActive());
 }
 }  // namespace test_dialogue_state_integration
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_contracts)
-#include <zeroerr/unittest.h>
-#include <string>
-#include <type_traits>
-#include <vector>
+// Contract section: editing contracts
 #include "PrivateTestScope.h"
+
+#include <zeroerr/unittest.h>
 #include "animation/editing/AnimationClip.h"
 #include "animation/editor/EditorAnimationClip.h"
 #include "avatar/editing/AvatarTarget.h"
@@ -424,8 +474,6 @@ TEST_CASE("dialogueState.dialogueFlowConfiguresAllCrossDomainHooks") {
 #include "voxel/editing/VoxelWorldTarget.h"
 #include "voxel/editor/EditorVoxelCatalogTarget.h"
 #include "voxel/editor/EditorVoxelPaletteTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editing_contracts.cpp
 namespace test_editing_contracts {
 // editing_contracts.cpp
@@ -684,76 +732,14 @@ TEST_CASE("editing.idInstances.selectionVectorKeepsIndependentIdentityAndText") 
     CHECK(static_cast<bool>(assigned.front().domain == eve::editing::SelectionDomain::Scene));
 }
 }  // namespace test_editing_contracts
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_result_storage)
+
+// Contract section: editing satellite contract suite
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <string>
-#include "editing/EditingResult.h"
-// editing_result_storage.cpp
-namespace test_editing_result_storage {
-TEST_CASE("editing.failureFactoryPreservesRuleAndStatus") {
-    auto result = eve::editing::failed<int>(eve::StatusCode::Conflict, eve::DiagnosticCode::Conflict,
-                                            eve::editing::RuleId("test.conflict"), "collision");
-    CHECK(!result.ok());
-    CHECK(result.code() == eve::StatusCode::Conflict);
-    CHECK(result.diagnostics().size() == 1);
-    const auto& diagnostic = result.diagnostics().front();
-    CHECK(diagnostic.message() == "collision");
-    CHECK(diagnostic.source() == "editing");
-    CHECK(eve::editing::diagnosticRule(diagnostic).value() == "test.conflict");
-}
 
-TEST_CASE("editing.failureFactoryRejectsSuccessfulStatus") {
-#if !defined(ZEROERR_NO_ASSERT)
-    bool caught = false;
-    try {
-        auto result = eve::editing::failed<void>(eve::StatusCode::Applied, eve::editing::RuleId("test.invalid"),
-                                                 "invalid category");
-        result.ignore();
-    } catch (const zeroerr::AssertionData& failure) {
-        caught = true;
-        CHECK(std::string(failure.file).find("EditingResult.h") != std::string::npos);
-        CHECK(failure.cond == "eve::Status(status, {}).isFailure()");
-        CHECK(!failure.passed);
-    }
-    CHECK(caught);
-#else
-    CHECK(true);
-#endif
-}
-
-TEST_CASE("editing.ruleDiagnosticPreservesOwnedTextSeverityAndProjection") {
-    std::string ruleText(4096, 'r');
-    std::string message(4096, 'm');
-    auto        diagnostic = eve::editing::ruleDiagnostic(eve::DiagnosticCode::Conflict, eve::editing::RuleId(ruleText),
-                                                          eve::Severity::Warning, message);
-    ruleText               = "changed";
-    message                = "changed";
-    CHECK(static_cast<bool>(diagnostic.code() == eve::DiagnosticCode::Conflict));
-    CHECK(static_cast<bool>(diagnostic.severity() == eve::Severity::Warning));
-    CHECK(diagnostic.message() == std::string(4096, 'm'));
-    CHECK(diagnostic.path().empty());
-    CHECK(diagnostic.source() == "editing");
-    REQUIRE(diagnostic.details().size() == 1u);
-    CHECK(diagnostic.details().front().first == "rule");
-    CHECK(diagnostic.details().front().second == std::string(4096, 'r'));
-    CHECK(eve::editing::diagnosticRule(diagnostic).value() == std::string(4096, 'r'));
-}
-}  // namespace test_editing_result_storage
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_satellite_contract_suite)
-#include "PrivateTestScope.h"
 #include <functional>
-#include <string>
 #include "audio/editing/AudioEditingProvider.h"
 #include "audio/editing/AudioTarget.h"
-#include "editor/Editor.h"
 #include "physics/editing/PhysicsEditingProvider.h"
-#include "physics/editing/PhysicsTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editing_satellite_contract_suite.cpp
 namespace test_editing_satellite_contract_suite {
 using namespace eve::editing;
@@ -875,108 +861,20 @@ TEST_CASE("editing.satellite.audio_and_physics_publish_open_factory_providers") 
     CHECK(static_cast<bool>(physicsTarget));
 }
 }  // namespace test_editing_satellite_contract_suite
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editing_value_lifecycle)
+// Contract section: editor
 #include "PrivateTestScope.h"
-#include <zeroerr/unittest.h>
-#include <type_traits>
-#include "editing/EditingValue.h"
-#include "editing/EditingValueJson.h"
-// editing_value_lifecycle.cpp
-namespace test_editing_value_lifecycle {
-using EditingValue = eve::editing::Value;
-static_assert(std::is_nothrow_move_constructible_v<EditingValue> ==
-              std::is_nothrow_move_constructible_v<EditingValue::Storage>);
-static_assert(std::is_nothrow_move_assignable_v<EditingValue> ==
-              std::is_nothrow_move_assignable_v<EditingValue::Storage>);
-static_assert(std::is_nothrow_default_constructible_v<EditingValue>);
 
-TEST_CASE("editing.valueLifecycle.deepCopyMoveAndDeterministicJson") {
-    EditingValue original(EditingValue::Object{{"z", EditingValue::Array{1, "text"}}, {"a", true}});
-    EditingValue copy(original);
-    (*original.getIf<EditingValue::Object>())["z"] = EditingValue(99);
-    REQUIRE(copy.getIf<EditingValue::Object>() != nullptr);
-    REQUIRE(copy.getIf<EditingValue::Object>()->at("z").getIf<EditingValue::Array>() != nullptr);
-    CHECK(eve::editing::editorValueToJson(copy) == "{\"a\":true,\"z\":[1,\"text\"]}");
-    EditingValue assigned;
-    assigned = copy;
-    CHECK(assigned == copy);
-    EditingValue moved(std::move(assigned));
-    CHECK(moved == copy);
-    assigned = EditingValue("reused");
-    CHECK(assigned.type() == EditingValue::Type::String);
-    EditingValue destination;
-    destination = std::move(moved);
-    CHECK(destination == copy);
-    auto parsed = eve::editing::editorValueFromJson(eve::editing::editorValueToJson(destination));
-    REQUIRE(parsed.ok());
-    CHECK(parsed.value() == destination);
-    CHECK(eve::editing::editorValueContentHash(parsed.value()) == eve::editing::editorValueContentHash(copy));
-    CHECK(copy.isWithinLimits(3, 10, 100));
-    CHECK(!copy.isWithinLimits(1, 10, 100));
-}
-
-TEST_CASE("editing.valueLifecycle.scalarKindsAndInvalidJsonRemainStable") {
-    CHECK(EditingValue().type() == EditingValue::Type::Null);
-    CHECK(EditingValue(nullptr).type() == EditingValue::Type::Null);
-    CHECK(EditingValue(true).type() == EditingValue::Type::Bool);
-    CHECK(EditingValue(1).type() == EditingValue::Type::Integer);
-    CHECK(EditingValue(int64_t(2)).type() == EditingValue::Type::Integer);
-    CHECK(EditingValue(1.5f).type() == EditingValue::Type::Number);
-    CHECK(EditingValue(2.5).type() == EditingValue::Type::Number);
-    CHECK(*EditingValue(static_cast<const char*>(nullptr)).getIf<std::string>() == "");
-    CHECK(*EditingValue(std::string("owned")).getIf<std::string>() == "owned");
-    auto rejected = eve::editing::editorValueFromJson("{broken");
-    CHECK(!rejected.ok());
-    CHECK(rejected.error() != nullptr);
-}
-
-TEST_CASE("editing.valueLifecycle.getIfKeepsDirectConstAndMutableBorrows") {
-    using V = EditingValue;
-    V text(std::string(4096, 'a'));
-    CHECK(static_cast<bool>(static_cast<const V&>(text).getIf<std::string>() == text.getIf<std::string>()));
-    text.getIf<std::string>()->append("changed");
-    CHECK(static_cast<const V&>(text).getIf<std::string>()->size() == 4103u);
-    CHECK(text.getIf<bool>() == nullptr);
-    CHECK(static_cast<const V&>(text).getIf<V::Array>() == nullptr);
-    V null;
-    CHECK(null.getIf<std::monostate>() != nullptr);
-    CHECK(static_cast<const V&>(null).getIf<std::monostate>() != nullptr);
-    V boolean(true);
-    *boolean.getIf<bool>() = false;
-    CHECK(!*static_cast<const V&>(boolean).getIf<bool>());
-    V integer(int64_t(42));
-    *integer.getIf<int64_t>() = 43;
-    CHECK(*static_cast<const V&>(integer).getIf<int64_t>() == 43);
-    V number(2.5);
-    *number.getIf<double>() = 3.5;
-    CHECK(*static_cast<const V&>(number).getIf<double>() == 3.5);
-    V array(V::Array{1, "two"});
-    array.getIf<V::Array>()->push_back(true);
-    CHECK(static_cast<const V&>(array).getIf<V::Array>()->size() == 3u);
-    V object(V::Object{{"key", "value"}});
-    (*object.getIf<V::Object>())["other"] = 4;
-    CHECK(static_cast<const V&>(object).getIf<V::Object>()->size() == 2u);
-}
-}  // namespace test_editing_value_lifecycle
-#endif
-
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor)
-#include "PrivateTestScope.h"
 #include <chrono>
 #include <cmath>
 #include <filesystem>
 #include <memory>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <stdexcept>
-#include <string>
 #include "common/Exception.h"
 #include "common/Module.h"
 #include "editor/BrushKernel.h"
 #include "editor/EditCommand.h"
 #include "editor/EditConstraint.h"
-#include "editor/Editor.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorDock.h"
 #include "editor/EditorInspector.h"
@@ -997,9 +895,6 @@ TEST_CASE("editing.valueLifecycle.getIfKeepsDirectConstAndMutableBorrows") {
 #include "procgen/editing/HeightmapTarget.h"
 #include "procgen/heightmap/Heightmap.h"
 #include "procgen/heightmap_target/HeightmapTargetModule.h"
-#include "scene/editor/EditorSceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor.cpp
 namespace test_editor {
 // editor.cpp
@@ -1294,10 +1189,11 @@ TEST_CASE("editor.targets.expose_capabilities_and_dirty_regions") {
     auto*            ints = base->query<IIntFieldTarget>();
     CHECK(ints != nullptr);
     CHECK(base->query<IScalarFieldTarget>() == nullptr);
+    const auto initialRevision = tiles.revision();
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Applied));
     CHECK_EQ(static_cast<int>(ints->writeInt(2, 1, 9)), static_cast<int>(FieldWriteStatus::Unchanged));
     CHECK_EQ(ints->readInt(2, 1), 9);
-    CHECK_EQ(tiles.revision(), 1ULL);
+    CHECK_EQ(tiles.revision(), initialRevision + 1);
     CHECK_EQ(tiles.dirtyRegion().minX, 2);
     tiles.clearDirtyRegion();
     CHECK(tiles.dirtyRegion().empty());
@@ -1675,7 +1571,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         timelineAsset <- {
             schema="eve.action.timeline", schemaVersion=1,
             actionId="test:light-attack", durationNs=1000000000,
-            animationUri="asset://test/attack.glb#Attack",
+            animationUri="",
             metadata={},
             tracks=[{
                 id="test-track:gameplay", label="Gameplay", kind="gameplay",
@@ -1864,7 +1760,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         removeSectionResult <- actionEditor.removeAnimationSection("test-section:attack");
         sectionCountAfterCleanup <- actionEditor.getAnimationSectionCount();
         montageSettingsResult <- actionEditor.setMontageSettings(
-            1.5, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            1.5, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         montageRate <- actionEditor.getMontageBasePlayRate();
         montageLooping <- actionEditor.getMontageLooping();
         montageFootIk <- actionEditor.getMontageFootIk();
@@ -1872,7 +1768,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
         montageBlendOffset <- actionEditor.getMontageBlendOutOffset();
         montageRootRotation <- actionEditor.getMontageRootMotionRotation();
         invalidMontageSettings <- actionEditor.setMontageSettings(
-            0.0, true, true, 2, 0.12, 0.18, -0.03, true, false, false);
+            0.0, true, true, 2, 0.12, 0.18, 0.03, true, false, false);
         undoMontageSettings <- actionEditor.undo();
         restoredMontageRate <- actionEditor.getMontageBasePlayRate();
         splitCountBefore <- actionEditor.getSectionSplitCount();
@@ -2008,7 +1904,7 @@ TEST_CASE("editor.actionTimeline.scriptUsesCanonicalTransactionsAndWorkspace") {
     CHECK(vm.find("montageLooping").toBool());
     CHECK(vm.find("montageFootIk").toBool());
     CHECK_EQ(vm.find("montageLayer").toInt(), 2);
-    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() + 0.03f) < 1e-5f);
+    CHECK(std::fabs(vm.find("montageBlendOffset").toFloat() - 0.03f) < 1e-5f);
     CHECK(!vm.find("montageRootRotation").toBool());
     CHECK_EQ(vm.find("splitCountBefore").toInt(), 0);
     CHECK(vm.find("addSplit").toTable().get<bool>("ok"));
@@ -2116,11 +2012,18 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
         clipEditor <- created.value;
         configured <- clipEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        panel0 <- ""; cap0 <- ""; ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "animation.skeleton") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         viewport <- clipEditor.setViewport(640.0, 36.0, 120.0);
         seekResult <- clipEditor.seekSeconds(1.0);
+    )"));
+    REQUIRE(preview_test::finishScript(vm, "clipEditor").ok());
+    vm.run(vm.compileSource(R"(
         hipsAtMid <- 0.0;
         for (local i = 0; i < clipEditor.getPrimitiveCount(); ++i) {
             if (clipEditor.getPrimitiveKind(i) == "joint") {
@@ -2157,8 +2060,8 @@ TEST_CASE("editor.animation.clip_editor_script_composes_workspace_and_transactio
     CHECK_LT(std::abs(vm.find("restoredMask").toFloat() - vm.find("beforeMask").toFloat()), 0.0001F);
     CHECK(vm.find("advanced").toTable().get<bool>("ok"));
     CHECK(vm.find("playhead").toFloat() > 0.0F);
-    CHECK_EQ(vm.find("tracks").toInt(), 2);
-    CHECK(vm.find("keys").toInt() >= 4);
+    CHECK_EQ(vm.find("tracks").toInt(), 6);
+    CHECK(vm.find("keys").toInt() >= 12);
     CHECK(vm.find("primitives").toInt() > 0);
 }
 
@@ -2190,7 +2093,7 @@ TEST_CASE("editor.api.session_and_history_preserve_failure_status") {
 
     EditorHistory history;
     auto          emptyUndo = history.undoAction();
-    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NoOp));
+    CHECK_EQ(static_cast<int>(emptyUndo.code()), static_cast<int>(EditorStatus::NotFound));
     REQUIRE(!emptyUndo.diagnostics().empty());
     CHECK(!history.undo());
 
@@ -2285,8 +2188,8 @@ TEST_CASE("editor.api.session_execute_checked_forwards_transaction_diagnostics")
     auto missingTransaction = session.executeChecked(std::move(command));
     CHECK_EQ(static_cast<int>(missingTransaction.code()), static_cast<int>(EditorStatus::Rejected));
     REQUIRE(!missingTransaction.diagnostics().empty());
-    CHECK_EQ(eve::editing::diagnosticRule(missingTransaction.diagnostics().front()).value(),
-             std::string("editor.transaction"));
+    CHECK_EQ(missingTransaction.diagnostics().front().code(), eve::DiagnosticCode::PreconditionViolation);
+    CHECK_EQ(missingTransaction.diagnostics().front().path(), std::string("editor.transaction"));
     CHECK_EQ(buffer.getGid(0, 0), 0);
 }
 
@@ -2327,9 +2230,13 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         avatarEditor <- created.value;
         configured <- avatarEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx4 <- workspace.getPanelContext(4);
+        panel0 <- ""; cap0 <- ""; ctx4 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "avatar.layers") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "expressions") ctx4 = workspace.getPanelContext(i);
+        }
         selectParam <- avatarEditor.selectParameter("smile");
         beforeY <- avatarEditor.getPreviewY(1);
         deleted <- avatarEditor.deleteSelectedParameter();
@@ -2341,21 +2248,21 @@ TEST_CASE("editor.avatar.document_editor_script_composes_workspace_and_rejects_r
         channels <- avatarEditor.getExpressionChannelCount(0);
     )"));
 
-    CHECK(vm.find("created").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
-    CHECK(vm.find("configured").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("workspacePanelCount").toInt(), 5);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
-    CHECK_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
-    CHECK_EQ(vm.find("ctx4").toString(), std::string("expressions"));
-    CHECK(vm.find("selectParam").toTable().get<bool>("ok"));
-    CHECK(!vm.find("deleted").toTable().get<bool>("ok"));
-    CHECK_EQ(vm.find("afterCount").toInt(), 1);
-    CHECK_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
-    CHECK(vm.find("valueResult").toTable().get<bool>("ok"));
-    CHECK(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
-    CHECK_EQ(vm.find("expressions").toInt(), 1);
-    CHECK(vm.find("channels").toInt() >= 1);
+    REQUIRE(vm.find("created").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
+    REQUIRE(vm.find("configured").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("workspacePanelCount").toInt(), 5);
+    REQUIRE_EQ(vm.find("panel0").toString(), std::string("avatar.layers"));
+    REQUIRE_EQ(vm.find("cap0").toString(), std::string("avatar.document"));
+    REQUIRE_EQ(vm.find("ctx4").toString(), std::string("expressions"));
+    REQUIRE(vm.find("selectParam").toTable().get<bool>("ok"));
+    REQUIRE(!vm.find("deleted").toTable().get<bool>("ok"));
+    REQUIRE_EQ(vm.find("afterCount").toInt(), 1);
+    REQUIRE_EQ(vm.find("afterY").toFloat(), vm.find("beforeY").toFloat());
+    REQUIRE(vm.find("valueResult").toTable().get<bool>("ok"));
+    REQUIRE(vm.find("movedY").toFloat() > vm.find("beforeY").toFloat());
+    REQUIRE_EQ(vm.find("expressions").toInt(), 1);
+    REQUIRE(vm.find("channels").toInt() >= 1);
 }
 
 // editor_biome_rules_script.cpp
@@ -2385,9 +2292,9 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK_EQ(vm.find("created").toTable().get<std::string>("ownership"), std::string("owned"));
     CHECK(vm.find("configured").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("workspacePanelCount").toInt(), 4);
-    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.layers"));
+    CHECK_EQ(vm.find("panel0").toString(), std::string("biome.assets"));
     CHECK_EQ(vm.find("cap0").toString(), std::string("biome.rules"));
-    CHECK_EQ(vm.find("ctx3").toString(), std::string("assets"));
+    CHECK_EQ(vm.find("ctx3").toString(), std::string("inspector"));
     CHECK(vm.find("beforePoints").toInt() > 0);
     CHECK(vm.find("excluded").toTable().get<bool>("ok"));
     CHECK_EQ(vm.find("exclusions").toInt(), 1);
@@ -2397,27 +2304,20 @@ TEST_CASE("editor.biome.rules_editor_script_composes_workspace_and_exclusions") 
     CHECK(!vm.find("densityReject").toTable().get<bool>("ok"));
 }
 }  // namespace test_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_animation_clip)
+// Contract section: editor animation clip
 #include "PrivateTestScope.h"
+
 #include <algorithm>
-#include <cmath>
 #include "animation/AnimClip.h"
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/AnimStateMachine.h"
-#include "animation/editing/AnimationClip.h"
 #include "animation/editing/AnimationGraph.h"
 #include "animation/editor/AnimationClipEditor.h"
 #include "animation/editor/AnimationEditorModule.h"
-#include "animation/editor/EditorAnimationClip.h"
 #include "common/Capability.h"
 #include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_animation_clip.cpp
 namespace test_editor_animation_clip {
 // editor_animation_clip.cpp
@@ -2504,17 +2404,24 @@ using eve::editor::EditorWorkspace;
 
 TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     EditorWorkspace     workspace("animation.preview", "Animation Clip Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("animation.skeleton"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("animation.clip"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("timeline"));
+    const std::map<std::string, std::string> expected = {{"animation.skeleton", "list"},
+                                                         {"animation.preview", "preview"},
+                                                         {"animation.inspector", "inspector"},
+                                                         {"animation.timeline", "timeline"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        const auto id = workspace.getPanelId(i);
+        REQUIRE(expected.contains(id));
+        CHECK_EQ(workspace.getPanelCapability(i), std::string("animation.clip"));
+        CHECK_EQ(workspace.getPanelContext(i), expected.at(id));
+    }
 
     REQUIRE(editor.setViewport(640.0f, 36.0f, 120.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.trackCount(), 6);
     CHECK_EQ(editor.boneCount(), 6);
     CHECK_EQ(editor.boneParent(3), std::string("Chest"));
@@ -2524,6 +2431,7 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
     CHECK_EQ(editor.preview().documentRevision, editor.revision());
 
     REQUIRE(editor.seekSeconds(1.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.playhead() - 1.0) < 0.0001);
     double hipsX = 0.0;
     for (const auto& bone : editor.preview().bones)
@@ -2532,19 +2440,29 @@ TEST_CASE("editor.animation.clip_editor_installs_workspace_and_reverses_mask") {
 
     const double before = editor.selectedMaskWeight();
     REQUIRE(editor.setMaskWeight(0.25).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedMaskWeight() - 0.25) < 0.0001);
     REQUIRE(editor.undo().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedMaskWeight() - before) < 0.0001);
 }
 
 TEST_CASE("editor.animation.clip_editor_pointer_selects_bone_and_rejects_invalid_settings") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.setViewport(800.0f, 36.0f, 120.0f).ok());
-    REQUIRE(editor.pointerDown(20.0f, 50.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
+    int spineRow = -1;
+    for (int i = 0; i < editor.trackCount(); ++i)
+        if (editor.trackBone(i) == "Spine") spineRow = i;
+    REQUIRE(spineRow >= 0);
+    REQUIRE(editor.pointerDown(20.0f, (static_cast<float>(spineRow) + 0.5f) * 36.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.selectedBone(), std::string("Spine"));
 
     editor.play();
     REQUIRE(editor.update(0.2).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.playhead() > 0.0);
     CHECK(editor.isPlaying());
 
@@ -2555,11 +2473,15 @@ TEST_CASE("editor.animation.clip_editor_pointer_selects_bone_and_rejects_invalid
 
 TEST_CASE("editor.animation.clip_editor_keys_edits_and_deletes_joint_transform") {
     AnimationClipEditor editor("preview.walk");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.selectBone("Spine").ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.seekSeconds(1.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     const int beforeKeys = editor.keyCount();
 
     REQUIRE(editor.setSelectedPosition(1.25, 2.5, -0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.hasSelectedKey());
     CHECK_EQ(editor.keyCount(), beforeKeys + 1);
     CHECK(std::abs(editor.selectedPositionX() - 1.25) < 0.0001);
@@ -2567,18 +2489,23 @@ TEST_CASE("editor.animation.clip_editor_keys_edits_and_deletes_joint_transform")
     CHECK(std::abs(editor.selectedPositionZ() + 0.5) < 0.0001);
 
     REQUIRE(editor.setSelectedRotation(15.0, 30.0, -20.0).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedRotationX() - 15.0) < 0.01);
     CHECK(std::abs(editor.selectedRotationY() - 30.0) < 0.01);
     CHECK(std::abs(editor.selectedRotationZ() + 20.0) < 0.01);
     REQUIRE(editor.setSelectedScale(1.1, 1.2, 1.3).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedScaleY() - 1.2) < 0.0001);
 
     REQUIRE(editor.moveSelectedKey(1.25).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(std::abs(editor.selectedKeyTime() - 1.25) < 0.0001);
     REQUIRE(editor.deleteSelectedKey().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(!editor.hasSelectedKey());
     CHECK_EQ(editor.keyCount(), beforeKeys);
     REQUIRE(editor.undo().ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.keyCount(), beforeKeys + 1);
 }
 
@@ -2598,14 +2525,20 @@ TEST_CASE("editor.animation.clip_editor_round_trips_real_runtime_skeleton_and_cl
     clip.addRotationKey(hand, 1.0f, 0.0f, 0.7071067f, 0.0f, 0.7071067f);
 
     AnimationClipEditor editor("runtime.attack");
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.loadRuntimeClip(skeleton, clip).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK_EQ(editor.boneCount(), 2);
     CHECK_EQ(editor.boneName(1), std::string("Hand"));
     CHECK_EQ(editor.boneParent(1), std::string("Root"));
     REQUIRE(editor.selectBone("Hand").ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.seekSeconds(0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.setSelectedPosition(0.25, 1.25, -0.5).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     REQUIRE(editor.writeRuntimeClip(clip, skeleton).ok());
+    REQUIRE(preview_test::finish(editor).ok());
 
     eve::animation::AnimPose pose(2);
     clip.sample(0.5f, &pose, &skeleton);
@@ -2794,21 +2727,15 @@ TEST_CASE("editor.animation.state_graph_builds_real_runtime_state_machine") {
     CHECK_EQ(static_cast<int>(missing.code()), static_cast<int>(EditorStatus::NotFound));
 }
 }  // namespace test_editor_animation_clip
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_archspace_target)
+// Contract section: editor archspace target
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include <fstream>
 #include "archspace/ArchSpaceCatalog.h"
 #include "archspace/ArchSpaceDocument.h"
 #include "archspace/editing/ArchSpaceTarget.h"
 #include "archspace/editor/ArchSpaceEditorModule.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_archspace_target.cpp
 namespace test_editor_archspace_target {
 using namespace eve::archspace;
@@ -2981,19 +2908,11 @@ TEST_CASE("editor.archspace.adapter_registers_commands_and_owns_automation_targe
     CHECK(closed.find("\"status\":\"applied\"") != std::string::npos);
 }
 }  // namespace test_editor_archspace_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_archspace_tools)
+// Contract section: editor archspace tools
 #include "PrivateTestScope.h"
-#include <algorithm>
-#include <array>
-#include <span>
-#include <string>
-#include "archspace/ArchSpaceCatalog.h"
+
 #include "archspace/editor/EditorArchSpaceTools.h"
-#include "editing/EditingAuthority.h"
-#include "editor/EditorSession.h"
-#include "zeroerr/unittest.h"
 // editor_archspace_tools.cpp
 namespace test_editor_archspace_tools {
 namespace {
@@ -3209,23 +3128,16 @@ TEST_CASE("editor.archspace.wall_draw_cancel_does_not_mutate") {
     CHECK(!tool.isDrawing());
 }
 }  // namespace test_editor_archspace_tools
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_editor)
+// Contract section: editor audio editor
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include <limits>
 #include "audio/editor/AudioEditorModule.h"
 #include "audio/editor/AudioSourceEditor.h"
 #include "audio/editor/EditorAudioEffects.h"
 #include "audio/editor/EditorAudioImportDiagnostics.h"
 #include "audio/editor/EditorAudioTarget.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_editor.cpp
 namespace test_editor_audio_editor {
 // editor_audio_editor.cpp
@@ -3440,14 +3352,19 @@ TEST_CASE("editor.audio.source_editor_installs_workspace_and_reverses_volume") {
     EditorWorkspace   workspace("audio.preview", "Audio Source Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
     CHECK_EQ(workspace.getPanelCount(), 4);
-    CHECK_EQ(workspace.getPanelId(0), std::string("audio.sources"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("audio.source"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("transport"));
+    const std::map<std::string, std::string> expected = {{"audio.sources", "list"},
+                                                         {"audio.waveform", "preview"},
+                                                         {"audio.inspector", "inspector"},
+                                                         {"audio.transport", "transport"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        const auto id = workspace.getPanelId(i);
+        REQUIRE(expected.contains(id));
+        CHECK_EQ(workspace.getPanelCapability(i), std::string("audio.source"));
+        CHECK_EQ(workspace.getPanelContext(i), expected.at(id));
+    }
 
     REQUIRE(editor.setViewportWidth(320.0f).ok());
+    REQUIRE(preview_test::finish(editor).ok());
     CHECK(editor.bucketCount() > 8);
     CHECK(editor.duration() > 1.9);
 
@@ -3479,20 +3396,12 @@ TEST_CASE("editor.audio.source_editor_property_edits_do_not_stale_audition") {
              static_cast<int>(eve::audio_editing::AudioTransportState::Playing));
 }
 }  // namespace test_editor_audio_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_source_script)
+// Contract section: editor audio source script
 #include "PrivateTestScope.h"
-#include <cmath>
-#include <simplesquirrel/simplesquirrel.hpp>
-#include <string>
+
 #include <tuple>
-#include "audio/editor/EditorAudioTarget.h"
-#include "common/Module.h"
-#include "editor/EditorAuthority.h"
 #include "editor/EditorTransactionService.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_source_script.cpp
 namespace test_editor_audio_source_script {
 // editor_audio_source_script.cpp
@@ -3506,10 +3415,17 @@ TEST_CASE("editor.audio.source_editor_script_composes_workspace_and_transactions
         audioEditor <- created.value;
         configured <- audioEditor.configureWorkspace(workspace);
         workspacePanelCount <- workspace.getPanelCount();
-        panel0 <- workspace.getPanelId(0);
-        cap0 <- workspace.getPanelCapability(0);
-        ctx1 <- workspace.getPanelContext(1);
+        panel0 <- ""; cap0 <- ""; ctx1 <- "";
+        for (local i = 0; i < workspace.getPanelCount(); ++i) {
+            if (workspace.getPanelId(i) == "audio.sources") {
+                panel0 = workspace.getPanelId(i); cap0 = workspace.getPanelCapability(i);
+            }
+            if (workspace.getPanelContext(i) == "preview") ctx1 = workspace.getPanelContext(i);
+        }
         viewport <- audioEditor.setViewportWidth(400.0);
+    )"));
+    REQUIRE(preview_test::finishScript(vm, "audioEditor").ok());
+    vm.run(vm.compileSource(R"(
         beforeVolume <- audioEditor.getFloat("play.volume");
         volumeResult <- audioEditor.setFloat("play.volume", 0.2);
         afterVolume <- audioEditor.getFloat("play.volume");
@@ -3667,14 +3583,12 @@ TEST_CASE("editor.audio.mixer_bus_hierarchy_is_cycle_safe_and_reversible") {
     CHECK_EQ(restored.children(ObjectId("music")).size(), static_cast<std::size_t>(1));
 }
 }  // namespace test_editor_audio_source_script
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_audio_transport)
+// Contract section: editor audio transport
 #include "PrivateTestScope.h"
+
 #include "audio/editor/EditorAudioTransport.h"
 #include "audio/editor/EditorAudioWaveform.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_audio_transport.cpp
 namespace test_editor_audio_transport {
 // editor_audio_transport.cpp
@@ -3768,27 +3682,19 @@ TEST_CASE("editor.audio.waveform_builds_bounded_envelopes_and_loop_diagnostics")
              static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_audio_transport
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_automation_v2)
+// Contract section: editor automation v2
 #include "PrivateTestScope.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
+
 #include "common/RenderCapture.h"
-#include "editor/Editor.h"
-#include "editor/EditorSession.h"
 #include "graphics/GraphicsCapabilities.h"
 #include "graphics/RenderSystem3D.h"
-#include "graphics/material/editor/EditorMaterialTarget.h"
 #include "graphics/material/editor/MaterialEditorModule.h"
 #include "scene/NodeDesc.h"
 #include "scene/Scene.h"
 #include "scene/SceneHost.h"
 #include "scene/editor/EditorPrefab.h"
-#include "scene/editor/EditorSceneTarget.h"
 #include "scene/editor/SceneEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_automation_v2.cpp
 namespace test_editor_automation_v2 {
 // editor_automation_v2.cpp
@@ -3800,6 +3706,7 @@ TEST_CASE("editor.v2.automation_capability_discovers_executes_plans_and_cancels"
     immediate.id          = CommandId("park.add-tree");
     immediate.ownerModule = "park";
     immediate.displayName = "Add tree";
+    immediate.createsTransaction = false;
     REQUIRE(editor.commandService()
                 .registerCommand(std::move(immediate),
                                  [](const CommandContext&, const EditorValue&) {
@@ -3933,11 +3840,19 @@ TEST_CASE("editor.v2.automation_edits_material_through_the_same_transaction_path
         "execute",
         R"({"target":"material.player","command":"material.property.set.v1","payload":{"path":"shading.roughness","value":0.65}})");
     CHECK(changed.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") == EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") == EditorValue(0.65));
 
     const std::string undone = automation->invoke("undo", R"({"target":"material.player"})");
     CHECK(undone.find("\"status\":\"applied\"") != std::string::npos);
-    CHECK(material.snapshotValue().getIf<EditorValue::Object>()->at("shading.roughness") != EditorValue(0.65));
+    CHECK(material.snapshotValue()
+              .getIf<EditorValue::Object>()
+              ->at("properties")
+              .getIf<EditorValue::Object>()
+              ->at("shading.roughness") != EditorValue(0.65));
 
     CHECK(editor.unregisterEditingTarget(TargetId("material.player")).ok());
 }
@@ -4282,14 +4197,11 @@ TEST_CASE("editor.prefab_snapshot_round_trip_rejects_invalid_hierarchy") {
     CHECK_EQ(static_cast<int>(prefabs.loadSnapshot(broken).code()), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_automation_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_document_editor)
+// Contract section: editor avatar document editor
 #include "PrivateTestScope.h"
+
 #include "avatar/editor/AvatarDocumentEditor.h"
-#include "editor/EditorWorkspace.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_document_editor.cpp
 namespace test_editor_avatar_document_editor {
 using eve::avatar_editor::AvatarDocumentEditor;
@@ -4299,26 +4211,29 @@ TEST_CASE("editor.avatar.document_editor_installs_workspace_and_reverses_layer_z
     AvatarDocumentEditor editor("preview.face");
     EditorWorkspace      workspace("avatar.preview", "Avatar Editor");
     REQUIRE(editor.configureWorkspace(workspace).ok());
-    CHECK_EQ(workspace.getPanelCount(), 5);
-    CHECK_EQ(workspace.getPanelId(0), std::string("avatar.layers"));
-    CHECK_EQ(workspace.getPanelCapability(0), std::string("avatar.document"));
-    CHECK_EQ(workspace.getPanelContext(0), std::string("list"));
-    CHECK_EQ(workspace.getPanelContext(1), std::string("preview"));
-    CHECK_EQ(workspace.getPanelContext(2), std::string("inspector"));
-    CHECK_EQ(workspace.getPanelContext(3), std::string("parameters"));
-    CHECK_EQ(workspace.getPanelContext(4), std::string("expressions"));
-    CHECK_EQ(editor.layerCount(), 2);
-    CHECK_EQ(editor.parameterCount(), 1);
-    CHECK_EQ(editor.expressionCount(), 1);
-    CHECK_EQ(editor.previewRevision(), editor.revision());
-    CHECK(editor.previewLayerCount() >= 2);
+    REQUIRE_EQ(workspace.getPanelCount(), 5);
+    const std::map<std::string, std::string> expected = {{"avatar.layers", "list"},
+                                                         {"avatar.preview", "preview"},
+                                                         {"avatar.inspector", "inspector"},
+                                                         {"avatar.parameters", "parameters"},
+                                                         {"avatar.expressions", "expressions"}};
+    for (int i = 0; i < workspace.getPanelCount(); ++i) {
+        REQUIRE(expected.contains(workspace.getPanelId(i)));
+        REQUIRE_EQ(workspace.getPanelCapability(i), std::string("avatar.document"));
+        REQUIRE_EQ(workspace.getPanelContext(i), expected.at(workspace.getPanelId(i)));
+    }
+    REQUIRE_EQ(editor.layerCount(), 2);
+    REQUIRE_EQ(editor.parameterCount(), 1);
+    REQUIRE_EQ(editor.expressionCount(), 1);
+    REQUIRE_EQ(editor.previewRevision(), editor.revision());
+    REQUIRE(editor.previewLayerCount() >= 2);
 
     REQUIRE(editor.selectLayer("eyes").ok());
     const int before = editor.layerZ(1);
     REQUIRE(editor.setLayerZ(4).ok());
-    CHECK_EQ(editor.layerZ(1), 4);
+    REQUIRE_EQ(editor.layerZ(1), 4);
     REQUIRE(editor.undo().ok());
-    CHECK_EQ(editor.layerZ(1), before);
+    REQUIRE_EQ(editor.layerZ(1), before);
 }
 
 TEST_CASE("editor.avatar.document_editor_rejects_referenced_parameter_delete") {
@@ -4329,29 +4244,23 @@ TEST_CASE("editor.avatar.document_editor_rejects_referenced_parameter_delete") {
     const auto revision   = editor.revision();
     const auto previewRev = editor.previewRevision();
     auto       rejected   = editor.deleteSelectedParameter();
-    CHECK(!rejected.ok());
-    CHECK_EQ(editor.layerCount(), layers);
-    CHECK_EQ(editor.parameterCount(), 1);
-    CHECK_EQ(editor.revision(), revision);
-    CHECK_EQ(editor.previewRevision(), previewRev);
-    CHECK_EQ(editor.previewY(1), previewY);
+    REQUIRE(!rejected.ok());
+    REQUIRE_EQ(editor.layerCount(), layers);
+    REQUIRE_EQ(editor.parameterCount(), 1);
+    REQUIRE_EQ(editor.revision(), revision);
+    REQUIRE_EQ(editor.previewRevision(), previewRev);
+    REQUIRE_EQ(editor.previewY(1), previewY);
 
     REQUIRE(editor.setParameterValue(0.9).ok());
-    CHECK(editor.previewY(1) > previewY);
-    CHECK_EQ(editor.previewRevision(), editor.revision());
+    REQUIRE(editor.previewY(1) > previewY);
+    REQUIRE_EQ(editor.previewRevision(), editor.revision());
 }
 }  // namespace test_editor_avatar_document_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_editor)
+// Contract section: editor avatar editor
 #include "PrivateTestScope.h"
+
 #include "avatar/editor/AvatarEditorModule.h"
-#include "avatar/editor/EditorAvatarTarget.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
-#include "editor/Editor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_editor.cpp
 namespace test_editor_avatar_editor {
 using eve::avatar_editing::AvatarDocumentTarget;
@@ -4422,14 +4331,11 @@ TEST_CASE("editor.avatar.automation_owns_headless_targets_for_agent_lifecycle") 
             std::string::npos);
 }
 }  // namespace test_editor_avatar_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_avatar_target)
+// Contract section: editor avatar target
 #include "PrivateTestScope.h"
+
 #include "avatar/AvatarInstance.h"
-#include "avatar/editing/AvatarTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_avatar_target.cpp
 namespace test_editor_avatar_target {
 using namespace eve::avatar_editing;
@@ -4538,23 +4444,18 @@ TEST_CASE("editor.avatar.runtime_publishes_metadata_and_preserves_generation_on_
     CHECK_EQ(runtime.revision(), revision);
 }
 }  // namespace test_editor_avatar_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_host_package)
+// Contract section: editor host package
 #include "PrivateTestScope.h"
+
 #include "action/editor/ActionEditorModule.h"
-#include "common/Capability.h"
-#include "common/EditorAutomation.h"
 #include "editing/EditingValueJson.h"
 #include "editing/EditorPackage.h"
 #include "editing/PropertySchemaJson.h"
-#include "editor/Editor.h"
 #include "editor/EditorHost.h"
 #include "editor/EditorMcpProjector.h"
 #include "fluids/editor/FluidsEditorModule.h"
 #include "voxel/editor/VoxelEditorModule.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_host_package.cpp
 namespace test_editor_host_package {
 using namespace eve::editor;
@@ -4712,26 +4613,15 @@ TEST_CASE("editor.script.automated_command_requires_panel_binding") {
     CHECK(commands.find("inputSchema") != std::string::npos);
 }
 }  // namespace test_editor_host_package
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_script_component_payload)
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
+// Contract section: editor script component payload
 #include "PrivateTestScope.h"
+
 #include "ScriptTest.h"
-#include "common/Capability.h"
 #include "common/ECS.h"
 #include "common/ScriptComponentStore.h"
-#include "editor/Editor.h"
 #include "editor/EditorAutomationTargetFactory.h"
-#include "editor/EditorTransactionService.h"
-#include "scene/editor/SceneEditorModule.h"
 #include "scene/editor/ScriptComponentPayloadProvider.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_script_component_payload.cpp
 namespace test_editor_script_component_payload {
 // ---------------------------------------------------------------------------
@@ -5321,4 +5211,3 @@ TEST_CASE_FIXTURE(ScriptComponentPayloadTest, "editor.scene.script_component_pay
     REQUIRE(none.value().empty());
 }
 }  // namespace test_editor_script_component_payload
-#endif

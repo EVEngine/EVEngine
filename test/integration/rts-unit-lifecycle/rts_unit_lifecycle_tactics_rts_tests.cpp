@@ -1,7 +1,34 @@
+// clang-format off
+/* eve-test-policy:
+{
+  "schema": "evengine.test-policy",
+  "version": 1,
+  "module": "rts",
+  "origins": [
+    "rts_crowd.cpp",
+    "rts_crowd_production.cpp",
+    "rts_formation.cpp",
+    "rts_groups.cpp",
+    "rts_orders.cpp",
+    "rts_production.cpp",
+    "rts_restore.cpp"
+  ],
+  "cases": {
+    "script-binding": [
+      "rts.formation.scriptCommandsReachCanonicalOrdersAndReplay",
+      "rts.groups.scriptAndReplayUseCanonicalAdmission"
+    ]
+  }
+}
+*/
+// clang-format on
+
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: rts crowd
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_crowd)
-#include "PrivateTestScope.h"
 #include "RtsCompositionFixtures.h"
 // rts_crowd.cpp
 namespace test_rts_crowd {
@@ -183,11 +210,10 @@ TEST_CASE("rts.crowd.convoyWaitDefersArrivalAndResumesExistingOrder") {
     unit->release();
 }
 }  // namespace test_rts_crowd
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_crowd_production)
+// Contract section: rts crowd production
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_crowd_production.cpp
 namespace test_rts_crowd_production {
 namespace {
@@ -369,14 +395,13 @@ TEST_CASE("rts.crowd.scriptProfileCrossingReachesBothDestinations") {
     CHECK(std::hypot(b->motion()->x - 5.5f, b->motion()->y - 10.5f) < 0.5f);
 }
 }  // namespace test_rts_crowd_production
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_formation)
+// Contract section: rts formation
 #include "PrivateTestScope.h"
+
 #include <limits>
 #include <numbers>
 #include <simplesquirrel/simplesquirrel.hpp>
-#include "RtsCompositionFixtures.h"
 #include "rts/RTSReplay.h"
 // rts_formation.cpp
 namespace test_rts_formation {
@@ -589,12 +614,10 @@ TEST_CASE("rts.formation.slotRelaxationAvoidsStealingNearbyDestination") {
     nearby->release();
 }
 }  // namespace test_rts_formation
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_groups)
+// Contract section: rts groups
 #include "PrivateTestScope.h"
-#include <simplesquirrel/simplesquirrel.hpp>
-#include "RtsCompositionFixtures.h"
+
 #include "rts/RTSSystemMovementInternal.h"
 // rts_groups.cpp
 namespace test_rts_groups {
@@ -1239,11 +1262,10 @@ TEST_CASE("rts.groups.scriptAndReplayUseCanonicalAdmission") {
     CHECK_EQ(restored.exportText(), text);
 }
 }  // namespace test_rts_groups
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_orders)
+// Contract section: rts orders
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_orders.cpp
 namespace test_rts_orders {
 TEST_CASE("rts.facadeCommandsContainmentAndCloakUseOwnedStableRoots") {
@@ -1794,11 +1816,10 @@ TEST_CASE("rts.commandNetworkUsesRelaysCapacityPriorityAndHostileJamming") {
     blue->release();
 }
 }  // namespace test_rts_orders
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_production)
+// Contract section: rts production
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_production.cpp
 namespace test_rts_production {
 TEST_CASE("rts.buildingTouchesConstructionDropoffAndRally") {
@@ -2388,11 +2409,10 @@ TEST_CASE("rts.productionPreservesFactoryResolvedPlacement") {
     factory->release();
 }
 }  // namespace test_rts_production
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_rts_restore)
+// Contract section: rts restore
 #include "PrivateTestScope.h"
-#include "RtsCompositionFixtures.h"
+
 // rts_restore.cpp
 namespace test_rts_restore {
 TEST_CASE("rts.buildingAmmoProductionPurchasesFiniteStockAndSnapshotsFractionalProgress") {
@@ -3226,4 +3246,3 @@ TEST_CASE("rts.facadeMigratesCombatStanceAndMovementPriorityIntoSnapshots") {
     CHECK(canonical.value().find("\"stance\":\"passive\"") != std::string::npos);
 }
 }  // namespace test_rts_restore
-#endif

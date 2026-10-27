@@ -218,6 +218,18 @@ public:
                          const std::string &parentId);
     /** @brief Detach node from its parent (arena node stays; rebuild to delete). */
     bool removeNodeAt(const std::string &hostName, const std::string &nodeId);
+    /**
+     * @brief Delete a leaf node and release its scene-owned script/ECS companion.
+     * @param hostName Host name, or empty for the selected host.
+     * @param nodeId Stable leaf id; a missing node or a node with children is rejected unchanged.
+     * @return Applied, or a diagnostic without deleting the node.
+     * @ownership External link targets retain their existing owners.
+     * @lifetime Removal invalidates borrowed arena pointers and the removed companion's handle.
+     * @thread Scene owner thread, outside ECS view iteration.
+     * @reentrancy Emits node_removed and detached script callbacks; they must not re-enter structural scene mutation.
+     * @cost Linear arena compaction and companion scan; call once at destruction, outside per-frame traversal.
+     */
+    [[nodiscard]] eve::Result<void> removeLeafAt(const std::string &hostName, const std::string &nodeId);
     /** @brief Adds child at. */
     bool addChildAt(const std::string &hostName, const std::string &parentId,
                     const std::string &childId);
