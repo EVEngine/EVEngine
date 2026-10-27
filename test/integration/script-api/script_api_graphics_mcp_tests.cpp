@@ -84,6 +84,7 @@
 */
 // clang-format on
 
+#include "physics/Physics.h"
 #include "procgen/Procgen.h"
 #include "ui/UI.h"
 #include "zeroerr/assert.h"
@@ -368,6 +369,7 @@ private:
 
 TEST_CASE("devtools.mcp.initializeToolsStatus") {
     eve::procgen::Procgen procgenModule;
+    eve::physics::Physics physicsModule;
     auto& mcp = McpServer::instance();
     auto& dt  = DevTool::instance();
     auto& ai  = AiPanel::instance();
