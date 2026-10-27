@@ -106,8 +106,9 @@ class ResourceSuiteTests(unittest.TestCase):
     def test_vrm_routing_has_real_import_contract(self):
         groups = suite.inventory()
         self.assertIn('.vrm', groups['model']['advertised_resource_extensions'])
-        self.assertEqual(groups['model']['tests']['avatar.vrm.importMorphGazeSpringAndRollback'],
-                     'test/integration/render-presentation/render_presentation_graphics_gpu_driven_tests.cpp')
+        name = 'avatar.vrm.importMorphGazeSpringAndRollback'
+        routed = suite.ROOT / groups['model']['tests'][name]
+        self.assertIn(name, suite.test_levels.cases_in(routed.read_text(encoding='utf-8')))
         rows = suite.format_coverage(groups, [])
         vrm = next(row for row in rows if row['id'] == 'model.vrm')
         self.assertEqual(vrm['importTests'], ['avatar.vrm.importMorphGazeSpringAndRollback'])

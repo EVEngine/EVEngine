@@ -314,7 +314,10 @@ vk::Pipeline createPbrPipeline(vkb::Device& device, vk::PipelineLayout layout, c
                                                                                        : vk::CullModeFlagBits::eBack),
                        vk::FrontFace::eCounterClockwise)
         .setMultisampler(multisampling)
-        .setDepthStencil(true, depthWrite, vk::CompareOp::eLess)
+        // Built-in opaque PBR can replace the same surface written by Hybrid;
+        // alpha/additive materials retain strict depth and their blend contract.
+        .setDepthStencil(true, depthWrite,
+                         blend == BlendMode::Opaque && depthWrite ? vk::CompareOp::eLessOrEqual : vk::CompareOp::eLess)
         .setColorBlending(color)
         .build(pass);
 }

@@ -695,3 +695,1664 @@ TEST_CASE("crowd.spawn.spec.transactionAndPolicyValidation") {
 }
 }  // namespace test_crowd_spawn_unit
 #endif
+
+#include <stdexcept>
+#include "crowd/CrowdSpatialIndex.h"
+#include "crowd/CrowdWorkScheduler.h"
+
+namespace test_crowd_advance_runtime {
+using namespace eve;
+using namespace eve::crowd;
+
+TEST_CASE("crowd.advance.nonfiniteLegacySteeringRejectsBeforeIndexing") {
+    Crowd crowd;
+    REQUIRE(crowd.addAgent(0.f, 0.f, 0.f, 1.f) >= 0);
+    crowd.setSeparationWeight(std::numeric_limits<float>::quiet_NaN());
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(16666667), {}};
+    REQUIRE(!crowd.advance(step).ok());
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.advance(step).ok());
+}
+
+TEST_CASE("crowd.advance.externalClockRejectsDuplicateSkippedAndMixedTicks") {
+    Crowd     crowd;
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(16666667), {}};
+    auto      first = crowd.advance(step);
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().tick.value(), 1);
+    CHECK_EQ(first.value().elapsed.nanoseconds(), 16666667);
+    REQUIRE(!crowd.advance(step).ok());
+    step.tick = SimulationTick(3);
+    REQUIRE(!crowd.advance(step).ok());
+    REQUIRE(!crowd.advance(0.01f).ok());
+    step.tick = SimulationTick(2);
+    REQUIRE(crowd.advance(step).ok());
+    auto noop = crowd.advance({SimulationTick(2), Duration::zero(), {}});
+    REQUIRE(noop.ok());
+    CHECK_EQ(noop.value().elapsed.nanoseconds(), 33333334);
+}
+
+TEST_CASE("crowd.advance.workBudgetFailureRollsBackMotionAndClock") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(2.f);
+    const int agent = crowd.addAgent(1.f, 2.f, 0.f, 0.5f);
+    REQUIRE(agent >= 0);
+    AgentFrame before;
+    REQUIRE(crowd.copyAgentFrame(before).ok());
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(16666667), {}};
+    step.budget.maxNeighborVisits = 0;
+    REQUIRE(!crowd.advance(step).ok());
+    AgentFrame after;
+    REQUIRE(crowd.copyAgentFrame(after).ok());
+    CHECK_EQ(after.tick.value(), before.tick.value());
+    CHECK_EQ(crowd.getAgentState(agent).x, 1.f);
+    CHECK_EQ(crowd.getAgentState(agent).y, 2.f);
+    step.budget.maxNeighborVisits = 10000;
+    auto retry                    = crowd.advance(step);
+    REQUIRE(retry.ok());
+    CHECK_EQ(retry.value().tick.value(), 1);
+}
+
+TEST_CASE("crowd.advance.emptyWorldConsumesTimeAndRejectsOverflow") {
+    Crowd     crowd;
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(INT64_MAX), {}};
+    auto      first = crowd.advance(step);
+    REQUIRE(first.ok());
+    step.tick  = SimulationTick(2);
+    step.delta = Duration::fromNanoseconds(1);
+    REQUIRE(!crowd.advance(step).ok());
+    AgentFrame frame;
+    REQUIRE(crowd.copyAgentFrame(frame).ok());
+    CHECK_EQ(frame.tick.value(), 1);
+}
+
+TEST_CASE("crowd.advance.residualBudgetFailureRestoresAlreadyIntegratedMotion") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setResolveOverlaps(false);
+    crowd.setDefaultSpeed(2.f);
+    const int first = crowd.addAgent(0.f, 0.f, 0.f, 1.f);
+    REQUIRE(crowd.addAgent(0.5f, 0.f, 0.f, 1.f) >= 0);
+    const auto initial = crowd.getAgentState(first);
+    CrowdStep  step{SimulationTick(1), Duration::fromNanoseconds(16666667), {}};
+    step.budget.maxContactChecks = 0;
+    REQUIRE(!crowd.advance(step).ok());
+    auto restored = crowd.getAgentState(first);
+    CHECK_EQ(restored.x, initial.x);
+    CHECK_EQ(restored.y, initial.y);
+    CHECK_EQ(restored.vx, initial.vx);
+    CHECK_EQ(restored.vy, initial.vy);
+    step.budget.maxContactChecks = 100;
+    auto retry                   = crowd.advance(step);
+    REQUIRE(retry.ok());
+    CHECK(retry.value().residualPairsChecked > 0);
+}
+}  // namespace test_crowd_advance_runtime
+
+namespace test_crowd_avoidance_runtime {
+using namespace eve::crowd;
+
+namespace {
+void configure(Crowd& crowd) {
+    crowd.setClampToField(false);
+    crowd.setResolveOverlaps(false);  // Prove anticipatory steering, not contact repair.
+    crowd.setDefaultSpeed(4.f);
+    crowd.setSeparationWeight(0.f);
+    crowd.setArriveRadius(1.f);
+    REQUIRE(crowd.configureAvoidance({true, 2.f, 0.1f, 32}).ok());
+}
+int mover(Crowd& crowd, const std::string& name, float x, float y, float tx, float ty) {
+    const int agent = crowd.addNamedAgent(name, x, y, 0.f, 0.5f);
+    REQUIRE(crowd.setAgentAction(agent, "seek"));
+    REQUIRE(crowd.setAgentTarget(agent, tx, ty));
+    REQUIRE(crowd.setAgentAccel(agent, 20.f));
+    return agent;
+}
+float separation(const Crowd& crowd, int a, int b) {
+    const auto left = crowd.getAgentState(a), right = crowd.getAgentState(b);
+    return std::hypot(left.x - right.x, left.y - right.y);
+}
+}  // namespace
+
+TEST_CASE("crowd.avoidance.finalArrivalAllowsPushableSettledUnitToYield") {
+    Crowd crowd;
+    configure(crowd);
+    crowd.setResolveOverlaps(true);
+    const int incoming = mover(crowd, "incoming", 0.f, -1.8f, 0.f, 1.f);
+    const int settled  = mover(crowd, "settled", 0.f, 0.f, 0.f, 0.f);
+    float     minimum  = 100.f;
+    for (int frame = 0; frame < 600; ++frame) {
+        REQUIRE(crowd.advance(1.f / 60.f).ok());
+        minimum = std::min(minimum, separation(crowd, incoming, settled));
+    }
+    CHECK(minimum >= 0.99f);
+    CHECK(crowd.getAgentState(incoming).y > 0.98f);
+    CHECK(std::hypot(crowd.getAgentState(settled).x, crowd.getAgentState(settled).y) < 0.03f);
+}
+
+TEST_CASE("crowd.avoidance.finalArrivalDoesNotPushHeldUnit") {
+    Crowd crowd;
+    configure(crowd);
+    crowd.setResolveOverlaps(true);
+    const int incoming = mover(crowd, "incoming", 0.f, -1.8f, 0.f, 1.2f);
+    const int settled  = mover(crowd, "settled", 0.f, 0.f, 0.f, 0.f);
+    REQUIRE(crowd.setAgentInteraction(settled, {0.f, true, 1, 1}).ok());
+    float minimum = 100.f;
+    for (int frame = 0; frame < 600; ++frame) {
+        REQUIRE(crowd.advance(1.f / 60.f).ok());
+        minimum = std::min(minimum, separation(crowd, incoming, settled));
+    }
+    CHECK(minimum >= 0.99f);
+    CHECK_EQ(crowd.getAgentState(settled).x, 0.f);
+    CHECK_EQ(crowd.getAgentState(settled).y, 0.f);
+    CHECK(crowd.getAgentState(incoming).y > 1.18f);
+}
+
+TEST_CASE("crowd.navigation.radiusAwareFlowPassesSingleCellPortal") {
+    Crowd crowd;
+    crowd.resizeField(12, 9, 1.f, 0.f, 0.f);
+    for (int y = 0; y < 9; ++y)
+        if (y != 4) crowd.setBlocked(5, y, true);
+    crowd.buildFlowField(10, 4);
+    crowd.setDefaultSpeed(3.f);
+    crowd.setArriveRadius(1.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.configureAvoidance({true, 2.f, 0.1f, 32}).ok());
+    const int agent = crowd.addNamedAgent("portal", 2.5f, 2.5f, 0.f, 0.35f);
+    REQUIRE(crowd.setAgentAction(agent, "flow"));
+    REQUIRE(crowd.setAgentAccel(agent, 20.f));
+    for (int frame = 0; frame < 600; ++frame) {
+        REQUIRE(crowd.advance(1.f / 60.f).ok());
+        const auto state = crowd.getAgentState(agent);
+        if (state.x >= 5.f && state.x <= 6.f) REQUIRE((state.y >= 4.3499f && state.y <= 4.6501f));
+    }
+    CHECK(crowd.getAgentState(agent).x > 9.5f);
+}
+
+TEST_CASE("crowd.avoidance.finalArrivalCanPassPushableIdleBody") {
+    Crowd crowd;
+    configure(crowd);
+    crowd.setResolveOverlaps(true);
+    const int incoming = mover(crowd, "incoming", 0.f, -1.8f, 0.f, 1.2f);
+    const int settled  = crowd.addNamedAgent("idle", 0.f, 0.f, 0.f, 0.5f);
+    REQUIRE(crowd.setAgentAction(settled, "idle"));
+    float minimum = 100.f;
+    for (int frame = 0; frame < 600; ++frame) {
+        REQUIRE(crowd.advance(1.f / 60.f).ok());
+        minimum = std::min(minimum, separation(crowd, incoming, settled));
+    }
+    CHECK(minimum >= 0.99f);
+    CHECK(crowd.getAgentState(incoming).y > 1.18f);
+}
+
+TEST_CASE("crowd.avoidance.seekPushesIdleBodyThroughLaneWithoutPassingSideways") {
+    Crowd crowd;
+    configure(crowd);
+    crowd.resizeField(16, 1, 1.f, 0.f, 0.f);
+    crowd.setClampToField(true);
+    crowd.setResolveOverlaps(true);
+    const int incoming = crowd.addNamedAgent("incoming", 2.5f, 0.5f, 0.f, 0.35f);
+    REQUIRE(crowd.setAgentAction(incoming, "seek"));
+    REQUIRE(crowd.setAgentTarget(incoming, 12.5f, 0.5f));
+    REQUIRE(crowd.setAgentAccel(incoming, 20.f));
+    const int idle = crowd.addNamedAgent("idle", 8.5f, 0.5f, 0.f, 0.35f);
+    REQUIRE(crowd.setAgentAction(idle, "idle"));
+    float minimum = 100.f;
+    for (int frame = 0; frame < 600; ++frame) {
+        REQUIRE(crowd.advance(1.f / 60.f).ok());
+        minimum = std::min(minimum, separation(crowd, incoming, idle));
+    }
+    CHECK(minimum >= 0.699f);
+    CHECK(crowd.getAgentState(incoming).x > 12.48f);
+    CHECK(crowd.getAgentState(idle).x > 13.f);
+}
+
+TEST_CASE("crowd.avoidance.pacedZeroSpeedSeekBodyRemainsPushable") {
+    for (const float pacedSpeed : {0.f, 0.01f}) {
+        Crowd crowd;
+        configure(crowd);
+        crowd.resizeField(16, 1, 1.f, 0.f, 0.f);
+        crowd.setClampToField(true);
+        crowd.setResolveOverlaps(true);
+        const int incoming = crowd.addNamedAgent("incoming", 2.5f, 0.5f, 0.f, 0.35f);
+        REQUIRE(crowd.setAgentAction(incoming, "seek"));
+        REQUIRE(crowd.setAgentTarget(incoming, 12.5f, 0.5f));
+        REQUIRE(crowd.setAgentAccel(incoming, 20.f));
+        const int paced = crowd.addNamedAgent("paced", 8.5f, 0.5f, 0.f, 0.35f);
+        REQUIRE(crowd.setAgentAction(paced, "seek"));
+        REQUIRE(crowd.setAgentTarget(paced, 15.5f, 0.5f));
+        REQUIRE(crowd.setAgentSpeed(paced, pacedSpeed));
+        float minimum = 100.f;
+        for (int frame = 0; frame < 600; ++frame) {
+            REQUIRE(crowd.advance(1.f / 60.f).ok());
+            minimum = std::min(minimum, separation(crowd, incoming, paced));
+        }
+        CHECK(minimum >= 0.699f);
+        CHECK(crowd.getAgentState(incoming).x > 12.48f);
+        CHECK(crowd.getAgentState(paced).x > 13.f);
+    }
+}
+}  // namespace test_crowd_avoidance_runtime
+
+namespace test_crowd_budget_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.budget.observationsResetAndRejectedStepsPreserveState") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    const int agent = crowd.addNamedAgent("budget.agent", 1.f, 2.f, 0.f, 1.f);
+    REQUIRE(agent >= 0);
+    auto first = crowd.advance(1.f / 60.f);
+    REQUIRE(first.ok());
+    CHECK(first.value().gridBuilds > 0);
+    CHECK(first.value().contactPasses > 0);
+    CHECK(first.value().cellsVisited > 0);
+    auto second = crowd.advance(1.f / 60.f);
+    REQUIRE(second.ok());
+    CHECK_EQ(first.value().gridBuilds, second.value().gridBuilds);
+    CHECK_EQ(first.value().candidatesVisited, second.value().candidatesVisited);
+    auto rejected = crowd.advance(std::numeric_limits<float>::infinity());
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(crowd.getAgentState(agent).x, 1.f);
+    CHECK_EQ(crowd.getAgentState(agent).y, 2.f);
+    auto noop = crowd.advance(0.f);
+    REQUIRE(noop.ok());
+    CHECK_EQ(noop.value().gridBuilds, 0);
+    CHECK_EQ(noop.value().candidatesVisited, 0);
+    CHECK_EQ(noop.value().motionNanoseconds, 0);
+}
+
+TEST_CASE("crowd.budget.neighborLimitDoesNotBoundBroadphaseWork") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setResolveOverlaps(false);
+    crowd.setDefaultSpeed(1.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.configureAvoidance({true, 2.f, 0.1f, 1}).ok());
+    for (int i = 0; i < 8; ++i) {
+        const int agent = crowd.addAgent(float(i) * 0.1f, 0.f, 0.f, 0.5f);
+        REQUIRE(agent >= 0);
+    }
+    auto result = crowd.advance(1.f / 60.f);
+    REQUIRE(result.ok());
+    CHECK(result.value().avoidanceTruncations > 0);
+    CHECK(result.value().candidatesVisited > 8);
+    CHECK_EQ(result.value().contactPasses, 0);
+    CHECK_EQ(result.value().contactPairsChecked, 0);
+    CHECK(result.value().unresolvedContacts > 0);
+}
+
+TEST_CASE("crowd.budget.contactWorkExcludesNonInteractingPairs") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    const int a = crowd.addAgent(0.f, 0.f, 0.f, 1.f);
+    const int b = crowd.addAgent(0.5f, 0.f, 0.f, 1.f);
+    REQUIRE(crowd.setAgentInteraction(a, {1.f, false, 1, 1}).ok());
+    REQUIRE(crowd.setAgentInteraction(b, {1.f, false, 2, 2}).ok());
+    auto result = crowd.advance(1.f / 60.f);
+    REQUIRE(result.ok());
+    CHECK(result.value().candidatesVisited > 0);
+    CHECK_EQ(result.value().contactPairsChecked, 0);
+    CHECK_EQ(result.value().unresolvedContacts, 0);
+}
+}  // namespace test_crowd_budget_runtime
+
+namespace test_crowd_contact_pairs_runtime {
+using namespace eve;
+using namespace eve::crowd;
+
+TEST_CASE("crowd.contactPairs.namedClusterIsBitExactAcrossCreationOrderAndRestore") {
+    Crowd first, second;
+    for (auto* crowd : {&first, &second}) {
+        crowd->setClampToField(false);
+        crowd->setDefaultSpeed(0.f);
+        crowd->setSeparationWeight(0.f);
+    }
+    for (int i = 0; i < 10; ++i) {
+        REQUIRE(first.addNamedAgent("pair/" + std::to_string(i), float((i * 7) % 13) * 0.021f,
+                                    float((i * 5) % 11) * 0.023f, 0.f, 1.f) >= 0);
+        const int j = 9 - i;
+        REQUIRE(second.addNamedAgent("pair/" + std::to_string(j), float((j * 7) % 13) * 0.021f,
+                                     float((j * 5) % 11) * 0.023f, 0.f, 1.f) >= 0);
+    }
+    const CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    auto            saved = first.captureSnapshot();
+    REQUIRE(saved.ok());
+    auto a = first.advance(step), b = second.advance(step);
+    REQUIRE(a.ok());
+    REQUIRE(b.ok());
+    CHECK(a.value().contactPairsPeak > 0);
+    CHECK(a.value().pairVisits > a.value().contactPairsChecked);
+    for (int i = 0; i < 10; ++i) {
+        const auto name  = "pair/" + std::to_string(i);
+        auto       left  = first.readAgent(first.resolveNamedAgent(name).takeValue()).takeValue();
+        auto       right = second.readAgent(second.resolveNamedAgent(name).takeValue()).takeValue();
+        CHECK_EQ(left.x, right.x);
+        CHECK_EQ(left.y, right.y);
+    }
+    const auto expected = first.readAgent(first.resolveNamedAgent("pair/0").takeValue()).takeValue();
+    auto       restored = first.prepareRestore(saved.value());
+    REQUIRE(restored.ok());
+    REQUIRE(first.commitRestore(std::move(restored).takeValue()).ok());
+    REQUIRE(first.advance(step).ok());
+    auto replayed = first.readAgent(first.resolveNamedAgent("pair/0").takeValue()).takeValue();
+    CHECK_EQ(replayed.x, expected.x);
+    CHECK_EQ(replayed.y, expected.y);
+}
+
+TEST_CASE("crowd.contactPairs.capacityAndConstructionBudgetRejectAtomically") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.addAgent(0.f, 0.f, 0.f, 1.f) >= 0);
+    REQUIRE(crowd.addAgent(0.3f, 0.f, 0.f, 1.f) >= 0);
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    step.budget.maxContactPairs = 0;
+    REQUIRE(!crowd.advance(step).ok());
+    CHECK_EQ(crowd.getAgentState(0).x, 0.f);
+    CHECK_EQ(crowd.getAgentState(1).x, 0.3f);
+    step.budget.maxContactPairs = 1;
+    step.budget.maxPairVisits   = 0;
+    REQUIRE(!crowd.advance(step).ok());
+    CHECK_EQ(crowd.getAgentState(0).x, 0.f);
+    CHECK_EQ(crowd.getAgentState(1).x, 0.3f);
+    step.budget.maxPairVisits = 10000;
+    auto accepted             = crowd.advance(step);
+    REQUIRE(accepted.ok());
+    CHECK_EQ(accepted.value().contactPairsPeak, 1);
+    CHECK(accepted.value().pairVisits > 0);
+    CHECK(crowd.getAgentState(0).x < 0.f);
+    // Fail one unit below the measured complete construction/gather cost, then retry the same tick.
+    Crowd bounded;
+    bounded.setClampToField(false);
+    bounded.setDefaultSpeed(0.f);
+    bounded.setSeparationWeight(0.f);
+    REQUIRE(bounded.addAgent(0.f, 0.f, 0.f, 1.f) >= 0);
+    REQUIRE(bounded.addAgent(0.3f, 0.f, 0.f, 1.f) >= 0);
+    step.budget.maxPairVisits = accepted.value().pairVisits - 1;
+    REQUIRE(!bounded.advance(step).ok());
+    CHECK_EQ(bounded.getAgentState(0).x, 0.f);
+    CHECK_EQ(bounded.getAgentState(1).x, 0.3f);
+    step.budget.maxPairVisits = accepted.value().pairVisits;
+    auto retry                = bounded.advance(step);
+    REQUIRE(retry.ok());
+    CHECK_EQ(retry.value().pairVisits, accepted.value().pairVisits);
+    CHECK_EQ(bounded.getAgentState(0).x, crowd.getAgentState(0).x);
+    CHECK_EQ(bounded.getAgentState(1).x, crowd.getAgentState(1).x);
+}
+
+TEST_CASE("crowd.contactPairs.filteredPairsDoNotUsePairBufferCapacity") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    const int a = crowd.addAgent(0.f, 0.f, 0.f, 1.f), b = crowd.addAgent(0.3f, 0.f, 0.f, 1.f);
+    REQUIRE(crowd.setAgentInteraction(a, {1.f, false, 1, 1}).ok());
+    REQUIRE(crowd.setAgentInteraction(b, {1.f, false, 2, 2}).ok());
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    step.budget.maxContactPairs = 0;
+    auto result                 = crowd.advance(step);
+    REQUIRE(result.ok());
+    CHECK_EQ(result.value().contactPairsPeak, 0);
+    CHECK_EQ(result.value().contactPairsChecked, 0);
+}
+}  // namespace test_crowd_contact_pairs_runtime
+
+namespace test_crowd_flow_cache_runtime {
+using namespace eve::crowd;
+namespace {
+FlowLease build(Crowd& crowd, std::vector<FlowGoal> goals) {
+    auto plan = crowd.prepareFlowBuild(goals).takeValue();
+    while (plan.state() == Crowd::FlowBuildState::Pending) REQUIRE(crowd.advanceFlowBuild(plan, 3).ok());
+    return crowd.acquireFlowField(std::move(plan)).takeValue();
+}
+}  // namespace
+
+TEST_CASE("crowd.cache.fullGoalKeysReuseGenerationAndPressurePreservesPlan") {
+    Crowd crowd;
+    crowd.resizeField(3, 3, 1.f, 0.f, 0.f);
+    REQUIRE(crowd.configureFlowCache(0).ok());
+    auto plan = crowd.prepareFlowBuild(2, 1).takeValue();
+    while (plan.state() == Crowd::FlowBuildState::Pending) REQUIRE(crowd.advanceFlowBuild(plan, 2).ok());
+    REQUIRE(!crowd.acquireFlowField(std::move(plan)).ok());
+    CHECK(plan.state() == Crowd::FlowBuildState::Ready);
+    CHECK_EQ(crowd.getFlowCacheStatus().entries, 0u);
+    REQUIRE(crowd.configureFlowCache(1024 * 1024).ok());
+    auto                  lease = crowd.acquireFlowField(std::move(plan)).takeValue();
+    std::vector<FlowGoal> key{{2, 1}, {2, 1}};
+    auto                  again = crowd.acquireFlowField(key).takeValue();
+    CHECK_EQ(lease.generation(), again.generation());
+    CHECK_EQ(crowd.getFlowCacheStatus().entries, 1u);
+    const auto bytes = crowd.getFlowCacheStatus().residentBytes;
+    REQUIRE(!crowd.configureFlowCache(0).ok());
+    CHECK_EQ(crowd.getFlowCacheStatus().residentBytes, bytes);
+    key = {{0, 1}};
+    REQUIRE(!crowd.acquireFlowField(key).ok());
+    key = {{3, 1}};
+    REQUIRE(!crowd.acquireFlowField(key).ok());
+    CHECK(crowd.sampleFlowField(lease, 1.5f, 1.5f).value().direction.x > 0.f);
+    auto outside = crowd.sampleFlowField(lease, 100.f, 100.f).takeValue();
+    CHECK(outside.state == FlowSampleState::Unreachable);
+    CHECK_EQ(outside.direction.x, 0.f);
+    lease = {};
+    again = {};
+    REQUIRE(crowd.configureFlowCache(0).ok());
+    CHECK_EQ(crowd.getFlowCacheStatus().entries, 0u);
+    REQUIRE(crowd.configureFlowCache(1024 * 1024).ok());
+    auto replacement = build(crowd, {{2, 1}});
+    CHECK(replacement.generation() > 1);
+}
+
+TEST_CASE("crowd.cache.equalAccessTicksEvictByStableKeyIndependentOfCreationOrder") {
+    for (bool reversed : {false, true}) {
+        Crowd crowd;
+        crowd.resizeField(3, 1, 1.f, 0.f, 0.f);
+        auto       first = build(crowd, {{reversed ? 2 : 0, 0}});
+        const auto bytes = crowd.getFlowCacheStatus().residentBytes;
+        first            = {};
+        auto second      = build(crowd, {{reversed ? 0 : 2, 0}});
+        second           = {};
+        const auto other = crowd.getFlowCacheStatus().residentBytes - bytes;
+        REQUIRE(crowd.configureFlowCache(std::max(bytes, other)).ok());
+        CHECK_EQ(crowd.getFlowCacheStatus().entries, 1u);
+        std::vector<FlowGoal> left{{0, 0}}, right{{2, 0}};
+        REQUIRE(!crowd.acquireFlowField(left).ok());
+        REQUIRE(crowd.acquireFlowField(right).ok());
+    }
+}
+
+TEST_CASE("crowd.cache.agentSelectionAndSnapshotRebindingKeepLatestTerrainAuthoritative") {
+    Crowd crowd;
+    crowd.resizeField(5, 5, 1.f, 0.f, 0.f);
+    crowd.setDefaultSpeed(2.f);
+    crowd.setSeparationWeight(0.f);
+    crowd.setClampToField(false);
+    auto        left = build(crowd, {{0, 2}}), right = build(crowd, {{4, 2}});
+    auto        a = crowd.agentRef(crowd.addNamedAgent("left", 2.5f, 1.5f, 3.14159265f, 0.1f)).takeValue();
+    auto        b = crowd.agentRef(crowd.addNamedAgent("right", 2.5f, 3.5f, 0.f, 0.1f)).takeValue();
+    AgentUpdate ua, ub;
+    ua.reference = a;
+    ua.flow      = left;
+    ub.reference = b;
+    ub.flow      = right;
+    REQUIRE(crowd.updateAgents({{ua, ub}}).ok());
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK(crowd.readAgent(a).value().vx < 0.f);
+    CHECK(crowd.readAgent(b).value().vx > 0.f);
+    CHECK_EQ(crowd.readAgent(a).value().flowGeneration, left.generation());
+    auto saved = crowd.captureSnapshot().takeValue();
+    REQUIRE(crowd.commitRestore(crowd.prepareRestore(saved).takeValue()).ok());
+    REQUIRE(!crowd.sampleFlowField(left, 2.5f, 1.5f).ok());
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK(crowd.readAgent(crowd.resolveNamedAgent("left").takeValue()).value().vx < 0.f);
+    auto rebound = crowd.acquireFlowField(std::vector<FlowGoal>{{0, 2}}).takeValue();
+    crowd.setBlocked(2, 2, true);
+    REQUIRE(!crowd.sampleFlowField(rebound, 2.5f, 1.5f).ok());
+    ua.reference = crowd.resolveNamedAgent("left").takeValue();
+    ua.flow      = rebound;
+    REQUIRE(!crowd.updateAgents({{ua}}).ok());
+    CHECK_EQ(crowd.advance(0.f).value().navigationClassMismatches, 2);
+}
+
+TEST_CASE("crowd.cache.leaseOutlivesProviderButCannotBindOtherOwner") {
+    FlowLease lease;
+    {
+        Crowd owner;
+        owner.resizeField(3, 1, 1.f, 0.f, 0.f);
+        lease = build(owner, {{2, 0}});
+    }
+    Crowd other;
+    other.resizeField(3, 1, 1.f, 0.f, 0.f);
+    REQUIRE(!other.sampleFlowField(lease, 1.5f, 0.5f).ok());
+    AgentUpdate update;
+    update.reference = other.agentRef(other.addAgent(1.5f, 0.5f, 0.f, 0.1f)).takeValue();
+    update.flow      = lease;
+    REQUIRE(!other.updateAgents({{update}}).ok());
+    CHECK_EQ(other.readAgent(update.reference).value().flowGeneration, 0);
+}
+
+TEST_CASE("crowd.cache.unleasedSnapshotRecordsDoNotPinCurrentEviction") {
+    Crowd crowd;
+    crowd.resizeField(3, 1, 1.f, 0.f, 0.f);
+    auto lease = build(crowd, {{2, 0}});
+    lease      = {};
+    auto saved = crowd.captureSnapshot().takeValue();
+    REQUIRE(crowd.configureFlowCache(0).ok());
+    CHECK_EQ(crowd.getFlowCacheStatus().entries, 0u);
+    REQUIRE(crowd.commitRestore(crowd.prepareRestore(saved).takeValue()).ok());
+    auto restored = crowd.acquireFlowField(std::vector<FlowGoal>{{2, 0}});
+    REQUIRE(restored.ok());
+    CHECK(restored.value().generation() != 0);
+}
+
+TEST_CASE("crowd.cache.interpolationDoesNotMakeBlockedContainingCellReachable") {
+    Crowd crowd;
+    crowd.resizeField(3, 3, 1.f, 0.f, 0.f);
+    crowd.setBlocked(0, 1, true);
+    auto lease  = build(crowd, {{2, 1}});
+    auto sample = crowd.sampleFlowField(lease, 0.8f, 1.5f).takeValue();
+    CHECK(sample.state == FlowSampleState::Unreachable);
+    CHECK_EQ(sample.direction.x, 0.f);
+    CHECK(crowd.sampleFlowField(lease, 1.1f, 1.5f).value().state == FlowSampleState::Reachable);
+}
+
+TEST_CASE("crowd.cache.moreThan64PinnedFieldsRespectByteBudget") {
+    Crowd crowd;
+    crowd.resizeField(9, 9, 1.f, 0.f, 0.f);
+    std::vector<FlowLease> leases;
+    leases.reserve(70);
+    for (int goal = 0; goal < 70; ++goal) leases.push_back(build(crowd, {{goal % 9, goal / 9}}));
+    REQUIRE_EQ(crowd.getFlowCacheStatus().entries, 70u);
+    CHECK(crowd.getFlowCacheStatus().residentBytes <= crowd.getFlowCacheStatus().budgetBytes);
+    CHECK(leases.front().generation() != leases.back().generation());
+    REQUIRE(crowd.sampleFlowField(leases.back(), 6.5f, 7.5f).ok());
+    const auto retained = crowd.getFlowCacheStatus().residentBytes;
+    REQUIRE(!crowd.configureFlowCache(0).ok());
+    CHECK_EQ(crowd.getFlowCacheStatus().entries, 70u);
+    CHECK_EQ(crowd.getFlowCacheStatus().residentBytes, retained);
+}
+}  // namespace test_crowd_flow_cache_runtime
+
+namespace test_crowd_navigation_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.navigation.blockedGoalCompletesAsUnreachable") {
+    Crowd crowd;
+    crowd.resizeField(3, 3, 1.f, 0.f, 0.f);
+    crowd.setBlocked(2, 2, true);
+    auto plan = crowd.prepareFlowBuild(2, 2).takeValue();
+    while (plan.state() == Crowd::FlowBuildState::Pending) REQUIRE(crowd.advanceFlowBuild(plan, 1).ok());
+    CHECK(plan.state() == Crowd::FlowBuildState::Unreachable);
+    REQUIRE(crowd.commitFlowBuild(std::move(plan)).ok());
+    CHECK_EQ(crowd.flowAtCell(0, 0).x, 0.f);
+    CHECK_EQ(crowd.flowAtCell(0, 0).y, 0.f);
+}
+
+TEST_CASE("crowd.navigation.largeFiniteCostsRetainUnitDirections") {
+    CrowdField field;
+    field.resize(2, 1, 1.f, 0.f, 0.f);
+    field.setAllCellCost(1e30f);
+    field.setGoal(1, 0);
+    field.build();
+    REQUIRE(field.isReachable(0, 0));
+    float dx = 0.f, dy = 0.f;
+    field.flowAtCell(0, 0, dx, dy);
+    CHECK_EQ(dx, 1.f);
+    CHECK_EQ(dy, 0.f);
+}
+
+TEST_CASE("crowd.navigation.workPartitionsMatchSynchronousKernel") {
+    Crowd synchronous, sliced;
+    for (auto* crowd : {&synchronous, &sliced}) {
+        crowd->resizeField(5, 5, 1.f, 0.f, 0.f);
+        for (int y = 0; y < 5; ++y)
+            if (y != 2) crowd->setBlocked(2, y, true);
+    }
+    synchronous.buildFlowField(4, 4);
+    auto plan = sliced.prepareFlowBuild(4, 4).takeValue();
+    REQUIRE(!sliced.advanceFlowBuild(plan, -1).ok());
+    int calls = 0, pops = 0, cells = 0;
+    while (plan.state() == Crowd::FlowBuildState::Pending) {
+        REQUIRE(++calls < 1000);
+        auto progress = sliced.advanceFlowBuild(plan, 3);
+        REQUIRE(progress.ok());
+        CHECK(progress.value().heapPops + progress.value().directionCells <= 3);
+        pops += progress.value().heapPops;
+        cells += progress.value().directionCells;
+    }
+    CHECK(pops > 0);
+    CHECK_EQ(cells, 25);
+    REQUIRE(sliced.commitFlowBuild(std::move(plan)).ok());
+    for (int y = 0; y < 5; ++y)
+        for (int x = 0; x < 5; ++x) {
+            const auto expected = synchronous.flowAtCell(x, y), actual = sliced.flowAtCell(x, y);
+            CHECK_EQ(actual.x, expected.x);
+            CHECK_EQ(actual.y, expected.y);
+        }
+}
+
+TEST_CASE("crowd.navigation.preparedFieldPublishesOnceAndRejectsForeignOrStalePlans") {
+    Crowd crowd, other;
+    crowd.resizeField(8, 8, 1.f, 0.f, 0.f);
+    auto prepared = crowd.prepareFlowBuild(7, 0);
+    REQUIRE(prepared.ok());
+    CHECK(crowd.getFieldStatus().state == FieldState::Unbuilt);
+    auto plan = std::move(prepared).takeValue();
+    REQUIRE(crowd.advanceFlowBuild(plan, 0).ok());
+    CHECK(plan.state() == Crowd::FlowBuildState::Pending);
+    REQUIRE(!crowd.commitFlowBuild(std::move(plan)).ok());
+    while (plan.state() == Crowd::FlowBuildState::Pending) {
+        auto progress = crowd.advanceFlowBuild(plan, 1);
+        REQUIRE(progress.ok());
+        CHECK(progress.value().heapPops + progress.value().directionCells <= 1);
+        CHECK(crowd.getFieldStatus().state == FieldState::Unbuilt);
+    }
+    REQUIRE(!other.commitFlowBuild(std::move(plan)).ok());
+    REQUIRE(crowd.commitFlowBuild(std::move(plan)).ok());
+    CHECK(crowd.getFieldStatus().state == FieldState::Ready);
+    REQUIRE(!crowd.commitFlowBuild(std::move(plan)).ok());
+    auto stale = crowd.prepareFlowBuild(0, 7).takeValue();
+    crowd.setBlocked(4, 4, true);
+    const auto revision = crowd.getFieldStatus().revision;
+    REQUIRE(!crowd.commitFlowBuild(std::move(stale)).ok());
+    auto cancelled = crowd.advanceFlowBuild(stale, 32);
+    REQUIRE(cancelled.ok());
+    CHECK(cancelled.value().state == Crowd::FlowBuildState::Cancelled);
+    CHECK_EQ(cancelled.value().heapPops, 0);
+    CHECK_EQ(cancelled.value().directionCells, 0);
+    CHECK_EQ(crowd.getFieldStatus().revision, revision);
+    CHECK(crowd.getFieldStatus().state == FieldState::Stale);
+}
+
+TEST_CASE("crowd.navigation.cancelAndInvalidGoalNeverPublish") {
+    Crowd crowd;
+    crowd.resizeField(8, 8, 1.f, 0.f, 0.f);
+    REQUIRE(!crowd.prepareFlowBuild(-1, 0).ok());
+    auto plan = crowd.prepareFlowBuild(7, 0).takeValue();
+    REQUIRE(plan.cancel().ok());
+    REQUIRE(plan.cancel().ok());
+    REQUIRE(!crowd.commitFlowBuild(std::move(plan)).ok());
+    CHECK(crowd.getFieldStatus().state == FieldState::Unbuilt);
+}
+
+TEST_CASE("crowd.navigation.multiGoalCanonicalizationAndMixedBlockedGoals") {
+    Crowd a, b;
+    for (auto* c : {&a, &b}) {
+        c->resizeField(5, 3, 1.f, 0.f, 0.f);
+        c->setBlocked(0, 0, true);
+    }
+    std::vector<FlowGoal> goals{{4, 1}, {0, 0}, {0, 1}, {4, 1}};
+    auto                  first = a.prepareFlowBuild(goals).takeValue();
+    goals                       = {{0, 1}, {4, 1}, {0, 0}};
+    auto second                 = b.prepareFlowBuild(goals).takeValue();
+    CHECK_EQ(a.getFieldStatus().goals, 0);
+    while (first.state() == Crowd::FlowBuildState::Pending) REQUIRE(a.advanceFlowBuild(first, 1).ok());
+    while (second.state() == Crowd::FlowBuildState::Pending) REQUIRE(b.advanceFlowBuild(second, 100).ok());
+    CHECK(first.state() == Crowd::FlowBuildState::Ready);
+    REQUIRE(a.commitFlowBuild(std::move(first)).ok());
+    REQUIRE(b.commitFlowBuild(std::move(second)).ok());
+    CHECK_EQ(a.getFieldStatus().goals, 3);
+    for (int y = 0; y < 3; ++y)
+        for (int x = 0; x < 5; ++x) {
+            CHECK_EQ(a.flowAtCell(x, y).x, b.flowAtCell(x, y).x);
+            CHECK_EQ(a.flowAtCell(x, y).y, b.flowAtCell(x, y).y);
+        }
+    CHECK(a.flowAtCell(1, 1).x < 0.f);
+    CHECK(a.flowAtCell(3, 1).x > 0.f);
+    const auto revision = a.getFieldStatus().revision;
+    REQUIRE(!a.prepareFlowBuild(std::span<const FlowGoal>{}).ok());
+    goals = {{1, 1}, {5, 1}};
+    REQUIRE(!a.prepareFlowBuild(goals).ok());
+    CHECK_EQ(a.getFieldStatus().revision, revision);
+    goals        = {{0, 0}};
+    auto blocked = a.prepareFlowBuild(goals).takeValue();
+    while (blocked.state() == Crowd::FlowBuildState::Pending) REQUIRE(a.advanceFlowBuild(blocked, 3).ok());
+    CHECK(blocked.state() == Crowd::FlowBuildState::Unreachable);
+}
+
+TEST_CASE("crowd.navigation.independentGoalsDoNotInvalidateEachOthersInputEpoch") {
+    Crowd crowd;
+    crowd.resizeField(5, 5, 1.f, 0.f, 0.f);
+    const auto input = crowd.getFieldStatus().inputRevision;
+    auto       left  = crowd.prepareFlowBuild(0, 2).takeValue();
+    auto       right = crowd.prepareFlowBuild(4, 2).takeValue();
+    while (left.state() == Crowd::FlowBuildState::Pending) REQUIRE(crowd.advanceFlowBuild(left, 3).ok());
+    REQUIRE(crowd.commitFlowBuild(std::move(left)).ok());
+    const auto first = crowd.getFieldStatus().revision;
+    CHECK_EQ(crowd.getFieldStatus().inputRevision, input);
+    crowd.addFlowGoal(2, 4);
+    CHECK_EQ(crowd.getFieldStatus().inputRevision, input);
+    while (right.state() == Crowd::FlowBuildState::Pending) REQUIRE(crowd.advanceFlowBuild(right, 1).ok());
+    REQUIRE(crowd.commitFlowBuild(std::move(right)).ok());
+    CHECK(crowd.getFieldStatus().revision > first);
+    CHECK_EQ(crowd.getFieldStatus().builtRevision, crowd.getFieldStatus().revision);
+    CHECK_EQ(crowd.getFieldStatus().inputRevision, input);
+    CHECK(crowd.flowAtCell(2, 2).x > 0.f);
+    auto stale = crowd.prepareFlowBuild(0, 2).takeValue();
+    crowd.setCellCost(1, 1, 1.f);
+    CHECK_EQ(crowd.getFieldStatus().inputRevision, input);
+    crowd.setCellCost(1, 1, 2.f);
+    CHECK(crowd.getFieldStatus().inputRevision > input);
+    auto cancelled = crowd.advanceFlowBuild(stale, 1);
+    REQUIRE(cancelled.ok());
+    CHECK(cancelled.value().state == Crowd::FlowBuildState::Cancelled);
+}
+}  // namespace test_crowd_navigation_runtime
+
+namespace test_crowd_policy_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.policy.noPredictiveAvoidanceStillResolvesBodyContact") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(4.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.configureAvoidance({true, 2.f, 0.1f, 32}).ok());
+    const auto a = crowd.agentRef(crowd.addAgent(-0.1f, 0.f, 0.f, 0.5f)).takeValue();
+    const auto b = crowd.agentRef(crowd.addAgent(0.1f, 0.f, 0.f, 0.5f)).takeValue();
+    REQUIRE(crowd.setInteractionPolicy(a, {1.f, false, 1, 0, 1, 1}).ok());
+    REQUIRE(crowd.setInteractionPolicy(b, {1.f, false, 1, 0, 1, 1}).ok());
+    auto advanced = crowd.advance(1.f / 60.f);
+    REQUIRE(advanced.ok());
+    CHECK_EQ(advanced.value().avoidanceChecks, 0);
+    CHECK(advanced.value().contactPairsChecked > 0);
+    CHECK_EQ(advanced.value().unresolvedContacts, 0);
+    CHECK(std::abs(crowd.readAgent(a).value().x - crowd.readAgent(b).value().x) >= 0.999f);
+}
+
+TEST_CASE("crowd.policy.contactFilteringDoesNotDisablePredictiveSteering") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(4.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.configureAvoidance({true, 2.f, 0.1f, 32}).ok());
+    const auto a = crowd.agentRef(crowd.addAgent(-0.1f, 0.f, 0.f, 0.5f)).takeValue();
+    const auto b = crowd.agentRef(crowd.addAgent(0.1f, 0.f, 0.f, 0.5f)).takeValue();
+    REQUIRE(crowd.setInteractionPolicy(a, {1.f, false, 1, 1, 0, 0}).ok());
+    REQUIRE(crowd.setInteractionPolicy(b, {1.f, false, 1, 1, 0, 0}).ok());
+    auto advanced = crowd.advance(1.f / 60.f);
+    REQUIRE(advanced.ok());
+    CHECK(advanced.value().avoidanceChecks > 0);
+    CHECK_EQ(advanced.value().contactPairsChecked, 0);
+    CHECK_EQ(advanced.value().unresolvedContacts, 0);
+}
+
+TEST_CASE("crowd.policy.spawnAndRelocationRespectContactInsteadOfAvoidanceMasks") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    const auto held = crowd.agentRef(crowd.addNamedAgent("held", 0.f, 0.f, 0.f, 1.f)).takeValue();
+    REQUIRE(crowd.setInteractionPolicy(held, {0.f, true, 1, 0, 1, 1}).ok());
+    AgentCreateBatch batch;
+    batch.policy           = SpawnPolicy::RejectOverlap;
+    batch.agents           = {{"new", 0.f, 0.f, 0.f, 1.f, {}}};
+    batch.agents[0].policy = InteractionPolicy{1.f, false, 1, 0, 1, 1};
+    REQUIRE(!crowd.createAgents(batch).ok());
+    CHECK(!crowd.hasNamedAgent("new"));
+    batch.agents[0].x = 4.f;
+    auto born         = crowd.createAgents(batch);
+    REQUIRE(born.ok());
+    const auto ref = born.value().created[0].reference;
+    REQUIRE(!crowd.relocateAgents({{{ref, 0.f, 0.f}}, 100}).ok());
+    CHECK_EQ(crowd.readAgent(ref).value().x, 4.f);
+    CHECK_EQ(crowd.readInteractionPolicy(ref).value().avoidanceMask, 0);
+}
+
+TEST_CASE("crowd.policy.legacyFacadeAndHoldUpdatesHaveExplicitSemantics") {
+    Crowd      crowd;
+    const int  slot = crowd.addAgent(0.f, 0.f, 0.f, 1.f);
+    const auto ref  = crowd.agentRef(slot).takeValue();
+    REQUIRE(crowd.setInteractionPolicy(ref, {0.25f, false, 1, 0, 2, 2}).ok());
+    AgentUpdate hold;
+    hold.reference    = ref;
+    hold.holdPosition = true;
+    REQUIRE(crowd.updateAgents({{hold}}).ok());
+    auto modern = crowd.readInteractionPolicy(ref).takeValue();
+    CHECK_EQ(modern.avoidanceMask, 0);
+    CHECK_EQ(modern.contactLayer, 2);
+    CHECK(modern.holdPosition);
+    const auto compatibility = crowd.getAgentInteraction(slot).takeValue();
+    CHECK_EQ(compatibility.layer, 2);
+    REQUIRE(crowd.setAgentInteraction(slot, {1.f, false, 4, 4}).ok());
+    modern = crowd.readInteractionPolicy(ref).takeValue();
+    CHECK_EQ(modern.contactLayer, 4);
+    CHECK_EQ(modern.avoidanceLayer, 4);
+    auto bad          = modern;
+    bad.avoidanceMask = -1;
+    REQUIRE(!crowd.setInteractionPolicy(ref, bad).ok());
+    bad             = modern;
+    bad.pushability = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!crowd.setInteractionPolicy(ref, bad).ok());
+    CHECK_EQ(crowd.readInteractionPolicy(ref).value().pushability, 1.f);
+}
+}  // namespace test_crowd_policy_runtime
+
+namespace test_crowd_registry_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.batch.relocationChecksWholeDestinationBatchAndPreservesIdentity") {
+    Crowd crowd;
+    crowd.resizeField(16, 16, 1.f, 0.f, 0.f);
+    crowd.setBlocked(10, 10, true);
+    const auto a = crowd.agentRef(crowd.addAgent(2.f, 2.f, 0.f, 0.5f)).takeValue();
+    const auto b = crowd.agentRef(crowd.addAgent(4.f, 2.f, 0.f, 0.5f)).takeValue();
+    REQUIRE(!crowd.relocateAgents({{{a, 6.f, 2.f}, {b, 6.f, 2.f}}, 100}).ok());
+    CHECK_EQ(crowd.readAgent(a).value().x, 2.f);
+    REQUIRE(!crowd.relocateAgents({{{a, 10.5f, 10.5f}}, 100}).ok());
+    REQUIRE(!crowd.relocateAgents({{{a, 8.f, 2.f}}, 1}).ok());
+    CHECK_EQ(crowd.readAgent(a).value().x, 2.f);
+    REQUIRE(crowd.relocateAgents({{{a, 4.f, 2.f}, {b, 2.f, 2.f}}, 100}).ok());
+    CHECK(crowd.isAgentAlive(a));
+    CHECK(crowd.isAgentAlive(b));
+    CHECK_EQ(crowd.readAgent(a).value().x, 4.f);
+    CHECK_EQ(crowd.readAgent(b).value().x, 2.f);
+}
+
+TEST_CASE("crowd.batch.relocationResetsVelocityButKeepsSteering") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(4.f);
+    crowd.setSeparationWeight(0.f);
+    crowd.setArriveRadius(0.1f);
+    const auto  reference = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 0.5f)).takeValue();
+    AgentUpdate update;
+    update.reference = reference;
+    update.intent    = {AgentAction::Seek, true, 20.f, 0.f};
+    REQUIRE(crowd.updateAgents({{update}}).ok());
+    REQUIRE(crowd.advance(0.1f).ok());
+    CHECK(crowd.readAgent(reference).value().vx > 0.f);
+    REQUIRE(crowd.relocateAgents({{{reference, 10.f, 0.f}}, 100}).ok());
+    auto state = crowd.readAgent(reference).takeValue();
+    CHECK_EQ(state.speed, 0.f);
+    CHECK_EQ(state.vx, 0.f);
+    CHECK_EQ(state.action, static_cast<int>(AgentAction::Seek));
+    REQUIRE(crowd.advance(0.1f).ok());
+    CHECK(crowd.readAgent(reference).value().x > 10.f);
+}
+
+TEST_CASE("crowd.registry.swapPopKeepsIdentityAndReuseRejectsOldGeneration") {
+    Crowd      crowd;
+    const int  a     = crowd.addNamedAgent("a", 1.f, 0.f, 0.f, 1.f);
+    const int  b     = crowd.addNamedAgent("b", 2.f, 0.f, 0.f, 1.f);
+    const auto first = crowd.agentRef(a).takeValue(), second = crowd.agentRef(b).takeValue();
+    REQUIRE(crowd.removeAgent(a));
+    CHECK(!crowd.isAgentAlive(first));
+    CHECK(crowd.isAgentAlive(second));
+    CHECK_EQ(crowd.readAgent(second).value().x, 2.f);
+    CHECK_EQ(crowd.resolveNamedAgent("b").value(), second);
+    const auto replacement = crowd.agentRef(crowd.addNamedAgent("replacement", 3.f, 0.f, 0.f, 1.f)).takeValue();
+    CHECK_EQ(replacement.handle.index(), first.handle.index());
+    CHECK(replacement.handle.generation() != first.handle.generation());
+    CHECK(!crowd.readAgent(first).ok());
+}
+
+TEST_CASE("crowd.registry.clearAndWrongOwnerCannotResolve") {
+    Crowd      first, second;
+    const auto old   = first.agentRef(first.addAgent(1.f, 0.f, 0.f, 1.f)).takeValue();
+    const auto other = second.agentRef(second.addAgent(2.f, 0.f, 0.f, 1.f)).takeValue();
+    REQUIRE_EQ(old.handle, other.handle);
+    REQUIRE(old.owner != other.owner);
+    REQUIRE(!second.readAgent(old).ok());
+    first.clearAgents();
+    const auto current = first.agentRef(first.addAgent(3.f, 0.f, 0.f, 1.f)).takeValue();
+    REQUIRE(!first.readAgent(old).ok());
+    REQUIRE(first.isAgentAlive(current));
+}
+
+TEST_CASE("crowd.registry.spawnTransactionPreservesOwnerAndLiveReferences") {
+    Crowd            crowd;
+    const auto       old = crowd.agentRef(crowd.addNamedAgent("old", 1.5f, 0.f, 0.f, 1.f)).takeValue();
+    AgentCreateBatch batch;
+    batch.agents = {{"new", 0.f, 0.f, 0.f, 1.f, {}}};
+    auto created = crowd.createAgents(batch);
+    REQUIRE(created.ok());
+    const auto reference = created.value().created.front().reference;
+    CHECK_EQ(reference.owner, old.owner);
+    CHECK(crowd.isAgentAlive(old));
+    CHECK(crowd.isAgentAlive(reference));
+    CHECK(crowd.readAgent(old).value().x > 1.5f);
+    REQUIRE(!crowd.createAgents(batch).ok());
+    CHECK(crowd.isAgentAlive(reference));
+    CHECK_EQ(crowd.resolveNamedAgent("new").value(), reference);
+}
+
+TEST_CASE("crowd.batch.updateAdmissionIsAtomicAndDuplicateReferencesReject") {
+    Crowd       crowd;
+    const auto  reference = crowd.agentRef(crowd.addAgent(1.f, 2.f, 0.f, 1.f)).takeValue();
+    AgentUpdate update;
+    update.reference        = reference;
+    update.data             = 17;
+    update.intent           = {AgentAction::Seek, true, 100.f, 0.f};
+    AgentUpdate invalid     = update;
+    invalid.reference.owner = 0;
+    REQUIRE(!crowd.updateAgents({{update, invalid}}).ok());
+    CHECK_EQ(crowd.readAgent(reference).value().data, 0);
+    REQUIRE(!crowd.updateAgents({{update, update}}).ok());
+    CHECK_EQ(crowd.readAgent(reference).value().data, 0);
+    invalid          = update;
+    invalid.maxSpeed = std::numeric_limits<float>::infinity();
+    REQUIRE(!crowd.updateAgents({{invalid}}).ok());
+    auto applied = crowd.updateAgents({{update}});
+    REQUIRE(applied.ok());
+    CHECK_EQ(applied.value().applied, 1u);
+    CHECK_EQ(crowd.readAgent(reference).value().data, 17);
+    CHECK_EQ(crowd.readAgent(reference).value().action, static_cast<int>(AgentAction::Seek));
+}
+
+TEST_CASE("crowd.batch.removalReResolvesAfterSwapAndInvalidBatchDoesNothing") {
+    Crowd      crowd;
+    const auto a = crowd.agentRef(crowd.addAgent(1.f, 0.f, 0.f, 1.f)).takeValue();
+    const auto b = crowd.agentRef(crowd.addAgent(2.f, 0.f, 0.f, 1.f)).takeValue();
+    const auto c = crowd.agentRef(crowd.addAgent(3.f, 0.f, 0.f, 1.f)).takeValue();
+    REQUIRE(!crowd.removeAgents({{a, {}}}).ok());
+    REQUIRE(!crowd.removeAgents({{a, a}}).ok());
+    CHECK_EQ(crowd.getAgentCount(), 3);
+    REQUIRE(crowd.removeAgents({{a, c}}).ok());
+    CHECK_EQ(crowd.getAgentCount(), 1);
+    CHECK(!crowd.isAgentAlive(a));
+    CHECK(!crowd.isAgentAlive(c));
+    CHECK_EQ(crowd.readAgent(b).value().x, 2.f);
+}
+
+TEST_CASE("crowd.batch.selectedFrameOwnsValuesAndRejectPreservesOutput") {
+    Crowd                       crowd;
+    const auto                  a = crowd.agentRef(crowd.addAgent(1.f, 0.f, 0.f, 1.f)).takeValue();
+    const auto                  b = crowd.agentRef(crowd.addAgent(2.f, 0.f, 0.f, 1.f)).takeValue();
+    AgentFrame                  frame;
+    const std::vector<AgentRef> selected{b, a};
+    REQUIRE(crowd.copyAgentStates(selected, frame).ok());
+    CHECK_EQ(frame.agents[0].reference, b);
+    CHECK_EQ(frame.agents[1].state.x, 1.f);
+    REQUIRE(crowd.removeAgents({{a}}).ok());
+    CHECK_EQ(frame.agents[1].state.x, 1.f);
+    REQUIRE(!crowd.copyAgentStates(selected, frame).ok());
+    CHECK_EQ(frame.agents.size(), 2u);
+    CHECK_EQ(frame.agents[0].state.x, 2.f);
+    REQUIRE(crowd.copyAgentFrame(frame).ok());
+    CHECK_EQ(frame.agents.size(), 1u);
+    CHECK_EQ(frame.agents[0].reference, b);
+}
+
+TEST_CASE("crowd.registry.updatePlanOwnsValuesAndRejectsMaskBeforeMutation") {
+    Crowd            crowd;
+    const auto       a = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 0.2f)).takeValue();
+    const auto       b = crowd.agentRef(crowd.addAgent(2.f, 0.f, 0.f, 0.2f)).takeValue();
+    AgentUpdateBatch batch;
+    AgentUpdate      first;
+    first.reference = a;
+    first.data      = 11;
+    AgentUpdate second;
+    second.reference = b;
+    second.data      = 22;
+    batch.agents     = {first, second};
+    auto prepared    = crowd.prepareAgentUpdates(batch);
+    REQUIRE(prepared.ok());
+    batch.agents[0].data         = 99;
+    auto               plan      = std::move(prepared).takeValue();
+    const std::uint8_t invalid[] = {1, 2};
+    REQUIRE(!crowd.commitAgentUpdates(std::move(plan), invalid).ok());
+    CHECK_EQ(crowd.readAgent(a).takeValue().data, 0);
+    const std::uint8_t selected[] = {1, 0};
+    auto               committed  = crowd.commitAgentUpdates(std::move(plan), selected);
+    REQUIRE(committed.ok());
+    CHECK_EQ(committed.value().applied, 1u);
+    CHECK_EQ(crowd.readAgent(a).takeValue().data, 11);
+    CHECK_EQ(crowd.readAgent(b).takeValue().data, 0);
+    REQUIRE(!crowd.commitAgentUpdates(std::move(plan), {}).ok());
+}
+
+TEST_CASE("crowd.registry.updatePlanResolvesCompactionAndRejectsStaleUnselectedIdentity") {
+    Crowd            crowd;
+    const int        removed = crowd.addAgent(-2.f, 0.f, 0.f, 0.2f);
+    const auto       a       = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 0.2f)).takeValue();
+    const auto       b       = crowd.agentRef(crowd.addAgent(2.f, 0.f, 0.f, 0.2f)).takeValue();
+    AgentUpdateBatch batch;
+    AgentUpdate      first;
+    first.reference = a;
+    first.data      = 11;
+    AgentUpdate second;
+    second.reference = b;
+    second.data      = 22;
+    batch.agents     = {first, second};
+    auto prepared    = crowd.prepareAgentUpdates(batch);
+    REQUIRE(prepared.ok());
+    REQUIRE(crowd.removeAgent(removed));
+    REQUIRE(crowd.commitAgentUpdates(std::move(prepared).takeValue(), {}).ok());
+    CHECK_EQ(crowd.readAgent(a).takeValue().data, 11);
+    CHECK_EQ(crowd.readAgent(b).takeValue().data, 22);
+    first.data      = 33;
+    batch.agents[0] = first;
+    auto stale      = crowd.prepareAgentUpdates(batch);
+    REQUIRE(stale.ok());
+    REQUIRE(crowd.removeAgent(crowd.getAgentCount() - 1));
+    const std::uint8_t selection[] = {0, 1};
+    REQUIRE(!crowd.commitAgentUpdates(std::move(stale).takeValue(), selection).ok());
+    CHECK_EQ(crowd.readAgent(b).takeValue().data, 22);
+}
+
+TEST_CASE("crowd.registry.updatePlanRestoreAndProviderDestructionAreSafe") {
+    Crowd::AgentUpdatePlan orphan;
+    {
+        Crowd       crowd;
+        const auto  ref = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 0.2f)).takeValue();
+        AgentUpdate update;
+        update.reference = ref;
+        update.data      = 4;
+        AgentUpdateBatch batch;
+        batch.agents.push_back(update);
+        auto prepared = crowd.prepareAgentUpdates(batch);
+        REQUIRE(prepared.ok());
+        orphan = std::move(prepared).takeValue();
+    }
+    Crowd      crowd;
+    const auto ref = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 0.2f)).takeValue();
+    REQUIRE(!crowd.commitAgentUpdates(std::move(orphan), {}).ok());
+    auto saved = crowd.captureSnapshot();
+    REQUIRE(saved.ok());
+    AgentUpdate update;
+    update.reference = ref;
+    update.data      = 4;
+    AgentUpdateBatch batch;
+    batch.agents.push_back(update);
+    auto prepared = crowd.prepareAgentUpdates(batch);
+    REQUIRE(prepared.ok());
+    auto restored = crowd.prepareRestore(saved.value());
+    REQUIRE(restored.ok());
+    REQUIRE(crowd.commitRestore(std::move(restored).takeValue()).ok());
+    REQUIRE(!crowd.commitAgentUpdates(std::move(prepared).takeValue(), {}).ok());
+    CHECK_EQ(crowd.getAgentState(0).data, 0);
+}
+}  // namespace test_crowd_registry_runtime
+
+namespace test_crowd_revision_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.revision.resizeRejectsInvalidGeometryWithoutPublishingState") {
+    CrowdField field;
+    field.resize(8, 8, 1.f, 0.f, 0.f);
+    field.setGoal(7, 0);
+    field.build();
+    const auto revision = field.revision();
+    field.resize(8, 8, 1.f, 0.f, 0.f);
+    CHECK_EQ(field.revision(), revision);
+    CHECK(field.isBuilt());
+    bool rejected = false;
+    try {
+        field.resize(8, 8, 1.f, std::numeric_limits<float>::quiet_NaN(), 0.f);
+    } catch (const std::invalid_argument&) {
+        rejected = true;
+    }
+    REQUIRE(rejected);
+    rejected = false;
+    try {
+        field.resize(65536, 65536, 1.f, 0.f, 0.f);
+    } catch (const std::length_error&) {
+        rejected = true;
+    }
+    REQUIRE(rejected);
+    CHECK_EQ(field.revision(), revision);
+    CHECK_EQ(field.getWidth(), 8);
+    CHECK(field.isBuilt());
+    CHECK(field.isReachable(0, 0));
+}
+
+TEST_CASE("crowd.revision.terrainAndGoalsInvalidateSamplingUntilRebuild") {
+    CrowdField field;
+    field.resize(8, 8, 1.f, 0.f, 0.f);
+    REQUIRE(field.state() == FieldState::Unbuilt);
+    field.setGoal(7, 0);
+    field.build();
+    REQUIRE(field.state() == FieldState::Ready);
+    const auto built = field.builtRevision();
+    field.setGoal(7, 0);
+    field.addGoal(7, 0);
+    REQUIRE_EQ(field.revision(), built);
+    REQUIRE(field.state() == FieldState::Ready);
+    float dx = 0.f, dy = 0.f;
+    field.flowAtCell(0, 0, dx, dy);
+    REQUIRE(dx > 0.f);
+    field.setBlocked(4, 4, true);
+    REQUIRE(field.state() == FieldState::Stale);
+    REQUIRE(field.revision() > built);
+    field.flowAtCell(0, 0, dx, dy);
+    REQUIRE_EQ(dx, 0.f);
+    REQUIRE_EQ(dy, 0.f);
+    REQUIRE_EQ(field.costAtWorld(0.5f, 0.5f), CrowdField::kUnreachable);
+    const auto revision = field.revision();
+    field.setBlocked(4, 4, true);
+    REQUIRE_EQ(field.revision(), revision);
+    field.build();
+    REQUIRE(field.isBuilt());
+    REQUIRE_EQ(field.builtRevision(), field.revision());
+    field.addGoal(0, 7);
+    REQUIRE(field.state() == FieldState::Stale);
+    field.flowAtWorld(0.5f, 0.5f, dx, dy);
+    REQUIRE_EQ(dx, 0.f);
+    REQUIRE_EQ(dy, 0.f);
+}
+
+TEST_CASE("crowd.revision.staleFlowStopsDrivingButLatestWallStillConstrains") {
+    Crowd crowd;
+    crowd.resizeField(8, 8, 1.f, 0.f, 0.f);
+    crowd.setDefaultSpeed(2.f);
+    crowd.setSeparationWeight(0.f);
+    crowd.buildFlowField(7, 0);
+    const int agent = crowd.addAgent(0.5f, 0.5f, 0.f, 0.1f);
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK(crowd.getAgentState(agent).vx > 0.f);
+    crowd.setBlocked(4, 4, true);
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK_EQ(crowd.getAgentState(agent).vx, 0.f);
+    REQUIRE(crowd.setAgentPosition(agent, 4.5f, 4.5f));
+    REQUIRE(crowd.advance(0.01f).ok());
+    const auto state = crowd.getAgentState(agent);
+    CHECK((state.x < 4.f || state.x > 5.f || state.y < 4.f || state.y > 5.f));
+}
+}  // namespace test_crowd_revision_runtime
+
+namespace test_crowd_scheduler_runtime {
+using namespace eve;
+using namespace eve::crowd;
+namespace {
+class FailedScheduler final : public CrowdWorkScheduler {
+public:
+    Result<void> execute(int partitions, const std::function<void(int)>& body) override {
+        for (int index = 0; index < partitions; ++index) body(index);
+        return Result<void>::failure(Diagnostic::error(DiagnosticCode::Failed, "Injected joined failure", "scheduler"));
+    }
+};
+}  // namespace
+
+TEST_CASE("crowd.scheduler.parallelWithoutProviderRejectsAndSerialRemainsAvailable") {
+    Crowd crowd;
+    REQUIRE(!crowd.setWorkScheduler(CrowdExecution::Parallel, {}).ok());
+    REQUIRE(!crowd.setWorkScheduler(static_cast<CrowdExecution>(99), {}).ok());
+    REQUIRE(crowd.setWorkScheduler(CrowdExecution::Serial, {}).ok());
+    REQUIRE(crowd.addAgent(0.f, 0.f, 0.f, 1.f) >= 0);
+    REQUIRE(crowd.advance(CrowdStep{SimulationTick(1), Duration::fromNanoseconds(10000000), {}}).ok());
+}
+
+TEST_CASE("crowd.scheduler.joinedFailureRollsBackAndSnapshotPreservesCurrentConfiguration") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    REQUIRE(crowd.addAgent(0.f, 0.f, 0.f, 1.f) >= 0);
+    REQUIRE(crowd.addAgent(0.3f, 0.f, 0.f, 1.f) >= 0);
+    auto snapshot = crowd.captureSnapshot();
+    REQUIRE(snapshot.ok());
+    REQUIRE(crowd.setWorkScheduler(CrowdExecution::Parallel, std::make_shared<FailedScheduler>()).ok());
+    auto restore = crowd.prepareRestore(snapshot.value());
+    REQUIRE(restore.ok());
+    REQUIRE(crowd.commitRestore(std::move(restore).takeValue()).ok());
+    const CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    REQUIRE(!crowd.advance(step).ok());
+    CHECK_EQ(crowd.getAgentState(0).x, 0.f);
+    CHECK_EQ(crowd.getAgentState(1).x, 0.3f);
+    REQUIRE(crowd.setWorkScheduler(CrowdExecution::Serial, {}).ok());
+    REQUIRE(crowd.advance(step).ok());
+}
+
+TEST_CASE("crowd.scheduler.predictionBudgetPreflightIsExactAndRetryable") {
+    Crowd oracle, bounded;
+    for (auto* crowd : {&oracle, &bounded}) {
+        crowd->setClampToField(false);
+        crowd->setResolveOverlaps(false);
+        crowd->setDefaultSpeed(4.f);
+        crowd->setSeparationWeight(0.f);
+        REQUIRE(crowd->configureAvoidance({true, 2.f, 0.1f, 16}).ok());
+        REQUIRE(crowd->addAgent(0.f, 0.f, 0.f, 0.2f) >= 0);
+        REQUIRE(crowd->addAgent(2.f, 0.f, 0.f, 0.2f) >= 0);
+        REQUIRE(crowd->setAgentAction(0, "seek"));
+        REQUIRE(crowd->setAgentAction(1, "seek"));
+        REQUIRE(crowd->setAgentTarget(0, 10.f, 0.f));
+        REQUIRE(crowd->setAgentTarget(1, -10.f, 0.f));
+    }
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    auto      expected = oracle.advance(step);
+    REQUIRE(expected.ok());
+    CHECK_EQ(expected.value().avoidanceChecks, 90);
+    step.budget.maxPredictionChecks = expected.value().avoidanceChecks - 1;
+    REQUIRE(!bounded.advance(step).ok());
+    CHECK_EQ(bounded.getAgentState(0).x, 0.f);
+    CHECK_EQ(bounded.getAgentState(1).x, 2.f);
+    step.budget.maxPredictionChecks += 1;
+    auto retry = bounded.advance(step);
+    REQUIRE(retry.ok());
+    CHECK_EQ(retry.value().avoidanceChecks, expected.value().avoidanceChecks);
+    CHECK_EQ(bounded.getAgentState(0).vx, oracle.getAgentState(0).vx);
+    CHECK_EQ(bounded.getAgentState(1).vx, oracle.getAgentState(1).vx);
+}
+
+TEST_CASE("crowd.scheduler.preferredCapacityAndWorkBudgetRejectAtomically") {
+    Crowd oracle, bounded;
+    for (auto* crowd : {&oracle, &bounded}) {
+        crowd->setClampToField(false);
+        crowd->setResolveOverlaps(false);
+        crowd->setDefaultSpeed(4.f);
+        crowd->setSeparationWeight(1.f);
+        crowd->setSeparationRadius(1.f);
+        REQUIRE(crowd->addAgent(0.f, 0.f, 0.f, 0.2f) >= 0);
+        REQUIRE(crowd->addAgent(0.3f, 0.f, 0.f, 0.2f) >= 0);
+    }
+    CrowdStep step{SimulationTick(1), Duration::fromNanoseconds(10000000), {}};
+    auto      expected = oracle.advance(step);
+    REQUIRE(expected.ok());
+    CHECK_EQ(expected.value().preferredNeighborsPeak, 2);
+    CHECK(expected.value().preferredVisits > 0);
+    step.budget.maxPreferredNeighbors = 1;
+    REQUIRE(!bounded.advance(step).ok());
+    CHECK_EQ(bounded.getAgentState(0).x, 0.f);
+    CHECK_EQ(bounded.getAgentState(1).x, 0.3f);
+    step.budget.maxPreferredNeighbors = 2;
+    step.budget.maxPreferredVisits    = expected.value().preferredVisits - 1;
+    REQUIRE(!bounded.advance(step).ok());
+    CHECK_EQ(bounded.getAgentState(0).x, 0.f);
+    CHECK_EQ(bounded.getAgentState(1).x, 0.3f);
+    step.budget.maxPreferredVisits += 1;
+    auto retry = bounded.advance(step);
+    REQUIRE(retry.ok());
+    CHECK_EQ(retry.value().preferredVisits, expected.value().preferredVisits);
+    CHECK_EQ(bounded.getAgentState(0).vx, oracle.getAgentState(0).vx);
+    CHECK_EQ(bounded.getAgentState(1).vx, oracle.getAgentState(1).vx);
+}
+
+TEST_CASE("crowd.scheduler.preferredRetainsFloatForceBoundarySemantics") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setResolveOverlaps(false);
+    crowd.setDefaultSpeed(4.f);
+    crowd.setSeparationWeight(0.f);
+    crowd.setSeparationRadius(2.f);
+    crowd.setCohesionWeight(1.f);
+    crowd.setPerceptionRadius(1.f);
+    REQUIRE(crowd.addAgent(-0.0000000298023223876953125f, 0.f, 0.f, 0.2f) >= 0);
+    REQUIRE(crowd.addAgent(1.f, 0.f, 0.f, 0.2f) >= 0);
+    // Double query distance exceeds one, but the existing float force subtraction rounds to one.
+    auto result = crowd.advance(CrowdStep{SimulationTick(1), Duration::fromNanoseconds(10000000), {}});
+    REQUIRE(result.ok());
+    CHECK_EQ(result.value().preferredNeighborsPeak, 2);
+    CHECK(crowd.getAgentState(0).vx > 0.f);
+    CHECK(crowd.getAgentState(1).vx < 0.f);
+}
+}  // namespace test_crowd_scheduler_runtime
+
+namespace test_crowd_snapshot_runtime {
+using namespace eve;
+using namespace eve::crowd;
+
+TEST_CASE("crowd.snapshot.providerWitnessSurvivesRestoreAndExpiresOnDestruction") {
+    LifetimeWitness witness;
+    CHECK(!witness.isAlive());
+    {
+        Crowd crowd;
+        witness = crowd.lifetimeWitness();
+        CHECK(witness.isAlive());
+        auto snapshot = crowd.captureSnapshot().takeValue();
+        auto plan     = crowd.prepareRestore(snapshot).takeValue();
+        REQUIRE(crowd.commitRestore(std::move(plan)).ok());
+        CHECK(witness.isAlive());
+        crowd.clearAgents();
+        CHECK(witness.isAlive());
+    }
+    CHECK(!witness.isAlive());
+}
+
+TEST_CASE("crowd.snapshot.restoreRecoversMotionPolicyClockAndInvalidatesRefs") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    const int         slot = crowd.addNamedAgent("saved", 3.f, 4.f, 0.f, 0.5f);
+    auto              old  = crowd.agentRef(slot).takeValue();
+    InteractionPolicy policy;
+    policy.avoidanceMask = 0;
+    policy.contactLayer  = 2;
+    REQUIRE(crowd.setInteractionPolicy(old, policy).ok());
+    REQUIRE(crowd.advance({SimulationTick(1), Duration::fromNanoseconds(10000000), {}}).ok());
+    auto snapshot = crowd.captureSnapshot().takeValue();
+    REQUIRE(crowd.setAgentPosition(slot, 8.f, 9.f));
+    REQUIRE(crowd.advance({SimulationTick(2), Duration::fromNanoseconds(10000000), {}}).ok());
+    auto prepared = crowd.prepareRestore(snapshot);
+    REQUIRE(prepared.ok());
+    CHECK_EQ(crowd.readAgent(old).value().x, 8.f);
+    auto plan = std::move(prepared).takeValue();
+    REQUIRE(crowd.commitRestore(std::move(plan)).ok());
+    CHECK(!crowd.isAgentAlive(old));
+    auto restored = crowd.resolveNamedAgent("saved").takeValue();
+    CHECK_EQ(crowd.readAgent(restored).value().x, 3.f);
+    CHECK_EQ(crowd.readInteractionPolicy(restored).value().avoidanceMask, 0);
+    CHECK_EQ(crowd.readInteractionPolicy(restored).value().contactLayer, 2);
+    AgentFrame frame;
+    REQUIRE(crowd.copyAgentFrame(frame).ok());
+    CHECK_EQ(frame.tick.value(), 1);
+    REQUIRE(crowd.advance({SimulationTick(2), Duration::fromNanoseconds(10000000), {}}).ok());
+    REQUIRE(!crowd.commitRestore(std::move(plan)).ok());
+}
+
+TEST_CASE("crowd.snapshot.foreignEmptyAndStalePlansPreserveLiveState") {
+    Crowd crowd, other;
+    REQUIRE(crowd.addNamedAgent("saved", 1.f, 2.f, 0.f, 1.f) >= 0);
+    Crowd::Snapshot empty;
+    REQUIRE(!crowd.prepareRestore(empty).ok());
+    auto snapshot = crowd.captureSnapshot().takeValue();
+    auto first    = crowd.prepareRestore(snapshot).takeValue();
+    auto stale    = crowd.prepareRestore(snapshot).takeValue();
+    REQUIRE(!other.commitRestore(std::move(first)).ok());
+    CHECK_EQ(other.getAgentCount(), 0);
+    REQUIRE(crowd.commitRestore(std::move(first)).ok());
+    REQUIRE(!crowd.commitRestore(std::move(stale)).ok());
+    CHECK_EQ(crowd.getAgentCount(), 1);
+    auto second = crowd.prepareRestore(snapshot).takeValue();
+    REQUIRE(crowd.commitRestore(std::move(second)).ok());
+    CHECK_EQ(crowd.getAgentCount(), 1);
+}
+}  // namespace test_crowd_snapshot_runtime
+
+namespace test_crowd_spatial_runtime {
+using namespace eve::crowd;
+
+TEST_CASE("crowd.spatial.sparseQueriesMatchBruteForceAcrossNegativeAndFarCoordinates") {
+    CrowdSpatialIndex        index;
+    std::vector<float>       xs, ys;
+    std::vector<CrowdTieKey> ties;
+    for (int i = 0; i < 80; ++i) {
+        xs.push_back(float((i * 13) % 19) - 9.125f);
+        ys.push_back(float((i * 7) % 17) - 8.5f);
+        ties.push_back({false, std::uint64_t(100 - i)});
+    }
+    xs.push_back(1e9f);
+    ys.push_back(-1e9f);
+    ties.push_back({true, 1});
+    std::int64_t comparisons = 0;
+    index.rebuild(xs, ys, ties, 2.0, 100, comparisons);
+    REQUIRE(index.cellCount() <= xs.size());
+    REQUIRE(comparisons > 0);
+    for (int i = 0; i < 40; ++i) {
+        const double     x      = i == 39 ? 1e9 : double((i * 11) % 23) - 11.25;
+        const double     y      = i == 39 ? -1e9 : double((i * 3) % 19) - 9.25;
+        const double     radius = double(i % 5) + 0.75;
+        std::vector<int> actual, expected;
+        std::int64_t     visits = 0, cells = 0;
+        index.visit(x, y, radius, 10000, visits, cells, [&](int slot) {
+            const double dx = double(xs[slot]) - x, dy = double(ys[slot]) - y;
+            if (dx * dx + dy * dy <= radius * radius) actual.push_back(slot);
+        });
+        for (std::size_t slot = 0; slot < xs.size(); ++slot) {
+            const double dx = double(xs[slot]) - x, dy = double(ys[slot]) - y;
+            if (dx * dx + dy * dy <= radius * radius) expected.push_back(static_cast<int>(slot));
+        }
+        std::sort(actual.begin(), actual.end());
+        REQUIRE(actual == expected);
+        REQUIRE(visits >= cells);
+    }
+    xs   = {0.1f, 0.2f, 0.3f};
+    ys   = {0.f, 0.f, 0.f};
+    ties = {{true, 1}, {false, 2}, {false, 1}};
+    index.rebuild(xs, ys, ties, 2.0, 1, comparisons);
+    std::vector<int> order;
+    std::int64_t     visits = 0, cells = 0;
+    index.visit(0.2, 0.0, 1.0, 100, visits, cells, [&](int slot) { order.push_back(slot); });
+    REQUIRE(order == std::vector<int>({2, 1, 0}));
+}
+
+TEST_CASE("crowd.spatial.farGroupsUseOccupiedCellsAndLookupBudgetRollsBackClock") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.addAgent(-1e9f, -1e9f, 0.f, 0.5f) >= 0);
+    REQUIRE(crowd.addAgent(1e9f, 1e9f, 0.f, 0.5f) >= 0);
+    CrowdStep step{eve::SimulationTick(1), eve::Duration::fromNanoseconds(10000000), {}};
+    step.budget.maxGridCells = 2;
+    auto first               = crowd.advance(step);
+    REQUIRE(first.ok());
+    CHECK_EQ(first.value().gridCellsPeak, 2);
+    CHECK_EQ(first.value().gridEntriesPeak, 2);
+    CHECK(first.value().gridSortComparisons > 0);
+    CHECK(first.value().spatialVisits > first.value().cellsVisited);
+    step.tick                    = eve::SimulationTick(2);
+    step.budget.maxSpatialVisits = 0;
+    auto rejected                = crowd.advance(step);
+    REQUIRE(!rejected.ok());
+    CHECK_EQ(crowd.getAgentState(0).x, -1e9f);
+    CHECK_EQ(crowd.getAgentState(1).x, 1e9f);
+    step.budget.maxSpatialVisits = 1000;
+    auto retry                   = crowd.advance(step);
+    REQUIRE(retry.ok());
+    CHECK_EQ(retry.value().tick.value(), 2);
+}
+
+TEST_CASE("crowd.spatial.cellLimitAndUnsupportedCoordinateRejectWithoutMotion") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    REQUIRE(crowd.addAgent(-1000.f, 0.f, 0.f, 0.5f) >= 0);
+    REQUIRE(crowd.addAgent(1000.f, 0.f, 0.f, 0.5f) >= 0);
+    CrowdStep step{eve::SimulationTick(1), eve::Duration::fromNanoseconds(10000000), {}};
+    step.budget.maxGridCells = 1;
+    REQUIRE(!crowd.advance(step).ok());
+    CHECK_EQ(crowd.getAgentState(0).x, -1000.f);
+    step.budget.maxGridCells = 2;
+    REQUIRE(crowd.advance(step).ok());
+    Crowd unsupported;
+    unsupported.setClampToField(false);
+    REQUIRE(unsupported.addAgent(std::numeric_limits<float>::max(), 0.f, 0.f, 0.5f) >= 0);
+    REQUIRE(!unsupported.advance(step).ok());
+    CHECK_EQ(unsupported.getAgentState(0).x, std::numeric_limits<float>::max());
+}
+}  // namespace test_crowd_spatial_runtime
+
+namespace test_crowd_surface_runtime {
+using namespace eve::crowd;
+namespace {
+NavigationSurfaceSnapshot surface() {
+    NavigationSurfaceSnapshot result;
+    result.stamp = {NavigationSurfaceId(1), MovementClassId(1), 1, 1, 1, 0.5f};
+    result.width = result.height = 5;
+    result.cellSize              = 1.f;
+    result.terrainCosts.assign(25, 1.f);
+    result.navigationCosts.assign(25, 1.f);
+    result.terrainCosts[12]    = 0.f;
+    result.navigationCosts[12] = result.navigationCosts[11] = 0.f;
+    return result;
+}
+}  // namespace
+
+TEST_CASE("crowd.surface.atomicPublicationRejectsConflictsAndSeparatesPhysicalWalls") {
+    Crowd crowd, other;
+    auto  input = surface();
+    auto  plan  = crowd.prepareNavigationSurface(input).takeValue();
+    CHECK(crowd.getFieldStatus().surface.surface.isZero());
+    REQUIRE(!other.commitNavigationSurface(std::move(plan)).ok());
+    REQUIRE(crowd.commitNavigationSurface(std::move(plan)).ok());
+    REQUIRE(!crowd.commitNavigationSurface(std::move(plan)).ok());
+    CHECK_EQ(crowd.getFieldStatus().surface.surface.value(), 1);
+    auto       identical = crowd.prepareNavigationSurface(input).takeValue();
+    const auto revision  = crowd.getFieldStatus().revision;
+    REQUIRE(crowd.commitNavigationSurface(std::move(identical)).ok());
+    CHECK_EQ(crowd.getFieldStatus().revision, revision);
+    auto conflict            = input;
+    conflict.terrainCosts[0] = conflict.navigationCosts[0] = 2.f;
+    REQUIRE(!crowd.prepareNavigationSurface(conflict).ok());
+    conflict                     = input;
+    conflict.navigationCosts[12] = 1.f;
+    REQUIRE(!crowd.prepareNavigationSurface(conflict).ok());
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    const int agent = crowd.addAgent(1.5f, 2.5f, 0.f, 0.1f);
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK_EQ(crowd.getAgentState(agent).x, 1.5f);
+    CHECK_EQ(crowd.getAgentState(agent).y, 2.5f);
+    crowd.buildFlowField(4, 2);
+    CHECK_EQ(crowd.flowAtCell(1, 2).x, 0.f);
+    CHECK_EQ(crowd.flowAtCell(1, 2).y, 0.f);
+    auto newer                  = input;
+    newer.stamp.surfaceRevision = 2;
+    auto ready                  = crowd.prepareNavigationSurface(newer).takeValue();
+    auto stale                  = crowd.prepareNavigationSurface(newer).takeValue();
+    REQUIRE(crowd.commitNavigationSurface(std::move(ready)).ok());
+    REQUIRE(!crowd.commitNavigationSurface(std::move(stale)).ok());
+    REQUIRE(!crowd.prepareNavigationSurface(input).ok());
+    auto snapshot = crowd.captureSnapshot().takeValue();
+    crowd.setBlocked(0, 0, true);
+    CHECK(crowd.getFieldStatus().surface.surface.isZero());
+    auto restored = crowd.prepareRestore(snapshot).takeValue();
+    REQUIRE(crowd.commitRestore(std::move(restored)).ok());
+    CHECK_EQ(crowd.getFieldStatus().surface.surfaceRevision, 2);
+}
+
+TEST_CASE("crowd.surface.oversizedFootprintDoesNotUseImportedNavigation") {
+    Crowd crowd;
+    auto  input = surface();
+    auto  plan  = crowd.prepareNavigationSurface(input).takeValue();
+    REQUIRE(crowd.commitNavigationSurface(std::move(plan)).ok());
+    crowd.setClampToField(false);
+    crowd.setSeparationWeight(0.f);
+    crowd.setDefaultSpeed(2.f);
+    crowd.buildFlowField(4, 0);
+    const int agent    = crowd.addAgent(0.5f, 0.5f, 0.f, 1.f);
+    auto      advanced = crowd.advance(0.01f);
+    REQUIRE(advanced.ok());
+    CHECK_EQ(advanced.value().navigationClassMismatches, 1);
+    CHECK_EQ(crowd.getAgentState(agent).vx, 0.f);
+    CHECK_EQ(crowd.getAgentState(agent).vy, 0.f);
+}
+
+TEST_CASE("crowd.surface.perAgentMovementBindingsSurviveSwapAndRestore") {
+    Crowd crowd;
+    auto  input = surface();
+    REQUIRE(crowd.commitNavigationSurface(crowd.prepareNavigationSurface(input).takeValue()).ok());
+    crowd.setClampToField(false);
+    crowd.setSeparationWeight(0.f);
+    crowd.setDefaultSpeed(2.f);
+    crowd.buildFlowField(4, 0);
+    const int   first  = crowd.addNamedAgent("first", 0.5f, 0.5f, 0.f, 0.1f);
+    const int   second = crowd.addNamedAgent("second", 0.5f, 4.5f, 0.f, 0.1f);
+    const auto  a = crowd.agentRef(first).takeValue(), b = crowd.agentRef(second).takeValue();
+    AgentUpdate ua, ub;
+    ua.reference = a;
+    ua.movement  = MovementBinding{MovementClassId(1), 1};
+    ub.reference = b;
+    ub.movement  = MovementBinding{MovementClassId(2), 1};
+    REQUIRE(crowd.updateAgents({{ua, ub}}).ok());
+    auto advanced = crowd.advance(0.01f);
+    REQUIRE(advanced.ok());
+    CHECK_EQ(advanced.value().navigationClassMismatches, 1);
+    CHECK(crowd.readAgent(a).value().speed > 0.f);
+    CHECK_EQ(crowd.readAgent(b).value().speed, 0.f);
+    REQUIRE(crowd.removeAgents({{a}}).ok());
+    CHECK(crowd.readAgent(b).value().movement == *ub.movement);
+    auto saved  = crowd.captureSnapshot().takeValue();
+    ub.movement = MovementBinding{MovementClassId(1), 0};
+    REQUIRE(!crowd.updateAgents({{ub}}).ok());
+    ub.movement = MovementBinding{};
+    REQUIRE(crowd.updateAgents({{ub}}).ok());
+    REQUIRE(crowd.commitRestore(crowd.prepareRestore(saved).takeValue()).ok());
+    auto restored = crowd.resolveNamedAgent("second").takeValue();
+    CHECK_EQ(crowd.readAgent(restored).value().movement.movement.value(), 2);
+    ub.reference = restored;
+    ub.movement  = MovementBinding{MovementClassId(1), 2};
+    REQUIRE(crowd.updateAgents({{ub}}).ok());
+    CHECK_EQ(crowd.advance(0.f).value().navigationClassMismatches, 1);
+    input.stamp.movementRevision = 2;
+    REQUIRE(crowd.commitNavigationSurface(crowd.prepareNavigationSurface(input).takeValue()).ok());
+    crowd.buildFlowField(4, 0);
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK(crowd.readAgent(restored).value().speed > 0.f);
+}
+
+TEST_CASE("crowd.surface.explicitMovementRequiresImportedProviderAndAtomicCreation") {
+    Crowd crowd;
+    crowd.resizeField(6, 6, 1.f, 0.f, 0.f);
+    crowd.setClampToField(false);
+    crowd.setSeparationWeight(0.f);
+    crowd.setDefaultSpeed(2.f);
+    crowd.buildFlowField(5, 5);
+    SpawnBatch batch;
+    batch.policy = SpawnPolicy::RejectOverlap;
+    SpawnRequest request;
+    request.stableId = "explicit";
+    request.x = request.y = 2.5f;
+    request.radius        = 0.1f;
+    request.movement      = {MovementClassId(5), 0};
+    batch.agents.push_back(request);
+    REQUIRE(!crowd.createAgents(batch).ok());
+    CHECK_EQ(crowd.getAgentCount(), 0);
+    batch.agents[0].movement.revision = 1;
+    auto receipt                      = crowd.createAgents(batch);
+    REQUIRE(receipt.ok());
+    auto reference = receipt.value().created[0].reference;
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK_EQ(crowd.readAgent(reference).value().speed, 0.f);
+    AgentUpdate update;
+    update.reference = reference;
+    update.movement  = MovementBinding{};
+    REQUIRE(crowd.updateAgents({{update}}).ok());
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK(crowd.readAgent(reference).value().speed > 0.f);
+}
+}  // namespace test_crowd_surface_runtime
+
+namespace test_crowd_ties_runtime {
+using namespace eve;
+using namespace eve::crowd;
+
+TEST_CASE("crowd.ties.anonymousContactDirectionSurvivesDenseCompaction") {
+    Crowd crowd;
+    crowd.setClampToField(false);
+    crowd.setDefaultSpeed(0.f);
+    crowd.setSeparationWeight(0.f);
+    const int  dummy    = crowd.addAgent(100.f, 100.f, 0.f, 1.f);
+    const auto a        = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 1.f)).takeValue();
+    const auto b        = crowd.agentRef(crowd.addAgent(0.f, 0.f, 0.f, 1.f)).takeValue();
+    auto       snapshot = crowd.captureSnapshot().takeValue();
+    REQUIRE(crowd.advance(0.01f).ok());
+    const auto expectedA = crowd.readAgent(a).takeValue();
+    const auto expectedB = crowd.readAgent(b).takeValue();
+    auto       plan      = crowd.prepareRestore(snapshot).takeValue();
+    REQUIRE(crowd.commitRestore(std::move(plan)).ok());
+    const auto newA = crowd.agentRef(1).takeValue();
+    const auto newB = crowd.agentRef(2).takeValue();
+    REQUIRE(crowd.removeAgent(dummy));
+    REQUIRE(crowd.advance(0.01f).ok());
+    CHECK_EQ(crowd.readAgent(newA).value().x, expectedA.x);
+    CHECK_EQ(crowd.readAgent(newA).value().y, expectedA.y);
+    CHECK_EQ(crowd.readAgent(newB).value().x, expectedB.x);
+    CHECK_EQ(crowd.readAgent(newB).value().y, expectedB.y);
+}
+
+TEST_CASE("crowd.ties.namedWanderIsIndependentOfCreationOrder") {
+    Crowd first, second;
+    for (auto* crowd : {&first, &second}) {
+        crowd->setClampToField(false);
+        crowd->setResolveOverlaps(false);
+        crowd->setDefaultSpeed(2.f);
+        crowd->setSeparationWeight(0.f);
+        crowd->setWanderWeight(1.f);
+    }
+    REQUIRE(first.addNamedAgent("left", -10.f, 0.f, 0.f, 0.5f) >= 0);
+    REQUIRE(first.addNamedAgent("right", 10.f, 0.f, 0.f, 0.5f) >= 0);
+    REQUIRE(second.addNamedAgent("right", 10.f, 0.f, 0.f, 0.5f) >= 0);
+    REQUIRE(second.addNamedAgent("left", -10.f, 0.f, 0.f, 0.5f) >= 0);
+    for (auto* crowd : {&first, &second}) {
+        AgentUpdateBatch updates;
+        for (const auto* name : {"left", "right"}) {
+            AgentUpdate update;
+            update.reference = crowd->resolveNamedAgent(name).takeValue();
+            update.intent    = {AgentAction::Boids, false, 0.f, 0.f};
+            updates.agents.push_back(update);
+        }
+        REQUIRE(crowd->updateAgents(updates).ok());
+    }
+    for (std::uint64_t tick = 1; tick <= 10; ++tick) {
+        CrowdStep step{SimulationTick(tick), Duration::fromNanoseconds(16666667), {}};
+        REQUIRE(first.advance(step).ok());
+        REQUIRE(second.advance(step).ok());
+    }
+    for (const auto* name : {"left", "right"}) {
+        auto a = first.readAgent(first.resolveNamedAgent(name).takeValue()).takeValue();
+        auto b = second.readAgent(second.resolveNamedAgent(name).takeValue()).takeValue();
+        CHECK_EQ(a.x, b.x);
+        CHECK_EQ(a.y, b.y);
+        CHECK_EQ(a.vx, b.vx);
+        CHECK_EQ(a.vy, b.vy);
+    }
+    auto            snapshot = first.captureSnapshot().takeValue();
+    const CrowdStep next{SimulationTick(11), Duration::fromNanoseconds(16666667), {}};
+    REQUIRE(first.advance(next).ok());
+    const auto expected = first.readAgent(first.resolveNamedAgent("left").takeValue()).takeValue();
+    auto       plan     = first.prepareRestore(snapshot).takeValue();
+    REQUIRE(first.commitRestore(std::move(plan)).ok());
+    REQUIRE(first.advance(next).ok());
+    const auto replayed = first.readAgent(first.resolveNamedAgent("left").takeValue()).takeValue();
+    CHECK_EQ(replayed.x, expected.x);
+    CHECK_EQ(replayed.y, expected.y);
+    CHECK_EQ(replayed.vx, expected.vx);
+    CHECK_EQ(replayed.vy, expected.vy);
+    CHECK_EQ(replayed.heading, expected.heading);
+}
+}  // namespace test_crowd_ties_runtime

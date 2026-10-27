@@ -19,6 +19,21 @@ from test_levels import TEST_DIR, source_catalogue, CLASSIFICATIONS, classified_
 
 @unittest.skipUnless(shutil.which("cmake"), "CMake is required for discovery tests")
 class ZeroerrDiscoveryTests(unittest.TestCase):
+    def test_benchmark_source_is_opt_in_independently_of_case_name_and_keeps_gpu_requirements(self):
+        policy = {"sources": {"benchmark/graphics/stability.cpp": {
+            "role": "tests", "default": "render-window",
+            "cases": {"render-window": ["resources.reuse"]},
+        }}}
+        result, generated = self.discover(
+            [("resources.reuse", "stability.cpp", 1)], "plain", catalogue=policy)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        for name in ("resources.reuse", "bundle/stability.cpp"):
+            labels = self.labels_of(generated, name)
+            self.assertIn("benchmark", labels)
+            self.assertIn("requires:graphics", labels)
+            self.assertIn("requires:window", labels)
+            self.assertNotIn("no-render", labels)
+
     def test_local_logic_and_composition_cases_have_exclusive_levels(self):
         result, generated = self.discover(
             [("math.local", "math.cpp", 10),

@@ -309,9 +309,7 @@ image::ImageData* Graphics::renderEntityIdMask(const std::vector<eve::graphics::
     // a per-pixel flat entity-ID color).
     std::vector<GBufferDraw> idDraws;
     idDraws.reserve(draws.size());
-    auto u8 = [](float x) -> uint32_t {
-        return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 255.f));
-    };
+    auto u6 = [](float x) -> uint32_t { return uint32_t(std::lround(std::clamp(x, 0.f, 1.f) * 63.f)); };
     for (const auto &d : draws) {
         if (!d.mesh || !d.mesh->gpuHandle) continue;
         GBufferDraw gd{};

@@ -4,7 +4,6 @@
 
 #include <string>
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_profiler)
 namespace {
 bool containsZone(const eve::profiler::ProfilerFrameSnapshot& frame, const std::string& name) {
     for (const auto& zone : frame.zones)
@@ -39,4 +38,3 @@ TEST_CASE("profiler contract: manual and render-pass scopes appear in owning sna
     profiler->setEnabled(false);
     profiler->reset();
 }
-#endif

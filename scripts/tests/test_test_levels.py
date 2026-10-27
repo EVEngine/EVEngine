@@ -15,6 +15,51 @@ import test_levels as levels  # noqa: E402
 
 
 class TestLevelCatalogueTests(unittest.TestCase):
+    def test_default_ctest_selection_excludes_physical_gpu_benchmarks_and_their_bundles(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            metadata = base / "levels.cmake"
+            levels.emit_cmake({"sources": {
+                "integration/native.cpp": {"role": "tests", "default": "module-composition",
+                                           "cases": {"module-composition": ["native.contract"]}},
+                "benchmark/graphics/gpu.cpp": {"role": "tests", "default": "render-window",
+                                               "cases": {"render-window": ["resources.reuse"]}},
+            }}, metadata)
+            project = (
+                'cmake_minimum_required(VERSION 3.21)\nproject(selection NONE)\nenable_testing()\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'include("{metadata.as_posix()}")\n'
+                'if("${EVE_TEST_DESKTOP_ORIGINS}" MATCHES "/benchmark/")\n'
+                'message(FATAL_ERROR "benchmark entered default source discovery")\nendif()\n'
+                'add_test(NAME native.contract COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME resources.reuse COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'add_test(NAME bundle/gpu.cpp COMMAND "${CMAKE_COMMAND}" -E true)\n'
+                'set(native_key "EVE_TEST_LEVEL_native.cpp|native.contract")\n'
+                'set_tests_properties(native.contract PROPERTIES LABELS "${${native_key}}")\n'
+                'set(key "EVE_TEST_LEVEL_gpu.cpp|resources.reuse")\n'
+                'set_tests_properties(resources.reuse PROPERTIES LABELS "${${key}}")\n'
+                'eve_merge_test_metadata(bundle_labels ${${key}})\n'
+                'set_tests_properties(bundle/gpu.cpp PROPERTIES LABELS "bundle;${bundle_labels}")\n'
+            )
+            (base / "CMakeLists.txt").write_text(project, encoding="utf-8")
+            configured = subprocess.run(["cmake", "-S", str(base), "-B", str(base / "build")],
+                                        capture_output=True, text=True, encoding="utf-8", check=False)
+            self.assertEqual(configured.returncode, 0, configured.stderr)
+
+            def selected(*arguments):
+                result = subprocess.run(["ctest", "--test-dir", str(base / "build"),
+                                         "-C", "Debug", "--show-only=json-v1", *arguments], capture_output=True,
+                                        text=True, encoding="utf-8", check=False)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                return {test["name"]: test for test in json.loads(result.stdout)["tests"]}
+
+            self.assertEqual(set(selected("-E", "^bundle/", "-LE", "benchmark")), {"native.contract"})
+            self.assertEqual(set(selected("-E", "^bundle/")), {"native.contract", "resources.reuse"})
+            bundles = selected("-L", "bundle")
+            self.assertEqual(set(bundles), {"bundle/gpu.cpp"})
+            labels = next(prop["value"] for prop in bundles["bundle/gpu.cpp"]["properties"]
+                          if prop["name"] == "LABELS")
+            self.assertTrue({"benchmark", "requires:graphics", "requires:window"}.issubset(labels))
     def test_formatter_reflow_preserves_policy(self):
         policy = '// eve-test-policy:\n// {"schema":"evengine.test-policy",\n// "version":1,"default":"local-format"}\n'
         self.assertEqual(levels.source_header_policy(policy + '#include "x.h"'), {"default": "local-format"})
@@ -368,6 +413,63 @@ void build() { ScriptTest script("fixture"); }
         text = '#define Generate(name) TEST_CASE("generated." #name) { CHECK(true); }\nGenerate(one) Generate(two)\n'
         self.assertEqual(levels.generator_line_collisions(text), [2])
         self.assertEqual(levels.generator_line_collisions(text.replace("Generate(one) Generate(two)", "Generate(one)\nGenerate(two)")), [])
+
+    def test_integration_sources_do_not_use_legacy_origin_selectors(self):
+        for source in (levels.ROOT / "test/integration").rglob("*.cpp"):
+            text = levels.mask_cpp(source.read_text(encoding="utf-8"))
+            self.assertNotIn("EVE_TEST_FILTER_ORIGINS", text, str(source))
+            self.assertNotIn("EVE_TEST_ORIGIN_", text, str(source))
+
+    def test_merged_integration_source_selection_keeps_all_compiled_cases(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base = Path(directory)
+            workflow = base / "integration/journey"
+            workflow.mkdir(parents=True)
+            merged, sibling = workflow / "merged.cpp", workflow / "sibling.cpp"
+            merged.write_text('TEST_CASE("journey.first") {}\nTEST_CASE("journey.second") {}\n', encoding="utf-8")
+            sibling.write_text('TEST_CASE("journey.sibling") {}\n', encoding="utf-8")
+            cmake = base / "CMakeLists.txt"
+            cmake.write_text(
+                'cmake_minimum_required(VERSION 3.21)\nproject(workflows NONE)\n'
+                f'include("{(levels.ROOT / "cmake/TestLevels.cmake").as_posix()}")\n'
+                f'set(EVE_TEST_RELOCATED_old.cpp "{merged.as_posix()}")\n'
+                f'eve_test_origin_definitions(definitions "{(base / "old.cpp").as_posix()}")\n'
+                'if(definitions)\nmessage(FATAL_ERROR "merged integration selection generated origin macros")\nendif()\n'
+                f'eve_resolve_test_sources(selected "{(base / "old.cpp").as_posix()}" "{merged.as_posix()}")\n'
+                f'if(NOT selected STREQUAL "{merged.as_posix()}")\n'
+                'message(FATAL_ERROR "merged source was duplicated or pulled in a sibling")\nendif()\n'
+                'add_custom_target(focused SOURCES ${selected})\n'
+                'get_target_property(actual focused SOURCES)\n'
+                f'if(NOT actual STREQUAL "{merged.as_posix()}")\n'
+                'message(FATAL_ERROR "target does not compile the complete merged source")\nendif()\n'
+                # A native legacy selector on the same target cannot hide the
+                # integration cases that the physical source actually compiles.
+                'set_property(TARGET focused PROPERTY EVE_TEST_ORIGIN_DEFINITIONS '
+                'EVE_TEST_FILTER_ORIGINS EVE_TEST_ORIGIN_native)\n'
+                'set(EVE_TEST_CASE_NAMES_merged.cpp journey.first journey.second)\n'
+                'set(EVE_TEST_CASE_NAMES_native.cpp native.case)\n'
+                f'eve_test_source_case_names("{merged.as_posix()}" names focused)\n'
+                'if(NOT names STREQUAL "journey.first;journey.second")\n'
+                'message(FATAL_ERROR "unit selection hid merged integration cases")\nendif()\n',
+                encoding="utf-8")
+            result = subprocess.run(["cmake", "-G", "Ninja", "-S", str(base), "-B", str(base / "build")],
+                                    text=True, encoding="utf-8", capture_output=True, check=False)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_test_targets_do_not_add_unity_build_configuration(self):
+        for relative in ("cmake/TestLevels.cmake", "test/CMakeLists.txt"):
+            text = (levels.ROOT / relative).read_text(encoding="utf-8")
+            self.assertNotIn("UNITY_BUILD", text, relative)
+            self.assertNotIn("UNITY_GROUP", text, relative)
+            self.assertNotIn("eve_group_integration_sources", text, relative)
+
+    def test_result_header_contract_checks_backend_before_assertion_headers(self):
+        header_contract = levels.ROOT / "test/unit/editing/editing_tests.cpp"
+        self.assertTrue(header_contract.is_file())
+        contract_text = header_contract.read_text(encoding="utf-8")
+        isolation_check = contract_text.index('#error "Result headers must not expose the zeroerr assertion backend"')
+        self.assertLess(isolation_check, contract_text.index('#include "zeroerr/assert.h"'))
+        self.assertLess(isolation_check, contract_text.index('#include <zeroerr/unittest.h>'))
 
     def test_origin_case_policy_does_not_expand_to_the_whole_merged_file(self):
         text = """#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_local)

@@ -1082,7 +1082,10 @@ wgpu::RenderPipeline Graphics::getMesh3DPipeline(BlendMode blend, bool depthWrit
     WGPUDepthStencilState ds{};
     ds.format            = WGPUTextureFormat_Depth32Float;
     ds.depthWriteEnabled = depthWrite ? WGPUOptionalBool_True : WGPUOptionalBool_False;
-    ds.depthCompare      = WGPUCompareFunction_Less;
+    // Built-in opaque ForwardPlus replaces the equal-depth Hybrid result;
+    // alpha surfaces keep strict depth and their existing blend behavior.
+    ds.depthCompare =
+        blend == BlendMode::Opaque && depthWrite ? WGPUCompareFunction_LessEqual : WGPUCompareFunction_Less;
 
     WGPUBlendState       blendDesc = blendState(blend);
     WGPUColorTargetState target{};
@@ -1143,7 +1146,7 @@ void Graphics::createMesh3DClusteredPipeline() {
     WGPUDepthStencilState ds{};
     ds.format            = WGPUTextureFormat_Depth32Float;
     ds.depthWriteEnabled = WGPUOptionalBool_True;
-    ds.depthCompare      = WGPUCompareFunction_Less;
+    ds.depthCompare      = WGPUCompareFunction_LessEqual;
     ds.stencilReadMask   = 0;
     ds.stencilWriteMask  = 0;
 

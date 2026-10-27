@@ -9,15 +9,16 @@
       "audio.pcm.scriptResultAndOwnership"
     ],
     "platform-audio": [
-      "audio.pcm.validationAndBackpressureAreAtomic",
+      "audio.pcm.bothDestructionOrders",
       "audio.pcm.starvationPauseResumeAndDrain",
-      "audio.pcm.bothDestructionOrders"
+      "audio.pcm.validationAndBackpressureAreAtomic"
     ]
   },
   "module": "audio"
 }
 */
 // clang-format on
+
 #include "audio/PcmStream.h"
 #include "audio/Audio.h"
 #include "common/Module.h"

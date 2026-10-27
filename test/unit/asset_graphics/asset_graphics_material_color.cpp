@@ -206,3 +206,90 @@ TEST_CASE("asset.graphics.material.spec.versionedVegetation") {
         REQUIRE(!decode(root, 6).ok());
     };
 }
+
+#include <array>
+#include <limits>
+#include "graphics/Material.h"
+#include "graphics/PbrSurface.h"
+#include "graphics/Texture.h"
+
+namespace test_material_foliage_value_unit {
+using namespace eve::graphics;
+
+TEST_CASE("graphics.vegetation.materialFoliageTranslucencyPublishesAtomically") {
+    Material material;
+    auto     accepted = material.setFoliageTranslucency(.34f, .55f, .18f, .52f, 2.f, .35f, 3.f, .85f, .18f, .35f);
+    REQUIRE(accepted.ok());
+    const auto published = material.pbrSurface();
+    CHECK_EQ(published.translucency.color, (std::array<float, 3>{.34f, .55f, .18f}));
+    CHECK_EQ(published.translucency.intensity, .52f);
+    CHECK_EQ(published.translucency.strength, 2.f);
+    CHECK_EQ(published.translucency.scattering, 3.f);
+    CHECK_EQ(published.vegetationColor.backfaceNormalMode, PbrVegetationBackfaceNormalMode::Flip);
+    CHECK(material.getDoubleSided());
+
+    auto rejected = material.setFoliageTranslucency(.9f, .1f, .1f, 2.f, 2.f, .35f, 3.f, .85f, .18f, .35f);
+    CHECK(!rejected.ok());
+    CHECK_EQ(material.pbrSurface().translucency.color, published.translucency.color);
+    CHECK_EQ(material.pbrSurface().translucency.intensity, published.translucency.intensity);
+}
+
+TEST_CASE("graphics.vegetation.materialFoliageWindPreservesPbrAndUpdatesExplicitTime") {
+    Material   material;
+    Texture    motion;
+    Texture    noise;
+    PbrSurface initial;
+    initial.translucency.intensity = .52f;
+    initial.albedoTextureStrength  = .73f;
+    REQUIRE(material.setPbrSurface(initial).ok());
+
+    REQUIRE(
+        material.setFoliageWind(&motion, &noise, .05f, 0.f, .5f, .18f, 2.f, .12f, 2.f, .072f, 1.f, 400.f, 2.f).ok());
+    const auto configured = material.pbrSurface();
+    CHECK_EQ(configured.translucency.intensity, .52f);
+    CHECK_EQ(configured.albedoTextureStrength, .73f);
+    CHECK_EQ(configured.vegetationMotion.texture, &motion);
+    CHECK_EQ(configured.vegetationMotion.noise, &noise);
+    CHECK_EQ(configured.vegetationMotion.fallback[0], 1.f);
+    CHECK_EQ(configured.vegetationMotion.fallback[2], .5f);
+    CHECK_EQ(configured.vegetationMotion.mode, PbrVegetationMotionMode::Object);
+    CHECK_EQ(configured.vegetationVertex.source, PbrVegetationDeformationSource::GpuFields);
+
+    REQUIRE(material.setFoliageWindTime(3.25).ok());
+    CHECK_EQ(material.pbrSurface().vegetationMotion.time, 3.25);
+    const auto beforeInvalid = material.pbrSurface();
+    CHECK(!material.setFoliageWind(nullptr, &noise, 1.f, 0.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f, 1.f).ok());
+    CHECK_EQ(material.pbrSurface().vegetationMotion.time, beforeInvalid.vegetationMotion.time);
+}
+
+TEST_CASE("graphics.vegetation.translucency_validates_factors") {
+    PbrSurface surface;
+    REQUIRE(validatePbrSurface(surface).ok());
+    surface.motionHighlightColor = {3, 2, 0};
+    REQUIRE(validatePbrSurface(surface).ok());
+    surface.motionHighlightColor[1] = -1;
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.motionHighlightColor             = {0, 0, 0};
+    surface.vegetationColor.overlayVariation = -0.1f;
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.vegetationColor.overlayVariation  = .5f;
+    surface.vegetationColor.overlayProjection = 1.1f;
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.vegetationColor.overlayProjection    = .5f;
+    surface.vegetationColor.vertexOcclusionAlpha = std::numeric_limits<float>::quiet_NaN();
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.vegetationColor.vertexOcclusionAlpha = .5f;
+    surface.vegetationColor.overlaySubsurface    = 1.1f;
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.vegetationColor.overlaySubsurface = .5f;
+    surface.translucency.intensity            = .5f;
+    surface.translucency.scattering           = 0;
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.translucency.scattering = 2;
+    surface.translucency.color[1]   = std::numeric_limits<float>::infinity();
+    REQUIRE(!validatePbrSurface(surface).ok());
+    surface.translucency.color[1]   = 1;
+    surface.translucency.maskAmount = 1;
+    REQUIRE(!validatePbrSurface(surface).ok());
+}
+}  // namespace test_material_foliage_value_unit

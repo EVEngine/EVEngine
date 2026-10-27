@@ -3,25 +3,7 @@
 {
   "schema": "evengine.test-policy",
   "version": 1,
-  "cases": {
-    "script-binding": [
-      "editor.procgen.script_editor_script_loads_schema_and_keeps_failed_preview",
-      "editor.v2.script_discovers_plans_and_executes_registered_command",
-      "editor.v2.script_game_injects_command_into_the_same_session_protocol",
-      "editor.v2.runtime_builder_quick_add_click_executes_command",
-      "editor.v2.script_command_failure_is_not_silent",
-      "editor.v2.script_tool_failure_is_not_silent"
-    ],
-    "physics-backend": [
-      "editor.physics.live_shape_publication_swaps_after_build_and_undoes",
-      "editor.physics.live_shape_publication_rejection_preserves_old_shape_and_document",
-      "editor.physics.live_2d_polygon_publication_swaps_after_build_and_undoes"
-    ]
-  },
   "module": "editor",
-  "modules": [
-    "editor"
-  ],
   "origins": [
     "editor_material_target.cpp",
     "editor_mesh_modifier_editor.cpp",
@@ -37,14 +19,32 @@
     "editor_scene_runtime.cpp",
     "editor_scene_target_v2.cpp",
     "editor_skeleton_overlay.cpp"
-  ]
+  ],
+  "cases": {
+    "physics-backend": [
+      "editor.physics.live_2d_polygon_publication_swaps_after_build_and_undoes",
+      "editor.physics.live_shape_publication_rejection_preserves_old_shape_and_document",
+      "editor.physics.live_shape_publication_swaps_after_build_and_undoes"
+    ],
+    "script-binding": [
+      "editor.procgen.script_editor_script_loads_schema_and_keeps_failed_preview",
+      "editor.v2.runtime_builder_quick_add_click_executes_command",
+      "editor.v2.script_command_failure_is_not_silent",
+      "editor.v2.script_discovers_plans_and_executes_registered_command",
+      "editor.v2.script_game_injects_command_into_the_same_session_protocol",
+      "editor.v2.script_tool_failure_is_not_silent"
+    ]
+  }
 }
 */
 // clang-format on
 
+// Related integration contracts share one translation unit to amortize header parsing.
+
+// Contract section: editor material target
+#include "PrivateTestScope.h"
 #include "zeroerr/assert.h"
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_material_target)
 #include <cmath>
 #include <simplesquirrel/simplesquirrel.hpp>
 #include <tuple>
@@ -59,7 +59,6 @@
 #include "graphics/Texture.h"
 #include "graphics/material/editing/MaterialTarget.h"
 #include "physics/editor/EditorPhysicsTarget.h"
-#include "zeroerr/assert.h"
 #include "zeroerr/unittest.h"
 // editor_material_target.cpp
 namespace test_editor_material_target {
@@ -1150,15 +1149,13 @@ TEST_CASE("editor.settings_changes_are_reversible_restart_aware_and_atomic") {
     CHECK(settings.read(selected, PropertyPath("content.asset-root")).value == EditorValue("assets"));
 }
 }  // namespace test_editor_material_target
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_mesh_modifier_editor)
+// Contract section: editor mesh modifier editor
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include "editing/EditingGraph.h"
 #include "procgen/editing/MeshModifierGraph.h"
 #include "procgen/editor/MeshModifierEditor.h"
-#include "zeroerr/unittest.h"
 // editor_mesh_modifier_editor.cpp
 namespace test_editor_mesh_modifier_editor {
 // editor_mesh_modifier_editor.cpp
@@ -1284,13 +1281,11 @@ TEST_CASE("editor.meshModifierGraph.compileRejectsDisconnectedInputsAndCycles") 
     CHECK_EQ(static_cast<int>(compiled.status), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_mesh_modifier_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_network_telemetry)
+// Contract section: editor network telemetry
 #include "PrivateTestScope.h"
+
 #include "network/editing/NetworkTelemetry.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_network_telemetry.cpp
 namespace test_editor_network_telemetry {
 using namespace eve::network_editing;
@@ -1343,10 +1338,10 @@ TEST_CASE("editor.network.telemetry_handles_reset_and_reports_health") {
     CHECK_EQ(diagnostics.size(), std::size_t{2});
 }
 }  // namespace test_editor_network_telemetry
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_offscreen_preview)
+// Contract section: editor offscreen preview
 #include "PrivateTestScope.h"
+
 #include <memory>
 #include <stdexcept>
 #include "graphics/Canvas.h"
@@ -1356,8 +1351,6 @@ TEST_CASE("editor.network.telemetry_handles_reset_and_reports_health") {
 #include "image/ImageData.h"
 #include "spritestack/editing/SpriteStackTarget.h"
 #include "virtualgeometry/editing/VirtualGeometryTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_offscreen_preview.cpp
 namespace test_editor_offscreen_preview {
 // editor_offscreen_preview.cpp
@@ -1622,14 +1615,12 @@ TEST_CASE("editor.virtualgeometry.failed_rebuild_preserves_previous_generation")
     CHECK_EQ(runtime.revision(), revision);
 }
 }  // namespace test_editor_offscreen_preview
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_particle_graph)
+// Contract section: editor particle graph
 #include "PrivateTestScope.h"
+
 #include <algorithm>
 #include "particles/editing/ParticleGraph.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_particle_graph.cpp
 namespace test_editor_particle_graph {
 using namespace eve::particles_editing;
@@ -1745,14 +1736,12 @@ TEST_CASE("editor.particles.graph_rejects_cycles_missing_modules_and_bad_propert
     CHECK_EQ(static_cast<int>(domain.compile(graph).status), static_cast<int>(EditorStatus::Failed));
 }
 }  // namespace test_editor_particle_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_pcg_graph)
+// Contract section: editor pcg graph
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include "procgen/PointGraph.h"
 #include "procgen/editing/PcgGraph.h"
-#include "zeroerr/unittest.h"
 // editor_pcg_graph.cpp
 namespace test_editor_pcg_graph {
 using namespace eve::procgen_editing;
@@ -1965,12 +1954,10 @@ TEST_CASE("editor.pcgGraph.boundsIsolatedPreviewPointOutputs") {
     CHECK_EQ(accepted.outputCount, 1001);
 }
 }  // namespace test_editor_pcg_graph
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_physics_asset)
+// Contract section: editor physics asset
 #include "PrivateTestScope.h"
-#include "editor/EditorAuthority.h"
-#include "editor/EditorTransactionService.h"
+
 #include "physics/Body.h"
 #include "physics/Body3D.h"
 #include "physics/Fixture.h"
@@ -1978,9 +1965,6 @@ TEST_CASE("editor.pcgGraph.boundsIsolatedPreviewPointOutputs") {
 #include "physics/World.h"
 #include "physics/World3D.h"
 #include "physics/editor/EditorPhysicsAsset.h"
-#include "physics/editor/EditorPhysicsTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_physics_asset.cpp
 namespace test_editor_physics_asset {
 // editor_physics_asset.cpp
@@ -2220,16 +2204,13 @@ TEST_CASE("editor.physics.live_2d_polygon_publication_swaps_after_build_and_undo
     CHECK_EQ(target.authoringTarget().read(selection(target), PropertyPath("shape.kind")).value, EditorValue("box"));
 }
 }  // namespace test_editor_physics_asset
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_procgen_script_editor)
+// Contract section: editor procgen script editor
 #include "PrivateTestScope.h"
-#include <cmath>
+
 #include "editor/EditorWorkspace.h"
 #include "procgen/PointSet.h"
 #include "procgen/editor/ProcgenScriptEditor.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_procgen_script_editor.cpp
 namespace test_editor_procgen_script_editor {
 using eve::editor::EditorWorkspace;
@@ -2347,24 +2328,19 @@ TEST_CASE("editor.procgen.script_editor_rejects_out_of_range_and_over_budget") {
     CHECK_EQ(editor.pointCount(), 2);
 }
 }  // namespace test_editor_procgen_script_editor
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_property_model)
+// Contract section: editor property model
+#include "PrivateTestScope.h"
+
 #include <cstdint>
-#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
 #include <vector>
-#include "PrivateTestScope.h"
-#include "editor/EditorAuthority.h"
 #include "editor/EditorCommandService.h"
 #include "editor/EditorPropertyModel.h"
 #include "editor/EditorPropertyPresenter.h"
 #include "editor/EditorSession.h"
-#include "editor/EditorTransactionService.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_property_model.cpp
 namespace test_editor_property_model {
 // editor_property_model.cpp
@@ -3010,16 +2986,14 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
     CHECK(target.position() != expected);
 }
 }  // namespace test_editor_property_model
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_runtime_manifest_v2)
+
+// Contract section: editor runtime manifest v2
+#include "PrivateTestScope.h"
+
 #include <filesystem>
 #include <fstream>
-#include <simplesquirrel/simplesquirrel.hpp>
 #include <sstream>
-#include <string>
 #include "PathBesideSource.h"
-#include "PrivateTestScope.h"
-#include "common/Module.h"
 #include "common/ScriptError.h"
 #include "common/SquirrelBinding.h"
 #include "editor/EditCommand.h"
@@ -3028,15 +3002,12 @@ TEST_CASE("editor.v2.legacy_property_provider_fails_closed_without_implicit_zero
 #include "editor/EditorProtocol.h"
 #include "editor/EditorRuntimeManifest.h"
 #include "editor/EditorSelection.h"
-#include "editor/EditorSession.h"
 #include "editor/EditorSimulationPreview.h"
 #include "editor/EditorValue.h"
 #include "editor/ScriptEditorTool.h"
 #include "graphics/lighting/editing/SnowFieldTarget.h"
 #include "map/level/editing/FieldTargets.h"
 #include "weather/SnowField.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_runtime_manifest_v2.cpp
 namespace test_editor_runtime_manifest_v2 {
 // editor_runtime_manifest_v2.cpp
@@ -3542,19 +3513,15 @@ TEST_CASE("editor.v2.script_tool_failure_is_not_silent") {
     REQUIRE(!pointer.handled);
 }
 }  // namespace test_editor_runtime_manifest_v2
-#endif
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_scene_component_payload)
+
+// Contract section: editor scene component payload
 #include "PrivateTestScope.h"
-#include <memory>
+
 #include "audio/editor/EditorAudioTarget.h"
-#include "editor/EditorTransactionService.h"
 #include "graphics/material/editor/EditorMaterialTarget.h"
-#include "physics/editor/EditorPhysicsTarget.h"
 #include "scene/editor/EditorSceneComponentPayload.h"
 #include "scene/editor/EditorSceneTarget.h"
 #include "scene/loader/editing/SceneImportTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_scene_component_payload.cpp
 namespace test_editor_scene_component_payload {
 // editor_scene_component_payload.cpp
@@ -4052,16 +4019,13 @@ TEST_CASE("editor.scene_import.snapshot_load_is_atomic_and_preflight_requires_lo
     CHECK_EQ(static_cast<int>(runtime.inspect(target, nullptr).code()), static_cast<int>(EditorStatus::Rejected));
 }
 }  // namespace test_editor_scene_component_payload
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_scene_runtime)
+// Contract section: editor scene runtime
 #include "PrivateTestScope.h"
-#include <utility>
+
 #include "scene/NodeDesc.h"
 #include "scene/SceneHost.h"
 #include "scene/editing/SceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_scene_runtime.cpp
 namespace test_editor_scene_runtime {
 using namespace eve::scene_editing;
@@ -4151,16 +4115,10 @@ TEST_CASE("editor.scene.live_host_staged_create_delete_and_conflict_are_atomic")
     CHECK_EQ(target.sceneObject(ObjectId("existing")).value().name, "existing");
 }
 }  // namespace test_editor_scene_runtime
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_scene_target_v2)
+// Contract section: editor scene target v2
 #include "PrivateTestScope.h"
-#include <string>
-#include "editor/EditorAuthority.h"
-#include "editor/EditorTransactionService.h"
-#include "scene/editor/EditorSceneTarget.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
+
 // editor_scene_target_v2.cpp
 namespace test_editor_scene_target_v2 {
 using namespace eve::editor;
@@ -4402,16 +4360,13 @@ TEST_CASE("editor.v2.scene_property_provider_multi_edits_generic_trs_inspector")
              static_cast<int>(PropertyReadState::Mixed));
 }
 }  // namespace test_editor_scene_target_v2
-#endif
 
-#if !defined(EVE_TEST_FILTER_ORIGINS) || defined(EVE_TEST_ORIGIN_editor_skeleton_overlay)
+// Contract section: editor skeleton overlay
 #include "PrivateTestScope.h"
-#include <algorithm>
+
 #include "animation/AnimPose.h"
 #include "animation/AnimSkeleton.h"
 #include "animation/editing/SkeletonOverlay.h"
-#include "zeroerr/assert.h"
-#include "zeroerr/unittest.h"
 // editor_skeleton_overlay.cpp
 namespace test_editor_skeleton_overlay {
 using namespace eve::animation_editing;
@@ -4512,4 +4467,3 @@ TEST_CASE("editor.animation.runtime_skeleton_adapter_uses_world_pose_and_stable_
     REQUIRE(primitive(overlay, "hand:axis-z"));
 }
 }  // namespace test_editor_skeleton_overlay
-#endif
