@@ -2030,6 +2030,7 @@ TEST_CASE("map.path.astar.routePreview") {
 // Contract section: mouse cpp
 #include "PrivateTestScope.h"
 
+#include <cstdio>
 #include "mouse/Cursor.h"
 #include "mouse/Mouse.h"
 // mouse_cpp.cpp
@@ -2101,6 +2102,17 @@ TEST_CASE("mouse.positionRoundTrip") {
     for (int attempt = 0; attempt < 100 && std::abs(m->getX() - 80.0) >= 2.0; ++attempt) {
         SDL_Delay(1);
         SDL_PumpEvents();
+    }
+    if (std::abs(m->getX() - 80.0) >= 2.0) {
+        auto* window  = static_cast<SDL_Window*>(handle);
+        int   globalX = 0, globalY = 0, windowX = 0, windowY = 0;
+        SDL_GetGlobalMouseState(&globalX, &globalY);
+        SDL_GetWindowPosition(window, &windowX, &windowY);
+        std::fprintf(stderr,
+                     "Mouse warp diagnostic: local=(%.1f,%.1f) global=(%d,%d) window=(%d,%d) flags=%u "
+                     "mouse_focus=%d keyboard_focus=%d SDL_error=%s\n",
+                     m->getX(), m->getY(), globalX, globalY, windowX, windowY, SDL_GetWindowFlags(window),
+                     SDL_GetMouseFocus() == window, SDL_GetKeyboardFocus() == window, SDL_GetError());
     }
     CHECK(std::abs(m->getX() - 80.0) < 2.0);
     m->setY(90.0);
