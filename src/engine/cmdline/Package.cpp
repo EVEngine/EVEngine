@@ -504,10 +504,13 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
         std::this_thread::sleep_for(std::chrono::milliseconds(20));
     if (exit == -1) {
         Poco::Process::kill(process.id());
+        exit = process.wait();
     }
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
     // On Windows tryWait reads the exit code before the process object is
     // signaled. Wait for teardown to release the candidate's directory handles.
     exit = process.wait();
+#endif
     child.reader.join();
     if (exit != 0 || log.find("[package-check] passed: 30 frames") == std::string::npos) {
         cerr << "Package runtime acceptance failed (exit " << exit << ")\n" << log;
