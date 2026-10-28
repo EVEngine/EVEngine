@@ -225,7 +225,7 @@ if ! "$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >"$WORK/package.
     # Reproduce the startup directly so a child-process abort has a native stack.
     # This is diagnostic only: the failed package gate remains failed below.
     EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
-      lldb --batch -o run -o 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
+      lldb --batch -o run -k 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
   fi
   fail "eve package failed"
 fi
