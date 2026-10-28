@@ -2,6 +2,7 @@
 
 #include "common/Exception.h"
 
+#include <algorithm>
 #include <atomic>
 #include <cstdio>
 #include <cstring>
@@ -85,8 +86,11 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
 
     WGPUDeviceDescriptor devDesc{};
     devDesc.label = sv("eve_device");
-    // Mesh3D bind group samples albedo/normal/env/shadow/height/depth/AO/extras.
-    constexpr std::uint32_t requiredSampledTextures = 17;
+    // Fixed Mesh3D layouts use 13 sampled textures, within the core 16-slot budget.
+    // Extended PBR variants check their actual resource count against Capabilities.
+    // Request the extra slot when available without rejecting core WebGPU adapters.
+    constexpr std::uint32_t requiredSampledTextures  = 16;
+    constexpr std::uint32_t preferredSampledTextures = 17;
     // Phase B GBuffer is five RGBA8Unorm color targets (5×8 = 40 bytes/sample).
     // WebGPU's default maxColorAttachmentBytesPerSample is 32; Dawn/macOS
     // adapters advertise 128 but only grant it when requested here.
@@ -102,7 +106,8 @@ DeviceDone InitFlow::requestDevice(AdapterDone&& prev) {
             "GBuffer requirement (%u)",
             adapterLimits.maxColorAttachmentBytesPerSample, requiredColorAttachmentBytes);
     WGPULimits requiredLimits                       = WGPU_LIMITS_INIT;
-    requiredLimits.maxSampledTexturesPerShaderStage = requiredSampledTextures;
+    requiredLimits.maxSampledTexturesPerShaderStage =
+        std::min(adapterLimits.maxSampledTexturesPerShaderStage, preferredSampledTextures);
     requiredLimits.maxColorAttachmentBytesPerSample = requiredColorAttachmentBytes;
     // Leave maxColorAttachments at the WGPU default (8); only raise bytes/sample.
     devDesc.requiredLimits                          = &requiredLimits;

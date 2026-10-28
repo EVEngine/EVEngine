@@ -277,6 +277,7 @@ jobs:
         timeout-minutes: 30
         env:
           TAG: ${{ inputs.tag }}
+          EVENGINE_VULKAN_VALIDATION: ${{ matrix.architecture == 'x86_64' && '1' || '0' }}
         run: bash .github/scripts/test-sdk.sh "dist/eve-sdk/$SDK_TARGET" macosx "${TAG#v}" "$SDK_ARCHITECTURE"
 
       - name: Package SDK zip

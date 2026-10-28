@@ -78,7 +78,7 @@ def run(archive: Path, version: str, output: Path) -> None:
                     }""")
                     (output / "adapter.json").write_text(
                         json.dumps({"browser": browser.version, "limits": limits}, indent=2), encoding="utf-8")
-                    if limits["sampledTextures"] < 17 or limits["colorAttachmentBytes"] < 40:
+                    if limits["sampledTextures"] < 16 or limits["colorAttachmentBytes"] < 40:
                         raise ValueError(f"Browser adapter cannot satisfy the engine device contract: {limits}")
                     page.goto(f"{base}/eve.html", wait_until="domcontentloaded")
                     page.wait_for_function(

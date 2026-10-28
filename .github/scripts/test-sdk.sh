@@ -221,6 +221,12 @@ echo "OK: eve zip -> $(basename "$GAME.eve")"
 PKG="$WORK/sample-pkg"
 if ! "$SDK/bin/$RUNTIME" package "$GAME" -o "$PKG" --sdk "$SDK" >"$WORK/package.log" 2>&1; then
   cat "$WORK/package.log" >&2
+  if [ "$PLAT" = macosx ] && command -v lldb >/dev/null 2>&1; then
+    # Reproduce the startup directly so a child-process abort has a native stack.
+    # This is diagnostic only: the failed package gate remains failed below.
+    EVE_PACKAGE_CHECK=1 EVENGINE_VULKAN_VALIDATION=1 \
+      lldb --batch -o run -o 'thread backtrace all' -- "$SDK/bin/$RUNTIME" run "$GAME" >&2 || true
+  fi
   fail "eve package failed"
 fi
 [ -f "$PKG/$RUNTIME" ] || fail "package missing runtime $RUNTIME"
