@@ -49,7 +49,17 @@ esac
 fail() { echo "ERROR: $*" >&2; exit 1; }
 
 WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
+cleanup() {
+  local result=$?
+  if ! rm -rf "$WORK"; then
+    if [ "$PLAT" = win32 ]; then
+      python3 "$SCRIPTS/report-windows-locks.py" "$WORK" || true
+    fi
+    return 1
+  fi
+  return "$result"
+}
+trap cleanup EXIT
 
 # --- Android: assemble an APK from the SDK packaging template ----------------
 # Hard gate: the template + SDK libs + a minimal game must produce an APK.
