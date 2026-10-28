@@ -17,6 +17,32 @@ Evolutionary Vision Engine
 
 [中文版](Readme.md)
 
+## Introduction
+
+**EVEngine (Evolutionary Vision Engine) is an open-source game engine built for fast iteration and collaboration between developers and AI agents. It combines C++20 and Vulkan with EveScript (Squirrel-compatible) gameplay scripting, supporting 2D, third-person 3D, and mixed 2D/3D games.**
+
+Its goal is to shorten the path from an idea to playable mechanics, observation, debugging, and verified changes. Individuals and small teams express gameplay in scripts, use native modules for rendering and simulation, and bring editing tools and AI agents into the actual execution and verification loop, iterating from a prototype toward a distributable game.
+
+### Core features
+
+- **Start making a game by writing scripts.** A direct, LÖVE-style workflow starts with `config.nut` and `main.nut` in an ordinary directory. Download a prebuilt SDK to run it. Add performance-sensitive extensions through C++ shared-library plugins when needed. See the [EveScript guide](docs/en/usr/EVESCRIPT.md) and [native plugin example](examples/native-plugin/).
+- **Edit and debug while the game runs.** Built-in asset management, script and asset hot reload, game-loop pausing, DAP debugging, and development snapshots support repeated iteration on events, logic, and cutscenes. Declarative UI shares the game runtime, allowing scripts to build custom editing tools. Script class scanning and property panels let you inspect and edit instance fields, with panels synchronizing property changes. See [DevLab](examples/devlab/README.en.md) and the [terrain editor](examples/terrain-editor/).
+- **AI can see the game and operate it through explicit interfaces.** Desktop MCP tools cover script API discovery, errors, runtime inspection, debugging, and engine-rendered screenshots. Entity geometry views, frame-buffer inspection, and image contact sheets help agents diagnose actual visual output. Games can expose operations and observations for agent playtesting; a separate `eve mcp` host can create native editor windows. See [AI and MCP](docs/en/usr/AI-MCP.md), [AI Game](examples/ai-game/README.en.md), and [AI Editor](examples/ai-editor/README.en.md).
+- **Bring 2D assets into a real 3D scene.** Alongside conventional 2D and 3D rendering, HD-2D extrudes tilemaps into terrain and places animated, camera-facing sprites in the 3D world with depth and shadows. Layered avatars and sprite stacking offer further ways to combine visual styles. See the [HD-2D riverside scene](examples/hd2d-riverside/) and [render gallery](docs/images/examples/README.en.md).
+- **Build mechanics out of interactive simulations.** PixelWorld provides chunked sand, water, and fire simulation with material reactions, heat transfer, and phase changes, supported by command replay, checkpoint divergence diagnostics, and incremental interest-area transfers. Geometry destruction uses pre-cut geometry, connection graphs, and field-driven bond breaking. Fluids, cloth, and particles provide additional building blocks. See [PixelWorld](examples/pixelworld/), [basic destruction](examples/destruction-basic/), and [cluster destruction](examples/destruction-clusters/).
+- **Reuse animation assets and control motion procedurally.** Skeletal animation includes state machines, blending, root motion, IK, bone-mapped retargeting, and Motion Matching. Control-based procedural animation uses targets, damping, and impulses for dynamic responses. See the [animation guide](docs/usr/modules/animation.md) (Chinese), [retargeting example](examples/ironwarden-retarget/), and [climbing / Motion Matching example](examples/climbing-motion-matching/).
+
+### Built-in systems
+
+Rendering, simulation, gameplay, and tools are organized into modules that can be selected through build configuration. See the [module handbook](docs/en/usr/MODULES.md) for interfaces and integration details.
+
+- **Scenes and presentation:** tilemaps and map editing, 2D/3D cameras, HD-2D, layered avatars, sprite stacking, 3D models and skeletal animation, particles, UI, and audio.
+- **Physics and worlds:** Box2D / Box3D physics, fluids, ropes and cloth, geometry destruction, pixel-material simulation, procedural generation, hex maps, and building placement.
+- **Gameplay and AI:** RPG attributes / effects / abilities, combat, inventory and equipment, dialogue, NPC state trees and sensing, RTS, tactics, weapons, and vehicles.
+- **Data and development:** a virtual filesystem, asset import and cooking, SQLite / JSON and save interfaces, localization, networking, script ECS, hot reload, runtime editing, and AI/MCP tools.
+
+Compose these systems into RPG, action, or strategy mechanics, then keep editing, debugging, and verifying in the same runtime: that is EVEngine's central development approach. Start with the [user guide](docs/en/usr/README.md) and runnable examples, and use the API catalog matching your engine version.
+
 ## Documentation
 
 ### Native Intel macOS x86_64 builds
@@ -121,43 +147,6 @@ English user guides are maintained by hand; Chinese is the authoritative source.
 - [Engine developer docs](docs/en/dev/README.md): for engine maintainers and contributors — architecture, module design, testing strategy, and implementation notes.
 
 > **For game developers:** you do **not** need to compile EVEngine. Download the prebuilt SDK for your platform from the [official release page](https://github.com/EVEngine/EVEngine/releases), unzip it, and start creating — no Git, CMake, C++ compiler, or Vulkan SDK required. Only developers who want to modify the engine itself need to read "Building from source" below.
-
-## Introduction
-
-Many game engines are slow to iterate, hard to debug, and awkward for rapid prototyping. EVEngine is designed to be a simple, practical engine focused on 2D, third-person 3D, and mixed 2D/3D gameplay components — not a heavyweight 3D scene-management suite.
-
-Design goals:
-
-> Status legend: ✅ shipped · 🟡 partially shipped · 🛠 roadmap (not implemented yet)
-
-1. ✅ A Love2D-style interpretive engine that loads scripts and data directly
-2. ✅ Many high-performance C++ modules; you can compile your own C++ libraries as shared libs and interact with them directly (see `examples/native-plugin`)
-3. 🟡 A full development stack: your logic can be edited with GUI tools; the editor runtime is the game runtime—only the shipping runtime strips DevTools (or you can keep them for player modding); scripts can build editing GUIs at runtime (see `examples/terrain-editor`)
-4. ✅ Built-in asset management and hot reload—no separate pipeline required
-5. 🛠 Class scanning with auto-generated editing GUIs (property reflection not landed yet; `editor.Inspector` currently registers fields manually—see roadmap)
-6. 🟡 GUIs that create and sync live from scripts (declarative `ui` module + hot reload; reflective two-way binding is on the roadmap)
-7. ✅ Pause the game loop for debugging (`eve run --debug`, F-keys / DAP / snapshots, see [DevLab](examples/devlab/README.en.md))
-8. 🟡 Independent state-machine models (e.g. animation) exist; systematic "edit code → affected state machines hot-update" support is on the roadmap
-9. ✅ Mixed 3D and 2D rendering
-
-> Fastest way to feel goals 3 / 4 / 7: `make devlab` (a developer-experience example that walks you through F4 / F6 / F7 / F9 and hot reload).
-
-Built-in systems:
-
-1. 2D tilemap — with an extensible map editor
-2. 2D camera
-3. Simple database
-4. Box2D / Box3D physics
-5. RPG framework
-6. Extensible combat model components
-7. Dialogs and scripting
-8. Layered avatar rendering
-9. 2D fluid engine (`Physics.newFluid2D`; also interactive cloth via `newCloth`)
-10. Particle system
-11. Sprite-stacking pseudo-3D
-12. Real 3D model rendering
-
-Build an RPG with minimal ceremony, with fast edit/debug for events, logic, and cutscene scripts — for example, hot-patch a function in a script and re-run it to preview the effect.
 
 ## Quick start (game developers: download, no build)
 
