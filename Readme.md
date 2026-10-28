@@ -17,6 +17,32 @@ Evolutionary Vision Engine
 
 [English](Readme.en.md)
 
+## 简介
+
+**EVEngine（Evolutionary Vision Engine）是一个面向快速迭代与人机协作的开源游戏引擎，以 C++20 和 Vulkan 为基础，用 EveScript（兼容 Squirrel）编写游戏逻辑，支持 2D、第三人称 3D 与 2D/3D 混合游戏。**
+
+项目的目标是缩短「想法 → 可运行的玩法 → 观察与调试 → 修改验证」的距离。让个人开发者和小团队用脚本快速表达玩法，用原生模块承担渲染与模拟，再让编辑工具和 AI Agent 参与实际运行、观察与验证，从原型持续迭代到可发布的游戏。
+
+### 核心特色
+
+- **像写脚本一样开始做游戏。** 类似 LÖVE 的直接运行方式，一个普通目录里的 `config.nut` 与 `main.nut` 就是游戏入口。下载预编译 SDK 即可运行；需要扩展性能代码时，再通过 SDK 的 C++ 动态库插件接入引擎模块。见 [EveScript 教程](docs/usr/EVESCRIPT.md)与[原生插件](examples/native-plugin/)。
+- **边运行、边编辑、边调试。** 内置资源管理与脚本、资源热重载，支持暂停游戏循环、DAP 调试和开发快照，方便反复修改和验证事件、逻辑与过场。声明式 UI 与游戏共享运行时，可以用脚本制作专属编辑工具；脚本类扫描与属性面板支持查看、编辑实例字段，面板可同步显示属性变化。见 [DevLab](examples/devlab/) 与[地形编辑器](examples/terrain-editor/)。
+- **AI 能看到游戏，也能通过接口操作游戏。** 桌面 MCP 工具覆盖脚本 API 查询、错误诊断、状态检查、调试和引擎截图，还提供实体几何多视图、帧缓冲检查与图像拼图，帮助 Agent 根据实际画面定位问题。游戏可以声明操作与观察接口供 Agent 试玩；独立 `eve mcp` 宿主支持创建原生编辑窗口。见 [AI 与 MCP](docs/dev/AI与MCP支持.md)、[AI Game](examples/ai-game/) 和 [AI Editor](examples/ai-editor/)。
+- **2D 资产可以进入真正的 3D 场景。** 除常规 2D 与 3D 渲染外，HD-2D 支持将 Tilemap 挤出为立体地形，把精灵动画作为面向摄像机的角色放入 3D 世界，并接入深度与阴影；也提供 Avatar 分层渲染和 Sprite Stacking，便于组合不同的美术表现。见 [HD-2D 河畔场景](examples/hd2d-riverside/) 与[渲染画廊](docs/images/examples/README.md)。
+- **把可交互的模拟做成玩法材料。** PixelWorld 提供分块的沙、水、火焰等像素物质模拟，以及材料反应、热传导和相变；配套命令回放、检查点分歧诊断与兴趣区增量传输。几何破碎系统则用预切几何、连接图和场驱动断边构建可破坏物体，另有流体、布料与粒子系统。见 [PixelWorld](examples/pixelworld/)、[几何破碎](examples/destruction-basic/) 与[分块破碎](examples/destruction-clusters/)。
+- **角色动画兼顾资源复用与程序控制。** 骨骼动画包含状态机、混合、Root Motion、IK、骨骼映射重定向和 Motion Matching；控制论程序动画支持用目标、阻尼和冲量驱动动态响应。见[动画手册](docs/usr/modules/animation.md)、[重定向示例](examples/ironwarden-retarget/) 与[攀爬 / Motion Matching](examples/climbing-motion-matching/)。
+
+### 内置系统
+
+引擎按模块组织渲染、模拟、玩法与工具，构建时可按配置选择能力。具体接口与接线方式见[模块手册](docs/usr/MODULES.md)。
+
+- **场景与表现：** Tilemap 与地图编辑、2D/3D 摄像机、HD-2D、Avatar 分层、Sprite Stacking、3D 模型与骨骼动画、粒子、UI、音频。
+- **物理与世界：** Box2D / Box3D 物理、流体、绳索与布料、几何破碎、像素物质世界、程序化生成、六边形地图、建筑放置。
+- **玩法与 AI：** RPG 属性 / 效果 / 技能、战斗、背包与装备、对话、NPC 状态树与感知、RTS、战棋、武器与载具。
+- **数据与开发：** 虚拟文件系统、资源导入与 Cook、SQLite / JSON 与存档接口、本地化、网络、脚本 ECS、热重载、运行时编辑与 AI/MCP 工具。
+
+用这些可组合的系统搭起 RPG、动作或策略玩法，再在同一个运行环境里持续编辑、调试与验证，是 EVEngine 的核心开发思路。可从[用户指南](docs/usr/README.md)和可运行示例入手，脚本接口以对应版本的 API 目录为准。
+
 ## 文档导航
 
 ### Intel macOS x86_64 原生构建
@@ -60,43 +86,6 @@ Debug SDK 对应 `sdk/macosx-arm64-debug` 和 `sdk/macosx-x86_64-debug`。
 - [开发者文档](docs/dev/README.md)：面向引擎维护者与贡献者，包含架构、模块设计、测试策略与实施记录。
 
 > **给游戏开发者**：使用 EVEngine 做游戏**不需要编译引擎**。请直接到[官网发布页](https://github.com/EVEngine/EVEngine/releases)下载对应平台的预编译 SDK，解压即可开始创作——无需安装 Git、CMake、C++ 编译器或 Vulkan SDK。只有想修改引擎本身的开发者才需要阅读下文“从源码构建”。
-
-## 简介
-
-针对很多游戏引擎开发效率低、难以调试、难以动态快速实现游戏原型的问题，我们设计了一款非常简单好用的游戏引擎。它主要提供 2D、第三人称 3D 与 2D/3D 混合的游戏组件能力，不提供复杂 3D 引擎中的场景管理等重量级功能。
-
-设计思路：
-
-> 状态图例：✅ = 已落地　🟡 = 部分落地　🛠 = 规划中（未实现）
-
-1. ✅ 采用类似 Love2D 的解析式引擎，可以直接加载脚本和数据；
-2. ✅ 内部有众多 C++ 编写的高性能模块，你还可以把自己的 C++ 库编译成动态链接库与这些模块直接交互（见 `examples/native-plugin`）；
-3. 🟡 有完整的开发环境：自己写的逻辑可以直接用 GUI 工具编辑，且编辑器运行时就是游戏运行时——只有发布用的运行时才会裁剪开发工具（也可以选择保留，供玩家二次创作；脚本可现场生成编辑用 GUI，见 `examples/terrain-editor`）；
-4. ✅ 内置资产管理、热重载，无需额外管线；
-5. 🛠 可扫描类并自动为其生成编辑用 GUI（属性反射尚未落地；当前 `editor.Inspector` 为手动登记字段，见 Roadmap）；
-6. 🟡 GUI 可以即时根据脚本动态创建和同步（声明式 `ui` 模块 + 热重载；反射式双向绑定规划中）；
-7. ✅ 可暂停游戏循环进行调试（`eve run --debug`，F 键 / DAP / 快照，见 `examples/devlab`）；
-8. 🟡 拥有众多独立状态机模型（动画状态机等）；「修改代码 → 局部状态机自动热更新」的系统化支持规划中；
-9. ✅ 支持 3D 与 2D 混合渲染。
-
-> 想最快体验第 3 / 4 / 7 条：`make devlab`（内置开发者体验示例，跑一遍 F4 / F6 / F7 / F9 与热重载）。
-
-内置系统：
-
-1. 2D tilemap——含可扩展的地图编辑器；
-2. 2D 摄像机；
-3. 简单的数据库；
-4. Box2D / Box3D 物理；
-5. RPG 框架；
-6. 可扩展的战斗模型组件；
-7. 对话框及脚本；
-8. Avatar 分层渲染；
-9. 2D 流体引擎（`Physics.newFluid2D`；另含可交互布料 `newCloth`）；
-10. 粒子系统；
-11. Sprite-stacking 伪 3D 技术；
-12. 真实 3D 模型渲染。
-
-支持以最简单的方式实现一个 RPG 游戏，并提供对事件、逻辑、过场脚本等快速编辑调试的功能。例如你可以修改脚本中的某个函数并反复执行，实时观察效果（热更新）。
 
 ## 快速开始（游戏开发者：下载即用，无需编译）
 
