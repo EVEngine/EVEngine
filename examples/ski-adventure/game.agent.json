@@ -1,0 +1,25 @@
+{
+  "schemaId": "evengine.game-agent-contract",
+  "schemaVersion": 1,
+  "id": "examples/ski-adventure",
+  "entry": "main.nut",
+  "smoke": {"scene": "default", "seed": 0, "maxHostFrames": 180, "mustReach": ["ski"]},
+  "clock": {"defaultStep": "frame"},
+  "observations": [{
+    "id": "ski", "kind": "script-root", "path": "ski",
+    "fields": ["phase", "tick", "elapsed", "distance", "speed", "altitude", "rotation", "coins", "flips", "crashes", "avalanche", "playing", "paused", "finished", "won", "score", "best", "stage", "worldY", "velocityX", "velocityY", "grounded", "slope", "jumps", "rampJumps", "nextKind", "nextDistance", "jumpQueued", "drawCalls"]
+  }],
+  "actions": {"source": "script-map", "map": [
+    {"id": "restart", "script": "skiRestart()"},
+    {"id": "jump", "script": "skiJump()"},
+    {"id": "tuck", "script": "skiTuck(true)"},
+    {"id": "untuck", "script": "skiTuck(false)"},
+    {"id": "flip", "script": "skiFlip(true)"},
+    {"id": "release", "script": "skiFlip(false)"},
+    {"id": "brake", "script": "skiBrake(true)"},
+    {"id": "unbrake", "script": "skiBrake(false)"},
+    {"id": "pause", "script": "skiPause()"}
+  ]},
+  "capture": {"requiredFor": ["visual"], "backend": "engine-readback"},
+  "tolerances": {"screenshot": "human-or-vlm", "numericAbs": 0.001}
+}
