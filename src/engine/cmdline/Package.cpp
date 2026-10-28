@@ -42,9 +42,12 @@ namespace eve::cmd
 namespace {
 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
-void diagnosePackageLocks(const path& candidate) {
-    // Read-only diagnostics: never shut down a locker or change the failed
-    // publication result. Dynamically load the OS API to keep it off the normal
+struct PackageLockOwners {
+    DWORD         status = ERROR_GEN_FAILURE;
+    vector<DWORD> processes;
+};
+PackageLockOwners diagnosePackageLocks(const path& candidate, bool verbose = true) {
+    // Read-only query: never shut down a locker. Dynamically load the OS API to keep it off the normal
     // packaging path and avoid adding a shipped DLL dependency.
     struct RestartManager {
         HMODULE library = LoadLibraryExW(L"Rstrtmgr.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
@@ -54,7 +57,7 @@ void diagnosePackageLocks(const path& candidate) {
     } api;
     if (!api.library) {
         cerr << "Package lock diagnostics unavailable: " << GetLastError() << '\n';
-        return;
+        return {};
     }
     auto start = reinterpret_cast<decltype(&RmStartSession)>(GetProcAddress(api.library, "RmStartSession"));
     auto end   = reinterpret_cast<decltype(&RmEndSession)>(GetProcAddress(api.library, "RmEndSession"));
@@ -63,14 +66,14 @@ void diagnosePackageLocks(const path& candidate) {
     auto list = reinterpret_cast<decltype(&RmGetList)>(GetProcAddress(api.library, "RmGetList"));
     if (!start || !end || !resources || !list) {
         cerr << "Package lock diagnostics API unavailable\n";
-        return;
+        return {};
     }
     DWORD session = 0;
     WCHAR key[CCH_RM_SESSION_KEY + 1]{};
     DWORD status = start(&session, 0, key);
     if (status != ERROR_SUCCESS) {
         cerr << "Package lock diagnostics start failed: " << status << '\n';
-        return;
+        return {};
     }
     struct Session {
         DWORD                   handle;
@@ -88,7 +91,7 @@ void diagnosePackageLocks(const path& candidate) {
     }
     if (scanError || names.empty()) {
         cerr << "Package lock diagnostics enumeration failed or empty: " << scanError.message() << '\n';
-        return;
+        return {};
     }
     vector<LPCWSTR> files;
     for (const auto& name : names) files.push_back(name.c_str());
@@ -102,14 +105,37 @@ void diagnosePackageLocks(const path& candidate) {
         count  = needed;
         status = list(session, &needed, &count, processes.data(), &reasons);
     }
-    cerr << "Package lock diagnostics: status=" << status << " process_count=" << count << '\n';
-    if (status != ERROR_SUCCESS) return;
+    if (verbose) cerr << "Package lock diagnostics: status=" << status << " process_count=" << count << '\n';
+    if (status != ERROR_SUCCESS) return {};
+    PackageLockOwners owners{ERROR_SUCCESS, {}};
     for (UINT i = 0; i < count; ++i) {
+        owners.processes.push_back(processes[i].Process.dwProcessId);
         string name;
         Poco::UnicodeConverter::toUTF8(wstring(processes[i].strAppName), name);
-        cerr << "Package locker pid=" << processes[i].Process.dwProcessId << " application=" << name << '\n';
+        if (verbose)
+            cerr << "Package locker pid=" << processes[i].Process.dwProcessId << " application=" << name << '\n';
+    }
+    return owners;
+}
+
+enum class PackageLockRelease { NotExternal, Released, TimedOut, Unavailable };
+PackageLockRelease waitForExternalPackageLocks(const path& candidate, DWORD runtimePid, PackageLockOwners owners) {
+    const auto deadline     = chrono::steady_clock::now() + chrono::seconds(5);
+    const auto publisherPid = GetCurrentProcessId();
+    if (owners.status != ERROR_SUCCESS) return PackageLockRelease::Unavailable;
+    if (owners.processes.empty()) return PackageLockRelease::NotExternal;
+    for (;;) {
+        if (find(owners.processes.begin(), owners.processes.end(), publisherPid) != owners.processes.end() ||
+            find(owners.processes.begin(), owners.processes.end(), runtimePid) != owners.processes.end())
+            return PackageLockRelease::NotExternal;
+        if (chrono::steady_clock::now() >= deadline) return PackageLockRelease::TimedOut;
+        this_thread::sleep_for(chrono::milliseconds(100));
+        owners = diagnosePackageLocks(candidate, false);
+        if (owners.status != ERROR_SUCCESS) return PackageLockRelease::Unavailable;
+        if (owners.processes.empty()) return PackageLockRelease::Released;
     }
 }
+
 #endif
 
 // Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
@@ -620,11 +646,23 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
         cerr << "Package publisher pid=" << GetCurrentProcessId() << " accepted runtime pid=" << process.id() << '\n';
         try {
-            diagnosePackageLocks(outDir);
+            auto owners = diagnosePackageLocks(outDir);
+            if (ec.category() == system_category() &&
+                (ec.value() == ERROR_ACCESS_DENIED || ec.value() == ERROR_SHARING_VIOLATION) &&
+                waitForExternalPackageLocks(outDir, process.id(), std::move(owners)) == PackageLockRelease::Released) {
+                // External monitoring can borrow the accepted executable without
+                // delete-sharing. Revalidate acceptance inputs after that borrow ends.
+                if (hashFile(archive) != archiveHash || hashFile(runtimeDst) != runtimeHash)
+                    throw runtime_error("Candidate changed while waiting for external package locks");
+                cerr << "External package locks released; publishing verified candidate\n";
+                rename(outDir, destination, ec);
+            }
         } catch (const std::exception& diagnosticError) {
             cerr << "Package lock diagnostics failed: " << diagnosticError.what() << '\n';
         }
 #endif
+    }
+    if (ec) {
         if (hadPrevious) {
             error_code restoreError;
             rename(previous, destination, restoreError);
