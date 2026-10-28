@@ -24,6 +24,7 @@
 #include "zip_writer.h"
 
 #if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+#include <restartmanager.h>
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -39,6 +40,77 @@ namespace eve::cmd
 
 #if !defined(__EMSCRIPTEN__)
 namespace {
+
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+void diagnosePackageLocks(const path& candidate) {
+    // Read-only diagnostics: never shut down a locker or change the failed
+    // publication result. Dynamically load the OS API to keep it off the normal
+    // packaging path and avoid adding a shipped DLL dependency.
+    struct RestartManager {
+        HMODULE library = LoadLibraryExW(L"Rstrtmgr.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
+        ~RestartManager() {
+            if (library) FreeLibrary(library);
+        }
+    } api;
+    if (!api.library) {
+        cerr << "Package lock diagnostics unavailable: " << GetLastError() << '\n';
+        return;
+    }
+    auto start = reinterpret_cast<decltype(&RmStartSession)>(GetProcAddress(api.library, "RmStartSession"));
+    auto end   = reinterpret_cast<decltype(&RmEndSession)>(GetProcAddress(api.library, "RmEndSession"));
+    auto resources =
+        reinterpret_cast<decltype(&RmRegisterResources)>(GetProcAddress(api.library, "RmRegisterResources"));
+    auto list = reinterpret_cast<decltype(&RmGetList)>(GetProcAddress(api.library, "RmGetList"));
+    if (!start || !end || !resources || !list) {
+        cerr << "Package lock diagnostics API unavailable\n";
+        return;
+    }
+    DWORD session = 0;
+    WCHAR key[CCH_RM_SESSION_KEY + 1]{};
+    DWORD status = start(&session, 0, key);
+    if (status != ERROR_SUCCESS) {
+        cerr << "Package lock diagnostics start failed: " << status << '\n';
+        return;
+    }
+    struct Session {
+        DWORD                   handle;
+        decltype(&RmEndSession) close;
+        ~Session() {
+            const DWORD result = close(handle);
+            if (result != ERROR_SUCCESS) cerr << "Package lock diagnostics end failed: " << result << '\n';
+        }
+    } cleanup{session, end};
+    vector<wstring> names;
+    error_code      scanError;
+    for (recursive_directory_iterator it(candidate, scanError), last; !scanError && it != last;
+         it.increment(scanError)) {
+        if (it->is_regular_file(scanError)) names.push_back(absolute(it->path()).wstring());
+    }
+    if (scanError || names.empty()) {
+        cerr << "Package lock diagnostics enumeration failed or empty: " << scanError.message() << '\n';
+        return;
+    }
+    vector<LPCWSTR> files;
+    for (const auto& name : names) files.push_back(name.c_str());
+    status       = resources(session, static_cast<UINT>(files.size()), files.data(), 0, nullptr, 0, nullptr);
+    UINT  needed = 0, count = 0;
+    DWORD reasons = 0;
+    if (status == ERROR_SUCCESS) status = list(session, &needed, &count, nullptr, &reasons);
+    vector<RM_PROCESS_INFO> processes;
+    if (status == ERROR_MORE_DATA) {
+        processes.resize(needed);
+        count  = needed;
+        status = list(session, &needed, &count, processes.data(), &reasons);
+    }
+    cerr << "Package lock diagnostics: status=" << status << " process_count=" << count << '\n';
+    if (status != ERROR_SUCCESS) return;
+    for (UINT i = 0; i < count; ++i) {
+        string name;
+        Poco::UnicodeConverter::toUTF8(wstring(processes[i].strAppName), name);
+        cerr << "Package locker pid=" << processes[i].Process.dwProcessId << " application=" << name << '\n';
+    }
+}
+#endif
 
 // Runtime binary name inside the *target* SDK's bin/. The packaged game runs on
 // the SDK's platform, which is not necessarily the host running `eve package`
@@ -543,6 +615,16 @@ int Cmdline::Package(std::string gamePath, std::string output, std::string sdk) 
     if (hadPrevious) rename(destination, previous);
     rename(outDir, destination, ec);
     if (ec) {
+        cerr << "Package publish failed: code=" << ec.value() << " category=" << ec.category().name()
+             << " candidate=" << outDir << " destination=" << destination << '\n';
+#if defined(EVENGINE_WINDOWS) || defined(_WIN32)
+        cerr << "Package publisher pid=" << GetCurrentProcessId() << " accepted runtime pid=" << process.id() << '\n';
+        try {
+            diagnosePackageLocks(outDir);
+        } catch (const std::exception& diagnosticError) {
+            cerr << "Package lock diagnostics failed: " << diagnosticError.what() << '\n';
+        }
+#endif
         if (hadPrevious) {
             error_code restoreError;
             rename(previous, destination, restoreError);
